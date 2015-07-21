@@ -11,6 +11,8 @@ import org.motechproject.tasks.domain.OperatorType;
 import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.events.constants.TaskFailureCause;
 import org.motechproject.tasks.ex.TaskHandlerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -32,6 +34,8 @@ import static org.motechproject.tasks.domain.KeyInformation.parse;
  * <p/>
  */
 public class TaskFilterExecutor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskFilterExecutor.class);
 
     /**
      * Default constructor.
@@ -67,8 +71,10 @@ public class TaskFilterExecutor {
                     throw e;    // data source lookups disable the task
                 }
                 value = null;   // trigger parameter lookups don't disable the task
-            } catch (Exception e) {
+                LOGGER.error("Unable to retrieve value for filter", e);
+            } catch (RuntimeException e) {
                 value = null;
+                LOGGER.error("Unable to retrieve value for filter", e);
             }
 
             filterCheck = value != null && checkValue(filter, value);

@@ -29,12 +29,13 @@ public class BundledJspView extends JstlView implements BundleContextAware {
     }
 
     @Override
-    public void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) throws RenderException {
+    public void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response)
+            throws RenderException {
         request.setAttribute(JSP_FILE, "/" + bundleContext.getBundle().getBundleId() + getUrl());
         try {
             super.render(model, request, response);
         } catch (Exception e) {
-            throw new RenderException(e);
+            throw new RenderException("Unable to load a JSP page for request " + request.getPathInfo(), e);
         }
     }
 }

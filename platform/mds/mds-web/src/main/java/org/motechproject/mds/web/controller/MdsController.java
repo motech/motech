@@ -27,9 +27,12 @@ public abstract class MdsController {
     public String handleMdsException(final MdsException exception) throws IOException {
         LOGGER.error("Error: " + exception.getMessage(), exception);
 
-        if (exception.getParams() == null) {
+        if (exception.getMessageKey() == null) {
+            return "error";
+        } else if (exception.getParams() == null) {
             return String.format("key:%s", exception.getMessageKey());
+        } else {
+            return String.format("key:%s\nparams:%s", exception.getMessageKey(), exception.getParams());
         }
-        return String.format("key:%s\nparams:%s", exception.getMessageKey(), exception.getParams());
     }
 }

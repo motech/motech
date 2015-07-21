@@ -445,11 +445,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
         model.put("list", information);
 
-        try {
-            VelocityEngineUtils.mergeTemplate(velocityEngine, templatePath, model, writer);
-        } catch (Exception e) {
-            LOGGER.error("An exception occurred, while trying to load" + templatePath + " template and merge it with data", e);
-        }
+        VelocityEngineUtils.mergeTemplate(velocityEngine, templatePath, model, writer);
 
         return writer.toString();
     }

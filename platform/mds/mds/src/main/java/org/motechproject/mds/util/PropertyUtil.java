@@ -4,7 +4,7 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.mds.ex.object.ObjectUpdateException;
+import org.motechproject.mds.ex.object.PropertyCopyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
@@ -53,14 +53,12 @@ public final class PropertyUtil extends PropertyUtils {
                         descriptor.setReadMethod(is);
                     }
                 } catch (IntrospectionException e) {
-                    LOGGER.error("Can't set read method for property: {}", propName);
-                    LOGGER.error("because of ", e);
+                    LOGGER.error("Can't set read method for property: {}", propName, e);
                 }
             }
         }
 
         return descriptors;
-
     }
 
     public static void safeSetCollectionProperty(Object bean, String name, Collection values) {
@@ -74,8 +72,7 @@ public final class PropertyUtil extends PropertyUtils {
         } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             LOGGER.error(
                     "There was a problem with set values {} for property {} in bean: {}",
-                    values, name, bean);
-            LOGGER.error("Because of: ", e);
+                    values, name, bean, e);
         }
     }
 
@@ -103,8 +100,7 @@ public final class PropertyUtil extends PropertyUtils {
         } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             LOGGER.error(
                     "There was a problem with set value {} for property {} in bean: {}",
-                    value, name, bean);
-            LOGGER.error("Because of: ", e);
+                    value, name, bean, e);
         }
     }
 
@@ -121,9 +117,8 @@ public final class PropertyUtil extends PropertyUtils {
             }
         } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             LOGGER.error(
-                    "There was a problem with get value of property {} in bean: {}", name, bean
+                    "There was a problem with get value of property {} in bean: {}", name, bean, e
             );
-            LOGGER.error("Because of: ", e);
         }
 
         return value;
@@ -136,8 +131,7 @@ public final class PropertyUtil extends PropertyUtils {
                 type = getPropertyType(bean, name);
             }
         } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            LOGGER.error("Cannot get property type of {} in {}: ", name, bean);
-            LOGGER.error("Reason: ", e);
+            LOGGER.error("Cannot get property type of {} in {}: ", name, bean, e);
         }
         return type;
     }
@@ -170,8 +164,8 @@ public final class PropertyUtil extends PropertyUtils {
             try {
                 Object val = readValue(object, descriptor);
                 writeValue(target, val, descriptor);
-            } catch (Exception e) {
-                throw new ObjectUpdateException(e);
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                throw new PropertyCopyException("Unable to copy properties for " + objectClass.getName(), e);
             }
         }
     }

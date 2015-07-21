@@ -1,15 +1,17 @@
 package org.motechproject.mds.web.controller;
 
-import org.junit.Assert;
 import org.junit.Test;
+import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.ex.entity.EntityAlreadyExistException;
 import org.motechproject.mds.ex.entity.EntityCreationException;
 import org.motechproject.mds.ex.entity.EntityInfrastructureException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.entity.EntityReadOnlyException;
-import org.motechproject.mds.ex.MdsException;
+
+import static org.junit.Assert.assertEquals;
 
 public class MdsControllerTest {
+
     private MdsController controller = new MdsController() {
 
         @Override
@@ -20,18 +22,18 @@ public class MdsControllerTest {
     };
 
     private MdsException[] exceptions = {
-            new EntityAlreadyExistException(),
-            new EntityNotFoundException(),
-            new EntityReadOnlyException(),
-            new EntityCreationException(new RuntimeException()),
-            new EntityInfrastructureException(new RuntimeException()),
-            new MdsException("test.key")
+            new EntityAlreadyExistException("EntityName"),
+            new EntityNotFoundException("EntityName"),
+            new EntityReadOnlyException("EntityName"),
+            new EntityCreationException("msg", new RuntimeException()),
+            new EntityInfrastructureException("className", new RuntimeException()),
+            new MdsException("msg", new RuntimeException(), "test.key")
     };
 
     @Test
     public void shouldHandleMdsExceptions() throws Exception {
         for (MdsException exception : exceptions) {
-            Assert.assertEquals(
+            assertEquals("Exception class " + exception.getClass(),
                     String.format("key:%s", exception.getMessageKey()),
                     controller.handleMdsException(exception)
             );

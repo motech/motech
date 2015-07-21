@@ -7,19 +7,27 @@ import org.motechproject.mds.ex.MdsException;
  * with creating new entity class.
  */
 public class EntityCreationException extends MdsException {
+
     private static final long serialVersionUID = -3828736679522726438L;
 
     /**
      * Constructs a new EntityCreationException with <i>mds.error.entityBuilderFailure</i> as
      * a message key.
      *
-     * @param cause the cause of exception.
+     * @param message the message for the logs
      */
-    public EntityCreationException(Throwable cause) {
-        super("mds.error.entityBuilderFailure", cause);
+    public EntityCreationException(String message) {
+        super(message, null, "mds.error.entityBuilderFailure");
     }
 
-    public EntityCreationException(String messageKey) {
-        super(messageKey);
+    /**
+     * Constructs a new EntityCreationException with <i>mds.error.entityBuilderFailure</i> as
+     * a message key.
+     *
+     * @param message the message for the logs
+     * @param cause the cause of exception.
+     */
+    public EntityCreationException(String message, Throwable cause) {
+        super(message, cause, "mds.error.entityBuilderFailure");
     }
 }

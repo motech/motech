@@ -13,7 +13,7 @@ public class NoSuchTypeException extends MdsException {
      * Constructs a new NoSuchTypeException with <i>mds.error.noSuchType</i> as
      * a message key.
      */
-    public NoSuchTypeException() {
-        super("mds.error.noSuchType");
+    public NoSuchTypeException(String type) {
+        super("Type not found: " + type, null, "mds.error.noSuchType");
     }
 }

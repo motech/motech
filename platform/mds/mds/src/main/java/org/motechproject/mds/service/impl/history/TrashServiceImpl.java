@@ -6,7 +6,6 @@ import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.ex.entity.EmptyTrashException;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryParams;
@@ -178,26 +177,22 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
     @Override
     @Transactional
     public void emptyTrash() {
-        try {
-            PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
+        PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
-            for (Entity entity : getEntities()) {
-                Class<?> trashClass =  HistoryTrashClassHelper.getClass(entity.getClassName(), EntityType.TRASH,
-                        getBundleContext());
+        for (Entity entity : getEntities()) {
+            Class<?> trashClass =  HistoryTrashClassHelper.getClass(entity.getClassName(), EntityType.TRASH,
+                    getBundleContext());
 
-                Query query = manager.newQuery(trashClass);
-                Collection instances = (Collection) query.execute();
-                if (entity.isRecordHistory()) {
-                    for (Object instance : instances) {
-                        historyService.remove(instance);
-                    }
+            Query query = manager.newQuery(trashClass);
+            Collection instances = (Collection) query.execute();
+            if (entity.isRecordHistory()) {
+                for (Object instance : instances) {
+                    historyService.remove(instance);
                 }
-
-                manager.deletePersistentAll(instances);
             }
-        } catch (Exception e) {
-            throw new EmptyTrashException(e);
-        }
+
+            manager.deletePersistentAll(instances);
+            }
     }
 
     @Autowired

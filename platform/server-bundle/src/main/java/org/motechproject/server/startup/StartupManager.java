@@ -152,7 +152,7 @@ public class StartupManager {
             dbSettings.setPlatformInitialized(true);
 
             configurationService.savePlatformSettings(dbSettings);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             LOGGER.error(e.getMessage(), e);
             markPlatformStateAs(DB_ERROR);
         }

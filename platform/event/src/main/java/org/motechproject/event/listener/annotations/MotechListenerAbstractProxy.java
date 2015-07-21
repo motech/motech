@@ -1,6 +1,5 @@
 package org.motechproject.event.listener.annotations;
 
-import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 
@@ -39,11 +38,7 @@ public abstract class MotechListenerAbstractProxy implements EventListener {
 
     @Override
     public void handle(MotechEvent event) {
-        try {
-            callHandler(event);
-        } catch (Exception e) {
-            throw new MotechException("Failed to handle event", e);
-        }
+        callHandler(event);
     }
 
     @Override

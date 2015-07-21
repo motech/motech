@@ -49,12 +49,12 @@ public class AllEntities extends MotechDataRepository<Entity> {
 
         if (entity != null) {
             if (entity.isDDE()) {
-                throw new EntityReadOnlyException();
+                throw new EntityReadOnlyException(entity.getName());
             }
 
             delete(entity);
         } else {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(id);
         }
     }
 

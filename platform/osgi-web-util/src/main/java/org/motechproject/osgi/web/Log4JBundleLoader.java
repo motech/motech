@@ -1,5 +1,6 @@
 package org.motechproject.osgi.web;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.motechproject.osgi.web.domain.LogMapping;
@@ -19,6 +20,7 @@ import org.xml.sax.SAXException;
 import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -88,12 +90,10 @@ public class Log4JBundleLoader {
                 }
                 logService.reconfigure();
                 LOGGER.debug("Added log4j configuration for [" + bundle.getLocation() + "]");
-            } catch (Exception e) {
-                throw new BundleLoadingException(e);
+            } catch (ParserConfigurationException | SAXException e) {
+                throw new BundleLoadingException("Error while loading log4j configuration from " + bundle, e);
             } finally {
-                if (log4jStream != null) {
-                    log4jStream.close();
-                }
+                IOUtils.closeQuietly(log4jStream);
             }
         }
     }

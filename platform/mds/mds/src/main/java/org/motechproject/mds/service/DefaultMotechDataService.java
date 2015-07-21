@@ -93,7 +93,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         Entity entity = allEntities.retrieveByClassName(name);
 
         if (entity == null) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(name);
         }
 
         securityMode = entity.getSecurityMode();

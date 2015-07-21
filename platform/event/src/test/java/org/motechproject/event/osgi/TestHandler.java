@@ -5,8 +5,8 @@ import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.event.listener.annotations.MotechListenerType;
 import org.motechproject.event.listener.annotations.MotechParam;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,12 +42,10 @@ public class TestHandler {
     }
 
     @MotechListener(subjects = {SUBJECT_READ})
-    public void read(MotechEvent event) {
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("test.properties");
-        try {
+    public void read(MotechEvent event) throws IOException {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("test.properties")) {
             PROPERTIES.load(inputStream);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 

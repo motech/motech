@@ -1,9 +1,11 @@
 package org.motechproject.mds.ex.lookup;
 
+import org.motechproject.mds.ex.MdsException;
+
 /**
  * Signals that an error occurred during lookup execution.
  */
-public class LookupExecutorException extends RuntimeException {
+public class LookupExecutorException extends MdsException {
 
     private static final long serialVersionUID = -1676839116204380821L;
 

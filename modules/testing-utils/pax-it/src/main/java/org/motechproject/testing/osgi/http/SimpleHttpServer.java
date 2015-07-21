@@ -34,6 +34,10 @@ public final class SimpleHttpServer {
         SimpleHttpServerStartException(String message) {
             super(message);
         }
+
+        SimpleHttpServerStartException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 
     /**
@@ -65,8 +69,8 @@ public final class SimpleHttpServer {
                 // Increase port number for the next guy...
                 port++;
                 return uri;
-            } catch (Exception e) {
-                throw new SimpleHttpServerStartException("Unable to start server: " + e);
+            } catch (RuntimeException e) {
+                throw new SimpleHttpServerStartException("Unable to start server", e);
             }
         }
 

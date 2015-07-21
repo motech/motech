@@ -106,62 +106,54 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
             boolean recordHistory = Boolean.parseBoolean(ReflectionsUtil.getAnnotationValue(annotation, HISTORY));
             boolean nonEditable = Boolean.parseBoolean(ReflectionsUtil.getAnnotationValue(annotation, NON_EDITABLE));
 
-            try {
-                EntityDto entity = entityService.getEntityByClassName(className);
-                RestOptionsDto restOptions = new RestOptionsDto();
-                TrackingDto tracking = new TrackingDto();
-                Collection<FieldDto> fields;
+            EntityDto entity = entityService.getEntityByClassName(className);
+            RestOptionsDto restOptions = new RestOptionsDto();
+            TrackingDto tracking = new TrackingDto();
+            Collection<FieldDto> fields;
 
-                if (entity == null) {
-                    LOGGER.debug("Creating DDE for {}", className);
+            if (entity == null) {
+                LOGGER.debug("Creating DDE for {}", className);
 
-                    entity = new EntityDto(
-                            null, className, name, module, namespace, tableName, recordHistory,
-                            SecurityMode.EVERYONE, null, clazz.getSuperclass().getName(),
-                            Modifier.isAbstract(clazz.getModifiers()), false
-                    );
-                } else {
-                    LOGGER.debug("DDE for {} already exists, updating if necessary", className);
+                entity = new EntityDto(
+                        null, className, name, module, namespace, tableName, recordHistory,
+                        SecurityMode.EVERYONE, null, clazz.getSuperclass().getName(),
+                        Modifier.isAbstract(clazz.getModifiers()), false
+                );
+            } else {
+                LOGGER.debug("DDE for {} already exists, updating if necessary", className);
 
-                    AdvancedSettingsDto advancedSettings = entityService.getAdvancedSettings(entity.getId(), true);
-                    restOptions = advancedSettings.getRestOptions();
-                    tracking = advancedSettings.getTracking();
-
-                    if (!tracking.isModifiedByUser()) {
-                        entity.setRecordHistory(recordHistory);
-                    }
-                }
+                AdvancedSettingsDto advancedSettings = entityService.getAdvancedSettings(entity.getId(), true);
+                restOptions = advancedSettings.getRestOptions();
+                tracking = advancedSettings.getTracking();
 
                 if (!tracking.isModifiedByUser()) {
                     tracking.setRecordHistory(recordHistory);
                     tracking.setNonEditable(nonEditable);
                 }
-
-                setSecurityOptions(element, entity);
-
-                // per entity maxFetchDepth that will be passed to the Persistence Manager
-                setMaxFetchDepth(entity, annotation);
-
-                entityProcessorOutput.setEntityProcessingResult(entity);
-
-                fields = findFields(clazz, entity);
-                addDefaultFields(entity, fields);
-
-                restOptions = processRestOperations(clazz, restOptions);
-                restOptions = findRestFields(clazz, restOptions, fields);
-
-                updateResults(entityProcessorOutput, clazz, fields, restOptions, tracking);
-
-                add(entity);
-                processingResult.add(entityProcessorOutput);
-                MotechClassPool.registerDDE(entity.getClassName());
-            } catch (Exception e) {
-                LOGGER.error(
-                        "Failed to create an entity for class {} from bundle {}",
-                        clazz.getName(), getBundle().getSymbolicName()
-                );
-                LOGGER.error("because of: ", e);
             }
+
+            if (!tracking.isModifiedByUser()) {
+                tracking.setRecordHistory(recordHistory);
+            }
+
+            setSecurityOptions(element, entity);
+
+            // per entity maxFetchDepth that will be passed to the Persistence Manager
+            setMaxFetchDepth(entity, annotation);
+
+            entityProcessorOutput.setEntityProcessingResult(entity);
+
+            fields = findFields(clazz, entity);
+            addDefaultFields(entity, fields);
+
+            restOptions = processRestOperations(clazz, restOptions);
+            restOptions = findRestFields(clazz, restOptions, fields);
+
+            updateResults(entityProcessorOutput, clazz, fields, restOptions, tracking);
+
+            add(entity);
+            processingResult.add(entityProcessorOutput);
+            MotechClassPool.registerDDE(entity.getClassName());
         } else {
             LOGGER.debug("Did not find Entity annotation in class: {}", clazz.getName());
         }

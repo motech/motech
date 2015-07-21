@@ -43,7 +43,9 @@ import static org.apache.commons.lang.StringUtils.uncapitalize;
  */
 @Component
 public class EntityBuilderImpl implements EntityBuilder {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityBuilderImpl.class);
+
     private final ClassPool classPool = MotechClassPool.getDefault();
 
     @Override
@@ -143,9 +145,8 @@ public class EntityBuilderImpl implements EntityBuilder {
                     declaring.getName(), entity.getModule(), entity.getNamespace(),
                     declaring.toBytecode(), type
             );
-        } catch (Exception e) {
-            LOGGER.error("Error while building {} entity {}", type.name(), entity.getName());
-            throw new EntityCreationException(e);
+        } catch (ReflectiveOperationException | CannotCompileException | IOException | NotFoundException e) {
+            throw new EntityCreationException("Unable to create entity " + entity.getName(), e);
         }
     }
 
@@ -186,9 +187,8 @@ public class EntityBuilderImpl implements EntityBuilder {
                 if (!shouldLeaveExistingMethod(field, setter, declaring)) {
                     createSetter(declaring, fieldName, ctField);
                 }
-            } catch (Exception e) {
-                LOGGER.error("Error while processing field {}", field.getName());
-                throw e;
+            } catch (RuntimeException e) {
+                throw new EntityCreationException("Error while processing field " + field.getName(), e);
             }
         }
 
@@ -272,8 +272,8 @@ public class EntityBuilderImpl implements EntityBuilder {
 
             createGetter(declaring, name, field);
             createSetter(declaring, name, field);
-        } catch (Exception e) {
-            throw new PropertyCreationException(String.format("Error while creating property %s", propertyName), e);
+        } catch (CannotCompileException e) {
+            throw new PropertyCreationException("Error while creating property " + propertyName, e);
         }
     }
 

@@ -29,10 +29,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Collections.singletonList;
+
 /**
  * controller for capturing bootstrap configuration from UI
  */
@@ -111,9 +113,11 @@ public class BootstrapController {
 
         try {
             OsgiListener.saveBootstrapConfig(bootstrapConfig);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            LOGGER.error("Error while saving bootstrap configuration", e);
+
             ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
-            bootstrapView.addObject("errors", Arrays.asList(getMessage("server.error.bootstrap.save", request)));
+            bootstrapView.addObject("errors", singletonList(getMessage("server.error.bootstrap.save", request)));
             addCommonBootstrapViewObjects(bootstrapView);
             return bootstrapView;
         }
@@ -130,7 +134,7 @@ public class BootstrapController {
         Map<String, Object> response = new HashMap<>();
 
         if (result.hasErrors()) {
-            response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verifySql.error", request)));
+            response.put(WARNINGS, singletonList(getMessage("server.bootstrap.verifySql.error", request)));
             response.put(ERRORS, getErrors(result));
         } else {
             Connection sqlConnection = null;
@@ -145,11 +149,11 @@ public class BootstrapController {
                 response.put(SUCCESS, reachable);
                 sqlConnection.close();
             } catch (SQLException e) {
-                response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verify.warning", request)));
+                response.put(WARNINGS, singletonList(getMessage("server.bootstrap.verify.warning", request)));
                 response.put(SUCCESS, false);
             } catch (IllegalArgumentException | IllegalAccessException | InstantiationException | ClassNotFoundException e) {
-                response.put(ERRORS, Arrays.asList(getMessage("server.error.invalid.sqlDriver", request)));
-                response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verifySql.error", request)));
+                response.put(ERRORS, singletonList(getMessage("server.error.invalid.sqlDriver", request)));
+                response.put(WARNINGS, singletonList(getMessage("server.bootstrap.verifySql.error", request)));
                 response.put(SUCCESS, false);
             } finally {
                 if (sqlConnection != null) {

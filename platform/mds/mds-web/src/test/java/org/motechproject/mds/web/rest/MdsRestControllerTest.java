@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
 import org.motechproject.mds.ex.rest.RestEntityNotFoundException;
-import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
+import org.motechproject.mds.ex.rest.RestLookupExecutionForbiddenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestNoLookupResultException;
 import org.motechproject.mds.ex.rest.RestNotSupportedException;
@@ -330,7 +330,7 @@ public class MdsRestControllerTest {
         when(restFacadeRetriever.getRestFacade(ENTITY_NAME, MODULE_NAME, NAMESPACE))
                 .thenReturn(restFacade);
         when(restFacade.executeLookup(eq(LOOKUP_NAME), any(Map.class), any(QueryParams.class), anyBoolean()))
-                .thenThrow(new RestLookupExecutionForbbidenException(LOOKUP_NAME));
+                .thenThrow(new RestLookupExecutionForbiddenException(LOOKUP_NAME));
 
         mockMvc.perform(
                 get(buildUrl(ENTITY_NAME, MODULE_NAME, NAMESPACE) + "?lookup=" + LOOKUP_NAME)

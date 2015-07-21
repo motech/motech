@@ -248,7 +248,7 @@ public class MdsDummyDataGeneratorImpl implements MdsDummyDataGenerator {
         ServiceReference ref = bundleContext.getServiceReference(interfaceName);
 
         if (ref == null) {
-            throw new ServiceNotFoundException();
+            throw new ServiceNotFoundException(interfaceName);
         }
 
         return (MotechDataService) bundleContext.getService(ref);

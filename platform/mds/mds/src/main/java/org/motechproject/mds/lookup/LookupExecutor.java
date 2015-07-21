@@ -87,7 +87,7 @@ public class LookupExecutor {
         for (LookupFieldDto lookupField : lookup.getLookupFields()) {
             FieldDto field = fieldsByName.get(lookupField.getName());
             if (field == null) {
-                throw new FieldNotFoundException();
+                throw new FieldNotFoundException(entityClass.getName(), lookupField.getName());
             }
 
             Object val = paramMap.get(field.getBasic().getName());
@@ -151,7 +151,7 @@ public class LookupExecutor {
                 default:
                     FieldDto field = fieldsByName.get(lookupField.getName());
                     if (field == null) {
-                        throw new FieldNotFoundException();
+                        throw new FieldNotFoundException(entityClass.getName(), lookupField.getName());
                     }
 
                     String typeClassName = getTypeClassName(lookupField, field);

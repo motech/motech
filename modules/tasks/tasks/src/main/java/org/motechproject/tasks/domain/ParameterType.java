@@ -39,7 +39,7 @@ public enum ParameterType {
         public Object parse(String value) {
             try {
                 return Integer.valueOf(value);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 throw new MotechException("task.error.convertToInteger", e);
             }
         }
@@ -50,7 +50,7 @@ public enum ParameterType {
         public Object parse(String value) {
             try {
                 return Long.valueOf(value);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 throw new MotechException("task.error.convertToLong", e);
             }
         }
@@ -61,7 +61,7 @@ public enum ParameterType {
         public Object parse(String value) {
             try {
                 return Double.valueOf(value);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 throw new MotechException("task.error.convertToDouble", e);
             }
         }
@@ -80,7 +80,7 @@ public enum ParameterType {
 
                 DateTimeFormatter formatter = new DateTimeFormatterBuilder().append(null, parsers).toFormatter();
                 return formatter.parseDateTime(value);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 throw new MotechException("task.error.convertToDate", e);
             }
         }
@@ -97,7 +97,7 @@ public enum ParameterType {
 
                 DateTimeFormatter formatter = new DateTimeFormatterBuilder().append(null, parsers).toFormatter();
                 return formatter.parseDateTime(value);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 throw new MotechException("task.error.convertToTime", e);
             }
         }
@@ -108,7 +108,7 @@ public enum ParameterType {
         public Object parse(String value) {
             try {
                 return Period.parse(value);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 throw new MotechException("task.error.convertToPeriod", e);
             }
         }

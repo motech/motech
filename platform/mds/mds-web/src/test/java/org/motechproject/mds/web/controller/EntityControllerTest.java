@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -121,7 +122,7 @@ public class EntityControllerTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldThrowExceptionIfNotFoundEntity() throws Exception {
-        doThrow(new EntityNotFoundException()).when(entityService).getEntityForEdit(10L);
+        doThrow(new EntityNotFoundException(10L)).when(entityService).getEntityForEdit(10L);
         controller.getEntity(10L);
     }
 
@@ -137,13 +138,13 @@ public class EntityControllerTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldThrowExceptionIfEntityToDeleteNotExists() throws Exception {
-        doThrow(new EntityNotFoundException()).when(entityService).deleteEntity(1000L);
+        doThrow(new EntityNotFoundException(1000L)).when(entityService).deleteEntity(1000L);
         controller.deleteEntity(1000L);
     }
 
     @Test(expected = EntityReadOnlyException.class)
     public void shouldThrowExceptionIfEntityToDeleteisReadonly() throws Exception {
-        doThrow(new EntityReadOnlyException()).when(entityService).deleteEntity(9001L);
+        doThrow(new EntityReadOnlyException("EntityName")).when(entityService).deleteEntity(9001L);
         controller.deleteEntity(9001L);
     }
 
@@ -161,7 +162,7 @@ public class EntityControllerTest {
 
     @Test(expected = EntityAlreadyExistException.class)
     public void shouldThrowExceptionIfEntityWithGivenNameExists() throws Exception {
-        doThrow(new EntityAlreadyExistException()).when(entityService).createEntity(any(EntityDto.class));
+        doThrow(new EntityAlreadyExistException("Voucher")).when(entityService).createEntity(any(EntityDto.class));
 
         controller.saveEntity(new EntityDto(7L, "Voucher", SecurityMode.EVERYONE, null));
     }
@@ -174,7 +175,7 @@ public class EntityControllerTest {
         data.setValues(new HashMap<String, Object>());
         data.getValues().put(DraftData.PATH, "basic.displayName");
         data.getValues().put(DraftData.FIELD_ID, "2");
-        data.getValues().put(DraftData.VALUE, Arrays.asList("test"));
+        data.getValues().put(DraftData.VALUE, singletonList("test"));
 
         EntityDto entity = controller.getEntity(9007L);
         List<FieldDto> fields = controller.getFields(9007L);
@@ -193,13 +194,13 @@ public class EntityControllerTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotSaveTemporaryChangeIfEntityNotExists() throws Exception {
-        doThrow(new EntityNotFoundException()).when(entityService).saveDraftEntityChanges(eq(100L), any(DraftData.class));
+        doThrow(new EntityNotFoundException(100L)).when(entityService).saveDraftEntityChanges(eq(100L), any(DraftData.class));
         controller.draft(100L, new DraftData());
     }
 
     @Test(expected = EntityReadOnlyException.class)
     public void shouldNotSaveTemporaryChangeIfEntityIsReadonly() throws Exception {
-        doThrow(new EntityReadOnlyException()).when(entityService).saveDraftEntityChanges(eq(9001L), any(DraftData.class));
+        doThrow(new EntityReadOnlyException("EntityName")).when(entityService).saveDraftEntityChanges(eq(9001L), any(DraftData.class));
         controller.draft(9001L, new DraftData());
     }
 
@@ -210,7 +211,7 @@ public class EntityControllerTest {
         data.setValues(new HashMap<String, Object>());
         data.getValues().put(DraftData.PATH, "basic.displayName");
         data.getValues().put(DraftData.FIELD_ID, "2");
-        data.getValues().put(DraftData.VALUE, Arrays.asList("test"));
+        data.getValues().put(DraftData.VALUE, singletonList("test"));
 
         controller.draft(9007L, data);
         verify(entityService).saveDraftEntityChanges(9007L, data);
@@ -221,7 +222,7 @@ public class EntityControllerTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotAbandonChangesIfEntityNotExists() throws Exception {
-        doThrow(new EntityNotFoundException()).when(entityService).abandonChanges(10000L);
+        doThrow(new EntityNotFoundException(10000L)).when(entityService).abandonChanges(10000L);
         controller.abandonChanges(10000L);
     }
 
@@ -244,7 +245,7 @@ public class EntityControllerTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotComitChangesIfEntityNotExists() throws Exception {
-        doThrow(new EntityNotFoundException()).when(entityService).commitChanges(10000L);
+        doThrow(new EntityNotFoundException(10000L)).when(entityService).commitChanges(10000L);
         controller.commitChanges(10000L);
     }
 
@@ -270,7 +271,7 @@ public class EntityControllerTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotGetEntityFieldsIfEntityNotExists() throws Exception {
-        doThrow(new EntityNotFoundException()).when(entityService).getFields(10000L);
+        doThrow(new EntityNotFoundException(10000L)).when(entityService).getFields(10000L);
         controller.getFields(10000L);
     }
 
@@ -293,7 +294,7 @@ public class EntityControllerTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotFindFieldByNameIfEntityNotExists() throws Exception {
-        doThrow(new EntityNotFoundException()).when(entityService).findFieldByName(500L, "ID");
+        doThrow(new EntityNotFoundException(500L)).when(entityService).findFieldByName(500L, "ID");
         controller.getFieldByName(500L, "ID");
     }
 

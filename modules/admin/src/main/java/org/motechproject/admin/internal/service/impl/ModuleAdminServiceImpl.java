@@ -55,6 +55,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -193,7 +194,11 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
     @Override
     public BundleInformation installBundleFromRepository(String moduleId, boolean startBundle) {
-        return installFromRepository(new Dependency(new DefaultArtifact(moduleId), JavaScopes.RUNTIME), startBundle);
+        try {
+            return installFromRepository(new Dependency(new DefaultArtifact(moduleId), JavaScopes.RUNTIME), startBundle);
+        } catch (DependencyResolutionException | IOException | BundleException e) {
+            throw new MotechException("Unable to install module from repository " + moduleId, e);
+        }
     }
 
     @Override
@@ -202,10 +207,10 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         try {
             savedBundleFile = bundleDirectoryManager.saveBundleFile(bundleFile);
             return installWithDependenciesFromFile(savedBundleFile, startBundle);
-        } catch (Exception e) {
+        } catch (IOException e) {
             if (savedBundleFile != null) {
                 LOGGER.error("Removing bundle due to exception", e);
-                savedBundleFile.delete();
+                FileUtils.deleteQuietly(savedBundleFile);
             }
             throw new MotechException("Cannot install file", e);
         }
@@ -248,6 +253,10 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     private BundleInformation installWithDependenciesFromFile(File bundleFile, boolean startBundle) throws IOException {
         JarInformation jarInformation = getJarInformations(bundleFile);
 
+        if (jarInformation == null) {
+            throw new IOException("Unable to read bundleFile " + bundleFile.getAbsolutePath());
+        }
+
         try {
             List<ArtifactResult> artifactResults = new LinkedList<>();
 
@@ -273,16 +282,11 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
             //start bundles after all bundles installed to avoid any dependency resolution problems.
             if (startBundle) {
-                for (Bundle bundle : bundlesInstalled) {
-                    if (bundle.getState() != Bundle.ACTIVE && !isFragmentBundle(bundle)) {
-                        LOGGER.info("Starting bundle: {}", bundle.getSymbolicName());
-                        bundle.start();
-                    }
-                }
+                startBundles(bundlesInstalled);
             }
 
             return bundleInformation;
-        } catch (Exception e) {
+        } catch (BundleException | DependencyResolutionException e) {
             throw new MotechException("Error while installing bundle and dependencies.", e);
         }
     }
@@ -442,58 +446,56 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         return result;
     }
 
-    private BundleInformation installFromRepository(Dependency dependency, boolean start) {
+    private BundleInformation installFromRepository(Dependency dependency, boolean start)
+            throws DependencyResolutionException, IOException, BundleException {
         LOGGER.info("Installing {} from repository", dependency);
 
         StringBuilder featureId = new StringBuilder(dependency.getArtifact().getGroupId());
         featureId = featureId.append(":").append(dependency.getArtifact().getArtifactId());
         featureId = featureId.append(":").append(dependency.getArtifact().getVersion());
-        try {
-            List<Bundle> bundlesInstalled = new ArrayList<>();
-            BundleInformation bundleInformation = null;
-            final int lastColonIndex = featureId.lastIndexOf(":");
-            final String featureStrNoVersion = featureId.substring(0, lastColonIndex);
 
-            List<ArtifactResult> dependencies = resolveDependencies(dependency, null);
+        List<Bundle> bundlesInstalled = new ArrayList<>();
+        BundleInformation bundleInformation = null;
+        final int lastColonIndex = featureId.lastIndexOf(":");
+        final String featureStrNoVersion = featureId.substring(0, lastColonIndex);
 
-            LOGGER.trace("Resolved the following dependencies for {}: {}", dependency, dependencies);
+        List<ArtifactResult> dependencies = resolveDependencies(dependency, null);
 
-            for (ArtifactResult artifact : dependencies) {
-                if (isOSGiFramework(artifact)) {
-                    // skip the framework jar
-                    continue;
-                }
+        LOGGER.trace("Resolved the following dependencies for {}: {}", dependency, dependencies);
 
-                LOGGER.info("Installing " + artifact);
-                final File bundleFile = artifact.getArtifact().getFile();
-
-                boolean isRequestedModule = isRequestedModule(artifact, featureStrNoVersion);
-
-                final Bundle bundle = installBundleFromFile(bundleFile, isRequestedModule, true);
-                if (bundle != null) {
-                    bundlesInstalled.add(bundle);
-
-                    if (isRequestedModule) {
-                        bundleInformation = new BundleInformation(bundle);
-                    }
-                }
+        for (ArtifactResult artifact : dependencies) {
+            if (isOSGiFramework(artifact)) {
+                // skip the framework jar
+                continue;
             }
 
-            //start bundles after all bundles installed to avoid any dependency resolution problems.
-            if (start) {
-                LOGGER.info("Starting installed bundles");
-                for (Bundle bundle : bundlesInstalled) {
-                    if (bundle.getState() != Bundle.ACTIVE && !isFragmentBundle(bundle)) {
-                        LOGGER.info("Starting bundle: {}", bundle.getSymbolicName());
-                        bundle.start();
-                    }
+            LOGGER.info("Installing " + artifact);
+            final File bundleFile = artifact.getArtifact().getFile();
+
+            boolean isRequestedModule = isRequestedModule(artifact, featureStrNoVersion);
+
+            final Bundle bundle = installBundleFromFile(bundleFile, isRequestedModule, true);
+            if (bundle != null) {
+                bundlesInstalled.add(bundle);
+
+                if (isRequestedModule) {
+                    bundleInformation = new BundleInformation(bundle);
                 }
             }
-
-            return bundleInformation;
-        } catch (Exception e) {
-            throw new MotechException("Error while installing bundle and dependencies " + featureId.toString() + ".", e);
         }
+
+        //start bundles after all bundles installed to avoid any dependency resolution problems.
+        if (start) {
+            LOGGER.info("Starting installed bundles");
+            for (Bundle bundle : bundlesInstalled) {
+                if (bundle.getState() != Bundle.ACTIVE && !isFragmentBundle(bundle)) {
+                    LOGGER.info("Starting bundle: {}", bundle.getSymbolicName());
+                    bundle.start();
+                }
+            }
+        }
+
+        return bundleInformation;
     }
 
     private static class HttpWagonProvider implements WagonProvider {
@@ -522,6 +524,15 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     private boolean isRequestedModule(ArtifactResult artifactResult, String featureStr) {
         Artifact artifact = artifactResult.getArtifact();
         return StringUtils.equals(featureStr, String.format("%s:%s", artifact.getGroupId(), artifact.getArtifactId()));
+    }
+
+    private void startBundles(Collection<Bundle> bundles) throws BundleException {
+        for (Bundle bundle : bundles) {
+            if (bundle.getState() != Bundle.ACTIVE && !isFragmentBundle(bundle)) {
+                LOGGER.info("Starting bundle: {}", bundle.getSymbolicName());
+                bundle.start();
+            }
+        }
     }
 
     @MotechListener(subjects = FILE_CHANGED_EVENT_SUBJECT)

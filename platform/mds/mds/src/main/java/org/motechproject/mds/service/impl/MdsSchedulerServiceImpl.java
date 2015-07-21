@@ -4,6 +4,7 @@ import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.ex.scheduler.MdsSchedulerException;
 import org.motechproject.mds.service.MdsSchedulerService;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.quartz.JobDetail;
 import org.quartz.ScheduleBuilder;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 
@@ -79,7 +81,8 @@ public class MdsSchedulerServiceImpl implements MdsSchedulerService {
                 scheduler.unscheduleJob(triggerKey(EMPTY_TRASH_JOB, JOB_GROUP_NAME));
             }
         } catch (SchedulerException e) {
-            handleException(String.format("Can not unschedule the job: %s %s", EMPTY_TRASH_JOB, e.getMessage()), e);
+            throw new MdsSchedulerException(String.format("Can not unschedule the job: %s %s",
+                    EMPTY_TRASH_JOB, e.getMessage()), e);
         }
     }
 
@@ -104,12 +107,9 @@ public class MdsSchedulerServiceImpl implements MdsSchedulerService {
                 scheduler.scheduleJob(jobDetail, trigger);
             }
         } catch (SchedulerException e) {
-            handleException(String.format("Can not schedule the job:\n %s\n%s\n%s", jobDetail.toString(), trigger.toString(), e.getMessage()), e);
+            throw new MdsSchedulerException(String.format("Can not schedule the job:\n %s\n%s\n%s",
+                    jobDetail.toString(), trigger.toString(), e.getMessage()), e);
         }
-    }
-
-    private void handleException(String errorMessage, Exception e) {
-        throw new MdsSchedulerException(errorMessage, e);
     }
 
     private void findMotechSchedulerFactoryBean() {
@@ -137,8 +137,9 @@ public class MdsSchedulerServiceImpl implements MdsSchedulerService {
                 Method method = motechSchedulerFactoryBean.getClass().getMethod("getQuartzScheduler");
                 scheduler = (Scheduler) method.invoke(motechSchedulerFactoryBean);
             }
-        } catch (Exception e) {
-            handleException("Can't find motechSchedulerFactoryBean", e);
+        } catch (InterruptedException | NoSuchMethodException | IllegalAccessException | InvocationTargetException |
+                InvalidSyntaxException e) {
+            throw new MdsSchedulerException("Can't find motechSchedulerFactoryBean", e);
         }
     }
 }

@@ -10,6 +10,6 @@ public class ReservedKeywordException extends MdsException {
     private static final long serialVersionUID = -4840188009298951328L;
 
     public ReservedKeywordException(String keyword) {
-        super("mds.error.javaKeyword", keyword);
+        super("Unable to use the reserved keyword " + keyword, null, "mds.error.javaKeyword", keyword);
     }
 }

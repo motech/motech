@@ -3,6 +3,7 @@ package org.motechproject.scheduler.factory;
 import org.motechproject.scheduler.exception.SchedulerInstantiationException;
 import org.motechproject.scheduler.exception.SchedulerShutdownException;
 import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -64,7 +65,7 @@ public class MotechSchedulerFactoryBean {
     public void shutdown() {
         try {
             schedulerFactoryBean.destroy();
-        } catch (Exception e) {
+        } catch (SchedulerException e) {
             throw new SchedulerShutdownException("Failed to shutdown scheduler", e);
         }
     }

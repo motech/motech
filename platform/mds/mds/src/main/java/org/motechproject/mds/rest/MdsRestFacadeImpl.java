@@ -12,7 +12,7 @@ import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
 import org.motechproject.mds.ex.rest.RestEntityNotFoundException;
 import org.motechproject.mds.ex.rest.RestInternalException;
-import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
+import org.motechproject.mds.ex.rest.RestLookupExecutionForbiddenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestNoLookupResultException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
@@ -191,7 +191,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
                         RestProjection.createProjection(result, restFields, blobFields));
             }
         } else if (forbiddenLookupMethodNames.contains(lookupName)) {
-            throw new RestLookupExecutionForbbidenException(lookupName);
+            throw new RestLookupExecutionForbiddenException(lookupName);
         } else {
             throw new RestLookupNotFoundException(lookupName);
         }

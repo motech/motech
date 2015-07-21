@@ -96,8 +96,12 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             platformStatusProxy = new PlatformStatusProxy(bundleContext);
 
             LOGGER.info("OSGi framework initialization finished");
-        } catch (Exception e) {
-            throw new OsgiException("Failed to start OSGi framework", e);
+        } catch (BundleLoadingException e) {
+            throw new OsgiException("Failed to start the OSGi framework, unable to load bundles", e);
+        } catch (BundleException e) {
+            throw new OsgiException("Failed to start the OSGi framework, error processing bundles", e);
+        } catch (IOException e) {
+            throw new OsgiException("Failed to start the OSGi framework, IO Error", e);
         }
     }
 
@@ -124,7 +128,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             platformBundle.start();
 
             LOGGER.info("OSGi framework started");
-        } catch (Exception e) {
+        } catch (BundleException e) {
             throw new OsgiException("Failed to start OSGi framework", e);
         }
     }
@@ -157,7 +161,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                     for (BundleLoader loader : bundleLoaders) {
                         try {
                             loader.loadBundle(bundle);
-                        } catch (Exception e) {
+                        } catch (BundleLoadingException e) {
                             LOGGER.error("Error while running custom bundle loader " + loader.getClass().getName() + " Error: " + e.getMessage());
                         }
                     }
@@ -176,7 +180,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 osgiFramework.stop();
                 LOGGER.info("OSGi framework stopped");
             }
-        } catch (Exception e) {
+        } catch (BundleException e) {
             throw new OsgiException("Error stopping OSGi framework", e);
         }
     }

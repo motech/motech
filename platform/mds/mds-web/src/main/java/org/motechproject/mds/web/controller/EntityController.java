@@ -126,7 +126,7 @@ public class EntityController extends MdsController {
         EntityDto entity = entityService.getEntityByClassName(entityClassName);
 
         if (entity == null) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(entityClassName);
         }
 
         return entity;

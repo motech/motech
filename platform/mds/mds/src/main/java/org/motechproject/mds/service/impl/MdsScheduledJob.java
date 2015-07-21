@@ -26,24 +26,20 @@ public class MdsScheduledJob implements Job {
 
         LOGGER.info("executing...");
 
+        SchedulerContext schedulerContext;
         try {
-            SchedulerContext schedulerContext;
-            try {
-                schedulerContext = jobExecutionContext.getScheduler().getContext();
-            } catch (SchedulerException e) {
-                LOGGER.error("Can not execute job. Can not get Scheduler Context", e);
-                return;
-            }
-            ApplicationContext applicationContext = (ApplicationContext) schedulerContext.get("applicationContext");
-            BundleContext bundleContext = ((MotechOsgiConfigurableApplicationContext) applicationContext).getBundleContext();
+            schedulerContext = jobExecutionContext.getScheduler().getContext();
+        } catch (SchedulerException e) {
+            LOGGER.error("Can not execute job. Can not get Scheduler Context", e);
+            return;
+        }
+        ApplicationContext applicationContext = (ApplicationContext) schedulerContext.get("applicationContext");
+        BundleContext bundleContext = ((MotechOsgiConfigurableApplicationContext) applicationContext).getBundleContext();
 
-            TrashService trashService = OSGiServiceUtils.findService(bundleContext, TrashService.class);
+        TrashService trashService = OSGiServiceUtils.findService(bundleContext, TrashService.class);
 
-            if (trashService != null) {
-                trashService.emptyTrash();
-            }
-        } catch (Exception e) {
-            LOGGER.error("Job execution failed.", e);
+        if (trashService != null) {
+            trashService.emptyTrash();
         }
     }
 }

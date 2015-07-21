@@ -50,7 +50,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
         File tempRoot = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
         File destRoot = new File(servletContext.getRealPath("/"));
         try {
-            if (tempRoot != null && destRoot != null) {
+            if (tempRoot != null) {
                 tempDir = new File(tempRoot, String.valueOf(bundle.getBundleId()));
                 destDir = new File(destRoot, String.valueOf(bundle.getBundleId()));
 
@@ -96,13 +96,15 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
                     loadBundleMessageFilesFromBundle(bundle, destRoot, path);
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
+            throw new BundleLoadingException("IO Error when laoding bundle " + bundle, e);
+        } catch (InvocationTargetException | NoSuchMethodException | NoSuchFieldException | IllegalAccessException e) {
             throw new BundleLoadingException(e);
         }
     }
 
     private void loadBundleMessageFilesFromBundle(final Bundle bundle, final File destRoot, final String pathInBundle)
-            throws IOException {
+            throws IOException, NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException {
         Enumeration<URL> messages = bundle.findEntries(pathInBundle, "*.properties", true);
         if (messages != null) {
             File msgDestDir = new File(destRoot, "/WEB-INF/classes/org/motechproject/resources/");
@@ -180,50 +182,42 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
         if (tempDir != null && tempDir.isDirectory()) {
             tempJspFile = new File(tempDir, "temp.jsp");
             tempJspFile.createNewFile();
-            FileOutputStream output = new FileOutputStream(tempJspFile);
 
-            try {
+            try (FileOutputStream output = new FileOutputStream(tempJspFile)) {
                 IOUtils.copy(input, output);
-            } finally {
-                output.close();
             }
         }
 
         return tempJspFile;
     }
 
-    public static void reloadBundles() {
-        try {
-            clearMap(ResourceBundle.class, null, "cacheList");
-            clearTomcatCache();
-        } catch (Exception e) {
-            LOGGER.error("Could not reload resource bundles" + e.getMessage());
-        }
+    public static void reloadBundles() throws InvocationTargetException, NoSuchMethodException,
+            IllegalAccessException, NoSuchFieldException {
+        clearMap(ResourceBundle.class, null, "cacheList");
+        clearTomcatCache();
     }
 
 
-    private static void clearTomcatCache() {
+    private static void clearTomcatCache() throws InvocationTargetException, NoSuchMethodException,
+            IllegalAccessException, NoSuchFieldException {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Class cl = loader.getClass();
 
-        try {
-            if ("org.apache.catalina.loader.WebappClassLoader".equals(cl.getName())) {
-                clearMap(cl, loader, "resourceEntries");
-            } else {
-                LOGGER.debug("class loader " + cl.getName() + " is not tomcat loader.");
-            }
-        } catch (Exception e) {
-            LOGGER.error("couldn't clear tomcat cache" + e.getMessage());
+        if ("org.apache.catalina.loader.WebappClassLoader".equals(cl.getName())) {
+            clearMap(cl, loader, "resourceEntries");
+        } else {
+            LOGGER.debug("class loader " + cl.getName() + " is not tomcat loader.");
         }
     }
 
 
-    private static void clearMap(Class cl, Object obj, String name) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    private static void clearMap(Class cl, Object obj, String name)
+            throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Field field = cl.getDeclaredField(name);
         field.setAccessible(true);
         Object cache = field.get(obj);
         Class ccl = cache.getClass();
-        Method clearMethod = ccl.getMethod("clear", null);
-        clearMethod.invoke(cache, null);
+        Method clearMethod = ccl.getMethod("clear");
+        clearMethod.invoke(cache);
     }
 }

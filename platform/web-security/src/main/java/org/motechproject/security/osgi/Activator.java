@@ -13,11 +13,14 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.http.HttpContext;
+import org.osgi.service.http.NamespaceException;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
+
+import javax.servlet.ServletException;
 
 /**
  * The Spring security activator is used to register the spring security filter, dispatcher servlet,
@@ -118,37 +121,37 @@ public class Activator implements BundleActivator {
      * registers the security filter and spring dispatcher servlet.
      */
     private void serviceAdded(ExtHttpService service) {
+        DispatcherServlet dispatcherServlet = new DispatcherServlet();
+        dispatcherServlet.setContextConfigLocation(CONTEXT_CONFIG_LOCATION);
+        dispatcherServlet.setContextClass(WebSecurityApplicationContext.class);
+        ClassLoader old = Thread.currentThread().getContextClassLoader();
+
         try {
-            DispatcherServlet dispatcherServlet = new DispatcherServlet();
-            dispatcherServlet.setContextConfigLocation(CONTEXT_CONFIG_LOCATION);
-            dispatcherServlet.setContextClass(WebSecurityApplicationContext.class);
-            ClassLoader old = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 
-            try {
-                Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+            HttpContext httpContext = HttpContextFactory.getHttpContext(
+                    service.createDefaultHttpContext(),
+                    bundleContext.getBundle()
+            );
 
-                HttpContext httpContext = HttpContextFactory.getHttpContext(
-                        service.createDefaultHttpContext(),
-                        bundleContext.getBundle()
-                );
+            service.registerServlet(SERVLET_URL_MAPPING, dispatcherServlet, null, null);
+            service.registerResources(RESOURCE_URL_MAPPING, "/webapp", httpContext);
+            LOGGER.debug("Servlet registered");
 
-                service.registerServlet(SERVLET_URL_MAPPING, dispatcherServlet, null, null);
-                service.registerResources(RESOURCE_URL_MAPPING, "/webapp", httpContext);
-                LOGGER.debug("Servlet registered");
+            filter = new MotechDelegatingFilterProxy("springSecurityFilterChain", dispatcherServlet.getWebApplicationContext());
+            MotechProxyManager proxyManager = dispatcherServlet.getWebApplicationContext().getBean(MotechProxyManager.class);
 
-                filter = new MotechDelegatingFilterProxy("springSecurityFilterChain", dispatcherServlet.getWebApplicationContext());
-                MotechProxyManager proxyManager = dispatcherServlet.getWebApplicationContext().getBean(MotechProxyManager.class);
+            LOGGER.debug("Creating initial proxy chain");
+            proxyManager.initializeProxyChain();
 
-                LOGGER.debug("Creating initial proxy chain");
-                proxyManager.initializeProxyChain();
-
-                service.registerFilter(filter, "/.*", null, 0, httpContext);
-                LOGGER.debug("Filter registered");
-            } finally {
-                Thread.currentThread().setContextClassLoader(old);
-            }
-        } catch (Exception e) {
-            throw new ServletRegistrationException(e);
+            service.registerFilter(filter, "/.*", null, 0, httpContext);
+            LOGGER.debug("Filter registered");
+        } catch (NamespaceException e) {
+            throw new ServletRegistrationException("Web-security servlet already registered", e);
+        } catch (ServletException e) {
+            throw new ServletRegistrationException("Unable to register servlet for web-security", e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(old);
         }
     }
 

@@ -9,11 +9,20 @@ public class ObjectReadException extends MdsException {
 
     private static final long serialVersionUID = -6214111291407582493L;
 
-    public ObjectReadException() {
-        super("mds.error.objectReadError");
+    /**
+     * @param entityName the name of the entity
+     * @param cause the cause of the error
+     */
+    public ObjectReadException(String entityName, Throwable cause) {
+        super("Unable to read objects of entity " + entityName, cause, "mds.error.objectReadError");
     }
 
-    public ObjectReadException(Throwable cause) {
-        super("mds.error.objectReadError", cause);
+
+    /**
+     * @param entityId the id of the entity
+     * @param cause the cause of the error
+     */
+    public ObjectReadException(Long entityId, Throwable cause) {
+        super("Unable to read objects of entity with Id" + entityId, cause, "mds.error.objectReadError");
     }
 }

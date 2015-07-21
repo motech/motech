@@ -268,7 +268,7 @@ public final class TypeHelper {
             } else {
                 return MethodUtils.invokeStaticMethod(toClass, "valueOf", str);
             }
-        } catch (Exception e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException("Unable to parse value " + str + " to " + toClass, e);
         }
     }

@@ -61,7 +61,7 @@ public class FieldReader {
         if (null == existingField || !existingField.isReadOnly()) {
             entity.addField(field);
         } else {
-            throw new FieldReadOnlyException("Cannot import field " + existingField.getName());
+            throw new FieldReadOnlyException(entity.getName(), existingField.getName());
         }
     }
 

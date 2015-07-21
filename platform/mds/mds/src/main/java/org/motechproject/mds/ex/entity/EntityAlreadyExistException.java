@@ -7,13 +7,14 @@ import org.motechproject.mds.ex.MdsException;
  * to create a new entity with a name that already exists in database.
  */
 public class EntityAlreadyExistException extends MdsException {
+
     private static final long serialVersionUID = -4030249523587627059L;
 
     /**
      * Constructs a new EntityAlreadyExistException with <i>mds.error.entityAlreadyExist</i> as
      * a message key.
      */
-    public EntityAlreadyExistException() {
-        super("mds.error.entityAlreadyExist");
+    public EntityAlreadyExistException(String entityName) {
+        super("Entity " + entityName + " already exist", null, "mds.error.entityAlreadyExist");
     }
 }

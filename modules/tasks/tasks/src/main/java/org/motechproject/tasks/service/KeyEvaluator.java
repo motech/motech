@@ -81,7 +81,7 @@ public class KeyEvaluator {
             case TRIGGER_PREFIX:
                 try {
                     value = taskContext.getTriggerValue(keyInformation.getKey());
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     throw new TaskHandlerException(
                             TRIGGER, "task.error.objectDoesNotContainField", e, keyInformation.getKey()
                     );

@@ -111,7 +111,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
             return subClass.toBytecode();
         } catch (NotFoundException | CannotCompileException | IOException e) {
-            throw new EntityInfrastructureException(e);
+            throw new EntityInfrastructureException(repositoryClassName, e);
         }
     }
 
@@ -161,7 +161,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
             return interfaceClass.toBytecode();
         } catch (NotFoundException | IOException | CannotCompileException e) {
-            throw new EntityInfrastructureException(e);
+            throw new EntityInfrastructureException(interfaceClassName, e);
         }
     }
 
@@ -202,7 +202,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
             return serviceClass.toBytecode();
         } catch (NotFoundException | IOException | CannotCompileException e) {
-            throw new EntityInfrastructureException(e);
+            throw new EntityInfrastructureException(serviceClassName, e);
         }
     }
 

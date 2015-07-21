@@ -32,7 +32,7 @@ public final class DataServiceHelper {
         String interfaceName = MotechClassPool.getInterfaceName(entityClass);
         MotechDataService dataService = OSGiServiceUtils.findService(bundleContext, interfaceName);
         if (dataService == null) {
-            throw new ServiceNotFoundException();
+            throw new ServiceNotFoundException(interfaceName);
         }
         return dataService;
     }

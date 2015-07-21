@@ -61,7 +61,7 @@ public class MotechScheduledJob implements Job {
             ApplicationContext applicationContext = (ApplicationContext) schedulerContext.get("applicationContext");
             EventRelay eventRelay = applicationContext.getBean(EventRelay.class);
             eventRelay.sendEventMessage(motechEvent);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             LOGGER.error("Job execution failed.", e);
         }
     }

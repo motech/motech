@@ -122,8 +122,9 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         CronScheduleBuilder cronSchedule;
         try {
             cronSchedule = cronSchedule(cronSchedulableJob.getCronExpression());
-        } catch (Exception e) {
-            throw new MotechSchedulerException(format("Can not schedule job %s; invalid Cron expression: %s", jobId, cronSchedulableJob.getCronExpression()), e);
+        } catch (RuntimeException e) {
+            throw new MotechSchedulerException(format("Can not schedule job %s; invalid Cron expression: %s",
+                    jobId, cronSchedulableJob.getCronExpression()), e);
         }
 
         // TODO: should take readable names rather than integers
@@ -202,7 +203,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         try {
             unscheduleJob(jobId.value());
         } catch (MotechSchedulerException e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("Error while unscheduling job with id {}", jobId.value(), e);
         }
         scheduleJob(cronSchedulableJob);
     }
@@ -233,7 +234,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         try {
             scheduler.deleteJob(jobKey(jobId.value(), JOB_GROUP_NAME));
         } catch (SchedulerException e) {
-            handleException(String.format("Can not update the job: %s.\n Can not delete old instance of the job %s", jobId, e.getMessage()), e);
+            throw new MotechSchedulerException(String.format("Can not update the job: %s.\n Can not delete old instance of the job %s", jobId, e.getMessage()), e);
         }
 
         JobDetail jobDetail = newJob(MotechScheduledJob.class).withIdentity(jobId.value(), JOB_GROUP_NAME).build();
@@ -256,8 +257,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             LOGGER.debug(format("Rescheduling the Job: %s new cron expression: %s", jobId, cronExpression));
         }
 
-        CronTrigger trigger = null;
-        JobDetail job = null;
+        CronTrigger trigger;
+        JobDetail job;
         try {
             trigger = (CronTrigger) scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
             if (trigger == null) {
@@ -265,16 +266,16 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             }
             job = scheduler.getJobDetail(trigger.getJobKey());
         } catch (SchedulerException e) {
-            handleException(String.format("Can not reschedule the job: %s.\n Can not get a trigger associated with that job %s", jobId, e.getMessage()), e);
+            throw new MotechSchedulerException(String.format("Can not reschedule the job: %s.\n Can not get a trigger associated with that job %s", jobId, e.getMessage()), e);
         } catch (ClassCastException e) {
-            handleException(String.format("Can not reschedule the job: %s.\n The trigger associated with that job is not a CronTrigger", jobId), e);
+            throw new MotechSchedulerException(String.format("Can not reschedule the job: %s.\n The trigger associated with that job is not a CronTrigger", jobId), e);
         }
 
         CronScheduleBuilder newCronSchedule = null;
         try {
             newCronSchedule = cronSchedule(cronExpression);
-        } catch (Exception e) {
-            handleException(String.format("Can not reschedule the job: %s Invalid Cron expression: %s", jobId, cronExpression), e);
+        } catch (RuntimeException e) {
+            throw new MotechSchedulerException(String.format("Can not reschedule the job: %s Invalid Cron expression: %s", jobId, cronExpression), e);
         }
 
         CronTrigger newTrigger = newTrigger()
@@ -288,12 +289,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         try {
             scheduler.rescheduleJob(triggerKey(jobId.value(), JOB_GROUP_NAME), newTrigger);
         } catch (SchedulerException e) {
-            handleException(String.format("Can not reschedule the job: %s %s", jobId, e.getMessage()), e);
+            throw new MotechSchedulerException(String.format("Can not reschedule the job: %s %s", jobId, e.getMessage()), e);
         }
-    }
-
-    private void handleException(String errorMessage, Exception e) {
-        throw new MotechSchedulerException(errorMessage, e);
     }
 
     @Override
@@ -380,10 +377,13 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         logObjectIfNotNull(repeatingPeriodSchedulableJob);
 
         assertArgumentNotNull(repeatingPeriodSchedulableJob);
+
+        JobId jobId = new RepeatingJobId(repeatingPeriodSchedulableJob.getMotechEvent());
+
         try {
-            unscheduleJob(new RepeatingJobId(repeatingPeriodSchedulableJob.getMotechEvent()).value());
+            unscheduleJob(jobId);
         } catch (MotechSchedulerException e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("Unable to unschedule repeating job with id {}", jobId.value(), e);
         }
         scheduleRepeatingPeriodJob(repeatingPeriodSchedulableJob);
     }
@@ -461,12 +461,14 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     @Override
     public void safeScheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob) {
         logObjectIfNotNull(repeatingSchedulableJob);
-
         assertArgumentNotNull(repeatingSchedulableJob);
+
+        JobId jobId = new RepeatingJobId(repeatingSchedulableJob.getMotechEvent());
+
         try {
-            unscheduleJob(new RepeatingJobId(repeatingSchedulableJob.getMotechEvent()).value());
+            unscheduleJob(jobId);
         } catch (MotechSchedulerException e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("Unable to unschedule repeating job with ID {}", jobId.value(), e);
         }
         scheduleRepeatingJob(repeatingSchedulableJob);
     }
@@ -524,9 +526,9 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         JobId jobId = new RunOnceJobId(schedulableJob.getMotechEvent());
         try {
-            unscheduleJob(jobId.value());
+            unscheduleJob(jobId);
         } catch (MotechSchedulerException e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("Unable to unschedule run once job with ID {}", jobId.value(), e);
         }
         scheduleRunOnceJob(schedulableJob);
     }
@@ -566,8 +568,9 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
         try {
             unscheduleRepeatingJob(subject, externalId);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+        } catch (RuntimeException e) {
+            LOGGER.error("Unable to unschedule the repeating job with subject {} and externalId {}",
+                    subject, externalId, e);
         }
     }
 
@@ -590,8 +593,9 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
         try {
             unscheduleRunOnceJob(subject, externalId);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+        } catch (RuntimeException e) {
+            LOGGER.error("Unable to unschedule the run once job with subject {} and externalId {}",
+                    subject, externalId, e);
         }
     }
 
@@ -616,7 +620,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
         try {
             unscheduleJob(subject, externalId);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             LOGGER.error(e.getMessage());
         }
     }
@@ -630,7 +634,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 previousFireTime = trigger.getPreviousFireTime();
             }
         } catch (SchedulerException e) {
-            handleException(String.format("Can not find next fire date for the job: %s %s", jobId, e.getMessage()), e);
+            throw new MotechSchedulerException(String.format("Can not find next fire date for the job: %s %s", jobId,
+                    e.getMessage()), e);
         }
         return (previousFireTime == null) ? null : new DateTime(previousFireTime);
     }
@@ -644,7 +649,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 nextFireTime = trigger.getNextFireTime();
             }
         } catch (SchedulerException e) {
-            handleException(String.format("Can not find next fire date for the job: %s %s", jobId, e.getMessage()), e);
+            throw new MotechSchedulerException(String.format("Can not find next fire date for the job: %s %s",
+                    jobId, e.getMessage()), e);
         }
         return (nextFireTime == null) ? null : new DateTime(nextFireTime);
     }
@@ -657,7 +663,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             assertArgumentNotNull("ScheduledJobID", jobId);
             scheduler.unscheduleJob(triggerKey(jobId, JOB_GROUP_NAME));
         } catch (SchedulerException e) {
-            handleException(String.format("Can not unschedule the job: %s %s", jobId, e.getMessage()), e);
+            throw new MotechSchedulerException(String.format("Can not unschedule the job: %s %s",
+                    jobId, e.getMessage()), e);
         }
     }
 
@@ -669,7 +676,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             assertArgumentNotNull("ScheduledJobID", jobId);
             scheduler.unscheduleJob(triggerKey(jobId, JOB_GROUP_NAME));
         } catch (SchedulerException e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("Unable to unschedule job with ID {}", jobId, e);
         }
     }
 
@@ -679,7 +686,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug(format("Safe unscheduling the Jobs given jobIdPrefix: %s", jobIdPrefix));
             }
-            List<TriggerKey> triggerKeys = new ArrayList<TriggerKey>(scheduler.getTriggerKeys(GroupMatcher.triggerGroupContains(JOB_GROUP_NAME)));
+            List<TriggerKey> triggerKeys = new ArrayList<>(scheduler.getTriggerKeys(GroupMatcher.triggerGroupContains(JOB_GROUP_NAME)));
             List<String> triggerNames = extractTriggerNames(triggerKeys);
             for (String triggerName : triggerNames) {
                 if (StringUtils.isNotEmpty(jobIdPrefix) && triggerName.contains(jobIdPrefix)) {
@@ -687,7 +694,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 }
             }
         } catch (SchedulerException e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("Unable to unschedule all jobs with jobIdPrefix {}", jobIdPrefix, e);
         }
     }
 
@@ -705,7 +712,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 }
             }
         } catch (SchedulerException e) {
-            handleException(String.format("Can not unschedule jobs given jobIdPrefix: %s %s", jobIdPrefix, e.getMessage()), e);
+            throw new MotechSchedulerException(String.format("Can not unschedule jobs given jobIdPrefix: %s %s",
+                    jobIdPrefix, e.getMessage()), e);
         }
     }
 
@@ -718,18 +726,16 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     public List<Date> getScheduledJobTimings(String subject, String externalJobId, Date startDate, Date endDate) {
         JobId jobId = new CronJobId(subject, externalJobId);
         Trigger trigger;
-        List<Date> messageTimings = null;
         try {
             trigger = scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
-            messageTimings = TriggerUtils.computeFireTimesBetween(
+            return TriggerUtils.computeFireTimesBetween(
                     (OperableTrigger) trigger, new BaseCalendar(), startDate, endDate);
 
         } catch (SchedulerException e) {
-            handleException(String.format(
+            throw new MotechSchedulerException(String.format(
                     "Can not get scheduled job timings given subject and externalJobId for dates : %s %s %s %s %s",
                     subject, externalJobId, startDate.toString(), endDate.toString(), e.getMessage()), e);
         }
-        return messageTimings;
     }
 
     /*
@@ -754,7 +760,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             }
 
         } catch (SchedulerException e) {
-            handleException(String.format(
+            throw new MotechSchedulerException(String.format(
                     "Can not get scheduled job timings given subject and externalJobIdPrefix for dates : %s %s %s %s %s",
                     subject, externalJobIdPrefix, startDate.toString(), endDate.toString(), e.getMessage()), e);
         }
@@ -769,7 +775,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         try {
             scheduler.scheduleJob(jobDetail, trigger);
         } catch (SchedulerException e) {
-            handleException(String.format("Can not schedule the job:\n %s\n%s\n%s", jobDetail.toString(), trigger.toString(), e.getMessage()), e);
+            throw new MotechSchedulerException(String.format("Can not schedule the job:\n %s\n%s\n%s",
+                    jobDetail.toString(), trigger.toString(), e.getMessage()), e);
         }
     }
 

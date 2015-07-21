@@ -95,7 +95,7 @@ public class TaskTriggerHandler implements TriggerHandler {
                 registryService.registerListener(proxy, subject);
                 LOGGER.info(String.format("%s listens on subject %s", serviceName, subject));
             }
-        } catch (Exception exp) {
+        } catch (RuntimeException exp) {
             LOGGER.error(
                     String.format("%s can not listen on subject %s due to:", serviceName, subject),
                     exp
@@ -132,7 +132,7 @@ public class TaskTriggerHandler implements TriggerHandler {
                 }
             } catch (TaskHandlerException e) {
                 handleError(parameters, task, e);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 handleError(parameters, task, new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e));
             }
         }

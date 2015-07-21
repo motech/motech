@@ -117,12 +117,10 @@ public class JarInformation {
     }
 
     private void readPOMFromDirectory(File file) {
-        StringBuilder pomPath = new StringBuilder();
-        pomPath.append("META-INF/maven/").append(bundleSymbolicName.replaceAll("\\.", "/")).append("/pom.xml");
-        File pomFile = new File(file, pomPath.toString());
+        File pomFile = new File(file, "META-INF/maven/" + bundleSymbolicName.replaceAll("\\.", "/") + "/pom.xml");
         try (FileInputStream fis = new FileInputStream(pomFile)) {
             parsePOM(fis);
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.error("Error while opening POM file", e);
         }
     }
@@ -205,34 +203,34 @@ public class JarInformation {
     }
 
     private void parsePOM(InputStream inputStream) {
-        MavenXpp3Reader reader = new MavenXpp3Reader();
-        Model model = null;
         try {
-            model = reader.read(inputStream);
+            MavenXpp3Reader reader = new MavenXpp3Reader();
+
+            Model model = reader.read(inputStream);
+
+            if (dependencies == null) {
+                dependencies = new LinkedList<>();
+            }
+            if (repositories == null) {
+                repositories = new LinkedList<>();
+            }
+            for (org.apache.maven.model.Dependency dependency : model.getDependencies()) {
+                if (!"test".equalsIgnoreCase(dependency.getScope())) {
+                    dependencies.add(new Dependency(new DefaultArtifact(
+                            (dependency.getGroupId().contains("${")) ? model.getParent().getGroupId() : dependency.getGroupId(),
+                            dependency.getArtifactId(),
+                            dependency.getClassifier(),
+                            "jar",
+                            "[0,)"
+                    ), JavaScopes.RUNTIME));
+                }
+            }
+
+            for (Repository remoteRepository : model.getRepositories()) {
+                repositories.add(new RemoteRepository(remoteRepository.getId(), "default", remoteRepository.getUrl()));
+            }
         } catch (Exception e) {
             LOGGER.error("Error while reading POM file", e);
         }
-        if (dependencies == null) {
-            dependencies = new LinkedList<>();
-        }
-        if (repositories == null) {
-            repositories = new LinkedList<>();
-        }
-        for (org.apache.maven.model.Dependency dependency : model.getDependencies()) {
-            if (!"test".equalsIgnoreCase(dependency.getScope())) {
-                dependencies.add(new Dependency(new DefaultArtifact(
-                    (dependency.getGroupId().contains("${")) ? model.getParent().getGroupId() : dependency.getGroupId(),
-                    dependency.getArtifactId(),
-                    dependency.getClassifier(),
-                    "jar",
-                    "[0,)"
-                ), JavaScopes.RUNTIME));
-            }
-        }
-
-        for (Repository remoteRepository : model.getRepositories()) {
-            repositories.add(new RemoteRepository(remoteRepository.getId(), "default", remoteRepository.getUrl()));
-        }
-
     }
 }

@@ -189,8 +189,10 @@ public class MotechNativeTestContainer
             sendEventMethod.invoke(eventAdmin, event);
 
             startupEventSent = true;
-        } catch (Exception e) {
-            LOGGER.error("Error while sending the startup event", e);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            LOGGER.error("Error while sending the startup event, its possible that we have invalid bundle versions", e);
+        } catch (ClassNotFoundException e) {
+            LOGGER.error("Unable to load the OSGi Event class, Event Admin might be missing", e);
         }
     }
 
@@ -215,8 +217,8 @@ public class MotechNativeTestContainer
             Field frameworkField = getClass().getSuperclass().getDeclaredField("framework");
             frameworkField.setAccessible(true);
             return (Framework) ReflectionUtils.getField(frameworkField, this);
-        } catch (Exception e) {
-            throw new IllegalStateException("Unable to access the framework field", e);
+        } catch (NoSuchFieldException e) {
+            throw new IllegalStateException("Unable to access the framework field from super", e);
         }
     }
 

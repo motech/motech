@@ -8,7 +8,13 @@ import org.motechproject.mds.ex.MdsException;
  */
 public class IncompatibleComboboxFieldException extends MdsException {
 
-    public IncompatibleComboboxFieldException(String messageKey, String... params) {
-        super(messageKey, params);
+    /**
+     * Constructs the exception with <i>mds.error.comboboxIncompatible</i> as the message key.
+     * @param entityName name of the entity
+     * @param fieldName name of the field that caused the issue
+     */
+    public IncompatibleComboboxFieldException(String entityName, String fieldName) {
+        super("Not compatible combobbox field " + fieldName + " in entity " + entityName, null,
+                "mds.error.comboboxIncompatible", fieldName);
     }
 }

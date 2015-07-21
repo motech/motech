@@ -41,7 +41,7 @@ public class JavassistLoader extends Loader<ClassData> {
 
                 loadClass(new ClassData(name, bytecode));
             } catch (IOException | CannotCompileException ex) {
-                throw new LoaderException(ex);
+                throw new LoaderException("Unable to load class using Javassist: " + name, ex);
             }
         }
     }

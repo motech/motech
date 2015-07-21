@@ -20,7 +20,7 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
-import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
+import org.motechproject.mds.ex.rest.RestLookupExecutionForbiddenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestNoLookupResultException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
@@ -383,7 +383,7 @@ public class MdsRestFacadeTest {
         mdsRestFacade.executeLookup("nonExistent", new HashMap<String, String>(), null, false);
     }
 
-    @Test(expected = RestLookupExecutionForbbidenException.class)
+    @Test(expected = RestLookupExecutionForbiddenException.class)
     public void shouldThrowLookupForbiddenException() {
         mdsRestFacade.executeLookup(FORBIDDEN_LOOKUP_NAME, asLookupMap("something", "55"), null, false);
     }

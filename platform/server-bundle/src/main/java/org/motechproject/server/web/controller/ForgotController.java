@@ -85,9 +85,9 @@ public class ForgotController {
             try {
                 recoveryService.passwordRecoveryRequest(email);
             } catch (UserNotFoundException e) {
-                LOGGER.debug("Request for a nonexistent email", e);
+                LOGGER.warn("Request for a nonexistent email", e);
                 return "security.forgot.noSuchUser";
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 LOGGER.error("Error processing recovery", e);
                 return "security.forgot.errorSending";
             }
@@ -95,12 +95,12 @@ public class ForgotController {
             try {
                 recoveryService.oneTimeTokenOpenId(email);
             } catch (UserNotFoundException e) {
-                LOGGER.debug("Request for a nonexistent email", e);
+                LOGGER.warn("Request for a nonexistent email", e);
                 return "security.forgot.noSuchUser";
             } catch (NonAdminUserException e) {
-                LOGGER.debug("Request for a nonexistent email", e);
+                LOGGER.warn("Request for a nonexistent email", e);
                 return "security.forgot.nonAdminUser";
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 LOGGER.error("Error processing recovery", e);
                 return "security.forgot.errorSending";
             }

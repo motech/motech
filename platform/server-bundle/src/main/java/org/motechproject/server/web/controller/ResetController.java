@@ -89,7 +89,7 @@ public class ResetController {
                 LOGGER.debug("Reset with invalid token attempted", e);
                 errors.add("server.reset.invalidToken");
                 viewData.setInvalidToken(true);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 LOGGER.error("Error while reseting passsword", e);
                 errors.add("server.reset.error");
             }

@@ -125,23 +125,19 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
-    public void saveBundleSettings(Settings settings, long bundleId) {
+    public void saveBundleSettings(Settings settings, long bundleId) throws IOException {
         Properties props = ParamParser.constructProperties(settings);
 
-        try {
-            configurationService.addOrUpdateProperties(getBundleSymbolicName(bundleId), getVersion(bundleId), settings.getSection(),
-                    props, getBundleDefaultProperties(bundleId).get(settings.getSection()));
+        configurationService.addOrUpdateProperties(getBundleSymbolicName(bundleId), getVersion(bundleId), settings.getSection(),
+                props, getBundleDefaultProperties(bundleId).get(settings.getSection()));
 
-            Map<String, Object> params = new HashMap<>();
-            params.put(ConfigurationConstants.BUNDLE_ID, bundleId);
-            params.put(ConfigurationConstants.BUNDLE_SYMBOLIC_NAME, getBundleSymbolicName(bundleId));
-            params.put(ConfigurationConstants.BUNDLE_SECTION, settings.getSection());
+        Map<String, Object> params = new HashMap<>();
+        params.put(ConfigurationConstants.BUNDLE_ID, bundleId);
+        params.put(ConfigurationConstants.BUNDLE_SYMBOLIC_NAME, getBundleSymbolicName(bundleId));
+        params.put(ConfigurationConstants.BUNDLE_SECTION, settings.getSection());
 
-            MotechEvent bundleSettingsChangedEvent = new MotechEvent(ConfigurationConstants.BUNDLE_SETTINGS_CHANGED_EVENT_SUBJECT, params);
-            eventRelay.sendEventMessage(bundleSettingsChangedEvent);
-        } catch (Exception e) {
-            throw new MotechException("Error while saving bundle settings", e);
-        }
+        MotechEvent bundleSettingsChangedEvent = new MotechEvent(ConfigurationConstants.BUNDLE_SETTINGS_CHANGED_EVENT_SUBJECT, params);
+        eventRelay.sendEventMessage(bundleSettingsChangedEvent);
     }
 
     @Override

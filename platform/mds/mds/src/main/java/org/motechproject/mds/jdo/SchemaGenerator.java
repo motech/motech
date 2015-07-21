@@ -58,21 +58,17 @@ public class SchemaGenerator implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() {
+    public void afterPropertiesSet() throws IOException {
         generateSchema();
         runMigrations();
     }
 
-    public void generateSchema() {
-        try {
-            Set<String> classNames = classNames();
+    public void generateSchema() throws IOException {
+        Set<String> classNames = classNames();
 
-            if (!classNames.isEmpty()) {
-                SchemaAwareStoreManager storeManager = getStoreManager();
-                storeManager.createSchema(classNames, new Properties());
-            }
-        } catch (Exception e) {
-            LOGGER.error("Error while creating initial entity schema", e);
+        if (!classNames.isEmpty()) {
+            SchemaAwareStoreManager storeManager = getStoreManager();
+            storeManager.createSchema(classNames, new Properties());
         }
     }
 

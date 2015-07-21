@@ -3,7 +3,7 @@ package org.motechproject.mds.web.rest;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
 import org.motechproject.mds.ex.rest.RestEntityNotFoundException;
-import org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException;
+import org.motechproject.mds.ex.rest.RestLookupExecutionForbiddenException;
 import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestNoLookupResultException;
 import org.motechproject.mds.ex.rest.RestNotSupportedException;
@@ -219,7 +219,7 @@ public class MdsRestController  {
         LOGGER.debug("Not found error", e);
     }
 
-    @ExceptionHandler({RestOperationNotSupportedException.class, RestLookupExecutionForbbidenException.class})
+    @ExceptionHandler({RestOperationNotSupportedException.class, RestLookupExecutionForbiddenException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public void handleRestOperationNotSupportedException(Exception e) {
         LOGGER.debug("Forbidden error", e);

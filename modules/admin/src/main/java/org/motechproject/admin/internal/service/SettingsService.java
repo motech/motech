@@ -40,7 +40,7 @@ public interface SettingsService {
      * @param bundleId the id of bundle we wish to save settings for
      */
     @PreAuthorize(SecurityConstants.MANAGE_SETTINGS)
-    void saveBundleSettings(Settings settings, long bundleId);
+    void saveBundleSettings(Settings settings, long bundleId) throws IOException;
 
     /**
      * Creates a file with platform settings and packs it into a zip file.

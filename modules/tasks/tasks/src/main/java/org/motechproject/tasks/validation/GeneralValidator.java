@@ -6,6 +6,8 @@ import org.motechproject.tasks.domain.FieldParameter;
 import org.motechproject.tasks.domain.Parameter;
 import org.motechproject.tasks.domain.TaskError;
 import org.osgi.framework.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -23,6 +25,8 @@ import static org.motechproject.tasks.domain.TaskErrorType.VERSION;
  * class that serves as a base for task related validators.
  */
 public abstract class GeneralValidator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GeneralValidator.class);
 
     /**
      * Validates that none of the event parameter fields is either null or blank. Returns the set of {@code TaskError}s
@@ -145,7 +149,9 @@ public abstract class GeneralValidator {
     protected static void checkVersion(Set<TaskError> errors, String objectName, String field, String value) {
         try {
             Version.parseVersion(value);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            LOGGER.error("An exception occurred during validation of field - {}, objectName - {}, value - {}",
+                field, objectName, value);
             errors.add(new TaskError(VERSION, field, objectName));
         }
     }

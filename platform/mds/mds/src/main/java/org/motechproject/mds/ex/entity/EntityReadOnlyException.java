@@ -7,13 +7,15 @@ import org.motechproject.mds.ex.MdsException;
  * to make changes on an entity which is read only (it was created by a module).
  */
 public class EntityReadOnlyException extends MdsException {
+
     private static final long serialVersionUID = -4030249523587627059L;
 
     /**
      * Constructs a new EntityReadOnlyException with <i>mds.error.entityIsReadOnly</i> as
      * a message key.
+     * @param entityName name of the entity
      */
-    public EntityReadOnlyException() {
-        super("mds.error.entityIsReadOnly");
+    public EntityReadOnlyException(String entityName) {
+        super("Unable to edit entity " + entityName + " since it's readonly", null, "mds.error.entityIsReadOnly");
     }
 }

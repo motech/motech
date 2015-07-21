@@ -62,7 +62,7 @@ public class OsgiListener implements ServletContextListener {
         try {
             bootstrapConfig = bootstrapManager.loadBootstrapConfig();
             bootstrapPresent = bootstrapConfig != null;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             LOGGER.info("Unable to load bootstrap config: " + e.getMessage());
         }
 

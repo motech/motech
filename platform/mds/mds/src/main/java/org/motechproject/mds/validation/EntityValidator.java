@@ -101,7 +101,7 @@ public class EntityValidator {
     private void validateField(Entity parent, Map.Entry<String, Boolean> field) {
         if (!field.getValue()) {
             if (!executeJDOQLQuery(prepareGetComboboxesWithMultipleValuesQuery(parent, field.getKey())).isEmpty()) {
-                throw new IncompatibleComboboxFieldException("mds.error.comboboxIncompatible", field.getKey());
+                throw new IncompatibleComboboxFieldException(parent.getName(), field.getKey());
             }
         }
     }
@@ -257,7 +257,7 @@ public class EntityValidator {
                 }
             }
             if (lookups.length() > 0) {
-                throw new LookupReferencedException(lookups.toString());
+                throw new LookupReferencedException(entityClassName, lookups.toString());
             }
         }
     }

@@ -157,7 +157,7 @@ public class InstanceController extends MdsController {
     public HistoryRecord getPreviousInstance(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable Long historyId) {
         HistoryRecord historyRecord = instanceService.getHistoryRecord(entityId, instanceId, historyId);
         if (historyRecord == null) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(entityId);
         }
         return historyRecord;
     }

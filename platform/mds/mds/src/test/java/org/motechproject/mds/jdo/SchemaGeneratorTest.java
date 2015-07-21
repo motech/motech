@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.util.ClassName;
 
+import java.io.IOException;
 import java.util.Properties;
 import java.util.Set;
 
@@ -43,7 +44,7 @@ public class SchemaGeneratorTest {
     }
 
     @Test
-    public void shouldGenerateSchema() {
+    public void shouldGenerateSchema() throws IOException {
         when(pmf.getNucleusContext()).thenReturn(nucleusContext);
         when(nucleusContext.getStoreManager()).thenReturn(storeManager);
 

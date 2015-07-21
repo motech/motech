@@ -10,7 +10,10 @@ public class ServiceNotFoundException extends MdsException {
 
     private static final long serialVersionUID = -2792362263836791348L;
 
-    public ServiceNotFoundException() {
-        super("mds.error.serviceNotAvailable");
+    /**
+     * @param serviceClassName class name of the service that was not found
+     */
+    public ServiceNotFoundException(String serviceClassName) {
+        super("Unable to find service " + serviceClassName, null, "mds.error.serviceNotAvailable");
     }
 }

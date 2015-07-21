@@ -125,7 +125,7 @@ public class ActionHandlerServiceImpl implements ActionHandlerService {
             } else {
                 PropertyUtil.safeSetProperty(instance, field.getName(), null);
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new ActionHandlerException("Cannot set instance property " + field.getName() + " with value " + value, e);
         }
     }

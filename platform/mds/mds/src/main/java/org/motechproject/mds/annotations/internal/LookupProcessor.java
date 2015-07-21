@@ -189,9 +189,8 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
 
         try {
             methodParameterNames.addAll(Arrays.asList(paranamer.lookupParameterNames(method)));
-        } catch (Exception e) {
-            LOGGER.warn("Unable to read method {} names using paranamer", method.toString());
-            LOGGER.debug("Paranamer stacktrace", e);
+        } catch (RuntimeException e) {
+            LOGGER.warn("Unable to read method {} names using paranamer", method.toString(), e);
         }
 
         for (int i = 0; i < paramAnnotations.length; i++) {
@@ -248,9 +247,8 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
 
         try {
             methodParameterNames.addAll(Arrays.asList(paranamer.lookupParameterNames(method)));
-        } catch (Exception e) {
-            LOGGER.warn("Unable to read method {} names using paranamer", method.toString());
-            LOGGER.debug("Paranamer stacktrace", e);
+        } catch (RuntimeException e) {
+            LOGGER.warn("Unable to read method {} names using Paranamer", method.toString(), e);
         }
 
         for (int i = 0; i < paramAnnotations.length; i++) {

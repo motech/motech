@@ -66,7 +66,7 @@ public class LookupReader {
             if (null != field) {
                 fields.add(field);
             } else {
-                throw new FieldNotFoundException();
+                throw new FieldNotFoundException(entity.getClassName(), fieldName);
             }
         }
         jsonReader.endArray();

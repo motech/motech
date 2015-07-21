@@ -192,7 +192,7 @@ public class ServerEventRelay implements EventRelay, EventHandler {
                 Thread.currentThread().setContextClassLoader(target.getClass().getClassLoader());
                 listener.handle(event);
                 break;
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 if (retryCount < maxRetryCount) {
                     LOGGER.warn(String.format("An exception occurred when handling topic event %s by listener %s.",
                             event.toString(), listener.getIdentifier()), e);

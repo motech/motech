@@ -62,9 +62,7 @@ class TaskInitializer {
                 try {
                     FilterSet filterSet = (FilterSet) step;
                     result = taskFilterExecutor.checkFilters(filterSet.getFilters(), filterSet.getOperator(), taskContext);
-                } catch (TaskHandlerException e) {
-                    throw e;
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     throw new TaskHandlerException(FILTER, "task.error.filterError", e);
                 }
             }

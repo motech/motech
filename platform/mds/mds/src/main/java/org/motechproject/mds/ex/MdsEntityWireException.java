@@ -4,7 +4,7 @@ package org.motechproject.mds.ex;
  * Exception, that informs about a problem when an entity is outside OSGi exported package.
  * It contains message with problem description and possible solutions.
  */
-public class MdsEntityWireException extends RuntimeException {
+public class MdsEntityWireException extends MdsException {
 
     private static final long serialVersionUID = 1097291331451418690L;
 

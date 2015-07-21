@@ -9,7 +9,12 @@ public class FieldUsedInLookupException extends MdsException {
 
     private static final long serialVersionUID = -3950357333708462369L;
 
+    /**
+     * @param fieldName the name of the field
+     * @param lookupNames names of the lookups the field is used
+     */
     public FieldUsedInLookupException(String fieldName, String lookupNames) {
-        super("mds.error.fieldUsedInLookup", fieldName, lookupNames);
+        super("Field " + fieldName + " is used in lookups: " + lookupNames, null, "mds.error.fieldUsedInLookup",
+                fieldName, lookupNames);
     }
 }

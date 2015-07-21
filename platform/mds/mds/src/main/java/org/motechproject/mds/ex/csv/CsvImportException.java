@@ -1,14 +1,13 @@
 package org.motechproject.mds.ex.csv;
 
+import org.motechproject.mds.ex.MdsException;
+
 /**
  * Signals that CSV import failed.
  */
-public class CsvImportException extends RuntimeException {
+public class CsvImportException extends MdsException {
 
     private static final long serialVersionUID = -982424055742014159L;
-
-    public CsvImportException() {
-    }
 
     public CsvImportException(String message) {
         super(message);

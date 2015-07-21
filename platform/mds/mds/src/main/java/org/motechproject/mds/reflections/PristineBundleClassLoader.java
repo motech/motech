@@ -60,6 +60,7 @@ public class PristineBundleClassLoader extends ClassLoader {
         try {
             return classPool.getClassLoader().loadClass(name);
         } catch (ClassNotFoundException e) {
+            LOGGER.debug("Unable to find class {}", name , e);
             return null;
         }
     }
@@ -77,9 +78,13 @@ public class PristineBundleClassLoader extends ClassLoader {
             }
 
             LOGGER.debug("Loading pristine entity class: " + name);
+
             bytecode = null == bytecode ? loadPristineClassBytecode(name) : bytecode;
-            return defineClass(name, bytecode, 0, bytecode.length);
+            int length = null == bytecode ? 0 : bytecode.length;
+
+            return defineClass(name, bytecode, 0, length);
         } catch (ClassNotFoundException e) {
+            LOGGER.debug("Unable to find class {}", name , e);
             return null;
         }
     }
@@ -89,7 +94,7 @@ public class PristineBundleClassLoader extends ClassLoader {
     }
 
     private void appendClassPath(String name, byte[] bytecode) {
-        LOGGER.debug("Appending class to javassist classpath: " + name);
+        LOGGER.debug("Appending class to Javassist classpath: " + name);
         ByteArrayClassPath classPath = new ByteArrayClassPath(name, bytecode);
         classPool.appendClassPath(classPath);
     }
@@ -102,7 +107,7 @@ public class PristineBundleClassLoader extends ClassLoader {
             try (InputStream in = classResource.openStream()) {
                 return IOUtils.toByteArray(in);
             } catch (IOException e) {
-                throw new LoaderException(e);
+                throw new LoaderException("Unable to load bytes in pristine class", e);
             }
         }
 

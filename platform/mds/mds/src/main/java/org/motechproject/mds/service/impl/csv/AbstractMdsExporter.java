@@ -79,20 +79,18 @@ public abstract class AbstractMdsExporter {
 
     protected Entity getEntity(long entityId) {
         Entity entity = allEntities.retrieveById(entityId);
-        assertEntityExists(entity);
+        if (entity == null) {
+            throw new EntityNotFoundException(entityId);
+        }
         return entity;
     }
 
     protected Entity getEntity(String entityClassName) {
         Entity entity = allEntities.retrieveByClassName(entityClassName);
-        assertEntityExists(entity);
-        return entity;
-    }
-
-    private void assertEntityExists(Entity entity) {
         if (entity == null) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(entityClassName);
         }
+        return entity;
     }
 
     private String[] fieldsToHeaders(List<Field> fields) {

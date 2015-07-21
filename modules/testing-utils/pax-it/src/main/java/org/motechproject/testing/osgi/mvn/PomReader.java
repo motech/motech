@@ -1,6 +1,7 @@
 package org.motechproject.testing.osgi.mvn;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.commons.api.MotechException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -55,13 +56,9 @@ public class PomReader {
     }
 
     private String getPomInfo(String tagName) {
-        try {
-            final Element root = getPomDoc().getDocumentElement();
-            final Node node = getChild(root, tagName);
-            return getNodeContent(node, Node.TEXT_NODE);
-        } catch (Exception e) {
-            return null;
-        }
+        final Element root = getPomDoc().getDocumentElement();
+        final Node node = getChild(root, tagName);
+        return getNodeContent(node, Node.TEXT_NODE);
     }
 
     private String getNodeContent(Node node, short nodeType) {
@@ -86,12 +83,16 @@ public class PomReader {
         return null;
     }
 
-    private Document getPomDoc() throws IOException, SAXException, ParserConfigurationException {
+    private Document getPomDoc() {
         if (pomDoc == null) {
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            documentBuilderFactory.setIgnoringComments(true);
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            pomDoc = documentBuilder.parse(pomFilePath);
+            try {
+                DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+                documentBuilderFactory.setIgnoringComments(true);
+                DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+                pomDoc = documentBuilder.parse(pomFilePath);
+            } catch (SAXException | IOException | ParserConfigurationException e) {
+                throw new MotechException("Unable to read the pom file", e);
+            }
         }
         return pomDoc;
     }

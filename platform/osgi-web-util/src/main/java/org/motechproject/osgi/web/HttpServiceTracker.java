@@ -1,19 +1,20 @@
 package org.motechproject.osgi.web;
 
 import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
-import org.motechproject.osgi.web.exception.ServletRegistrationException;
 import org.motechproject.osgi.web.ext.HttpContextFactory;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.http.HttpContext;
 import org.osgi.service.http.HttpService;
+import org.osgi.service.http.NamespaceException;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import javax.servlet.ServletException;
 import java.util.Map;
 
 /**
@@ -65,31 +66,31 @@ public class HttpServiceTracker extends ServiceTracker {
 
     private void register(HttpService httpService) {
         if (contextPath == null && httpService != null) {
+            DispatcherServlet dispatcherServlet = new OSGiDispatcherServlet(context, (ConfigurableWebApplicationContext) bundleContextWrapper.getBundleApplicationContext());
+            contextPath = WebBundleUtil.getContextPath(context.getBundle());
+            dispatcherServlet.setContextClass(MotechOSGiWebApplicationContext.class);
+            dispatcherServlet.setContextConfigLocation(WebBundleUtil.getContextLocation(context.getBundle()));
+            ClassLoader old = Thread.currentThread().getContextClassLoader();
             try {
-                DispatcherServlet dispatcherServlet = new OSGiDispatcherServlet(context, (ConfigurableWebApplicationContext) bundleContextWrapper.getBundleApplicationContext());
-                contextPath = WebBundleUtil.getContextPath(context.getBundle());
-                dispatcherServlet.setContextClass(MotechOSGiWebApplicationContext.class);
-                dispatcherServlet.setContextConfigLocation(WebBundleUtil.getContextLocation(context.getBundle()));
-                ClassLoader old = Thread.currentThread().getContextClassLoader();
-                try {
-                    Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-                    HttpContext httpContext = HttpContextFactory.getHttpContext(httpService.createDefaultHttpContext(), context.getBundle());
-                    httpService.unregister(contextPath);
-                    httpService.registerServlet(contextPath, dispatcherServlet, null, httpContext);
-                    if (resourceMapping != null) {
-                        for (String key : resourceMapping.keySet()) {
-                            LOGGER.debug(String.format("Registering %s = %s for bundle %s ", key, resourceMapping.keySet(), bundleContextWrapper.getCurrentBundleSymbolicName()));
-                            httpService.registerResources(key, resourceMapping.get(key), httpContext);
-                        }
+                Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+                HttpContext httpContext = HttpContextFactory.getHttpContext(httpService.createDefaultHttpContext(), context.getBundle());
+                httpService.unregister(contextPath);
+                httpService.registerServlet(contextPath, dispatcherServlet, null, httpContext);
+                if (resourceMapping != null) {
+                    for (String key : resourceMapping.keySet()) {
+                        LOGGER.debug(String.format("Registering %s = %s for bundle %s ", key, resourceMapping.keySet(), bundleContextWrapper.getCurrentBundleSymbolicName()));
+                        httpService.registerResources(key, resourceMapping.get(key), httpContext);
                     }
-                    LOGGER.info(String.format("servlet registered with context path %s for bundle %s", contextPath, OsgiStringUtils.nullSafeSymbolicName(context.getBundle())));
-                } catch (Exception e) {
-                    LOGGER.error("Unable to register dispather servlet for {}", bundleContextWrapper.getCurrentBundleSymbolicName(), e);
-                } finally {
-                    Thread.currentThread().setContextClassLoader(old);
                 }
-            } catch (Exception e) {
-                throw new ServletRegistrationException(String.format("%s could not be registered with the HttpService due to : %s", bundleContextWrapper.getCurrentBundleSymbolicName(), e.getMessage()), e);
+                LOGGER.info(String.format("servlet registered with context path %s for bundle %s", contextPath, OsgiStringUtils.nullSafeSymbolicName(context.getBundle())));
+            } catch (ServletException e) {
+                LOGGER.error("Unable to register dispatcher servlet for {}",
+                        bundleContextWrapper.getCurrentBundleSymbolicName(), e);
+            } catch (NamespaceException e) {
+                LOGGER.error("Unable to register dispatcher servlet for {}, namespace already taken",
+                        bundleContextWrapper.getCurrentBundleSymbolicName(), e);
+            } finally {
+                Thread.currentThread().setContextClassLoader(old);
             }
         }
     }

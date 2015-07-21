@@ -111,7 +111,7 @@ public class EntityServiceImpl implements EntityService {
     @Transactional
     public Long getCurrentSchemaVersion(String className) {
         Entity entity = allEntities.retrieveByClassName(className);
-        assertEntityExists(entity);
+        assertEntityExists(entity, className);
 
         return entity.getEntityVersion();
     }
@@ -120,13 +120,14 @@ public class EntityServiceImpl implements EntityService {
     @Transactional
     public void updateComboboxValues(Long entityId, Map<String, Collection> fieldValuesToUpdate) {
         Entity entity = allEntities.retrieveById(entityId);
-        assertEntityExists(entity);
+        assertEntityExists(entity, entityId);
+
         boolean doEntityUpdate = false;
 
         for (Map.Entry<String, Collection> fieldUpdate : fieldValuesToUpdate.entrySet()) {
             Field field = entity.getField(fieldUpdate.getKey());
             if (field == null) {
-                throw new FieldNotFoundException();
+                throw new FieldNotFoundException(entity.getClassName(), fieldUpdate.getKey());
             }
 
             ComboboxHolder cbHolder = new ComboboxHolder(field);
@@ -189,7 +190,7 @@ public class EntityServiceImpl implements EntityService {
         }
 
         if (allEntities.contains(entityDto.getClassName())) {
-            throw new EntityAlreadyExistException();
+            throw new EntityAlreadyExistException(entityDto.getName());
         }
 
         Entity entity = allEntities.create(entityDto);
@@ -321,7 +322,7 @@ public class EntityServiceImpl implements EntityService {
                 allTypes.retrieveByClassName(typeClass);
 
         if (type == null) {
-            throw new NoSuchTypeException();
+            throw new NoSuchTypeException(typeClass);
         }
 
         Set<Lookup> fieldLookups = new HashSet<>();
@@ -583,7 +584,7 @@ public class EntityServiceImpl implements EntityService {
     public AdvancedSettingsDto getAdvancedSettings(Long entityId, boolean committed) {
         if (committed) {
             Entity entity = allEntities.retrieveById(entityId);
-            assertEntityExists(entity);
+            assertEntityExists(entity, entityId);
             return addNonPersistentAdvancedSettingsData(entity.advancedSettingsDto(), entity);
         } else {
             Entity entity = getEntityDraft(entityId);
@@ -606,7 +607,7 @@ public class EntityServiceImpl implements EntityService {
     @Transactional
     public void updateRestOptions(Long entityId, RestOptionsDto restOptionsDto) {
         Entity entity = allEntities.retrieveById(entityId);
-        assertEntityExists(entity);
+        assertEntityExists(entity, entityId);
 
         entity.updateRestOptions(restOptionsDto);
     }
@@ -615,7 +616,7 @@ public class EntityServiceImpl implements EntityService {
     @Transactional
     public void updateTracking(Long entityId, TrackingDto trackingDto) {
         Entity entity = allEntities.retrieveById(entityId);
-        assertEntityExists(entity);
+        assertEntityExists(entity, entityId);
 
         entity.updateTracking(trackingDto);
     }
@@ -642,7 +643,7 @@ public class EntityServiceImpl implements EntityService {
     @Transactional
     public void addLookups(Long entityId, Collection<LookupDto> lookups) {
         Entity entity = allEntities.retrieveById(entityId);
-        assertEntityExists(entity);
+        assertEntityExists(entity, entityId);
 
         removeLookup(entity, lookups);
         addOrUpdateLookups(entity, lookups);
@@ -704,7 +705,7 @@ public class EntityServiceImpl implements EntityService {
     public void deleteEntity(Long entityId) {
         Entity entity = allEntities.retrieveById(entityId);
 
-        assertWritableEntity(entity);
+        assertWritableEntity(entity, entityId);
 
         if (entity.isDraft()) {
             entity = ((EntityDraft) entity).getParentEntity();
@@ -816,7 +817,7 @@ public class EntityServiceImpl implements EntityService {
     private List<LookupDto> getLookups(Long entityId, boolean forDraft) {
         Entity entity = (forDraft) ? getEntityDraft(entityId) : allEntities.retrieveById(entityId);
 
-        assertEntityExists(entity);
+        assertEntityExists(entity, entityId);
 
         List<LookupDto> lookupDtos = new ArrayList<>();
         for (Lookup lookup : entity.getLookups()) {
@@ -841,7 +842,7 @@ public class EntityServiceImpl implements EntityService {
     private List<FieldDto> getFields(Long entityId, boolean forDraft) {
         Entity entity = (forDraft) ? getEntityDraft(entityId) : allEntities.retrieveById(entityId);
 
-        assertEntityExists(entity);
+        assertEntityExists(entity, entityId);
 
         // the returned collection is unmodifiable
         List<Field> fields = new ArrayList<>(entity.getFields());
@@ -889,7 +890,7 @@ public class EntityServiceImpl implements EntityService {
         Field field = entity.getField(name);
 
         if (field == null) {
-            throw new FieldNotFoundException();
+            throw new FieldNotFoundException(entity.getClassName(), name);
         }
 
         return field.toDto();
@@ -902,7 +903,7 @@ public class EntityServiceImpl implements EntityService {
         Field field = entity.getField(name);
 
         if (field == null) {
-            throw new FieldNotFoundException();
+            throw new FieldNotFoundException(entity.getClassName(), name);
         }
 
         return field.toDto();
@@ -915,7 +916,7 @@ public class EntityServiceImpl implements EntityService {
         Field field = entity.getField(fieldId);
 
         if (field == null) {
-            throw new FieldNotFoundException();
+            throw new FieldNotFoundException(entity.getClassName(), fieldId);
         }
 
         return field.toDto();
@@ -940,7 +941,7 @@ public class EntityServiceImpl implements EntityService {
     public EntityDraft getEntityDraft(Long entityId, String username) {
         Entity entity = allEntities.retrieveById(entityId);
 
-        assertEntityExists(entity);
+        assertEntityExists(entity, entityId);
 
         if (entity instanceof EntityDraft) {
             return (EntityDraft) entity;
@@ -983,7 +984,7 @@ public class EntityServiceImpl implements EntityService {
     public void addFields(Long entityId, Collection<FieldDto> fields) {
         Entity entity = allEntities.retrieveById(entityId);
 
-        assertEntityExists(entity);
+        assertEntityExists(entity, entityId);
 
         removeFields(entity, fields);
 
@@ -1080,7 +1081,7 @@ public class EntityServiceImpl implements EntityService {
     public void addFilterableFields(EntityDto entityDto, Collection<String> fieldNames) {
         Entity entity = allEntities.retrieveById(entityDto.getId());
 
-        assertEntityExists(entity);
+        assertEntityExists(entity, entityDto.getId());
 
         for (Field field : entity.getFields()) {
             boolean isUIFilterable = fieldNames.contains(field.getName());
@@ -1104,7 +1105,7 @@ public class EntityServiceImpl implements EntityService {
     @Transactional
     public LookupDto getLookupByName(Long entityId, String lookupName) {
         Entity entity = allEntities.retrieveById(entityId);
-        assertEntityExists(entity);
+        assertEntityExists(entity, entityId);
 
         Lookup lookup = entity.getLookupByName(lookupName);
         return (lookup == null) ? null : lookup.toDto();
@@ -1114,7 +1115,7 @@ public class EntityServiceImpl implements EntityService {
     @Transactional
     public List<FieldDto> getDisplayFields(Long entityId) {
         Entity entity = allEntities.retrieveById(entityId);
-        assertEntityExists(entity);
+        assertEntityExists(entity, entityId);
 
         List<FieldDto> displayFields = new ArrayList<>();
         for (Field field : entity.getFields()) {
@@ -1131,7 +1132,7 @@ public class EntityServiceImpl implements EntityService {
     public void addNonEditableFields(EntityDto entityDto, Map<String, Boolean> nonEditableFields) {
         Entity entity = allEntities.retrieveById(entityDto.getId());
 
-        assertEntityExists(entity);
+        assertEntityExists(entity, entityDto.getId());
 
         List<Field> fields = entity.getFields();
 
@@ -1154,7 +1155,7 @@ public class EntityServiceImpl implements EntityService {
     public void addDisplayedFields(EntityDto entityDto, Map<String, Long> positions) {
         Entity entity = allEntities.retrieveById(entityDto.getId());
 
-        assertEntityExists(entity);
+        assertEntityExists(entity, entityDto.getId());
 
         List<Field> fields = entity.getFields();
 
@@ -1190,7 +1191,7 @@ public class EntityServiceImpl implements EntityService {
     public void updateSecurityOptions(Long entityId, SecurityMode securityMode, Set<String> securityMembers) {
         Entity entity = allEntities.retrieveById(entityId);
 
-        assertEntityExists(entity);
+        assertEntityExists(entity, entityId);
 
         entity.setSecurityMode(securityMode);
         entity.setSecurityMembers(securityMembers);
@@ -1202,24 +1203,30 @@ public class EntityServiceImpl implements EntityService {
     @Transactional
     public void updateMaxFetchDepth(Long entityId, Integer maxFetchDepth) {
         Entity entity = allEntities.retrieveById(entityId);
-        assertEntityExists(entity);
+        assertEntityExists(entity, entityId);
 
         entity.setMaxFetchDepth(maxFetchDepth);
 
         allEntities.update(entity);
     }
 
-    private void assertEntityExists(Entity entity) {
+    private void assertEntityExists(Entity entity, Long entityId) {
         if (entity == null) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(entityId);
         }
     }
 
-    private void assertWritableEntity(Entity entity) {
-        assertEntityExists(entity);
+    private void assertEntityExists(Entity entity, String entityClassName) {
+        if (entity == null) {
+            throw new EntityNotFoundException(entityClassName);
+        }
+    }
+
+    private void assertWritableEntity(Entity entity, Long entityId) {
+        assertEntityExists(entity, entityId);
 
         if (entity.isDDE()) {
-            throw new EntityReadOnlyException();
+            throw new EntityReadOnlyException(entity.getName());
         }
     }
 

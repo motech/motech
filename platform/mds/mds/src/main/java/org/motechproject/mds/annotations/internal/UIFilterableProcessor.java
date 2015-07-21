@@ -4,7 +4,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.UIFilterable;
 import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.ex.type.TypeNotFoundException;
+import org.motechproject.mds.ex.type.NoSuchTypeException;
 import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.MemberUtil;
@@ -110,7 +110,7 @@ class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> 
             TypeDto type = typeService.findType(clazz);
 
             return ArrayUtils.contains(SUPPORT_TYPES, type);
-        } catch (TypeNotFoundException e) {
+        } catch (NoSuchTypeException e) {
             LOGGER.error("Not found type with given name: {}", clazz.getName());
             return false;
         }

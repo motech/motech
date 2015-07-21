@@ -58,7 +58,7 @@ public final class MotechScheduler {
                         break;
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             LOGGER.error("Error: ", e);
         }
     }
@@ -73,7 +73,7 @@ public final class MotechScheduler {
         try {
             LOGGER.info("Scheduling test job: " + cronSchedulableJob);
             schedulerService.scheduleJob(cronSchedulableJob);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             LOGGER.warn("Can not schedule test job.", e);
         }
     }
@@ -82,8 +82,8 @@ public final class MotechScheduler {
         try {
             LOGGER.info("Unscheduling the test job: " + TEST_EVENT_NAME);
             schedulerService.unscheduleJob(new CronJobId(TEST_SUBJECT, TEST_EVENT_NAME));
-        } catch (Exception e) {
-            LOGGER.warn(String.format("Can not unschedule the test job %s:", TEST_EVENT_NAME), e);
+        } catch (RuntimeException e) {
+            LOGGER.error(String.format("Can not unschedule the test job %s:", TEST_EVENT_NAME), e);
         }
     }
 

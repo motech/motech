@@ -184,15 +184,22 @@ public class EntityProcessorTest extends MockBundle {
         assertTrue(entity.getSecurityMembers().contains("motech"));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void shouldFailProcessingClassesWithInvalidSecurityOptions() {
-        processor.process(InvalidSecuritySample.class);
+        try {
+            processor.process(InvalidSecuritySample.class);
+        } finally {
+            verifyZeroInteractions(fieldProcessor);
+        }
+    }
 
-        verifyZeroInteractions(fieldProcessor);
-
-        processor.process(AnotherInvalidSecuritySample.class);
-
-        verifyZeroInteractions(fieldProcessor);
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailProcessingClassesWithAnotherInvalidSecurityOptions() {
+        try {
+            processor.process(AnotherInvalidSecuritySample.class);
+        } finally {
+            verifyZeroInteractions(fieldProcessor);
+        }
     }
 
     @Test

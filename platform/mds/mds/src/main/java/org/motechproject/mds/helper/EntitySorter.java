@@ -139,8 +139,7 @@ public final class EntitySorter {
 
         if (relatedClasses != null && relatedClasses.contains(field.getEntity().getClassName()) &&
                 StringUtils.isEmpty(holder.getRelatedField())) {
-            throw new InvalidRelationshipException("Invalid relationship found between entities: " + holder.getRelatedClass() +
-                    " and " + field.getEntity().getClassName());
+            throw new InvalidRelationshipException(holder.getRelatedClass(), field.getEntity().getClassName());
         }
 
         if (holder.hasUnresolvedRelation() && !field.getEntity().getClassName().equals(holder.getRelatedClass())) {
@@ -154,8 +153,8 @@ public final class EntitySorter {
         Entity relatedEntity = findEntityByName(holder.getRelatedClass(), allEntities);
 
         if (!hasCorrectTrackingSettings(field, relatedEntity, holder)) {
-            throw new InvalidEntitySettingsException(field.getEntity().getClassName() + " and " + relatedEntity.getClassName() +
-                    " have invalid history tracking settings.");
+            String relatedClassName = relatedEntity == null ? "null" : relatedEntity.getClassName();
+            throw new InvalidEntitySettingsException(field.getEntity().getClassName(), relatedClassName);
         }
     }
 

@@ -1,5 +1,6 @@
 package org.motechproject.mds.rest;
 
+import org.motechproject.mds.ex.rest.RestLookupExecutionForbiddenException;
 import org.motechproject.mds.query.QueryParams;
 
 import java.io.InputStream;
@@ -73,7 +74,7 @@ public interface MdsRestFacade<T> {
     /**
      * Executes a lookup for REST, given the lookup name, lookup parameters and query parameters. The
      * result will only contain fields that are visible for REST. If requested lookup is not available
-     * via REST, this will throw {@link org.motechproject.mds.ex.rest.RestLookupExecutionForbbidenException}. If
+     * via REST, this will throw {@link RestLookupExecutionForbiddenException}. If
      * a lookup of given name does not exist, it throws {@link org.motechproject.mds.ex.rest.RestLookupNotFoundException}.
      *
      * @param lookupName name of the lookup

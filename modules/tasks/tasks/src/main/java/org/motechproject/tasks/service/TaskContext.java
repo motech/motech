@@ -88,7 +88,7 @@ public class TaskContext {
 
         try {
             return getFieldValue(dataSourceObject.getObjectValue(), field);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             if (dataSourceObject.isFailIfNotFound()) {
                 throw new TaskHandlerException(TaskFailureCause.DATA_SOURCE, "task.error.objectDoesNotContainField", e, field);
             }
