@@ -4,17 +4,35 @@
     <meta charset="UTF-8">
     <title>MOTECH - Mobile Technology for Community Health</title>
 
+    <link rel="apple-touch-icon" sizes="57x57" href="./../../static/img/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="./../../static/img/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="./../../static/img/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="./../../static/img/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="./../../static/img/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="./../../static/img/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="./../../static/img/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="./../../static/img/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./../../static/img/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="./../../static/img/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="./../../static/img/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="./../../static/img/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="./../../static/img/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="./../../manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="./../../static/img/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
     ${mainHeader}
 
 </head>
 <body class="body-down" ng-controller="MotechMasterCtrl" ng-init="getLoginViewData()">
     <div class="splash login" ng-hide="ready">
         <div class="splash-logo">
-            <img src="../server/resources/img/motech-logo.gif" alt="motech-logo">
+            <img src="./../../static/img/motech-logo.gif" alt="motech-logo">
         </div>
         <div class="clearfix"></div>
         <div class="splash-loader">
-            <img src="../server/resources/img/loadingbar.gif" alt="loading">
+            <img src="./../../static/img/loadingbar.gif" alt="loading">
         </div>
         <div class="clearfix"></div>
         <div class="splash-msg"></div>
@@ -26,7 +44,7 @@
             <div class="container">
                 <a href=".">
                     <div class="dashboard-logo" ng-cloak>
-                        <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.gif">
+                        <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="./../../static/img/motech-logo.gif">
                     </div>
                 </a>
                 <div class="hidden-xs" ng-cloak>
