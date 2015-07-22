@@ -37,6 +37,11 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>com.springsource.org.apache.maven.ant</artifactId>
+            <version>2.0.8</version>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-osgi-platform</artifactId>
             <version>${project.version}</version>

@@ -507,7 +507,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
             if ("http".equals(roleHint)) {
                 return new LightweightHttpWagon() {
                     @Override
-                    protected void openConnectionInternal() throws ConnectionException, AuthenticationException {
+                    public void openConnection() throws ConnectionException, AuthenticationException {
                     }
                 };
             }
