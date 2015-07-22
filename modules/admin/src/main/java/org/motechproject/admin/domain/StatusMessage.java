@@ -15,7 +15,7 @@ import org.motechproject.mds.util.SecurityMode;
  *
  * @see org.motechproject.admin.domain.NotificationRule
  */
-@Entity
+@Entity(nonEditable = true)
 @Access(value = SecurityMode.PERMISSIONS, members = {"manageMessages"})
 public class StatusMessage {
     @Field(required = true)

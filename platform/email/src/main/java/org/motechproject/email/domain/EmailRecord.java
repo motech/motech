@@ -16,7 +16,7 @@ import java.util.Objects;
  *
  * @see org.motechproject.mds.annotations
  */
-@Entity
+@Entity(nonEditable = true)
 @Access(value = SecurityMode.PERMISSIONS, members = {EmailRolesConstants.BASIC_EMAIL_LOGS})
 public class EmailRecord {
 
