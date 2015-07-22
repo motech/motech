@@ -17,7 +17,7 @@ import java.util.Objects;
  * Represents a single task error. Those error are encountered during validation of a channel if some of the required
  * fields are blank or missing.
  */
-@Entity(recordHistory = true)
+@Entity(recordHistory = true, nonEditable = true)
 @CrudEvents(CrudEventType.NONE)
 @Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class TaskError implements Serializable {
