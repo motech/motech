@@ -711,6 +711,23 @@ both uni-directional and bi-directional. The way to define relationships for DDE
         ...
     }
 
+- **Eager/lazy loading**
+  By default loading an entity with relationship will load its related entities, but that behaviour can be configured through @Persistent(defaultFetchGroup = "true/false") annotation.
+  Please see the code below for an example.
+
+.. code-block:: java
+
+    @Entity
+    public class Author {
+        @Field
+        private String name;
+
+        @Field
+        @Persistent(defaultFetchGroup = "false")
+        private Set<Book> book;
+
+        ...
+    }
 
 Using DataNucleus annotations
 #############################
