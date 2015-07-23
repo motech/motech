@@ -206,6 +206,11 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test-mvc</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-tomcat-it</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>motech-platform-server</finalName>
@@ -363,7 +368,7 @@
                     <plugin>
                         <groupId>com.googlecode.t7mp</groupId>
                         <artifactId>maven-t7-plugin</artifactId>
-                        <version>0.9.10.M8</version>
+                        <version>0.9.16</version>
                         <configuration>
                             <tomcatHttpPort>${tomcat.port}</tomcatHttpPort>
                             <tomcatShutdownPort>${tomcat.shutdown.port}</tomcatShutdownPort>
@@ -376,14 +381,14 @@
                             <execution>
                                 <id>tomcat-start</id>
                                 <goals>
-                                    <goal>run</goal>
+                                    <goal>run-forked</goal>
                                 </goals>
                                 <phase>pre-integration-test</phase>
                             </execution>
                             <execution>
                                 <id>tomcat-stop</id>
                                 <goals>
-                                    <goal>stop</goal>
+                                    <goal>stop-forked</goal>
                                 </goals>
                                 <phase>post-integration-test</phase>
                             </execution>

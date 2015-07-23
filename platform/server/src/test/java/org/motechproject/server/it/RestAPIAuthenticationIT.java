@@ -10,6 +10,7 @@ import org.hamcrest.core.Is;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.testing.tomcat.BaseTomcatIT;
 
 import java.io.IOException;
 
@@ -17,7 +18,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public class RestAPIAuthenticationIT extends BaseIT {
+public class RestAPIAuthenticationIT extends BaseTomcatIT {
 
     @Before
     public void setUp() throws Exception {
@@ -27,11 +28,13 @@ public class RestAPIAuthenticationIT extends BaseIT {
     }
 
     @Test
-    public void testThatItShouldAllowRestApiAccessAfterFormAuthentication() throws IOException, JSONException, InterruptedException {
+    public void testThatItShouldAllowRestApiAccessAfterFormAuthentication() throws IOException, JSONException,
+            InterruptedException {
+
         HttpGet statusRequest =
                 new HttpGet(String.format("http://%s:%d/motech-platform-server/module/server/web-api/status", HOST, PORT));
 
-        HttpResponse response = httpClient.execute(statusRequest, HttpStatus.SC_UNAUTHORIZED);
+        HttpResponse response = HTTP_CLIENT.execute(statusRequest, HttpStatus.SC_UNAUTHORIZED);
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
 
         Header authenticateHeader = response.getFirstHeader(HttpHeaders.WWW_AUTHENTICATE);
@@ -44,8 +47,7 @@ public class RestAPIAuthenticationIT extends BaseIT {
 
         login();
 
-        HttpResponse statusResponse = httpClient.execute(statusRequest);
+        HttpResponse statusResponse = HTTP_CLIENT.execute(statusRequest);
         assertEquals(HttpStatus.SC_OK, statusResponse.getStatusLine().getStatusCode());
     }
-
 }

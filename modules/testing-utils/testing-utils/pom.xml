@@ -44,6 +44,11 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20140107</version>
+        </dependency>
     </dependencies>
 
     <build>

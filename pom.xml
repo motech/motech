@@ -1078,9 +1078,11 @@
         <module>modules/tasks/tasks-test-utils</module>
         <module>modules/tasks/tasks-test-bundle</module>
         <module>modules/testing-utils/testing-utils</module>
+        <module>modules/testing-utils/tomcat-it</module>
         <module>platform/mds/mds-test-bundle</module>
         <module>platform/mds/mds-secondary-test-bundle</module>
         <module>platform/mds/mds-performance-tests</module>
+        <module>platform/server-war-test</module>
 
         <!-- Archetypes modules -->
         <module>utils/archetypes/minimal-bundle-archetype</module>
