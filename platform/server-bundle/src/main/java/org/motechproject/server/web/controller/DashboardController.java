@@ -2,9 +2,8 @@ package org.motechproject.server.web.controller;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.motechproject.server.startup.StartupManager;
 import org.motechproject.osgi.web.LocaleService;
+import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.web.form.UserInfo;
 import org.motechproject.server.web.helper.Header;
 import org.osgi.framework.BundleContext;
@@ -18,9 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.management.ManagementFactory;
-import java.util.Locale;
 
-import static org.joda.time.format.DateTimeFormat.forPattern;
 import static org.motechproject.commons.date.util.DateUtil.now;
 
 /**
@@ -68,10 +65,8 @@ public class DashboardController {
 
     @RequestMapping(value = "/gettime", method = RequestMethod.POST)
     @ResponseBody
-    public String getTime(HttpServletRequest request) {
-        Locale locale = localeService.getUserLocale(request);
-        DateTimeFormatter format = forPattern("EEE MMM dd, h:mm a, z yyyy").withLocale(locale);
-        return now().toString(format);
+    public DateTime getTime() {
+        return now();
     }
 
     @RequestMapping(value = "/getUptime", method = RequestMethod.POST)
