@@ -21,6 +21,11 @@ public enum ManipulationType {
     PARSEDATE("parseDate", ManipulationTarget.STRING),
     DATETIME("dateTime", ManipulationTarget.DATE, ManipulationTarget.DATE),
     PLUSDAYS("plusDays", ManipulationTarget.DATE),
+    MINUSDAYS("minusDays", ManipulationTarget.DATE),
+    PLUSHOURS("plusHours", ManipulationTarget.DATE),
+    MINUSHOURS("minusHours", ManipulationTarget.DATE),
+    PLUSMINUTES("plusMinutes", ManipulationTarget.DATE),
+    MINUSMINUTES("minusMinutes", ManipulationTarget.DATE),
     UNKNOWN("unknown", ManipulationTarget.ALL);
 
     private final String value;

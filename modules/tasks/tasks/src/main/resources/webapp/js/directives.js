@@ -515,60 +515,98 @@
                                 };
 
                                 scope.setSortable = function(elemen, index) {
-                                var isValid = true, reg;
-                                    if (elemen.indexOf('join') !== -1) {
-                                        elemen = elemen.replace(elemen, 'join');
-                                    } else if (elemen.indexOf('split') !== -1) {
-                                        elemen = elemen.replace(elemen, 'split');
-                                    } else if (elemen.indexOf('substring') !== -1) {
-                                        elemen = elemen.replace(elemen, 'substring');
-                                    } else if (elemen.indexOf('dateTime') !== -1) {
-                                        elemen = elemen.replace(elemen, 'dateTime');
-                                    } else if (elemen.indexOf('plusDays') !== -1) {
-                                        elemen = elemen.replace(elemen, 'plusDays');
-                                    } else if(elemen.indexOf('format') !== -1) {
-                                        elemen = elemen.replace(elemen, 'format');
-                                    } else if(elemen.indexOf('capitalize') !== -1) {
-                                        elemen = elemen.replace(elemen, 'capitalize');
-                                    } else if(elemen.indexOf('toUpper') !== -1) {
-                                        elemen = elemen.replace(elemen, 'toUpper');
-                                    } else if(elemen.indexOf('toLower') !== -1) {
-                                        elemen = elemen.replace(elemen, 'toLower');
-                                    } else if(elemen.indexOf('URLEncode') !== -1) {
-                                        elemen = elemen.replace(elemen, 'URLEncode');
-                                    } else if(elemen.indexOf('parseDate') !== -1) {
-                                         elemen = elemen.replace(elemen, 'parseDate');
-                                    } else {
-                                        isValid = false;
+                                // Every new manipulation should be added to options array.
+                                // Add name and input for each manipulation and
+                                // pattern only if manipulation takes parameters
+                                var isValid = false, reg, i, notFound = true, options = [{
+                                        name: 'join',
+                                        input: 'input[join-update]',
+                                        pattern: 5
+                                    }, {
+                                        name: 'split',
+                                        input: 'input[split-update]',
+                                        pattern: 6
+                                    }, {
+                                        name: 'substring',
+                                        input: 'input[substring-update]',
+                                        pattern: 10
+                                    }, {
+                                        name: 'dateTime',
+                                        input: 'input[date-update]',
+                                        pattern: 9
+                                    }, {
+                                        name: 'plusDays',
+                                        input: 'input[manipulation-kind="plusDays"]',
+                                        pattern: 9
+                                    }, {
+                                        name: 'minusDays',
+                                        input: 'input[manipulation-kind="minusDays"]',
+                                        pattern: 10
+                                    }, {
+                                        name: 'plusHours',
+                                        input: 'input[manipulation-kind="plusHours"]',
+                                        pattern: 10
+                                    }, {
+                                        name: 'minusHours',
+                                        input: 'input[manipulation-kind="minusHours"]',
+                                        pattern: 11
+                                    }, {
+                                        name: 'plusMinutes',
+                                        input: 'input[manipulation-kind="plusMinutes"]',
+                                        pattern: 12
+                                    }, {
+                                        name: 'minusMinutes',
+                                        input: 'input[manipulation-kind="minusMinutes"]',
+                                        pattern: 13
+                                    }, {
+                                        name: 'format',
+                                        input: ''
+                                    }, {
+                                        name: 'capitalize',
+                                        input: ''
+                                    }, {
+                                        name: 'toUpper',
+                                        input: ''
+                                    }, {
+                                        name: 'toLower',
+                                        input: ''
+                                    }, {
+                                        name: 'URLEncode',
+                                        input: ''
+                                    }, {
+                                        name: 'parseDate',
+                                        input: 'input[parsedate-update]',
+                                        pattern: 10
+                                    } ];
+
+                                    for(i=0; i<options.length; i+=1) {
+                                        if(elemen.indexOf(options[i].name) !== -1) {
+                                            elemen = elemen.replace(elemen, options[i].name);
+                                            isValid = true;
+                                            break;
+                                        }
                                     }
+
                                     if (isValid) {
                                         elem.find("span[setmanipulation="+elemen+"]").replaceWith(function () {
                                             if (elemen !== undefined && elemen.indexOf(this.attributes.getNamedItem('setmanipulation').value) !== -1) {
                                                 $(this).parent().children().css({ 'display' : '' });
                                                 $(this).parent().addClass('active');
-                                                if (manipulation.indexOf("join") !== -1 && elemen.indexOf('join') !== -1) {
-                                                    $(this.nextElementSibling).css({ 'display' : '' });
-                                                    elem.find('input[join-update]').val(manipulation.slice(manipulation.indexOf("join") + 5, manipulation.indexOf(")", manipulation.indexOf("join"))));
-                                                } else if (manipulation.indexOf("split") !== -1 && elemen.indexOf('split') !== -1){
-                                                    $(this.nextElementSibling).css({ 'display' : '' });
-                                                    elem.find('input[split-update]').val(manipulation.slice(manipulation.indexOf("split") + 6, manipulation.indexOf(")", manipulation.indexOf("split"))));
-                                                } else if (manipulation.indexOf("substring") !== -1 && elemen.indexOf('substring') !== -1){
-                                                    $(this.nextElementSibling).css({ 'display' : '' });
-                                                    elem.find('input[substring-update]').val(manipulation.slice(manipulation.indexOf("substring") + 10, manipulation.indexOf(")", manipulation.indexOf("substring"))));
-                                                } else if (manipulation.indexOf("format") !== -1 && elemen.indexOf('format') !== -1){
-                                                    $(this.nextElementSibling).css({ 'display' : '' });
-                                                } else if (manipulation.indexOf("dateTime") !== -1 && elemen.indexOf('dateTime') !== -1) {
-                                                    $(this.nextElementSibling).css({ 'display' : '' });
-                                                    elem.find('input[date-update]').val(manipulation.slice(manipulation.indexOf("dateTime") + 9, manipulation.indexOf(")", manipulation.indexOf("dateTime"))));
-                                                } else if (manipulation.indexOf("plusDays") !== -1 && elemen.indexOf('plusDays') !== -1) {
-                                                    $(this.nextElementSibling).css({ 'display' : '' });
-                                                    elem.find('input[days-update]').val(manipulation.slice(manipulation.indexOf("plusDays") + 9, manipulation.indexOf(")", manipulation.indexOf("plusDays"))));
-                                                } else if (manipulation.indexOf("parseDate") !== -1 && elemen.indexOf('parseDate') !== -1) {
-                                                    $(this.nextElementSibling).css({ 'display' : '' });
-                                                    elem.find('input[parsedate-update]').val(manipulation.slice(manipulation.indexOf("parseDate") + 10, manipulation.indexOf(")", manipulation.indexOf("parseDate"))));
-                                                } else {
+
+                                                for(i=0; i<options.length; i+=1) {
+                                                    if (options[i].input !== '') {
+                                                        if (manipulation.indexOf(options[i].name) !== -1 && elemen.indexOf(options[i].name) !== -1) {
+                                                            $(this.nextElementSibling).css({ 'display' : '' });
+                                                            elem.find(options[i].input).val(manipulation.slice(manipulation.indexOf(options[i].name) + options[i].pattern, manipulation.indexOf(")", manipulation.indexOf(options[i].name))));
+                                                            notFound = false;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                                if (notFound) {
                                                     elem.find('input').val("");
                                                 }
+
                                                 $(elem[0]).append($(this).parent().clone().end());
                                             }
                                             return $(this)[0].outerHTML;
@@ -778,7 +816,60 @@
                 });
 
                 el.bind("click", function () {
-                    var manipulateElement = $("[ismanipulate=true]"), joinSeparator = "", reg, manipulation, manipulateAttributes, manipulationAttributesIndex;
+                    var manipulateElement = $("[ismanipulate=true]"), joinSeparator = "", reg, manipulation, manipulateAttributes, manipulationAttributesIndex, nonParamManip = true, i, found,
+                    // Every new manipulation that takes parameter should be added to
+                    // paramOptions array. Name is just a name of manipulation
+                    // and id is id of input field for that manipulation
+                    paramOptions = [
+                        {
+                            name: 'join',
+                            id: '#joinSeparator'
+                        },
+                        {
+                            name: 'split',
+                            id: '#splitSeparator'
+                        },
+                        {
+                            name: 'substring',
+                            id: '#substringSeparator'
+                        },
+                        {
+                            name: 'dateTime',
+                            id: '#dateFormat'
+                        },
+                        {
+                            name: 'plusDays',
+                            id: '#plusDays'
+                        },
+                        {
+                            name: 'minusDays',
+                            id: '#minusDays'
+                        },
+                        {
+                            name: 'plusHours',
+                            id: '#plusHours'
+                        },
+                        {
+                            name: 'minusHours',
+                            id: '#minusHours'
+                        },
+                        {
+                            name: 'plusMinutes',
+                            id: '#plusMinutes'
+                        },
+                        {
+                            name: 'minusMinutes',
+                            id: '#minusMinutes'
+                        },
+                        {
+                            name: 'parseDate',
+                            id: '#parseDate'
+                        },
+                        {
+                            name: 'format',
+                            id: ''
+                        }
+                    ];
 
                     manipulation = this.getAttribute("setManipulation");
                     manipulateAttributes = manipulateElement.attr("manipulate") || "";
@@ -796,7 +887,14 @@
                     if (manipulateAttributes.indexOf(manipulation) !== -1) {
                         manipulationAttributesIndex = manipulateElement.attr("manipulate").indexOf(manipulation);
 
-                        if (manipulation !== "join" && manipulation !== "split" && manipulation !== "substring" && manipulation !== "dateTime" && manipulation !== "plusDays") {
+                        for(i=0; i<paramOptions.length; i+=1) {
+                            if(manipulation === paramOptions[i].name) {
+                                nonParamManip = false;
+                                break;
+                            }
+                        }
+
+                        if(nonParamManip) {
                             reg = new RegExp(manipulation + "(\\(.*\\))?( |$)", "g");
                             manipulateAttributes = manipulateAttributes.replace(reg, '');
                         } else {
@@ -807,27 +905,17 @@
                     } else {
                         manipulateAttributes = manipulateAttributes.replace(/ +(?= )/g, '');
 
-                        if (manipulation === "join") {
-                            $("#joinSeparator").val("");
-                            manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
-                        } else if (manipulation === "split") {
-                            $("#splitSeparator").val("");
-                            manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
-                        } else if (manipulation === "substring") {
-                            $("#substringSeparator").val("");
-                            manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
-                        } else if (manipulation === "format") {
-                            manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
-                        } else if (manipulation === "dateTime") {
-                            $("#dateFormat").val("");
-                            manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
-                        } else if (manipulation === "plusDays") {
-                            $("#plusDays").val("");
-                            manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
-                        } else if (manipulation === "parseDate") {
-                            $("#parseDate").val("");
-                            manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
-                        } else {
+                        for(i=0; i<paramOptions.length; i+=1) {
+                            if(manipulation === paramOptions[i].name) {
+                                if(paramOptions[i].id !== '') {
+                                    $(paramOptions[i].id).val("");
+                                }
+                                manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(!found) {
                             manipulateAttributes = manipulateAttributes + manipulation + " ";
                         }
                     }
@@ -931,17 +1019,19 @@
         };
     });
 
-    directives.directive('daysUpdate', function () {
+    directives.directive('dateManipulationUpdate', function() {
         return {
             restrict : 'A',
             require: '?ngModel',
             link : function (scope, el, attrs) {
                 el.bind("focusout focusin keyup", function (event) {
                     event.stopPropagation();
-                    var manipulateElement = $("[ismanipulate=true]"),
-                        manipulation = "plusDays(" + $("#plusDays").val() + ")",
+                    var
+                        manipKind = attrs.manipulationKind,
+                        manipulateElement = $("[ismanipulate=true]"),
+                        manipulation = manipKind + "(" + $("#" + manipKind).val() + ")",
                         elementManipulation = manipulateElement.attr("manipulate"),
-                        regex = new RegExp("plusDays\\(.*?\\)", "g");
+                        regex = new RegExp(manipKind + "\\(.*?\\)", "g");
 
                     elementManipulation = elementManipulation.replace(regex, manipulation);
                     manipulateElement.attr("manipulate", elementManipulation);
