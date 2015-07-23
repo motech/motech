@@ -31,10 +31,10 @@ public class SqlDBManagerBundleIT extends BasePaxIT {
     @Test
     public void shouldCreateDatabase() {
         // create database
-        sqlDBManager.createDatabase("motech_test_db");
+        sqlDBManager.createDatabase("${sql.url}motech_test_db");
         // check if database exists
-        assertTrue(sqlDBManager.checkForDatabase("motech_test_db"));
+        assertTrue(sqlDBManager.checkForDatabase("${sql.url}motech_test_db"));
         // try to create it again - if it was created properly before then method should return false
-        assertFalse(sqlDBManager.createDatabase("motech_test_db"));
+        assertFalse(sqlDBManager.createDatabase("${sql.url}motech_test_db"));
     }
 }
