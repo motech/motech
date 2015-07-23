@@ -20,7 +20,7 @@ import java.util.Objects;
 /**
  * Represents a single task activity. Task activity is a historical entry about a task execution.
  */
-@Entity
+@Entity(nonEditable = true)
 @CrudEvents(CrudEventType.NONE)
 @Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class TaskActivity implements Comparable<TaskActivity> {
