@@ -83,15 +83,10 @@ public class InstanceServiceTest {
     private BundleContext bundleContext;
 
     @Mock
-    private ServiceReference serviceReference;
-
-    @Mock
     private TrashService trashService;
 
     @Before
     public void setUp() {
-        when(entity.getClassName()).thenReturn(TestSample.class.getName());
-        when(entity.getId()).thenReturn(ENTITY_ID);
         when(bundleContext.getBundles()).thenReturn(new Bundle[0]);
     }
 
@@ -468,6 +463,47 @@ public class InstanceServiceTest {
         instanceService.deleteInstance(ENTITY_ID + 1, INSTANCE_ID);
     }
 
+    @Test
+    public void shouldCreateInstanceOfSubclassedEntityWithRelation() {
+        mockEntity(SubclassSample.class, ENTITY_ID, entity);
+        mockDataService(SubclassSample.class, motechDataService);
+        when(motechDataService.retrieve("id", INSTANCE_ID)).thenReturn(new SubclassSample());
+        when(entityService.getEntityFields(ENTITY_ID)).thenReturn(asList(
+                FieldTestHelper.fieldDto(1L, "superclassInteger", Integer.class.getName(), "Superclass Integer", 7),
+                FieldTestHelper.fieldDto(2L, "subclassString", String.class.getName(), "Subclass String", "test"),
+                FieldTestHelper.fieldDto(3L, "superclassRelation", TypeDto.ONE_TO_ONE_RELATIONSHIP.getTypeClass(), "Superclass Relationship", null)
+        ));
+
+        long relationEntityId = ENTITY_ID + 1;
+        long relationInstanceId = INSTANCE_ID + 1;
+        EntityDto relationEntity = mock(EntityDto.class);
+        MotechDataService relationDataService = mock(MotechDataService.class);
+        mockEntity(TestSample.class, relationEntityId, relationEntity);
+        mockDataService(TestSample.class, relationDataService);
+        TestSample relatedInstance = new TestSample("test sample", 42);
+        when(relationDataService.retrieve("id", relationInstanceId)).thenReturn(relatedInstance);
+        when(relationDataService.findById(relationInstanceId)).thenReturn(relatedInstance);
+
+        Map propertiesMap = new HashMap();
+        propertiesMap.put("id", relationInstanceId);
+        EntityRecord createRecord = new EntityRecord(null, ENTITY_ID, asList(
+                FieldTestHelper.fieldRecord("superclassInteger", Integer.class.getName(), "", 77),
+                FieldTestHelper.fieldRecord("subclassString", String.class.getName(), "", "test test"),
+                FieldTestHelper.fieldRecord(TypeDto.ONE_TO_ONE_RELATIONSHIP, "superclassRelation", "", propertiesMap)
+        ));
+
+        ArgumentCaptor<SubclassSample> createCaptor = ArgumentCaptor.forClass(SubclassSample.class);
+        instanceService.saveInstance(createRecord);
+        verify(motechDataService).create(createCaptor.capture());
+
+        SubclassSample instance = createCaptor.getValue();
+        assertEquals(77, (int) instance.getSuperclassInteger());
+        assertEquals("test test", instance.getSubclassString());
+        assertNotNull(instance.getSuperclassRelation());
+        assertEquals(relatedInstance.getStrField(), instance.getSuperclassRelation().getStrField());
+        assertEquals(relatedInstance.getIntField(), instance.getSuperclassRelation().getIntField());
+    }
+
     private List buildRelatedRecord() {
         List list = new ArrayList();
         Map recordProperties = new HashMap();
@@ -515,7 +551,12 @@ public class InstanceServiceTest {
     }
 
     private void mockDataService() {
-        when(bundleContext.getServiceReference(ClassName.getInterfaceName(TestSample.class.getName())))
+        mockDataService(TestSample.class, motechDataService);
+    }
+
+    private void mockDataService(Class<?> entityClass, MotechDataService motechDataService) {
+        ServiceReference serviceReference = mock(ServiceReference.class);
+        when(bundleContext.getServiceReference(ClassName.getInterfaceName(entityClass.getName())))
                 .thenReturn(serviceReference);
         when(bundleContext.getService(serviceReference)).thenReturn(motechDataService);
     }
@@ -535,7 +576,13 @@ public class InstanceServiceTest {
     }
 
     private void mockEntity() {
-        when(entityService.getEntity(ENTITY_ID)).thenReturn(entity);
+        mockEntity(TestSample.class, ENTITY_ID, entity);
+    }
+
+    private void mockEntity(Class<?> entityClass, long entityId, EntityDto entity) {
+        when(entityService.getEntity(entityId)).thenReturn(entity);
+        when(entity.getClassName()).thenReturn(entityClass.getName());
+        when(entity.getId()).thenReturn(entityId);
     }
 
     private void mockLookups() {
@@ -553,9 +600,7 @@ public class InstanceServiceTest {
     }
 
     private void mockLookupService() {
-        when(bundleContext.getServiceReference(ClassName.getInterfaceName(TestSample.class.getName())))
-                .thenReturn(serviceReference);
-        when(bundleContext.getService(serviceReference)).thenReturn(new TestDataService());
+        mockDataService(TestSample.class, new TestDataService());
     }
 
     private QueryParams queryParams() {
@@ -813,6 +858,48 @@ public class InstanceServiceTest {
         @Override
         public Class<TestSample> getClassType() {
             return TestSample.class;
+        }
+    }
+
+    public static class SuperclassSample {
+        private Long id;
+        private Integer superclassInteger;
+        private TestSample superclassRelation;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public Integer getSuperclassInteger() {
+            return superclassInteger;
+        }
+
+        public void setSuperclassInteger(Integer superclassInteger) {
+            this.superclassInteger = superclassInteger;
+        }
+
+        public TestSample getSuperclassRelation() {
+            return superclassRelation;
+        }
+
+        public void setSuperclassRelation(TestSample superclassRelation) {
+            this.superclassRelation = superclassRelation;
+        }
+    }
+
+    public static class SubclassSample extends SuperclassSample {
+        private String subclassString;
+
+        public String getSubclassString() {
+            return subclassString;
+        }
+
+        public void setSubclassString(String subclassString) {
+            this.subclassString = subclassString;
         }
     }
 }
