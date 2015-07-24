@@ -17,6 +17,7 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.object.ObjectNotFoundException;
+import org.motechproject.mds.ex.object.ObjectUpdateException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.service.EntityService;
@@ -505,6 +506,22 @@ public class InstanceServiceTest {
         assertEquals(relatedInstance.getIntField(), instance.getSuperclassRelation().getIntField());
     }
 
+    @Test(expected = ObjectUpdateException.class)
+    public void shouldThrowExceptionWhileUpdatingReadonlyField() throws ClassNotFoundException {
+        mockDataService();
+        mockEntity();
+        when(motechDataService.retrieve("id", INSTANCE_ID)).thenReturn(new TestSample());
+
+        List<FieldRecord> fieldRecords = asList(
+                FieldTestHelper.fieldRecord("strField", String.class.getName(), "", "CannotEditThis")
+        );
+        fieldRecords.get(0).setNonEditable(true);
+
+        EntityRecord record = new EntityRecord(INSTANCE_ID, ENTITY_ID, fieldRecords);
+
+        instanceService.saveInstance(record);
+    }
+
     private List buildRelatedRecord() {
         List list = new ArrayList();
         Map recordProperties = new HashMap();
@@ -563,6 +580,7 @@ public class InstanceServiceTest {
     }
 
     private void mockSampleFields() {
+
         when(entityService.getEntityFields(ENTITY_ID)).thenReturn(asList(
                 FieldTestHelper.fieldDto(1L, "strField", String.class.getName(), "String field", "Default"),
                 FieldTestHelper.fieldDto(2L, "intField", Integer.class.getName(), "Integer field", 7),

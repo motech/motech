@@ -20,6 +20,7 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.entity.EntitySchemaMismatchException;
+import org.motechproject.mds.ex.field.FieldReadOnlyException;
 import org.motechproject.mds.ex.lookup.LookupExecutionException;
 import org.motechproject.mds.ex.lookup.LookupNotFoundException;
 import org.motechproject.mds.ex.object.ObjectCreateException;
@@ -77,6 +78,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
@@ -582,7 +584,7 @@ public class InstanceServiceImpl implements InstanceService {
                 historyInstanceSchemaVersion.equals(currentSchemaVersion), entityRecord.getFields());
     }
 
-    private void setProperty(Object instance, FieldRecord fieldRecord, MotechDataService service, Long deleteValueFieldId) throws NoSuchMethodException, ClassNotFoundException {
+    private void setProperty(Object instance, FieldRecord fieldRecord, MotechDataService service, Long deleteValueFieldId) throws NoSuchMethodException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
         String fieldName = fieldRecord.getName();
         TypeDto type = getType(fieldRecord);
 
@@ -603,6 +605,8 @@ public class InstanceServiceImpl implements InstanceService {
 
             parsedValue = parseValue(holder, methodParameterType, fieldRecord, classLoader);
         }
+
+        validateNonEditableField(fieldRecord, instance, parsedValue);
 
         Method method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, parameterType);
 
@@ -894,6 +898,22 @@ public class InstanceServiceImpl implements InstanceService {
     private void validateNonEditableProperty(EntityDto entity) {
         if (entity.isNonEditable()) {
             throw new EntityInstancesNonEditableException();
+        }
+    }
+
+    private void validateNonEditableField(FieldRecord fieldRecord, Object instance, Object parsedValue) throws IllegalAccessException {
+
+        Object fieldOldValue = FieldUtils.readField(instance,
+                        StringUtils.uncapitalize(fieldRecord.getName()),
+                        true);
+
+        // We need to check if hidden or read only field value isn't changed
+        // in some unexpected way. If so then throw exception
+        if((fieldRecord.isNonEditable() || fieldRecord.isNonDisplayable())
+                // There is need to use Objects.equals as values - one or both - can be null
+                // which would cause NullPointerException when just .equals() on null value
+                && !Objects.equals(fieldOldValue, parsedValue)) {
+            throw new FieldReadOnlyException(instance.getClass().getName(), fieldRecord.getName());
         }
     }
 

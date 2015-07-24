@@ -299,6 +299,7 @@
                             org.motechproject.mds.ex;version=${project.version},
                             org.motechproject.mds.ex.csv;version=${project.version},
                             org.motechproject.mds.ex.entity;version=${project.version},
+                            org.motechproject.mds.ex.field;version=${project.version},
                             org.motechproject.mds.ex.lookup;version=${project.version},
                             org.motechproject.mds.ex.object;version=${project.version},
                             org.motechproject.mds.ex.rest;version=${project.version},
