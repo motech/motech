@@ -1,7 +1,10 @@
 package org.motechproject.mds.helper;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This is a helper class, used while generating enums in MDS.
@@ -24,14 +27,22 @@ public final class EnumHelper {
     }
 
     /**
-     * Prefixes a list of enum values. For each value in the list, <code>prefixEnumValue(java.lang.String)</code>
+     * Prefixes a collection of enum values. For each value in the collection, <code>prefixEnumValue(java.lang.String)</code>
      * is called.
      *
-     * @param values  a list of enum values
-     * @return        a list of prefixed values
+     * @param values  a collection of enum values
+     * @return        a collection of prefixed values
      */
-    public static List<String> prefixEnumValues(List<String> values) {
-        List<String> prefixedValues = new ArrayList<>();
+    public static Collection<String> prefixEnumValues(Collection<String> values) {
+        Collection<String> prefixedValues;
+        if (List.class.isAssignableFrom(values.getClass())) {
+            prefixedValues = new ArrayList<>();
+        } else if (Set.class.isAssignableFrom(values.getClass())) {
+            prefixedValues = new HashSet<>();
+        } else {
+            return null;
+        }
+
         for (String value : values) {
             prefixedValues.add(prefixEnumValue(value));
         }

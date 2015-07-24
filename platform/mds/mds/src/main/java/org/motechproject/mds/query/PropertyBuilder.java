@@ -7,6 +7,9 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.util.Constants;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,8 +28,12 @@ public final class PropertyBuilder {
         if (type.isCombobox()) {
             ComboboxHolder holder = new ComboboxHolder(field);
 
-            if (holder.isStringList() || holder.isEnumList()) {
-                return new CollectionProperty(name, value, holder.getUnderlyingType());
+            if (holder.isCollection()) {
+                if (holder.getTypeClassName().equals(List.class.getName())) {
+                    return new CollectionProperty(name, value, new ArrayList(), holder.getUnderlyingType());
+                } else if (holder.getTypeClassName().equals(Set.class.getName())) {
+                    return new CollectionProperty(name, value, new HashSet(), holder.getUnderlyingType());
+                }
             }
         }
 

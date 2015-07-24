@@ -2,7 +2,7 @@ package org.motechproject.mds.test.secondary.domain;
 
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.test.domain.EntityB;
+import org.motechproject.mds.test.domain.differentbundles.EntityB;
 
 @Entity
 public class EntityA {

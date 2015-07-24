@@ -90,7 +90,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.motechproject.mds.dto.SettingOptions.REQUIRE;
 import static org.motechproject.mds.dto.TypeDto.BOOLEAN;
-import static org.motechproject.mds.dto.TypeDto.LIST;
+import static org.motechproject.mds.dto.TypeDto.COLLECTION;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
@@ -177,8 +177,8 @@ public class MdsBundleIT extends BasePaxIT {
         clearInstances();
 
         verifyInstanceCreatingAndRetrieving(objectClass);
-        //verifyLookups(false); // regular lookups
-        //verifyLookups(true); // using the lookup service
+        verifyLookups(false); // regular lookups
+        verifyLookups(true); // using the lookup service
         verifyComboboxValueUpdate();
         verifyInstanceUpdating();
         verifyCustomQuery();
@@ -671,11 +671,11 @@ public class MdsBundleIT extends BasePaxIT {
                         new SettingDto("mds.form.label.textarea", false, BOOLEAN)
                 ), null));
         fields.add(new FieldDto(null, entityDto.getId(),
-                LIST,
+                COLLECTION,
                 new FieldBasicDto("Some List", "someList"),
                 false, null, null,
                 asList(
-                        new SettingDto(Constants.Settings.COMBOBOX_VALUES, new LinkedList<>(), LIST, REQUIRE),
+                        new SettingDto(Constants.Settings.COMBOBOX_VALUES, new LinkedList<>(), COLLECTION, REQUIRE),
                         new SettingDto(Constants.Settings.ALLOW_USER_SUPPLIED, true, BOOLEAN),
                         new SettingDto(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS, true, BOOLEAN)
                 ), null));
@@ -725,11 +725,11 @@ public class MdsBundleIT extends BasePaxIT {
                 false, null));
 
         fields.add(new FieldDto(null, entityDto.getId(),
-                TypeDto.LIST,
+                TypeDto.COLLECTION,
                 new FieldBasicDto("Some Enum", "someEnum"),
                 false, null, null,
                 asList(
-                        new SettingDto(Constants.Settings.COMBOBOX_VALUES, asList("one", "two", "three"), LIST, REQUIRE),
+                        new SettingDto(Constants.Settings.COMBOBOX_VALUES, asList("one", "two", "three"), COLLECTION, REQUIRE),
                         new SettingDto(Constants.Settings.ALLOW_USER_SUPPLIED, false, BOOLEAN),
                         new SettingDto(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS, false, BOOLEAN)
                 ), null));

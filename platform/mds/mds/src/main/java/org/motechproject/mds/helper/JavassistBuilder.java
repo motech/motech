@@ -18,6 +18,7 @@ import org.motechproject.mds.util.TypeHelper;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
@@ -137,6 +138,23 @@ public final class JavassistBuilder {
     }
 
     /**
+     * Creates a collection initializer for the given generic type and default value.
+     *
+     * @param genericType the generic type
+     * @param defaultValue the default value
+     * @return initializer for collections
+     */
+    public static CtField.Initializer createCollectionInitializer(String genericType, Object defaultValue) {
+        if (List.class.isAssignableFrom(defaultValue.getClass())) {
+            return createListInitializer(genericType, defaultValue);
+        } else if (Set.class.isAssignableFrom(defaultValue.getClass())) {
+            return createSetInitializer(genericType, defaultValue);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Creates a list initializer for the given generic type and default value.
      *
      * @param genericType the generic type
@@ -172,6 +190,45 @@ public final class JavassistBuilder {
             }
         }
 
+        sb.append("}))");
+
+        return CtField.Initializer.byExpr(sb.toString());
+    }
+
+    /**
+     * Creates a set initializer for the given generic type and default value.
+     *
+     * @param genericType the generic type
+     * @param defaultValue the default value
+     * @return initializer for sets
+     */
+    public static CtField.Initializer createSetInitializer(String genericType, Object defaultValue) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("new java.util.HashSet(");
+        sb.append(Arrays.class.getName());
+        sb.append(".asList(new Object[]{");
+
+        Set defValSet = (Set) defaultValue;
+
+        for (Object obj : defValSet) {
+            if (String.class.getName().equalsIgnoreCase(genericType)) {
+                // set of strings
+                sb.append('\"');
+                sb.append(obj);
+                sb.append('\"');
+            } else {
+                // set of enums
+                sb.append(genericType);
+                sb.append('.');
+                sb.append(obj);
+            }
+
+            sb.append(',');
+
+        }
+
+        sb.deleteCharAt(sb.lastIndexOf(","));
         sb.append("}))");
 
         return CtField.Initializer.byExpr(sb.toString());

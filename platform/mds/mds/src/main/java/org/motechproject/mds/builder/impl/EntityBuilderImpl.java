@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.util.List;
+import java.util.Collection;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
@@ -287,20 +287,20 @@ public class EntityBuilderImpl implements EntityBuilder {
         if (fieldType.isCombobox()) {
             ComboboxHolder holder = new ComboboxHolder(entity, field);
 
-            if (holder.isEnum() || holder.isEnumList()) {
+            if (holder.isEnum() || holder.isEnumCollection()) {
                 type = classPool.getOrNull(holder.getEnumName());
 
-                if (holder.isEnumList()) {
+                if (holder.isEnumCollection()) {
                     genericSignature = JavassistUtil.genericSignature(
-                            List.class, holder.getEnumName()
+                            holder.getTypeClassName(), holder.getEnumName()
                     );
-                    type = classPool.getOrNull(List.class.getName());
+                    type = classPool.getOrNull(holder.getTypeClassName());
                 }
-            } else if (holder.isStringList()) {
-                genericSignature = JavassistUtil.genericSignature(List.class, String.class);
-                type = classPool.getOrNull(List.class.getName());
+            } else if (holder.isStringCollection()) {
+                genericSignature = JavassistUtil.genericSignature(holder.getTypeClassName(), holder.getUnderlyingType());
+                type = classPool.getOrNull(holder.getTypeClassName());
             } else if (holder.isString()) {
-                type = classPool.getOrNull(String.class.getName());
+                type = classPool.getOrNull(holder.getUnderlyingType());
             }
         } else if (fieldType.isRelationship()) {
             Relationship relationshipType = (Relationship) fieldType.getTypeClass().newInstance();
@@ -335,19 +335,19 @@ public class EntityBuilderImpl implements EntityBuilder {
         if (type.isCombobox()) {
             ComboboxHolder holder = new ComboboxHolder(entity, field);
 
-            if (holder.isStringList()) {
-                Object defaultValue = TypeHelper.parse(field.getDefaultValue(), List.class);
-                initializer = JavassistBuilder.createListInitializer(
-                        String.class.getName(), defaultValue
+            if (holder.isStringCollection()) {
+                Object defaultValue = TypeHelper.parse(field.getDefaultValue(), holder.getTypeClassName());
+                initializer = JavassistBuilder.createCollectionInitializer(
+                        holder.getUnderlyingType(), defaultValue
                 );
-            } else if (holder.isEnumList()) {
-                Object defaultValue = TypeHelper.parse(field.getDefaultValue(), List.class);
-                initializer = JavassistBuilder.createListInitializer(
-                        holder.getEnumName(), EnumHelper.prefixEnumValues((List) defaultValue)
+            } else if (holder.isEnumCollection()) {
+                Object defaultValue = TypeHelper.parse(field.getDefaultValue(), holder.getTypeClassName());
+                initializer = JavassistBuilder.createCollectionInitializer(
+                        holder.getEnumName(), EnumHelper.prefixEnumValues((Collection) defaultValue)
                 );
             } else if (holder.isString()) {
                 initializer = JavassistBuilder.createInitializer(
-                        String.class.getName(), field.getDefaultValue()
+                        holder.getUnderlyingType(), field.getDefaultValue()
                 );
             } else if (holder.isEnum()) {
                 initializer = JavassistBuilder.createEnumInitializer(

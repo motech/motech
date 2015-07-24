@@ -7,8 +7,6 @@ import org.motechproject.mds.util.ClassName;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleWiring;
 
-import java.util.List;
-
 import static org.apache.commons.lang.StringUtils.uncapitalize;
 
 /**
@@ -50,15 +48,7 @@ public final class HistoryTrashClassHelper {
         String methodParameterType;
 
         if (type.isCombobox() && null != holder) {
-            if (holder.isEnum()) {
-                methodParameterType = holder.getEnumName();
-            } else if (holder.isEnumList()) {
-                methodParameterType = List.class.getName();
-            } else if (holder.isStringList()) {
-                methodParameterType = List.class.getName();
-            } else {
-                methodParameterType = String.class.getName();
-            }
+            methodParameterType = holder.getTypeClassName();
         } else {
             methodParameterType = type.getTypeClassName();
         }

@@ -582,7 +582,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                     typeInfo.setItems(Arrays.asList(items));
                 }
 
-                typeInfo.setAllowsMultipleSelection(cbHolder.isList());
+                typeInfo.setAllowsMultipleSelection(cbHolder.isCollection());
                 typeInfo.setAllowUserSupplied(cbHolder.isAllowUserSupplied());
             }
 

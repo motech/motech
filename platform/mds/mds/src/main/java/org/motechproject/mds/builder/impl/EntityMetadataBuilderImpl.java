@@ -529,7 +529,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         String fieldName = getNameForMetadata(field);
         FieldMetadata fmd = cmd.newFieldMetadata(fieldName);
 
-        if (holder.isStringList() || holder.isEnumList()) {
+        if (holder.isCollection()) {
             addDefaultFetchGroupMetadata(fmd, definition);
 
             fmd.setTable(ClassTableName.getTableName(cmd.getTable(), fieldName));

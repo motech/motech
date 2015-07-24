@@ -22,7 +22,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 
@@ -158,9 +157,9 @@ public class ValueGetter {
 
         Object obj;
 
-        if (null != holder && holder.isEnumList()) {
+        if (null != holder && holder.isEnumCollection()) {
             String genericType = holder.getEnumName();
-            obj = TypeHelper.parse(valueAsString, List.class.getName(), genericType, classLoader);
+            obj = TypeHelper.parse(valueAsString, holder.getTypeClassName(), genericType, classLoader);
         } else {
             String methodParameterType = HistoryTrashClassHelper.getMethodParameterType(fieldType, holder);
             obj = TypeHelper.parse(valueAsString, methodParameterType, classLoader);

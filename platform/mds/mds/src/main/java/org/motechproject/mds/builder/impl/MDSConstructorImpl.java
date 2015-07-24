@@ -243,7 +243,7 @@ public class MDSConstructorImpl implements MDSConstructor {
 
             ComboboxHolder holder = new ComboboxHolder(entity, field);
 
-            if (holder.isEnum() || holder.isEnumList()) {
+            if (holder.isEnum() || holder.isEnumCollection()) {
                 if (field.isReadOnly()) {
                     String enumName = holder.getEnumName();
                     Class<?> definition = loadClass(entity.getModule(), enumName);

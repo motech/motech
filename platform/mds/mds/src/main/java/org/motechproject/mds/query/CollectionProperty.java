@@ -12,7 +12,11 @@ import java.util.Collection;
 public class CollectionProperty extends AbstractCollectionBasedProperty<Collection> {
 
     public CollectionProperty(String name, Object value, String type) {
-        super(name, new ArrayList(), type);
+        this(name, value, new ArrayList(), type);
+    }
+
+    public CollectionProperty(String name, Object value, Collection collectionType, String type) {
+        super(name, collectionType, type);
 
         if (value instanceof Collection) {
             getValue().addAll((Collection) value);

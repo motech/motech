@@ -65,8 +65,8 @@
                             net.sf.cglib.proxy,
                             net.sf.cglib.reflect,
                             org.motechproject.event.listener,
-                            org.motechproject.mds.test.domain,
-                            org.motechproject.mds.test.service,
+                            org.motechproject.mds.test.domain.differentbundles,
+                            org.motechproject.mds.test.service.differentbundles,
                             *
                         </Import-Package>
                     </instructions>

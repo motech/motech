@@ -116,7 +116,7 @@ class LookupBuilder {
 
                 typeClassName = holder.getUnderlyingType();
 
-                if (holder.isStringList() || holder.isEnumList()) {
+                if (holder.isCollection()) {
                     body.append("new ");
                     body.append(CollectionProperty.class.getName());
                 } else {
@@ -141,7 +141,7 @@ class LookupBuilder {
                 body.append(",\"").append(customOperator).append('"');
             }
 
-            body.append(")"); // close contructor or create method
+            body.append(")"); // close constructor or create method
             body.append(");"); // close add method
         }
 
@@ -196,13 +196,7 @@ class LookupBuilder {
         } else if (field.getType().isCombobox()) {
             ComboboxHolder holder = new ComboboxHolder(field);
 
-            if (holder.isEnum()) {
-                return holder.getEnumName();
-            } else if (holder.isString()) {
-                return String.class.getName();
-            } else {
-                return List.class.getName();
-            }
+            return holder.getTypeClassName();
         } else {
             return field.getType().getTypeClassName();
         }
@@ -230,9 +224,9 @@ class LookupBuilder {
         // List<org.motechproject.mds.Test> method(String p1, Integer p2)
         // is
         // cmt -- (Ljava/lang/String;Ljava/lang/Integer;)Ljava/util/List<Lorg/motechproject/mds/Test;>;
-        StringBuilder sb = new StringBuilder();
+        StringBuilder signature = new StringBuilder();
 
-        sb.append('(');
+        signature.append('(');
         for (int i = 0; i < fields.size(); ++i) {
             Field field = fields.get(i);
 
@@ -243,35 +237,28 @@ class LookupBuilder {
 
             if (type.isCombobox()) {
                 ComboboxHolder holder = new ComboboxHolder(field);
-
-                if (holder.isEnum() || holder.isEnumList()) {
-                    genericType = holder.getEnumName();
-                } else if (holder.isString() || holder.isStringList()) {
-                    genericType = String.class.getName();
-                } else {
-                    genericType = type.getTypeClassName();
-                }
+                genericType = holder.getUnderlyingType();
             } else {
                 genericType = type.getTypeClassName();
             }
 
             if (StringUtils.equals(paramType, genericType) || TypeHelper.isPrimitive(paramType)) {
                 // simple parameter
-                sb.append(JavassistUtil.toGenericParam(paramType));
+                signature.append(JavassistUtil.toGenericParam(paramType));
             } else {
                 // we wrap in a range/set or a different wrapper
-                sb.append(JavassistUtil.genericSignature(paramType, genericType));
+                signature.append(JavassistUtil.genericSignature(paramType, genericType));
             }
         }
-        sb.append(')');
+        signature.append(')');
 
         if (lookup.isSingleObjectReturn()) {
-            sb.append(JavassistUtil.toGenericParam(className));
+            signature.append(JavassistUtil.toGenericParam(className));
         } else {
-            sb.append(JavassistUtil.genericSignature(List.class.getName(), className));
+            signature.append(JavassistUtil.genericSignature(List.class.getName(), className));
         }
 
-        return sb.toString();
+        return signature.toString();
     }
 
 }
