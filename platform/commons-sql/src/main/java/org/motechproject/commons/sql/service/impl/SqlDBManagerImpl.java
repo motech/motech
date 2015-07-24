@@ -3,6 +3,7 @@ package org.motechproject.commons.sql.service.impl;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.motechproject.commons.sql.service.SqlDBManager;
 import org.motechproject.commons.sql.util.Drivers;
+import org.motechproject.commons.sql.util.JdbcUrl;
 import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -70,46 +72,49 @@ public class SqlDBManagerImpl implements SqlDBManager {
     }
 
     @Override
-    public boolean createDatabase(String dbName) {
-        String name = prepareDatabaseName(dbName);
+    public boolean createDatabase(String connectionUrl) {
         boolean created = false;
 
         loadSQLDriverClass();
 
+        JdbcUrl jdbcUrl = prepareConnectionUri(connectionUrl);
+        String dbName = jdbcUrl.getDbName();
+        String serverUrl = jdbcUrl.getUrlForDbServer();
+
         // check if database already exists - if yes then there's no need to create it again
-        if (checkForDatabase(name)) {
+        if (checkForDatabase(connectionUrl)) {
             return false;
         }
 
-        try (Connection conn = DriverManager.getConnection(sqlProperties.get(SQL_URL).toString(), sqlProperties.get(SQL_USER).toString(),
-                sqlProperties.get(SQL_PASSWORD).toString());
-            Statement stmt = conn.createStatement()) {
-            LOGGER.info("Creating database " + name);
-            String sql = "CREATE DATABASE " + name;
+        try (Connection conn = buildConnection(serverUrl); Statement stmt = conn.createStatement()) {
+            LOGGER.info("Creating database " + dbName);
+            String sql = "CREATE DATABASE " + dbName;
             stmt.executeUpdate(sql);
-            LOGGER.info("Database " + name + " created");
+            LOGGER.info("Database " + dbName + " created");
             created = true;
         } catch (SQLException e) {
-            LOGGER.error("Error while creating database " + name, e);
+            LOGGER.error("Error while creating database " + dbName, e);
         }
 
         return created;
     }
 
     @Override
-    public boolean checkForDatabase(String dbName) {
+    public boolean checkForDatabase(String connectionUrl) {
         boolean exist = false;
-        String name = prepareDatabaseName(dbName);
+
+        JdbcUrl jdbcUrl = prepareConnectionUri(connectionUrl);
+        String dbName = jdbcUrl.getDbName();
+        String serverUrl = jdbcUrl.getUrlForDbServer();
 
         loadSQLDriverClass();
 
-        try (Connection conn = DriverManager.getConnection(sqlProperties.get(SQL_URL).toString(), sqlProperties.get(SQL_USER).toString(),
-                sqlProperties.get(SQL_PASSWORD).toString()); Statement stmt = conn.createStatement()) {
+        try (Connection conn = buildConnection(serverUrl); Statement stmt = conn.createStatement()) {
             StringBuilder sb = new StringBuilder();
             if (MYSQL_DRIVER_CLASSNAME.equalsIgnoreCase(getChosenSQLDriver())) {
-                sb = sb.append("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '").append(name).append("'");
+                sb = sb.append("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '").append(dbName).append("'");
             } else {
-                sb = sb.append("SELECT datname FROM pg_catalog.pg_database WHERE datname = '").append(name).append("'");
+                sb = sb.append("SELECT datname FROM pg_catalog.pg_database WHERE datname = '").append(dbName).append("'");
             }
             ResultSet rs = stmt.executeQuery(sb.toString());
             while (rs.next()) {
@@ -122,12 +127,10 @@ public class SqlDBManagerImpl implements SqlDBManager {
     }
 
     @Override
-    public boolean hasColumn(String database, String table, String column) throws SQLException {
+    public boolean hasColumn(String connectionUrl, String table, String column) throws SQLException {
         boolean hasColumn;
 
-        try (Connection conn = DriverManager.getConnection(sqlProperties.get(SQL_URL).toString() + database, sqlProperties.get(SQL_USER).toString(),
-                sqlProperties.get(SQL_PASSWORD).toString())) {
-
+        try (Connection conn = buildConnection(connectionUrl)) {
             DatabaseMetaData md = conn.getMetaData();
             ResultSet rs = md.getColumns(null, null, table, column);
 
@@ -135,18 +138,6 @@ public class SqlDBManagerImpl implements SqlDBManager {
         }
 
         return hasColumn;
-    }
-
-    private String prepareDatabaseName(String dbName) {
-        String name;
-        if (dbName.contains("/")) {
-            name = dbName.substring(dbName.lastIndexOf('/') + 1, dbName.length());
-        } else if (dbName.contains("${")) {
-            name = dbName.substring(dbName.indexOf('}') + 1, dbName.length());
-        } else {
-            name = dbName;
-        }
-        return name;
     }
 
     private void loadSqlProperties() {
@@ -199,5 +190,19 @@ public class SqlDBManagerImpl implements SqlDBManager {
         } else {
             return Drivers.QUARTZ_STD_JDBC_DELEGATE;
         }
+    }
+
+    private JdbcUrl prepareConnectionUri(String connectionUrl) {
+        String parsedConnection = StrSubstitutor.replace(connectionUrl, sqlProperties);
+        try {
+            return new JdbcUrl(parsedConnection);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Invalid connection url " + connectionUrl, e);
+        }
+    }
+
+    private Connection buildConnection(String jdbcUrl) throws SQLException {
+        return DriverManager.getConnection(jdbcUrl, sqlProperties.getProperty(SQL_USER),
+                sqlProperties.getProperty(SQL_PASSWORD));
     }
 }
