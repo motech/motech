@@ -3685,8 +3685,6 @@
 
           $http.get(entityUrl).success(function (data) {
               $scope.selectedEntity = data;
-              $scope.showAddInstanceButton = !$scope.selectedEntity.nonEditable;
-              $scope.showDeleteInstanceButton = !$scope.selectedEntity.nonEditable;
 
               $scope.setModuleEntity($scope.selectedEntity.module, $scope.selectedEntity.name);
 
