@@ -11,6 +11,9 @@ public class District {
     private String name;
 
     @Field
+    private Long serialNumber;
+
+    @Field
     private State state;
 
     @Field
@@ -19,12 +22,25 @@ public class District {
     public District() {
     }
 
+    public District(String name , Long serialNumber) {
+        this.name = name;
+        this.serialNumber = serialNumber;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(Long serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
     public State getState() {

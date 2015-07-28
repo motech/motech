@@ -2,13 +2,12 @@ package org.motechproject.mds.domain;
 
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
-import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.MemberUtil;
 import org.motechproject.mds.util.Pair;
 
 import java.util.List;
 
-import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_CLASS_NAME;
 import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_COLLECTION_TYPE;
 
@@ -25,24 +24,24 @@ public class ComboboxHolder extends FieldHolder {
 
     public ComboboxHolder(Entity entity, Field field) {
         super(field);
-        this.defaultEnumName = getDefaultEnumName(entity.getClassName(), field.getName());
+        this.defaultEnumName = MemberUtil.getDefaultEnumName(entity.getClassName(), field.getName());
     }
 
     public ComboboxHolder(EntityDto entity, FieldDto field) {
         super(field);
-        this.defaultEnumName = getDefaultEnumName(entity.getClassName(), field.getBasic().getName());
+        this.defaultEnumName = MemberUtil.getDefaultEnumName(entity.getClassName(), field.getBasic().getName());
     }
 
     public ComboboxHolder(Class<?> entityClass, FieldDto field) {
         super(field);
-        this.defaultEnumName = getDefaultEnumName(entityClass.getName(), field.getBasic().getName());
+        this.defaultEnumName = MemberUtil.getDefaultEnumName(entityClass.getName(), field.getBasic().getName());
     }
 
     public ComboboxHolder(List<? extends Pair<String, String>> metadata,
                           List<? extends Pair<String, ?>> settings,
                           String className, String fieldName) {
         super(metadata, settings);
-        this.defaultEnumName = getDefaultEnumName(className, fieldName);
+        this.defaultEnumName = MemberUtil.getDefaultEnumName(className, fieldName);
     }
 
     /**
@@ -130,10 +129,5 @@ public class ComboboxHolder extends FieldHolder {
         } else {
             return String.class.getName();
         }
-    }
-
-    private String getDefaultEnumName(String className, String fieldName) {
-        return String.format("%s.%s%s", ClassName.getEnumPackage(className),
-                ClassName.getSimpleName(className), capitalize(fieldName));
     }
 }

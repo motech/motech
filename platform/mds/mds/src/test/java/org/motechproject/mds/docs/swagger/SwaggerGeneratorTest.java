@@ -11,6 +11,9 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.docs.swagger.gson.ParameterTypeAdapter;
 import org.motechproject.mds.docs.swagger.model.Definition;
@@ -29,6 +32,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.RestOptions;
+import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.util.Constants;
 import org.springframework.context.MessageSource;
@@ -53,6 +57,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.API_DESCRIPTION_KEY;
 import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.ARRAY_TYPE;
 import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.CREATE_BODY_DESC_KEY;
@@ -91,11 +96,16 @@ import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.UPDATE_I
 import static org.motechproject.mds.docs.swagger.model.SwaggerConstants.VERSION_KEY;
 import static org.motechproject.mds.testutil.FieldTestHelper.field;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SwaggerGeneratorTest {
 
     private static final Locale LOCALE = new Locale("en", "US");
 
+    @Mock
+    private AllEntities allEntities;
+
     private Properties swaggerProperties;
+
     private MessageSource messageSource;
 
     private SwaggerGenerator swaggerGenerator = new SwaggerGenerator();
@@ -112,14 +122,17 @@ public class SwaggerGeneratorTest {
             swaggerProperties = new Properties();
             swaggerProperties.load(in);
             swaggerGenerator.setSwaggerProperties(swaggerProperties);
+            swaggerGenerator.setAllEntities(allEntities);
         }
+
+        when(allEntities.retrieveAll()).thenReturn(entities());
     }
 
     @Test
     public void shouldGenerateJson() {
         StringWriter stringWriter = new StringWriter();
 
-        swaggerGenerator.generateDocumentation(stringWriter, entities(), "/motech-platform-server", LOCALE);
+        swaggerGenerator.generateDocumentation(stringWriter, "/motech-platform-server", LOCALE);
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Response.class, new ResponseAdapter())
@@ -204,6 +217,7 @@ public class SwaggerGeneratorTest {
         entity.setFields(fields);
 
         Lookup lookup = new Lookup("Find By Str & Long", true, true, asList(strField, longField), true, "findByStrLong");
+        lookup.setFieldsOrder(asList("str", "longField"));
         entity.addLookup(lookup);
 
         entities.add(entity);
@@ -241,6 +255,7 @@ public class SwaggerGeneratorTest {
         lookup = new Lookup("By Dt and Locale", false, true, asList(dtField, localeField), false, "byDtAndLocale");
         lookup.setRangeLookupFields(asList(dtField.getName()));
         lookup.setSetLookupFields(asList(localeField.getName()));
+        lookup.setFieldsOrder(asList("dtField", "localeField"));
         entity.addLookup(lookup);
 
         entities.add(entity);

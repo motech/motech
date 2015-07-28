@@ -11,6 +11,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
@@ -483,16 +484,23 @@ public class InstanceServiceTest {
 
     private void mockLookups() {
         LookupDto lookup = new LookupDto(TestDataService.LOOKUP_1_NAME, true, true,
-                asList(FieldTestHelper.lookupFieldDto(1L, "strField")), true, "singleObject");
+                asList(FieldTestHelper.lookupFieldDto(1L, "strField")), true, "singleObject", asList("strField"));
         when(entityService.getLookupByName(ENTITY_ID, TestDataService.LOOKUP_1_NAME)).thenReturn(lookup);
+        Map<String, FieldDto> mapping = new HashMap<>();
+        mapping.put("strField", FieldTestHelper.fieldDto(1L, "strField", String.class.getName(), "String field", "Default"));
+        when(entityService.getLookupFieldsMapping(ENTITY_ID, TestDataService.LOOKUP_1_NAME)).thenReturn(mapping);
 
         lookup = new LookupDto(TestDataService.LOOKUP_2_NAME, false, true,
-                asList(FieldTestHelper.lookupFieldDto(1L, "strField")), false, "multiObject");
+                asList(FieldTestHelper.lookupFieldDto(1L, "strField")), false, "multiObject", asList("strField"));
         when(entityService.getLookupByName(ENTITY_ID, TestDataService.LOOKUP_2_NAME)).thenReturn(lookup);
+        when(entityService.getLookupFieldsMapping(ENTITY_ID, TestDataService.LOOKUP_2_NAME)).thenReturn(mapping);
 
         lookup = new LookupDto(TestDataService.NULL_EXPECTING_LOOKUP_NAME, false, true,
-                asList(FieldTestHelper.lookupFieldDto(3L, "dtField")), false, "nullParamExpected");
+                asList(FieldTestHelper.lookupFieldDto(3L, "dtField")), false, "nullParamExpected", asList("dtField"));
         when(entityService.getLookupByName(ENTITY_ID, TestDataService.NULL_EXPECTING_LOOKUP_NAME)).thenReturn(lookup);
+        mapping = new HashMap<>();
+        mapping.put("dtField", FieldTestHelper.fieldDto(3L, "dtField", DateTime.class.getName(), "DateTime field", null));
+        when(entityService.getLookupFieldsMapping(ENTITY_ID, TestDataService.NULL_EXPECTING_LOOKUP_NAME)).thenReturn(mapping);
     }
 
     private void mockLookupService() {

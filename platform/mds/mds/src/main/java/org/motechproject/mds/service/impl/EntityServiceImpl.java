@@ -35,6 +35,7 @@ import org.motechproject.mds.ex.entity.EntityChangedException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.entity.EntityReadOnlyException;
 import org.motechproject.mds.ex.field.FieldNotFoundException;
+import org.motechproject.mds.ex.lookup.LookupNotFoundException;
 import org.motechproject.mds.ex.type.NoSuchTypeException;
 import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.filter.FilterValue;
@@ -284,10 +285,17 @@ public class EntityServiceImpl implements EntityService {
                         map.put(field.getName(), value.get(0).toString());
                     }
                     draft.setFieldNameChanges(map);
+                    List<LookupDto> lookups = draft.advancedSettingsDto().getIndexes();
+                    // Perform update
+                    field.update(dto);
+                    //we need update fields name in lookup fieldsOrder
+                    draft.updateIndexes(lookups);
+                    FieldHelper.addOrUpdateMetadataForCombobox(field);
+                } else {
+                    // Perform update
+                    field.update(dto);
                 }
 
-                // Perform update
-                field.update(dto);
                 allEntityDrafts.update(draft);
             }
         }
@@ -353,6 +361,8 @@ public class EntityServiceImpl implements EntityService {
         }
 
         FieldHelper.addMetadataForRelationship(typeClass, field);
+        FieldHelper.addOrUpdateMetadataForCombobox(field);
+
         draft.addField(field);
         allEntityDrafts.update(draft);
     }
@@ -405,6 +415,7 @@ public class EntityServiceImpl implements EntityService {
         comboboxDataMigrationHelper.migrateComboboxDataIfNecessary(parent, draft);
 
         configureRelatedFields(parent, draft, modulesToRefresh);
+
         parent.updateFromDraft(draft);
 
         if (username != null) {
@@ -584,10 +595,10 @@ public class EntityServiceImpl implements EntityService {
         if (committed) {
             Entity entity = allEntities.retrieveById(entityId);
             assertEntityExists(entity);
-            return addNonPersistentAdvancedSettingsData(entity.advancedSettingsDto(), entity);
+            return addNonPersistentAdvancedSettingsData(entity.advancedSettingsDto(), entity, committed);
         } else {
             Entity entity = getEntityDraft(entityId);
-            return addNonPersistentAdvancedSettingsData(entity.advancedSettingsDto(), entity);
+            return addNonPersistentAdvancedSettingsData(entity.advancedSettingsDto(), entity, committed);
         }
     }
 
@@ -598,7 +609,7 @@ public class EntityServiceImpl implements EntityService {
         if (entity == null) {
             return null;
         } else {
-            return addNonPersistentAdvancedSettingsData(entity.advancedSettingsDto(), entity);
+            return addNonPersistentAdvancedSettingsData(entity.advancedSettingsDto(), entity, true);
         }
     }
 
@@ -677,19 +688,24 @@ public class EntityServiceImpl implements EntityService {
     private void addOrUpdateLookups(Entity entity, Collection<LookupDto> lookups) {
         for (LookupDto lookupDto : lookups) {
             Lookup lookup = entity.getLookupByName(lookupDto.getLookupName());
+            List<String> fieldsOrder = new ArrayList<>();
             List<Field> lookupFields = new ArrayList<>();
             for (LookupFieldDto lookupField : lookupDto.getLookupFields()) {
                 String fieldName = lookupField.getName();
 
-                Field field = entity.getField(fieldName);
-
+                Field field;
+                field = entity.getField(fieldName);
+                fieldsOrder.add(LookupName.buildLookupFieldName(lookupField.getName(), lookupField.getRelatedName()));
                 if (field == null) {
                     LOGGER.error("No field {} in entity {}", fieldName, entity.getClassName());
                 } else {
-                    lookupFields.add(field);
+                    if (!lookupFields.contains(field)) {
+                        lookupFields.add(field);
+                    }
                 }
             }
 
+            lookupDto.setFieldsOrder(fieldsOrder);
             if (lookup == null) {
                 Lookup newLookup = new Lookup(lookupDto, lookupFields);
                 entity.addLookup(newLookup);
@@ -697,6 +713,28 @@ public class EntityServiceImpl implements EntityService {
                 lookup.update(lookupDto, lookupFields);
             }
         }
+    }
+
+    @Override
+    @Transactional
+    public Map<String, FieldDto> getLookupFieldsMapping(Long entityId, String lookupName) {
+        Entity entity = allEntities.retrieveById(entityId);
+        assertEntityExists(entity);
+        Lookup lookup = entity.getLookupByName(lookupName);
+        if (lookup == null) {
+            throw new LookupNotFoundException();
+        }
+
+        Map<String, FieldDto> fieldMap = new HashMap<>();
+        for (String lookupFieldName : lookup.getFieldsOrder()) {
+            Field field = lookup.getLookupFieldByName(LookupName.getFieldName(lookupFieldName));
+            if (lookupFieldName.contains(".")) {
+                Entity relatedEntity = allEntities.retrieveByClassName(field.getMetadata(Constants.MetadataKeys.RELATED_CLASS).getValue());
+                field = relatedEntity.getField(LookupName.getRelatedFieldName(lookupFieldName));
+            }
+            fieldMap.put(lookupFieldName, field.toDto());
+        }
+        return fieldMap;
     }
 
     @Override
@@ -836,6 +874,19 @@ public class EntityServiceImpl implements EntityService {
     @Transactional
     public List<FieldDto> getEntityFields(Long entityId) {
         return getFields(entityId, false);
+    }
+
+    @Override
+    @Transactional
+    public List<FieldDto> getEntityFieldsByClassName(String className) {
+        Entity entity = allEntities.retrieveByClassName(className);
+        assertEntityExists(entity);
+
+        List<FieldDto> fieldDtos = new ArrayList<>();
+        for (Field field : entity.getFields()) {
+            fieldDtos.add(field.toDto());
+        }
+        return fieldDtos;
     }
 
     private List<FieldDto> getFields(Long entityId, boolean forDraft) {
@@ -1252,9 +1303,35 @@ public class EntityServiceImpl implements EntityService {
         return fieldDtos;
     }
 
-    private AdvancedSettingsDto addNonPersistentAdvancedSettingsData(AdvancedSettingsDto advancedSettingsDto, Entity entity) {
+    private AdvancedSettingsDto addNonPersistentAdvancedSettingsData(AdvancedSettingsDto advancedSettingsDto, Entity entity, boolean committed) {
+        //For dataBrowser we need to add information about the lookup fields(type, settings, displayName)
+        if (committed) {
+            addNonPersistentDataForLookupFields(advancedSettingsDto.getIndexes(), entity);
+        }
         addLookupsReferences(advancedSettingsDto.getIndexes(), entity.getClassName());
         return advancedSettingsDto;
+    }
+
+
+
+    private void addNonPersistentDataForLookupFields(Collection<LookupDto> lookupDtos, Entity entity) {
+        for (LookupDto lookup : lookupDtos) {
+            for (LookupFieldDto lookupField : lookup.getLookupFields()) {
+                if (StringUtils.isNotBlank(lookupField.getRelatedName())) {
+                    Field field = entity.getField(lookupField.getName());
+                    Entity relatedEntity = allEntities.retrieveByClassName(field.getMetadata(Constants.MetadataKeys.RELATED_CLASS).getValue());
+                    addNonPersistentDataForLookupField(relatedEntity.getField(lookupField.getRelatedName()), lookupField, field.getDisplayName());
+                } else {
+                    addNonPersistentDataForLookupField(entity.getField(lookupField.getName()), lookupField, null);
+                }
+            }
+        }
+    }
+
+    private void addNonPersistentDataForLookupField(Field field, LookupFieldDto lookupField, String nameParam) {
+        lookupField.setSettings(field.settingsToDto());
+        lookupField.setDisplayName(StringUtils.isNotBlank(nameParam) ? nameParam : field.getDisplayName());
+        lookupField.setClassName(field.getType().getTypeClassName());
     }
 
     private void addLookupsReferences(Collection<LookupDto> lookupDtos, String entityClassName) {

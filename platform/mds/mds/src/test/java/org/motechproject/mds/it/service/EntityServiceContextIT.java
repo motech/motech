@@ -18,6 +18,7 @@ import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.EntityAlreadyExistException;
@@ -393,6 +394,7 @@ public class EntityServiceContextIT extends BaseIT {
                 extract(lookupFromDb.getLookupFields(), on(LookupFieldDto.class).getName()));
         assertEquals(asList(VALUE, RANGE, SET),
                 extract(lookupFromDb.getLookupFields(), on(LookupFieldDto.class).getType()));
+        assertEquals(asList("boolField", "dtField", "strField"), lookupFromDb.getFieldsOrder());
     }
 
     @Test
@@ -507,6 +509,35 @@ public class EntityServiceContextIT extends BaseIT {
         entityService.commitChanges(entityDto1.getId());
         assertNull(getField(entityDto1.getId(), "newField"));
         assertNull(getField(entityDto3.getId(), "newNameForRelatedField"));
+    }
+
+    @Test
+    public void shouldAddLookupWithRelatedField() {
+        EntityDto entityWithLookup = new EntityDto();
+        entityWithLookup.setName("entityWithLookup");
+        entityWithLookup = entityService.createEntity(entityWithLookup);
+        EntityDto relatedEntity = new EntityDto();
+        relatedEntity.setName("relatedEntity");
+        relatedEntity = entityService.createEntity(relatedEntity);
+
+        FieldDto stringField = FieldTestHelper.fieldDto("stringField", String.class);
+        FieldDto nameField = FieldTestHelper.fieldDto("nameField", String.class);
+        FieldDto lengthField = FieldTestHelper.fieldDto("lengthField", Long.class);
+        FieldDto relationField = FieldTestHelper.fieldDto("relatedField", TypeDto.ONE_TO_MANY_RELATIONSHIP.getTypeClass());
+        relationField.addMetadata(new MetadataDto(RELATED_CLASS, relatedEntity.getClassName()));
+
+        entityService.addFields(entityWithLookup,  asList(stringField, relationField));
+        entityService.addFields(relatedEntity, asList(nameField, lengthField));
+        List<LookupFieldDto> lookupFieldDtos = lookupFieldsFromNames("relatedField.nameField", "relatedField.lengthField", "stringField");
+        LookupDto lookup = new LookupDto("lookup", false, false, lookupFieldDtos, true);
+
+        entityService.addLookups(entityWithLookup.getId(), lookup);
+
+        LookupDto lookupFromDb = entityService.getLookupByName(entityWithLookup.getId(), "lookup");
+        assertNotNull(lookupFromDb);
+        assertEquals(asList("relatedField.nameField", "relatedField.lengthField", "stringField"), lookupFromDb.getFieldsOrder());
+        assertEquals(asList("relatedField", "relatedField", "stringField"),
+                extract(lookupFromDb.getLookupFields(), on(LookupFieldDto.class).getName()));
     }
 
     @Test

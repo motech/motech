@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
@@ -34,6 +35,7 @@ public class MdsDataProviderTest {
     private static final String PARAM_VALUE = "param";
     private static final long ENTITY_ID = 4;
     private static final Long INSTANCE_ID = 1L;
+    private static final String VALUE = "sample value";
     private static final String FIND_BY_ID_LOOKUP = "mds.dataprovider.byinstanceid";
     private static final String ID_LOOKUP_FIELD = "mds.dataprovider.instanceid";
 
@@ -66,8 +68,22 @@ public class MdsDataProviderTest {
         LookupDto singleLookup = new LookupDto("singleLookup", true, false, asList(lookupField), false);
         LookupDto multiLookup = new LookupDto("multiLookup", false, false, asList(lookupField), false);
 
+        lookupField = FieldTestHelper.lookupFieldDto(2L, "related");
+        lookupField.setRelatedName("stringVar");
+        LookupDto relatedLookup = new LookupDto("relatedLookup", false, false, asList(lookupField), false);
+
         when(entityService.getLookupByName(ENTITY_ID, "singleLookup")).thenReturn(singleLookup);
         when(entityService.getLookupByName(ENTITY_ID, "multiLookup")).thenReturn(multiLookup);
+        when(entityService.getLookupByName(ENTITY_ID, "relatedLookup")).thenReturn(relatedLookup);
+
+        Map<String, FieldDto> mapping = new HashMap<>();
+        mapping.put("field", fieldDto);
+        when(entityService.getLookupFieldsMapping(ENTITY_ID, "singleLookup")).thenReturn(mapping);
+        when(entityService.getLookupFieldsMapping(ENTITY_ID, "multiLookup")).thenReturn(mapping);
+
+        mapping = new HashMap<>();
+        mapping.put("related.stringVar", fieldDto);
+        when(entityService.getLookupFieldsMapping(ENTITY_ID, "relatedLookup")).thenReturn(mapping);
 
         when(bundleContext.getServiceReference(LookupService.class.getName())).thenReturn(serviceReference);
         when(bundleContext.getService(serviceReference)).thenReturn(new LookupService());
@@ -119,6 +135,19 @@ public class MdsDataProviderTest {
         assertEquals("found by id", record.getValue());
     }
 
+    @Test
+    public void shouldFindByRelatedField() {
+        Map<String, String> lookupMap = new HashMap<>();
+        lookupMap.put("related.stringVar", VALUE);
+
+        Object result = dataProvider.lookup(Record.class.getName(), "relatedLookup", lookupMap);
+
+        assertNotNull(result);
+        assertTrue("Wrong type returned", result instanceof Record);
+        Record record = (Record) result;
+        assertEquals("found by related field", record.getValue());
+    }
+
     public static class LookupService extends DefaultMotechDataService<Record> {
 
         public Record singleLookup(String field) {
@@ -142,6 +171,13 @@ public class MdsDataProviderTest {
             Record record = new Record();
             record.setValue("found by id");
             return record;
+        }
+
+        public List<Record> relatedLookup(String value) {
+            assertEquals(VALUE, value);
+            Record record = new Record();
+            record.setValue("found by related field");
+            return asList(record);
         }
 
         @Override

@@ -5,11 +5,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.commons.api.Range;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.service.HistoryService;
+import org.motechproject.mds.test.domain.lookupcomboboxrelation.LogAttribute;
+import org.motechproject.mds.test.domain.lookupcomboboxrelation.LogParameters;
+import org.motechproject.mds.test.domain.lookupcomboboxrelation.LogStatus;
+import org.motechproject.mds.test.domain.lookupcomboboxrelation.MessageLog;
 import org.motechproject.mds.test.domain.manytomany.Author;
 import org.motechproject.mds.test.domain.inheritancestrategies.Boat;
 import org.motechproject.mds.test.domain.manytomany.Book;
@@ -35,6 +40,7 @@ import org.motechproject.mds.test.domain.cascadedelete.City;
 import org.motechproject.mds.test.domain.cascadedelete.Country;
 import org.motechproject.mds.test.domain.setofenumandstring.Channel;
 import org.motechproject.mds.test.domain.setofenumandstring.Message;
+import org.motechproject.mds.test.service.lookupcomboboxrelation.MessageLogDataService;
 import org.motechproject.mds.test.service.manytomany.AuthorDataService;
 import org.motechproject.mds.test.service.inheritancestrategies.BoatDataService;
 import org.motechproject.mds.test.service.manytomany.BookDataService;
@@ -77,8 +83,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
@@ -174,6 +182,9 @@ public class MdsDdeBundleIT extends BasePaxIT {
     @Inject
     private MessageDataService messageDataService;
 
+    @Inject
+    private MessageLogDataService messageLogDataService;
+
     private final Object waitLock = new Object();
 
     @Before
@@ -204,6 +215,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
         languageDataService.deleteAll();
         cityDataService.deleteAll();
         countryDataService.deleteAll();
+        messageLogDataService.deleteAll();
     }
 
     @Test
@@ -837,6 +849,296 @@ public class MdsDdeBundleIT extends BasePaxIT {
         petOwnerDataService.delete(updated.get(0));
 
         assertEquals(0, petOwnerDataService.retrieveAll().size());
+    }
+
+    @Test
+    public void testDistrictLookupsOnRelationshipFields() {
+        setUpDataForLookupsOnRelationshipFields();
+
+        List<District> districts = districtDataService.findByLanguage("language_1");
+        assertEquals(1, districts.size());
+        assertEquals("district_1", districts.get(0).getName());
+
+        districts = districtDataService.findByLanguage("language_2");
+        assertEquals(1, districts.size());
+        assertEquals("district_2", districts.get(0).getName());
+
+        districts = districtDataService.findByLanguage("language_3_eng");
+        assertEquals(1, districts.size());
+        assertEquals("district_3", districts.get(0).getName());
+
+        districts = districtDataService.findByNameAndLanguage("district_2", "language_2");
+        assertEquals(1, districts.size());
+        assertEquals("district_2", districts.get(0).getName());
+        assertEquals("language_2", districts.get(0).getLanguage().getName());
+
+        districts = districtDataService.findByNameAndLanguage("district_1", "language_4_eng");
+        assertEquals(0, districts.size());
+
+        districts = districtDataService.findByNameAndLanguageWithOperators("district_3", "eng");
+        assertEquals(1, districts.size());
+        assertEquals("district_3", districts.get(0).getName());
+        assertEquals("language_3_eng", districts.get(0).getLanguage().getName());
+
+        districts = districtDataService.findByNameAndLanguageWithOperators("district_2", "eng");
+        assertEquals(0, districts.size());
+
+        final Set<String> languageNames = new HashSet<>();
+        languageNames.add("language_1");
+        languageNames.add("language_2");
+
+        districtDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                List<District> districts = districtDataService.findByNameLanguageAndState(languageNames, "state_1");
+                assertEquals(1, districts.size());
+                assertEquals("district_1", districts.get(0).getName());
+                assertEquals("state_1", districts.get(0).getState().getName());
+            }
+        });
+
+        districtDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                List<District> districts = districtDataService.findByNameLanguageAndState(languageNames, "state_2");
+                assertEquals(1, districts.size());
+                assertEquals("district_2", districts.get(0).getName());
+                assertEquals("state_2", districts.get(0).getState().getName());
+            }
+        });
+
+        districts = districtDataService.findByNameLanguageAndState(languageNames, "state_3");
+        assertEquals(0, districts.size());
+    }
+
+
+    @Test
+    public void testLanguageLookupsOnRelationshipFields() {
+        setUpDataForLookupsOnRelationshipFields();
+
+        List<Language> languages = languageDataService.findByDistrictName("district_1");
+        assertEquals(1, languages.size());
+        assertEquals("language_1", languages.get(0).getName());
+        assertEquals("district_1", ((District)(languages.get(0).getDistricts().toArray()[0])).getName());
+
+        languages = languageDataService.findByDistrictName("district_3");
+        assertEquals(1, languages.size());
+        assertEquals("language_3_eng", languages.get(0).getName());
+        assertEquals("district_3", ((District)(languages.get(0).getDistricts().toArray()[0])).getName());
+
+        languages = languageDataService.findByDistrictSerialNumber(123l);
+        assertEquals(1, languages.size());
+        assertEquals("language_1", languages.get(0).getName());
+        assertEquals("district_1", ((District)(languages.get(0).getDistricts().toArray()[0])).getName());
+
+        languages = languageDataService.findByDistrictSerialNumber(220l);
+        assertEquals(1, languages.size());
+        assertEquals("language_4_eng", languages.get(0).getName());
+        assertEquals("district_4", ((District)(languages.get(0).getDistricts().toArray()[0])).getName());
+
+        languages = languageDataService.findByDistrictNameAndSerialNumber("distr", new Range<Long>(100l, 240l));
+        assertEquals(2, languages.size());
+        assertEquals("language_1", languages.get(0).getName());
+        assertEquals("district_1", ((District)(languages.get(0).getDistricts().toArray()[0])).getName());
+        assertEquals("language_4_eng", languages.get(1).getName());
+        assertEquals("district_4", ((District)(languages.get(1).getDistricts().toArray()[0])).getName());
+
+        languages = languageDataService.findByDistrictSerialNumber(3111l);
+        assertEquals(1, languages.size());
+        assertEquals(2, languages.get(0).getDistricts().size());
+        assertEquals("english", languages.get(0).getName());
+
+        languages = languageDataService.findByDistrictNameAndSerialNumber("", new Range<Long>(3111l, 3599l));
+        assertEquals(2, languages.size());
+        assertEquals(2, languages.get(0).getDistricts().size());
+        assertEquals(2, languages.get(1).getDistricts().size());
+        assertEquals("english", languages.get(0).getName());
+        assertEquals("french", languages.get(1).getName());
+    }
+
+    @Test
+    public void testLookupsOnComboboxRelationshipFields() {
+        setUpDataForLookupsOnComboboxRelationshipFields();
+
+        List<MessageLog> messageLogs = messageLogDataService.findByPatameterStatus(LogStatus.PROCESSED);
+        assertEquals(2, messageLogs.size());
+        assertEquals("info_1_processed", messageLogs.get(0).getInfo());
+        assertEquals("info_2_processed", messageLogs.get(1).getInfo());
+
+        Set<LogStatus> statuses = new HashSet<>();
+        statuses.add(LogStatus.TO_PROCESS);
+        statuses.add(LogStatus.UNKNOWN);
+        messageLogs = messageLogDataService.findByPatameterStatusSet(statuses);
+        assertEquals(3, messageLogs.size());
+        assertEquals("info_3_to_process", messageLogs.get(0).getInfo());
+        assertEquals("info_4_to_process", messageLogs.get(1).getInfo());
+        assertEquals("info_5_to_unknow", messageLogs.get(2).getInfo());
+        assertEquals(LogStatus.UNKNOWN, messageLogs.get(2).getMainParameter().getParamStatus());
+
+        messageLogs = messageLogDataService.findByPatametersStatus(LogStatus.PROCESSED);
+        assertEquals(3, messageLogs.size());
+        assertContainsEnumValue(messageLogs, LogStatus.PROCESSED);
+
+        messageLogs = messageLogDataService.findByPatametersStatus(LogStatus.UNKNOWN);
+        assertEquals(2, messageLogs.size());
+        assertEquals("info_4_to_process", messageLogs.get(0).getInfo());
+        assertEquals(LogStatus.UNKNOWN, messageLogs.get(0).getParameters().get(2).getParamStatus());
+        assertEquals("info_5_to_unknow", messageLogs.get(1).getInfo());
+        assertContainsEnumValue(messageLogs, LogStatus.UNKNOWN);
+
+        messageLogs = messageLogDataService.findByPatameterValue("value_1");
+        assertEquals(3, messageLogs.size());
+        assertEquals("info_1_processed", messageLogs.get(0).getInfo());
+        assertEquals("info_4_to_process", messageLogs.get(1).getInfo());
+        assertEquals("info_5_to_unknow", messageLogs.get(2).getInfo());
+
+        messageLogs = messageLogDataService.findByPatametersAttributes(LogAttribute.ATTRIBUTE_4);
+        assertEquals(3, messageLogs.size());
+        assertEquals("info_1_processed", messageLogs.get(0).getInfo());
+        assertEquals("info_4_to_process", messageLogs.get(1).getInfo());
+        assertEquals("info_5_to_unknow", messageLogs.get(2).getInfo());
+
+        Set<LogAttribute> attributes = new HashSet<>();
+        attributes.add(LogAttribute.ATTRIBUTE_3);
+        attributes.add(LogAttribute.ATTRIBUTE_2);
+        messageLogs = messageLogDataService.findByPatametersSetAttributes(attributes);
+        assertEquals(3, messageLogs.size());
+        assertEquals("info_2_processed", messageLogs.get(0).getInfo());
+        assertEquals("info_3_to_process", messageLogs.get(1).getInfo());
+        assertEquals("info_4_to_process", messageLogs.get(2).getInfo());
+    }
+
+    private void setUpDataForLookupsOnRelationshipFields() {
+        final District district1 = new District("district_1", 123l);
+        final District district2 = new District("district_2", 842l);
+        final District district3 = new District("district_3", 11l);
+        final District district4 = new District("district_4", 220l);
+
+        final Language lang1 = new Language();
+        lang1.setName("language_1");
+        final Language lang2 = new Language();
+        lang2.setName("language_2");
+        final Language lang3 = new Language();
+        lang3.setName("language_3_eng");
+        final Language lang4 = new Language();
+        lang4.setName("language_4_eng");
+
+        final State state1 = new State();
+        state1.setName("state_1");
+        final State state2 = new State();
+        state2.setName("state_2");
+        final State state3 = new State();
+        state3.setName("state_3");
+        final State state4 = new State();
+        state4.setName("state_4");
+
+        district1.setLanguage(lang1);
+        district2.setLanguage(lang2);
+        district3.setLanguage(lang3);
+        district4.setLanguage(lang4);
+
+        district1.setState(state1);
+        district2.setState(state2);
+        district3.setState(state3);
+        district4.setState(state4);
+
+        districtDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                districtDataService.create(district1);
+                districtDataService.create(district2);
+                districtDataService.create(district3);
+                districtDataService.create(district4);
+            }
+        });
+
+        final Language english = new Language();
+        english.setName("english");
+        final Language french = new Language();
+        french.setName("french");
+
+        final District districtEnglish1 = new District("districtEnglish_1", 3596l);
+        final District districtEnglish2 = new District("districtEnglish_2", 3111l);
+        final District districtEnglish3 = new District("districtEnglish_3", 3966l);
+        final District districtEnglish4 = new District("districtEnglish_4", 3599l);
+
+        final Set<District> disctricts1 = new HashSet<>();
+        disctricts1.add(districtEnglish1);
+        disctricts1.add(districtEnglish2);
+        english.setDistricts(disctricts1);
+
+        final Set<District> disctricts2 = new HashSet<>();
+        disctricts2.add(districtEnglish3);
+        disctricts2.add(districtEnglish4);
+        french.setDistricts(disctricts2);
+
+        languageDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                languageDataService.create(english);
+                languageDataService.create(french);
+            }
+        });
+    }
+
+    private void assertContainsEnumValue(List<MessageLog> messageLogs, LogStatus value) {
+        for (MessageLog messageLog : messageLogs) {
+            Boolean contains = false;
+            for (LogParameters logParameters : messageLog.getParameters()) {
+                contains = contains || logParameters.getParamStatus().equals(value);
+            }
+            assertEquals(true, contains);
+        }
+    }
+
+    private void setUpDataForLookupsOnComboboxRelationshipFields() {
+        final MessageLog messageLog1 = new MessageLog("info_1_processed", LogStatus.PROCESSED);
+        final MessageLog messageLog2 = new MessageLog("info_2_processed", LogStatus.PROCESSED);
+        final MessageLog messageLog3 = new MessageLog("info_3_to_process", LogStatus.TO_PROCESS);
+        final MessageLog messageLog4 = new MessageLog("info_4_to_process", LogStatus.TO_PROCESS);
+        final MessageLog messageLog5 = new MessageLog("info_5_to_unknow", LogStatus.UNKNOWN);
+
+        //MainParameter
+        LogParameters logParameters1 = new LogParameters("param_1", LogStatus.PROCESSED, asList("value_1", "value_2"), asList(LogAttribute.ATTRIBUTE_1));
+        LogParameters logParameters2 = new LogParameters("param_2", LogStatus.PROCESSED, asList("value_2", "value_3"), asList(LogAttribute.ATTRIBUTE_1, LogAttribute.ATTRIBUTE_2));
+        LogParameters logParameters3 = new LogParameters("param_3", LogStatus.TO_PROCESS, asList("value_3", "value_4"), asList(LogAttribute.ATTRIBUTE_3));
+        LogParameters logParameters4 = new LogParameters("param_4", LogStatus.TO_PROCESS, asList("value_1", "value_2"), asList(LogAttribute.ATTRIBUTE_4));
+        LogParameters logParameters5 = new LogParameters("param_5", LogStatus.UNKNOWN, asList("value_1"), asList(LogAttribute.ATTRIBUTE_4, LogAttribute.ATTRIBUTE_3));
+
+        //Parameters
+        LogParameters logParameters6 = new LogParameters("param_6", LogStatus.PROCESSED, asList("value_2"), asList(LogAttribute.ATTRIBUTE_1, LogAttribute.ATTRIBUTE_4));
+        LogParameters logParameters7 = new LogParameters("param_7", LogStatus.TO_PROCESS, asList("value_5", "value_5"), asList(LogAttribute.ATTRIBUTE_1));
+        LogParameters logParameters8 = new LogParameters("param_8", LogStatus.TO_PROCESS, asList("value_1", "value_8"), asList(LogAttribute.ATTRIBUTE_2));
+        LogParameters logParameters9 = new LogParameters("param_9", LogStatus.PROCESSED, asList("value_5"), asList(LogAttribute.ATTRIBUTE_2));
+        LogParameters logParameters10 = new LogParameters("param_10", LogStatus.PROCESSED, asList("value_8", "value_2"), asList(LogAttribute.ATTRIBUTE_3));
+        LogParameters logParameters11 = new LogParameters("param_11", LogStatus.TO_PROCESS, asList("value_1", "value_5"), asList(LogAttribute.ATTRIBUTE_3));
+        LogParameters logParameters12 = new LogParameters("param_12", LogStatus.PROCESSED, asList("value_6", "value_8"), asList(LogAttribute.ATTRIBUTE_3));
+        LogParameters logParameters13 = new LogParameters("param_13", LogStatus.TO_PROCESS, asList("value_5", "value_7"), asList(LogAttribute.ATTRIBUTE_4));
+        LogParameters logParameters14 = new LogParameters("param_14", LogStatus.UNKNOWN, asList("value_1", "value_5"), asList(LogAttribute.ATTRIBUTE_4));
+        LogParameters logParameters15 = new LogParameters("param_15", LogStatus.UNKNOWN, asList("value_8", "value_2"), asList(LogAttribute.ATTRIBUTE_4));
+
+        messageLog1.setMainParameter(logParameters1);
+        messageLog2.setMainParameter(logParameters2);
+        messageLog3.setMainParameter(logParameters3);
+        messageLog4.setMainParameter(logParameters4);
+        messageLog5.setMainParameter(logParameters5);
+
+        messageLog1.setParameters(asList(logParameters6));
+        messageLog2.setParameters(asList(logParameters7, logParameters11));
+        messageLog3.setParameters(asList(logParameters8, logParameters12));
+        messageLog4.setParameters(asList(logParameters9, logParameters10, logParameters14));
+        messageLog5.setParameters(asList(logParameters13, logParameters15));
+
+        messageLogDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                messageLogDataService.create(messageLog1);
+                messageLogDataService.create(messageLog2);
+                messageLogDataService.create(messageLog3);
+                messageLogDataService.create(messageLog4);
+                messageLogDataService.create(messageLog5);
+            }
+        });
     }
 
     private void assertDefaultConstructorPresent() throws ClassNotFoundException {

@@ -5,14 +5,16 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.Range;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.util.JavassistUtil;
 import org.motechproject.mds.query.CollectionProperty;
 import org.motechproject.mds.query.PropertyBuilder;
@@ -22,8 +24,10 @@ import org.motechproject.mds.util.TypeHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 import static org.motechproject.mds.builder.impl.LookupType.COUNT;
 import static org.motechproject.mds.builder.impl.LookupType.SIMPLE;
@@ -37,22 +41,19 @@ import static org.motechproject.mds.builder.impl.LookupType.WITH_QUERY_PARAMS;
 class LookupBuilder {
     private String className;
     private Lookup lookup;
-    private List<Field> fields;
     private String lookupName;
     private CtClass definition;
     private LookupType lookupType;
+    private AllEntities allEntities;
 
     LookupBuilder(Entity entity, Lookup lookup, CtClass definition,
-                  LookupType lookupType) {
+                  LookupType lookupType, AllEntities allEntities) {
         this.definition = definition;
-
+        this.allEntities = allEntities;
         this.className = entity.getClassName();
 
         this.lookup = lookup;
         this.lookupType = lookupType;
-        this.fields = CollectionUtils.isEmpty(lookup.getFields())
-                ? new ArrayList<Field>()
-                : lookup.getFields();
         this.lookupName = (lookupType == COUNT)
                 ? LookupName.lookupCountMethod(lookup.getMethodName())
                 : lookup.getMethodName();
@@ -68,13 +69,18 @@ class LookupBuilder {
 
     private CtMethod build(boolean body) throws CannotCompileException, NotFoundException {
         Collection<String> paramCollection = new ArrayList<>();
+        List<String> fieldOrder = lookup.getFieldsOrder();
 
-        for (int i = 0; i < fields.size(); ++i) {
-            Field field = fields.get(i);
+        for (int i = 0; i < fieldOrder.size(); i++) {
+            Field field = lookup.getLookupFieldByName(LookupName.getFieldName(fieldOrder.get(i)));
+            Field relationField = null;
+            if (fieldOrder.get(i).contains(".")) {
+                Entity relatedEntity = allEntities.retrieveByClassName(new RelationshipHolder(field).getRelatedClass());
+                relationField = relatedEntity.getField(LookupName.getRelatedFieldName(fieldOrder.get(i)));
+            }
+            String type = getTypeForParam(i, relationField == null ? field : relationField, fieldOrder.get(i));
 
-            String type = getTypeForParam(i, field);
-            String param = String.format("%s %s", type, field.getName());
-
+            String param = String.format("%s %s", type, fieldOrder.get(i).replace(".", ""));
             paramCollection.add(param);
         }
 
@@ -104,71 +110,142 @@ class LookupBuilder {
 
         body.append("java.util.List properties = new java.util.ArrayList();");
 
-        for (Field field : fields) {
-            String name = field.getName();
+        Map<String, String> jdoQueryVariables = new HashMap<>();
+        for (String lookupFieldName : lookup.getFieldsOrder()) {
+            boolean appendJdoVariableName = false;
+            Field field = lookup.getLookupFieldByName(LookupName.getFieldName(lookupFieldName));
+            Field relationField = null;
+
+            if (lookupFieldName.contains(".")) {
+                Entity relatedEntity = allEntities.retrieveByClassName(new RelationshipHolder(field).getRelatedClass());
+                relationField = relatedEntity.getField(LookupName.getRelatedFieldName(lookupFieldName));
+            }
+
             Type type = field.getType();
-            String typeClassName = type.getTypeClassName();
+            String typeClassName = resolveClassName(type, relationField);
 
             body.append("properties.add(");
 
             if (type.isCombobox()) {
                 ComboboxHolder holder = new ComboboxHolder(field);
-
                 typeClassName = holder.getUnderlyingType();
-
-                if (holder.isCollection()) {
-                    body.append("new ");
-                    body.append(CollectionProperty.class.getName());
-                } else {
-                    body.append(PropertyBuilder.class.getName());
-                    body.append(".create");
-                }
+                body.append(resolvePropertyForCombobox(holder, type));
+            } else if (relationField != null && relationField.getType().isCombobox()) {
+                ComboboxHolder holder = new ComboboxHolder(relationField);
+                typeClassName = holder.getUnderlyingType();
+                body.append(resolvePropertyForCombobox(holder, type));
+                addJdoVariableName(jdoQueryVariables, lookupFieldName);
+                appendJdoVariableName = needsJdoVariable(type);
+            } else if (relationField != null && (type.getTypeClassName().equals(TypeDto.MANY_TO_MANY_RELATIONSHIP.getTypeClass())
+                    || type.getTypeClassName().equals(TypeDto.ONE_TO_MANY_RELATIONSHIP.getTypeClass()))) {
+                //related class collection
+                body.append(PropertyBuilder.class.getName());
+                body.append(".createRelationProperty");
+                addJdoVariableName(jdoQueryVariables, lookupFieldName);
+                appendJdoVariableName = true;
             } else {
                 body.append(PropertyBuilder.class.getName());
                 body.append(".create");
             }
 
-            body.append("(\""); // open constructor or create method
-            body.append(name);
-            body.append("\", ($w)"); //in case the type is primitive, we wrap it to its object representation
-            body.append(name);
-            // append the param type
-            body.append(", \"").append(typeClassName).append('\"');
+            body.append(buildPropertyParameters(appendJdoVariableName, lookupFieldName, typeClassName, jdoQueryVariables));
+        }
+        body.append(buildReturn());
+        return body.toString();
+    }
 
-            // append a custom operator for the lookup field, if defined
-            String customOperator = lookup.getCustomOperators().get(field.getName());
-            if (StringUtils.isNotBlank(customOperator)) {
-                body.append(",\"").append(customOperator).append('"');
-            }
+    private void addJdoVariableName(Map<String, String> jdoQueryVariables, String lookupFieldName) {
+        if (!jdoQueryVariables.containsKey(LookupName.getFieldName(lookupFieldName))) {
+            jdoQueryVariables.put(LookupName.getFieldName(lookupFieldName), buildJdoVariableName(lookupFieldName));
+        }
+    }
 
-            body.append(")"); // close constructor or create method
-            body.append(");"); // close add method
+    private String resolveClassName(Type type, Field relationField) {
+        return relationField == null ? type.getTypeClassName() : relationField.getType().getTypeClassName();
+    }
+
+    private String buildPropertyParameters(boolean appendJdoVariableName, String lookupFieldName, String typeClassName, Map<String, String> jdoQueryVariables) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("(\""); // open constructor or create method
+        if (appendJdoVariableName) {
+            sb.append(jdoQueryVariables.get(LookupName.getFieldName(lookupFieldName)));
+            sb.append("\", \"");
+        }
+        sb.append(lookupFieldName);
+        sb.append("\", ($w)"); //in case the type is primitive, we wrap it to its object representation
+        sb.append(lookupFieldName.replace(".", ""));
+        // append the param type
+        sb.append(", \"").append(typeClassName).append('\"');
+
+        // append a custom operator for the lookup field, if defined
+        String customOperator = lookup.getCustomOperators().get(lookupFieldName);
+        if (StringUtils.isNotBlank(customOperator)) {
+            sb.append(",\"").append(customOperator).append('"');
         }
 
-        if (COUNT == lookupType) {
-            body.append("return count(properties);");
+        sb.append(")"); // close constructor or create method
+        sb.append(");"); // close add method
+
+        return sb.toString();
+    }
+
+    private String resolvePropertyForCombobox(ComboboxHolder holder, Type type) {
+        StringBuilder sb = new StringBuilder();
+        if (holder.isCollection()) {
+            if (needsJdoVariable(type)) {
+                sb.append(PropertyBuilder.class.getName());
+                sb.append(".createRelationPropertyForComboboxCollection");
+            } else {
+                sb.append("new ");
+                sb.append(CollectionProperty.class.getName());
+            }
         } else {
-            body.append("java.util.List list = retrieveAll(properties");
+            sb.append(PropertyBuilder.class.getName());
+            if (needsJdoVariable(type)) {
+                sb.append(".createRelationProperty");
+            } else {
+                sb.append(".create");
+            }
+        }
+
+        return sb.toString();
+    }
+
+    private boolean needsJdoVariable(Type type) {
+        return (type.getTypeClassName().equals(TypeDto.MANY_TO_MANY_RELATIONSHIP.getTypeClass())
+                || type.getTypeClassName().equals(TypeDto.ONE_TO_MANY_RELATIONSHIP.getTypeClass()));
+    }
+
+    private String buildReturn() {
+        StringBuilder sb = new StringBuilder();
+        if (COUNT == lookupType) {
+            sb.append("return count(properties);");
+        } else {
+            sb.append("java.util.List list = retrieveAll(properties");
 
             if (WITH_QUERY_PARAMS == lookupType) {
-                body.append(", queryParams");
+                sb.append(", queryParams");
             } else if (SIMPLE == lookupType) {
                 // by default, order by id
-                body.append(", ").append(QueryParams.class.getName()).append(".ORDER_ID_ASC");
+                sb.append(", ").append(QueryParams.class.getName()).append(".ORDER_ID_ASC");
             }
 
-            body.append(");");
+            sb.append(");");
 
             if (lookup.isSingleObjectReturn()) {
-                body.append("return list.isEmpty() ? null : (");
-                body.append(className);
-                body.append(") list.get(0);");
+                sb.append("return list.isEmpty() ? null : (");
+                sb.append(className);
+                sb.append(") list.get(0);");
             } else {
-                body.append("return list;");
+                sb.append("return list;");
             }
         }
 
-        return body.toString();
+        return sb.toString();
+    }
+
+    private String buildJdoVariableName(String lookupFieldName) {
+        return String.format("%s%s%s", "element", LookupName.getFieldName(lookupFieldName), LookupName.getRelatedFieldName(lookupFieldName));
     }
 
     private String returnType() {
@@ -181,19 +258,21 @@ class LookupBuilder {
         }
     }
 
-    private String getTypeForParam(int idx, Field field) throws NotFoundException {
-        // firstly we try to copy type param from existing method signature...
+    private String getTypeForParam(int idx, Field field, String lookupFieldName) throws NotFoundException {
+        // firstly we check if field is Range or Set
+        if (lookup.isRangeParam(lookupFieldName)) {
+            return Range.class.getName();
+        } else if (lookup.isSetParam(lookupFieldName)) {
+            return Set.class.getName();
+        }
+        // we try to copy type param from existing method signature...
         String type = copyParamTypeFromMethod(idx, field);
         if (type != null) {
             return type;
         }
         // .. if method with type param on idx position does not exist then we will return
         // type based on field type
-        if (lookup.isRangeParam(field)) {
-            return Range.class.getName();
-        } else if (lookup.isSetParam(field)) {
-            return Set.class.getName();
-        } else if (field.getType().isCombobox()) {
+        if (field.getType().isCombobox()) {
             ComboboxHolder holder = new ComboboxHolder(field);
 
             return holder.getTypeClassName();
@@ -227,16 +306,23 @@ class LookupBuilder {
         StringBuilder signature = new StringBuilder();
 
         signature.append('(');
-        for (int i = 0; i < fields.size(); ++i) {
-            Field field = fields.get(i);
+        List<String> fieldsOrder = lookup.getFieldsOrder();
+        for (int i = 0; i < fieldsOrder.size(); ++i) {
+            Field field = lookup.getLookupFieldByName(LookupName.getFieldName(fieldsOrder.get(i)));
 
-            String paramType = getTypeForParam(i, field);
+            Field relationField = null;
+            if (fieldsOrder.get(i).contains(".")) {
+                Entity relatedEntity = allEntities.retrieveByClassName(new RelationshipHolder(field).getRelatedClass());
+                relationField = relatedEntity.getField(LookupName.getRelatedFieldName(fieldsOrder.get(i)));
+            }
+
+            String paramType = getTypeForParam(i, resolveField(field, relationField), fieldsOrder.get(i));
             String genericType;
 
-            Type type = field.getType();
+            Type type = resolveField(field, relationField).getType();
 
             if (type.isCombobox()) {
-                ComboboxHolder holder = new ComboboxHolder(field);
+                ComboboxHolder holder = new ComboboxHolder(resolveField(field, relationField));
                 genericType = holder.getUnderlyingType();
             } else {
                 genericType = type.getTypeClassName();
@@ -259,6 +345,10 @@ class LookupBuilder {
         }
 
         return signature.toString();
+    }
+
+    private Field resolveField(Field field, Field relationField) {
+        return relationField == null ? field : relationField;
     }
 
 }

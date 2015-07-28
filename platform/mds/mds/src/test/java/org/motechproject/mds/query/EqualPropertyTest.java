@@ -16,6 +16,11 @@ public class EqualPropertyTest extends PropertyTest {
     }
 
     @Override
+    protected Property getRelatedProperty() {
+        return new EqualProperty<>("equalJdoVar", "field.name", 5L, Long.class.getName());
+    }
+
+    @Override
     protected int getIdx() {
         return 2;
     }
@@ -23,6 +28,11 @@ public class EqualPropertyTest extends PropertyTest {
     @Override
     protected String expectedFilter() {
         return "id == param2";
+    }
+
+    @Override
+    protected String expectedFilterForRelatedField() {
+        return "field.contains(equalJdoVar) && equalJdoVar.name == param2";
     }
 
     @Override

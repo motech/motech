@@ -66,4 +66,30 @@ public final class PropertyBuilder {
         }
     }
 
+    public static Property createRelationProperty(String jdoVariableName, String name, Object value, String type) {
+        return createRelationProperty(jdoVariableName, name, value, type, null);
+    }
+
+    public static Property createRelationProperty(String jdoVariableName, String name, Object value, String type, String operator) {
+        if (value instanceof Set) {
+            Set set = (Set) value;
+            return new SetProperty<>(jdoVariableName, name, set, type);
+        } else if (value instanceof Range) {
+            Range range = (Range) value;
+            return new RangeProperty<>(jdoVariableName, name, range, type);
+        } else if (StringUtils.isNotBlank(operator)) {
+            if (Constants.Operators.MATCHES.equals(operator)) {
+                return new MatchesProperty(jdoVariableName, name, (String) value);
+            } else {
+                return new CustomOperatorProperty<>(jdoVariableName, name, value, type, operator);
+            }
+        } else {
+            return new EqualProperty<>(jdoVariableName, name, value, type);
+        }
+    }
+
+    public static CollectionProperty createRelationPropertyForComboboxCollection(String jdoVariable, String name, Object value, String type) {
+        return new CollectionProperty(jdoVariable, name, value, new ArrayList(), type);
+    }
+
 }

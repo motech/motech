@@ -56,6 +56,9 @@ public class Lookup {
     private List<Field> fields;
 
     @Persistent(defaultFetchGroup = TRUE)
+    private List<String> fieldsOrder;
+
+    @Persistent(defaultFetchGroup = TRUE)
     private List<String> rangeLookupFields;
 
     @Persistent(defaultFetchGroup = TRUE)
@@ -78,19 +81,19 @@ public class Lookup {
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly,
                   String methodName) {
         this(lookupName, singleObjectReturn, exposedViaRest, fields, readOnly, methodName, Collections.<String>emptyList(),
-                Collections.<String>emptyList(), new HashMap<String, String>(), new HashMap<String, Boolean>());
+                Collections.<String>emptyList(), new HashMap<String, String>(), new HashMap<String, Boolean>(), new ArrayList<String>());
     }
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly,
                   String methodName, List<String> rangeLookupFields, List<String> setLookupFields,
                   Map<String, String> customOperators) {
         this(lookupName, singleObjectReturn, exposedViaRest, fields, readOnly, methodName, rangeLookupFields,
-                setLookupFields, customOperators, new HashMap<String, Boolean>());
+                setLookupFields, customOperators, new HashMap<String, Boolean>(), new ArrayList<String>());
     }
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly,
                   String methodName, List<String> rangeLookupFields, List<String> setLookupFields,
-                  Map<String, String> customOperators, Map<String, Boolean> useGenericParams) {
+                  Map<String, String> customOperators, Map<String, Boolean> useGenericParams, List<String> fieldsOrder) {
         setLookupName(lookupName);
         this.singleObjectReturn = singleObjectReturn;
         this.exposedViaRest = exposedViaRest;
@@ -101,6 +104,7 @@ public class Lookup {
         this.setLookupFields = setLookupFields;
         this.customOperators = customOperators;
         this.useGenericParams = useGenericParams;
+        this.fieldsOrder = fieldsOrder;
     }
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, Entity entity) {
@@ -115,27 +119,25 @@ public class Lookup {
     public LookupDto toDto() {
         List<LookupFieldDto> lookupFields = new ArrayList<>();
 
-        if (fields != null) {
-            for (Field field : fields) {
-                LookupFieldType lookupFieldType = LookupFieldType.VALUE;
+        for (String lookupFieldName : getFieldsOrder()) {
+            Field field = getLookupFieldByName(LookupName.getFieldName(lookupFieldName));
+            LookupFieldType lookupFieldType = LookupFieldType.VALUE;
 
-                if (isRangeParam(field)) {
-                    lookupFieldType = LookupFieldType.RANGE;
-                } else if (isSetParam(field)) {
-                    lookupFieldType = LookupFieldType.SET;
-                }
-
-                String fieldName = field.getName();
-
-                String customOperator = getCustomOperators().get(fieldName);
-                boolean useGenericParam = toBoolean(getUseGenericParams().get(fieldName));
-
-                lookupFields.add(new LookupFieldDto(field.getId(), fieldName, lookupFieldType, customOperator, useGenericParam));
+            if (isRangeParam(lookupFieldName)) {
+                lookupFieldType = LookupFieldType.RANGE;
+            } else if (isSetParam(lookupFieldName)) {
+                lookupFieldType = LookupFieldType.SET;
             }
+
+            String customOperator = getCustomOperators().get(lookupFieldName);
+            boolean useGenericParam = toBoolean(getUseGenericParams().get(lookupFieldName));
+            LookupFieldDto lookupField = new  LookupFieldDto(field.getId(), field.getName(), lookupFieldType, customOperator,
+                    useGenericParam, LookupName.getRelatedFieldName(lookupFieldName));
+            lookupFields.add(lookupField);
         }
 
         return new LookupDto(id, lookupName, singleObjectReturn, exposedViaRest,
-                lookupFields, readOnly, methodName);
+                lookupFields, readOnly, methodName, fieldsOrder);
     }
 
     public Long getId() {
@@ -266,6 +268,17 @@ public class Lookup {
         this.useGenericParams = useGenericParams;
     }
 
+    public List<String> getFieldsOrder() {
+        if (fieldsOrder == null) {
+            return new ArrayList<>();
+        }
+        return fieldsOrder;
+    }
+
+    public void setFieldsOrder(List<String> fieldsOrder) {
+        this.fieldsOrder = fieldsOrder;
+    }
+
     public Lookup copy(List<Field> fields) {
         List<Field> lookupFields = new ArrayList<>();
         for (Field lookupField : this.fields) {
@@ -278,7 +291,7 @@ public class Lookup {
         }
 
         return new Lookup(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly, methodName,
-                getRangeLookupFields(), getSetLookupFields(), customOperators, useGenericParams);
+                getRangeLookupFields(), getSetLookupFields(), customOperators, useGenericParams, getFieldsOrder());
     }
 
     public final void update(LookupDto lookupDto, List<Field> lookupFields) {
@@ -289,26 +302,34 @@ public class Lookup {
         methodName = lookupDto.getMethodName();
         readOnly = lookupDto.isReadOnly();
 
+        updateFieldsOrder(lookupDto.getFieldsOrder());
         updateCustomOperators(lookupDto);
         updateLookupFields(lookupDto);
         updateUseGenericParams(lookupDto);
     }
 
-    public boolean isRangeParam(Field field) {
-        return getRangeLookupFields().contains(field.getName());
+    public boolean isRangeParam(String field) {
+        return getRangeLookupFields().contains(field);
     }
 
-    public boolean isSetParam(Field field) {
-        return getSetLookupFields().contains(field.getName());
+    public boolean isSetParam(String field) {
+        return getSetLookupFields().contains(field);
+    }
+
+    private void updateFieldsOrder(List<String> newOrder) {
+        if (fieldsOrder == null) {
+            fieldsOrder = new ArrayList<>();
+        } else {
+            fieldsOrder.clear();
+        }
+        fieldsOrder.addAll(newOrder);
     }
 
     private void updateLookupFields(LookupDto lookupDto) {
         getRangeLookupFields().clear();
         getSetLookupFields().clear();
         for (LookupFieldDto lookupFieldDto : lookupDto.getLookupFields()) {
-            String name = (lookupFieldDto.getId() == null) ?
-                    lookupFieldDto.getName() :
-                    getLookupFieldById(lookupFieldDto.getId()).getName();
+            String name = lookupFieldDto.getLookupFieldName();
 
             if (lookupFieldDto.getType() == LookupFieldType.RANGE) {
                 getRangeLookupFields().add(name);
@@ -323,7 +344,7 @@ public class Lookup {
         for (LookupFieldDto lookupField : lookupDto.getLookupFields()) {
             String customOperator = lookupField.getCustomOperator();
             if (StringUtils.isNotBlank(customOperator)) {
-                getCustomOperators().put(lookupField.getName(), customOperator);
+                getCustomOperators().put(lookupField.getLookupFieldName(), customOperator);
             }
         }
     }
@@ -332,7 +353,7 @@ public class Lookup {
         getUseGenericParams().clear();
 
         for (LookupFieldDto lookupField : lookupDto.getLookupFields()) {
-            getUseGenericParams().put(lookupField.getName(), lookupField.isUseGenericParam());
+            getUseGenericParams().put(lookupField.getLookupFieldName(), lookupField.isUseGenericParam());
         }
     }
 

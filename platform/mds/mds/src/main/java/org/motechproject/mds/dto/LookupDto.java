@@ -6,6 +6,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.motechproject.mds.util.LookupName;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class LookupDto {
     private boolean readOnly;
     private String methodName;
     private boolean referenced;
+    private List<String> fieldsOrder;
 
     public LookupDto() {
         this(null, false, false);
@@ -39,11 +41,11 @@ public class LookupDto {
 
     public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
                      List<LookupFieldDto> lookupFields, boolean readOnly) {
-        this(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly, null);
+        this(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly, null, new ArrayList<String>());
     }
 
     public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<LookupFieldDto> lookupFields,
-                     boolean readOnly, String methodName) {
+                     boolean readOnly, String methodName, List<String> fieldsOrder) {
         this.lookupName = lookupName;
         this.singleObjectReturn = singleObjectReturn;
         this.exposedViaRest = exposedViaRest;
@@ -51,12 +53,13 @@ public class LookupDto {
         this.methodName = methodName;
         this.lookupFields = lookupFields;
         this.referenced = false;
+        this.fieldsOrder = fieldsOrder;
     }
 
     public LookupDto(Long id, String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
-                     List<LookupFieldDto> lookupFields, boolean readOnly, String methodName) {
+                     List<LookupFieldDto> lookupFields, boolean readOnly, String methodName, List<String> fieldsOrder) {
         this(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly,
-                methodName);
+                methodName, fieldsOrder);
         this.id = id;
     }
 
@@ -92,22 +95,24 @@ public class LookupDto {
         addField(field.longValue());
     }
 
-    public void insertField(Integer idx, Integer fieldId) {
-        insertField(idx, fieldId.longValue());
+    public void insertField(Integer idx, Integer fieldId, String relatedFieldName) {
+        insertField(idx, fieldId.longValue(), relatedFieldName);
     }
 
-    public void insertField(Integer idx, Long fieldId) {
-        insertField(idx, fieldId, LookupFieldType.VALUE.name());
+    public void insertField(Integer idx, Long fieldId, String relatedFieldName) {
+        insertField(idx, fieldId, LookupFieldType.VALUE.name(), relatedFieldName);
     }
 
-    public void insertField(Integer idx, Integer fieldId, String lookupFieldType) {
-        insertField(idx, Long.valueOf(fieldId), lookupFieldType);
+    public void insertField(Integer idx, Integer fieldId, String lookupFieldType, String relatedFieldName) {
+        insertField(idx, Long.valueOf(fieldId), lookupFieldType, relatedFieldName);
     }
 
-    public void insertField(Integer idx, Long fieldId, String lookupFieldType) {
+    public void insertField(Integer idx, Long fieldId, String lookupFieldType, String relatedFieldName) {
         if (idx != null && idx < lookupFields.size()) {
             this.lookupFields.remove(idx.intValue());
-            this.lookupFields.add(idx, new LookupFieldDto(fieldId, null, LookupFieldType.valueOf(lookupFieldType)));
+            LookupFieldDto lokLookupFieldDto = new LookupFieldDto(fieldId, null, LookupFieldType.valueOf(lookupFieldType));
+            lokLookupFieldDto.setRelatedName(relatedFieldName);
+            this.lookupFields.add(idx, lokLookupFieldDto);
         }
     }
 
@@ -123,18 +128,26 @@ public class LookupDto {
         }
     }
 
-    public void removeField(Long fieldId) {
+    public void updateFieldRelatedName(Integer idx, String relatedName) {
+        if (idx != null && idx < lookupFields.size()) {
+            this.lookupFields.get(idx.intValue()).setRelatedName(relatedName);
+        }
+    }
+
+    public void removeField(String name) {
         Iterator<LookupFieldDto> it = lookupFields.iterator();
         while (it.hasNext()) {
             LookupFieldDto lookupField = it.next();
-            if (Objects.equals(fieldId, lookupField.getId())) {
+            if (Objects.equals(name, lookupField.getLookupFieldName())) {
                 it.remove();
             }
         }
     }
 
-    public void removeField(Integer fieldId) {
-        removeField(fieldId.longValue());
+    public void removeField(Integer idx) {
+        String fieldName = fieldsOrder.get(idx);
+        fieldsOrder.remove(idx.intValue());
+        removeField(fieldName);
     }
 
     public final List<LookupFieldDto> getLookupFields() {
@@ -178,6 +191,15 @@ public class LookupDto {
 
     public void setReferenced(boolean referenced) {
         this.referenced = referenced;
+    }
+
+
+    public List<String> getFieldsOrder() {
+        return fieldsOrder;
+    }
+
+    public void setFieldsOrder(List<String> fieldsOrder) {
+        this.fieldsOrder = fieldsOrder;
     }
 
     /**

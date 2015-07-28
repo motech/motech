@@ -5,7 +5,6 @@ import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.commons.api.AbstractDataProvider;
 import org.motechproject.commons.api.DataProvider;
 import org.motechproject.mds.builder.MDSDataProviderBuilder;
-import org.motechproject.mds.dto.DtoHelper;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
@@ -98,8 +97,7 @@ public class MDSDataProvider extends AbstractDataProvider {
             MotechDataService service = OSGiServiceUtils.findService(bundleContext, serviceName);
 
             if (service != null) {
-                List<FieldDto> fields = entityService.getEntityFields(entity.getId());
-                Map<String, FieldDto> fieldsByName = DtoHelper.asFieldMapByName(fields);
+                Map<String, FieldDto> fieldsByName = entityService.getLookupFieldsMapping(entity.getId(), lookupName);
 
                 LookupExecutor executor = new LookupExecutor(service, lookup, fieldsByName);
 

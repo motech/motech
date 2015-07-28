@@ -1,2 +1,2 @@
-<select id="selectmulti" class="form-control" ng-model="lookupBy[field.basic.name]" ng-options="option for option in field.settings[0].value" multiple="multiple" multiselect-list>
+<select id="selectmulti" class="form-control" ng-model="lookupBy[buildLookupFieldName(field)]" ng-options="option for option in field.settings[0].value" multiple="multiple" multiselect-list>
 </select>

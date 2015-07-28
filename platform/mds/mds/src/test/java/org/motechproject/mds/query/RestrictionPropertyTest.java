@@ -16,6 +16,11 @@ public class RestrictionPropertyTest extends PropertyTest {
     }
 
     @Override
+    protected boolean isRelationSupported() {
+        return false;
+    }
+
+    @Override
     protected int getIdx() {
         return 8;
     }

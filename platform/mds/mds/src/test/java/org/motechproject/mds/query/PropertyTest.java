@@ -14,9 +14,17 @@ public abstract class PropertyTest {
 
     protected abstract Property getProperty();
 
+    protected Property getRelatedProperty() {
+        return null;
+    }
+
     protected abstract int getIdx();
 
     protected abstract String expectedFilter();
+
+    protected String expectedFilterForRelatedField() {
+        return null;
+    }
 
     protected abstract String expectedDeclareParameter();
 
@@ -26,9 +34,20 @@ public abstract class PropertyTest {
         return true;
     }
 
+    protected boolean isRelationSupported() {
+        return true;
+    }
+
     @Test
     public void shouldGenerateAppropriateFilter() throws Exception {
         assertEquals(expectedFilter(), getProperty().asFilter(getIdx()));
+    }
+
+    @Test
+    public void shouldGenerateAppropriateFilterForRelatedField() {
+        if (isRelationSupported()) {
+            assertEquals(expectedFilterForRelatedField(), getRelatedProperty().asFilter(getIdx()));
+        }
     }
 
     @Test

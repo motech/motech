@@ -112,6 +112,8 @@ public class MdsRestFacadeTest {
         FieldDto strField = FieldTestHelper.fieldDto(1L, STR_FIELD, String.class.getName(), STR_FIELD, null);
         FieldDto intField = FieldTestHelper.fieldDto(2L, INT_FIELD, Integer.class.getName(), INT_FIELD, null);
         when(entity.getFieldDtos()).thenReturn(asList(intField, strField, valueField, dateField, blobField));
+        when(entity.getField(STR_FIELD)).thenReturn(FieldTestHelper.field(1l, STR_FIELD, String.class));
+        when(entity.getField(INT_FIELD)).thenReturn(FieldTestHelper.field(2l, INT_FIELD, Integer.class));
 
         LookupDto forbiddenLookup = new LookupDto(FORBIDDEN_LOOKUP_NAME, true, false,
                 asList(FieldTestHelper.lookupFieldDto(1L, STR_FIELD), FieldTestHelper.lookupFieldDto(2L, INT_FIELD)),

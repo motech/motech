@@ -105,6 +105,7 @@ public class EntityInfrastructureBuilderTest {
         lookup.setSingleObjectReturn(true);
         lookup.setRangeLookupFields(Arrays.asList("dateField"));
         lookup.setSetLookupFields(Arrays.asList("timeField"));
+        lookup.setFieldsOrder(Arrays.asList(testField.getName(), testField2.getName(), dateField.getName(), timeField.getName()));
 
         entity.addLookup(lookup);
 

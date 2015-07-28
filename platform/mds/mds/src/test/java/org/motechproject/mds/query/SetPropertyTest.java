@@ -24,6 +24,11 @@ public class SetPropertyTest extends PropertyTest {
     }
 
     @Override
+    protected Property getRelatedProperty() {
+        return new SetProperty<>("jdoVar", "set.id", SET, Integer.class.getName());
+    }
+
+    @Override
     protected int getIdx() {
         return 0;
     }
@@ -31,6 +36,11 @@ public class SetPropertyTest extends PropertyTest {
     @Override
     protected String expectedFilter() {
         return "(set == param0_0 || set == param0_1 || set == param0_2)";
+    }
+
+    @Override
+    protected String expectedFilterForRelatedField() {
+        return "(set.contains(jdoVar) && (jdoVar.id == param0_0 || jdoVar.id == param0_1 || jdoVar.id == param0_2))";
     }
 
     @Override

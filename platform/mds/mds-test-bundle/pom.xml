@@ -61,6 +61,7 @@
                             org.motechproject.mds.test.domain.relationshipswithhistory;version=${project.version},
                             org.motechproject.mds.test.domain.setofenumandstring;version=${project.version},
                             org.motechproject.mds.test.domain.validation;version=${project.version},
+                            org.motechproject.mds.test.domain.lookupcomboboxrelation;version=${project.version},
                             org.motechproject.mds.test.service;version=${project.version},
                             org.motechproject.mds.test.service.cascadedelete;version=${project.version},
                             org.motechproject.mds.test.service.differentbundles;version=${project.version},
@@ -69,7 +70,8 @@
                             org.motechproject.mds.test.service.manytomany;version=${project.version},
                             org.motechproject.mds.test.service.relationshipswithhistory;version=${project.version},
                             org.motechproject.mds.test.service.setofenumandstring;version=${project.version},
-                            org.motechproject.mds.test.service.validation;version=${project.version}
+                            org.motechproject.mds.test.service.validation;version=${project.version},
+                            org.motechproject.mds.test.service.lookupcomboboxrelation;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,

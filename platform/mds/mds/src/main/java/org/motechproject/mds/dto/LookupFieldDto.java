@@ -1,5 +1,8 @@
 package org.motechproject.mds.dto;
 
+import org.apache.commons.lang.StringUtils;
+
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -9,9 +12,13 @@ public class LookupFieldDto {
 
     private Long id;
     private String name;
+    private String relatedName;
     private LookupFieldType type;
     private String customOperator;
     private boolean useGenericParam;
+    private String className;
+    private String displayName;
+    private List<SettingDto> settings;
 
     public LookupFieldDto() {
     }
@@ -25,19 +32,27 @@ public class LookupFieldDto {
     }
 
     public LookupFieldDto(String name, LookupFieldType type, String customOperator) {
-        this(null, name, type, customOperator, false);
+        this(null, name, type, customOperator, false, null);
     }
 
     public LookupFieldDto(Long id, String name, LookupFieldType type, String customOperator) {
-        this(id, name, type, customOperator, false);
+        this(id, name, type, customOperator, false, null);
     }
 
-    public LookupFieldDto(Long id, String name, LookupFieldType type, String customOperator, boolean useGenericParam) {
+    public LookupFieldDto(Long id, String name, LookupFieldType type, String customOperator, boolean useGenericParam, String relatedName) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.customOperator = customOperator;
         this.useGenericParam = useGenericParam;
+        this.relatedName = relatedName;
+    }
+
+    public String getLookupFieldName() {
+        if (StringUtils.isNotBlank(getRelatedName())) {
+            return getName() + "." + getRelatedName();
+        }
+        return getName();
     }
 
     public Long getId() {
@@ -79,6 +94,39 @@ public class LookupFieldDto {
     public void setUseGenericParam(boolean useGenericParam) {
         this.useGenericParam = useGenericParam;
     }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public List<SettingDto> getSettings() {
+        return settings;
+    }
+
+    public void setSettings(List<SettingDto> settings) {
+        this.settings = settings;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getRelatedName() {
+        return relatedName;
+    }
+
+    public void setRelatedName(String relatedName) {
+        this.relatedName = relatedName;
+    }
+
 
     @Override
     public boolean equals(Object o) {

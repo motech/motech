@@ -43,6 +43,7 @@ public class LookupReader {
         lookup.setRangeLookupFields(objectReader.readStringArray("rangeFields"));
         lookup.setCustomOperators(objectReader.readStringMap("customOperators"));
         lookup.setUseGenericParams(objectReader.readBooleanMap("useGenericParams"));
+        lookup.setFieldsOrder(objectReader.readStringArray("fieldsOrder"));
         jsonReader.endObject();
 
         Lookup existingLookup = entity.getLookupByName(lookup.getLookupName());
