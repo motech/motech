@@ -9,7 +9,7 @@
             <i class="fa fa-lg fa-level-up"></i>
             {{msg('mds.btn.backToList')}}
         </button>
-        <button ng-click="addInstance(module, entity)" type="button" class="btn btn-success" ng-show="showAddInstanceButton && !selectedEntity.nonEditable">
+        <button ng-click="addInstance(module, entity)" type="button" class="btn btn-success" ng-show="showAddInstanceButton && !shouldHideButton()">
             <i class="fa fa-plus"></i> {{msg('mds.btn.add')}}
         </button>
         <button id="lookupDialogButton" ng-click="showLookupDialog()" type="button" class="btn btn-default" ng-show="showLookupButton">

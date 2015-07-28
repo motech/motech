@@ -833,12 +833,15 @@
             $scope.securitySettings = {};
             $scope.securitySettings.permissions = [];
             $scope.securitySettings.users = [];
+            $scope.securitySettings.readOnlyPermissions = [];
+            $scope.securitySettings.readOnlyUsers = [];
 
             if ($scope.selectedEntity === null) {
                 return;
             }
 
-            $scope.securitySettings.securityMode =  $scope.selectedEntity.securityMode.valueOf();
+            $scope.securitySettings.securityMode = $scope.selectedEntity.securityMode.valueOf();
+            $scope.securitySettings.readOnlySecurityMode = $scope.selectedEntity.readOnlySecurityMode.valueOf();
 
             if ($scope.securitySettings.securityMode === 'USERS'){
                 $scope.securitySettings.users = $scope.selectedEntity.securityMembers;
@@ -846,8 +849,16 @@
                 $scope.securitySettings.permissions = $scope.selectedEntity.securityMembers;
             }
 
+            if ($scope.securitySettings.readOnlySecurityMode === 'USERS'){
+                $scope.securitySettings.readOnlyUsers = $scope.selectedEntity.readOnlySecurityMembers;
+            } else if ($scope.securitySettings.readOnlySecurityMode === 'PERMISSIONS'){
+                $scope.securitySettings.readOnlyPermissions = $scope.selectedEntity.readOnlySecurityMembers;
+            }
+
             $('#usersSelect').select2('val', $scope.securitySettings.users);
             $('#permissionsSelect').select2('val', $scope.securitySettings.permissions);
+            $('#readOnlyUsersSelect').select2('val', $scope.securitySettings.readOnlyUsers);
+            $('#readOnlyPermissionsSelect').select2('val', $scope.securitySettings.readOnlyPermissions);
         };
 
         /**
@@ -890,6 +901,9 @@
         $scope.securitySettings.permissions = [];
         $scope.securitySettings.users = [];
         $scope.securitySettings.securityMode = undefined;
+        $scope.securitySettings.readOnlyPermissions = [];
+        $scope.securitySettings.readOnlyUser = [];
+        $scope.securitySettings.readOnlySecurityMode = undefined;
 
         /**
         * The $scope.fields contains entity fields. By default there are no fields.
@@ -2833,13 +2847,11 @@
 
         /* ~~~~~ SECURITY FUNCTIONS ~~~~~ */
 
-        $scope.securityOptions = ['EVERYONE', 'OWNER', 'CREATOR', 'USERS', 'PERMISSIONS'];
+        $scope.securityOptions = ['EVERYONE', 'OWNER', 'CREATOR', 'USERS', 'PERMISSIONS', 'NO ACCESS'];
 
-        /**
-        * Clears permissions list in 'Security' view
-        */
         $scope.commitSecurity = function() {
             $scope.securityList = [];
+            $scope.readOnlySecurityList = [];
 
             if ($scope.securitySettings.securityMode === 'USERS') {
                 $scope.clearPermissions();
@@ -2852,12 +2864,23 @@
                 $scope.clearPermissions();
             }
 
+            if ($scope.securitySettings.readOnlySecurityMode === 'USERS') {
+                $scope.clearReadOnlyPermissions();
+                $scope.readOnlySecurityList = $scope.securitySettings.readOnlyUsers;
+            } else if ($scope.securitySettings.readOnlySecurityMode === 'PERMISSIONS') {
+                $scope.clearReadOnlyUsers();
+                $scope.readOnlySecurityList = $scope.securitySettings.readOnlyPermissions;
+            } else {
+                $scope.clearReadOnlyUsers();
+                $scope.clearReadOnlyPermissions();
+            }
+
             $scope.draft({
                 edit: true,
                 values: {
                     path: "$securitySave",
                     security: true,
-                    value: [$scope.securitySettings.securityMode, $scope.securityList]
+                    value: [$scope.securitySettings.securityMode, $scope.securityList, $scope.securitySettings.readOnlySecurityMode, $scope.readOnlySecurityList]
                 }
             });
         };
@@ -2876,6 +2899,22 @@
         $scope.clearPermissions = function() {
             $scope.securitySettings.permissions = [];
             $('#permissionsSelect').select2('val', $scope.securitySettings.permissions);
+        };
+
+        /**
+        * Clears readOnlyUsers list in 'Security' view
+        */
+        $scope.clearReadOnlyUsers = function() {
+            $scope.securitySettings.readOnlyUsers = [];
+            $('#readOnlyUsersSelect').select2('val', $scope.securitySettings.readOnlyUsers);
+        };
+
+        /**
+        * Clears readOnlyPermissions list in 'Security' view
+        */
+        $scope.clearReadOnlyPermissions = function() {
+            $scope.securitySettings.readOnlyPermissions = [];
+            $('#readOnlyPermissionsSelect').select2('val', $scope.securitySettings.readOnlyPermissions);
         };
 
         /**
@@ -2905,6 +2944,35 @@
             } else if (change.removed) {
                 value = change.removed.text;
                 $scope.securitySettings.permissions.removeObject(value);
+            }
+        };
+
+        /**
+        * Callback function called when read only users list under 'Security' view changes
+        */
+        $scope.readOnlyUsersChanged = function(change) {
+            var value;
+
+            if (change.added) {
+                value = change.added.text;
+                $scope.securitySettings.readOnlyUsers.push(value);
+            } else if (change.removed) {
+                value = change.removed.text;
+                $scope.securitySettings.readOnlyUsers.removeObject(value);
+            }
+        };
+        /**
+        * Callback function called when read only permissions list under 'Security' view changes
+        */
+        $scope.readOnlyPermissionsChanged = function(change) {
+            var value;
+
+            if (change.added) {
+                value = change.added.text;
+                $scope.securitySettings.readOnlyPermissions.push(value);
+            } else if (change.removed) {
+                value = change.removed.text;
+                $scope.securitySettings.readOnlyPermissions.removeObject(value);
             }
         };
 
@@ -3125,6 +3193,11 @@
         $scope.entitiesByNonEditable = {};
 
         /**
+        * A map containing names of all entities in MDS, and their readOnlyAccess property value
+        */
+        $scope.entitiesByReadOnlyAccess = {};
+
+        /**
         * This variable is set after user clicks "View" button next to chosen entity
         */
         $scope.selectedEntity = ($routeParams.entityId === undefined) ? undefined : $scope.checkForEntityId();
@@ -3220,6 +3293,7 @@
                     angular.forEach(entitiesList, function (entity) {
                         $scope.modules[moduleName].push(entity.name);
                         $scope.entitiesByNonEditable[entity.name] = entity.nonEditable;
+                        $scope.entitiesByReadOnlyAccess[entity.name] = entity.readOnlyAccess;
                     });
                 });
 
@@ -3377,7 +3451,11 @@
         };
 
         $scope.shouldHideEdition = function(field) {
-            return field.nonEditable || $scope.previousInstance || $scope.isAutoGenerated(field) || ($scope.selectedEntity !== null && $scope.selectedEntity.nonEditable);
+            return field.nonEditable || $scope.previousInstance || $scope.isAutoGenerated(field) || ($scope.selectedEntity !== null && ($scope.selectedEntity.nonEditable || $scope.selectedEntity.readOnlyAccess));
+        };
+
+        $scope.shouldHideButton = function() {
+            return $scope.selectedEntity.nonEditable || $scope.selectedEntity.readOnlyAccess;
         };
 
         $scope.closeRelatedEntityModal = function() {

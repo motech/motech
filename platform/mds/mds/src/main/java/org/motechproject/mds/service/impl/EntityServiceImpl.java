@@ -245,12 +245,25 @@ public class EntityServiceImpl implements EntityService {
         if (value != null) {
             String securityModeName = (String) value.get(0);
             SecurityMode securityMode = SecurityMode.getEnumByName(securityModeName);
+            String readOnlySecurityModeName = (String) value.get(2);
+            SecurityMode readOnlySecurityMode;
+            if(readOnlySecurityModeName != null) {
+                readOnlySecurityMode = SecurityMode.getEnumByName(readOnlySecurityModeName);
+            } else {
+                readOnlySecurityMode = null;
+            }
 
-            if (value.size() > 1) {
-                List<String> list = (List<String>) value.get(1);
-                draft.setSecurity(securityMode, list);
+            List<String> securityMembers = (List<String>) value.get(1);
+            if(securityMembers != null) {
+                draft.setSecurity(securityMode, securityMembers);
             } else {
                 draft.setSecurityMode(securityMode);
+            }
+            List<String> readOnlySecurityMembers = (List<String>) value.get(3);
+            if(readOnlySecurityMembers != null) {
+                draft.setReadOnlySecurity(readOnlySecurityMode, readOnlySecurityMembers);
+            } else {
+                draft.setReadOnlySecurityMode(readOnlySecurityMode);
             }
 
             allEntityDrafts.update(draft);
@@ -779,7 +792,13 @@ public class EntityServiceImpl implements EntityService {
     private boolean hasAccessToEntity(Entity entity) {
         SecurityMode mode = entity.getSecurityMode();
         Set<String> members = entity.getSecurityMembers();
+        SecurityMode readOnlyMode = entity.getReadOnlySecurityMode();
+        Set<String> readOnlyMembers = entity.getReadOnlySecurityMembers();
 
+        return (mode == null && readOnlyMode == null) || ( hasAccessToEntityFromSecurityMode(mode, members) || hasAccessToEntityFromSecurityMode(readOnlyMode, readOnlyMembers));
+    }
+
+    private boolean hasAccessToEntityFromSecurityMode(SecurityMode mode, Set<String> members) {
         if (SecurityMode.USERS.equals(mode)) {
             return members.contains(getUsername());
         } else if (SecurityMode.PERMISSIONS.equals(mode)) {
@@ -791,6 +810,8 @@ public class EntityServiceImpl implements EntityService {
 
             // Only allowed permissions can view, but current user
             // doesn't have any of the required permissions
+            return false;
+        } else if (SecurityMode.NO_ACCESS.equals(mode) || mode == null) {
             return false;
         }
 
@@ -1240,13 +1261,15 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
-    public void updateSecurityOptions(Long entityId, SecurityMode securityMode, Set<String> securityMembers) {
+    public void updateSecurityOptions(Long entityId, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers) {
         Entity entity = allEntities.retrieveById(entityId);
 
         assertEntityExists(entity, entityId);
 
         entity.setSecurityMode(securityMode);
         entity.setSecurityMembers(securityMembers);
+        entity.setReadOnlySecurityMode(readOnlySecurityMode);
+        entity.setReadOnlySecurityMembers(readOnlySecurityMembers);
 
         allEntities.update(entity);
     }

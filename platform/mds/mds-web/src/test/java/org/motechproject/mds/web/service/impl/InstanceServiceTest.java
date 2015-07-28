@@ -27,6 +27,7 @@ import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.Order;
+import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.web.FieldTestHelper;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
@@ -34,6 +35,7 @@ import org.motechproject.mds.web.service.InstanceService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.motechproject.mds.ex.object.SecurityException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,10 +87,15 @@ public class InstanceServiceTest {
     private BundleContext bundleContext;
 
     @Mock
+    private ServiceReference serviceReference;
+
+    @Mock
     private TrashService trashService;
 
     @Before
     public void setUp() {
+        when(entity.getClassName()).thenReturn(TestSample.class.getName());
+        when(entity.getId()).thenReturn(ENTITY_ID);
         when(bundleContext.getBundles()).thenReturn(new Bundle[0]);
     }
 
@@ -463,6 +470,83 @@ public class InstanceServiceTest {
         when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(nonEditableEntity);
 
         instanceService.deleteInstance(ENTITY_ID + 1, INSTANCE_ID);
+    }
+
+    @Test(expected = SecurityException.class)
+    public void shouldThrowExceptionWhileSavingInstanceWithReadOnlyPermission() {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setReadOnlySecurityMode(SecurityMode.EVERYONE);
+        entityDto.setSecurityMode(SecurityMode.NO_ACCESS);
+
+        EntityRecord entityRecord = new EntityRecord(null, ENTITY_ID + 1, new ArrayList<FieldRecord>());
+
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityDto);
+
+        instanceService.saveInstance(entityRecord);
+    }
+
+    @Test(expected = SecurityException.class)
+    public void shouldThrowExceptionWhileReadingInstanceWithoutAnyPermission() {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setReadOnlySecurityMode(SecurityMode.NO_ACCESS);
+        entityDto.setSecurityMode(SecurityMode.NO_ACCESS);
+
+        EntityRecord entityRecord = new EntityRecord(ENTITY_ID + 1, null, new ArrayList<FieldRecord>());
+
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityDto);
+
+        instanceService.getEntityRecords(entityRecord.getId());
+    }
+
+    @Test
+    public void shouldAcceptUserWithReadAccessPermissionWhileReadingInstance() {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setReadOnlySecurityMode(SecurityMode.EVERYONE);
+        entityDto.setSecurityMode(SecurityMode.NO_ACCESS);
+        entityDto.setClassName(TestSample.class.getName());
+
+        EntityRecord entityRecord = new EntityRecord(ENTITY_ID + 1, null, new ArrayList<FieldRecord>());
+
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityDto);
+
+        mockDataService();
+        instanceService.getEntityRecords(entityRecord.getId());
+
+        verify(entityService).getEntityFields(ENTITY_ID + 1);
+    }
+
+    @Test
+    public void shouldAcceptUserWithRegularAccessPermissionWhileReadingInstance() {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setReadOnlySecurityMode(SecurityMode.NO_ACCESS);
+        entityDto.setSecurityMode(SecurityMode.EVERYONE);
+        entityDto.setClassName(TestSample.class.getName());
+
+        EntityRecord entityRecord = new EntityRecord(ENTITY_ID + 1, null, new ArrayList<FieldRecord>());
+
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityDto);
+
+        mockDataService();
+        instanceService.getEntityRecords(entityRecord.getId());
+
+        verify(entityService).getEntityFields(ENTITY_ID + 1);
+    }
+
+    @Test
+    public void shouldAcceptUserWithNoPermissionWhileReadingInstanceWithNoSecurityMode() {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setReadOnlySecurityMode(null);
+        entityDto.setSecurityMode(null);
+        entityDto.setClassName(TestSample.class.getName());
+
+        EntityRecord entityRecord = new EntityRecord(ENTITY_ID + 1, null, new ArrayList<FieldRecord>());
+
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityDto);
+
+        mockDataService();
+        instanceService.getEntityRecords(entityRecord.getId());
+
+        verify(entityService).getEntityFields(ENTITY_ID + 1);
     }
 
     @Test
