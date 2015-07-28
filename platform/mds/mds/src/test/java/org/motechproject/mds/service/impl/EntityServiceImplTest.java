@@ -151,22 +151,23 @@ public class EntityServiceImplTest {
 
     @Test
     public void shouldCreateValidClassNames() throws IOException {
-        EntityDto entityDto1 = new EntityDto(null, null, "test name with spaces", null, null, null, null);
-        EntityDto entityDto2 = new EntityDto(null, null, "    second test      with spaces", null, null, null, null);
-        EntityDto entityDto3 = new EntityDto(null, null, "Sample name  ", null, null, null, null);
+        EntityDto entityDto1 = new EntityDto(null, null, "test name with spaces", null, null, null, null, null, null);
+        EntityDto entityDto2 = new EntityDto(null, null, "    second test      with spaces", null, null, null, null, null, null);
+        EntityDto entityDto3 = new EntityDto(null, null, "Sample name  ", null, null, null, null, null, null);
 
         when(entity.getField((String) any())).thenReturn(null);
         when(allEntities.create((EntityDto) any())).thenReturn(entity);
 
-        EntityDto entityDto4 = new EntityDto(null, "org.motechproject.mds.entity.TestNameWithSpaces", "test name with spaces", null, null, null, null);
+        EntityDto entityDto4 = new EntityDto(null, "org.motechproject.mds.entity.TestNameWithSpaces", "test name with spaces", null, null, null, null, null, null);
         entityService.createEntity(entityDto1);
         verify(allEntities, times(1)).create(entityDto4);
 
-        entityDto4 = new EntityDto(null, "org.motechproject.mds.entity.SecondTestWithSpaces", "second test      with spaces", null, null, null, null);
+        entityDto4 = new EntityDto(null, "org.motechproject.mds.entity.SecondTestWithSpaces", "second test      with spaces", null, null, null, null, null, null);
         entityService.createEntity(entityDto2);
         verify(allEntities, times(1)).create(entityDto4);
 
-        entityDto4 = new EntityDto(null, "org.motechproject.mds.entity.SampleName", "Sample name", null, null, null, null);
+
+        entityDto4 = new EntityDto(null, "org.motechproject.mds.entity.SampleName", "Sample name", null, null, null, null, null, null);
         entityService.createEntity(entityDto3);
         verify(allEntities, times(1)).create(entityDto4);
     }

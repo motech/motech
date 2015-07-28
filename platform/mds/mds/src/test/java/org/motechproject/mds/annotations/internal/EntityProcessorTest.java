@@ -82,7 +82,11 @@ public class EntityProcessorTest extends MockBundle {
 
     EntityDto entity = new EntityDto(
             null, AnotherSample.class.getName(), "test", "mds", null, null, false,
-            SecurityMode.EVERYONE, null, null, false, false);
+            SecurityMode.EVERYONE, null, null, null, null, false, false);
+
+    EntityDto readOnlyEntity = new EntityDto(
+            null, ReadAccessSample.class.getName(), "foo", "mds", null, null, false,
+            null, null, SecurityMode.EVERYONE, null, null, false, false);
 
     @Before
     public void setUp() throws Exception {
@@ -106,6 +110,9 @@ public class EntityProcessorTest extends MockBundle {
         when(entityService.getEntityByClassName(AnotherSample.class.getName()))
             .thenReturn(entity);
 
+        when(entityService.getEntityByClassName(ReadAccessSample.class.getName()))
+                .thenReturn(readOnlyEntity);
+
         when(entityService.getAdvancedSettings(null, true)).thenReturn(
                 new AdvancedSettingsDto()
         );
@@ -128,7 +135,7 @@ public class EntityProcessorTest extends MockBundle {
 
         Set<? extends AnnotatedElement> actual = processor.getElementsToProcess();
 
-        assertEquals(5, actual.size());
+        assertEquals(6, actual.size());
         assertContainsClass(actual, Sample.class.getName());
         assertContainsClass(actual, RelatedSample.class.getName());
         assertContainsClass(actual, AnotherSample.class.getName());
@@ -182,6 +189,17 @@ public class EntityProcessorTest extends MockBundle {
 
         assertEquals(SecurityMode.USERS, entity.getSecurityMode());
         assertTrue(entity.getSecurityMembers().contains("motech"));
+    }
+
+    @Test
+    public void shouldSetReadOnlySecurityOptions() {
+        assertNotSame(SecurityMode.PERMISSIONS, readOnlyEntity.getReadOnlySecurityMode());
+        assertEquals(0, readOnlyEntity.getSecurityMembers().size());
+
+        processor.process(ReadAccessSample.class);
+
+        assertEquals(SecurityMode.PERMISSIONS, readOnlyEntity.getReadOnlySecurityMode());
+        assertTrue(readOnlyEntity.getReadOnlySecurityMembers().contains("manageEbodac"));
     }
 
     @Test

@@ -143,7 +143,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public List<EntityRecord> getEntityRecords(Long entityId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
-        validateCredentials(entity);
+        validateCredentialsForReading(entity);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
 
         MotechDataService service = getServiceForEntity(entity);
@@ -154,14 +154,14 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public List<FieldDto> getEntityFields(Long entityId) {
-        validateCredentials(getEntity(entityId));
+        validateCredentialsForReading(getEntity(entityId));
         return entityService.getEntityFields(entityId);
     }
 
     @Override
     public List<EntityRecord> getTrashRecords(Long entityId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
-        validateCredentials(entity);
+        validateCredentialsForReading(entity);
 
         MotechDataService service = getServiceForEntity(entity);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
@@ -173,7 +173,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public long countTrashRecords(Long entityId) {
         EntityDto entity = getEntity(entityId);
-        validateCredentials(entity);
+        validateCredentialsForReading(entity);
 
         return trashService.countTrashRecords(entity.getClassName());
     }
@@ -181,7 +181,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public EntityRecord getSingleTrashRecord(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
-        validateCredentials(entity);
+        validateCredentialsForReading(entity);
 
         MotechDataService service = getServiceForEntity(entity);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
@@ -194,7 +194,7 @@ public class InstanceServiceImpl implements InstanceService {
     public Object getInstanceField(Long entityId, Long instanceId, String fieldName) {
         EntityDto entity = getEntity(entityId);
         MotechDataService service = getServiceForEntity(entity);
-        validateCredentials(entity);
+        validateCredentialsForReading(entity);
 
         Object instance = service.retrieve(ID, instanceId);
 
@@ -205,7 +205,7 @@ public class InstanceServiceImpl implements InstanceService {
     public List<EntityRecord> getEntityRecordsFromLookup(Long entityId, String lookupName, Map<String, Object> lookupMap,
                                                          QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
-        validateCredentials(entity);
+        validateCredentialsForReading(entity);
 
         LookupDto lookup = getLookupByName(entityId, lookupName);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
@@ -233,7 +233,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public List<EntityRecord> getEntityRecordsWithFilter(Long entityId, Filters filters, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
-        validateCredentials(entity);
+        validateCredentialsForReading(entity);
 
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         MotechDataService service = getServiceForEntity(entity);
@@ -246,7 +246,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public long countRecordsWithFilters(Long entityId, Filters filters) {
         EntityDto entity = getEntity(entityId);
-        validateCredentials(entity);
+        validateCredentialsForReading(entity);
         MotechDataService service = getServiceForEntity(entity);
 
         return service.countForFilters(filters);
@@ -255,7 +255,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public long countRecords(Long entityId) {
         EntityDto entity = getEntity(entityId);
-        validateCredentials(entity);
+        validateCredentialsForReading(entity);
         MotechDataService service = getServiceForEntity(entity);
 
         return service.count();
@@ -264,7 +264,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public long countRecordsByLookup(Long entityId, String lookupName, Map<String, Object> lookupMap) {
         EntityDto entity = getEntity(entityId);
-        validateCredentials(entity);
+        validateCredentialsForReading(entity);
 
         LookupDto lookup = getLookupByName(entityId, lookupName);
         Map<String, FieldDto> fieldMap = entityService.getLookupFieldsMapping(entityId, lookupName);
@@ -294,7 +294,7 @@ public class InstanceServiceImpl implements InstanceService {
     public List<FieldInstanceDto> getInstanceFields(Long entityId, Long instanceId) {
         EntityDto entity = entityService.getEntity(entityId);
         assertEntityExists(entity);
-        validateCredentials(entity);
+        validateCredentialsForReading(entity);
 
         List<FieldDto> fields = entityService.getEntityFields(entityId);
 
@@ -310,7 +310,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public List<HistoryRecord> getInstanceHistory(Long entityId, Long instanceId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
-        validateCredentials(entity);
+        validateCredentialsForReading(entity);
         MotechDataService service = getServiceForEntity(entity);
 
         Object instance = service.retrieve(ID, instanceId);
@@ -326,7 +326,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public long countHistoryRecords(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
-        validateCredentials(entity);
+        validateCredentialsForReading(entity);
         MotechDataService service = getServiceForEntity(entity);
 
         Object instance = service.retrieve(ID, instanceId);
@@ -337,7 +337,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public HistoryRecord getHistoryRecord(Long entityId, Long instanceId, Long historyId) {
         EntityDto entity = getEntity(entityId);
-        validateCredentials(entity);
+        validateCredentialsForReading(entity);
         MotechDataService service = getServiceForEntity(entity);
 
         Object instance = service.retrieve(ID, instanceId);
@@ -365,14 +365,13 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public EntityRecord getEntityInstance(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
-        validateCredentials(entity);
+        validateCredentialsForReading(entity);
         MotechDataService service = getServiceForEntity(entity);
 
         Object instance = service.retrieve(ID, instanceId);
         if (instance == null) {
             throw new ObjectNotFoundException();
         }
-
         List<FieldDto> fields = entityService.getEntityFields(entityId);
 
         return instanceToRecord(instance, entity, fields, service);
@@ -380,7 +379,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public FieldRecord getInstanceValueAsRelatedField(Long entityId, Long fieldId, Long instanceId) {
-        validateCredentials(getEntity(entityId));
+        validateCredentialsForReading(getEntity(entityId));
         try {
             FieldRecord fieldRecord;
             FieldDto field = entityService.getEntityFieldById(entityId, fieldId);
@@ -444,7 +443,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public void verifyEntityAccess(Long entityId) {
         EntityDto entity = getEntity(entityId);
-        validateCredentials(entity);
+        validateCredentialsForReading(entity);
     }
 
     private void populateDefaultFields(List<FieldRecord> fieldRecords) {
@@ -508,7 +507,6 @@ public class InstanceServiceImpl implements InstanceService {
         if (instance == null) {
             return null;
         }
-
         try {
             List<FieldRecord> fieldRecords = new ArrayList<>();
 
@@ -832,32 +830,74 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     private void validateCredentials(EntityDto entity) {
-        boolean authorized = false;
-        String username = getUsername();
-
+        boolean authorized;
         SecurityMode securityMode = entity.getSecurityMode();
-
-        if (securityMode != null) {
+        if(securityMode != null) {
             Set<String> securityMembers = entity.getSecurityMembers();
-
-            if (securityMode == SecurityMode.EVERYONE) {
-                authorized = true;
-            } else if (securityMode == SecurityMode.USERS) {
-                if (securityMembers.contains(username)) {
-                    authorized = true;
-                }
-            } else if (securityMode == SecurityMode.PERMISSIONS) {
-                for (String permission : getUserPermissions()) {
-                    if (securityMembers.contains(permission)) {
-                        authorized = true;
-                    }
-                }
-            }
-
+            authorized = hasUserAuthorization(securityMode, securityMembers);
             if (!authorized && !securityMode.isInstanceRestriction()) {
                 throw new SecurityException();
             }
         }
+    }
+
+    /*
+    * Function throw security exception when user is not authorized while reading instance
+    * and return if it necessary to set instance fields to nonEditable
+    * */
+    private boolean validateCredentialsForReading(EntityDto entity) {
+        boolean authorized = false;
+        SecurityMode securityMode = entity.getSecurityMode();
+        SecurityMode readOnlySecurityMode = entity.getReadOnlySecurityMode();
+
+        if(securityMode != null) {
+            Set<String> securityMembers = entity.getSecurityMembers();
+            authorized = hasUserAuthorization(securityMode, securityMembers);
+        }
+        if (!authorized) {
+            if(readOnlySecurityMode != null) {
+                Set<String> readOnlySecurityMembers = entity.getReadOnlySecurityMembers();
+                authorized = hasUserAuthorization(readOnlySecurityMode, readOnlySecurityMembers);
+                return checkIfUserHasAuthorizationOrAuthorizationIsInstanceRestriction(authorized, securityMode, readOnlySecurityMode);
+            } else if (securityMode != null && !securityMode.isInstanceRestriction()) {
+                throw new SecurityException();
+            }
+        }
+        return false;
+    }
+
+    private boolean checkIfUserHasAuthorizationOrAuthorizationIsInstanceRestriction ( Boolean authorized, SecurityMode securityMode, SecurityMode readOnlySecurityMode){
+        boolean securityModeIsInstanceRestriction = (securityMode != null && securityMode.isInstanceRestriction());
+        if(!securityModeIsInstanceRestriction) {
+            if (!authorized && !readOnlySecurityMode.isInstanceRestriction() && securityMode != null) {
+                throw new SecurityException();
+            } else  {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasUserAuthorization(SecurityMode securityMode, Set<String> securityMembers) {
+        boolean authorized = false;
+        String username = getUsername();
+
+        if (securityMode == SecurityMode.EVERYONE) {
+            authorized = true;
+        } else if (securityMode == SecurityMode.USERS) {
+            if (securityMembers.contains(username)) {
+                authorized = true;
+            }
+        } else if (securityMode == SecurityMode.PERMISSIONS) {
+            for (String permission : getUserPermissions()) {
+                if (securityMembers.contains(permission)) {
+                    authorized = true;
+                }
+            }
+        } else if(securityMode == SecurityMode.NO_ACCESS) {
+            authorized = false;
+        }
+        return authorized;
     }
 
     private void validateNonEditableProperty(EntityDto entity) {

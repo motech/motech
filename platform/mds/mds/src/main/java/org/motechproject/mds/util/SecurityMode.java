@@ -23,7 +23,11 @@ public enum SecurityMode {
     /**
      * Only users with specified permissions can access the instances of an entity.
      */
-    PERMISSIONS;
+    PERMISSIONS,
+    /**
+     * Nobody can access the instances of an entity
+     */
+    NO_ACCESS;
 
     public static SecurityMode getEnumByName(String value) {
         switch (value.toUpperCase()) {
@@ -37,6 +41,8 @@ public enum SecurityMode {
                 return USERS;
             case "PERMISSIONS":
                 return PERMISSIONS;
+            case "NO_ACCESS":
+                return NO_ACCESS;
             default:
                 return null;
         }

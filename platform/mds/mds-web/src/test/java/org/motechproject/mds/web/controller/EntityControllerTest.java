@@ -99,14 +99,14 @@ public class EntityControllerTest {
     @Test
     public void shouldReturnRecordsSortedByName() throws Exception {
         List<EntityDto> expected = new ArrayList<>();
-        expected.add(new EntityDto(9005L, "org.motechproject.appointments.api.model.Appointment", "MOTECH Appointments API", SecurityMode.EVERYONE, null));
-        expected.add(new EntityDto(9006L, "org.motechproject.ivr.domain.CallDetailRecord", "MOTECH IVR API", SecurityMode.EVERYONE, null));
-        expected.add(new EntityDto(9008L, "org.motechproject.messagecampaign.domain.campaign.Campaign", "MOTECH Message Campaign", SecurityMode.EVERYONE, null));
-        expected.add(new EntityDto(9001L, "org.motechproject.openmrs.ws.resource.model.Patient", "MOTECH OpenMRS Web Services", "navio", SecurityMode.EVERYONE, null));
-        expected.add(new EntityDto(9003L, "org.motechproject.openmrs.ws.resource.model.Patient", "MOTECH OpenMRS Web Services", "accra", SecurityMode.EVERYONE, null));
-        expected.add(new EntityDto(9002L, "org.motechproject.openmrs.ws.resource.model.Person", "MOTECH OpenMRS Web Services", "navio", SecurityMode.EVERYONE, null));
-        expected.add(new EntityDto(9004L, "org.motechproject.openmrs.ws.resource.model.Person", "MOTECH OpenMRS Web Services", "accra", SecurityMode.EVERYONE, null));
-        expected.add(new EntityDto(9007L, "org.motechproject.mds.entity.Voucher", SecurityMode.EVERYONE, null));
+        expected.add(new EntityDto(9005L, "org.motechproject.appointments.api.model.Appointment", "MOTECH Appointments API", SecurityMode.EVERYONE, null, null, null));
+        expected.add(new EntityDto(9006L, "org.motechproject.ivr.domain.CallDetailRecord", "MOTECH IVR API", SecurityMode.EVERYONE, null, null, null));
+        expected.add(new EntityDto(9008L, "org.motechproject.messagecampaign.domain.campaign.Campaign", "MOTECH Message Campaign", SecurityMode.EVERYONE, null, null, null));
+        expected.add(new EntityDto(9001L, "org.motechproject.openmrs.ws.resource.model.Patient", "MOTECH OpenMRS Web Services", "navio", SecurityMode.EVERYONE, null, null, null));
+        expected.add(new EntityDto(9003L, "org.motechproject.openmrs.ws.resource.model.Patient", "MOTECH OpenMRS Web Services", "accra", SecurityMode.EVERYONE, null, null, null));
+        expected.add(new EntityDto(9002L, "org.motechproject.openmrs.ws.resource.model.Person", "MOTECH OpenMRS Web Services", "navio", SecurityMode.EVERYONE, null, null, null));
+        expected.add(new EntityDto(9004L, "org.motechproject.openmrs.ws.resource.model.Person", "MOTECH OpenMRS Web Services", "accra", SecurityMode.EVERYONE, null, null, null));
+        expected.add(new EntityDto(9007L, "org.motechproject.mds.entity.Voucher", SecurityMode.EVERYONE, null, null, null));
 
         SelectResult<EntityDto> result = controller.getEntities(new SelectData(null, 1, 10));
 
@@ -116,7 +116,7 @@ public class EntityControllerTest {
 
     @Test
     public void shouldReturnEntityById() throws Exception {
-        assertEquals(new EntityDto(9007L, "org.motechproject.mds.entity.Voucher", SecurityMode.EVERYONE, null), controller.getEntity(9007L));
+        assertEquals(new EntityDto(9007L, "org.motechproject.mds.entity.Voucher", SecurityMode.EVERYONE, null, null, null), controller.getEntity(9007L));
     }
 
     @Test(expected = EntityNotFoundException.class)
@@ -149,8 +149,8 @@ public class EntityControllerTest {
 
     @Test
     public void shouldCreateNewEntity() throws Exception {
-        EntityDto given = new EntityDto(11L, "Test", SecurityMode.EVERYONE, null);
-        EntityDto expected = new EntityDto(9L, "Test", SecurityMode.EVERYONE, null);
+        EntityDto given = new EntityDto(11L, "Test", SecurityMode.EVERYONE, null, null, null);
+        EntityDto expected = new EntityDto(9L, "Test", SecurityMode.EVERYONE, null, null, null);
 
         doReturn(expected).when(entityService).createEntity(given);
         doReturn(expected).when(entityService).getEntityForEdit(9L);
@@ -163,7 +163,7 @@ public class EntityControllerTest {
     public void shouldThrowExceptionIfEntityWithGivenNameExists() throws Exception {
         doThrow(new EntityAlreadyExistException()).when(entityService).createEntity(any(EntityDto.class));
 
-        controller.saveEntity(new EntityDto(7L, "Voucher", SecurityMode.EVERYONE, null));
+        controller.saveEntity(new EntityDto(7L, "Voucher", SecurityMode.EVERYONE, null, null, null));
     }
 
     @Ignore("Ignored until we get fields from database")

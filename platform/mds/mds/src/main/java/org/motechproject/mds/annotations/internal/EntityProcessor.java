@@ -2,6 +2,7 @@ package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.ReadAccess;
 import org.motechproject.mds.domain.MdsEntity;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
@@ -117,7 +118,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
 
                     entity = new EntityDto(
                             null, className, name, module, namespace, tableName, recordHistory,
-                            SecurityMode.EVERYONE, null, clazz.getSuperclass().getName(),
+                            SecurityMode.EVERYONE, null, null, null, clazz.getSuperclass().getName(),
                             Modifier.isAbstract(clazz.getModifiers()), false
                     );
                 } else {
@@ -253,30 +254,48 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
 
     private void setSecurityOptions(AnnotatedElement element, EntityDto entity) {
         Access access = element.getAnnotation(Access.class);
+        ReadAccess readAccess = element.getAnnotation(ReadAccess.class);
         if (null != access && !entity.isSecurityOptionsModified()) {
-            SecurityMode securityMode = access.value();
-            Boolean hasMembers = access.members() != null && access.members().length > 0;
-
-            if (securityMode == SecurityMode.USERS || securityMode == SecurityMode.PERMISSIONS) {
-                if (hasMembers) {
-                    Set<String> members = new HashSet<String>(Arrays.asList(access.members()));
-                    entity.setSecurityMembers(members);
-                } else {
-                    throw new IllegalArgumentException(
-                            "Failed to process Access annotation: the security mode is set to "
-                                    + securityMode + " but there are no members specified."
-                    );
-                }
-            } else {
-                entity.setSecurityMembers(new HashSet<String>());
-                if (hasMembers) {
-                    throw new IllegalArgumentException(
-                            "Failed to process Access annotation: the members attribute can be only used with USERS or PERMISSIONS security mode."
-                    );
-                }
+            Set<String> securityMembers = returnSecurityMembersForSecurityMode(access.value(), access.members(), "Access");
+            entity.setSecurityMode(access.value());
+            entity.setSecurityMembers(securityMembers);
+            if(null == readAccess) {
+                entity.setReadOnlySecurityMode(SecurityMode.NO_ACCESS);
             }
-            entity.setSecurityMode(securityMode);
         }
+
+        if(null != readAccess && !entity.isSecurityOptionsModified()) {
+            Set<String> readOnlySecurityMembers = returnSecurityMembersForSecurityMode(readAccess.value(), readAccess.members(), "ReadAccess");
+            entity.setReadOnlySecurityMode(readAccess.value());
+            if(entity.getSecurityMode()==SecurityMode.EVERYONE) {
+                entity.setSecurityMode(SecurityMode.NO_ACCESS);
+            }
+            entity.setReadOnlySecurityMembers(readOnlySecurityMembers);
+        }
+    }
+
+    private Set<String> returnSecurityMembersForSecurityMode(SecurityMode securityMode, String[] securityMembersArray, String annotationName) {
+        Boolean hasMembers = securityMembersArray != null && securityMembersArray.length > 0;
+        Set<String> securityMembers;
+        if (securityMode == SecurityMode.USERS || securityMode == SecurityMode.PERMISSIONS) {
+            if (hasMembers) {
+                securityMembers = new HashSet<String>(Arrays.asList(securityMembersArray));
+            } else {
+                throw new IllegalArgumentException(
+                        "Failed to process " + annotationName+ " annotation: the security mode is set to "
+                                + securityMode + " but there are no members specified."
+                );
+            }
+        } else {
+            securityMembers = new HashSet<String>();
+            if (hasMembers) {
+                throw new IllegalArgumentException(
+                        "Failed to process " + annotationName + " annotation: the members attribute can be only used with USERS or PERMISSIONS security mode."
+                );
+            }
+        }
+        return securityMembers;
+
     }
 
     @Autowired

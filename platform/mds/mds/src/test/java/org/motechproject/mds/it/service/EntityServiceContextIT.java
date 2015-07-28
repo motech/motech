@@ -208,8 +208,8 @@ public class EntityServiceContextIT extends BaseIT {
 
     @Test
     public void shouldRetrieveAllEntities() throws IOException {
-        entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME_2, null, null, SecurityMode.EVERYONE, null));
-        entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME_3, null, null, SecurityMode.EVERYONE, null));
+        entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME_2, null, null, SecurityMode.EVERYONE, null, null, null));
+        entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME_3, null, null, SecurityMode.EVERYONE, null, null, null));
 
         List<EntityDto> result = entityService.listEntities();
 
@@ -224,11 +224,11 @@ public class EntityServiceContextIT extends BaseIT {
 
     @Test
     public void shouldRetrieveOnlyEntitiesUserHasAccessTo() throws IOException {
-        entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME, null, null, SecurityMode.EVERYONE, null));
+        entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME, null, null, SecurityMode.EVERYONE, null, null, null));
         entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME_2, null, null,
-                SecurityMode.USERS, new HashSet<>(Arrays.asList("motech", "motech2"))));
+                SecurityMode.USERS, new HashSet<>(Arrays.asList("motech", "motech2")), null, null));
         entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME_3, null, null,
-                SecurityMode.USERS, new HashSet<>(Arrays.asList("no_motech", "definitely_no_motech"))));
+                SecurityMode.USERS, new HashSet<>(Arrays.asList("no_motech", "definitely_no_motech")), null, null));
 
         List<EntityDto> result = entityService.listEntities(true);
 

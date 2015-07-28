@@ -14,6 +14,8 @@ import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.motechproject.mds.util.SecurityUtil.getUserPermissions;
+import static org.motechproject.mds.util.SecurityUtil.getUsername;
 
 /**
  * The <code>EntityDto</code> class contains only basic information about an entity like id, name,
@@ -32,54 +34,57 @@ public class EntityDto {
     private boolean outdated;
     private boolean nonEditable;
     private SecurityMode securityMode;
+    private SecurityMode readOnlySecurityMode;
     private Set<String> securityMembers;
+    private Set<String> readOnlySecurityMembers;
     private String superClass;
     private boolean abstractClass;
     private boolean securityOptionsModified;
     private Integer maxFetchDepth;
+    private boolean hasOnlyReadAccessToInstance;
 
     public EntityDto() {
-        this(null, null, null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null, null, null, null);
     }
 
     public EntityDto(String className) {
-        this(className, SecurityMode.EVERYONE, null);
+        this(className, SecurityMode.EVERYONE, null, null, null);
     }
 
     public EntityDto(Long id, String className) {
-        this(id, className, SecurityMode.EVERYONE, null);
+        this(id, className, SecurityMode.EVERYONE, null, null, null);
     }
 
-    public EntityDto(String className, SecurityMode securityMode, Set<String> securityMembers) {
-        this(className, ClassName.getSimpleName(className), null, null, securityMode, securityMembers);
+    public EntityDto(String className, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers) {
+        this(className, ClassName.getSimpleName(className), null, null, securityMode, securityMembers, readOnlySecurityMode, readOnlySecurityMembers);
     }
 
-    public EntityDto(Long id, String className, SecurityMode securityMode, Set<String> securityMembers) {
-        this(id, className, ClassName.getSimpleName(className), null, null, securityMode, securityMembers);
+    public EntityDto(Long id, String className, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers) {
+        this(id, className, ClassName.getSimpleName(className), null, null, securityMode, securityMembers, readOnlySecurityMode, readOnlySecurityMembers);
     }
 
-    public EntityDto(Long id, String className, String module, SecurityMode securityMode, Set<String> securityMembers) {
-        this(id, className, ClassName.getSimpleName(className), module, null, securityMode, securityMembers);
+    public EntityDto(Long id, String className, String module, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers) {
+        this(id, className, ClassName.getSimpleName(className), module, null, securityMode, securityMembers, readOnlySecurityMode, readOnlySecurityMembers);
     }
 
-    public EntityDto(Long id, String className, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers) {
-        this(id, className, ClassName.getSimpleName(className), module, namespace, securityMode, securityMembers);
+    public EntityDto(Long id, String className, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers) {
+        this(id, className, ClassName.getSimpleName(className), module, namespace, securityMode, securityMembers, readOnlySecurityMode, readOnlySecurityMembers);
     }
 
-    public EntityDto(String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers) {
-        this(null, className, name, module, namespace, securityMode, securityMembers);
+    public EntityDto(String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers) {
+        this(null, className, name, module, namespace, securityMode, securityMembers, readOnlySecurityMode, readOnlySecurityMembers);
     }
 
-    public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers) {
+    public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers) {
         // to avoid PMD violation (ConstructorCallsOverridableMethod) we pass string representation of Object class name
-        this(id, className, name, module, namespace, securityMode, securityMembers, "java.lang.Object");
+        this(id, className, name, module, namespace, securityMode, securityMembers, readOnlySecurityMode, readOnlySecurityMembers, "java.lang.Object");
     }
 
-    public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, String superClass) {
-        this(id, className, name, module, namespace, null, false, securityMode, securityMembers, superClass, false, false);
+    public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers, String superClass) {
+        this(id, className, name, module, namespace, null, false, securityMode, securityMembers, readOnlySecurityMode, readOnlySecurityMembers, superClass, false, false);
     }
 
-    public EntityDto(Long id, String className, String name, String module, String namespace, String tableName, boolean recordHistory, SecurityMode securityMode, Set<String> securityMembers, String superClass, boolean abstractClass, boolean securityOptionsModified) {
+    public EntityDto(Long id, String className, String name, String module, String namespace, String tableName, boolean recordHistory, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers, String superClass, boolean abstractClass, boolean securityOptionsModified) {
         this.id = id;
         this.className = className;
         this.name = name;
@@ -89,6 +94,8 @@ public class EntityDto {
         this.recordHistory = recordHistory;
         this.securityMode = securityMode != null ? securityMode : SecurityMode.EVERYONE;
         this.securityMembers = securityMembers != null ? new HashSet<>(securityMembers) : new HashSet<String>();
+        this.readOnlySecurityMode = readOnlySecurityMode;
+        this.readOnlySecurityMembers = readOnlySecurityMembers;
         this.readOnly = isNotBlank(module) || isNotBlank(namespace);
         this.superClass = superClass;
         this.abstractClass = abstractClass;
@@ -191,6 +198,22 @@ public class EntityDto {
         this.securityMembers = securityMembers != null ? securityMembers : new HashSet<String>();
     }
 
+    public SecurityMode getReadOnlySecurityMode() {
+        return readOnlySecurityMode;
+    }
+
+    public void setReadOnlySecurityMode(SecurityMode readOnlySecurityMode) {
+        this.readOnlySecurityMode = readOnlySecurityMode;
+    }
+
+    public Set<String> getReadOnlySecurityMembers() {
+        return readOnlySecurityMembers;
+    }
+
+    public void setReadOnlySecurityMembers(Set<String> readOnlySecurityMembers) {
+        this.readOnlySecurityMembers = readOnlySecurityMembers;
+    }
+
     public String getSuperClass() {
         return defaultIfBlank(superClass, Object.class.getName());
     }
@@ -231,6 +254,14 @@ public class EntityDto {
         this.nonEditable = nonEditable;
     }
 
+    public boolean isHasOnlyReadAccessToInstance() {
+        return hasOnlyReadAccessToInstance;
+    }
+
+    public void setHasOnlyReadAccessToInstance(boolean hasOnlyReadAccesToInstance) {
+        this.hasOnlyReadAccessToInstance = hasOnlyReadAccesToInstance;
+    }
+
     @JsonIgnore
     public boolean isDDE() {
         return StringUtils.isNotBlank(module);
@@ -258,5 +289,34 @@ public class EntityDto {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+    public boolean checkIfUserHasOnlyReadAccessAuthorization() {
+        return (!hasAccessToEntityFromSecurityMode(securityMode, securityMembers) && hasAccessToEntityFromSecurityMode(readOnlySecurityMode, readOnlySecurityMembers));
+    }
+
+    private boolean hasAccessToEntityFromSecurityMode(SecurityMode mode, Set<String> members) {
+        boolean authorized = false;
+        String username = getUsername();
+        if(mode == null) {
+            authorized = false;
+        } else if (mode == SecurityMode.EVERYONE) {
+            authorized = true;
+        } else if (mode == SecurityMode.USERS) {
+            if (members.contains(username)) {
+                authorized = true;
+            }
+        } else if (mode == SecurityMode.PERMISSIONS) {
+            for (String permission : getUserPermissions()) {
+                if (members.contains(permission)) {
+                    authorized = true;
+                }
+            }
+        } else if (mode == SecurityMode.NO_ACCESS) {
+            authorized = false;
+        } else if (mode.isInstanceRestriction()) {
+            authorized = true;
+        }
+        return authorized;
     }
 }

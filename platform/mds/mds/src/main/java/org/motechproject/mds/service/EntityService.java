@@ -388,7 +388,7 @@ public interface EntityService {
      * @param securityMode new security mode
      * @param securityMembers set of user or role names
      */
-    void updateSecurityOptions(Long entityId, SecurityMode securityMode, Set<String> securityMembers);
+    void updateSecurityOptions(Long entityId, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers);
 
     /**
      * Updated the max fetch depth for a given entity. That fetch depth will be passed to the fetch plan

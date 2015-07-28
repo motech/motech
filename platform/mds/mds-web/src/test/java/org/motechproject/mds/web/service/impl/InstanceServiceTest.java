@@ -17,6 +17,7 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.object.ObjectNotFoundException;
+import org.motechproject.mds.ex.object.SecurityException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.service.EntityService;
@@ -26,6 +27,7 @@ import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.Order;
+import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.web.FieldTestHelper;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
@@ -415,6 +417,83 @@ public class InstanceServiceTest {
         when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(nonEditableEntity);
 
         instanceService.deleteInstance(ENTITY_ID + 1, INSTANCE_ID);
+    }
+
+    @Test(expected = SecurityException.class)
+    public void shouldThrowExceptionWhileSavingInstanceWithReadOnlyPermission() {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setReadOnlySecurityMode(SecurityMode.EVERYONE);
+        entityDto.setSecurityMode(SecurityMode.NO_ACCESS);
+
+        EntityRecord entityRecord = new EntityRecord(null, ENTITY_ID + 1, new ArrayList<FieldRecord>());
+
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityDto);
+
+        instanceService.saveInstance(entityRecord);
+    }
+
+    @Test(expected = SecurityException.class)
+    public void shouldThrowExceptionWhileReadingInstanceWithoutAnyPermission() {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setReadOnlySecurityMode(SecurityMode.NO_ACCESS);
+        entityDto.setSecurityMode(SecurityMode.NO_ACCESS);
+
+        EntityRecord entityRecord = new EntityRecord(ENTITY_ID + 1, null, new ArrayList<FieldRecord>());
+
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityDto);
+
+        instanceService.getEntityRecords(entityRecord.getId());
+    }
+
+    @Test
+    public void shouldAcceptUserWithReadAccessPermissionWhileReadingInstance() {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setReadOnlySecurityMode(SecurityMode.EVERYONE);
+        entityDto.setSecurityMode(SecurityMode.NO_ACCESS);
+        entityDto.setClassName(TestSample.class.getName());
+
+        EntityRecord entityRecord = new EntityRecord(ENTITY_ID + 1, null, new ArrayList<FieldRecord>());
+
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityDto);
+
+        mockDataService();
+        instanceService.getEntityRecords(entityRecord.getId());
+
+        verify(entityService).getEntityFields(ENTITY_ID + 1);
+    }
+
+    @Test
+    public void shouldAcceptUserWithRegularAccessPermissionWhileReadingInstance() {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setReadOnlySecurityMode(SecurityMode.NO_ACCESS);
+        entityDto.setSecurityMode(SecurityMode.EVERYONE);
+        entityDto.setClassName(TestSample.class.getName());
+
+        EntityRecord entityRecord = new EntityRecord(ENTITY_ID + 1, null, new ArrayList<FieldRecord>());
+
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityDto);
+
+        mockDataService();
+        instanceService.getEntityRecords(entityRecord.getId());
+
+        verify(entityService).getEntityFields(ENTITY_ID + 1);
+    }
+
+    @Test
+    public void shouldAcceptUserWithNoPermissionWhileReadingInstanceWithNoSecurityMode() {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setReadOnlySecurityMode(null);
+        entityDto.setSecurityMode(null);
+        entityDto.setClassName(TestSample.class.getName());
+
+        EntityRecord entityRecord = new EntityRecord(ENTITY_ID + 1, null, new ArrayList<FieldRecord>());
+
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityDto);
+
+        mockDataService();
+        instanceService.getEntityRecords(entityRecord.getId());
+
+        verify(entityService).getEntityFields(ENTITY_ID + 1);
     }
 
     private List buildRelatedRecord() {

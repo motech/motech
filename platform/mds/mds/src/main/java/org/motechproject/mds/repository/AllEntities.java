@@ -30,6 +30,8 @@ public class AllEntities extends MotechDataRepository<Entity> {
         entity.setMaxFetchDepth(dto.getMaxFetchDepth());
         entity.setSecurityMode(dto.getSecurityMode());
         entity.setSecurityMembers(dto.getSecurityMembers());
+        entity.setReadOnlySecurityMode(dto.getReadOnlySecurityMode());
+        entity.setReadOnlySecurityMembers(dto.getReadOnlySecurityMembers());
         entity.setSuperClass(dto.getSuperClass());
         entity.setAbstractClass(dto.isAbstractClass());
         Tracking tracking = new Tracking();

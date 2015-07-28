@@ -70,6 +70,9 @@ public class Entity {
     private SecurityMode securityMode;
 
     @Persistent
+    private SecurityMode readOnlySecurityMode;
+
+    @Persistent
     private String superClass;
 
     @Persistent
@@ -106,6 +109,10 @@ public class Entity {
     @Element(column = "SecurityMember")
     private Set<String> securityMembers;
 
+    @Join(column = "Entity_OID")
+    @Element(column = "ReadOnlySecurityMember")
+    private Set<String> readOnlySecurityMembers;
+
     public Entity() {
         this(null);
     }
@@ -115,24 +122,27 @@ public class Entity {
     }
 
     public Entity(String className, String module, String namespace, SecurityMode securityMode) {
-        this(className, ClassName.getSimpleName(className), module, namespace, securityMode, null);
+        this(className, ClassName.getSimpleName(className), module, namespace, securityMode, null, null, null);
     }
 
-    public Entity(String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers) {
+    public Entity(String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers) {
         this.className = className;
         this.module = module;
         this.namespace = namespace;
-        this.securityMode = securityMode != null ? securityMode : SecurityMode.EVERYONE;
-        this.securityMembers = securityMembers != null ? securityMembers : new HashSet<String>();
+        this.securityMode  = securityMode != null ? securityMode : SecurityMode.EVERYONE;
+        this.securityMembers = securityMembers;
+        this.readOnlySecurityMode = readOnlySecurityMode;
+        this.readOnlySecurityMembers = readOnlySecurityMembers;
         setName(name);
     }
 
     public EntityDto toDto() {
         EntityDto dto = new EntityDto(id, className, getName(), module, namespace, tableName, getTracking() != null ? getTracking().isRecordHistory() : false,
-                securityMode, securityMembers, superClass, abstractClass, securityOptionsModified);
+                securityMode, securityMembers, readOnlySecurityMode, readOnlySecurityMembers, superClass, abstractClass, securityOptionsModified);
 
         dto.setMaxFetchDepth(maxFetchDepth);
         dto.setNonEditable(getTracking() != null ? getTracking().isNonEditable() : false);
+        dto.setHasOnlyReadAccessToInstance(dto.checkIfUserHasOnlyReadAccessAuthorization());
 
         return dto;
     }
@@ -263,7 +273,7 @@ public class Entity {
     }
 
     public void setSecurityMode(SecurityMode securityMode) {
-        this.securityMode = securityMode != null ? securityMode : SecurityMode.EVERYONE;
+        this.securityMode  = securityMode != null ? securityMode : SecurityMode.EVERYONE;
     }
 
     public Set<String> getSecurityMembers() {
@@ -272,6 +282,23 @@ public class Entity {
 
     public void setSecurityMembers(Set<String> securityMembers) {
         this.securityMembers = securityMembers;
+    }
+
+    public SecurityMode getReadOnlySecurityMode() {
+        return readOnlySecurityMode;
+    }
+
+    public void setReadOnlySecurityMode(SecurityMode readOnlySecurityMode) {
+        this.readOnlySecurityMode = readOnlySecurityMode;
+    }
+
+    public Set<String> getReadOnlySecurityMembers() {
+
+        return readOnlySecurityMembers;
+    }
+
+    public void setReadOnlySecurityMembers(Set<String> readOnlySecurityMembers) {
+        this.readOnlySecurityMembers = readOnlySecurityMembers;
     }
 
     public String getSuperClass() {
@@ -453,7 +480,7 @@ public class Entity {
             addLookup(copy);
         }
 
-        if (draft.getSecurityMode() != null) {
+        if (draft.getSecurityMode() != null || draft.getReadOnlySecurityMode() != null) {
             securityOptionsModified = true;
         }
 
@@ -478,9 +505,18 @@ public class Entity {
         incrementVersion();
 
         securityMode = draft.getSecurityMode();
+        readOnlySecurityMode = draft.getReadOnlySecurityMode();
 
         if (draft.getSecurityMembers() != null) {
             securityMembers = new HashSet(draft.getSecurityMembers());
+        }
+        setReadOnlySecurityMembersForDraft(draft);
+
+    }
+
+    private void setReadOnlySecurityMembersForDraft(EntityDraft draft) {
+        if (draft.getReadOnlySecurityMembers() != null) {
+            readOnlySecurityMembers = new HashSet(draft.getReadOnlySecurityMembers());
         }
     }
 
@@ -664,6 +700,16 @@ public class Entity {
             securityMembers = null;
         } else {
             securityMembers = new HashSet<>(securityMembersList);
+        }
+    }
+
+    public void setReadOnlySecurity(SecurityMode readOnlySecurityMode, List<String> readOnlySecurityMembersList) {
+        setReadOnlySecurityMode(readOnlySecurityMode);
+
+        if (readOnlySecurityMembersList == null) {
+            readOnlySecurityMembers = null;
+        } else {
+            readOnlySecurityMembers = new HashSet<>(readOnlySecurityMembersList);
         }
     }
 
