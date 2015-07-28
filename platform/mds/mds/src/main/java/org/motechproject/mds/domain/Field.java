@@ -140,6 +140,13 @@ public class Field {
         this.exposedViaRest = true;
     }
 
+    public List<SettingDto> settingsToDto() {
+        List<SettingDto> settingsDto = new ArrayList<>();
+        for (FieldSetting setting : settings) {
+                settingsDto.add(setting.toDto());
+        }
+        return settingsDto;
+    }
 
     public FieldDto toDto() {
         FieldBasicDto basic = new FieldBasicDto(displayName, name, required, parseDefaultValue(), tooltip, placeholder);
@@ -162,14 +169,14 @@ public class Field {
         List<SettingDto> settingsDto = new ArrayList<>();
 
 
-            for (FieldSetting setting : settings) {
-                // since textArea setting is used only to distinguish between TextArea and String fields we don't display it on UI
-                if (setting.getDetails().getName().equalsIgnoreCase("mds.form.label.textarea")) {
-                    typeDto = generateTypeForTextArea(setting);
-                } else {
-                    settingsDto.add(setting.toDto());
-                }
+        for (FieldSetting setting : settings) {
+            // since textArea setting is used only to distinguish between TextArea and String fields we don't display it on UI
+            if (setting.getDetails().getName().equalsIgnoreCase("mds.form.label.textarea")) {
+                typeDto = generateTypeForTextArea(setting);
+            } else {
+                settingsDto.add(setting.toDto());
             }
+        }
 
 
         List<LookupDto> lookupDtos = new ArrayList<>();

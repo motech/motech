@@ -218,6 +218,13 @@ public class EntityController extends MdsController {
         return entityService.getEntityFields(entityId);
     }
 
+    @RequestMapping(value = "/entities/entityFieldsByClassName", method = RequestMethod.GET)
+    @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
+    @ResponseBody
+    public List<FieldDto> getEntityFieldsByClassName(@RequestParam(value = "entityClassName", required = true) String entityClassName) {
+        return entityService.getEntityFieldsByClassName(entityClassName);
+    }
+
     @RequestMapping(value = "/entities/{entityId}/displayFields", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody

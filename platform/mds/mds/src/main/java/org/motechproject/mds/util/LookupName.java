@@ -41,6 +41,46 @@ public final class LookupName {
         return "count" + StringUtils.capitalize(lookupMethod(lookupNameOrMethodName));
     }
 
+    /**
+     * Builds lookup field name which may contain information about the searching by relationship.
+     *
+     * @param fieldName The name of the field from entity
+     * @param relatedFieldName The name of the field in related entity
+     * @return lookup field name
+     */
+    public static String buildLookupFieldName(String fieldName, String relatedFieldName) {
+        if (StringUtils.isNotBlank(relatedFieldName)) {
+            return String.format("%s.%s", fieldName, relatedFieldName);
+        }
+        return fieldName;
+    }
+
+    /**
+     * Returns a field name in related entity.
+     *
+     * @param lookupFieldName the lookup field name
+     * @return field name from related entity
+     */
+    public static String getRelatedFieldName(String lookupFieldName) {
+        if (lookupFieldName.contains(".")) {
+            return lookupFieldName.split("\\.")[1];
+        }
+        return null;
+    }
+
+    /**
+     * Returns the name of the field from entity.
+     *
+     * @param lookupFieldName the lookup field name
+     * @return field name from entity
+     */
+    public static String getFieldName(String lookupFieldName) {
+        if (lookupFieldName.contains(".")) {
+            return lookupFieldName.split("\\.")[0];
+        }
+        return lookupFieldName;
+    }
+
     private LookupName() {
     }
 }

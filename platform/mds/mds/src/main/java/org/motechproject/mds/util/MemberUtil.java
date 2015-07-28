@@ -105,6 +105,18 @@ public final class MemberUtil {
     }
 
     /**
+     * Builds an enum class name for given entity class name and field name.
+     *
+     * @param entityClassName the class name of the entity
+     * @param fieldName the field name
+     * @return enum class name
+     */
+    public static String getDefaultEnumName(String entityClassName, String fieldName) {
+        return String.format("%s.%s%s", ClassName.getEnumPackage(entityClassName),
+                ClassName.getSimpleName(entityClassName), capitalize(fieldName));
+    }
+
+    /**
      * Gets annotated element type. If this element is not a member of the class, it returns null. Otherwise, it
      * will try to resolve the type by checking it directly, or via getter/setter methods. If member is neither
      * a field or getter/setter method, it returns null.

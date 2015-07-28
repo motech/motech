@@ -37,6 +37,7 @@
     <osgi:reference id="goldfishDataService" interface="org.motechproject.mds.test.service.inheritancestrategies.GoldfishDataService" />
     <osgi:reference id="vehicleOwnerDataService" interface="org.motechproject.mds.test.service.inheritancestrategies.VehicleOwnerDataService" />
     <osgi:reference id="messageDataService" interface="org.motechproject.mds.test.service.setofenumandstring.MessageDataService" />
+    <osgi:reference id="messageLogDataService" interface="org.motechproject.mds.test.service.lookupcomboboxrelation.MessageLogDataService" />
 
     <osgi:service ref="jdoListenerTestService" interface="org.motechproject.mds.test.service.instancelifecyclelistener.JdoListenerTestService" auto-export="interfaces"/>
     <osgi:service ref="transactionTestService" interface="org.motechproject.mds.test.service.TransactionTestService" auto-export="interfaces"/>

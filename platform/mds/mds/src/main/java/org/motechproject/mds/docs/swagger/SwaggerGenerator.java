@@ -21,8 +21,10 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.RestOptions;
 import org.motechproject.mds.dto.LookupFieldType;
+import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.LookupName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,16 +109,17 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerGenerator.class);
 
     private MessageSource messageSource;
+    private AllEntities allEntities;
     private Properties swaggerProperties;
 
     @Override
-    public void generateDocumentation(Writer writer, List<Entity> entities, String serverPrefix, Locale locale) {
+    public void generateDocumentation(Writer writer, String serverPrefix, Locale locale) {
         LOGGER.info("Generating REST documentation");
 
         SwaggerModel swaggerModel = initialSwaggerModel(serverPrefix, locale);
         swaggerModel.addDefinition("Metadata", buildMetadataDefinition());
 
-        for (Entity entity : entities) {
+        for (Entity entity : allEntities.retrieveAll()) {
             addCrudEndpoints(swaggerModel, entity, locale);
             addLookupEndpoints(swaggerModel, entity, locale);
             addDefinitions(swaggerModel, entity);
@@ -312,14 +315,26 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
         pathEntry.addResponse(HttpStatus.FORBIDDEN, forbiddenResponse(locale));
     }
 
+    private Field getRelatedField(String entityClassName, String fieldName) {
+        Entity entity = allEntities.retrieveByClassName(entityClassName);
+        return entity.getField(fieldName);
+    }
+
     private List<Parameter> lookupParameters(Entity entity, Lookup lookup, Locale locale) {
         List<Parameter> parameters = new ArrayList<>();
 
-        for (Field lookupField : lookup.getFields()) {
-            LookupFieldType lookupFieldType = lookup.getLookupFieldType(lookupField.getName());
+        for (String lookupFieldName : lookup.getFieldsOrder()) {
+            LookupFieldType lookupFieldType = lookup.getLookupFieldType(lookupFieldName);
+            Field lookupField;
+            if (lookupFieldName.contains(".")) {
+                lookupField = getRelatedField(lookup.getLookupFieldByName(LookupName.getFieldName(lookupFieldName)).
+                                getMetadata(Constants.MetadataKeys.RELATED_CLASS).getValue(), LookupName.getRelatedFieldName(lookupFieldName));
+            } else {
+                lookupField = lookup.getLookupFieldByName(lookupFieldName);
+            }
             String paramDesc = lookupParamDescription(lookupField, lookupFieldType, locale);
 
-            Parameter parameter = SwaggerFieldConverter.lookupParameter(lookupField, lookupFieldType, paramDesc);
+            Parameter parameter = SwaggerFieldConverter.lookupParameter(lookupFieldName, lookupField, lookupFieldType, paramDesc);
             parameters.add(parameter);
         }
 
@@ -641,6 +656,11 @@ public class SwaggerGenerator implements RestDocumentationGenerator {
     @Qualifier("swaggerProperties")
     public void setSwaggerProperties(Properties swaggerProperties) {
         this.swaggerProperties = swaggerProperties;
+    }
+
+    @Autowired
+    public void setAllEntities(AllEntities allEntities) {
+        this.allEntities = allEntities;
     }
 
     @Resource(name="swaggerMessageSource")

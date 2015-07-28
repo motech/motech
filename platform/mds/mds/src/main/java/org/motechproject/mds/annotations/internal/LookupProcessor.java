@@ -20,6 +20,8 @@ import org.motechproject.mds.ex.lookup.IllegalLookupException;
 import org.motechproject.mds.ex.lookup.LookupWrongParameterTypeException;
 import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.LookupName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,8 +147,8 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
         List<String> parametersNames = findParametersNames(method);
         for (LookupFieldDto lookupFieldDto : lookupFields) {
             if (lookupFieldDto.getType() == LookupFieldType.VALUE) {
-                FieldDto fieldDto = findEntityFieldByName(entityClassName, lookupFieldDto.getName());
-                int position = parametersNames.indexOf(lookupFieldDto.getName());
+                FieldDto fieldDto = findEntityFieldByName(entityClassName, lookupFieldDto.getLookupFieldName());
+                int position = parametersNames.indexOf(lookupFieldDto.getLookupFieldName());
 
                 if (fieldDto != null && fieldDto.getType() != null) {
                     TypeDto type = fieldDto.getType();
@@ -266,8 +268,8 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
 
                     LookupFieldType type = determineLookupType(methodParameterType);
 
-                    LookupFieldDto lookupField = new LookupFieldDto(null, name, type);
-
+                    LookupFieldDto lookupField = new LookupFieldDto(null, LookupName.getFieldName(name), type);
+                    lookupField.setRelatedName(LookupName.getRelatedFieldName(name));
                     setCustomOperator(fieldAnnotation, lookupField);
                     setUseGenericParam(entity, methodParameterType, lookupField);
 
@@ -294,9 +296,14 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
     private void setUseGenericParam(EntityDto entity, Class<?> methodParameterType, LookupFieldDto lookupField) {
         FieldDto field = findEntityFieldByName(entity.getClassName(), lookupField.getName());
         TypeDto fieldType = field.getType();
+        EntityDto relatedEntity = null;
+        if (fieldType.isRelationship()) {
+            relatedEntity = findEntityByClassName(field.getMetadata(Constants.MetadataKeys.RELATED_CLASS).getValue());
+            field = findEntityFieldByName(field.getMetadata(Constants.MetadataKeys.RELATED_CLASS).getValue(), lookupField.getRelatedName());
+        }
 
         if (fieldType.isCombobox()) {
-            ComboboxHolder holder = new ComboboxHolder(entity, field);
+            ComboboxHolder holder = new ComboboxHolder(relatedEntity == null ? entity : relatedEntity, field);
             boolean isCollection = holder.isCollection();
             boolean isCollectionParam = Collection.class.isAssignableFrom(methodParameterType);
 

@@ -10,6 +10,7 @@ import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.util.ValidationUtil;
 
@@ -519,7 +520,7 @@ public class Entity {
     }
 
     public void updateAdvancedSetting(AdvancedSettingsDto advancedSettings) {
-        updateIndexes(advancedSettings);
+        updateIndexes(advancedSettings.getIndexes());
         updateBrowsingSettings(advancedSettings);
         updateRestOptions(advancedSettings);
         updateTracking(advancedSettings);
@@ -550,7 +551,7 @@ public class Entity {
         }
     }
 
-    private void updateIndexes(AdvancedSettingsDto advancedSettings) {
+    public void updateIndexes(List<LookupDto> indexes) {
         // deletion
         Iterator<Lookup> it = getLookups().iterator();
 
@@ -558,7 +559,7 @@ public class Entity {
             Lookup lookup = it.next();
 
             boolean inNewList = false;
-            for (LookupDto lookupDto : advancedSettings.getIndexes()) {
+            for (LookupDto lookupDto : indexes) {
                 if (Objects.equals(lookup.getId(), lookupDto.getId())) {
                     inNewList = true;
                     break;
@@ -570,12 +571,19 @@ public class Entity {
             }
         }
 
-        for (LookupDto lookupDto : advancedSettings.getIndexes()) {
+        for (LookupDto lookupDto : indexes) {
             Lookup lookup = getLookupById(lookupDto.getId());
             List<Field> lookupFields = new ArrayList<>();
+            List<String> lookupFieldsOrder = new ArrayList<>();
             for (LookupFieldDto lookupField : lookupDto.getLookupFields()) {
-                lookupFields.add(getField(lookupField.getId()));
+                Field field = getField(lookupField.getId());
+                if (!lookupFields.contains(field)) {
+                    lookupFields.add(field);
+                }
+                String lookupFieldName = LookupName.buildLookupFieldName(field.getName(), lookupField.getRelatedName());
+                lookupFieldsOrder.add(lookupFieldName);
             }
+            lookupDto.setFieldsOrder(lookupFieldsOrder);
 
             if (lookup == null) {
                 Lookup newLookup = new Lookup(lookupDto, lookupFields);

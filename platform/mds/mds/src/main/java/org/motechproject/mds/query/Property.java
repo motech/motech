@@ -13,8 +13,18 @@ public abstract class Property<T> {
     private String name;
     private T value;
     private String type;
+    private boolean forRelation = false;
+    private String jdoVariableName;
 
     protected Property(String name, T value, String type) {
+        this.name = name;
+        this.value = value;
+        this.type = type;
+    }
+
+    protected Property(String jdoVariableName, String name, T value, String type) {
+        this.jdoVariableName = jdoVariableName;
+        this.forRelation = true;
         this.name = name;
         this.value = value;
         this.type = type;
@@ -30,6 +40,14 @@ public abstract class Property<T> {
 
     public String getType() {
         return type;
+    }
+
+    public String getJdoVariableName() {
+        return jdoVariableName;
+    }
+
+    public boolean isForRelation() {
+        return forRelation;
     }
 
     public CharSequence asFilter(int idx) {

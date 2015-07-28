@@ -1,13 +1,17 @@
 package org.motechproject.mds.rest;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.module.SimpleModule;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.RestOptions;
 import org.motechproject.mds.dto.DtoHelper;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
 import org.motechproject.mds.ex.rest.RestEntityNotFoundException;
@@ -81,7 +85,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
 
         Map<String, FieldDto> fieldMap = DtoHelper.asFieldMapByName(entity.getFieldDtos());
 
-        readLookups(entity, fieldMap);
+        readLookups(entity);
         readFieldsExposedByRest(fieldMap);
         readBlobFieldsExposedByRest(fieldMap);
     }
@@ -231,8 +235,9 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
         }
     }
 
-    private void readLookups(Entity entity, Map<String, FieldDto> fieldMap) {
+    private void readLookups(Entity entity) {
         for (LookupDto lookup : entity.getLookupDtos()) {
+            Map<String, FieldDto> fieldMap = getLookupFieldsMapping(entity, lookup);
             String lookuMethodpName = lookup.getMethodName();
             if (lookup.isExposedViaRest()) {
                 // we create executors for exposed lookups
@@ -243,6 +248,22 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
                 forbiddenLookupMethodNames.add(lookuMethodpName);
             }
         }
+    }
+
+    private Map<String, FieldDto> getLookupFieldsMapping(Entity entity, LookupDto lookup) {
+        Map<String, FieldDto> fieldMap = new HashMap<>();
+        for (LookupFieldDto lookupField : lookup.getLookupFields()) {
+            Field field;
+            if (StringUtils.isNotBlank(lookupField.getRelatedName())) {
+                Entity relatedEntity = allEntities.retrieveByClassName(new RelationshipHolder(entity.getField(lookupField.getName())).getRelatedClass());
+                field = relatedEntity.getField(lookupField.getRelatedName());
+            } else {
+                field = entity.getField(lookupField.getName());
+            }
+            fieldMap.put(lookupField.getLookupFieldName(), field.toDto());
+        }
+        return fieldMap;
+
     }
 
     private void readRestOptions(Entity entity) {

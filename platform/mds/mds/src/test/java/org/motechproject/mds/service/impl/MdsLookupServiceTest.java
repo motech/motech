@@ -100,6 +100,12 @@ public class MdsLookupServiceTest {
         when(entityService.getLookupByName(ENTITY_ID, FIRST_LOOKUP_NAME)).thenReturn(firstLookup);
         when(entityService.getLookupByName(ENTITY_ID, SECOND_LOOKUP_NAME)).thenReturn(secondLookup);
 
+        Map<String, FieldDto> mapping = new HashMap<>();
+        mapping.put(STR_PARAM, strField);
+        mapping.put(INT_PARAM, intField);
+        when(entityService.getLookupFieldsMapping(ENTITY_ID, FIRST_LOOKUP_NAME)).thenReturn(mapping);
+        when(entityService.getLookupFieldsMapping(ENTITY_ID, SECOND_LOOKUP_NAME)).thenReturn(mapping);
+
         when(bundleContext.getServiceReference(TestDataService.class.getName())).thenReturn(serviceReference);
         when(bundleContext.getService(serviceReference)).thenReturn(dataService);
     }

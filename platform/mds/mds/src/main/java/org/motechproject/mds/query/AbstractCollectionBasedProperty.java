@@ -16,6 +16,10 @@ public abstract class AbstractCollectionBasedProperty<T extends Collection> exte
         super(name, value, type);
     }
 
+    protected AbstractCollectionBasedProperty(String jdoVariableName, String name, T value, String type) {
+        super(jdoVariableName, name, value, type);
+    }
+
     @Override
     public CharSequence generateDeclareParameter(int idx) {
         Collection<String> strings = new ArrayList<>();

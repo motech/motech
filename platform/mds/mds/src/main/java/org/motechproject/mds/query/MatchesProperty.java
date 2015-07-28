@@ -13,6 +13,10 @@ public class MatchesProperty extends CustomOperatorProperty<String> {
         super(name, QueryUtil.asMatchesPattern(value),  String.class.getName(), Constants.Operators.MATCHES);
     }
 
+    public MatchesProperty(String jdoVariableName, String name, String value) {
+        super(jdoVariableName, name, QueryUtil.asMatchesPattern(value),  String.class.getName(), Constants.Operators.MATCHES);
+    }
+
     @Override
     protected boolean shouldIgnoreThisProperty() {
         // null cannot be used with the matches operator

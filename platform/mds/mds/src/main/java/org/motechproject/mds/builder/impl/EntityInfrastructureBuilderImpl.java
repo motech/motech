@@ -14,6 +14,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.ex.entity.EntityInfrastructureException;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TransactionalMotechDataService;
@@ -47,6 +48,8 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
     private final ClassPool classPool = MotechClassPool.getDefault();
 
     private BundleContext bundleContext;
+
+    private AllEntities allEntities;
 
     @Override
     public List<ClassData> buildInfrastructure(Entity entity) {
@@ -146,7 +149,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
             if (null != entity) {
                 for (Lookup lookup : entity.getLookups()) {
                     for (LookupType lookupType : LookupType.values()) {
-                        LookupBuilder lookupBuilder = new LookupBuilder(entity, lookup, interfaceClass, lookupType);
+                        LookupBuilder lookupBuilder = new LookupBuilder(entity, lookup, interfaceClass, lookupType, allEntities);
                         methods.add(lookupBuilder.buildSignature());
                     }
                 }
@@ -187,7 +190,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
             if (null != entity) {
                 for (Lookup lookup : entity.getLookups()) {
                     for (LookupType lookupType : LookupType.values()) {
-                        LookupBuilder lookupBuilder = new LookupBuilder(entity, lookup, serviceClass, lookupType);
+                        LookupBuilder lookupBuilder = new LookupBuilder(entity, lookup, serviceClass, lookupType, allEntities);
                         methods.add(lookupBuilder.buildMethod());
                     }
                 }
@@ -270,5 +273,10 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
     @Autowired
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    @Autowired
+    public void setAllEntities(AllEntities allEntities){
+        this.allEntities = allEntities;
     }
 }

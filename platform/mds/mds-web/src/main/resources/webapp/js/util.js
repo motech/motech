@@ -69,7 +69,8 @@
                                 && (_.isEqual(field, value) || _.isEqual(label(field), value));
                         } else {
                             if (caseInsensitive) {
-                                isTrue = isTrue && _.isEqual(field.toLowerCase(), value.toLowerCase());
+                                isTrue = isTrue && _.isEqual(field !== undefined && field !== null ? field.toLowerCase() : field,
+                                    value !== undefined && value !== null ? value.toLowerCase() : value);
                             } else {
                                 isTrue = isTrue && _.isEqual(field, value);
                             }

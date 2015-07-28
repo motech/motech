@@ -4,6 +4,7 @@ import org.apache.commons.lang.reflect.MethodUtils;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldMetadata;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.util.MemberUtil;
 import org.motechproject.mds.util.PropertyUtil;
 
 import java.beans.PropertyDescriptor;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_CLASS_NAME;
 import static org.motechproject.mds.util.Constants.MetadataKeys.OWNING_SIDE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
@@ -36,6 +38,19 @@ public final class FieldHelper {
             map.put(field.getName(), field);
         }
         return map;
+    }
+
+    public static void addOrUpdateMetadataForCombobox(Field field) {
+        if (field.getType().isCombobox()) {
+            FieldMetadata metadata = field.getMetadata(ENUM_CLASS_NAME);
+            if (metadata == null) {
+                metadata = new FieldMetadata(field, ENUM_CLASS_NAME);
+                metadata.setValue(MemberUtil.getDefaultEnumName(field.getEntity().getClassName(), field.getName()));
+                field.addMetadata(metadata);
+            } else {
+                field.setMetadataValue(ENUM_CLASS_NAME, MemberUtil.getDefaultEnumName(field.getEntity().getClassName(), field.getName()));
+            }
+        }
     }
 
     public static void addMetadataForRelationship(String typeClass, Field field) {

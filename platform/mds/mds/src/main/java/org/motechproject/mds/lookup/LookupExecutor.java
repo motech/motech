@@ -85,12 +85,12 @@ public class LookupExecutor {
     private List<Object> getLookupArgs(Map<String, ?> paramMap) {
         List<Object> args = new ArrayList<>();
         for (LookupFieldDto lookupField : lookup.getLookupFields()) {
-            FieldDto field = fieldsByName.get(lookupField.getName());
+            FieldDto field = fieldsByName.get(lookupField.getLookupFieldName());
             if (field == null) {
                 throw new FieldNotFoundException(entityClass.getName(), lookupField.getName());
             }
 
-            Object val = paramMap.get(field.getBasic().getName());
+            Object val = paramMap.get(lookupField.getLookupFieldName());
 
             String typeClass = getTypeClass(field);
             String genericType = getGenericTypeClass(field);
@@ -149,7 +149,7 @@ public class LookupExecutor {
                     argTypes.add(Set.class);
                     break;
                 default:
-                    FieldDto field = fieldsByName.get(lookupField.getName());
+                    FieldDto field = fieldsByName.get(lookupField.getLookupFieldName());
                     if (field == null) {
                         throw new FieldNotFoundException(entityClass.getName(), lookupField.getName());
                     }

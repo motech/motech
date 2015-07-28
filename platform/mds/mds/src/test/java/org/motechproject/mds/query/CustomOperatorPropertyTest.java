@@ -20,6 +20,11 @@ public class CustomOperatorPropertyTest extends PropertyTest {
     }
 
     @Override
+    protected Property getRelatedProperty() {
+        return new CustomOperatorProperty<>("sampleJdoVar", "sampleField.length", 5, Integer.class.getName(), ">=");
+    }
+
+    @Override
     protected int getIdx() {
         return 3;
     }
@@ -27,6 +32,11 @@ public class CustomOperatorPropertyTest extends PropertyTest {
     @Override
     protected String expectedFilter() {
         return "length < param3";
+    }
+
+    @Override
+    protected String expectedFilterForRelatedField() {
+        return "sampleField.contains(sampleJdoVar) && sampleJdoVar.length >= param3";
     }
 
     @Override

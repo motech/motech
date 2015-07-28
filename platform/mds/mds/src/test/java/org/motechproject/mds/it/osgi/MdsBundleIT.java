@@ -740,11 +740,11 @@ public class MdsBundleIT extends BasePaxIT {
         List<LookupFieldDto> lookupFields = new ArrayList<>();
 
         lookupFields.add(new LookupFieldDto(null, "someBoolean", LookupFieldType.VALUE));
-        lookups.add(new LookupDto("By boolean", false, false, lookupFields, true, "byBool"));
+        lookups.add(new LookupDto("By boolean", false, false, lookupFields, true, "byBool", asList("someBoolean")));
 
         lookupFields = new ArrayList<>();
         lookupFields.add(new LookupFieldDto(null, "someString", LookupFieldType.VALUE));
-        lookups.add(new LookupDto("By unique String", true, false, lookupFields, true, "byUniqueString"));
+        lookups.add(new LookupDto("By unique String", true, false, lookupFields, true, "byUniqueString", asList("someString")));
 
         lookupFields = new ArrayList<>();
         lookupFields.add(new LookupFieldDto(null, "someBoolean", LookupFieldType.VALUE));
@@ -755,11 +755,11 @@ public class MdsBundleIT extends BasePaxIT {
 
         lookupFields = new ArrayList<>();
         lookupFields.add(new LookupFieldDto(null, "someInt", LookupFieldType.VALUE, "<="));
-        lookups.add(new LookupDto("With custom operator", false, false, lookupFields, true, "customOperator"));
+        lookups.add(new LookupDto("With custom operator", false, false, lookupFields, true, "customOperator", asList("someInt")));
 
         lookupFields = new ArrayList<>();
         lookupFields.add(new LookupFieldDto(null, "someString", LookupFieldType.VALUE, "matches()"));
-        lookups.add(new LookupDto("With matches", false, false, lookupFields, true, "matchesOperator"));
+        lookups.add(new LookupDto("With matches", false, false, lookupFields, true, "matchesOperator", asList("someString")));
 
         entityService.addLookups(entityDto.getId(), lookups);
         entityService.commitChanges(entityDto.getId());

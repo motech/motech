@@ -1,8 +1,6 @@
 package org.motechproject.mds.service.impl;
 
-import org.motechproject.mds.dto.DtoHelper;
 import org.motechproject.mds.dto.EntityDto;
-import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.ex.lookup.CollectionResultFromLookupExpectedException;
 import org.motechproject.mds.ex.lookup.SingleResultFromLookupExpectedException;
@@ -135,9 +133,8 @@ public class MdsLookupServiceImpl implements MDSLookupService {
 
         EntityDto entity = entityService.getEntityByClassName(fullyQualifiedEntityClassName);
         LookupDto lookup = entityService.getLookupByName(entity.getId(), lookupName);
-        List<FieldDto> fields = entityService.getEntityFields(entity.getId());
 
-        return new LookupExecutor(dataService, lookup, DtoHelper.asFieldMapByName(fields));
+        return new LookupExecutor(dataService, lookup, entityService.getLookupFieldsMapping(entity.getId(), lookupName));
     }
 
     private <T> T assertAndReturnSingleResult(Object result, String lookupName) {

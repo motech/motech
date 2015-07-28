@@ -3,6 +3,7 @@ package org.motechproject.mds.testutil;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.LookupFieldType;
+import org.motechproject.mds.util.LookupName;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +31,9 @@ public final class LookupTestHelper {
     public static List<LookupFieldDto> lookupFieldsFromNames(Collection<String> names) {
         List<LookupFieldDto> lookupFieldDtos = new ArrayList<>();
         for (String name : names) {
-            lookupFieldDtos.add(new LookupFieldDto(null, name, LookupFieldType.VALUE));
+            LookupFieldDto lookupFieldDto = new LookupFieldDto(null, LookupName.getFieldName(name), LookupFieldType.VALUE);
+            lookupFieldDto.setRelatedName(LookupName.getRelatedFieldName(name));
+            lookupFieldDtos.add(lookupFieldDto);
         }
         return lookupFieldDtos;
     }

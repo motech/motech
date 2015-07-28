@@ -2,6 +2,7 @@ package org.motechproject.mds.query;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,6 +17,11 @@ public class CollectionPropertyTest extends PropertyTest {
     }
 
     @Override
+    protected Property getRelatedProperty() {
+        return new CollectionProperty("permissionJdoVar", "role.permissions", (Object)Arrays.asList("permission_1", "permission_2"), new ArrayList(), String.class.getName());
+    }
+
+    @Override
     protected int getIdx() {
         return 5;
     }
@@ -23,6 +29,11 @@ public class CollectionPropertyTest extends PropertyTest {
     @Override
     protected String expectedFilter() {
         return "(roles.contains(param5_0) || roles.contains(param5_1))";
+    }
+
+    @Override
+    protected String expectedFilterForRelatedField() {
+        return "(role.contains(permissionJdoVar) && (permissionJdoVar.permissions.contains(param5_0) || permissionJdoVar.permissions.contains(param5_1)))";
     }
 
     @Override

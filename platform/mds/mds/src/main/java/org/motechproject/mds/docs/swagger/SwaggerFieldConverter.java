@@ -53,7 +53,7 @@ public final class SwaggerFieldConverter {
         return toMiscProperty(typeClass);
     }
 
-    public static Parameter lookupParameter(Field field, LookupFieldType lookupFieldType, String paramDescription) {
+    public static Parameter lookupParameter(String lookupFieldName, Field field, LookupFieldType lookupFieldType, String paramDescription) {
         // first convert this to property
 
         Property property;
@@ -72,7 +72,7 @@ public final class SwaggerFieldConverter {
 
         Parameter parameter = new Parameter(property);
 
-        parameter.setName(field.getName());
+        parameter.setName(lookupFieldName);
         parameter.setIn(ParameterType.QUERY);
         parameter.setDescription(paramDescription);
 

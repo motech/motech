@@ -1,6 +1,7 @@
 package org.motechproject.mds.query;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.mds.util.LookupName;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +18,15 @@ public class CollectionProperty extends AbstractCollectionBasedProperty<Collecti
 
     public CollectionProperty(String name, Object value, Collection collectionType, String type) {
         super(name, collectionType, type);
+        addElements(value);
+    }
 
+    public CollectionProperty(String jdoVariable, String name, Object value, Collection collectionType, String type) {
+        super(jdoVariable, name, collectionType, type);
+        addElements(value);
+    }
+
+    private void addElements(Object value) {
         if (value instanceof Collection) {
             getValue().addAll((Collection) value);
         } else {
@@ -28,6 +37,13 @@ public class CollectionProperty extends AbstractCollectionBasedProperty<Collecti
     @Override
     public CharSequence generateFilter(int idx) {
         Collection<String> strings = new ArrayList<>();
+        if (isForRelation()) {
+            for (int i = 0; i < getValue().size(); ++i) {
+                strings.add(String.format("%s.%s.contains(param%d_%d)", getJdoVariableName(), LookupName.getRelatedFieldName(getName()), idx, i));
+            }
+
+            return String.format("(%s.contains(%s) && (%s))", LookupName.getFieldName(getName()), getJdoVariableName(), StringUtils.join(strings, " || "));
+        }
 
         for (int i = 0; i < getValue().size(); ++i) {
             strings.add(String.format("%s.contains(param%d_%d)", getName(), idx, i));

@@ -13,6 +13,7 @@ import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.helper.FieldHelper;
+import org.motechproject.mds.testutil.FieldTestHelper;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -91,6 +92,22 @@ public class FieldHelperTest {
         assertEquals(field.getMetadataValue(Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE), "java.util.Set");
     }
 
+    @Test
+    public void shouldAddAndUpdateComboboxMetadata() {
+        Entity entity = new Entity("SampleEntity");
+        entity.setClassName("org.motechproject.samplemodule.domain.SampleEntity");
+        Field field = FieldTestHelper.fieldWithComboboxSettings(entity, "sampleField", "Display Name", String.class, false, false, asList("Item_1", "Item_2"));
+
+        FieldHelper.addOrUpdateMetadataForCombobox(field);
+        assertEquals("org.motechproject.samplemodule.domain.mdsenum.SampleEntitySampleField", field.getMetadata(Constants.MetadataKeys.ENUM_CLASS_NAME).getValue());
+
+        Entity otherEntity = new Entity("OtherEntity");
+        otherEntity.setClassName("org.motechproject.samplemodule.domain.OtherEntity");
+        field.setEntity(otherEntity);
+        FieldHelper.addOrUpdateMetadataForCombobox(field);
+        assertEquals("org.motechproject.samplemodule.domain.mdsenum.OtherEntitySampleField", field.getMetadata(Constants.MetadataKeys.ENUM_CLASS_NAME).getValue());
+    }
+
     private FieldDto fieldDto() {
         TypeDto type = new TypeDto("typeDispName", "typeDesc", "typeDefaultName", "typeClass");
         FieldBasicDto basic = new FieldBasicDto("fieldDispName", "fieldName", true, "defVal", "tooltip", "placeholder");
@@ -104,8 +121,8 @@ public class FieldHelperTest {
         AdvancedSettingsDto advancedSettings = new AdvancedSettingsDto();
         advancedSettings.setEntityId(100L);
 
-        LookupDto lookup = new LookupDto(1L, "look1Name", true, true, null, false, "look1");
-        LookupDto lookup2 = new LookupDto(2L, "look2Name", false, false, null, false, "look2");
+        LookupDto lookup = new LookupDto(1L, "look1Name", true, true, null, false, "look1", new ArrayList<String>());
+        LookupDto lookup2 = new LookupDto(2L, "look2Name", false, false, null, false, "look2", new ArrayList<String>());
         advancedSettings.setIndexes(new ArrayList<>((asList(lookup, lookup2))));
 
         return advancedSettings;

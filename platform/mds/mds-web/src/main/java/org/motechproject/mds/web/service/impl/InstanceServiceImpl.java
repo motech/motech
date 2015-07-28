@@ -11,7 +11,6 @@ import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.date.model.Time;
-import org.motechproject.mds.dto.DtoHelper;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
@@ -222,7 +221,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         LookupDto lookup = getLookupByName(entityId, lookupName);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
-        Map<String, FieldDto> fieldMap = DtoHelper.asFieldMapByName(fields);
+        Map<String, FieldDto> fieldMap = entityService.getLookupFieldsMapping(entityId, lookupName);
 
         MotechDataService service = getServiceForEntity(entity);
 
@@ -280,8 +279,7 @@ public class InstanceServiceImpl implements InstanceService {
         validateCredentials(entity);
 
         LookupDto lookup = getLookupByName(entityId, lookupName);
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
-        Map<String, FieldDto> fieldMap = DtoHelper.asFieldMapByName(fields);
+        Map<String, FieldDto> fieldMap = entityService.getLookupFieldsMapping(entityId, lookupName);
 
         MotechDataService service = getServiceForEntity(entity);
 

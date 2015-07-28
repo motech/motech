@@ -16,6 +16,11 @@ public class RangePropertyTest extends PropertyTest {
     }
 
     @Override
+    protected Property getRelatedProperty() {
+        return new RangeProperty<>("jdoVariable", "relation.integerField", new Range<>(0, 1), Integer.class.getName());
+    }
+
+    @Override
     protected int getIdx() {
         return 3;
     }
@@ -23,6 +28,11 @@ public class RangePropertyTest extends PropertyTest {
     @Override
     protected String expectedFilter() {
         return "gaussian>=param3lb && gaussian<=param3ub";
+    }
+
+    @Override
+    protected String expectedFilterForRelatedField() {
+        return "relation.contains(jdoVariable) && jdoVariable.integerField>=param3lb && jdoVariable.integerField<=param3ub";
     }
 
     @Override

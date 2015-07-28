@@ -59,6 +59,16 @@ public interface EntityService {
     EntityDto getEntity(Long entityId);
 
     /**
+     * Returns a map which contains lookup fields. Fields may come from related entities. Map keys represents lookup
+     * fields name which can contains a dot operator(for example relationshipField.id).
+     *
+     * @param entityId The id of an entity
+     * @param lookupName name of a lookup
+     * @return a map of lookup fields.
+     */
+    Map<String, FieldDto> getLookupFieldsMapping(Long entityId, String lookupName);
+
+    /**
      * Removes the entity with the given id. This will also remove all drafts associated with the
      * deleted entity.
      *
@@ -156,6 +166,14 @@ public interface EntityService {
      * @return a list of fields for an entity
      */
     List<FieldDto> getEntityFields(Long entityId);
+
+    /**
+     * Retrieves a list of all fields for the given entity class name. This will not include any draft fields.
+     *
+     * @param className the entity class name
+     * @return a list of fields for an entity
+     */
+    List<FieldDto> getEntityFieldsByClassName(String className);
 
     /**
      * Retrieves a field by name. This will be able to find any draft fields,

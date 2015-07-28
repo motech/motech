@@ -23,4 +23,25 @@ public class LookupNameTest {
         assertEquals("countSample", LookupName.lookupCountMethod("Sample"));
         assertEquals("countSample", LookupName.lookupCountMethod("sample"));
     }
+
+    @Test
+    public void shouldReturnRelatedName() {
+        assertEquals("id", LookupName.getRelatedFieldName("fieldName.id"));
+        assertEquals("name", LookupName.getRelatedFieldName("collection.name"));
+        assertEquals(null, LookupName.getRelatedFieldName("field"));
+    }
+
+    @Test
+    public void shouldReturnFieldName() {
+        assertEquals("fieldName", LookupName.getFieldName("fieldName.id"));
+        assertEquals("collection", LookupName.getFieldName("collection.name"));
+        assertEquals("field", LookupName.getFieldName("field"));
+    }
+
+    @Test
+    public void shouldReturnLookupFieldName() {
+        assertEquals("fieldName.id", LookupName.buildLookupFieldName("fieldName", "id"));
+        assertEquals("collection.name", LookupName.buildLookupFieldName("collection", "name"));
+        assertEquals("field", LookupName.buildLookupFieldName("field", null));
+    }
 }
