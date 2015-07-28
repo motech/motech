@@ -74,6 +74,14 @@ public class PropertyBuilderTest {
                 PropertyBuilder.create("equal", 1L, Long.class),
                 EqualProperty.class, "equal", 1L
         );
+        assertProperty(
+                PropertyBuilder.create("text", "someString", String.class.getName(), "matches()"),
+                MatchesProperty.class, "text", ".*someString.*"
+        );
+        assertProperty(
+                PropertyBuilder.create("text", "someString", String.class.getName(), "matches((?i))"),
+                MatchesCaseInsensitiveProperty.class, "text", "(?i).*someString.*"
+        );
     }
 
     private void assertProperty(Property property, Class clazz, String name, Object value) {
