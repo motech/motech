@@ -83,6 +83,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
@@ -427,28 +428,38 @@ public class MdsBundleIT extends BasePaxIT {
                 NOW.plusHours(2), LD_NOW.plusDays(1), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
                 DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 2, toEnum(objClass, "three"));
 
-        // usage of matches
-        if (usingLookupService) {
-            Map<String, String> lookupMap = new HashMap<>();
-            lookupMap.put("someString", ".*true.*");
-            resultObj = mdsLookupService.findMany(FOO_CLASS, "With matches", lookupMap, QueryParams.ascOrder("someDateTime"));
-        } else {
-            resultObj = MethodUtils.invokeMethod(service, "matchesOperator",
-                    new Object[]{".*true.*", QueryParams.ascOrder("someDateTime")});
-        }
+        // usage of matches, case sensitive and case insensitive
+        String[] textsToSearch = { "true", "TRUE" };
+        String[] methodNames = {"matchesOperator", "matchesOperatorCI"};
+        String[] lookupNames = {"With matches", "With matches case insensitive"};
 
-        assertTrue(resultObj instanceof List);
-        resultList = (List) resultObj;
-        assertEquals(3, resultList.size());
-        assertInstance(resultList.get(0), true, "trueNow", "trueNowCp", asList("1", "2", "3"),
-                NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
-                DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1, toEnum(objClass, "one"));
-        assertInstance(resultList.get(1), true, "trueInRange", "trueInRangeCp", asList("2", "4"),
-                NOW.plusHours(1), LD_NOW.plusDays(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
-                DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 2, toEnum(objClass, "two"));
-        updateInstance(resultList.get(2), true, "trueOutOfRange", "trueOutOfRangeCp", null,
-                NOW.plusHours(3), LD_NOW.plusDays(10), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
-                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 3, toEnum(objClass, "one"));
+        for (int i = 0; i < 2; i++) {
+            String textToSearch = textsToSearch[i];
+            String methodName = methodNames[i];
+            String lookupName = lookupNames[i];
+
+            if (usingLookupService) {
+                Map<String, String> lookupMap = new HashMap<>();
+                lookupMap.put("someString", textToSearch);
+                resultObj = mdsLookupService.findMany(FOO_CLASS, lookupName, lookupMap, QueryParams.ascOrder("someDateTime"));
+            } else {
+                resultObj = MethodUtils.invokeMethod(service, methodName,
+                        new Object[]{textToSearch, QueryParams.ascOrder("someDateTime")});
+            }
+
+            assertTrue(resultObj instanceof List);
+            resultList = (List) resultObj;
+            assertEquals(3, resultList.size());
+            assertInstance(resultList.get(0), true, "trueNow", "trueNowCp", asList("1", "2", "3"),
+                    NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
+                    DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1, toEnum(objClass, "one"));
+            assertInstance(resultList.get(1), true, "trueInRange", "trueInRangeCp", asList("2", "4"),
+                    NOW.plusHours(1), LD_NOW.plusDays(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
+                    DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 2, toEnum(objClass, "two"));
+            updateInstance(resultList.get(2), true, "trueOutOfRange", "trueOutOfRangeCp", null,
+                    NOW.plusHours(3), LD_NOW.plusDays(10), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
+                    DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 3, toEnum(objClass, "one"));
+        }
     }
 
     private void verifyInstanceUpdating() throws Exception {
@@ -760,6 +771,12 @@ public class MdsBundleIT extends BasePaxIT {
         lookupFields = new ArrayList<>();
         lookupFields.add(new LookupFieldDto(null, "someString", LookupFieldType.VALUE, "matches()"));
         lookups.add(new LookupDto("With matches", false, false, lookupFields, true, "matchesOperator", asList("someString")));
+
+        lookupFields = new ArrayList<>();
+        lookupFields.add(new LookupFieldDto(null, "someString", LookupFieldType.VALUE,
+                Constants.Operators.MATCHES_CASE_INSENSITIVE));
+;       lookups.add(new LookupDto("With matches case insensitive", false, false, lookupFields, true, "matchesOperatorCI",
+                singletonList("someString")));
 
         entityService.addLookups(entityDto.getId(), lookups);
         entityService.commitChanges(entityDto.getId());

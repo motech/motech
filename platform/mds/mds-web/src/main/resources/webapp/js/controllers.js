@@ -564,6 +564,9 @@
     * The MdsSchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
     controllers.controller('MdsSchemaEditorCtrl', function ($scope, $timeout, $http, Entities, MDSUsers, Permissions, MDSUtils, Locale) {
+
+        MDSUtils.setCustomOperatorFunctions($scope);
+
         var setAdvancedSettings, updateAdvancedSettings, setRest, setBrowsing, setSecuritySettings, setIndexesLookupsTab, checkLookupName, checkActiveIndex;
 
         $scope.lookupExists = true;
@@ -584,7 +587,6 @@
         ];
 
         $scope.lookupFieldTypes = ["VALUE", "RANGE", "SET"];
-        $scope.customOperators = ["<", "<=", ">", ">=", "==", "!=", "matches()", "startsWith()", "endsWith()", "equalsIgnoreCase()"];
 
         $scope.setRegexPattern = function (itemPattern) {
             $scope.selectedRegexPattern = itemPattern;
@@ -3061,6 +3063,9 @@
     */
     controllers.controller('MdsDataBrowserCtrl', function ($rootScope, $scope, $http, $location, $routeParams, Entities, Instances, History,
                                 $timeout, MDSUtils, Locale, MDSUsers) {
+
+        MDSUtils.setCustomOperatorFunctions($scope);
+
         workInProgress.setActualEntity(Entities, undefined);
 
         $scope.modificationFields = ['modificationDate', 'modifiedBy'];

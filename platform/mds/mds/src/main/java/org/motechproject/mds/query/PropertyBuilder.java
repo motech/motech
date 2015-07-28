@@ -56,10 +56,13 @@ public final class PropertyBuilder {
             Range range = (Range) value;
             return new RangeProperty<>(name, range, type);
         } else if (StringUtils.isNotBlank(operator)) {
-            if (Constants.Operators.MATCHES.equals(operator)) {
-                return new MatchesProperty(name, (String) value);
-            } else {
-                return new CustomOperatorProperty<>(name, value, type, operator);
+            switch (operator) {
+                case Constants.Operators.MATCHES:
+                    return new MatchesProperty(name, (String) value);
+                case Constants.Operators.MATCHES_CASE_INSENSITIVE:
+                    return new MatchesCaseInsensitiveProperty(name, (String) value);
+                default:
+                    return new CustomOperatorProperty<>(name, value, type, operator);
             }
         } else {
             return new EqualProperty<>(name, value, type);

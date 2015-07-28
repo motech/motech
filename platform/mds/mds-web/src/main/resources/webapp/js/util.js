@@ -159,8 +159,32 @@
                     result = false;
                 }
                 return result;
-            }
+            },
 
+            setCustomOperatorFunctions: function(scope) {
+              scope.customOperators = {
+                   "": "mds.form.operator.none",
+                   "<": "mds.operator.lt",
+                   "<=": "mds.operator.lteq",
+                   ">": "mds.operator.gt",
+                   ">=": "mds.operator.gteq",
+                   "==": "mds.operator.eq",
+                   "!=": "mds.operator.neq",
+                   "equalsIgnoreCase()": "mds.operator.eq.ci",
+                   "matches()": "mds.operator.matches",
+                   "matches((?i))": "mds.operator.matches.ci",
+                   "startsWith()": "mds.operator.starts",
+                   "endsWith()": "mds.operator.ends"
+               };
+
+               scope.getOperatorMsg = function(operator) {
+                   if (operator) {
+                       return scope.msg(scope.customOperators[operator]);
+                   } else {
+                       return scope.msg("mds.form.operator.none");
+                   }
+               };
+            }
         };
     });
 

@@ -47,7 +47,7 @@
                     <div class="form-group margin-after" ng-show="lookup.lookupFields.length">
                         <div class="col-sm-4">{{msg('mds.form.label.fieldName')}}</div>
                         <div class="col-sm-3">{{msg('mds.form.label.type')}}</div>
-                        <div class="col-sm-3">{{msg('mds.form.label.operator')}}</div>
+                        <div class="col-sm-4">{{msg('mds.form.label.operator')}}</div>
                         <div class="col-sm-2">{{msg('mds.form.label.delete')}}</div>
                     </div>
 
@@ -78,18 +78,15 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div class="col-sm-3">
+                            <div class="col-sm-4">
                                 <!-- Custom operators dropdown -->
-                                <button ng-disabled="lookup.readOnly || lookup.referenced || lookupField.type !== 'VALUE'" class="btn btn-default dropdown-toggle input-medium" data-toggle="dropdown">
-                                    {{lookupField.customOperator}}
+                                <button ng-disabled="lookup.readOnly || lookup.referenced || lookupField.type !== 'VALUE'" class="btn btn-default btn-block dropdown-toggle input-medium" style="width:100%" data-toggle="dropdown">
+                                    {{getOperatorMsg(lookupField.customOperator)}}
                                     <span class="caret"></span>
                                 </button>
-                                <ul class="dropdown-menu input-medium">
-                                    <li class="input-medium">
-                                        <a ng-click="selectLookupFieldCustomOperator($index, '')">{{msg('mds.form.operator.none')}}</a>
-                                    </li>
-                                    <li class="input-medium" ng-repeat="operator in customOperators">
-                                        <a ng-click="selectLookupFieldCustomOperator($parent.$index, operator)">{{operator}}</a>
+                                <ul class="dropdown-menu input-large">
+                                    <li class="input-large" ng-repeat="(operator, operatorMsgKey) in customOperators">
+                                        <a ng-click="selectLookupFieldCustomOperator($parent.$index, operator)">{{msg(operatorMsgKey)}}</a>
                                     </li>
                                 </ul>
                             </div>

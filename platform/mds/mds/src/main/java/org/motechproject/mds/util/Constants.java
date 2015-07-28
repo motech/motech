@@ -508,6 +508,7 @@ public final class Constants {
 
         // string functions
         public static final String MATCHES = "matches()";
+        public static final String MATCHES_CASE_INSENSITIVE = "matches((?i))";
         public static final String STARTS_WITH = "startsWith()";
         public static final String ENDS_WITH = "endsWith()";
         public static final String EQ_IGNORE_CASE = "equalsIgnoreCase()";

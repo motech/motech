@@ -68,7 +68,7 @@
                     </span>
                     <span ng-class="{'ng-hide': !selectedLookup.lookupFields[$index].customOperator}"
                           data-original-title="{{msg('mds.form.label.operator')}}"
-                          bs-popover="&nbsp;{{selectedLookup.lookupFields[$index].customOperator}}"
+                          bs-popover="&nbsp;{{getOperatorMsg(selectedLookup.lookupFields[$index].customOperator)}}"
                           data-placement="right" data-trigger="hover"
                           class="glyphicon glyphicon-info-sign">
                     </span>
