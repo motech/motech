@@ -267,7 +267,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
         if(null != readAccess && !entity.isSecurityOptionsModified()) {
             Set<String> readOnlySecurityMembers = returnSecurityMembersForSecurityMode(readAccess.value(), readAccess.members(), "ReadAccess");
             entity.setReadOnlySecurityMode(readAccess.value());
-            if(entity.getSecurityMode()==SecurityMode.EVERYONE) {
+            if(entity.getSecurityMode() == SecurityMode.EVERYONE) {
                 entity.setSecurityMode(SecurityMode.NO_ACCESS);
             }
             entity.setReadOnlySecurityMembers(readOnlySecurityMembers);
@@ -295,7 +295,6 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
             }
         }
         return securityMembers;
-
     }
 
     @Autowired

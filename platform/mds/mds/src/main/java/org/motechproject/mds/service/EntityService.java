@@ -387,6 +387,8 @@ public interface EntityService {
      * @param entityId id of an entity
      * @param securityMode new security mode
      * @param securityMembers set of user or role names
+     * @param readOnlySecurityMode new read only security mode
+     * @param readOnlySecurityMembers set of user or role names for read only security mode
      */
     void updateSecurityOptions(Long entityId, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers);
 

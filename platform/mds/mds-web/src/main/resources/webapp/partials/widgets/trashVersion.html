@@ -5,7 +5,7 @@
             <i class="fa fa-fw fa-lg fa-level-up"></i>
             {{msg('mds.btn.trash')}}
         </button>
-        <button ng-hide="selectedEntity.nonEditable || selectedEntity.hasOnlyReadAccessToInstance" target="_self" href="#restoreInstanceModal" data-toggle="modal" data-backdrop="static" type="button" class="btn btn-primary">
+        <button ng-hide="shouldHideButton()" target="_self" href="#restoreInstanceModal" data-toggle="modal" data-backdrop="static" type="button" class="btn btn-primary">
             {{msg('mds.btn.restore')}}
         </button>
     </div>

@@ -75,8 +75,6 @@ import java.util.Set;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
-import static org.motechproject.mds.util.SecurityUtil.getUserPermissions;
-import static org.motechproject.mds.util.SecurityUtil.getUsername;
 
 /**
  * Default implementation of the {@link org.motechproject.mds.web.service.InstanceService} interface.
@@ -834,70 +832,42 @@ public class InstanceServiceImpl implements InstanceService {
         SecurityMode securityMode = entity.getSecurityMode();
         if(securityMode != null) {
             Set<String> securityMembers = entity.getSecurityMembers();
-            authorized = hasUserAuthorization(securityMode, securityMembers);
+            authorized = entity.hasAccessToEntityFromSecurityMode(securityMode, securityMembers);
             if (!authorized && !securityMode.isInstanceRestriction()) {
                 throw new SecurityException();
             }
         }
     }
 
-    /*
-    * Function throw security exception when user is not authorized while reading instance
-    * and return if it necessary to set instance fields to nonEditable
-    * */
-    private boolean validateCredentialsForReading(EntityDto entity) {
+    private void validateCredentialsForReading(EntityDto entity) {
         boolean authorized = false;
         SecurityMode securityMode = entity.getSecurityMode();
         SecurityMode readOnlySecurityMode = entity.getReadOnlySecurityMode();
 
         if(securityMode != null) {
             Set<String> securityMembers = entity.getSecurityMembers();
-            authorized = hasUserAuthorization(securityMode, securityMembers);
-        }
-        if (!authorized) {
-            if(readOnlySecurityMode != null) {
-                Set<String> readOnlySecurityMembers = entity.getReadOnlySecurityMembers();
-                authorized = hasUserAuthorization(readOnlySecurityMode, readOnlySecurityMembers);
-                return checkIfUserHasAuthorizationOrAuthorizationIsInstanceRestriction(authorized, securityMode, readOnlySecurityMode);
-            } else if (securityMode != null && !securityMode.isInstanceRestriction()) {
-                throw new SecurityException();
-            }
-        }
-        return false;
-    }
-
-    private boolean checkIfUserHasAuthorizationOrAuthorizationIsInstanceRestriction ( Boolean authorized, SecurityMode securityMode, SecurityMode readOnlySecurityMode){
-        boolean securityModeIsInstanceRestriction = (securityMode != null && securityMode.isInstanceRestriction());
-        if(!securityModeIsInstanceRestriction) {
-            if (!authorized && !readOnlySecurityMode.isInstanceRestriction() && securityMode != null) {
-                throw new SecurityException();
-            } else  {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean hasUserAuthorization(SecurityMode securityMode, Set<String> securityMembers) {
-        boolean authorized = false;
-        String username = getUsername();
-
-        if (securityMode == SecurityMode.EVERYONE) {
-            authorized = true;
-        } else if (securityMode == SecurityMode.USERS) {
-            if (securityMembers.contains(username)) {
-                authorized = true;
-            }
-        } else if (securityMode == SecurityMode.PERMISSIONS) {
-            for (String permission : getUserPermissions()) {
-                if (securityMembers.contains(permission)) {
-                    authorized = true;
+            authorized = entity.hasAccessToEntityFromSecurityMode(securityMode, securityMembers);
+            if(!authorized) {
+                if (readOnlySecurityMode != null) {
+                    Set<String> readOnlySecurityMembers = entity.getReadOnlySecurityMembers();
+                    authorized = entity.hasAccessToEntityFromSecurityMode(readOnlySecurityMode, readOnlySecurityMembers);
+                    if (isAuthorizedByReadAccessOrIsInstanceRestriction(authorized, readOnlySecurityMode, securityMode)) {
+                        throw new SecurityException();
+                    }
                 }
             }
-        } else if(securityMode == SecurityMode.NO_ACCESS) {
-            authorized = false;
         }
-        return authorized;
+        if (!authorized && readOnlySecurityMode != null) {
+            Set<String> readOnlySecurityMembers = entity.getReadOnlySecurityMembers();
+            authorized = entity.hasAccessToEntityFromSecurityMode(readOnlySecurityMode, readOnlySecurityMembers);
+            if (!authorized && !readOnlySecurityMode.isInstanceRestriction()) {
+                throw new SecurityException();
+            }
+        }
+    }
+
+    private boolean isAuthorizedByReadAccessOrIsInstanceRestriction(boolean authorized, SecurityMode readOnlySecurityMode, SecurityMode securityMode) {
+        return !authorized && !readOnlySecurityMode.isInstanceRestriction() && !securityMode.isInstanceRestriction();
     }
 
     private void validateNonEditableProperty(EntityDto entity) {

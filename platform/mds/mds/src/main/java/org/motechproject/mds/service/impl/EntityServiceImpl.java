@@ -245,7 +245,12 @@ public class EntityServiceImpl implements EntityService {
             String securityModeName = (String) value.get(0);
             SecurityMode securityMode = SecurityMode.getEnumByName(securityModeName);
             String readOnlySecurityModeName = (String) value.get(2);
-            SecurityMode readOnlySecurityMode = SecurityMode.getEnumByName(readOnlySecurityModeName);
+            SecurityMode readOnlySecurityMode;
+            if(readOnlySecurityModeName != null) {
+                readOnlySecurityMode = SecurityMode.getEnumByName(readOnlySecurityModeName);
+            } else {
+                readOnlySecurityMode = null;
+            }
 
             List<String> securityMembers = (List<String>) value.get(1);
             if(securityMembers != null) {
@@ -793,7 +798,6 @@ public class EntityServiceImpl implements EntityService {
     }
 
     private boolean hasAccessToEntityFromSecurityMode(SecurityMode mode, Set<String> members) {
-
         if (SecurityMode.USERS.equals(mode)) {
             return members.contains(getUsername());
         } else if (SecurityMode.PERMISSIONS.equals(mode)) {
@@ -1256,7 +1260,7 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
-    public void updateSecurityOptions(Long entityId, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMemebers) {
+    public void updateSecurityOptions(Long entityId, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers) {
         Entity entity = allEntities.retrieveById(entityId);
 
         assertEntityExists(entity);
@@ -1264,7 +1268,7 @@ public class EntityServiceImpl implements EntityService {
         entity.setSecurityMode(securityMode);
         entity.setSecurityMembers(securityMembers);
         entity.setReadOnlySecurityMode(readOnlySecurityMode);
-        entity.setReadOnlySecurityMembers(readOnlySecurityMemebers);
+        entity.setReadOnlySecurityMembers(readOnlySecurityMembers);
 
         allEntities.update(entity);
     }

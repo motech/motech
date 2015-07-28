@@ -142,7 +142,7 @@ public class Entity {
 
         dto.setMaxFetchDepth(maxFetchDepth);
         dto.setNonEditable(getTracking() != null ? getTracking().isNonEditable() : false);
-        dto.setHasOnlyReadAccessToInstance(dto.checkIfUserHasOnlyReadAccessAuthorization());
+        dto.setReadOnlyAccess(dto.checkIfUserHasOnlyReadAccessAuthorization());
 
         return dto;
     }
@@ -293,7 +293,6 @@ public class Entity {
     }
 
     public Set<String> getReadOnlySecurityMembers() {
-
         return readOnlySecurityMembers;
     }
 
@@ -511,7 +510,6 @@ public class Entity {
             securityMembers = new HashSet(draft.getSecurityMembers());
         }
         setReadOnlySecurityMembersForDraft(draft);
-
     }
 
     private void setReadOnlySecurityMembersForDraft(EntityDraft draft) {
