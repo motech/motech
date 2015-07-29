@@ -408,7 +408,9 @@ Given that we have the EntityDto object and the EntityService(), we can create l
                 // the dob parameter will take a range, with a min and max value
                 new LookupFieldDto("dob", LookupFieldDto.Type.RANGE),
                 // for the state field, a set of possible values can be supplied
-                new LookupFieldDto("state", LookupFieldDto.Type.SET))
+                new LookupFieldDto("state", LookupFieldDto.Type.SET),
+                // the search through relationship fields is possible using the dot operator
+                new LookupFieldDto("relationshipField.number", LookupFieldDto.Type.VALUE))
         );
 
         // add the lookup
@@ -1687,14 +1689,33 @@ The service exposes these methods:
         long countAll(String entityClassName);
     }
 
-For the examples below assume the following class:
+For the examples below assume the following classes:
 
 .. code-block:: java
 
+    @Entity
     public class Patient {
 
+        @Field
         public String name;
+
+        @Field
         public Integer age;
+
+        @Field
+        private Set<Visit> visits;
+    }
+
+.. code-block:: java
+
+    @Entity
+    public class Visit {
+
+        @Field
+        public Integer officeNumber;
+
+        @Field
+        public DateTime date;
     }
 
 with the following lookups defined in its data service:
@@ -1759,6 +1780,23 @@ it retrieves all records from the database executing retrieveAll on the service.
 The **count** and **countAll** methods are also no different in terms of usage. The only difference is that they return
 the number of instances returned by a lookup and the total number of instances respectively.
 
+**Lookups on relationship fields** can be used like in the example below:
+
+.. code-block:: java
+
+    public interface PatientService extends MotechDataService<Patient> {
+
+        @Lookup
+        List<Patient> byVisitsDate(@LookupField(name = "visits.date") DateTime date);
+
+        @Lookup
+        List<Patient> byVisitsDateAndVisitsOffice(@LookupField(name = "visits.officeNumber") Integer officeNumber
+                                                  @LookupField(name = "visits.date") Range<DateTime> date);
+    }
+
+.. note::
+
+    MDS Lookups support only first depth level of relationships.
 
 .. _custom_queries:
 
