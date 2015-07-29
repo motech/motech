@@ -125,15 +125,11 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                 AdvancedSettingsDto advancedSettings = entityService.getAdvancedSettings(entity.getId(), true);
                 restOptions = advancedSettings.getRestOptions();
                 tracking = advancedSettings.getTracking();
-
-                if (!tracking.isModifiedByUser()) {
-                    tracking.setRecordHistory(recordHistory);
-                    tracking.setNonEditable(nonEditable);
-                }
             }
 
             if (!tracking.isModifiedByUser()) {
                 tracking.setRecordHistory(recordHistory);
+                tracking.setNonEditable(nonEditable);
             }
 
             setSecurityOptions(element, entity);
