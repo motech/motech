@@ -45,7 +45,7 @@ public class EventListenerRegistry implements EventListenerRegistryService {
         }
 
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("registering handler for " + subject + " to " + this.toString());
+            LOGGER.debug("registering handler for {} to {}", subject, this.toString());
         }
 
         listenerTree.addListener(listener, subject);
@@ -64,6 +64,7 @@ public class EventListenerRegistry implements EventListenerRegistryService {
     }
 
     public void clearListenersForBean(String beanName) {
+        LOGGER.debug("Clearing listeners for bean: {}", beanName);
         listenerTree.removeAllListeners(beanName);
     }
 }
