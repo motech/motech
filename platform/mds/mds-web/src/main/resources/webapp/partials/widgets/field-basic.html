@@ -7,7 +7,7 @@
             {{msg('mds.form.label.displayName')}}<span class="text-danger">*</span>
         </label>
         <div class="col-md-8 col-sm-7 form-inline">
-            <input class="form-control input-xlarge-fluid" type="text" ng-model="field.basic.displayName" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="field.readOnly" mds-camel-case="{{$index}}">
+            <input class="form-control input-xlarge-fluid" type="text" ng-model="field.basic.displayName" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-readonly="field.readOnly" mds-camel-case="{{$index}}">
             <span class="form-hint" ng-class="{hide: field.basic.displayName}">
                 {{msg('mds.error.fieldIsRequired')}}
             </span>
@@ -18,7 +18,7 @@
             {{msg('mds.form.label.name')}}<span class="text-danger">*</span>
         </label>
         <div class="col-md-8 col-sm-7 form-inline">
-            <input class="form-control input-xlarge-fluid" id="field-name-{{$index}}" type="text" ng-model="field.basic.name" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="field.readOnly || fieldUsedInReferencedLookup(field)" mds-camel-case="{{$index}}">
+            <input class="form-control input-xlarge-fluid" id="field-name-{{$index}}" type="text" ng-model="field.basic.name" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-readonly="field.readOnly || fieldUsedInReferencedLookup(field)" mds-camel-case="{{$index}}">
             <span class="form-hint" ng-class="{hide: field.basic.name}">
                 {{msg('mds.error.fieldIsRequired')}}
             </span>
@@ -42,7 +42,7 @@
             {{msg('mds.form.label.tooltip')}}
         </label>
         <div class="col-md-8 col-sm-7 form-inline">
-            <input class="form-control input-xlarge-fluid" id="field-tooltip-{{$index}}" type="text" ng-model="field.basic.tooltip" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
+            <input class="form-control input-xlarge-fluid" id="field-tooltip-{{$index}}" type="text" ng-model="field.basic.tooltip" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-readonly="field.readOnly">
         </div>
     </div>
     <div class="form-group">
@@ -50,7 +50,7 @@
             {{msg('mds.form.label.placeholder')}}
         </label>
         <div class="col-md-8 col-sm-7 form-inline">
-            <input class="form-control input-xlarge-fluid" id="field-placeholder-{{$index}}" type="text" ng-model="field.basic.placeholder" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
+            <input class="form-control input-xlarge-fluid" id="field-placeholder-{{$index}}" type="text" ng-model="field.basic.placeholder" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-readonly="field.readOnly">
         </div>
     </div>
     <div class="form-group">
