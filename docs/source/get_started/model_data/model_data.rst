@@ -1934,9 +1934,15 @@ MDS transaction manager and uses it when declaring annotation driven transaction
 
         <tx:annotation-driven transaction-manager="transactionManager"/>
 
-        <osgi:reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager"/>
+        <osgi:reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager" context-class-loader="unmanaged"/>
 
     </beans>
+
+.. note::
+
+    Setting the context-class-loader to unmanaged will prevent switching the context classlaoder to the incorrect one, since
+    the platform transaction manager is treated as an OSGi proxy itself. This issue can manifest in bundle ITs, where
+    the wrong context classloader can be used, leading to errors about missing metadata.
 
 Thanks to this configuration, Spring transaction annotations should work properly in your module, take note however that you
 might be required to explicitly import the following packages (example of the bundle plugin configuration):

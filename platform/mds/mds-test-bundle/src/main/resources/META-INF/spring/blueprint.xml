@@ -14,7 +14,7 @@
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
-    <osgi:reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager" />
+    <osgi:reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager" context-class-loader="unmanaged"/>
     <osgi:reference id="eventListenerRegistryService" interface="org.motechproject.event.listener.EventListenerRegistryService" />
     <osgi:reference id="testMdsEntityService" interface="org.motechproject.mds.test.service.TestMdsEntityService" />
     <osgi:reference id="testLookupService" interface="org.motechproject.mds.test.service.TestLookupService" />
@@ -37,9 +37,12 @@
     <osgi:reference id="goldfishDataService" interface="org.motechproject.mds.test.service.inheritancestrategies.GoldfishDataService" />
     <osgi:reference id="vehicleOwnerDataService" interface="org.motechproject.mds.test.service.inheritancestrategies.VehicleOwnerDataService" />
     <osgi:reference id="messageDataService" interface="org.motechproject.mds.test.service.setofenumandstring.MessageDataService" />
+    <osgi:reference id="departmentDataService" interface="org.motechproject.mds.test.service.transactions.DepartmentDataService" />
+    <osgi:reference id="employeeDataService" interface="org.motechproject.mds.test.service.transactions.EmployeeDataService" />
     <osgi:reference id="messageLogDataService" interface="org.motechproject.mds.test.service.lookupcomboboxrelation.MessageLogDataService" />
 
     <osgi:service ref="jdoListenerTestService" interface="org.motechproject.mds.test.service.instancelifecyclelistener.JdoListenerTestService" auto-export="interfaces"/>
     <osgi:service ref="transactionTestService" interface="org.motechproject.mds.test.service.TransactionTestService" auto-export="interfaces"/>
+    <osgi:service ref="officeService" interface="org.motechproject.mds.test.service.transactions.OfficeService" auto-export="interfaces" />
 
 </beans>

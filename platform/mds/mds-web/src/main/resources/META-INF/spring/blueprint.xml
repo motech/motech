@@ -12,7 +12,7 @@
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
-    <osgi:reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager" />
+    <osgi:reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager" context-class-loader="unmanaged"/>
 
     <osgi:reference id="typeServiceOSGi" interface="org.motechproject.mds.service.TypeService"/>
 

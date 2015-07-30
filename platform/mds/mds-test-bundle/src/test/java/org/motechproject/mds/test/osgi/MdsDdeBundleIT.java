@@ -11,61 +11,66 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.service.HistoryService;
+import org.motechproject.mds.test.domain.TestLookup;
+import org.motechproject.mds.test.domain.TestMdsEntity;
 import org.motechproject.mds.test.domain.TestSingleReturnLookup;
+import org.motechproject.mds.test.domain.cascadedelete.City;
+import org.motechproject.mds.test.domain.cascadedelete.Country;
+import org.motechproject.mds.test.domain.inheritancestrategies.Boat;
+import org.motechproject.mds.test.domain.inheritancestrategies.Cat;
+import org.motechproject.mds.test.domain.inheritancestrategies.Dog;
+import org.motechproject.mds.test.domain.inheritancestrategies.Goldfish;
+import org.motechproject.mds.test.domain.inheritancestrategies.Motorcycle;
+import org.motechproject.mds.test.domain.inheritancestrategies.Pet;
+import org.motechproject.mds.test.domain.inheritancestrategies.PetOwner;
+import org.motechproject.mds.test.domain.inheritancestrategies.Truck;
+import org.motechproject.mds.test.domain.inheritancestrategies.Vehicle;
+import org.motechproject.mds.test.domain.inheritancestrategies.VehicleOwner;
+import org.motechproject.mds.test.domain.instancelifecyclelistener.SubclassA;
+import org.motechproject.mds.test.domain.instancelifecyclelistener.SubclassB;
 import org.motechproject.mds.test.domain.lookupcomboboxrelation.LogAttribute;
 import org.motechproject.mds.test.domain.lookupcomboboxrelation.LogParameters;
 import org.motechproject.mds.test.domain.lookupcomboboxrelation.LogStatus;
 import org.motechproject.mds.test.domain.lookupcomboboxrelation.MessageLog;
 import org.motechproject.mds.test.domain.manytomany.Author;
-import org.motechproject.mds.test.domain.inheritancestrategies.Boat;
 import org.motechproject.mds.test.domain.manytomany.Book;
-import org.motechproject.mds.test.domain.inheritancestrategies.Cat;
 import org.motechproject.mds.test.domain.manytomany.Clinic;
-import org.motechproject.mds.test.domain.relationshipswithhistory.District;
-import org.motechproject.mds.test.domain.inheritancestrategies.Dog;
-import org.motechproject.mds.test.domain.inheritancestrategies.Goldfish;
-import org.motechproject.mds.test.domain.relationshipswithhistory.Language;
-import org.motechproject.mds.test.domain.inheritancestrategies.Motorcycle;
 import org.motechproject.mds.test.domain.manytomany.Patient;
-import org.motechproject.mds.test.domain.inheritancestrategies.Pet;
-import org.motechproject.mds.test.domain.inheritancestrategies.PetOwner;
+import org.motechproject.mds.test.domain.relationshipswithhistory.District;
+import org.motechproject.mds.test.domain.relationshipswithhistory.Language;
 import org.motechproject.mds.test.domain.relationshipswithhistory.State;
-import org.motechproject.mds.test.domain.instancelifecyclelistener.SubclassA;
-import org.motechproject.mds.test.domain.instancelifecyclelistener.SubclassB;
-import org.motechproject.mds.test.domain.TestLookup;
-import org.motechproject.mds.test.domain.TestMdsEntity;
-import org.motechproject.mds.test.domain.inheritancestrategies.Truck;
-import org.motechproject.mds.test.domain.inheritancestrategies.Vehicle;
-import org.motechproject.mds.test.domain.inheritancestrategies.VehicleOwner;
-import org.motechproject.mds.test.domain.cascadedelete.City;
-import org.motechproject.mds.test.domain.cascadedelete.Country;
 import org.motechproject.mds.test.domain.setofenumandstring.Channel;
 import org.motechproject.mds.test.domain.setofenumandstring.Message;
-import org.motechproject.mds.test.service.TestSingleReturnLookupService;
-import org.motechproject.mds.test.service.lookupcomboboxrelation.MessageLogDataService;
-import org.motechproject.mds.test.service.manytomany.AuthorDataService;
-import org.motechproject.mds.test.service.inheritancestrategies.BoatDataService;
-import org.motechproject.mds.test.service.manytomany.BookDataService;
-import org.motechproject.mds.test.service.inheritancestrategies.CatDataService;
-import org.motechproject.mds.test.service.cascadedelete.CityDataService;
-import org.motechproject.mds.test.service.manytomany.ClinicDataService;
-import org.motechproject.mds.test.service.cascadedelete.CountryDataService;
-import org.motechproject.mds.test.service.relationshipswithhistory.DistrictDataService;
-import org.motechproject.mds.test.service.inheritancestrategies.DogDataService;
-import org.motechproject.mds.test.service.inheritancestrategies.GoldfishDataService;
-import org.motechproject.mds.test.service.relationshipswithhistory.LanguageDataService;
-import org.motechproject.mds.test.service.setofenumandstring.MessageDataService;
-import org.motechproject.mds.test.service.inheritancestrategies.MotorcycleDataService;
-import org.motechproject.mds.test.service.manytomany.PatientDataService;
-import org.motechproject.mds.test.service.inheritancestrategies.PetOwnerDataService;
-import org.motechproject.mds.test.service.relationshipswithhistory.StateDataService;
-import org.motechproject.mds.test.service.instancelifecyclelistener.SubclassADataService;
-import org.motechproject.mds.test.service.instancelifecyclelistener.SubclassBDataService;
+import org.motechproject.mds.test.domain.transactions.Department;
+import org.motechproject.mds.test.domain.transactions.Employee;
 import org.motechproject.mds.test.service.TestLookupService;
 import org.motechproject.mds.test.service.TestMdsEntityService;
+import org.motechproject.mds.test.service.TestSingleReturnLookupService;
 import org.motechproject.mds.test.service.TransactionTestService;
+import org.motechproject.mds.test.service.cascadedelete.CityDataService;
+import org.motechproject.mds.test.service.cascadedelete.CountryDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.BoatDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.CatDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.DogDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.GoldfishDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.MotorcycleDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.PetOwnerDataService;
 import org.motechproject.mds.test.service.inheritancestrategies.TruckDataService;
 import org.motechproject.mds.test.service.inheritancestrategies.VehicleOwnerDataService;
+import org.motechproject.mds.test.service.instancelifecyclelistener.SubclassADataService;
+import org.motechproject.mds.test.service.instancelifecyclelistener.SubclassBDataService;
+import org.motechproject.mds.test.service.lookupcomboboxrelation.MessageLogDataService;
+import org.motechproject.mds.test.service.manytomany.AuthorDataService;
+import org.motechproject.mds.test.service.manytomany.BookDataService;
+import org.motechproject.mds.test.service.manytomany.ClinicDataService;
+import org.motechproject.mds.test.service.manytomany.PatientDataService;
+import org.motechproject.mds.test.service.relationshipswithhistory.DistrictDataService;
+import org.motechproject.mds.test.service.relationshipswithhistory.LanguageDataService;
+import org.motechproject.mds.test.service.relationshipswithhistory.StateDataService;
+import org.motechproject.mds.test.service.setofenumandstring.MessageDataService;
+import org.motechproject.mds.test.service.transactions.DepartmentDataService;
+import org.motechproject.mds.test.service.transactions.EmployeeDataService;
+import org.motechproject.mds.test.service.transactions.OfficeService;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.testing.osgi.BasePaxIT;
@@ -86,6 +91,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -190,6 +196,15 @@ public class MdsDdeBundleIT extends BasePaxIT {
     @Inject
     private TestSingleReturnLookupService testSingleReturnLookupService;
 
+    @Inject
+    private OfficeService officeService;
+
+    @Inject
+    private DepartmentDataService departmentDataService;
+
+    @Inject
+    private EmployeeDataService employeeDataService;
+
     private final Object waitLock = new Object();
 
     @Before
@@ -221,6 +236,8 @@ public class MdsDdeBundleIT extends BasePaxIT {
         cityDataService.deleteAll();
         countryDataService.deleteAll();
         testSingleReturnLookupService.deleteAll();
+        departmentDataService.deleteAll();
+        employeeDataService.deleteAll();
         messageLogDataService.deleteAll();
     }
 
@@ -258,6 +275,47 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(1, subclassesB.size());
         assertEquals("StringWasChanged", subclassesA.get(0).getSuperClassString());
         assertEquals("StringWasChanged", subclassesB.get(0).getSuperClassString());
+    }
+
+    @Test
+    public void shouldUpdateRelationshipInTransaction() {
+        // Create department and add 2 members
+        Department department = new Department("Sales Department");
+        Employee employee1 = new Employee("John D.");
+        Employee employee2 = new Employee("Chris T.");
+
+        Set<Employee> employees = new LinkedHashSet<>();
+        employees.add(employee1);
+        employees.add(employee2);
+
+        department.setEmployees(employees);
+        departmentDataService.create(department);
+
+        // Create and add new employee
+        Employee employee = employeeDataService.create(new Employee("Elliot R."));
+        employees.add(employee);
+
+        // Create a set of existing and new employee
+        Set<Employee> otherEmployees = new LinkedHashSet<>();
+        otherEmployees.add(employee1);
+        otherEmployees.add(employee);
+
+        // Create a new department
+        Department anotherDepartment = departmentDataService.create(new Department("Marketing Department"));
+
+        // Update the department with its members in transaction
+        officeService.saveEmployees(anotherDepartment.getId(), otherEmployees);
+
+        //Then
+        List<Department> departments = departmentDataService.retrieveAll();
+        assertEquals(2, departments.size());
+
+        // check the employees for the new department
+        anotherDepartment = departmentDataService.findById(anotherDepartment.getId());
+        assertEquals(2, anotherDepartment.getEmployees().size());
+
+        department = departmentDataService.findById(department.getId());
+        assertEquals(1, department.getEmployees().size());
     }
 
     @Test
