@@ -101,8 +101,8 @@ public class ServerEventRelayBundleIT extends BasePaxIT {
 
         Thread.sleep(2000);
 
-        assertEquals(firstGoodListener.getCount(), 1);
-        assertEquals(secondGoodListener.getCount(), 1);
+        assertEquals(1, firstGoodListener.getCount());
+        assertEquals(1, secondGoodListener.getCount());
     }
 
     @Test

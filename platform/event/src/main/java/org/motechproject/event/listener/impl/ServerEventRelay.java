@@ -1,6 +1,5 @@
 package org.motechproject.event.listener.impl;
 
-import com.google.common.collect.Iterables;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventRelay;
@@ -49,15 +48,20 @@ public class ServerEventRelay implements EventRelay, EventHandler {
     // @TODO either relayQueueEvent should be made private, or this method moved out to it's own class.
     @Override
     public void sendEventMessage(MotechEvent event) {
+        verifyEventNotNull(event);
         Set<EventListener> listeners = getEventListeners(event);
 
         if (!listeners.isEmpty()) {
-            outboundEventGateway.sendEventMessage(event);
+            // We need to split the message for each listener to ensure the work units
+            // are completed individually. Therefore, if a message fails it will be
+            // re-distributed to another server without being lost
+            splitEvent(event, listeners);
         }
     }
 
     @Override
     public void broadcastEventMessage(MotechEvent event) {
+        verifyEventNotNull(event);
         Set<EventListener> listeners = getEventListeners(event);
 
         // broadcast the event if there are listeners for it, or if it should get proxied as an OSGi event,
@@ -74,32 +78,18 @@ public class ServerEventRelay implements EventRelay, EventHandler {
      * @param event the event being relayed
      */
     public void relayQueueEvent(MotechEvent event) {
-        Set<EventListener> listeners = getEventListeners(event);
-
-        // Is this message destine for a specific listener?
-        if (event.getParameters().containsKey(MESSAGE_DESTINATION)) {
-
-            String messageDestination = (String) event.getParameters().get(MESSAGE_DESTINATION);
-
-            for (EventListener listener : listeners) {
-                if (listener.getIdentifier().equals(messageDestination)) {
-                    MotechEvent e = new MotechEvent(event.getSubject(), event.getParameters());
-                    handleQueueEvent(listener, e);
-                    break;
-                }
-            }
-
-        } else {
-
-            // Is there a single listener?
-            if (listeners.size() > 1) {
-                // We need to split the message for each listener to ensure the work units
-                // are completed individually. Therefore, if a message fails it will be
-                // re-distributed to another server without being lost
-                splitEvent(event, listeners);
+        verifyEventNotNull(event);
+        String messageDestination = (String) event.getParameters().get(MESSAGE_DESTINATION);
+        if (null != messageDestination) {
+            EventListener listener = getEventListener(event, messageDestination);
+            if (null != listener) {
+                MotechEvent e = copyMotechEvent(event);
+                handleQueueEvent(listener, e);
             } else {
-                handleQueueEvent(Iterables.getOnlyElement(listeners), event);
+                LOGGER.warn("Event listener with identifier {} not present to handle the event: {}", messageDestination, event);
             }
+        } else {
+            LOGGER.warn("Message destination not present in event: {}", event);
         }
     }
 
@@ -109,6 +99,7 @@ public class ServerEventRelay implements EventRelay, EventHandler {
      * @param event the event being relayed
      */
     public void relayTopicEvent(MotechEvent event) {
+        verifyEventNotNull(event);
         Set<EventListener> listeners = getEventListeners(event);
         for (EventListener listener : listeners) {
             handleTopicEvent(listener, event);
@@ -175,7 +166,7 @@ public class ServerEventRelay implements EventRelay, EventHandler {
             }
 
             event.incrementMessageRedeliveryCount();
-            sendEventMessage(event);
+            outboundEventGateway.sendEventMessage(event);
         } finally {
             Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
@@ -228,17 +219,24 @@ public class ServerEventRelay implements EventRelay, EventHandler {
         }
     }
 
+    private EventListener getEventListener(MotechEvent event, String identifier) {
+        Set<EventListener> listeners = getEventListeners(event);
+        for (EventListener listener : listeners) {
+            if (listener.getIdentifier().equals(identifier)) {
+                return listener;
+            }
+        }
+        return null;
+    }
+
     private Set<EventListener> getEventListeners(MotechEvent event) {
         if (eventListenerRegistry == null) {
             throw new IllegalStateException("eventListenerRegistry is null");
         }
-        if (event == null) {
-            throw new IllegalArgumentException("Invalid request to relay null event");
-        }
 
         Set<EventListener> listeners = eventListenerRegistry.getListeners(event.getSubject());
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("found " + listeners.size() + " for " + event.getSubject() + " in " + eventListenerRegistry.toString());
+            LOGGER.debug("found {} event listeners for {} in {}", listeners.size(), event.getSubject(), eventListenerRegistry);
         }
         return listeners;
     }
@@ -251,5 +249,17 @@ public class ServerEventRelay implements EventRelay, EventHandler {
     private void sendInOSGi(MotechEvent motechEvent) {
         Event osgiEvent = new Event(motechEvent.getSubject(), motechEvent.getParameters());
         osgiEventAdmin.postEvent(osgiEvent);
+    }
+
+    private MotechEvent copyMotechEvent(MotechEvent event) {
+        MotechEvent copy = new MotechEvent(event.getSubject(), event.getParameters());
+        copy.setId(event.getId());
+        return copy;
+    }
+
+    private void verifyEventNotNull(MotechEvent event) {
+        if (event == null) {
+            throw new IllegalArgumentException("Invalid request to relay null event");
+        }
     }
 }
