@@ -6,8 +6,8 @@ import org.junit.runner.RunWith;
 import org.motechproject.mds.test.domain.differentbundles.Animal;
 import org.motechproject.mds.test.domain.differentbundles.EntityB;
 import org.motechproject.mds.test.domain.differentbundles.EntityC;
-import org.motechproject.mds.test.domain.differentbundles.type.MessageStatus;
 import org.motechproject.mds.test.domain.differentbundles.Priority;
+import org.motechproject.mds.test.domain.differentbundles.type.MessageStatus;
 import org.motechproject.mds.test.secondary.domain.CallStatus;
 import org.motechproject.mds.test.secondary.domain.EntityA;
 import org.motechproject.mds.test.secondary.domain.MessageRecord;
@@ -15,6 +15,7 @@ import org.motechproject.mds.test.secondary.service.EntityADataService;
 import org.motechproject.mds.test.secondary.service.MessageRecordDataService;
 import org.motechproject.mds.test.service.differentbundles.EntityBDataService;
 import org.motechproject.mds.test.service.differentbundles.EntityCDataService;
+import org.motechproject.mds.test.service.instancelifecyclelistener.JdoListenerTestService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
@@ -42,6 +43,10 @@ public class MdsCrossBundleRelationshipBundleIT extends BasePaxIT {
     public static final String A_UPDATED_NAME = "a_updated";
     public static final String B_UPDATED_NAME = "b_updated";
     public static final String C_UPDATED_NAME = "c_updated";
+
+    // Unused. We inject it to make sure that the service is ready before starting tests
+    @Inject
+    private JdoListenerTestService jdoListenerTestService;
 
     @Inject
     private EntityADataService entityADataService;

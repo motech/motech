@@ -98,7 +98,8 @@ public class ProxyJdoListener implements CreateLifecycleListener, StoreLifecycle
                         }
                     }
                 }  else {
-                    throw new JdoListenerInvocationException(String.format("The service %s cannot be found", clazz));
+                    throw new JdoListenerInvocationException(String.format("JDO instance lifecycle event has taken place and is " +
+                            "tracked by the %s, but the OSGi service for this class cannot be found.",  clazz.getName()));
                 }
             }
         }
