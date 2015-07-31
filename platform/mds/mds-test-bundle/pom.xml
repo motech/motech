@@ -53,6 +53,7 @@
                         <Bundle-SymbolicName>motech-platform-dataservices-test-bundle</Bundle-SymbolicName>
                         <Export-Package>
                             org.motechproject.mds.test.domain;version=${project.version},
+                            org.motechproject.mds.test.domain.transactions;version=${project.version},
                             org.motechproject.mds.test.domain.cascadedelete;version=${project.version},
                             org.motechproject.mds.test.domain.differentbundles;version=${project.version},
                             org.motechproject.mds.test.domain.differentbundles.type;version=${project.version},
@@ -64,6 +65,7 @@
                             org.motechproject.mds.test.domain.validation;version=${project.version},
                             org.motechproject.mds.test.domain.lookupcomboboxrelation;version=${project.version},
                             org.motechproject.mds.test.service;version=${project.version},
+                            org.motechproject.mds.test.service.transactions;version=${project.version},
                             org.motechproject.mds.test.service.cascadedelete;version=${project.version},
                             org.motechproject.mds.test.service.differentbundles;version=${project.version},
                             org.motechproject.mds.test.service.inheritancestrategies;version=${project.version},
