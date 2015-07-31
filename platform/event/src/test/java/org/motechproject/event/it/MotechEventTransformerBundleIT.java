@@ -44,13 +44,15 @@ public class MotechEventTransformerBundleIT extends BasePaxIT {
     public void verifyTransformedQueueEventHasValidId() throws InterruptedException {
         TransformedEventListener eventListener = new TransformedEventListener();
         eventListenerRegistry.registerListener(eventListener, EVENT_SUBJECT);
-        outboundEventGateway.sendEventMessage(new MotechEvent(EVENT_SUBJECT));
+        MotechEvent event = new MotechEvent(EVENT_SUBJECT);
+        event.getParameters().put("message-destination", eventListener.getIdentifier());
+        outboundEventGateway.sendEventMessage(event);
 
         waitForHandledEvent(eventListener);
 
-        MotechEvent motechEvent = eventListener.getEvent();
-        Assert.notNull(motechEvent);
-        Assert.notNull(motechEvent.getId());
+        MotechEvent capturedEvent = eventListener.getEvent();
+        Assert.notNull(capturedEvent);
+        Assert.notNull(capturedEvent.getId());
     }
 
     @Test

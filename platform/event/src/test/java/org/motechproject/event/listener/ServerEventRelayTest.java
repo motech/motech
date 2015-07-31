@@ -1,10 +1,13 @@
 package org.motechproject.event.listener;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.domain.BuggyListener;
@@ -15,28 +18,30 @@ import org.motechproject.event.messaging.OutboundEventGateway;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ServerEventRelayTest {
 
     public static final String MESSAGE_DESTINATION = "message-destination";
+    public static final String LISTENER_IDENTIFIER = "test-identifier";
+    public static final String SECONDARY_LISTENER_IDENTIFIER = "secondary-test-identifier";
     public static final String SUBJECT = "org.motechproject.server.someevent";
 
     @Mock
@@ -49,116 +54,88 @@ public class ServerEventRelayTest {
     private EventListener eventListener;
 
     @Mock
+    private EventListener secondaryEventListener;
+
+    @Mock
     private EventAdmin eventAdmin;
 
-    private ServerEventRelay eventRelay;
-    private MotechEvent motechEvent;
+    @Mock
     private EventListenerRegistry registry;
+
+    private ServerEventRelay eventRelay;
 
     @Before
     public void setUp() throws Exception {
-        initMocks(this);
-
-        registry = new EventListenerRegistry();
         eventRelay = new ServerEventRelay(outboundEventGateway, registry, motechEventConfig, eventAdmin);
 
-        // Create the scheduled event message object
-        Map<String, Object> messageParameters = new HashMap<String, Object>();
-        messageParameters.put("test", "value");
-        motechEvent = new MotechEvent(SUBJECT, messageParameters);
+        when(eventListener.getIdentifier()).thenReturn(LISTENER_IDENTIFIER);
+        when(secondaryEventListener.getIdentifier()).thenReturn(SECONDARY_LISTENER_IDENTIFIER);
     }
 
     @Test
-    public void testRelayToSingleListener() throws Exception {
-        registry.registerListener(eventListener, SUBJECT);
+    public void testRelayToSingleListenerWithMessageDestination() throws Exception {
+        MotechEvent motechEvent = createEvent(LISTENER_IDENTIFIER);
+        setUpListeners(SUBJECT, eventListener);
         eventRelay.relayQueueEvent(motechEvent);
         verify(eventListener).handle(motechEvent);
     }
 
     @Test
-    public void testSplittingRelay() throws Exception {
-        ArgumentCaptor<MotechEvent> argument = ArgumentCaptor.forClass(MotechEvent.class);
-        String firstListener;
-        String secondListener;
-
-        // Register a single listener for an event
-        when(eventListener.getIdentifier()).thenReturn("SampleEventListener");
-        registry.registerListener(eventListener, SUBJECT);
-
-        EventListener fel = mock(EventListener.class);
-        when(fel.getIdentifier()).thenReturn("FooEventListener");
-        registry.registerListener(fel, SUBJECT);
-
-        List<String> registeredListeners = asList(eventListener.getIdentifier(), fel.getIdentifier());
-
+    public void testRelayToSingleListenerWithoutMessageDestination() throws Exception {
+        MotechEvent motechEvent = createEvent();
+        setUpListeners(SUBJECT, eventListener);
         eventRelay.relayQueueEvent(motechEvent);
-
-        verify(outboundEventGateway, times(2)).sendEventMessage(argument.capture());
-        MotechEvent event = argument.getAllValues().get(0);
-        firstListener = (String) event.getParameters().get("message-destination");
-        assertTrue(event.getParameters().containsKey("message-destination"));
-        assertTrue(registeredListeners.contains(firstListener));
-        assertEvent(createEvent(motechEvent, firstListener), event);
-
-        event = argument.getAllValues().get(1);
-        secondListener = (String) event.getParameters().get("message-destination");
-        assertTrue(event.getParameters().containsKey("message-destination"));
-        assertTrue(registeredListeners.contains(secondListener));
-        assertEvent(createEvent(motechEvent, secondListener), event);
-
-        assertFalse(firstListener.equals(secondListener));
+        verify(eventListener, never()).handle(motechEvent);
     }
 
-    private MotechEvent createEvent(MotechEvent motechEvent, String destination) {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("message-destination", destination);
-        params.putAll(motechEvent.getParameters());
-        return new MotechEvent(motechEvent.getSubject(), params);
+    @Test
+    public void testSplitEvents() throws Exception {
+        MotechEvent motechEvent = createEvent();
+        setUpListeners(SUBJECT, eventListener, secondaryEventListener);
+        eventRelay.sendEventMessage(motechEvent);
+
+        ArgumentCaptor<MotechEvent> argumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
+        verify(outboundEventGateway, times(2)).sendEventMessage(argumentCaptor.capture());
+        MotechEvent capturedEvent;
+
+        capturedEvent = argumentCaptor.getAllValues().get(0);
+        assertThat(capturedEvent.getParameters(), Matchers.hasEntry(MESSAGE_DESTINATION, (Object) LISTENER_IDENTIFIER));
+
+        capturedEvent = argumentCaptor.getAllValues().get(1);
+        assertThat(capturedEvent.getParameters(), Matchers.hasEntry(MESSAGE_DESTINATION, (Object) SECONDARY_LISTENER_IDENTIFIER));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testRelayNullEvent() throws Exception {
+    public void testRelayNullQueueEvent() throws Exception {
         eventRelay.relayQueueEvent(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRelayNullTopicEvent() throws Exception {
         eventRelay.relayTopicEvent(null);
     }
 
     @Test
-    public void shouldSetDestinationToEventIfListenerFails() {
+    public void shouldPreserveEventDestinationIfListenerFails() {
         when(motechEventConfig.getMessageMaxRedeliveryCount()).thenReturn(2);
-
         BuggyListener buggyListener = new BuggyListener(1);
-
-        registry.registerListener(buggyListener, "TEST-FOO");
-
-        MotechEvent event = new MotechEvent("TEST-FOO");
-
-        assertThat(event.getParameters().containsKey(MESSAGE_DESTINATION), is(false));
+        setUpListeners(SUBJECT, buggyListener);
+        MotechEvent event = createEvent(buggyListener.getIdentifier());
 
         eventRelay.relayQueueEvent(event);
 
         assertThat(event.getParameters().get(MESSAGE_DESTINATION).toString(), is(buggyListener.getIdentifier()));
-
     }
 
     @Test
     public void testThatOnlyListenerIdentifiedByMessageDestinationHandlesEvent() throws Exception {
+        setUpListeners(SUBJECT, eventListener, secondaryEventListener);
+        MotechEvent motechEvent = createEvent(LISTENER_IDENTIFIER);
 
-        when(eventListener.getIdentifier()).thenReturn("Good");
-        registry.registerListener(eventListener, SUBJECT);
+        eventRelay.relayQueueEvent(motechEvent);
 
-        EventListener badListener = mock(EventListener.class);
-        when(badListener.getIdentifier()).thenReturn("Bad");
-        registry.registerListener(badListener, SUBJECT);
-
-        Map<String, Object> messageParameters = new HashMap<String, Object>();
-        messageParameters.put("test", "value");
-        messageParameters.put("message-destination", "Good");
-        MotechEvent eventForGoodListener = new MotechEvent(SUBJECT, messageParameters);
-
-        eventRelay.relayQueueEvent(eventForGoodListener);
-
-        verify(eventListener).handle(eventForGoodListener);
-        verify(badListener, never()).handle(any(MotechEvent.class));
+        verify(eventListener).handle(motechEvent);
+        verify(secondaryEventListener, never()).handle(any(MotechEvent.class));
     }
 
     @Test
@@ -176,7 +153,7 @@ public class ServerEventRelayTest {
                     }
                 })
                 .when(eventListener).handle(any(MotechEvent.class));
-        registry.registerListener(eventListener, SUBJECT);
+        setUpListeners(SUBJECT, eventListener);
 
         eventRelay.relayTopicEvent(new MotechEvent(SUBJECT));
         verify(eventListener, times(3)).handle(any(MotechEvent.class));
@@ -202,7 +179,7 @@ public class ServerEventRelayTest {
                     }
                 })
                 .when(eventListener).handle(any(MotechEvent.class));
-        registry.registerListener(eventListener, SUBJECT);
+        setUpListeners(SUBJECT, eventListener);
 
         eventRelay.relayTopicEvent(new MotechEvent(SUBJECT));
         verify(eventListener, times(3)).handle(any(MotechEvent.class));
@@ -223,9 +200,20 @@ public class ServerEventRelayTest {
         assertEquals("subject", captor.getValue().getTopic());
     }
 
-    private void assertEvent(MotechEvent expected, MotechEvent copy) {
-        assertEquals(expected.getSubject(), copy.getSubject());
-        assertEquals(expected.getParameters(), copy.getParameters());
+    private MotechEvent createEvent(String messageDestination) {
+        MotechEvent event = createEvent();
+        event.getParameters().put(MESSAGE_DESTINATION, messageDestination);
+        return event;
+    }
+
+    private MotechEvent createEvent() {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("test", "value");
+        return new MotechEvent(SUBJECT, parameters);
+    }
+
+    private void setUpListeners(String subject, EventListener... listeners) {
+        when(registry.getListeners(eq(subject))).thenReturn(new LinkedHashSet<>(Arrays.asList(listeners)));
     }
 
     private class BooleanValue {
