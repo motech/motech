@@ -8,6 +8,7 @@ This section of the documentation is aimed at developers and maintainers of the 
    :maxdepth: 1
 
    dev_setup/index
+   Using the Maven Archetype <archetype>
    patch
    repositories
    commit_message
