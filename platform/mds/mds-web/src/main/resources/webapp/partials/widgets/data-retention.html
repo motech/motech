@@ -20,7 +20,7 @@
             {{msg('mds.dataRetention.emptyTrash')}}
         </label>
         <div class="settings-input-group">
-            <input class="form-control input-auto" ng-disabled="checkTimeSelectDisable()" type="number" min="1" ng-model="settings.timeValue">
+            <input class="form-control input-auto" ng-readonly="checkTimeSelectDisable()" type="number" min="1" ng-model="settings.timeValue">
             <select class="form-control input-auto" ng-disabled="checkTimeSelectDisable()" ng-model="settings.timeUnit" ng-options="t.value as t.label for t in timeUnits"></select>
         </div>
     </div>

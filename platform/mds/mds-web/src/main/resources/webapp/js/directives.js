@@ -358,13 +358,16 @@
             restrict: 'A',
             require: 'ngModel',
             link: function (scope, element, attr, ngModel) {
-                angular.element(element).timepicker({
-                    onSelect: function (timeTex) {
-                        scope.safeApply(function () {
-                            ngModel.$setViewValue(timeTex);
-                        });
-                    }
-                });
+                var isReadOnly = scope.$eval(attr.ngReadonly);
+                if(!isReadOnly) {
+                    angular.element(element).timepicker({
+                        onSelect: function (timeTex) {
+                            scope.safeApply(function () {
+                                ngModel.$setViewValue(timeTex);
+                            });
+                        }
+                    });
+                }
             }
         };
     });
@@ -377,35 +380,38 @@
             restrict: 'A',
             require: 'ngModel',
             link: function (scope, element, attr, ngModel) {
-                angular.element(element).datetimepicker({
-                    showTimezone: true,
-                    changeYear: true,
-                    useLocalTimezone: true,
-                    dateFormat: 'yy-mm-dd',
-                    timeFormat: 'HH:mm z',
-                    onSelect: function (dateTex) {
-                        scope.safeApply(function () {
-                            ngModel.$setViewValue(dateTex);
-                        });
-                    },
-                    onClose: function (year, month, inst) {
-                        var viewValue = $(this).val();
-                        scope.safeApply(function () {
-                            ngModel.$setViewValue(viewValue);
-                        });
-                    },
-                    onChangeMonthYear: function (year, month, inst) {
-                        var curDate = $(this).datepicker("getDate");
-                        if (curDate === null) {
-                            return;
+                var isReadOnly = scope.$eval(attr.ngReadonly);
+                if(!isReadOnly) {
+                    angular.element(element).datetimepicker({
+                        showTimezone: true,
+                        changeYear: true,
+                        useLocalTimezone: true,
+                        dateFormat: 'yy-mm-dd',
+                        timeFormat: 'HH:mm z',
+                        onSelect: function (dateTex) {
+                            scope.safeApply(function () {
+                                ngModel.$setViewValue(dateTex);
+                            });
+                        },
+                        onClose: function (year, month, inst) {
+                            var viewValue = $(this).val();
+                            scope.safeApply(function () {
+                                ngModel.$setViewValue(viewValue);
+                            });
+                        },
+                        onChangeMonthYear: function (year, month, inst) {
+                            var curDate = $(this).datepicker("getDate");
+                            if (curDate === null) {
+                                return;
+                            }
+                            if (curDate.getYear() !== year || curDate.getMonth() !== month - 1) {
+                                curDate.setYear(year);
+                                curDate.setMonth(month - 1);
+                                $(this).datepicker("setDate", curDate);
+                            }
                         }
-                        if (curDate.getYear() !== year || curDate.getMonth() !== month - 1) {
-                            curDate.setYear(year);
-                            curDate.setMonth(month - 1);
-                            $(this).datepicker("setDate", curDate);
-                        }
-                    }
-                });
+                    });
+                }
             }
         };
     });
@@ -418,27 +424,30 @@
             restrict: 'A',
             require: 'ngModel',
             link: function (scope, element, attr, ngModel) {
-                angular.element(element).datepicker({
-                    changeYear: true,
-                    showButtonPanel: true,
-                    dateFormat: 'yy-mm-dd',
-                    onSelect: function (dateTex) {
-                        scope.safeApply(function () {
-                            ngModel.$setViewValue(dateTex);
-                        });
-                    },
-                    onChangeMonthYear: function (year, month, inst) {
-                        var curDate = $(this).datepicker("getDate");
-                        if (curDate === null) {
-                            return;
+                var isReadOnly = scope.$eval(attr.ngReadonly);
+                if(!isReadOnly) {
+                    angular.element(element).datepicker({
+                        changeYear: true,
+                        showButtonPanel: true,
+                        dateFormat: 'yy-mm-dd',
+                        onSelect: function (dateTex) {
+                            scope.safeApply(function () {
+                                ngModel.$setViewValue(dateTex);
+                            });
+                        },
+                        onChangeMonthYear: function (year, month, inst) {
+                            var curDate = $(this).datepicker("getDate");
+                            if (curDate === null) {
+                                return;
+                            }
+                            if (curDate.getYear() !== year || curDate.getMonth() !== month - 1) {
+                                curDate.setYear(year);
+                                curDate.setMonth(month - 1);
+                                $(this).datepicker("setDate", curDate);
+                            }
                         }
-                        if (curDate.getYear() !== year || curDate.getMonth() !== month - 1) {
-                            curDate.setYear(year);
-                            curDate.setMonth(month - 1);
-                            $(this).datepicker("setDate", curDate);
-                        }
-                    }
-                });
+                    });
+                }
             }
         };
     });
