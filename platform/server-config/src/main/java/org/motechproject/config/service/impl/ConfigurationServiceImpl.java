@@ -6,7 +6,6 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.api.MotechMapUtils;
@@ -22,6 +21,8 @@ import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.SettingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -56,7 +57,7 @@ import static org.motechproject.config.core.filters.ConfigFileFilter.isPlatformC
 @Service("configurationService")
 public class ConfigurationServiceImpl implements ConfigurationService {
     private static final String STRING_FORMAT = "%s/%s";
-    private static final Logger LOGGER = Logger.getLogger(ConfigurationServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationServiceImpl.class);
 
     private ConfigLoader configLoader;
     private ConfigSource configSource;
@@ -68,9 +69,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private Properties defaultConfig;
     private Properties configAnnotation;
 
-    public ConfigurationServiceImpl() {
-    }
-
     @Autowired
     public ConfigurationServiceImpl(CoreConfigurationService coreConfigurationService,
                                     SettingService settingService, BundlePropertiesService bundlePropertiesService,
@@ -80,6 +78,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         this.configLoader = configLoader;
         this.resourceLoader = resourceLoader;
         this.bundlePropertiesService = bundlePropertiesService;
+        LOGGER.debug("ConfigurationService has been created.");
     }
 
     @Override

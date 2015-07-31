@@ -8,6 +8,8 @@ import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -25,6 +27,7 @@ import java.util.Properties;
  */
 public class SettingsFacade {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SettingsFacade.class);
     private static final int CONFIG_SERVICE_WAIT_TIME = 10000; // 10s
 
     private ConfigurationService configurationService;
@@ -55,9 +58,12 @@ public class SettingsFacade {
 
     @PostConstruct
     public void afterPropertiesSet() {
+        LOGGER.debug("SettingsFacade in bundle {} started searching for ConfigurationService.", bundleContext.getBundle().getSymbolicName());
         configurationService = OSGiServiceUtils.findService(bundleContext, ConfigurationService.class,
                 CONFIG_SERVICE_WAIT_TIME);
 
+        LOGGER.debug("ConfigurationService for SettingsFacade in bundle {} {}", bundleContext.getBundle().getSymbolicName(),
+                (configurationService == null ? "was not found." : "was found."));
         if (configurationService == null) {
             throw new MotechConfigurationException("SettingsFacade in bundle " + getBundleSymbolicName() +
                     " is unable to retrieve ConfigurationService");
