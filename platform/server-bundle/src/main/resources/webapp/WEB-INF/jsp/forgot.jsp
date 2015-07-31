@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>MOTECH - Mobile Technology for Community Health</title>
 
+    <%@ include file="faviconPage.jsp" %>
+
     ${mainHeader}
 </head>
 
@@ -13,7 +15,7 @@
         <div class="container">
             <a href=".">
                 <div class="dashboard-logo hidden-xs" ng-cloak>
-                    <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.gif">
+                    <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="./../../static/img/motech-logo.gif">
                 </div>
             </a>
 

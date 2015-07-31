@@ -8,6 +8,8 @@
     <meta charset="UTF-8">
     <title>MOTECH - Mobile Technology for Community Health</title>
 
+    <%@ include file="faviconPage.jsp" %>
+
     ${mainHeader}
 </head>
 
@@ -39,11 +41,11 @@
                     <c:otherwise>
                     <div class="splash" ng-hide="ready">
                         <div class="splash-logo">
-                            <img src="../server/resources/img/motech-logo.gif" alt="motech-logo">
+                            <img src="./../../static/img/motech-logo.gif" alt="motech-logo">
                         </div>
                         <div class="clearfix"></div>
                         <div class="splash-loader">
-                            <img src="../server/resources/img/loadingbar.gif" alt="loading">
+                            <img src="./../../static/img/loadingbar.gif" alt="loading">
                         </div>
                         <div class="clearfix"></div>
                         <div class="splash-msg"></div>
