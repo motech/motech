@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
-            <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
+            <artifactId>quartz</artifactId>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
