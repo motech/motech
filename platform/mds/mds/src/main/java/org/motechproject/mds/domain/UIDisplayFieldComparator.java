@@ -1,7 +1,5 @@
 
-package org.motechproject.mds.service.impl;
-
-import org.motechproject.mds.domain.Field;
+package org.motechproject.mds.domain;
 
 import java.util.Comparator;
 

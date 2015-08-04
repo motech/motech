@@ -20,6 +20,7 @@ import org.motechproject.mds.service.CsvExportCustomizer;
 import org.motechproject.mds.service.CsvImportCustomizer;
 import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.domain.UIDisplayFieldComparator;
 import org.motechproject.mds.testutil.records.Record2;
 import org.motechproject.mds.testutil.records.RecordEnum;
 import org.motechproject.mds.testutil.records.RelatedClass;
@@ -117,6 +118,8 @@ public class CsvImporterExporterTest {
         when(entityDto.getName()).thenReturn(ENTITY_NAME);
         when(entityDto.getModule()).thenReturn(ENTITY_MODULE);
         when(entityDto.getNamespace()).thenReturn(ENTITY_NAMESPACE);
+
+        when(csvExportCustomizer.columnOrderComparator()).thenReturn(new UIDisplayFieldComparator());
 
         CsvTestHelper.mockRecord2Fields(entity);
     }
@@ -269,23 +272,31 @@ public class CsvImporterExporterTest {
     }
 
     private String getTestEntityRecordsAsCsv(IdMode idMode) {
-        StringBuilder sb = new StringBuilder(idMode == IdMode.NO_ID_COLUMN ? "" : "id,");
+        StringBuilder sb = new StringBuilder("value,date,"); // these are UI displayable
+
+        if (idMode != IdMode.NO_ID_COLUMN) {
+            sb.append("id,");
+        }
+
         sb.append("creator,owner,modifiedBy,creationDate,");
-        sb.append("modificationDate,value,date,dateIgnoredByRest,enumField,enumListField");
+        sb.append("modificationDate,dateIgnoredByRest,enumField,enumListField");
         sb.append(",singleRelationship,multiRelationship\r\n");
 
         for (int i = 0; i < INSTANCE_COUNT; i++) {
+            sb.append("value ").append(i).append(',').append(NOW.plusSeconds(i)).append(','); // value, date
+
+            // id
             if (idMode == IdMode.INCLUDE_ID) {
                 sb.append(i);
             }
             if (idMode != IdMode.NO_ID_COLUMN) {
                 sb.append(',');
             }
-            sb.append("the creator ").append(i).append(',');
-            sb.append("the owner ").append(i).append(',').append("username").append(i).append(',');
-            sb.append(NOW.plusMinutes(i)).append(',').append(NOW.plusHours(i)).append(',');
-            sb.append("value ").append(i).append(',').append(NOW.plusSeconds(i)).append(',');
-            sb.append(NOW.minusHours(i)).append(',').append(enumValue(i));
+
+            sb.append("the creator ").append(i).append(','); // creator
+            sb.append("the owner ").append(i).append(',').append("username").append(i).append(','); // owner
+            sb.append(NOW.plusMinutes(i)).append(',').append(NOW.plusHours(i)).append(','); // creationDate, modificationDate
+            sb.append(NOW.minusHours(i)).append(',').append(enumValue(i)); // dateIgnoredByRest, enumField
             // enum list
             sb.append(",\"").append(enumValue(i + 1)).append(',').append(enumValue(i + 2)).append("\",");
             // relationship

@@ -1,9 +1,12 @@
 package org.motechproject.mds.service;
 
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.UIDisplayFieldComparator;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.PropertyUtil;
 
 import java.util.Collection;
+import java.util.Comparator;
 
 /**
  * This is a basic implementation of {@link org.motechproject.mds.service.CsvExportCustomizer}.
@@ -28,5 +31,10 @@ public class DefaultCsvExportCustomizer implements CsvExportCustomizer {
         } else {
             return "";
         }
+    }
+
+    @Override
+    public Comparator<Field> columnOrderComparator() {
+        return new UIDisplayFieldComparator();
     }
 }
