@@ -2185,7 +2185,8 @@
 
             for(i = 0; i < field.metadata.length; i += 1) {
                 if (field.metadata[i].key === 'related.class') {
-                    entityClassName = field.metadata[i].value.className;
+                    entityClassName = field.metadata[i].value.className === undefined ? field.metadata[i].value
+                        : field.metadata[i].value.className;
                     break;
                 }
             }
@@ -2199,7 +2200,7 @@
                     }
                 }
             }).error(function(response) {
-                $scope.lookupAvailableRelatedFields[lookupField.id] = [];
+                $scope.lookupAvailableRelatedFields[lookupField.id] = undefined;
             });
         };
 
