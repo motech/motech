@@ -203,6 +203,9 @@
             isDate: function (value) {
                 return value && $.inArray(value, ['DATE']) !== -1;
             },
+            isDate2Date: function (value) {
+                return value && $.inArray(value, ['DATE2DATE']) !== -1;
+            },
             isBoolean: function (value) {
                 return value && $.inArray(value, ['BOOLEAN']) !== -1;
             },

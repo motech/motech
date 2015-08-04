@@ -31,6 +31,11 @@ public class KeyEvaluatorTest {
         assertEquals("2015-05-15 11:32 " + timeZone, keyEvaluator.manipulate("parseDate(yyyy/dd/MM hh:mm)", "2015/15/05 11:32"));
         assertEquals(toStringWithPattern, keyEvaluator.manipulate("datetime(yyyy-MM-dd)", toString));
         assertEquals(now.plusDays(1).toString(), keyEvaluator.manipulate("plusDays(1)", toString));
+        assertEquals(now.minusDays(1).toString(), keyEvaluator.manipulate("minusDays(1)", toString));
+        assertEquals(now.plusHours(2).toString(), keyEvaluator.manipulate("plusHours(2)", toString));
+        assertEquals(now.minusHours(2).toString(), keyEvaluator.manipulate("minusHours(2)", toString));
+        assertEquals(now.plusMinutes(20).toString(), keyEvaluator.manipulate("plusMinutes(20)", toString));
+        assertEquals(now.minusMinutes(20).toString(), keyEvaluator.manipulate("minusMinutes(20)", toString));
     }
 
     @Test(expected = MotechException.class)

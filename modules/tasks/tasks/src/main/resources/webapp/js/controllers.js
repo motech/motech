@@ -778,7 +778,7 @@
                 }
 
                 if (manipulations !== "") {
-                    if ($scope.util.isText(type) || $scope.util.isDate(type)) {
+                    if ($scope.util.isText(type) || $scope.util.isDate(type) || $scope.util.isDate2Date(type) ) {
                         array = $scope.extractManipulations(manipulations);
 
                         for (i = 0; i < array.length; i += 1) {

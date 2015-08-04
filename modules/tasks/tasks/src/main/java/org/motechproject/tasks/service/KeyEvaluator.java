@@ -30,6 +30,11 @@ public class KeyEvaluator {
     private static final int SUBSTRING_PATTERN_BEGIN_INDEX = 10;
     private static final int SPLIT_PATTERN_BEGIN_INDEX = 6;
     private static final int PLUS_DAYS_PATTERN_BEGIN_INDEX = 9;
+    private static final int MINUS_DAYS_PATTERN_BEGIN_INDEX = 10;
+    private static final int PLUS_HOURS_PATTERN_BEGIN_INDEX = 10;
+    private static final int MINUS_HOURS_PATTERN_BEGIN_INDEX = 11;
+    private static final int PLUS_MINUTES_PATTERN_BEGIN_INDEX = 12;
+    private static final int MINUS_MINUTES_PATTERN_BEGIN_INDEX = 13;
     private static final int PARSE_DATE_PATTERN_BEGIN_INDEX = 10;
 
     private TaskContext taskContext;
@@ -168,10 +173,10 @@ public class KeyEvaluator {
             result = substringManipulation(value, manipulation);
         } else if (lowerCase.contains("split")) {
             result = splitManipulation(value, manipulation);
-        } else if (lowerCase.contains("plusdays")) {
-            result = plusDaysManipulation(value, manipulation);
         } else if (lowerCase.contains("parsedate")) {
             result = parseDate(value, manipulation);
+        } else if (lowerCase.contains("plus") || lowerCase.contains("minus")) {
+            result = dateTimeChangeManipulation(value, lowerCase);
         } else {
             result = simpleManipulations(value, lowerCase.replace("()", ""));
         }
@@ -199,6 +204,27 @@ public class KeyEvaluator {
         DateTimeFormatter targetFormat = DateTimeFormat.forPattern(pattern);
 
         return targetFormat.print(new DateTime(value));
+    }
+
+    private String dateTimeChangeManipulation(String value, String manipulation) {
+        String result = value;
+
+        if (manipulation.contains("plusdays")) {
+            result = plusDaysManipulation(value, manipulation);
+        } else if (manipulation.contains("minusdays")) {
+            result = minusDaysManipulation(value, manipulation);
+        } else if (manipulation.contains("plushours")) {
+            result = plusHoursManipulation(value, manipulation);
+        } else if (manipulation.contains("minushours")) {
+            result = minusHoursManipulation(value, manipulation);
+        } else if (manipulation.contains("plusminutes")) {
+            result = plusMinutesManipulation(value, manipulation);
+        } else if (manipulation.contains("minusminutes")) {
+            result = minusMinutesManipulation(value, manipulation);
+        } else {
+            throw new MotechException("task.warning.manipulation");
+        }
+        return result;
     }
 
     private String substringManipulation(String value, String manipulation) {
@@ -234,6 +260,41 @@ public class KeyEvaluator {
         DateTime dateTime = new DateTime(value);
 
         return dateTime.plusDays(Integer.parseInt(pattern)).toString();
+    }
+
+    private String minusDaysManipulation(String value, String manipulation) {
+        String pattern = manipulation.substring(MINUS_DAYS_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
+        DateTime dateTime = new DateTime(value);
+
+        return dateTime.minusDays(Integer.parseInt(pattern)).toString();
+    }
+
+    private String plusHoursManipulation(String value, String manipulation) {
+        String pattern = manipulation.substring(PLUS_HOURS_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
+        DateTime dateTime = new DateTime(value);
+
+        return dateTime.plusHours(Integer.parseInt(pattern)).toString();
+    }
+
+    private String minusHoursManipulation(String value, String manipulation) {
+        String pattern = manipulation.substring(MINUS_HOURS_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
+        DateTime dateTime = new DateTime(value);
+
+        return dateTime.minusHours(Integer.parseInt(pattern)).toString();
+    }
+
+    private String plusMinutesManipulation(String value, String manipulation) {
+        String pattern = manipulation.substring(PLUS_MINUTES_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
+        DateTime dateTime = new DateTime(value);
+
+        return dateTime.plusMinutes(Integer.parseInt(pattern)).toString();
+    }
+
+    private String minusMinutesManipulation(String value, String manipulation) {
+        String pattern = manipulation.substring(MINUS_MINUTES_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
+        DateTime dateTime = new DateTime(value);
+
+        return dateTime.minusMinutes(Integer.parseInt(pattern)).toString();
     }
 
     private String simpleManipulations(String value, String manipulation) {
