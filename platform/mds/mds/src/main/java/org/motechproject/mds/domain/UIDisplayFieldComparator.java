@@ -1,5 +1,5 @@
 
-package org.motechproject.mds.service.impl;
+package org.motechproject.mds.domain;
 
 import org.motechproject.mds.domain.Field;
 

@@ -1,5 +1,6 @@
 package org.motechproject.mds.service.impl.csv;
 
+import ch.lambdaj.Lambda;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
@@ -21,9 +22,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Base class used by classes responsible for exporting MDS Data in a tabular CSV-like form.
@@ -55,9 +60,11 @@ public abstract class AbstractMdsExporter {
         final MotechDataService dataService = DataServiceHelper.getDataService(bundleContext, entity);
 
         final Map<String, Field> fieldMap = FieldHelper.fieldMapByName(entity.getFields());
+        // we must respect field ordering
+        String[] orderedHeaders = orderHeaders(headers, entity.getFields(), exportCustomizer);
 
         try {
-            writer.writeHeader(headers);
+            writer.writeHeader(orderedHeaders);
 
             long rowsExported = 0;
             Map<String, String> row = new HashMap<>();
@@ -66,8 +73,8 @@ public abstract class AbstractMdsExporter {
                     mdsLookupService.findMany(entity.getClassName(), lookupName, lookupFields, params);
 
             for (Object instance : instances) {
-                buildCsvRow(row, fieldMap, instance, headers, exportCustomizer);
-                writer.writeRow(row, headers);
+                buildCsvRow(row, fieldMap, instance, orderedHeaders, exportCustomizer);
+                writer.writeRow(row, orderedHeaders);
                 rowsExported++;
             }
 
@@ -93,11 +100,28 @@ public abstract class AbstractMdsExporter {
         return entity;
     }
 
+    protected String[] orderHeaders(String[] selectedHeaders, List<Field> entityFields, CsvExportCustomizer customizer) {
+        Set<String> selectedHeadersSet = new HashSet<>(Arrays.asList(selectedHeaders));
+        TreeSet<Field> orderedFields = new TreeSet<>(customizer.columnOrderComparator());
+
+        for (Field field : entityFields) {
+            if (selectedHeadersSet.contains(field.getName())) {
+                orderedFields.add(field);
+            }
+        }
+
+        // after ordering, we are only interested in field names
+        List<String> headers = Lambda.extract(orderedFields, Lambda.on(Field.class).getName());
+
+        return headers.toArray(new String[headers.size()]);
+    }
+
     private String[] fieldsToHeaders(List<Field> fields) {
         List<String> fieldNames = new ArrayList<>();
         for (Field field : fields) {
             fieldNames.add(field.getName());
         }
+
         return fieldNames.toArray(new String[fieldNames.size()]);
     }
 

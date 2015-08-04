@@ -17,6 +17,7 @@ import org.motechproject.mds.domain.EntityInfo;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldInfo;
 import org.motechproject.mds.domain.RestOptions;
+import org.motechproject.mds.domain.UIDisplayFieldComparator;
 import org.motechproject.mds.event.CrudEventBuilder;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.helper.ActionParameterTypeResolver;
