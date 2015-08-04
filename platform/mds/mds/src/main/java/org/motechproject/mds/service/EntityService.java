@@ -462,4 +462,12 @@ public interface EntityService {
      * @throws java.lang.IllegalArgumentException when field passed to the method is not of the combobox type
      */
     void updateComboboxValues(Long entityId, Map<String, Collection> fieldValuesToUpdate);
+
+    /**
+     * Increments the version of the entity.
+     *
+     * @param entityId id of an entity
+     * @throws org.motechproject.mds.ex.entity.EntityNotFoundException when entity of the given id does not exist
+     */
+    void incrementVersion(Long entityId);
 }

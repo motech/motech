@@ -163,6 +163,14 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
+    public void incrementVersion(Long entityId) {
+        Entity entity = allEntities.retrieveById(entityId);
+        assertEntityExists(entity, entityId);
+        entity.incrementVersion();
+    }
+
+    @Override
+    @Transactional
     public EntityDto createEntity(EntityDto entityDto) {
         String packageName = ClassName.getPackage(entityDto.getClassName());
         boolean fromUI = StringUtils.isEmpty(packageName);
@@ -331,7 +339,9 @@ public class EntityServiceImpl implements EntityService {
 
     private void setLookupMethodNames(AdvancedSettingsDto advancedDto) {
         for (LookupDto lookup : advancedDto.getIndexes()) {
-            lookup.setMethodName(LookupName.lookupMethod(lookup.getLookupName()));
+            if (!lookup.isReadOnly()) {
+                lookup.setMethodName(LookupName.lookupMethod(lookup.getLookupName()));
+            }
         }
     }
 
