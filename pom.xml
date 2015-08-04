@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.motechproject</groupId>
@@ -138,6 +139,12 @@
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.c3p0</artifactId>
+            <version>0.9.1.2_1</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -714,15 +721,20 @@
             </dependency>
             <dependency>
                 <groupId>org.quartz-scheduler</groupId>
-                <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
-                <version>2.1.5-${external.dependency.release.tag}</version>
+                <artifactId>quartz</artifactId>
+                <version>2.2.1</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.log4j</groupId>
                         <artifactId>com.springsource.org.apache.log4j</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>c3p0</groupId>
+                        <artifactId>c3p0</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
+
             <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
@@ -1145,7 +1157,9 @@
                         </execution>
                     </executions>
                     <configuration>
-                        <!-- TO DO: Current version of jasmine-maven-plugin is not compatible with jquery v.1.10.2 so temporarily tests have to be skipped. To restore functionality put ${maven.test.skip} instead of true -->
+                        <!-- TO DO: Current version of jasmine-maven-plugin is not compatible
+                            with jquery v.1.10.2 so temporarily tests have to be skipped. To restore
+                            functionality put ${maven.test.skip} instead of true -->
                         <!-- Similar issue: https://github.com/searls/jasmine-maven-plugin/issues/178 -->
                         <skipTests>true</skipTests>
                         <serverPort>${jasmine.server.port}</serverPort>
@@ -1298,28 +1312,28 @@
                 </executions>
             </plugin>
             <!-- Uncomment with findbugs dependency -->
-            <!--<plugin>-->
-            <!--<groupId>org.codehaus.mojo</groupId>-->
-            <!--<artifactId>findbugs-maven-plugin</artifactId>-->
-            <!--<version>2.3.2</version>-->
-            <!--<configuration>-->
-            <!--<failOnError>true</failOnError>-->
-            <!--<effort>Max</effort>-->
-            <!--<threshold>Low</threshold>-->
-            <!--<excludeFilterFile>${modules.root.dir}/findbugs-exclude.xml</excludeFilterFile>-->
-            <!--<includeFilterFile>${modules.root.dir}/findbugs-include.xml</includeFilterFile>-->
-            <!--<skip>${maven.test.skip}</skip>-->
-            <!--<includeTests>false</includeTests>-->
-            <!--</configuration>-->
-            <!--<executions>-->
-            <!--<execution>-->
-            <!--<phase>verify</phase>-->
-            <!--<goals>-->
-            <!--<goal>check</goal>-->
-            <!--</goals>-->
-            <!--</execution>-->
-            <!--</executions>-->
-            <!--</plugin>-->
+            <!--<plugin> -->
+            <!--<groupId>org.codehaus.mojo</groupId> -->
+            <!--<artifactId>findbugs-maven-plugin</artifactId> -->
+            <!--<version>2.3.2</version> -->
+            <!--<configuration> -->
+            <!--<failOnError>true</failOnError> -->
+            <!--<effort>Max</effort> -->
+            <!--<threshold>Low</threshold> -->
+            <!--<excludeFilterFile>${modules.root.dir}/findbugs-exclude.xml</excludeFilterFile> -->
+            <!--<includeFilterFile>${modules.root.dir}/findbugs-include.xml</includeFilterFile> -->
+            <!--<skip>${maven.test.skip}</skip> -->
+            <!--<includeTests>false</includeTests> -->
+            <!--</configuration> -->
+            <!--<executions> -->
+            <!--<execution> -->
+            <!--<phase>verify</phase> -->
+            <!--<goals> -->
+            <!--<goal>check</goal> -->
+            <!--</goals> -->
+            <!--</execution> -->
+            <!--</executions> -->
+            <!--</plugin> -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
@@ -1501,10 +1515,8 @@
                             <password>${motech.sql.password}</password>
                             <url>${motech.sql.url}</url>
                         </configuration>
-                        <!--
-                            For each Bundle IT tests in modules migrated to MDS the
-                            'motech_data_services' database has to be dropped and created again.
-                        -->
+                        <!-- For each Bundle IT tests in modules migrated to MDS the 'motech_data_services'
+                            database has to be dropped and created again. -->
                         <executions>
                             <execution>
                                 <id>drop-db</id>
