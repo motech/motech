@@ -518,7 +518,7 @@
                                 // Every new manipulation should be added to options array.
                                 // Add name and input for each manipulation and
                                 // pattern only if manipulation takes parameters
-                                var isValid = false, reg, i, notFound = true, options = [{
+                                var isValid = false, reg, i, options = [{
                                         name: 'join',
                                         input: 'input[join-update]',
                                         pattern: 5
@@ -598,13 +598,9 @@
                                                         if (manipulation.indexOf(options[i].name) !== -1 && elemen.indexOf(options[i].name) !== -1) {
                                                             $(this.nextElementSibling).css({ 'display' : '' });
                                                             elem.find(options[i].input).val(manipulation.slice(manipulation.indexOf(options[i].name) + options[i].pattern, manipulation.indexOf(")", manipulation.indexOf(options[i].name))));
-                                                            notFound = false;
                                                             break;
                                                         }
                                                     }
-                                                }
-                                                if (notFound) {
-                                                    elem.find('input').val("");
                                                 }
 
                                                 $(elem[0]).append($(this).parent().clone().end());
@@ -884,23 +880,33 @@
                         return;
                     }
 
+                    if (manipulateAttributes.charAt(manipulateAttributes.length - 1) !== " ") {
+                        manipulateAttributes = manipulateAttributes + " ";
+                    }
+
                     if (manipulateAttributes.indexOf(manipulation) !== -1) {
                         manipulationAttributesIndex = manipulateElement.attr("manipulate").indexOf(manipulation);
 
-                        for(i=0; i<paramOptions.length; i+=1) {
-                            if(manipulation === paramOptions[i].name) {
-                                nonParamManip = false;
-                                break;
-                            }
-                        }
-
-                        if(nonParamManip) {
-                            reg = new RegExp(manipulation + "(\\(.*\\))?( |$)", "g");
+                        if (manipulation === "format") {
+                            reg = new RegExp("format(\\((\\{.*\\})*\\))", "g");
                             manipulateAttributes = manipulateAttributes.replace(reg, '');
                         } else {
-                            joinSeparator = manipulation + "\\(" + this.nextElementSibling.value + "\\)( |$)";
-                            reg = new RegExp(joinSeparator, "g");
-                            manipulateAttributes = manipulateAttributes.replace(reg, '');
+
+                            for (i = 0; i < paramOptions.length; i += 1) {
+                                if(manipulation === paramOptions[i].name) {
+                                    nonParamManip = false;
+                                    break;
+                                }
+                            }
+
+                            if (nonParamManip) {
+                                reg = new RegExp(manipulation + "(\\(.*\\))?( |$)", "g");
+                                manipulateAttributes = manipulateAttributes.replace(reg, '');
+                            } else {
+                                joinSeparator = manipulation + "\\(" + this.nextElementSibling.value + "\\)( |$)";
+                                reg = new RegExp(joinSeparator, "g");
+                                manipulateAttributes = manipulateAttributes.replace(reg, '');
+                            }
                         }
                     } else {
                         manipulateAttributes = manipulateAttributes.replace(/ +(?= )/g, '');

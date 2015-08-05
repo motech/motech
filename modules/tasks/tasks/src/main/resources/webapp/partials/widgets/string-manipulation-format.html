@@ -9,8 +9,8 @@
                 <div class="form-group clearfix">
                     <label class="radio col-md-3 col-sm-4 task-label">{{msg('task.info.availableFields')}}:</label>
                     <div class="move-element col-md-9 col-sm-8">
-                        <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}" data-popover="no">{{taskMsg(i.displayName)}}</span>​
-                        <span ng-repeat="ds in getDataSources()">
+                        <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters track by $index" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}" data-popover="no">{{taskMsg(i.displayName)}}</span>​
+                        <span ng-repeat="ds in getDataSources() track by $index">
                             <span contenteditable="false" ng-repeat="i in findObject(ds.providerId, ds.type).fields" class="badge badge-warning triggerField" draggable
                                 data-prefix="ad" data-source="{{ds.providerName}}" data-object="{{ds.displayName}}" data-object-type="{{ds.type}}"
                                 data-field="{{i.fieldKey}}" data-index="{{$index}}" data-object-id="{{ds.objectId}}" data-type="{{i.type}}" data-popover="no">
@@ -21,7 +21,7 @@
                 </div>
                 <div class="form-group clearfix">
                     <label class="radio task-label col-md-3 col-sm-4 task-label">{{msg('task.info.formatFields')}}:</label>
-                    <div ng-repeat="lookupField in formatInput">
+                    <div ng-repeat="lookupField in formatInput track by $index">
                         <!------------------------ Chrome & IE ------------------------>
                         <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="margin-before col-md-12 col-sm-12">
                             <div class="formatInput row col-md-11 col-sm-10">
