@@ -31,8 +31,8 @@ public class CsvTestHelper {
         fields.add(new Field(mockEntity, "modifiedBy", "Modified By", new Type(String.class)));
         fields.add(new Field(mockEntity, "creationDate", "Creation date", new Type(DateTime.class)));
         fields.add(new Field(mockEntity, "modificationDate", "Modification date", new Type(DateTime.class)));
-        fields.add(new Field(mockEntity, "value", "Value Disp", new Type(String.class)));
-        fields.add(new Field(mockEntity, "date", "Date disp", new Type(Date.class)));
+        fields.add(withDisplayPosition(new Field(mockEntity, "value", "Value Disp", new Type(String.class)), 0));
+        fields.add(withDisplayPosition(new Field(mockEntity, "date", "Date disp", new Type(Date.class)), 1));
         fields.add(new Field(mockEntity, "dateIgnoredByRest", "dateIgnoredByRest disp", new Type(Date.class)));
         fields.add(comboboxField(mockEntity, "enumField", false));
         fields.add(comboboxField(mockEntity, "enumListField", true));
@@ -70,6 +70,12 @@ public class CsvTestHelper {
         if (collectionType != null) {
             field.addMetadata(new FieldMetadata(field, Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE, collectionType.getName()));
         }
+        return field;
+    }
+
+    private static Field withDisplayPosition(Field field, long displayPosition) {
+        field.setUIDisplayable(true);
+        field.setUIDisplayPosition(displayPosition);
         return field;
     }
 
