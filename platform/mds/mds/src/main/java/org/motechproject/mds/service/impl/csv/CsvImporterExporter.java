@@ -193,8 +193,8 @@ public class CsvImporterExporter extends AbstractMdsExporter {
                           Map<String, Object> lookupFields, CsvExportCustomizer exportCustomizer) {
         Entity entity = getEntity(entityId);
         try (CsvTableWriter tableWriter = new CsvTableWriter(writer)){
-            return exportData(entity, tableWriter, lookupName, params, headers.toArray(new String[headers.size()]),
-                    lookupFields, exportCustomizer);
+            return exportData(entity, tableWriter, lookupName, params, headers, lookupFields,
+                    exportCustomizer);
         }
     }
 
@@ -214,8 +214,8 @@ public class CsvImporterExporter extends AbstractMdsExporter {
                           Map<String, Object> lookupFields, CsvExportCustomizer exportCustomizer) {
         Entity entity = getEntity(entityClassName);
         try (CsvTableWriter tableWriter = new CsvTableWriter(writer)){
-            return exportData(entity, tableWriter, lookupName, params, headers.toArray(new String[headers.size()]),
-                    lookupFields, exportCustomizer);
+            return exportData(entity, tableWriter, lookupName, params, headers, lookupFields,
+                    exportCustomizer);
         }
     }
 

@@ -216,7 +216,7 @@ public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/entities/{entityId}/exportInstances", method = RequestMethod.GET)
     public void exportEntityInstances(@PathVariable Long entityId, GridSettings settings,
-                                      @RequestParam String range,
+                                      @RequestParam String exportRecords,
                                       @RequestParam String outputFormat,
                                       HttpServletResponse response) throws IOException {
         if (!Constants.ExportFormat.isValidFormat(outputFormat)) {
@@ -233,28 +233,15 @@ public class InstanceController extends MdsController {
                 "Content-Disposition",
                 "attachment; filename=" + fileName + "." + outputFormat.toLowerCase());
 
-        if ("table".equalsIgnoreCase(range)) {
-            Order order = null;
-            if (!settings.getSortColumn().isEmpty()) {
-                order = new Order(settings.getSortColumn(), settings.getSortDirection());
-            }
+        Order order = StringUtils.isNotEmpty(settings.getSortColumn()) ? new Order(settings.getSortColumn(), settings.getSortDirection()) : null;
+        QueryParams queryParams = new QueryParams(1, StringUtils.equalsIgnoreCase(exportRecords, "all") ? null : Integer.valueOf(exportRecords), order);
 
-            QueryParams queryParams = new QueryParams(settings.getPage(), settings.getRows(), order);
-            String lookup = settings.getLookup();
-
-            if (Constants.ExportFormat.PDF.equals(outputFormat)) {
-                csvImportExportService.exportPdf(entityId, response.getOutputStream(), lookup, queryParams,
-                        settings.getSelectedFields(), getFields(settings));
-            } else {
-                csvImportExportService.exportCsv(entityId, response.getWriter(), lookup, queryParams,
-                        settings.getSelectedFields(), getFields(settings));
-            }
-        } else if ("all".equalsIgnoreCase(range)) {
-            if (Constants.ExportFormat.PDF.equals(outputFormat)) {
-                csvImportExportService.exportPdf(entityId, response.getOutputStream());
-            } else {
-                csvImportExportService.exportCsv(entityId, response.getWriter());
-            }
+        if (Constants.ExportFormat.PDF.equals(outputFormat)) {
+            csvImportExportService.exportPdf(entityId, response.getOutputStream(), settings.getLookup(), queryParams,
+                    settings.getSelectedFields(), getFields(settings));
+        } else {
+            csvImportExportService.exportCsv(entityId, response.getWriter(), settings.getLookup(), queryParams,
+                    settings.getSelectedFields(), getFields(settings));
         }
     }
 
@@ -309,8 +296,11 @@ public class InstanceController extends MdsController {
     }
 
     private Map<String, Object> getFields(GridSettings gridSettings) throws IOException {
-        return objectMapper.readValue(gridSettings.getFields(), new TypeReference<HashMap>() {
-        });
+        if (gridSettings.getFields() == null) {
+            return null;
+        } else {
+            return objectMapper.readValue(gridSettings.getFields(), new TypeReference<HashMap>() {});
+        }
     }
 
     private boolean filterSet(String filterStr) {

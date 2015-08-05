@@ -2,18 +2,24 @@ package org.motechproject.mds.web.controller;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvImportExportService;
+import org.motechproject.mds.util.Order;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.service.InstanceService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
@@ -43,33 +49,55 @@ public class InstanceControllerTest {
     }
 
     @Test
-    public void shouldExportInstancesFromTableAsCsv() throws Exception {
+    public void shouldExportInstancesWithAllRecordsAsCsv() throws Exception {
         when(response.getWriter()).thenReturn(writer);
 
-        GridSettings gridSettings = new GridSettings();
-        gridSettings.setSortColumn("sortColumn");
-        gridSettings.setLookup("lookup");
-        gridSettings.setFields("{}");
+        ArgumentCaptor<QueryParams> captor = ArgumentCaptor.forClass(QueryParams.class);
 
-        instanceController.exportEntityInstances(1L, gridSettings, "table", "csv", response);
+        GridSettings gridSettings = new GridSettings();
+        gridSettings.setLookup("lookup");
+
+        instanceController.exportEntityInstances(1L, gridSettings, "all", "csv", response);
 
         verify(instanceService).verifyEntityAccess(1L);
-        verify(csvImportExportService).exportCsv(eq(1L), eq(writer), eq("lookup"), any(QueryParams.class), any(List.class), any(Map.class));
+        verify(csvImportExportService).exportCsv(eq(1L), eq(writer), eq("lookup"), captor.capture(), any(List.class), any(Map.class));
         verify(response).setContentType("text/csv");
         verify(response).setHeader("Content-Disposition",
                 "attachment; filename=Entity_1_instances.csv");
+
+        assertNull(captor.getValue().getPageSize());
+        assertNull(captor.getValue().getOrder());
     }
 
     @Test
-    public void shouldExportAllInstancesAsCsv() throws Exception {
+    public void shouldExportInstancesWithAdditionalOptionsAsCsv() throws Exception {
         when(response.getWriter()).thenReturn(writer);
 
-        instanceController.exportEntityInstances(1L, new GridSettings(), "all", "csv", response);
+        ArgumentCaptor<QueryParams> queryParamsCaptor = ArgumentCaptor.forClass(QueryParams.class);
+        ArgumentCaptor<List> listCaptor = ArgumentCaptor.forClass(List.class);
+
+        GridSettings gridSettings = new GridSettings();
+        gridSettings.setSortColumn("sortColumn");
+        gridSettings.setSortDirection("asc");
+        gridSettings.setSelectedFields(Arrays.asList("id", "date"));
+        gridSettings.setLookup("lookup");
+
+        instanceController.exportEntityInstances(1L, gridSettings, "50", "csv", response);
 
         verify(instanceService).verifyEntityAccess(1L);
-        verify(csvImportExportService).exportCsv(1L, writer);
+        verify(csvImportExportService).exportCsv(eq(1L), eq(writer), eq("lookup"), queryParamsCaptor.capture(), listCaptor.capture(), any(Map.class));
         verify(response).setContentType("text/csv");
         verify(response).setHeader("Content-Disposition",
                 "attachment; filename=Entity_1_instances.csv");
+
+        QueryParams captorValue = queryParamsCaptor.getValue();
+        assertEquals(Order.Direction.ASC, captorValue.getOrder().getDirection());
+        assertEquals("sortColumn", captorValue.getOrder().getField());
+        assertEquals(Integer.valueOf(1), captorValue.getPage());
+        assertEquals(Integer.valueOf(50), captorValue.getPageSize());
+
+        assertEquals(2, listCaptor.getValue().size());
+        assertTrue(listCaptor.getValue().contains("id"));
+        assertTrue(listCaptor.getValue().contains("date"));
     }
 }

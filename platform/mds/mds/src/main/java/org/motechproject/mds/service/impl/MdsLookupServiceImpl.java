@@ -2,7 +2,6 @@ package org.motechproject.mds.service.impl;
 
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
-import org.motechproject.mds.ex.lookup.CollectionResultFromLookupExpectedException;
 import org.motechproject.mds.ex.lookup.SingleResultFromLookupExpectedException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.lookup.LookupExecutor;
@@ -17,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -70,7 +70,7 @@ public class MdsLookupServiceImpl implements MDSLookupService {
 
         Object result = lookupExecutor.execute(lookupParams, queryParams);
 
-        return assertAndReturnListResult(result, lookupName);
+        return returnListResult(result);
     }
 
     @Override
@@ -144,9 +144,9 @@ public class MdsLookupServiceImpl implements MDSLookupService {
         return (T) result;
     }
 
-    private <T> List<T> assertAndReturnListResult(Object result, String lookupName) {
+    private <T> List<T> returnListResult(Object result) {
         if (result != null && !(result instanceof Collection)) {
-            throw new CollectionResultFromLookupExpectedException(lookupName);
+            return (List<T>) Collections.singletonList(result);
         }
         return (List<T>) result;
     }

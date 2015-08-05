@@ -12,7 +12,6 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.LookupFieldType;
-import org.motechproject.mds.ex.lookup.CollectionResultFromLookupExpectedException;
 import org.motechproject.mds.ex.lookup.SingleResultFromLookupExpectedException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.query.QueryParams;
@@ -198,12 +197,6 @@ public class MdsLookupServiceTest {
 
         assertEquals(TOTAL_COUNT, mdsLookupService.countAll(Record.class));
         assertEquals(TOTAL_COUNT, mdsLookupService.countAll(Record.class.getName()));
-    }
-
-    @Test(expected = CollectionResultFromLookupExpectedException.class)
-    public void shouldThrowExceptionWhenFindManyCalledForSingleReturnLookup() {
-        Map<String, Object> lookupMap = lookupMap();
-        mdsLookupService.findMany(Record.class, FIRST_LOOKUP_NAME, lookupMap);
     }
 
     @Test(expected = SingleResultFromLookupExpectedException.class)

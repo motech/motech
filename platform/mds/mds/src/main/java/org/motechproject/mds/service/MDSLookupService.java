@@ -48,8 +48,7 @@ public interface MDSLookupService {
      * Retrieves and executes multi-return lookup for the given entity class,
      * lookup name and parameters. It will fail, if lookup parameters do not match the
      * parameters specified in the lookup or if the lookup of given name does not exist for
-     * the retrieved entity. It will also throw {@link org.motechproject.mds.ex.lookup.CollectionResultFromLookupExpectedException}
-     * in case lookup returns single instance, rather than collection of instances.
+     * the retrieved entity.
      *
      * @param entityClass entity class
      * @param lookupName name of the lookup from entity
@@ -63,8 +62,7 @@ public interface MDSLookupService {
      * Retrieves and executes multi-return lookup for the given entity class name,
      * lookup name and parameters. It will fail, if lookup parameters do not match the
      * parameters specified in the lookup or if the lookup of given name does not exist for
-     * the retrieved entity. It will also throw {@link org.motechproject.mds.ex.lookup.CollectionResultFromLookupExpectedException}
-     * in case lookup returns single instance, rather than collection of instances.
+     * the retrieved entity.
      *
      * @param entityClassName entity class name
      * @param lookupName name of the lookup from entity
@@ -78,9 +76,8 @@ public interface MDSLookupService {
      * Retrieves and executes multi-return lookup for the given entity class,
      * lookup name and parameters. It will fail, if lookup parameters do not match the
      * parameters specified in the lookup or if the lookup of given name does not exist for
-     * the retrieved entity. It will also throw {@link org.motechproject.mds.ex.lookup.CollectionResultFromLookupExpectedException}
-     * in case lookup returns single instance, rather than collection of instances. This version additionally
-     * allows to use query parameters, to adjust retrieved instances (eg. limit their number).
+     * the retrieved entity. This version additionally allows to use query parameters,
+     * to adjust retrieved instances (eg. limit their number).
      *
      * @param entityClass entity class
      * @param lookupName name of the lookup from entity
@@ -96,9 +93,8 @@ public interface MDSLookupService {
      * Retrieves and executes multi-return lookup for the given entity class name,
      * lookup name and parameters. It will fail, if lookup parameters do not match the
      * parameters specified in the lookup or if the lookup of given name does not exist for
-     * the retrieved entity. It will also throw {@link org.motechproject.mds.ex.lookup.CollectionResultFromLookupExpectedException}
-     * in case lookup returns single instance, rather than collection of instances. This version additionally
-     * allows to use query parameters, to adjust retrieved instances (eg. limit their number).
+     * the retrieved entity. This version additionally allows to use query parameters,
+     * to adjust retrieved instances (eg. limit their number).
      *
      * @param entityClassName entity class name
      * @param lookupName name of the lookup from entity

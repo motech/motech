@@ -3071,10 +3071,16 @@
 
         $scope.modificationFields = ['modificationDate', 'modifiedBy'];
 
-        $scope.availableExportRange = ['all','table'];
+        $scope.availableExportRecords = ['All','10', '25', '50', '100', '250'];
+        $scope.availableExportColumns = ['All','selected'];
         $scope.availableExportFormats = ['csv','pdf'];
-        $scope.actualExportRange = 'all';
+        $scope.actualExportRecords = 'All';
+        $scope.actualExportColumns = 'All';
         $scope.exportFormat = 'csv';
+        $scope.checkboxModel = {
+            exportWithLookup : false,
+            exportWithOrder : false
+        };
 
         $scope.setDataRetrievalError = function (value) {
             $scope.$apply(function () {
@@ -4172,8 +4178,12 @@
             $('#exportInstanceModal').modal('show');
         };
 
-        $scope.changeExportRange = function (range) {
-            $scope.actualExportRange = range;
+        $scope.changeExportRecords = function (records) {
+            $scope.actualExportRecords = records;
+        };
+
+        $scope.changeExportColumns = function (columns) {
+            $scope.actualExportColumns = columns;
         };
 
         $scope.changeExportFormat = function (format) {
@@ -4189,29 +4199,31 @@
         * Exports selected entity's instances to CSV file
         */
         $scope.exportInstance = function() {
-            var selectedFieldsName = [], url, rows, page, sortColumn, sortDirection;
-
-            angular.forEach($scope.selectedFields, function(selectedField) {
-                selectedFieldsName.push(selectedField.basic.name);
-            });
+            var selectedFieldsName = [], url, sortColumn, sortDirection;
 
             url = "../mds/entities/" + $scope.selectedEntity.id + "/exportInstances";
-            url = url + "?range=" + $scope.actualExportRange;
-            url = url + "&outputFormat=" + $scope.exportFormat;
+            url = url + "?outputFormat=" + $scope.exportFormat;
+            url = url + "&exportRecords=" + $scope.actualExportRecords;
 
-            if ($scope.actualExportRange === 'table') {
-                rows = $('#instancesTable').getGridParam('rowNum');
-                page = $('#instancesTable').getGridParam('page');
+            if ($scope.actualExportColumns === 'selected') {
+                angular.forEach($scope.selectedFields, function(selectedField) {
+                    selectedFieldsName.push(selectedField.basic.name);
+                });
+
+                url = url + "&selectedFields=" + selectedFieldsName;
+            }
+
+            if ($scope.checkboxModel.exportWithOrder === true) {
                 sortColumn = $('#instancesTable').getGridParam('sortname');
                 sortDirection = $('#instancesTable').getGridParam('sortorder');
 
-                url = url + "&selectedFields=" + selectedFieldsName;
-                url = url + "&rows=" + rows;
-                url = url + "&lookup=" + (($scope.selectedLookup) ? $scope.selectedLookup.lookupName : "");
-                url = url + "&fields=" + JSON.stringify($scope.lookupBy);
-                url = url + "&page=" + page;
                 url = url + "&sortColumn=" + sortColumn;
                 url = url + "&sortDirection=" + sortDirection;
+            }
+
+            if ($scope.checkboxModel.exportWithLookup === true) {
+                url = url + "&lookup=" + (($scope.selectedLookup) ? $scope.selectedLookup.lookupName : "");
+                url = url + "&fields=" + JSON.stringify($scope.lookupBy);
             }
 
             $http.get(url)

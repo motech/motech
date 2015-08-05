@@ -52,16 +52,17 @@ public abstract class AbstractMdsExporter {
     }
 
     protected long exportData(Entity entity, TableWriter writer, CsvExportCustomizer exportCustomizer) {
-        return exportData(entity, writer, "", null, fieldsToHeaders(entity.getFields()), null, exportCustomizer);
+        return exportData(entity, writer, "", null, null, null, exportCustomizer);
     }
 
-    protected long exportData(Entity entity, TableWriter writer, String lookupName, QueryParams params, String[] headers,
+    protected long exportData(Entity entity, TableWriter writer, String lookupName, QueryParams params, List<String> headers,
                            Map<String, Object> lookupFields, CsvExportCustomizer exportCustomizer) {
         final MotechDataService dataService = DataServiceHelper.getDataService(bundleContext, entity);
 
         final Map<String, Field> fieldMap = FieldHelper.fieldMapByName(entity.getFields());
         // we must respect field ordering
-        String[] orderedHeaders = orderHeaders(headers, entity.getFields(), exportCustomizer);
+        String[] orderedHeaders = orderHeaders(headers == null ? fieldsToHeaders(entity.getFields()) : headers.toArray(new String[headers.size()]),
+                entity.getFields(), exportCustomizer);
 
         try {
             writer.writeHeader(orderedHeaders);
