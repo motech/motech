@@ -86,6 +86,9 @@ public class Field {
     @Persistent
     private boolean nonDisplayable;
 
+    @Persistent
+    private boolean uiChanged;
+
     @Persistent(mappedBy = "field")
     @Element(dependent = "true")
     private List<FieldMetadata> metadata = new ArrayList<>();
@@ -124,6 +127,13 @@ public class Field {
 
     public Field(Entity entity, String name, String displayName, boolean required,
                  boolean readOnly, boolean nonEditable, boolean nonDisplayable, String defaultValue, String tooltip, String placeholder, Set<Lookup> lookups) {
+        this(entity, name, displayName, required, readOnly, nonEditable, nonDisplayable, false, defaultValue, tooltip,
+                placeholder, lookups);
+    }
+
+    public Field(Entity entity, String name, String displayName, boolean required,
+                 boolean readOnly, boolean nonEditable, boolean nonDisplayable, boolean uiChanged, String defaultValue,
+                 String tooltip, String placeholder, Set<Lookup> lookups) {
         this.entity = entity;
         this.displayName = displayName;
         setName(name);
@@ -131,6 +141,7 @@ public class Field {
         this.readOnly = readOnly;
         this.nonEditable = nonEditable;
         this.nonDisplayable = nonDisplayable;
+        this.uiChanged = uiChanged;
         this.defaultValue = defaultValue;
         this.tooltip = tooltip;
         this.placeholder = placeholder;
@@ -188,8 +199,8 @@ public class Field {
             typeDto = type.toDto();
         }
 
-        return new FieldDto(id, entity == null ? null : entity.getId(), typeDto, basic, readOnly, nonEditable, nonDisplayable,
-                metaDto, validationDto, settingsDto, lookupDtos);
+        return new FieldDto(id, entity == null ? null : entity.getId(), typeDto, basic, readOnly, nonEditable,
+                nonDisplayable, uiChanged, metaDto, validationDto, settingsDto, lookupDtos);
     }
 
     private TypeDto generateTypeForTextArea(FieldSetting setting) {
@@ -418,6 +429,7 @@ public class Field {
         copy.setReadOnly(readOnly);
         copy.setNonEditable(nonEditable);
         copy.setNonDisplayable(nonDisplayable);
+        copy.setUiChanged(uiChanged);
         copy.setExposedViaRest(exposedViaRest);
         copy.setUIDisplayable(uiDisplayable);
         copy.setUIDisplayPosition(uiDisplayPosition);
@@ -487,6 +499,7 @@ public class Field {
         setReadOnly(field.isReadOnly());
         setNonEditable(field.isNonEditable());
         setNonDisplayable(field.isNonDisplayable());
+        setUiChanged(field.isUiChanged());
 
         if (field.getBasic().getDefaultValue() != null) {
             this.setDefaultValue(field.getBasic().getDefaultValue().toString());
@@ -579,5 +592,13 @@ public class Field {
                 }
             }
         }
+    }
+
+    public boolean isUiChanged() {
+        return uiChanged;
+    }
+
+    public void setUiChanged(boolean uiChanged) {
+        this.uiChanged = uiChanged;
     }
 }

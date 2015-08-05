@@ -79,14 +79,14 @@ import java.util.Set;
 
 import static org.motechproject.mds.repository.query.DataSourceReferenceQueryExecutionHelper.DATA_SOURCE_CLASS_NAME;
 import static org.motechproject.mds.repository.query.DataSourceReferenceQueryExecutionHelper.createLookupReferenceQuery;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
+import static org.motechproject.mds.util.Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE;
 import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED;
 import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED_EDITABLE;
 import static org.motechproject.mds.util.Constants.Util.TRUE;
 import static org.motechproject.mds.util.SecurityUtil.getUserPermissions;
 import static org.motechproject.mds.util.SecurityUtil.getUsername;
-import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
-import static org.motechproject.mds.util.Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE;
-import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
 
 /**
  * Default implementation of {@link org.motechproject.mds.service.EntityService} interface.
@@ -269,6 +269,7 @@ public class EntityServiceImpl implements EntityService {
 
                 // Convert to dto for UI updates
                 FieldDto dto = field.toDto();
+                dto.setUiChanged(true);
                 FieldHelper.setField(dto, path, value);
 
                 //If field name was changed add this change to map

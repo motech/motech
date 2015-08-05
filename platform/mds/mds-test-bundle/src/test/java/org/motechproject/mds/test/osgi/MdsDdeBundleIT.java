@@ -9,13 +9,18 @@ import org.motechproject.commons.api.Range;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.event.CrudEventType;
+import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
+import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.test.domain.TestLookup;
 import org.motechproject.mds.test.domain.TestMdsEntity;
 import org.motechproject.mds.test.domain.TestSingleReturnLookup;
 import org.motechproject.mds.test.domain.cascadedelete.City;
 import org.motechproject.mds.test.domain.cascadedelete.Country;
+import org.motechproject.mds.test.domain.editablelookups.Entry;
 import org.motechproject.mds.test.domain.inheritancestrategies.Boat;
 import org.motechproject.mds.test.domain.inheritancestrategies.Cat;
 import org.motechproject.mds.test.domain.inheritancestrategies.Dog;
@@ -49,6 +54,7 @@ import org.motechproject.mds.test.service.TestSingleReturnLookupService;
 import org.motechproject.mds.test.service.TransactionTestService;
 import org.motechproject.mds.test.service.cascadedelete.CityDataService;
 import org.motechproject.mds.test.service.cascadedelete.CountryDataService;
+import org.motechproject.mds.test.service.editablelookups.EntryDataService;
 import org.motechproject.mds.test.service.inheritancestrategies.BoatDataService;
 import org.motechproject.mds.test.service.inheritancestrategies.CatDataService;
 import org.motechproject.mds.test.service.inheritancestrategies.DogDataService;
@@ -194,6 +200,12 @@ public class MdsDdeBundleIT extends BasePaxIT {
     private MessageLogDataService messageLogDataService;
 
     @Inject
+    private EntryDataService entryDataService;
+
+    @Inject
+    private EntityService entityService;
+
+    @Inject
     private TestSingleReturnLookupService testSingleReturnLookupService;
 
     @Inject
@@ -204,6 +216,9 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     @Inject
     private EmployeeDataService employeeDataService;
+
+    @Inject
+    private MDSLookupService lookupService;
 
     private final Object waitLock = new Object();
 
@@ -1218,6 +1233,33 @@ public class MdsDdeBundleIT extends BasePaxIT {
                 messageLogDataService.create(messageLog5);
             }
         });
+    }
+
+    @Test
+    public void shouldLoadLookupsFromFile() {
+
+        Entry entryOne = new Entry();
+        entryOne.setValue("someValue");
+        entryDataService.create(entryOne);
+
+        Entry entryTwo = new Entry();
+        entryTwo.setValue("someValueTwo");
+        entryDataService.create(entryTwo);
+
+        EntityDto entity = entityService.getEntityByClassName("org.motechproject.mds.test.domain.editablelookups.Entry");
+
+        List<LookupDto> lookups = entityService.getEntityLookups(entity.getId());
+
+        assertEquals(1, lookups.size());
+        assertEquals("Find by Value", lookups.get(0).getLookupName());
+
+        Map<String, String> params = new HashMap<>();
+        params.put("value", entryOne.getValue());
+
+        List<Entry> lookupResult = lookupService.findMany(entity.getClassName(), lookups.get(0).getLookupName(), params);
+
+        assertEquals(1, lookupResult.size());
+        assertEquals(entryOne.getValue(), lookupResult.get(0).getValue());
     }
 
     private void assertDefaultConstructorPresent() throws ClassNotFoundException {

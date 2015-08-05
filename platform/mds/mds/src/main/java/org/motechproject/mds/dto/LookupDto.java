@@ -16,6 +16,7 @@ import java.util.Objects;
  * The <code>LookupDto</code> class contains information about single lookup defined by user
  */
 public class LookupDto {
+
     private Long id;
     private String lookupName;
     private boolean singleObjectReturn;
