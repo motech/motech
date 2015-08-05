@@ -10,24 +10,8 @@
         </layout>
     </appender>
 
-    <logger name="org.motechproject">
-        <level value="ERROR" />
-    </logger>
-
-    <logger name="org.motechproject.server">
-        <level value="INFO" />
-    </logger>
-
-    <logger name="org.motechproject.server.it">
+    <logger name="org.motechproject.server.war.test.it">
         <level value="DEBUG" />
-    </logger>
-
-    <logger name="org.motechproject.testing.utils">
-        <level value="INFO" />
-    </logger>
-
-    <logger name="org.motechproject.server.osgi">
-        <level value="WARN" />
     </logger>
 
     <root>

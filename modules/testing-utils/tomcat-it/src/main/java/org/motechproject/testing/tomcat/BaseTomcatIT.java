@@ -170,6 +170,8 @@ public class BaseTomcatIT {
 
         assertNotNull(response, "Unable to retrieve bundle status from server");
 
+        logger.debug("Server response for bundle status request: \n" + response);
+
         return new JSONArray(response);
     }
 }
