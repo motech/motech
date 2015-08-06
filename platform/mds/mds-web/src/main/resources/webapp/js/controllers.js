@@ -3994,7 +3994,7 @@
 
             if (field.className === "java.lang.Boolean") {
                 value = "boolean";
-            } else if (field.className === "java.util.List") {
+            } else if (field.className === "java.util.Collection") {
                 value = "list";
             } else if (field.className === "org.joda.time.DateTime" || field.className === "java.util.Date") {
                 value = "datetime";
