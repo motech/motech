@@ -389,7 +389,9 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             mmd.setValueType(valueMetadata.getValue());
 
             fmd.setTable(ClassTableName.getTableName(cmd.getTable(), getNameForMetadata(field)));
-            fmd.newJoinMetadata();
+            JoinMetadata jmd = fmd.newJoinMetadata();
+            ForeignKeyMetadata fkmd = jmd.newForeignKeyMetadata();
+            fkmd.setDeleteAction(ForeignKeyAction.CASCADE);
         }
         return fmd;
     }
