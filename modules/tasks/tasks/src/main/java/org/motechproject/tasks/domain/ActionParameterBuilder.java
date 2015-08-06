@@ -2,6 +2,8 @@ package org.motechproject.tasks.domain;
 
 import org.motechproject.tasks.contract.ActionParameterRequest;
 
+import java.util.SortedSet;
+
 /**
  * The <code>ActionParameterBuilder</code> class provides methods for constructing action parameters.
  *
@@ -15,6 +17,7 @@ public class ActionParameterBuilder {
     private boolean required = true;
     private String value;
     private boolean hidden;
+    private SortedSet<String> options;
 
     public ActionParameterBuilder setDisplayName(String displayName) {
         this.displayName = displayName;
@@ -51,13 +54,18 @@ public class ActionParameterBuilder {
         return this;
     }
 
+    public ActionParameterBuilder setOptions(SortedSet<String> options){
+        this.options = options;
+        return  this;
+    }
+
     /**
      * Builds an object of the {@code ActionParameter} class.
      *
      * @return the created instance
      */
     public ActionParameter createActionParameter() {
-        return new ActionParameter(displayName, type, order, key, value, required, hidden);
+        return new ActionParameter(displayName, type, order, key, value, required, hidden, options);
     }
 
     /**
@@ -76,6 +84,7 @@ public class ActionParameterBuilder {
         builder.setValue(actionParameterRequest.getValue());
         builder.setRequired(actionParameterRequest.isRequired());
         builder.setHidden(actionParameterRequest.isHidden());
+        builder.setOptions(actionParameterRequest.getOptions());
         return builder;
     }
 
@@ -95,6 +104,7 @@ public class ActionParameterBuilder {
         builder.setValue(actionParameter.getValue());
         builder.setRequired(actionParameter.isRequired());
         builder.setHidden(actionParameter.isHidden());
+        builder.setOptions(actionParameter.getOptions());
         return builder;
     }
 }

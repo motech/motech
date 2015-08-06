@@ -1,10 +1,11 @@
 package org.motechproject.tasks.validation;
 
-import org.motechproject.tasks.domain.ActionParameter;
+import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.FieldParameter;
+import org.motechproject.tasks.domain.ActionParameter;
+import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.domain.Parameter;
-import org.motechproject.tasks.domain.TaskError;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +84,11 @@ public abstract class GeneralValidator {
 
             checkNullValue(errors, name, "order", parameter.getOrder());
             checkBlankValue(errors, name, "key", parameter.getKey());
+
+            if(parameter.getType() == ParameterType.SELECT){
+                checkEmpty(errors, name, "options", parameter.getOptions());
+            }
+
         }
 
         return errors;
