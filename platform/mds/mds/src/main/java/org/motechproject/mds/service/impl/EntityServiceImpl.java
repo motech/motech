@@ -1338,7 +1338,7 @@ public class EntityServiceImpl implements EntityService {
     private void addNonPersistentDataForLookupField(Field field, LookupFieldDto lookupField, String nameParam) {
         lookupField.setSettings(field.settingsToDto());
         lookupField.setDisplayName(StringUtils.isNotBlank(nameParam) ? nameParam : field.getDisplayName());
-        lookupField.setClassName(field.getType().getTypeClassName());
+        lookupField.setClassName(field.getType().getTypeClass().getName());
     }
 
     private void addLookupsReferences(Collection<LookupDto> lookupDtos, String entityClassName) {
