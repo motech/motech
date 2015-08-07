@@ -178,6 +178,7 @@ public class MdsBundleIT extends BasePaxIT {
         clearInstances();
 
         verifyInstanceCreatingAndRetrieving(objectClass);
+        verifyInstanceCreatingOrUpdating(objectClass);
         verifyLookups(false); // regular lookups
         verifyLookups(true); // using the lookup service
         verifyComboboxValueUpdate();
@@ -472,8 +473,8 @@ public class MdsBundleIT extends BasePaxIT {
         Class objClass = retrieved.getClass();
 
         updateInstance(retrieved, false, "anotherString", "anotherStringCp", asList("4", "5"),
-                       YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
-                       DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"));
+                YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
+                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"));
 
         service.update(retrieved);
         Object updated = service.retrieveAll(QueryParams.descOrder("someDateTime")).get(0);
@@ -481,6 +482,46 @@ public class MdsBundleIT extends BasePaxIT {
         assertInstance(updated, false, "anotherString", "anotherStringCp", asList("4", "5"),
                        YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
                        DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"));
+    }
+
+    private void verifyInstanceCreatingOrUpdating(Class<?> loadedClass) throws Exception {
+        getLogger().info("Verifying instance creating or updating using createOrUpdate() method");
+
+        // Creating a new object using createOrUpdate() method and checking if it was really added
+        Object instance = loadedClass.newInstance();
+
+        updateInstance(instance, false, "newInstance", "newInstance", asList("1", "2", "3"),
+                NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
+                DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1, toEnum(loadedClass, "one"));
+
+        service.createOrUpdate(instance);                           // using createOrUpdate() to create
+
+        List<Object> allObjects = service.retrieveAll();
+        assertEquals(allObjects.size(), INSTANCE_COUNT + 1);        // should return one extra object
+
+
+        // Now update that object using createOrUpdate method and check if it is really updated
+        Object retrieved = allObjects.get(INSTANCE_COUNT);          // gets the last added object
+        Class objClass = retrieved.getClass();
+
+        updateInstance(retrieved, false, "yetAnotherString", "yetAnotherStringCp", asList("1", "2", "3"),
+                YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
+                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"));
+
+        service.createOrUpdate(retrieved);                          // using createOrUpdate() to update
+
+        assertEquals(allObjects.size(), INSTANCE_COUNT + 1);        // number of objects shouldn't change since last check
+
+        Object updated = service.retrieveAll().get(INSTANCE_COUNT); // gets the last added object
+
+        assertInstance(updated, false, "yetAnotherString", "yetAnotherStringCp", asList("1", "2", "3"),
+                YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
+                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"));
+
+        // Remove new object for the sake of other tests
+        service.delete(updated);
+        allObjects = service.retrieveAll();
+        assertEquals(allObjects.size(), INSTANCE_COUNT);            // check if the object is removed
     }
 
     private void verifyColumnNameChange() throws ClassNotFoundException, InterruptedException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -586,6 +627,8 @@ public class MdsBundleIT extends BasePaxIT {
 
         FieldDto comboboxField = entityService.findEntityFieldByName(entityId, "someList");
 
+        // If this test fails be sure to check if any unexpected values were added to comboboxField earlier.
+        // At the moment all values remain in comboboxField, even after the object instances that added them were deleted.
         assertEquals("[1, 2, 3, 4, 0, 35]", comboboxField.getSetting(Constants.Settings.COMBOBOX_VALUES).getValue().toString());
     }
 

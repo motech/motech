@@ -61,6 +61,15 @@ public interface MotechDataService<T> {
     T update(T object);
 
     /**
+     * Updates the given instance in MDS if it exists (checks the presence of the instances id to verify that)
+     * or creates a new one if it doesn't.
+     *
+     * @param object instance to update or create
+     * @return updated or created instance
+     */
+    T createOrUpdate(T object);
+
+    /**
      * Returns the persistent instance, updated with the values from the transient instance. If there's
      * no instance of the id from the transient instance, it will create one.
      *

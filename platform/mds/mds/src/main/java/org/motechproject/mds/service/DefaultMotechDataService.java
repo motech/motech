@@ -195,6 +195,19 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
+    @Transactional
+    public T createOrUpdate (final T object) {
+        final T result;
+
+        if (getId(object) == null) {
+            result = create(object);
+        } else {
+            result = update(object);
+        }
+        return result;
+    }
+
+    @Override
     public T updateFromTransient(T transientObject) {
         return updateFromTransient(transientObject, null);
     }
