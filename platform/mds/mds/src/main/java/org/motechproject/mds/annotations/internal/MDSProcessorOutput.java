@@ -9,13 +9,13 @@ import java.util.Map;
  * Represents the result of processing the bundle, by the {@link org.motechproject.mds.annotations.internal.MDSAnnotationProcessor}.
  * The fields contain representations of entities and lookups, based on the discovered annotations.
  */
-public class MDSAnnotationProcessorOutput {
+public class MDSProcessorOutput {
 
     private List<EntityProcessorOutput> entityProcessorOutputs;
     private Map<String, List<LookupDto>> lookupProcessorOutputs;
 
 
-    public MDSAnnotationProcessorOutput(List<EntityProcessorOutput> entityProcessorOutputs, Map<String, List<LookupDto>> lookupProcessorOutputs) {
+    public MDSProcessorOutput(List<EntityProcessorOutput> entityProcessorOutputs, Map<String, List<LookupDto>> lookupProcessorOutputs) {
         this.entityProcessorOutputs = entityProcessorOutputs;
         this.lookupProcessorOutputs = lookupProcessorOutputs;
     }
