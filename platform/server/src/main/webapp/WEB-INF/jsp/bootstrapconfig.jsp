@@ -15,6 +15,8 @@
     <link rel="stylesheet" type="text/css" href="static/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/bootstrap-page.css">
 
+    <%@ include file="faviconPage.jsp" %>
+
     <script type="text/javascript" src="static/js/jquery.js"></script>
     <script type="text/javascript" src="static/js/angular.min.js"></script>
     <script type="text/javascript" src="static/js/bootstrap-page.js"></script>

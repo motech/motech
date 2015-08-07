@@ -4,17 +4,19 @@
     <meta charset="UTF-8">
     <title>MOTECH - Mobile Technology for Community Health</title>
 
+    <%@ include file="faviconPage.jsp" %>
+
     ${mainHeader}
 
 </head>
 <body class="body-down" ng-controller="MotechMasterCtrl" ng-init="getLoginViewData()">
     <div class="splash login" ng-hide="ready">
         <div class="splash-logo">
-            <img src="../server/resources/img/motech-logo.gif" alt="motech-logo">
+            <img src="./../../static/img/motech-logo.gif" alt="motech-logo">
         </div>
         <div class="clearfix"></div>
         <div class="splash-loader">
-            <img src="../server/resources/img/loadingbar.gif" alt="loading">
+            <img src="./../../static/img/loadingbar.gif" alt="loading">
         </div>
         <div class="clearfix"></div>
         <div class="splash-msg"></div>
@@ -26,7 +28,7 @@
             <div class="container">
                 <a href=".">
                     <div class="dashboard-logo" ng-cloak>
-                        <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.gif">
+                        <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="./../../static/img/motech-logo.gif">
                     </div>
                 </a>
                 <div class="hidden-xs" ng-cloak>

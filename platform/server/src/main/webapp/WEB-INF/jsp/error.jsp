@@ -10,6 +10,9 @@
         <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/static/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/static/css/bootstrap-page.css">
         <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/static/css/font-awesome.min.css">
+
+        <%@ include file="faviconPage.jsp" %>
+
     </head>
 
     <body>
