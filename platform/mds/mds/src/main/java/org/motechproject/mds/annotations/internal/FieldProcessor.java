@@ -25,6 +25,7 @@ import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.reflections.ReflectionsUtil;
+import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MemberUtil;
@@ -106,6 +107,9 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     private static final Logger LOGGER = LoggerFactory.getLogger(FieldProcessor.class);
 
     private TypeService typeService;
+    private EntityService entityService;
+    private List<FieldDto> cachedFields;
+    private String cachedClassname;
 
     private EntityDto entity;
     private Class clazz;
@@ -147,6 +151,8 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
             String fieldName = MemberUtil.getFieldName(ac);
 
+            FieldDto currentField = getFieldByName(declaringClass.getName(), fieldName);
+
             boolean isRelationship = ReflectionsUtil.hasAnnotationClassLoaderSafe(
                     genericType, genericType, Entity.class);
 
@@ -158,8 +164,8 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
             java.lang.reflect.Field relatedField = (relatedFieldName != null) ?
                     ReflectionUtils.findField(genericType, relatedFieldName) : null;
-            boolean relatedFieldIsCollection = relatedField != null && Collection.class.isAssignableFrom(relatedField.getType());
 
+            boolean relatedFieldIsCollection = isRelatedFieldCollection(relatedField);
 
             Field annotation = getAnnotationClassLoaderSafe(ac, classType, Field.class);
 
@@ -168,9 +174,9 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             TypeDto type = getCorrectType(classType, isCollection, isRelationship, relatedFieldIsCollection);
 
             FieldBasicDto basic = new FieldBasicDto();
-            basic.setDisplayName(getAnnotationValue(
-                            annotation, DISPLAY_NAME, convertFromCamelCase(fieldName))
-            );
+
+            basic.setDisplayName(isUiChanged(currentField) ? currentField.getBasic().getDisplayName()
+                    : getAnnotationValue(annotation, DISPLAY_NAME, convertFromCamelCase(fieldName)));
 
             basic.setName(fieldName);
 
@@ -180,7 +186,10 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             FieldDto field = new FieldDto();
 
             if (null != annotation) {
-                basic.setTooltip(annotation.tooltip());
+
+                basic.setTooltip(isUiChanged(currentField) ? currentField.getBasic().getTooltip()
+                        : annotation.tooltip());
+
                 basic.setPlaceholder(annotation.placeholder());
 
                 String fn = getAnnotationValue(annotation, NAME, EMPTY);
@@ -205,6 +214,38 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         } else {
             LOGGER.warn("Field type is unknown in: {}", ac);
         }
+    }
+
+    private boolean isRelatedFieldCollection(java.lang.reflect.Field relatedField) {
+        return relatedField != null && Collection.class.isAssignableFrom(relatedField.getType());
+    }
+
+    private boolean isUiChanged(FieldDto currentField) {
+        return currentField != null && currentField.isUiChanged();
+    }
+
+    private FieldDto getFieldByName(String className, String fieldName) {
+
+        if (!StringUtils.equals(cachedClassname, className)) {
+
+            EntityDto entityDto = entityService.getEntityByClassName(className);
+
+            if (entityDto != null) {
+                cachedFields = entityService.getEntityFields(entityDto.getId());
+            } else {
+                cachedFields = new ArrayList<>();
+            }
+
+            cachedClassname = className;
+        }
+
+        for (FieldDto field : cachedFields) {
+            if (StringUtils.equals(field.getBasic().getName(), fieldName)) {
+                return field;
+            }
+        }
+
+        return null;
     }
 
     private String convertFromCamelCase(String name) {
@@ -341,6 +382,11 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     @Autowired
     public void setTypeService(TypeService typeService) {
         this.typeService = typeService;
+    }
+
+    @Autowired
+    public void setEntityService(EntityService entityService) {
+        this.entityService = entityService;
     }
 
     public void setEntity(EntityDto entity) {

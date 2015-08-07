@@ -23,6 +23,7 @@ public class FieldDto {
     private boolean readOnly;
     private boolean nonEditable;
     private boolean nonDisplayable;
+    private boolean uiChanged;
     private List<MetadataDto> metadata;
     private FieldValidationDto validation;
     private List<SettingDto> settings;
@@ -58,6 +59,13 @@ public class FieldDto {
     public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic, boolean readOnly, boolean nonEditable,
                     boolean nonDisplayable, List<MetadataDto> metadata, FieldValidationDto validation,
                     List<SettingDto> settings, List<LookupDto> lookups) {
+        this(id, entityId, type, basic, readOnly, nonEditable, nonDisplayable, false, metadata, validation, settings,
+                lookups);
+    }
+
+    public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic, boolean readOnly, boolean nonEditable,
+                    boolean nonDisplayable, boolean uiChanged, List<MetadataDto> metadata, FieldValidationDto validation,
+                    List<SettingDto> settings, List<LookupDto> lookups) {
         this.id = id;
         this.entityId = entityId;
         this.type = type;
@@ -65,6 +73,7 @@ public class FieldDto {
         this.readOnly = readOnly;
         this.nonEditable = nonEditable;
         this.nonDisplayable = nonDisplayable;
+        this.uiChanged = uiChanged;
         this.validation = validation;
         this.metadata = CollectionUtils.isEmpty(metadata)
                 ? new LinkedList<MetadataDto>()
@@ -259,4 +268,11 @@ public class FieldDto {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
+    public boolean isUiChanged() {
+        return uiChanged;
+    }
+
+    public void setUiChanged(boolean uiChanged) {
+        this.uiChanged = uiChanged;
+    }
 }

@@ -86,6 +86,9 @@ public class Field {
     @Persistent
     private boolean nonDisplayable;
 
+    @Persistent
+    private boolean uiChanged;
+
     @Persistent(mappedBy = "field")
     @Element(dependent = "true")
     private List<FieldMetadata> metadata = new ArrayList<>();
@@ -124,11 +127,17 @@ public class Field {
 
     public Field(Entity entity, String name, String displayName, boolean required,
                  boolean readOnly, String defaultValue, String tooltip, String placeholder, Set<Lookup> lookups) {
+        this(entity, name, displayName, required, readOnly, false, defaultValue, tooltip, placeholder, lookups);
+    }
+
+    public Field(Entity entity, String name, String displayName, boolean required,
+                 boolean readOnly, boolean uiChanged, String defaultValue, String tooltip, String placeholder, Set<Lookup> lookups) {
         this.entity = entity;
         this.displayName = displayName;
         setName(name);
         this.required = required;
         this.readOnly = readOnly;
+        this.uiChanged = uiChanged;
         this.defaultValue = defaultValue;
         this.tooltip = tooltip;
         this.placeholder = placeholder;
@@ -186,8 +195,8 @@ public class Field {
             typeDto = type.toDto();
         }
 
-        return new FieldDto(id, entity == null ? null : entity.getId(), typeDto, basic, readOnly, nonEditable, nonDisplayable,
-                metaDto, validationDto, settingsDto, lookupDtos);
+        return new FieldDto(id, entity == null ? null : entity.getId(), typeDto, basic, readOnly, nonEditable,
+                nonDisplayable, uiChanged, metaDto, validationDto, settingsDto, lookupDtos);
     }
 
     private TypeDto generateTypeForTextArea(FieldSetting setting) {
@@ -414,6 +423,7 @@ public class Field {
         copy.setPlaceholder(placeholder);
         copy.setType(type);
         copy.setReadOnly(readOnly);
+        copy.setUiChanged(uiChanged);
         copy.setExposedViaRest(exposedViaRest);
         copy.setUIDisplayable(uiDisplayable);
         copy.setUIDisplayPosition(uiDisplayPosition);
@@ -481,6 +491,7 @@ public class Field {
         setTooltip(field.getBasic().getTooltip());
         setPlaceholder(field.getBasic().getPlaceholder());
         setReadOnly(field.isReadOnly());
+        setUiChanged(field.isUiChanged());
 
         if (field.getBasic().getDefaultValue() != null) {
             this.setDefaultValue(field.getBasic().getDefaultValue().toString());
@@ -573,5 +584,13 @@ public class Field {
                 }
             }
         }
+    }
+
+    public boolean isUiChanged() {
+        return uiChanged;
+    }
+
+    public void setUiChanged(boolean uiChanged) {
+        this.uiChanged = uiChanged;
     }
 }

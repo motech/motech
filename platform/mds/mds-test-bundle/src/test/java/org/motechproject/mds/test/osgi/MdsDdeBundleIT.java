@@ -9,61 +9,67 @@ import org.motechproject.commons.api.Range;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.event.CrudEventType;
+import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
+import org.motechproject.mds.service.MDSLookupService;
+import org.motechproject.mds.test.domain.TestLookup;
+import org.motechproject.mds.test.domain.TestMdsEntity;
+import org.motechproject.mds.test.domain.cascadedelete.City;
+import org.motechproject.mds.test.domain.cascadedelete.Country;
+import org.motechproject.mds.test.domain.editablelookups.Entry;
+import org.motechproject.mds.test.domain.inheritancestrategies.Boat;
+import org.motechproject.mds.test.domain.inheritancestrategies.Cat;
+import org.motechproject.mds.test.domain.inheritancestrategies.Dog;
+import org.motechproject.mds.test.domain.inheritancestrategies.Goldfish;
+import org.motechproject.mds.test.domain.inheritancestrategies.Motorcycle;
+import org.motechproject.mds.test.domain.inheritancestrategies.Pet;
+import org.motechproject.mds.test.domain.inheritancestrategies.PetOwner;
+import org.motechproject.mds.test.domain.inheritancestrategies.Truck;
+import org.motechproject.mds.test.domain.inheritancestrategies.Vehicle;
+import org.motechproject.mds.test.domain.inheritancestrategies.VehicleOwner;
+import org.motechproject.mds.test.domain.instancelifecyclelistener.SubclassA;
+import org.motechproject.mds.test.domain.instancelifecyclelistener.SubclassB;
 import org.motechproject.mds.test.domain.lookupcomboboxrelation.LogAttribute;
 import org.motechproject.mds.test.domain.lookupcomboboxrelation.LogParameters;
 import org.motechproject.mds.test.domain.lookupcomboboxrelation.LogStatus;
 import org.motechproject.mds.test.domain.lookupcomboboxrelation.MessageLog;
 import org.motechproject.mds.test.domain.manytomany.Author;
-import org.motechproject.mds.test.domain.inheritancestrategies.Boat;
 import org.motechproject.mds.test.domain.manytomany.Book;
-import org.motechproject.mds.test.domain.inheritancestrategies.Cat;
 import org.motechproject.mds.test.domain.manytomany.Clinic;
-import org.motechproject.mds.test.domain.relationshipswithhistory.District;
-import org.motechproject.mds.test.domain.inheritancestrategies.Dog;
-import org.motechproject.mds.test.domain.inheritancestrategies.Goldfish;
-import org.motechproject.mds.test.domain.relationshipswithhistory.Language;
-import org.motechproject.mds.test.domain.inheritancestrategies.Motorcycle;
 import org.motechproject.mds.test.domain.manytomany.Patient;
-import org.motechproject.mds.test.domain.inheritancestrategies.Pet;
-import org.motechproject.mds.test.domain.inheritancestrategies.PetOwner;
+import org.motechproject.mds.test.domain.relationshipswithhistory.District;
+import org.motechproject.mds.test.domain.relationshipswithhistory.Language;
 import org.motechproject.mds.test.domain.relationshipswithhistory.State;
-import org.motechproject.mds.test.domain.instancelifecyclelistener.SubclassA;
-import org.motechproject.mds.test.domain.instancelifecyclelistener.SubclassB;
-import org.motechproject.mds.test.domain.TestLookup;
-import org.motechproject.mds.test.domain.TestMdsEntity;
-import org.motechproject.mds.test.domain.inheritancestrategies.Truck;
-import org.motechproject.mds.test.domain.inheritancestrategies.Vehicle;
-import org.motechproject.mds.test.domain.inheritancestrategies.VehicleOwner;
-import org.motechproject.mds.test.domain.cascadedelete.City;
-import org.motechproject.mds.test.domain.cascadedelete.Country;
 import org.motechproject.mds.test.domain.setofenumandstring.Channel;
 import org.motechproject.mds.test.domain.setofenumandstring.Message;
-import org.motechproject.mds.test.service.lookupcomboboxrelation.MessageLogDataService;
-import org.motechproject.mds.test.service.manytomany.AuthorDataService;
-import org.motechproject.mds.test.service.inheritancestrategies.BoatDataService;
-import org.motechproject.mds.test.service.manytomany.BookDataService;
-import org.motechproject.mds.test.service.inheritancestrategies.CatDataService;
-import org.motechproject.mds.test.service.cascadedelete.CityDataService;
-import org.motechproject.mds.test.service.manytomany.ClinicDataService;
-import org.motechproject.mds.test.service.cascadedelete.CountryDataService;
-import org.motechproject.mds.test.service.relationshipswithhistory.DistrictDataService;
-import org.motechproject.mds.test.service.inheritancestrategies.DogDataService;
-import org.motechproject.mds.test.service.inheritancestrategies.GoldfishDataService;
-import org.motechproject.mds.test.service.relationshipswithhistory.LanguageDataService;
-import org.motechproject.mds.test.service.setofenumandstring.MessageDataService;
-import org.motechproject.mds.test.service.inheritancestrategies.MotorcycleDataService;
-import org.motechproject.mds.test.service.manytomany.PatientDataService;
-import org.motechproject.mds.test.service.inheritancestrategies.PetOwnerDataService;
-import org.motechproject.mds.test.service.relationshipswithhistory.StateDataService;
-import org.motechproject.mds.test.service.instancelifecyclelistener.SubclassADataService;
-import org.motechproject.mds.test.service.instancelifecyclelistener.SubclassBDataService;
 import org.motechproject.mds.test.service.TestLookupService;
 import org.motechproject.mds.test.service.TestMdsEntityService;
 import org.motechproject.mds.test.service.TransactionTestService;
+import org.motechproject.mds.test.service.cascadedelete.CityDataService;
+import org.motechproject.mds.test.service.cascadedelete.CountryDataService;
+import org.motechproject.mds.test.service.editablelookups.EntryDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.BoatDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.CatDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.DogDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.GoldfishDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.MotorcycleDataService;
+import org.motechproject.mds.test.service.inheritancestrategies.PetOwnerDataService;
 import org.motechproject.mds.test.service.inheritancestrategies.TruckDataService;
 import org.motechproject.mds.test.service.inheritancestrategies.VehicleOwnerDataService;
+import org.motechproject.mds.test.service.instancelifecyclelistener.SubclassADataService;
+import org.motechproject.mds.test.service.instancelifecyclelistener.SubclassBDataService;
+import org.motechproject.mds.test.service.lookupcomboboxrelation.MessageLogDataService;
+import org.motechproject.mds.test.service.manytomany.AuthorDataService;
+import org.motechproject.mds.test.service.manytomany.BookDataService;
+import org.motechproject.mds.test.service.manytomany.ClinicDataService;
+import org.motechproject.mds.test.service.manytomany.PatientDataService;
+import org.motechproject.mds.test.service.relationshipswithhistory.DistrictDataService;
+import org.motechproject.mds.test.service.relationshipswithhistory.LanguageDataService;
+import org.motechproject.mds.test.service.relationshipswithhistory.StateDataService;
+import org.motechproject.mds.test.service.setofenumandstring.MessageDataService;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.testing.osgi.BasePaxIT;
@@ -184,6 +190,15 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     @Inject
     private MessageLogDataService messageLogDataService;
+
+    @Inject
+    private EntryDataService entryDataService;
+
+    @Inject
+    private EntityService entityService;
+
+    @Inject
+    private MDSLookupService lookupService;
 
     private final Object waitLock = new Object();
 
@@ -1139,6 +1154,33 @@ public class MdsDdeBundleIT extends BasePaxIT {
                 messageLogDataService.create(messageLog5);
             }
         });
+    }
+
+    @Test
+    public void shouldLoadLookupsFromFile() {
+
+        Entry entryOne = new Entry();
+        entryOne.setValue("someValue");
+        entryDataService.create(entryOne);
+
+        Entry entryTwo = new Entry();
+        entryTwo.setValue("someValueTwo");
+        entryDataService.create(entryTwo);
+
+        EntityDto entity = entityService.getEntityByClassName("org.motechproject.mds.test.domain.editablelookups.Entry");
+
+        List<LookupDto> lookups = entityService.getEntityLookups(entity.getId());
+
+        assertEquals(1, lookups.size());
+        assertEquals("Find by Value", lookups.get(0).getLookupName());
+
+        Map<String, String> params = new HashMap<>();
+        params.put("value", entryOne.getValue());
+
+        List<Entry> lookupResult = lookupService.findMany(entity.getClassName(), lookups.get(0).getLookupName(), params);
+
+        assertEquals(1, lookupResult.size());
+        assertEquals(entryOne.getValue(), lookupResult.get(0).getValue());
     }
 
     private void assertDefaultConstructorPresent() throws ClassNotFoundException {
