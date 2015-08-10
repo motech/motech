@@ -215,6 +215,11 @@ public class TypeDto {
         return equalsIgnoreCase(displayName, "mds.field.blob");
     }
 
+    @JsonIgnore
+    public boolean isMap() {
+        return equalsIgnoreCase(displayName, "mds.field.map");
+    }
+
     /**
      * {@inheritDoc}
      */

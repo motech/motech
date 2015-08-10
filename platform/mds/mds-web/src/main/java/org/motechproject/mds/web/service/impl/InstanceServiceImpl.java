@@ -115,6 +115,8 @@ public class InstanceServiceImpl implements InstanceService {
         validateCredentials(entity);
         validateNonEditableProperty(entity);
 
+        List<FieldDto> entityFields = getEntityFields(entityRecord.getEntitySchemaId());
+
         try {
             MotechDataService service = getServiceForEntity(entity);
             Class<?> entityClass = getEntityClass(entity);
@@ -124,6 +126,13 @@ public class InstanceServiceImpl implements InstanceService {
             Object instance;
             if (newObject) {
                 instance = entityClass.newInstance();
+
+                for (FieldDto entityField : entityFields) {
+                    if (entityField.getType().isMap() && entityField.getBasic().getDefaultValue() != null) {
+                        setInstanceFieldMap(instance, entityField);
+                    }
+                }
+
             } else {
                 instance = service.retrieve(ID, entityRecord.getId());
                 if (instance == null) {
@@ -145,6 +154,24 @@ public class InstanceServiceImpl implements InstanceService {
                 throw new ObjectUpdateException(entity.getName(), entityRecord.getId(), e);
             }
         }
+    }
+
+    private void setInstanceFieldMap(Object instance, FieldDto entityField) {
+
+        String strMap = entityField.getBasic().getDefaultValue().toString();
+
+        String keyMetadata;
+        String valueMetadata;
+
+        if (entityField.getMetadata(MAP_KEY_TYPE) == null || entityField.getMetadata(MAP_VALUE_TYPE) == null) {
+            keyMetadata = String.class.getName();
+            valueMetadata = String.class.getName();
+        } else {
+            keyMetadata = entityField.getMetadata(MAP_KEY_TYPE).getValue();
+            valueMetadata = entityField.getMetadata(MAP_VALUE_TYPE).getValue();
+        }
+
+        PropertyUtil.safeSetProperty(instance, entityField.getBasic().getName(), TypeHelper.parseStringToMap(keyMetadata, valueMetadata, strMap));
     }
 
     @Override
@@ -688,7 +715,7 @@ public class InstanceServiceImpl implements InstanceService {
            for (Object object : (Collection) fieldValue) {
                if (isFromUI(object)) {
                    ((Collection) parsedValue).add(findRelatedObjectById(((Map) object).get(ID), service));
-               } else if (isHistoricalObject(object)){
+               } else if (isHistoricalObject(object)) {
                    String currentVersion = HistoryTrashClassHelper.currentVersion(object.getClass());
                    ((Collection) parsedValue).add(findRelatedObjectById(PropertyUtil.safeGetProperty(object, currentVersion), service));
                }
@@ -696,7 +723,7 @@ public class InstanceServiceImpl implements InstanceService {
        } else {
            if (isFromUI(fieldValue)) {
                parsedValue = findRelatedObjectById(((Map) fieldValue).get(ID), service);
-           } else if (isHistoricalObject(fieldValue)){
+           } else if (isHistoricalObject(fieldValue)) {
                String currentVersion = HistoryTrashClassHelper.currentVersion(fieldValue.getClass());
                parsedValue = findRelatedObjectById(PropertyUtil.safeGetProperty(fieldValue, currentVersion), service);
            }
