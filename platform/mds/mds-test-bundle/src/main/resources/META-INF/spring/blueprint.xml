@@ -40,6 +40,7 @@
     <osgi:reference id="departmentDataService" interface="org.motechproject.mds.test.service.transactions.DepartmentDataService" />
     <osgi:reference id="employeeDataService" interface="org.motechproject.mds.test.service.transactions.EmployeeDataService" />
     <osgi:reference id="messageLogDataService" interface="org.motechproject.mds.test.service.lookupcomboboxrelation.MessageLogDataService" />
+    <osgi:reference id="entityWithMapDataService" interface="org.motechproject.mds.test.service.mapdeserialisation.EntityWithStringObjectMapDataService" />
 
     <osgi:service ref="jdoListenerTestService" interface="org.motechproject.mds.test.service.instancelifecyclelistener.JdoListenerTestService" auto-export="interfaces"/>
     <osgi:service ref="transactionTestService" interface="org.motechproject.mds.test.service.TransactionTestService" auto-export="interfaces"/>
