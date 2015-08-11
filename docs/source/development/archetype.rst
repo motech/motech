@@ -124,7 +124,7 @@ Using Archetypes Locally
 ########################
 You can also use the archetypes locally, without the Motech Nexus repository.  First, you must build the archetypes locally.  You can either follow the :doc:`developer guidelines </development/dev_procedures/patch>` to set up your developer environemt, or to build locally without commiting::
 
-    git clone https://code.google.com/p/motech/
+    git clone https://github.com/motech/motech/
     cd motech
     mvn clean install
 
