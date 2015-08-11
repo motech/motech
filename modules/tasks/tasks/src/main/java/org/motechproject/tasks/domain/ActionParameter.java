@@ -1,14 +1,17 @@
 package org.motechproject.tasks.domain;
 
-import org.motechproject.mds.annotations.Access;
-import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.CrudEvents;
+import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
 
 import java.util.Objects;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static org.motechproject.tasks.domain.ParameterType.UNICODE;
 
@@ -31,12 +34,15 @@ public class ActionParameter extends Parameter implements Comparable<ActionParam
     private Boolean required;
     @Field
     private Boolean hidden;
+    @Field
+    @Cascade(delete = true)
+    private SortedSet<String> options;
 
     /**
      * Constructor.
      */
     public ActionParameter() {
-        this(null, UNICODE, null, null, null, false, false);
+        this(null, UNICODE, null, null, null, false, false, null);
     }
 
     /**
@@ -49,15 +55,17 @@ public class ActionParameter extends Parameter implements Comparable<ActionParam
      * @param value  the parameter value
      * @param required  defines whether the parameter is required
      * @param hidden  defines whether the parameter is hidden
+     * @param options the parameter options for select parameter type
      */
     public ActionParameter(String displayName, ParameterType type, Integer order, String key, String value,
-                           Boolean required, Boolean hidden) {
+                           Boolean required, Boolean hidden, SortedSet<String> options) {
         super(displayName, type);
         this.order = order;
         this.key = key;
         this.value = value;
         this.required = required;
         this.hidden = hidden;
+        this.options = options == null ? new TreeSet<String>() : options;
     }
 
     public Integer getOrder() {
@@ -100,6 +108,14 @@ public class ActionParameter extends Parameter implements Comparable<ActionParam
         this.hidden = hidden;
     }
 
+    public SortedSet<String> getOptions() {
+        return options;
+    }
+
+    public void setOptions(SortedSet<String> options) {
+        this.options = options;
+    }
+
     @Override
     public int compareTo(ActionParameter o) {
         return Integer.compare(this.order, o.order);
@@ -107,9 +123,10 @@ public class ActionParameter extends Parameter implements Comparable<ActionParam
 
     @Override
     public int hashCode() {
-        return Objects.hash(order, key, value, required, hidden);
+        return Objects.hash(order, key, value, required, hidden, options);
     }
 
+    //CHECKSTYLE:OFF
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -129,9 +146,11 @@ public class ActionParameter extends Parameter implements Comparable<ActionParam
                 && Objects.equals(this.key, other.key)
                 && Objects.equals(this.value, other.value)
                 && Objects.equals(this.required, other.required)
-                && Objects.equals(this.hidden, other.hidden);
+                && Objects.equals(this.hidden, other.hidden)
+                && Objects.equals(this.options, other.options);
     }
 
+    //CHECKSTYLE:ON
     @Override
     public String toString() {
         return "ActionParameter{" +

@@ -1,5 +1,7 @@
 package org.motechproject.tasks.contract;
 
+import java.util.SortedSet;
+
 /**
  * The <code>ActionParameterRequestBuilder</code> class provides methods for constructing action parameter requests.
  *
@@ -14,6 +16,7 @@ public class ActionParameterRequestBuilder {
     private String type;
     private boolean required;
     private boolean hidden;
+    private SortedSet<String> options;
 
     /**
      * Sets the key of the action parameter to build the request for.
@@ -93,11 +96,22 @@ public class ActionParameterRequestBuilder {
     }
 
     /**
+     * Sets the options of the action parameter to build the request for.
+     *
+     * @param options  the action parameter options
+     * @return the reference to this object
+     */
+    public ActionParameterRequestBuilder setOptions(SortedSet<String> options){
+        this.options = options;
+        return this;
+    }
+
+    /**
      * Builds an object of the {@code ActionParameterRequest} class.
      *
      * @return the created instance
      */
     public ActionParameterRequest createActionParameterRequest() {
-        return new ActionParameterRequest(order, key, value, displayName, type, required, hidden);
+        return new ActionParameterRequest(order, key, value, displayName, type, required, hidden, options);
     }
 }

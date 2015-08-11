@@ -27,6 +27,13 @@ public enum ParameterType {
         }
     },
 
+    SELECT("SELECT"){
+        @Override
+        public Object parse(String value) {
+            return value;
+        }
+    },
+
     TEXTAREA("TEXTAREA") {
         @Override
         public Object parse(String value) {
@@ -182,7 +189,7 @@ public enum ParameterType {
 
     @JsonIgnore
     public boolean isString() {
-        return value.equalsIgnoreCase(UNICODE.getValue()) || value.equalsIgnoreCase(TEXTAREA.getValue());
+        return value.equalsIgnoreCase(UNICODE.getValue()) || value.equalsIgnoreCase(TEXTAREA.getValue()) || value.equalsIgnoreCase(SELECT.getValue());
     }
 
     @JsonIgnore

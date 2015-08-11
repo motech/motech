@@ -460,6 +460,36 @@
                                                         <editable-content data="i" index="$index" type="BOOLEAN"></editable-content>
                                                     </label>
                                                 </div>
+                                                <div ui-if="i.type == 'SELECT'">
+                                                    <div class="btn-group form-group">
+                                                        <button class="btn btn-default dropdown-toggle"
+                                                                data-toggle="dropdown" target="_self" href="#"
+                                                                ng-click="searchOptions=''">
+                                                            {{taskMsg(i.value || 'task.select')}}
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li class="search-data-source"
+                                                                ng-show="i.options.length &gt; 8"
+                                                                task-stop-propagation>
+                                                                <input class="form-control" type="text"
+                                                                       ng-model="searchOptions"
+                                                                       placeholder="{{msg('task.placeholder.searchOptions')}}">
+                                                            </li>
+                                                            <li>
+                                                                <ul class="select-limit">
+                                                                    <li ng-repeat="a in i.options | filter:searchOptions">
+                                                                        <a ng-click="i.value = a">{{taskMsg(a)}}</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="alert alert-danger alert-block"
+                                                         ng-show="i.options.length == 0">
+                                                        {{msg('task.info.noParameterOptions')}} {{taskMsg(i.displayName)}}
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             <!------------------------ Other browsers  ------------------------>
@@ -483,6 +513,37 @@
                                                     <label class="radio-inline input-large-fluid">
                                                         <input type="text" value="{{getBooleanValue(i.value)}}" droppable class="actionField form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" placeholder="{{msg('task.placeholder.booleanOnly')}}" readonly="readonly" style="background:white;"/>
                                                     </label>
+                                                </div>
+                                                <div ui-if="i.type == 'SELECT'">
+                                                    <div class="btn-group form-group">
+                                                        <button class="btn btn-default dropdown-toggle"
+                                                                data-toggle="dropdown" target="_self" href="#"
+                                                                ng-click="searchOptions=''">
+                                                            {{taskMsg(i.value || 'task.select')}}
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li class="search-data-source"
+                                                                ng-show="i.options.length &gt; 8"
+                                                                task-stop-propagation>
+                                                                <input class="form-control" type="text"
+                                                                       ng-model="searchOptions"
+                                                                       placeholder="{{msg('task.placeholder.searchOptions')}}">
+                                                            </li>
+                                                            <li>
+                                                                <ul class="select-limit">
+                                                                    <li ng-repeat="a in i.options | filter:searchOptions">
+                                                                        <a ng-click="i.value = a">{{taskMsg(a)}}</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </li>
+
+                                                        </ul>
+                                                    </div>
+                                                    <div class="alert alert-danger alert-block"
+                                                         ng-show="i.options.length == 0">
+                                                        {{msg('task.info.noParameterOptions')}} {{taskMsg(i.displayName)}}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

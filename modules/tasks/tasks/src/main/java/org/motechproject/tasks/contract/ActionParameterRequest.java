@@ -1,6 +1,7 @@
 package org.motechproject.tasks.contract;
 
 import java.util.Objects;
+import java.util.SortedSet;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -21,12 +22,13 @@ public class ActionParameterRequest implements Comparable<ActionParameterRequest
     private String type;
     private boolean required;
     private boolean hidden;
+    private SortedSet<String> options;
 
     /**
      * Constructor.
      */
     public ActionParameterRequest() {
-        this(null, null, null, null, null, true, false);
+        this(null, null, null, null, null, true, false, null);
     }
 
     /**
@@ -39,9 +41,10 @@ public class ActionParameterRequest implements Comparable<ActionParameterRequest
      * @param type  the parameter type
      * @param required  defines if the parameter is required
      * @param hidden  defines if the parameter is hidden on the UI
+     * @param options the parameter options for select parameter type
      */
     public ActionParameterRequest(Integer order, String key, String value, String displayName, String type,
-                                  boolean required, boolean hidden) {
+                                  boolean required, boolean hidden, SortedSet<String> options) {
         this.key = key;
         this.value = value;
         this.displayName = displayName;
@@ -49,6 +52,7 @@ public class ActionParameterRequest implements Comparable<ActionParameterRequest
         this.type = isBlank(type) ? UNICODE : type;
         this.required = required;
         this.hidden = hidden;
+        this.options = options;
     }
 
     /**
@@ -114,14 +118,35 @@ public class ActionParameterRequest implements Comparable<ActionParameterRequest
         return required;
     }
 
+
+    /**
+     * Returns the options of the parameter.
+     *
+     * @return  options of the parameter order
+     */
+    public SortedSet<String> getOptions() {
+        return options;
+    }
+
+    /**
+     * Sets the options of the parameter.
+     *
+     * @param options of the parameter order
+     */
+    public void setOptions(SortedSet<String> options) {
+        this.options = options;
+    }
+
     /**
      * Returns whether this action parameter should be hidden on the UI.
      *
+
      * @return  true if this action parameter should be hidden on the UI, false otherwise
      */
     public boolean isHidden() {
         return hidden;
     }
+
 
     @Override
     public int compareTo(ActionParameterRequest o) {
@@ -130,9 +155,10 @@ public class ActionParameterRequest implements Comparable<ActionParameterRequest
 
     @Override
     public int hashCode() {
-        return Objects.hash(order, key, value, displayName, type, required, hidden);
+        return Objects.hash(order, key, value, displayName, type, required, hidden, options);
     }
 
+    //CHECKSTYLE:OFF
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -151,9 +177,11 @@ public class ActionParameterRequest implements Comparable<ActionParameterRequest
                 && Objects.equals(this.displayName, other.displayName)
                 && Objects.equals(this.type, other.type)
                 && Objects.equals(this.required, other.required)
-                && Objects.equals(this.hidden, other.hidden);
+                && Objects.equals(this.hidden, other.hidden)
+                && Objects.equals(this.options, other.options);
     }
 
+    // CHECKSTYLE:ON
     @Override
     public String toString() {
         return "ActionParameterRequest{" +
@@ -164,6 +192,7 @@ public class ActionParameterRequest implements Comparable<ActionParameterRequest
                 ", type='" + type + '\'' +
                 ", required=" + required +
                 ", hidden=" + hidden +
+                ", options="+ options+
                 '}';
     }
 }
