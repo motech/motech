@@ -1,0 +1,1 @@
+This topic has moved to http://docs.motechproject.org/en/latest/development/coding_conventions.html

@@ -1,0 +1,9 @@
+A case in the MOTECH Suite tracks data over time. A case can be a pregnancy, a malaria episode,  or even a facility.
+
+A patient record may encompass several  cases, such as  if women in pregnancy several times and also has malaria. These would all be different cases that are linked together.
+
+The case management capabilities of the MOTECH Suite are one of the key reasons it is so powerful and flexible. Through configuration, data elements for a case can be defined per deployment and use case. For pregnancy, this can include first name, last name, and expected delivery date (EDD). For a facility, this can contain the facility id code, and stock levels of various commodities. The case record represents the current status of data necessary to perform case management. Typically, a case record is a subset of the data elements collected by all the forms that operate on it.
+
+The data inside of a case record can be updated through traditional form data collection that is all configurable via administration (very complicated use cases may require programming expertise). In addition, case data can be updated via SMS, or IVR. Business logic that occurs during form data collection or through IVR and SMS can be driven by data in the case. So, for example, if you want to send a SMS content to pregnant mothers based on the EDD this can all be done through configuration in the MOTECH Suite.
+
+All case data is stored on both the handset and the server. This enables handset users to work fully offline and synchronize when network connectivity is available. A community health worker, for example, can work for days without connectivity, performing case management, and upload the new data to the server when they come back to a network.

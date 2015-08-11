@@ -1,0 +1,1 @@
+This page has moved to http://docs.motechproject.org/en/latest/get_started/config.html
