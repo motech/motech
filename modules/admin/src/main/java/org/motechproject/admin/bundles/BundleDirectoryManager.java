@@ -75,13 +75,9 @@ public class BundleDirectoryManager {
      */
     public File saveBundleStreamToFile(String destFileName, InputStream in) throws IOException {
         File destFile = new File(bundleDir, destFileName);
-        OutputStream os = null;
-        try {
-            os = FileUtils.openOutputStream(destFile);
+        try (OutputStream os = FileUtils.openOutputStream(destFile)) {
             IOUtils.copy(in, os);
             return destFile;
-        } finally {
-            IOUtils.closeQuietly(os);
         }
     }
 
