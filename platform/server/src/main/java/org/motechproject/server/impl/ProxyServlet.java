@@ -66,6 +66,8 @@ public class ProxyServlet extends HttpServlet {
     @Override
     public void destroy() {
         LOGGER.info("Destroying servlet");
-        felixServlet.destroy();
+        if (felixServlet != null) {
+            felixServlet.destroy();
+        }
     }
 }
