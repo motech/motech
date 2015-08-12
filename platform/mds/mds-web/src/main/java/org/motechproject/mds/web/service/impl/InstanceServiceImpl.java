@@ -917,9 +917,9 @@ public class InstanceServiceImpl implements InstanceService {
                         StringUtils.uncapitalize(fieldRecord.getName()),
                         true);
 
-        // We need to check if hidden or read only field value isn't changed
+        // We need to check if read only field value isn't changed
         // in some unexpected way. If so then throw exception
-        if((fieldRecord.isNonEditable() || fieldRecord.isNonDisplayable())
+        if(fieldRecord.isNonEditable()
                 // There is need to use Objects.equals as values - one or both - can be null
                 // which would cause NullPointerException when just .equals() on null value
                 && !Objects.equals(fieldOldValue, parsedValue)) {
