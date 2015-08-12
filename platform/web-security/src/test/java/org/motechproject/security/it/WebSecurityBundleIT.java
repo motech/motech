@@ -21,7 +21,6 @@ import org.motechproject.security.service.MotechProxyManager;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.testing.utils.TestContext;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.springframework.core.io.ClassPathResource;
@@ -32,7 +31,6 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 
@@ -40,8 +38,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
-import static org.osgi.framework.Bundle.ACTIVE;
-import static org.osgi.framework.Bundle.RESOLVED;
 
 /**
  * Test class that verifies the web security services
@@ -77,11 +73,6 @@ public class WebSecurityBundleIT extends BaseIT {
     private MotechUserService userService;
 
     private FilterChainProxy originalSecurityProxy;
-
-    @Override
-    protected Collection<String> getAdditionalTestDependencies() {
-        return Arrays.asList("org.motechproject:motech-osgi-integration-tests");
-    }
 
     @Test
     public void testDynamicPermissionAccessSecurity() throws InterruptedException, IOException, BundleException {
@@ -153,8 +144,6 @@ public class WebSecurityBundleIT extends BaseIT {
         updateSecurity(config);
 
         restartSecurityBundle();
-        restartOsgiIntegrationTestBundle();
-        Thread.sleep(5000); // Give it some time to process rules from resource files
 
         MotechProxyManager manager = getFromContext(MotechProxyManager.class);
         //Receives one chain from config built in test, and two from OSGi IT bundle being scanned for two rules
@@ -170,8 +159,6 @@ public class WebSecurityBundleIT extends BaseIT {
         updateSecurity(updatedConfig);
 
         restartSecurityBundle();
-        restartOsgiIntegrationTestBundle();
-        Thread.sleep(5000); // Give it some time to process rules from resource files
 
         manager = getFromContext(MotechProxyManager.class);
         assertEquals(4 + defaultSize, manager.getFilterChainProxy().getFilterChains().size());
@@ -253,20 +240,6 @@ public class WebSecurityBundleIT extends BaseIT {
         super.tearDown();
         resetSecurityConfig();
         clearSecurityContext();
-    }
-
-    private void restartOsgiIntegrationTestBundle() throws BundleException, InterruptedException, IOException {
-        getLogger().info("Restarting OSGi Integration tests bundle");
-
-        Bundle bundle = getBundle("motech-osgi-integration-tests");
-
-        bundle.stop();
-        waitForBundleState(bundle, RESOLVED);
-
-        bundle.start();
-        waitForBundleState(bundle, ACTIVE);
-
-        getLogger().info("Restarted OSGi Integration tests bundle");
     }
 
 }

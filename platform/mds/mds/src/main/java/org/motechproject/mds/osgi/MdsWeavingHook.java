@@ -26,9 +26,7 @@ public class MdsWeavingHook implements WeavingHook {
             "org.apache.commons.lang", "org.springframework.transaction.support",
             "org.motechproject.mds.filter",
             "org.motechproject.mds.query", "org.motechproject.mds.util",
-            "org.motechproject.commons.date.util", "org.datanucleus.enhancer", "org.datanucleus", "org.datanucleus.state",
-            "org.datanucleus.asm", "org.datanucleus.exceptions", "org.datanucleus.metadata", "org.datanucleus.plugin",
-            "org.datanucleus.util", "org.datanucleus.identity"
+            "org.motechproject.commons.date.util"
     };
 
     @Override

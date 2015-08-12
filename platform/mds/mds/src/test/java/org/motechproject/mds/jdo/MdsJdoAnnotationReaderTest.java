@@ -48,7 +48,7 @@ public class MdsJdoAnnotationReaderTest {
 
     @Test
     public void shouldRecognizeRegularPCAnnotation() {
-        AnnotationObject result = mdsJdoAnnotationReader.isClassPersistable(JustPc.class);
+        AnnotationObject result = mdsJdoAnnotationReader.isClassPersistenceCapable(JustPc.class);
 
         assertEquals(PersistenceCapable.class.getName(), result.getName());
         assertNotNull(result.getNameValueMap());
@@ -58,7 +58,7 @@ public class MdsJdoAnnotationReaderTest {
 
     @Test
     public void shouldRecognizeEntityAnnotation() {
-        AnnotationObject result = mdsJdoAnnotationReader.isClassPersistable(Record.class);
+        AnnotationObject result = mdsJdoAnnotationReader.isClassPersistenceCapable(Record.class);
 
         assertEquals(PersistenceCapable.class.getName(), result.getName());
         assertNotNull(result.getNameValueMap());
@@ -68,7 +68,7 @@ public class MdsJdoAnnotationReaderTest {
 
     @Test
     public void shouldPrioritizePersistenceCapableAnnotationValuesOverEntityDefaults() {
-        AnnotationObject result = mdsJdoAnnotationReader.isClassPersistable(PcAndEntity.class);
+        AnnotationObject result = mdsJdoAnnotationReader.isClassPersistenceCapable(PcAndEntity.class);
 
         assertEquals(PersistenceCapable.class.getName(), result.getName());
         assertNotNull(result.getNameValueMap());

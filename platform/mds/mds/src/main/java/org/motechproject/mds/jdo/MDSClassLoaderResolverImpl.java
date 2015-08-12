@@ -2,7 +2,6 @@ package org.motechproject.mds.jdo;
 
 import org.datanucleus.ClassLoaderResolverImpl;
 import org.datanucleus.exceptions.ClassNotResolvedException;
-import org.datanucleus.util.Localiser;
 import org.motechproject.mds.util.MDSClassLoader;
 
 /**
@@ -34,7 +33,7 @@ class MDSClassLoaderResolverImpl extends ClassLoaderResolverImpl {
                 try {
                     return MDSClassLoader.getInstance().loadClass(name);
                 } catch (ClassNotFoundException exp) {
-                    throw new ClassNotResolvedException(Localiser.msg("001000", name), exp);
+                    throw new ClassNotResolvedException(LOCALISER.msg("001000", name), exp);
                 }
             }
         }
@@ -44,8 +43,8 @@ class MDSClassLoaderResolverImpl extends ClassLoaderResolverImpl {
         // We want to use MDSClassLoader as a last resort class loader only, never as a primary one
         if (forwarded != null && !(forwarded instanceof MDSClassLoader)) {
             return forwarded;
-        } else if (contextLoader != null && !(contextLoader instanceof MDSClassLoader)) {
-            return contextLoader;
+        } else if (ecContextLoader != null && !(ecContextLoader instanceof MDSClassLoader)) {
+            return ecContextLoader;
         }
         return forwarded;
     }

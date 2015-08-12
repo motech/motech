@@ -108,6 +108,10 @@
         </dependency>
         <dependency>
             <groupId>org.datanucleus</groupId>
+            <artifactId>datanucleus-api-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.datanucleus</groupId>
             <artifactId>datanucleus-jodatime</artifactId>
         </dependency>
         <dependency>
@@ -253,7 +257,7 @@
             <plugin>
                 <groupId>org.datanucleus</groupId>
                 <artifactId>datanucleus-maven-plugin</artifactId>
-                <version>4.0.0-release</version>
+                <version>3.3.0-release</version>
                 <configuration>
                     <api>JDO</api>
                     <verbose>true</verbose>
@@ -272,7 +276,7 @@
                     <dependency>
                         <groupId>org.datanucleus</groupId>
                         <artifactId>datanucleus-core</artifactId>
-                        <version>4.0.1</version>
+                        <version>3.2.12</version>
                     </dependency>
                 </dependencies>
             </plugin>
