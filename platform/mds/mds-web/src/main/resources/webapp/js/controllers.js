@@ -4011,7 +4011,7 @@
                         for (i = 0; i < $scope.selectedFields.length; i += 1) {
                             field = $scope.selectedFields[i];
                             if (field.basic.name === name) {
-                                $scope.selectedFields.remove(i, i + 1);
+                                $scope.selectedFields.remove(i, i);
                             }
                         }
                     }
