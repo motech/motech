@@ -870,6 +870,49 @@ lookup field, the customOperator field of the @LookupField annotation has to be 
     The list of standard JDO operators that can be used in lookups is defined as constants in the
     class **org.motechproject.mds.util.Constants.Operators**.
 
+Defining editable lookups for DDE entities
+##########################################
+
+One way to define lookups for DDE entities is to include a :code:`mds-lookups.json` file in module resource directory.
+The file should be a valid array of :code:`EntityLookups` class objects. Every lookup defined in the file will be added
+only once, so even after user had deleted lookup it won't be recreated during module or MOTECH restart. This gives the
+user complete control over those lookups without any restrictions. The unique identifier of every lookup is its
+entity class name and lookup name combination. This is the intended way for modules to define lookups that should be
+made editable by the end user. Backend code should not depend on these lookups.
+
+Example :code:`mds-lookups.json` file.
+
+.. code-block:: json
+
+    [
+        {
+            "entityClassName" : "org.motechproject.tasks.domain.Task",
+            "lookups" : [
+                {
+                    "lookupName" : "Find Task by Owner",
+                    "singleObjectReturn" : false,
+                    "exposedViaRest" : false,
+                    "lookupFields" : [
+                        {
+                            "name" : "owner",
+                            "type" : "VALUE",
+                            "customOperator" : "\u003d\u003d",
+                            "useGenericParam" : false
+                        }
+                    ],
+                    "readOnly" : false,
+                    "methodName" : "findTaskByOwner",
+                    "fieldsOrder" : [
+                      "owner"
+                    ]
+                }
+            ]
+        }
+    ]
+
+Including the example json in Tasks module will result in adding lookup for Task entity that will return all tasks that
+are owned by the specified user.
+
 Programmatic usage of DDE entities
 ##################################
 
