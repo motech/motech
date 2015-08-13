@@ -1,0 +1,25 @@
+[
+  {
+    "entityClassName" : "org.motechproject.testbundle.TestClass",
+    "lookups" :
+    [
+      {
+        "lookupName" : "Find by Value",
+        "singleObjectReturn" : "false",
+        "exposedViaRest" : "false",
+        "readOnly" : "false",
+        "methodName" : "findByValue",
+        "referenced" : "false",
+        "lookupFields" :
+        [
+          {
+            "name" : "value",
+            "type" : "VALUE",
+            "customOperator" : "==",
+            "useGenericParam" : "false"
+          }
+        ]
+      }
+    ]
+  }
+]
