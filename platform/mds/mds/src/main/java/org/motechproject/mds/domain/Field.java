@@ -423,6 +423,7 @@ public class Field {
         copy.setPlaceholder(placeholder);
         copy.setType(type);
         copy.setReadOnly(readOnly);
+        copy.setNonEditable(nonEditable);
         copy.setUiChanged(uiChanged);
         copy.setExposedViaRest(exposedViaRest);
         copy.setUIDisplayable(uiDisplayable);

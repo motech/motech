@@ -1,5 +1,6 @@
 package org.motechproject.mds.annotations.internal;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.dto.LookupDto;
 
 import java.util.List;
@@ -34,5 +35,16 @@ public class MDSProcessorOutput {
 
     public void setLookupProcessorOutputs(Map<String, List<LookupDto>> lookupProcessorOutputs) {
         this.lookupProcessorOutputs = lookupProcessorOutputs;
+    }
+
+    public EntityProcessorOutput getEntityProcessorOutputByClassName(String className) {
+
+        for (EntityProcessorOutput entityProcessorOutput : entityProcessorOutputs) {
+            if (StringUtils.equals(entityProcessorOutput.getEntityProcessingResult().getClassName(), className)) {
+                return entityProcessorOutput;
+            }
+        }
+
+        return null;
     }
 }
