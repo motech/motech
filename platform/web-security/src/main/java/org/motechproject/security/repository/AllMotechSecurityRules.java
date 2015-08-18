@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -129,10 +130,10 @@ public class AllMotechSecurityRules {
      *
      * @param origin of security rules
      * @param version of security rules
-     * @return list that contains rules or null in case origin or version is null
+     * @return list that contains rules or empty list in case origin or version is null
      */
     public List<MotechURLSecurityRule> getRulesByOriginAndVersion(String origin, String version) {
-        return null == origin || null == version ? null : dataService.findByOriginAndVersion(origin, version);
+        return null == origin || null == version ? Collections.<MotechURLSecurityRule>emptyList() : dataService.findByOriginAndVersion(origin, version);
     }
 
     /**
