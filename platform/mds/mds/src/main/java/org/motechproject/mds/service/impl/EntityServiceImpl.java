@@ -454,8 +454,8 @@ public class EntityServiceImpl implements EntityService {
     }
 
     private void addModuleToRefresh(Entity entity, List<String> modulesToRefresh) {
-        if (entity.isDDE() && !modulesToRefresh.contains(entity.getModule())) {
-            modulesToRefresh.add(entity.getModule());
+        if (entity.isDDE() && !modulesToRefresh.contains(entity.getBundleSymbolicName())) {
+            modulesToRefresh.add(entity.getBundleSymbolicName());
         }
     }
 

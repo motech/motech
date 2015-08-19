@@ -61,6 +61,9 @@ public class Entity {
     private String module;
 
     @Persistent
+    private String bundleSymbolicName;
+
+    @Persistent
     private String namespace;
 
     @Persistent
@@ -122,10 +125,10 @@ public class Entity {
     }
 
     public Entity(String className, String module, String namespace, SecurityMode securityMode) {
-        this(className, ClassName.getSimpleName(className), module, namespace, securityMode, null, null, null);
+        this(className, ClassName.getSimpleName(className), module, namespace, securityMode, null, null, null, null);
     }
 
-    public Entity(String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers) {
+    public Entity(String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers, String bundleSymbolicName) {
         this.className = className;
         this.module = module;
         this.namespace = namespace;
@@ -133,12 +136,17 @@ public class Entity {
         this.securityMembers = securityMembers;
         this.readOnlySecurityMode = readOnlySecurityMode;
         this.readOnlySecurityMembers = readOnlySecurityMembers;
+        this.bundleSymbolicName = bundleSymbolicName;
         setName(name);
+    }
+
+    public Entity(String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers) {
+        this(className, name, module, namespace, securityMode, securityMembers, null, null, null);
     }
 
     public EntityDto toDto() {
         EntityDto dto = new EntityDto(id, className, getName(), module, namespace, tableName, getTracking() != null ? getTracking().isRecordHistory() : false,
-                securityMode, securityMembers, readOnlySecurityMode, readOnlySecurityMembers, superClass, abstractClass, securityOptionsModified);
+                securityMode, securityMembers, readOnlySecurityMode, readOnlySecurityMembers, superClass, abstractClass, securityOptionsModified, bundleSymbolicName);
 
         dto.setMaxFetchDepth(maxFetchDepth);
         dto.setNonEditable(getTracking() != null ? getTracking().isNonEditable() : false);
@@ -178,6 +186,14 @@ public class Entity {
 
     public void setModule(String module) {
         this.module = module;
+    }
+
+    public String getBundleSymbolicName() {
+        return bundleSymbolicName;
+    }
+
+    public void setBundleSymbolicName(String bundleSymbolicName) {
+        this.bundleSymbolicName = bundleSymbolicName;
     }
 
     public String getNamespace() {

@@ -86,11 +86,12 @@ public class EntityProcessorTest extends MockBundle {
 
     EntityDto entity = new EntityDto(
             null, AnotherSample.class.getName(), "test", "mds", null, null, false,
-            SecurityMode.EVERYONE, null, null, null, null, false, false);
+
+            SecurityMode.EVERYONE, null, null, null, null, false, false, null);
 
     EntityDto readOnlyEntity = new EntityDto(
             null, ReadAccessSample.class.getName(), "foo", "mds", null, null, false,
-            null, null, SecurityMode.EVERYONE, null, null, false, false);
+            null, null, SecurityMode.EVERYONE, null, null, false, false, null);
 
     @Before
     public void setUp() throws Exception {

@@ -31,6 +31,7 @@ import org.motechproject.mds.ex.object.RevertFromTrashException;
 import org.motechproject.mds.ex.object.SecurityException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.helper.DataServiceHelper;
+import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
@@ -902,7 +903,7 @@ public class InstanceServiceImpl implements InstanceService {
         // get the declaring bundle, for DDE the module bundle, for EUDE the generated entities bundle
         Bundle declaringBundle;
         if (entity.isDDE()) {
-            declaringBundle = WebBundleUtil.findBundleByName(bundleContext, entity.getModule());
+            declaringBundle = MdsBundleHelper.searchForBundle(bundleContext, entity);
         } else {
             declaringBundle = WebBundleUtil.findBundleBySymbolicName(bundleContext,
                     Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME);
