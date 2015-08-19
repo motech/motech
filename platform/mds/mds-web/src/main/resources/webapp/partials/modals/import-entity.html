@@ -17,6 +17,9 @@
                                 <input type="file" id="csvFile" name="csvFile" class="input-file" accept=".csv"/>
                             </span>
                             <a target="_self" href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="fa fa-fw fa-trash-o"></i>&nbsp;{{msg('mds.import.remove')}}</a>
+                            <span class="row">
+                                <input id="continueOnError" name="continueOnError" value="true" type="checkbox">{{msg('mds.import.continueOnError')}}
+                            </span>
                         </div>
                     </div>
                 </form>
@@ -28,4 +31,55 @@
             </div>
         </div>
     </div>
+</div>
+
+<div id="importResultModal" class="mds modal fade" tabindex="-1" role="dialog" aria-labelledby="importResultLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="closeImportResultModal()">&times;</button>
+                <h4 class="modal-title" id="importResultModalLabel">{{msg('mds.form.importResponse')}}</h4>
+            </div>
+            <div class="modal-body" >
+                <div class="collapse" id="successPanel">
+                    <div class="row">
+                        <img class="col-sm-1" src="../tasks/img/icon-ok.png"/>
+                        <div class="col-sm-10 alert alert-success">
+                            <label id="successMessage">{{msg('mds.import.successResult', successRows)}}</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="collapse" id="errorPanel">
+                    <div class="row">
+                        <img class="col-sm-1" src="../tasks/img/icon-exclamation.png"/>
+                        <div class="col-sm-10 alert alert-danger">
+                            <label id="errorMessage">{{msg('mds.import.errorResult', failRows, successRows)}}</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <table  id="exceptionsTable" class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <th class="ng-binding">Row </th>
+                                <th class="ng-binding">Error message</th>
+                            </tr>
+                            </thead>
+                            <tbody ng-repeat="(key, value) in currentError">
+                            <tr>
+                                <td class="ng-binding">{{key}}</td>
+                                <td class="ng-binding">{{value}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" ng-click="closeImportResultModal()">{{msg('mds.btn.close')}}</button>
+            </div>
+        </div>
+    </div>
+
+
 </div>

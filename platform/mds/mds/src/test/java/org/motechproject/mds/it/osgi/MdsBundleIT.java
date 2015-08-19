@@ -640,7 +640,7 @@ public class MdsBundleIT extends BasePaxIT {
 
         try (InputStream in = new ClassPathResource("csv/import.csv").getInputStream()) {
             Reader reader = new InputStreamReader(in);
-            CsvImportResults results = csvImportExportService.importCsv(FOO_CLASS, reader, "import.csv");
+            CsvImportResults results = csvImportExportService.importCsv(FOO_CLASS, reader, "import.csv", false);
             assertNotNull(results);
             assertEquals(2, results.totalNumberOfImportedInstances());
             assertEquals(2, results.newInstanceCount());
@@ -674,7 +674,7 @@ public class MdsBundleIT extends BasePaxIT {
         try (InputStream in = new ClassPathResource("csv/import.csv").getInputStream()) {
             String csv = IOUtils.toString(in);
             csv += "invalid row";
-            csvImportExportService.importCsv(FOO_CLASS, new StringReader(csv), "import.csv");
+            csvImportExportService.importCsv(FOO_CLASS, new StringReader(csv), "import.csv", false);
         } catch (RuntimeException e) {
             exceptionThrown = true;
         }

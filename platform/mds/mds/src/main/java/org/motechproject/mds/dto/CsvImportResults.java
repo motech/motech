@@ -2,6 +2,7 @@ package org.motechproject.mds.dto;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class holds results from a CSV import - IDs of updated and created instances.
@@ -16,19 +17,23 @@ public class CsvImportResults implements Serializable {
     private final String entityName;
     private final String entityModule;
     private final String entityNamespace;
+    private final Map<Integer, String> rowErrors;
 
     /**
      * @param entity entity for which this import was performed
      * @param newInstanceIDs a list of IDs for instances that were newly created during import
      * @param updatedInstanceIDs a list of IDs for instances that were updated during import
+     * @param rowErrors a list of errors thrown during import
      */
-    public CsvImportResults(EntityDto entity, List<Long> newInstanceIDs, List<Long> updatedInstanceIDs) {
+    public CsvImportResults(EntityDto entity, List<Long> newInstanceIDs, List<Long> updatedInstanceIDs,
+                            Map<Integer, String> rowErrors) {
         this.entityClassName = entity.getClassName();
         this.entityName = entity.getName();
         this.entityModule = entity.getModule();
         this.entityNamespace = entity.getNamespace();
         this.newInstanceIDs = newInstanceIDs;
         this.updatedInstanceIDs = updatedInstanceIDs;
+        this.rowErrors = rowErrors;
     }
 
     /**
@@ -95,5 +100,12 @@ public class CsvImportResults implements Serializable {
      */
     public int totalNumberOfImportedInstances() {
         return newInstanceCount() + updatedInstanceCount();
+    }
+
+    /**
+     * @return the map containing errors thrown during import
+     */
+    public Map<Integer, String> getRowErrors() {
+        return rowErrors;
     }
 }

@@ -282,18 +282,19 @@ public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/instances/{entityId}/csvimport", method = RequestMethod.POST)
     @ResponseBody
-    public long importCsv(@PathVariable long entityId, @RequestParam(required = true)  MultipartFile csvFile) {
+    public CsvImportResults importCsv(@PathVariable long entityId, @RequestParam(required = true)  MultipartFile csvFile,
+                          @RequestParam(required = false) boolean continueOnError) {
         instanceService.verifyEntityAccess(entityId);
         try {
             try (InputStream in = csvFile.getInputStream()) {
                 Reader reader = new InputStreamReader(in);
-                CsvImportResults results = csvImportExportService.importCsv(entityId, reader, csvFile.getOriginalFilename());
-                return results.totalNumberOfImportedInstances();
+                return csvImportExportService.importCsv(entityId, reader, csvFile.getOriginalFilename(), continueOnError);
             }
         } catch (IOException e) {
             throw new CsvImportException("Unable to open uploaded file", e);
         }
     }
+
 
     private Map<String, Object> getFields(GridSettings gridSettings) throws IOException {
         if (gridSettings.getFields() == null) {

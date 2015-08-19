@@ -4663,14 +4663,35 @@
             return exist;
         };
 
+        $scope.printResult = function (response) {
+            $scope.currentError = null;
+             $scope.failRows = 0;
+             $scope.successRows = 0;
+             $('#errorPanel').collapse({'toggle': false});
+             $('#successPanel').collapse({'toggle': false});
+            if (Object.keys(response.rowErrors).length === 0) {
+                $scope.successRows = Object.keys(response.newInstanceIDs).length
+                                    + Object.keys(response.updatedInstanceIDs).length;
+                $('#successPanel').collapse('show');
+            } else {
+                $scope.failRows = Object.keys(response.rowErrors).length;
+                $scope.successRows = Object.keys(response.newInstanceIDs).length
+                                    + Object.keys(response.updatedInstanceIDs).length;
+                $scope.currentError = response.rowErrors;
+                $('#errorPanel').collapse('show');
+            }
+            $('#importResultModal').modal('show');
+        };
+
         $scope.importInstance = function () {
             blockUI();
 
             $('#importInstanceForm').ajaxSubmit({
-                success: function () {
+                success: function (response) {
                     $("#instancesTable").trigger('reloadGrid');
                     $('#importInstanceForm').resetForm();
                     $('#importInstanceModal').modal('hide');
+                    $scope.printResult(response);
                     unblockUI();
                 },
                 error: function (response) {
@@ -4683,6 +4704,12 @@
             $('#importInstanceForm').resetForm();
             $('#importInstanceModal').modal('hide');
         };
+
+        $scope.closeImportResultModal = function () {
+            $('#errorPanel').collapse('hide');
+            $('#successPanel').collapse('hide');
+            $('#importResultModal').modal('hide');
+         };
 
         $scope.preselectEntity = function (entityModule, entityName) {
             $scope.$parent.selectedEntity = { module: entityModule,

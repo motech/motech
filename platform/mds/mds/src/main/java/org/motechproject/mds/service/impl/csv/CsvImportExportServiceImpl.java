@@ -152,20 +152,19 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
                 exportCustomizer);
     }
 
-
     @Override
-    public CsvImportResults importCsv(long entityId, Reader reader, String fileName) {
-        return importCsv(entityId, reader, fileName, new DefaultCsvImportCustomizer());
+    public CsvImportResults importCsv(long entityId, Reader reader, String fileName, boolean continueOnError) {
+        return importCsv(entityId, reader, fileName, new DefaultCsvImportCustomizer(), continueOnError);
     }
 
     @Override
     public CsvImportResults importCsv(long entityId, Reader reader, String fileName,
-                                      CsvImportCustomizer importCustomizer) {
+                                      CsvImportCustomizer importCustomizer, boolean continueOnError) {
         LOGGER.debug("Importing instances of entity with ID: {}", entityId);
 
         CsvImportResults importResults;
         try {
-            importResults = csvImporterExporter.importCsv(entityId, reader, importCustomizer);
+            importResults = csvImporterExporter.importCsv(entityId, reader, importCustomizer, continueOnError);
         } catch (RuntimeException e) {
             EntityDto entity = entityService.getEntity(entityId);
             sendImportFailureEvent(entity, fileName, e);
@@ -178,12 +177,12 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
     }
 
     @Override
-    public CsvImportResults importCsv(String entityClassName, Reader reader, String fileName) {
+    public CsvImportResults importCsv(String entityClassName, Reader reader, String fileName, boolean continueOnError) {
         LOGGER.debug("Importing instances of entity: {}", entityClassName);
 
         CsvImportResults importResults;
         try {
-            importResults = csvImporterExporter.importCsv(entityClassName, reader);
+            importResults = csvImporterExporter.importCsv(entityClassName, reader, continueOnError);
         } catch (RuntimeException e) {
             EntityDto entity = entityService.getEntityByClassName(entityClassName);
             sendImportFailureEvent(entity, fileName, e);

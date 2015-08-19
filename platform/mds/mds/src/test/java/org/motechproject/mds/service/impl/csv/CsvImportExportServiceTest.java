@@ -89,59 +89,59 @@ public class CsvImportExportServiceTest {
 
     @Test
     public void shouldImportInstancesByClassName() {
-        CsvImportResults importResults = new CsvImportResults(entityDto, NEW_IDS, UPDATED_IDS);
-        when(csvImporterExporter.importCsv(ENTITY_CLASS_NAME, reader)).thenReturn(importResults);
+        CsvImportResults importResults = new CsvImportResults(entityDto, NEW_IDS, UPDATED_IDS, null);
+        when(csvImporterExporter.importCsv(ENTITY_CLASS_NAME, reader, false)).thenReturn(importResults);
 
-        csvImportExportService.importCsv(ENTITY_CLASS_NAME, reader, FILE_NAME);
+        csvImportExportService.importCsv(ENTITY_CLASS_NAME, reader, FILE_NAME, false);
 
-        verify(csvImporterExporter).importCsv(ENTITY_CLASS_NAME, reader);
+        verify(csvImporterExporter).importCsv(ENTITY_CLASS_NAME, reader, false);
         verifyImportSuccessEvent();
     }
 
     @Test
     public void shouldImportInstancesById() {
-        CsvImportResults importResults = new CsvImportResults(entityDto, NEW_IDS, UPDATED_IDS);
-        when(csvImporterExporter.importCsv(eq(ENTITY_ID), eq(reader), any(DefaultCsvImportCustomizer.class)))
+        CsvImportResults importResults = new CsvImportResults(entityDto, NEW_IDS, UPDATED_IDS, null);
+        when(csvImporterExporter.importCsv(eq(ENTITY_ID), eq(reader), any(DefaultCsvImportCustomizer.class), eq(false)))
                 .thenReturn(importResults);
 
-        csvImportExportService.importCsv(ENTITY_ID, reader, FILE_NAME);
+        csvImportExportService.importCsv(ENTITY_ID, reader, FILE_NAME, false);
 
-        verify(csvImporterExporter).importCsv(eq(ENTITY_ID), eq(reader), any(DefaultCsvImportCustomizer.class));
+        verify(csvImporterExporter).importCsv(eq(ENTITY_ID), eq(reader), any(DefaultCsvImportCustomizer.class), eq(false));
         verifyImportSuccessEvent();
     }
 
     @Test
     public void shouldThrowImportFailureExceptionWhenImportingById() {
-        when(csvImporterExporter.importCsv(eq(ENTITY_ID), eq(reader), any(DefaultCsvImportCustomizer.class)))
+        when(csvImporterExporter.importCsv(eq(ENTITY_ID), eq(reader), any(DefaultCsvImportCustomizer.class), eq(false)))
                 .thenThrow(new CsvImportException(FAILURE_EX_MSG));
         when(entityService.getEntity(ENTITY_ID)).thenReturn(entityDto);
 
         boolean thrown = false;
         try {
-            csvImportExportService.importCsv(ENTITY_ID, reader, FILE_NAME);
+            csvImportExportService.importCsv(ENTITY_ID, reader, FILE_NAME, false);
         } catch (CsvImportException e) {
             thrown = true;
         }
         assertTrue("CSV Import exception was not propagated", thrown);
 
-        verify(csvImporterExporter).importCsv(eq(ENTITY_ID), eq(reader), any(DefaultCsvImportCustomizer.class));
+        verify(csvImporterExporter).importCsv(eq(ENTITY_ID), eq(reader), any(DefaultCsvImportCustomizer.class), eq(false));
         verifyImportFailureEvent();
     }
 
     @Test
     public void shouldThrowImportFailureExceptionWhenImportingByClassName() {
-        when(csvImporterExporter.importCsv(ENTITY_CLASS_NAME, reader)).thenThrow(new CsvImportException(FAILURE_EX_MSG));
+        when(csvImporterExporter.importCsv(ENTITY_CLASS_NAME, reader, false)).thenThrow(new CsvImportException(FAILURE_EX_MSG));
         when(entityService.getEntityByClassName(ENTITY_CLASS_NAME)).thenReturn(entityDto);
 
         boolean thrown = false;
         try {
-            csvImportExportService.importCsv(ENTITY_CLASS_NAME, reader, FILE_NAME);
+            csvImportExportService.importCsv(ENTITY_CLASS_NAME, reader, FILE_NAME, false);
         } catch (CsvImportException e) {
             thrown = true;
         }
         assertTrue("CSV Import exception was not propagated", thrown);
 
-        verify(csvImporterExporter).importCsv(ENTITY_CLASS_NAME, reader);
+        verify(csvImporterExporter).importCsv(ENTITY_CLASS_NAME, reader, false);
         verifyImportFailureEvent();
     }
 

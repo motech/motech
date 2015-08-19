@@ -2,6 +2,7 @@ package org.motechproject.mds.service;
 
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.mds.ex.csv.CsvImportException;
 import org.motechproject.mds.util.Constants;
 
 import java.util.Map;
@@ -17,7 +18,12 @@ public class DefaultCsvImportCustomizer implements CsvImportCustomizer {
         String id = row.get(Constants.Util.ID_FIELD_NAME);
 
         if (StringUtils.isNotBlank(id)) {
-            return dataService.findById(Long.valueOf(id));
+            Object object = dataService.findById(Long.valueOf(id));
+            if (object == null){
+                throw new CsvImportException("Unable to update, no instance with id = " + id);
+            } else {
+                return object;
+            }
         }
         return null;
     }

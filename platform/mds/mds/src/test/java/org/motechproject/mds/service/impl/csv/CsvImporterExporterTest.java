@@ -11,6 +11,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.UIDisplayFieldComparator;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -20,7 +21,6 @@ import org.motechproject.mds.service.CsvExportCustomizer;
 import org.motechproject.mds.service.CsvImportCustomizer;
 import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.domain.UIDisplayFieldComparator;
 import org.motechproject.mds.testutil.records.Record2;
 import org.motechproject.mds.testutil.records.RecordEnum;
 import org.motechproject.mds.testutil.records.RelatedClass;
@@ -59,6 +59,7 @@ public class CsvImporterExporterTest {
     private static final String ENTITY_NAME = "Record2";
     private static final int INSTANCE_COUNT = 20;
     private static final DateTime NOW = DateTime.now();
+    private static final boolean CONTINUE_ON_ERROR = false;
 
     @InjectMocks
     private CsvImporterExporter csvImporterExporter = new CsvImporterExporter();
@@ -182,15 +183,45 @@ public class CsvImporterExporterTest {
 
         when(csvImportCustomizer.doCreate(any(Record2.class), eq(motechDataService))).thenAnswer(new CreateAnswer());
 
-        CsvImportResults results = csvImporterExporter.importCsv(ENTITY_ID, reader, csvImportCustomizer);
+        CsvImportResults results = csvImporterExporter.importCsv(ENTITY_ID, reader, csvImportCustomizer, CONTINUE_ON_ERROR);
 
         ArgumentCaptor<Record2> captor = ArgumentCaptor.forClass(Record2.class);
         verify(csvImportCustomizer, times(INSTANCE_COUNT)).findExistingInstance(anyMap(), eq(motechDataService));
-        verify(csvImportCustomizer, times(INSTANCE_COUNT)).doCreate(captor.capture(),  eq(motechDataService));
-        verify(csvImportCustomizer, never()).doUpdate(captor.capture(),  eq(motechDataService));
+        verify(csvImportCustomizer, times(INSTANCE_COUNT)).doCreate(captor.capture(), eq(motechDataService));
+        verify(csvImportCustomizer, never()).doUpdate(captor.capture(), eq(motechDataService));
 
         assertNotNull(results);
         assertEquals(INSTANCE_COUNT, results.totalNumberOfImportedInstances());
+    }
+
+    @Test
+    public void testImportWithInvalidRows() {
+        CsvImportResults results;
+
+        // This will provide csv import with 3 rows with invalid enum fields
+        StringReader reader = new StringReader(getTestEntityRecordsAsCsv(IdMode.INVALID));
+
+        // First import call with continueOnError flag on
+        results = csvImporterExporter.importCsv(ENTITY_ID, reader, true);
+
+        // Check how many times create was called, how many objects were created and how many errors were caught
+        // Expecting 17 creates and 3 errors since we got 3 invalid rows in a set of 20 passed as import input
+        ArgumentCaptor<Record2> captor = ArgumentCaptor.forClass(Record2.class);
+        verify(motechDataService, times(17)).create(captor.capture());
+        assertNotNull(results);
+        assertEquals(17, results.totalNumberOfImportedInstances());
+        assertEquals(3, results.getRowErrors().size());
+
+        // Now call import with continueOnError flag off
+        StringReader reader2 = new StringReader(getTestEntityRecordsAsCsv(IdMode.INVALID));
+        boolean thrown = false;
+        try {
+            csvImporterExporter.importCsv(ENTITY_ID, reader2, false);
+        } catch (RuntimeException e){
+            thrown = true;
+        }
+        // First invalid row encountered should stop whole import process and throw an exception
+        assertTrue(thrown);
     }
 
     private void testImport(IdMode idMode) {
@@ -210,7 +241,7 @@ public class CsvImporterExporterTest {
             when(motechDataService.create(any(Record2.class))).thenAnswer(new CreateAnswer());
         }
 
-        CsvImportResults results = csvImporterExporter.importCsv(ENTITY_ID, reader);
+        CsvImportResults results = csvImporterExporter.importCsv(ENTITY_ID, reader, CONTINUE_ON_ERROR);
 
         ArgumentCaptor<Record2> captor = ArgumentCaptor.forClass(Record2.class);
         if (idMode == IdMode.INCLUDE_ID) {
@@ -227,6 +258,7 @@ public class CsvImporterExporterTest {
         assertEquals(ENTITY_NAME, results.getEntityName());
         assertEquals(ENTITY_MODULE, results.getEntityModule());
         assertEquals(ENTITY_NAMESPACE, results.getEntityNamespace());
+        assertEquals(0, results.getRowErrors().size());
 
         if (idMode == IdMode.INCLUDE_ID) {
             assertEquals(INSTANCE_COUNT, results.updatedInstanceCount());
@@ -274,7 +306,7 @@ public class CsvImporterExporterTest {
     private String getTestEntityRecordsAsCsv(IdMode idMode) {
         StringBuilder sb = new StringBuilder("value,date,"); // these are UI displayable
 
-        if (idMode != IdMode.NO_ID_COLUMN) {
+        if ((idMode != IdMode.NO_ID_COLUMN) && (idMode != IdMode.INVALID)) {
             sb.append("id,");
         }
 
@@ -289,7 +321,7 @@ public class CsvImporterExporterTest {
             if (idMode == IdMode.INCLUDE_ID) {
                 sb.append(i);
             }
-            if (idMode != IdMode.NO_ID_COLUMN) {
+            if ((idMode != IdMode.NO_ID_COLUMN) && (idMode != IdMode.INVALID)) {
                 sb.append(',');
             }
 
@@ -298,7 +330,14 @@ public class CsvImporterExporterTest {
             sb.append(NOW.plusMinutes(i)).append(',').append(NOW.plusHours(i)).append(','); // creationDate, modificationDate
             sb.append(NOW.minusHours(i)).append(',').append(enumValue(i)); // dateIgnoredByRest, enumField
             // enum list
-            sb.append(",\"").append(enumValue(i + 1)).append(',').append(enumValue(i + 2)).append("\",");
+            sb.append(",\"").append(enumValue(i + 1)).append(',').append(enumValue(i + 2));
+            // adding invalid enum values for rows 3, 7 and 11
+            if (idMode == IdMode.INVALID){
+                if ((i == 3) || (i == 7) || (i == 11)) {
+                    sb.append(',').append("INVALID_ENUM");
+                }
+            }
+            sb.append("\",");
             // relationship
             sb.append(relatedId(i)).append(',');
             // relationships list
@@ -345,6 +384,6 @@ public class CsvImporterExporterTest {
     }
 
     private enum IdMode {
-        INCLUDE_ID, EMPTY_ID_COLUMN, NO_ID_COLUMN
+        INCLUDE_ID, EMPTY_ID_COLUMN, NO_ID_COLUMN, INVALID
     }
 }

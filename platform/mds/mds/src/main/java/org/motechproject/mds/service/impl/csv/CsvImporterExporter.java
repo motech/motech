@@ -33,6 +33,7 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,12 +53,14 @@ public class CsvImporterExporter extends AbstractMdsExporter {
      * Imports instances of the given entity to the database.
      * @param entityId the ID of the entity for which instances will be imported
      * @param reader reader from which the csv file will be read
+     * @param continueOnError if true, import will continue with next row if exception was encountered,
+     *                        if false, import process will stop and rethrow the exception
      * @return IDs of instances updated/added during import
      */
     @Transactional
-    public CsvImportResults importCsv(final long entityId, final Reader reader) {
+    public CsvImportResults importCsv(final long entityId, final Reader reader, boolean continueOnError) {
         Entity entity = getEntity(entityId);
-        return importCsv(entity, reader);
+        return importCsv(entity, reader, continueOnError);
     }
 
     /**
@@ -65,24 +68,28 @@ public class CsvImporterExporter extends AbstractMdsExporter {
      * @param entityId the ID of the entity for which instances will be imported
      * @param reader reader from which the csv file will be read
      * @param importCustomizer the customizer that will be used during instance import from rows
+     * @param continueOnError if true, import will continue with next row if exception was encountered,
+     *                        if false, import process will stop and rethrow the exception
      * @return IDs of instances updated/added during import
      */
     @Transactional
-    public CsvImportResults importCsv(final long entityId, final Reader reader, CsvImportCustomizer importCustomizer) {
+    public CsvImportResults importCsv(final long entityId, final Reader reader, CsvImportCustomizer importCustomizer, boolean continueOnError) {
         Entity entity = getEntity(entityId);
-        return importCsv(entity, reader, importCustomizer);
+        return importCsv(entity, reader, importCustomizer, continueOnError);
     }
 
     /**
      * Imports instances of the given entity to the database.
      * @param entityClassName the class name of the entity for which instances will be imported
      * @param reader reader from which the csv file will be read
+     * @param continueOnError if true, import will continue with next row if exception was encountered,
+     *                        if false, import process will stop and rethrow the exception
      * @return IDs of instances updated/added during import
      */
     @Transactional
-    public CsvImportResults importCsv(final String entityClassName, final Reader reader) {
+    public CsvImportResults importCsv(final String entityClassName, final Reader reader, boolean continueOnError) {
         Entity entity = getEntity(entityClassName);
-        return importCsv(entity, reader);
+        return importCsv(entity, reader, continueOnError);
     }
 
     /**
@@ -219,11 +226,12 @@ public class CsvImporterExporter extends AbstractMdsExporter {
         }
     }
 
-    private CsvImportResults importCsv(final Entity entity, final Reader reader) {
-        return importCsv(entity, reader, new DefaultCsvImportCustomizer());
+    private CsvImportResults importCsv(final Entity entity, final Reader reader, boolean continueOnError) {
+        return importCsv(entity, reader, new DefaultCsvImportCustomizer(), continueOnError);
     }
 
-    private CsvImportResults importCsv(final Entity entity, final Reader reader, CsvImportCustomizer importCustomizer) {
+    private CsvImportResults importCsv(final Entity entity, final Reader reader, CsvImportCustomizer importCustomizer,
+                                       boolean continueOnError) {
         final MotechDataService dataService = DataServiceHelper.getDataService(getBundleContext(), entity);
 
         final Map<String, Field> fieldMap = FieldHelper.fieldMapByName(entity.getFields());
@@ -233,24 +241,36 @@ public class CsvImporterExporter extends AbstractMdsExporter {
             List<Long> newInstanceIDs = new ArrayList<>();
             List<Long> updatedInstanceIDs = new ArrayList<>();
 
+            Map <Integer, String> exceptions = new HashMap<>();
+
             Map<String, String> row;
+            int rowNum = 0;
 
             final String headers[] = csvMapReader.getHeader(true);
 
             while ((row = csvMapReader.read(headers)) != null) {
-                // import a row
-                RowImportResult rowImportResult = importInstanceFromRow(row, headers, fieldMap, dataService, importCustomizer);
-                Long id = rowImportResult.getId();
+                rowNum++;
+                try {
+                    // import a row
+                    RowImportResult rowImportResult = importInstanceFromRow(row, headers, fieldMap, dataService, importCustomizer);
+                    Long id = rowImportResult.getId();
 
-                // put its ID in the correct list
-                if (rowImportResult.isNewInstance()) {
-                    newInstanceIDs.add(id);
-                } else {
-                    updatedInstanceIDs.add(id);
+                    // put its ID in the correct list
+                    if (rowImportResult.isNewInstance()) {
+                        newInstanceIDs.add(id);
+                    } else {
+                        updatedInstanceIDs.add(id);
+                    }
+                } catch (RuntimeException e){
+                    if (continueOnError) {
+                        exceptions.put(rowNum, e.getMessage());
+                    } else {
+                        throw e;
+                    }
                 }
             }
 
-            return new CsvImportResults(entity.toDto(), newInstanceIDs, updatedInstanceIDs);
+            return new CsvImportResults(entity.toDto(), newInstanceIDs, updatedInstanceIDs, exceptions);
         } catch (IOException e) {
             throw new CsvImportException("IO Error when importing CSV", e);
         }

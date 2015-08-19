@@ -196,9 +196,11 @@ public interface CsvImportExportService {
      * @param entityId id of the entity for which the instances will be imported
      * @param reader the reader that will be used for reading the file contents
      * @param fileName the name of the CSV file
+     * @param continueOnError if true, import will continue with next row if exception was encountered,
+     *                        if false, import process will stop and rethrow the exception
      * @return IDs of instances updated/added during import
      */
-    CsvImportResults importCsv(long entityId, Reader reader, String fileName);
+    CsvImportResults importCsv(long entityId, Reader reader, String fileName, boolean continueOnError);
 
     /**
      * Import instances from a CSV file
@@ -206,16 +208,20 @@ public interface CsvImportExportService {
      * @param reader the reader that will be used for reading the file contents
      * @param fileName the name of the CSV file
      * @param importCustomizer the customizer that will be used during import
+     * @param continueOnError if true, import will continue with next row if exception was encountered,
+     *                        if false, import process will stop and rethrow the exception
      * @return IDs of instances updated/added during import
      */
-    CsvImportResults importCsv(long entityId, Reader reader, String fileName, CsvImportCustomizer importCustomizer);
+    CsvImportResults importCsv(long entityId, Reader reader, String fileName, CsvImportCustomizer importCustomizer, boolean continueOnError);
 
     /**
      * Import instances from a CSV file
      * @param entityClassName class name of the entity for which the instances will be imported
      * @param reader the reader that will be used for reading the file contents
      * @param fileName the name of the CSV file
+     * @param continueOnError if true, import will continue with next row if exception was encountered,
+     *                        if false, import process will stop and rethrow the exception
      * @return IDs of instances updated/added during import
      */
-    CsvImportResults importCsv(String entityClassName, Reader reader, String fileName);
+    CsvImportResults importCsv(String entityClassName, Reader reader, String fileName, boolean continueOnError);
 }
