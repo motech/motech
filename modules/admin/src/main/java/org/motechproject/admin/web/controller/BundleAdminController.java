@@ -202,6 +202,7 @@ public class BundleAdminController {
      * @param ex the exception being handled
      * @throws IOException if there were problems writing the stacktrace to the response
      */
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public void handleBundleException(HttpServletRequest request, HttpServletResponse response, Exception ex)
             throws IOException {
