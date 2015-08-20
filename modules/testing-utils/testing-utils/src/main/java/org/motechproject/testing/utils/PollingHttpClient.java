@@ -38,6 +38,16 @@ public class PollingHttpClient {
     }
 
     /**
+     * Creates an instance with a new instance of {@link DefaultHttpClient} underneath and timeout of
+     * {@code waitPeriodInSeconds} seconds.
+     *
+     * @param waitPeriodInSeconds the time that the client will wait for satisfying response, in seconds
+     */
+    public PollingHttpClient(int waitPeriodInSeconds) {
+        this(new DefaultHttpClient(), waitPeriodInSeconds);
+    }
+
+    /**
      * Creates an instance with the given instance of {@link DefaultHttpClient} underneath and
      * the given timeout time.
      * @param httpClient the http client that is being decorated by this class
