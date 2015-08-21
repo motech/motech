@@ -37,7 +37,7 @@ public class BaseTomcatIT {
     protected static final PollingHttpClient HTTP_CLIENT;
 
     static {
-        HTTP_CLIENT = new PollingHttpClient();
+        HTTP_CLIENT = new PollingHttpClient(120);
         HTTP_CLIENT.setCookieStore(new BasicCookieStore());
     }
 
