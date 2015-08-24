@@ -149,7 +149,7 @@ public class CsvImporterExporterTest {
 
     @Test
     public void shouldExportInstancesFromTableAsCsv() {
-        when(mdsLookupService.findMany((any(String.class)), eq("lookup"), any(Map.class), any(QueryParams.class))).thenReturn(testInstances(IdMode.INCLUDE_ID));
+        when(mdsLookupService.<Record2>findMany((any(String.class)), eq("lookup"), any(Map.class), any(QueryParams.class))).thenReturn(testInstances(IdMode.INCLUDE_ID));
         StringWriter writer = new StringWriter();
 
         List<String> headers = Arrays.asList("id", "creator", "owner", "modifiedBy", "creationDate", "modificationDate",

@@ -819,6 +819,8 @@ public class InstanceServiceImpl implements InstanceService {
             parsedValue = ((Time) parsedValue).timeStr();
         } else if (parsedValue instanceof LocalDate) {
             parsedValue = parsedValue.toString();
+        } else if (parsedValue instanceof java.time.LocalDate) {
+            parsedValue = parsedValue.toString();
         } else if (relatedFieldMetadata != null) {
             parsedValue = removeCircularRelations(parsedValue, relatedFieldMetadata.getValue());
         }

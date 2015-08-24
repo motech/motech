@@ -25,7 +25,9 @@ import static org.motechproject.mds.dto.TypeDto.BOOLEAN;
 import static org.motechproject.mds.dto.TypeDto.DATE;
 import static org.motechproject.mds.dto.TypeDto.DATETIME;
 import static org.motechproject.mds.dto.TypeDto.COLLECTION;
+import static org.motechproject.mds.dto.TypeDto.DATETIME8;
 import static org.motechproject.mds.dto.TypeDto.LOCAL_DATE;
+import static org.motechproject.mds.dto.TypeDto.LOCAL_DATE8;
 import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 
 /**
@@ -39,7 +41,7 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 @Component
 class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> {
     private static final Logger LOGGER = LoggerFactory.getLogger(UIFilterableProcessor.class);
-    private static final TypeDto[] SUPPORT_TYPES = {BOOLEAN, DATE, DATETIME, LOCAL_DATE, COLLECTION};
+    private static final TypeDto[] SUPPORT_TYPES = {BOOLEAN, DATE, DATETIME, LOCAL_DATE, COLLECTION, LOCAL_DATE8, DATETIME8};
 
     private TypeService typeService;
     private Class clazz;

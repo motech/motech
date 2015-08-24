@@ -464,7 +464,8 @@ public final class TypeHelper {
     private static boolean isDate(Class<?> toClass) {
         return DateTime.class.isAssignableFrom(toClass)
                 || Date.class.isAssignableFrom(toClass)
-                || LocalDate.class.isAssignableFrom(toClass);
+                || LocalDate.class.isAssignableFrom(toClass)
+                || java.time.LocalDate.class.isAssignableFrom(toClass);
     }
 
     private static Object parseDateTime(DateTime val, String toClass) {
@@ -512,6 +513,8 @@ public final class TypeHelper {
                 val = str.substring(0, tIndex);
             }
             return LocalDate.parse(val);
+        } else if (java.time.LocalDate.class.isAssignableFrom(toClass)) {
+            return java.time.LocalDate.parse(str);
         } else {
             return null;
         }

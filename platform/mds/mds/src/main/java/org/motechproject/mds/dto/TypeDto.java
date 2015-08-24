@@ -10,6 +10,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.motechproject.commons.date.model.Time;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -70,7 +71,7 @@ public class TypeDto {
     );
 
     /**
-     * Constant <code>DATE</code> is a representation of the MDS Date type.
+     * Constant <code>DATE</code> is a representation of the MDS Joda Date type.
      */
     public static final TypeDto DATE = new TypeDto(
             "mds.field.date", "mds.field.description.date", "date", Date.class.getName()
@@ -84,10 +85,17 @@ public class TypeDto {
     );
 
     /**
-     * Constant <code>DATETIME</code> is a representation of the MDS DateTime type.
+     * Constant <code>DATETIME</code> is a representation of the MDS Joda DateTime type.
      */
     public static final TypeDto DATETIME = new TypeDto(
             "mds.field.datetime", "mds.field.description.datetime", "datetime", DateTime.class.getName()
+    );
+
+    /**
+     * Constant <code>DATETIME8</code> is a representation of the MDS Java8 DateTime type.
+     */
+    public static final TypeDto DATETIME8 = new TypeDto(
+            "mds.field.datetime8", "mds.field.description.datetime", "datetime", LocalDateTime.class.getName()
     );
 
     /**
@@ -109,6 +117,13 @@ public class TypeDto {
      */
     public static final TypeDto LOCAL_DATE = new TypeDto(
             "mds.field.localDate", "mds.field.description.localDate", "localDate", LocalDate.class.getName()
+    );
+
+    /**
+     * Constant <code>LOCAL_DATE8</code> is a representation of the Java8 LocalDate type.
+     */
+    public static final TypeDto LOCAL_DATE8 = new TypeDto(
+            "mds.field.localDate8", "mds.field.description.localDate", "localDate", java.time.LocalDate.class.getName()
     );
 
     /**
