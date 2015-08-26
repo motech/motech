@@ -386,7 +386,7 @@ public final class TypeHelper {
      * @return Map, parsed from the given String
      */
     public static Map parseStringToMap(String keyClass, String valueClass, String str) {
-        String[] entries = breakString(str);
+        String[] entries = breakStringForCollection(str);
         Map map = new HashMap<>();
 
         for (String entry : entries) {

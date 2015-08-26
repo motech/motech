@@ -3,6 +3,7 @@ package org.motechproject.mds.annotations.internal;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.CrudEvents;
+import org.motechproject.mds.annotations.EnumDisplayName;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
@@ -35,12 +36,23 @@ import java.util.Set;
 @CrudEvents(CrudEventType.CREATE)
 public class Sample {
     // if you added a new field (and it has no @Ignore annotation) please increase this number.
-    public static final long FIELD_COUNT = 21;
+    public static final long FIELD_COUNT = 22;
     public static final long UI_DISPLAYABLE_FIELD_COUNT = 1;
     public static final long UI_FILTERABLE_FIELD_COUNT = 3;
 
-    private enum TestEnum {
-        ONE, TWO, THREE
+
+    public enum TestEnum {
+        ONE("one"), TWO("two"), THREE("three");
+
+        private String dispName;
+
+        TestEnum(String dispName){
+            this.dispName = dispName;
+        }
+
+        public String getDispName(){
+            return dispName;
+        }
     }
 
     // test class
@@ -123,7 +135,12 @@ public class Sample {
     private RelatedSample oneToOneBi;
 
     @Field
+    @EnumDisplayName(enumField="dispName")
     private Set<TestEnum> enumSet;
+
+    @Field
+    @EnumDisplayName(enumField="dispName")
+    private TestEnum singleEnum;
 
     @Field
     private Set<String> stringSet;

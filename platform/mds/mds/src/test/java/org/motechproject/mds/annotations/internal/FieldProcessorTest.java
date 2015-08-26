@@ -383,7 +383,7 @@ public class FieldProcessorTest {
         assertEquals(3, field.getSettings().size());
         assertTrue(Boolean.parseBoolean(field.getSettingsValueAsString(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS)));
         assertFalse(Boolean.parseBoolean(field.getSettingsValueAsString(Constants.Settings.ALLOW_USER_SUPPLIED)));
-        assertEquals("[ONE, TWO, THREE]", field.getSettingsValueAsString(Constants.Settings.COMBOBOX_VALUES));
+        assertEquals("{ONE=one, TWO=two, THREE=three}", field.getSettingsValueAsString(Constants.Settings.COMBOBOX_VALUES));
 
         field= findFieldWithName(fields, "stringSet");
         assertEquals(1, field.getMetadata().size());
@@ -392,7 +392,24 @@ public class FieldProcessorTest {
         assertEquals(3, field.getSettings().size());
         assertTrue(Boolean.parseBoolean(field.getSettingsValueAsString(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS)));
         assertTrue(Boolean.parseBoolean(field.getSettingsValueAsString(Constants.Settings.ALLOW_USER_SUPPLIED)));
-        assertEquals("[]", field.getSettingsValueAsString(Constants.Settings.COMBOBOX_VALUES));
+        assertEquals("{}", field.getSettingsValueAsString(Constants.Settings.COMBOBOX_VALUES));
+    }
+
+    @Test
+    public void shouldProcessComboboxFieldsForSingleEnumInstance() throws NoSuchFieldException {
+        processor.process(Sample.class.getDeclaredField("singleEnum"));
+
+        Collection<FieldDto> fields = processor.getElements();
+        assertEquals(1, fields.size());
+
+        FieldDto field= findFieldWithName(fields, "singleEnum");
+        assertEquals(1, field.getMetadata().size());
+        assertEquals("org.motechproject.mds.annotations.internal.Sample$TestEnum", field.getMetadata(Constants.MetadataKeys.ENUM_CLASS_NAME).getValue());
+
+        assertEquals(3, field.getSettings().size());
+        assertFalse(Boolean.parseBoolean(field.getSettingsValueAsString(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS)));
+        assertFalse(Boolean.parseBoolean(field.getSettingsValueAsString(Constants.Settings.ALLOW_USER_SUPPLIED)));
+        assertEquals("{ONE=one, TWO=two, THREE=three}", field.getSettingsValueAsString(Constants.Settings.COMBOBOX_VALUES));
     }
 
     @Test

@@ -3925,6 +3925,10 @@
             return field.type.typeClass === "java.util.Map";
         };
 
+        $scope.isComboboxField = function(field) {
+             return field.type.typeClass === "java.util.Collection";
+        };
+
         $scope.dataBrowserPreferencesCookieName = function(entity) {
             var username = $rootScope.username || '';
             return username + '_org.motechproject.mds.databrowser.fields.' + entity.className + '#' + entity.id;
@@ -4441,7 +4445,46 @@
         * @return {Array} A array of possible combobox values.
         */
         $scope.getComboboxValues = function (settings) {
-            return MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value;
+            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value, keys = [], key;
+            // Check the user supplied flag, if true return string set
+            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
+                return labelValues;
+            } else {
+                if (labelValues[0].indexOf(":") === -1) {       // there is no colon, so we are dealing with a string set, not a map
+                    return labelValues;
+                } else {
+                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
+                    for(key in labelValues) {
+                        keys.push(key);
+                    }
+                    return keys;
+                }
+            }
+        };
+
+        $scope.getComboboxDisplayName = function (settings, value) {
+            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value;
+            // Check the user supplied flag, if true return string set
+            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
+                return value;
+            } else {
+                if (labelValues[0].indexOf(":") === -1) { // there is no colon, so we are dealing with a string set, not a map
+                    return value;
+                } else {
+                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
+                    return labelValues[value];
+                }
+            }
+
+        };
+
+        $scope.getAndSplitComboboxValues = function (labelValues) {
+            var doublet, i, map = {};
+            for (i = 0; i < labelValues.length; i += 1) {
+                doublet = labelValues[i].split(":");
+                map[doublet[0]] = doublet[1];
+            }
+            return map;
         };
 
         /**
