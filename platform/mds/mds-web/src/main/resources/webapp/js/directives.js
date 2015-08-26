@@ -135,6 +135,10 @@
                 cmd.formatter = mapFormatter;
             }
 
+            if (scope.isComboboxField(field)) {
+                cmd.jsonmap = "fields." + i + ".displayValue";
+            }
+
             colModel.push(cmd);
         }
     }

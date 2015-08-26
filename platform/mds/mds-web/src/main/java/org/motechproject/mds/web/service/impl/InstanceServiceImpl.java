@@ -526,25 +526,13 @@ public class InstanceServiceImpl implements InstanceService {
 
             for (FieldDto field : fields) {
                 Object value = getProperty(instance, field, service);
-                Object displayValueForRelatedInstances = null;
-
-                if (field.getType().isRelationship()) {
-                    if (field.getType().equals(TypeDto.ONE_TO_MANY_RELATIONSHIP) || field.getType().equals(TypeDto.MANY_TO_MANY_RELATIONSHIP)) {
-                        displayValueForRelatedInstances = buildDisplayValuesMap((Collection) value);
-                    } else {
-                        if (value != null) {
-                            String toStringResult = value.toString();
-                            displayValueForRelatedInstances = toStringResult.length() > TO_STRING_MAX_LENGTH ?
-                                    toStringResult.substring(0, TO_STRING_MAX_LENGTH + 1) + "..." : toStringResult;
-                        }
-                    }
-                }
+                Object displayValue = getDisplayValueForField(field, value);
 
                 value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_FIELD));
 
                 FieldRecord fieldRecord = new FieldRecord(field);
                 fieldRecord.setValue(value);
-                fieldRecord.setDisplayValue(displayValueForRelatedInstances);
+                fieldRecord.setDisplayValue(displayValue);
                 fieldRecords.add(fieldRecord);
             }
 
@@ -553,6 +541,49 @@ public class InstanceServiceImpl implements InstanceService {
         } catch (Exception e) {
             throw new ObjectReadException(entityDto.getName(), e);
         }
+    }
+
+    private Object getDisplayValueForField(FieldDto field, Object value) throws InvocationTargetException, IllegalAccessException {
+        Object displayValue = null;
+        if (field.getType().isRelationship()) {
+            if (field.getType().equals(TypeDto.ONE_TO_MANY_RELATIONSHIP) || field.getType().equals(TypeDto.MANY_TO_MANY_RELATIONSHIP)) {
+                displayValue = buildDisplayValuesMap((Collection) value);
+            } else {
+                if (value != null) {
+                    String toStringResult = value.toString();
+                    displayValue = toStringResult.length() > TO_STRING_MAX_LENGTH ?
+                            toStringResult.substring(0, TO_STRING_MAX_LENGTH + 1) + "..." : toStringResult;
+                }
+            }
+        } else if (field.getType().isCombobox()) {
+            displayValue = getDisplayValueForCombobox(field, value);
+        }
+
+        return displayValue;
+    }
+
+    private Object getDisplayValueForCombobox(FieldDto field, Object value) {
+        Object displayValue;
+        if (Constants.Util.FALSE.equalsIgnoreCase(field.getSettingsValueAsString(Constants.Settings.ALLOW_USER_SUPPLIED))) {
+            String mapString = field.getSettingsValueAsString(Constants.Settings.COMBOBOX_VALUES);
+            Map<String, String> comboboxValues = TypeHelper.parseStringToMap(mapString);
+            if (value instanceof Collection) {
+                Collection valuesToDisplay = new ArrayList();
+                Collection enumList = (Collection) value;
+                for (Object enumValue : enumList) {
+                    String valueFromMap = comboboxValues.get(ObjectUtils.toString(enumValue));
+                    valuesToDisplay.add(StringUtils.isNotEmpty(valueFromMap) ? valueFromMap : enumValue);
+                }
+                displayValue = valuesToDisplay;
+            } else {
+                String valueFromMap = comboboxValues.get(ObjectUtils.toString(value));
+                displayValue = StringUtils.isNotEmpty(valueFromMap) ? valueFromMap : value;
+            }
+        } else {
+            displayValue = value;
+        }
+
+        return displayValue;
     }
 
     private Map<Long, String> buildDisplayValuesMap(Collection values) throws InvocationTargetException, IllegalAccessException {

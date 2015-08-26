@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.EnumDisplayName;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.NotInSet;
@@ -29,6 +30,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MemberUtil;
+import org.motechproject.mds.util.PropertyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +48,8 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -415,34 +416,47 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     private List<SettingDto> createComboboxSettings(AccessibleObject ac, Class<?> classType) {
         boolean allowMultipleSelections = Collection.class.isAssignableFrom(classType);
         boolean allowUserSupplied = false;
-        List values = new LinkedList();
+
+        Map<String, String> values = new HashMap<>();
+
+        final EnumDisplayName annotation = ac.getAnnotation(EnumDisplayName.class);
+        String nameDisplayField = "";
+        if(annotation != null){
+            nameDisplayField = annotation.enumField();
+        }
 
         if (Collection.class.isAssignableFrom(classType)) {
             Class<?> genericType = MemberUtil.getGenericType(ac);
 
             if (genericType.isEnum()) {
                 Object[] enumConstants = genericType.getEnumConstants();
-
-                if (ArrayUtils.isNotEmpty(enumConstants)) {
-                    Collections.addAll(values, enumConstants);
-                }
+                populateEnumDisplayValues(enumConstants, values, nameDisplayField, annotation);
             } else {
                 allowUserSupplied = true;
             }
         } else {
             Object[] enumConstants = classType.getEnumConstants();
-
-            if (ArrayUtils.isNotEmpty(enumConstants)) {
-                Collections.addAll(values, enumConstants);
-            }
+            populateEnumDisplayValues(enumConstants, values, nameDisplayField, annotation);
         }
-
         List<SettingDto> list = new ArrayList<>();
         list.add(new SettingDto(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS, allowMultipleSelections));
         list.add(new SettingDto(Constants.Settings.ALLOW_USER_SUPPLIED, allowUserSupplied));
         list.add(new SettingDto(Constants.Settings.COMBOBOX_VALUES, values));
 
         return list;
+    }
+
+    private void populateEnumDisplayValues(Object[] enumConstants, Map<String, String> values, String nameDisplayField,
+                                           EnumDisplayName annotation) {
+        if (ArrayUtils.isNotEmpty(enumConstants)) {
+            for (Object obj : enumConstants){
+                if (annotation != null){
+                    values.put(obj.toString(), (PropertyUtil.safeGetProperty(obj, nameDisplayField)).toString());
+                } else {
+                    values.put(obj.toString(), obj.toString());
+                }
+            }
+        }
     }
 
     private List<SettingDto> createStringSettings(AccessibleObject ac, boolean isTextArea) {

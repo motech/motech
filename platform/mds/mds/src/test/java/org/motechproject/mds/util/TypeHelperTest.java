@@ -11,7 +11,6 @@ import org.motechproject.commons.date.util.DateUtil;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -159,11 +158,11 @@ public class TypeHelperTest {
 
     @Test
     public void shouldParseStringsToMaps() {
-        String str = "{key1:value,key2:,key3:test}";
+        String str = "{key1:new value,key2:,key3:test}";
 
         Map map = TypeHelper.parseStringToMap(str);
 
-        assertEquals("value", map.get("key1"));
+        assertEquals("new value", map.get("key1"));
         assertEquals("", map.get("key2"));
         assertEquals("test", map.get("key3"));
 
