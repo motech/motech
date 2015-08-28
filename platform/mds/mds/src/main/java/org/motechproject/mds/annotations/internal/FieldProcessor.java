@@ -25,6 +25,7 @@ import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
+import org.motechproject.mds.ex.field.EnumFieldAccessException;
 import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
@@ -451,7 +452,12 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         if (ArrayUtils.isNotEmpty(enumConstants)) {
             for (Object obj : enumConstants){
                 if (annotation != null){
-                    values.put(obj.toString(), (PropertyUtil.safeGetProperty(obj, nameDisplayField)).toString());
+                    Object fieldValue = PropertyUtil.safeGetProperty(obj, nameDisplayField);
+                    if (fieldValue != null) {
+                        values.put(obj.toString(), fieldValue.toString());
+                    } else {
+                        throw new EnumFieldAccessException(obj, nameDisplayField);
+                    }
                 } else {
                     values.put(obj.toString(), obj.toString());
                 }
