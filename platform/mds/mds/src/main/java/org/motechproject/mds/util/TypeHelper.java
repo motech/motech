@@ -23,6 +23,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -808,6 +809,25 @@ public final class TypeHelper {
             return COLLECTION_IMPLEMENTATIONS.get(collectionClass.getName());
         } else {
             return collectionClass;
+        }
+    }
+
+    /**
+     * Returns the provided value as a collection. If the value is a collection, it is simply returned.
+     * If the value is a non-collection and non null object, it is returned as an arrayList containing one object.
+     * IF the object is null, then an empty arraylist is returned.
+     *
+     * @param value the value to parse
+     * @param <T> the type of the collection
+     * @return the value as a collection
+     */
+    public static <T> Collection<T> asCollection(Object value) {
+        if (value instanceof Collection) {
+            return (Collection<T>) value;
+        } else if (value != null) {
+            return new ArrayList<>(Collections.singletonList((T) value));
+        } else {
+            return new ArrayList<>();
         }
     }
 

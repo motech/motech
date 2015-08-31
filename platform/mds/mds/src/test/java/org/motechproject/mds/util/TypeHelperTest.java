@@ -10,6 +10,7 @@ import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -211,6 +213,13 @@ public class TypeHelperTest {
         assertEquals(enumSet, TypeHelper.parse("ONE, TWO, THREE", Set.class.getName(), TestEnum.class.getName()));
         assertEquals(enumSet, TypeHelper.parse(enumSet, Set.class.getName(), TestEnum.class.getName()));
         assertEquals("[one, two, three]", TypeHelper.parse("one\ntwo\nthree\n", Collection.class).toString());
+    }
+
+    @Test
+    public void shouldReturnValuesAsCollection() {
+        assertEquals(asList("one", "two", "three"), TypeHelper.asCollection(asList("one", "two", "three")));
+        assertEquals(singletonList("one"), TypeHelper.asCollection("one"));
+        assertEquals(Collections.emptyList(), TypeHelper.asCollection(null));
     }
 
     private Map<String, String> mapFromUI(String value) {

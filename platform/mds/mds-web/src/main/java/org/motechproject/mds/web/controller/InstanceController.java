@@ -97,7 +97,8 @@ public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/{fieldName}", method = RequestMethod.GET)
     @ResponseBody
-    public void getBlobField(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable String fieldName, HttpServletResponse response) throws IOException {
+    public void getBlobField(@PathVariable Long entityId, @PathVariable Long instanceId,
+                             @PathVariable String fieldName, HttpServletResponse response) throws IOException {
         byte[] content;
         Object value = instanceService.getInstanceField(entityId, instanceId, fieldName);
         if (value instanceof  byte[]) {
@@ -133,17 +134,9 @@ public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/history", method = RequestMethod.GET)
     @ResponseBody
-    public Records<HistoryRecord> getHistory(@PathVariable Long entityId, @PathVariable Long instanceId, GridSettings settings) {
-        Order order = null;
-        if (settings.getSortColumn() != null && !settings.getSortColumn().isEmpty()) {
-            order = new Order(settings.getSortColumn(), settings.getSortDirection());
-        }
-
-        if (settings.getPage() == null) {
-            settings.setPage(1);
-            settings.setRows(10);
-        }
-        QueryParams queryParams = new QueryParams(settings.getPage(), settings.getRows(), order);
+    public Records<HistoryRecord> getHistory(@PathVariable Long entityId, @PathVariable Long instanceId,
+                                             GridSettings settings) {
+        QueryParams queryParams = gridSettingsToQueryParams(settings);
         List<HistoryRecord> historyRecordsList = instanceService.getInstanceHistory(entityId, instanceId, queryParams);
 
         long recordCount = instanceService.countHistoryRecords(entityId, instanceId);
@@ -154,7 +147,8 @@ public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/previousVersion/{historyId}", method = RequestMethod.GET)
     @ResponseBody
-    public HistoryRecord getPreviousInstance(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable Long historyId) {
+    public HistoryRecord getPreviousInstance(@PathVariable Long entityId, @PathVariable Long instanceId,
+                                             @PathVariable Long historyId) {
         HistoryRecord historyRecord = instanceService.getHistoryRecord(entityId, instanceId, historyId);
         if (historyRecord == null) {
             throw new EntityNotFoundException(entityId);
@@ -164,7 +158,8 @@ public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/revert/{historyId}", method = RequestMethod.GET)
     @ResponseBody
-    public void revertPreviousVersion(@PathVariable Long entityId, @PathVariable Long instanceId, @PathVariable Long historyId) {
+    public void revertPreviousVersion(@PathVariable Long entityId, @PathVariable Long instanceId,
+                                      @PathVariable Long historyId) {
         instanceService.revertPreviousVersion(entityId, instanceId, historyId);
     }
 
@@ -172,6 +167,14 @@ public class InstanceController extends MdsController {
     @ResponseBody
     public EntityRecord getInstance(@PathVariable Long entityId, @PathVariable Long instanceId) {
         return instanceService.getEntityInstance(entityId, instanceId);
+    }
+
+    @RequestMapping(value = "/instances/{entityId}/instance/{instanceId}/{fieldName}", method = RequestMethod.GET)
+    @ResponseBody
+    public Records<?> getRelatedValues(@PathVariable Long entityId, @PathVariable Long instanceId,
+                                    @PathVariable String fieldName, GridSettings settings) {
+        QueryParams queryParams = gridSettingsToQueryParams(settings);
+        return instanceService.getRelatedFieldValue(entityId, instanceId, fieldName, queryParams);
     }
 
     /**
@@ -193,12 +196,7 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/entities/{entityId}/trash", method = RequestMethod.GET)
     @ResponseBody
     public Records<EntityRecord> getTrash(@PathVariable Long entityId, GridSettings settings) {
-        Order order = null;
-        if (settings.getSortColumn() != null && !settings.getSortColumn().isEmpty()) {
-            order = new Order(settings.getSortColumn(), settings.getSortDirection());
-        }
-
-        QueryParams queryParams = new QueryParams(settings.getPage(), settings.getRows(), order);
+        QueryParams queryParams = gridSettingsToQueryParams(settings);
         List<EntityRecord> trashRecordsList = instanceService.getTrashRecords(entityId, queryParams);
 
         long recordCount = instanceService.countTrashRecords(entityId);
@@ -248,12 +246,7 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
     @ResponseBody
     public Records<?> getInstances(@PathVariable Long entityId, GridSettings settings) throws IOException {
-        Order order = null;
-        if (!settings.getSortColumn().isEmpty()) {
-            order = new Order(settings.getSortColumn(), settings.getSortDirection());
-        }
-
-        QueryParams queryParams = new QueryParams(settings.getPage(), settings.getRows(), order);
+        QueryParams queryParams = gridSettingsToQueryParams(settings);
 
         String lookup = settings.getLookup();
         String filterStr = settings.getFilter();
@@ -295,6 +288,18 @@ public class InstanceController extends MdsController {
         }
     }
 
+    private QueryParams gridSettingsToQueryParams(GridSettings settings) {
+        Order order = null;
+        if (StringUtils.isNotBlank(settings.getSortColumn())) {
+            order = new Order(settings.getSortColumn(), settings.getSortDirection());
+        }
+
+        if (settings.getPage() == null) {
+            settings.setPage(1);
+            settings.setRows(10);
+        }
+        return new QueryParams(settings.getPage(), settings.getRows(), order);
+    }
 
     private Map<String, Object> getFields(GridSettings gridSettings) throws IOException {
         if (gridSettings.getFields() == null) {

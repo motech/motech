@@ -1,31 +1,44 @@
 package org.motechproject.mds.web.controller;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.web.domain.GridSettings;
+import org.motechproject.mds.web.domain.Records;
+import org.motechproject.mds.web.rest.TestRecord;
 import org.motechproject.mds.web.service.InstanceService;
+import org.motechproject.testing.utils.rest.RestTestUtil;
+import org.springframework.test.web.server.MockMvc;
+import org.springframework.test.web.server.setup.MockMvcBuilders;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
 
+@RunWith(MockitoJUnitRunner.class)
 public class InstanceControllerTest {
 
     @Mock
@@ -43,9 +56,11 @@ public class InstanceControllerTest {
     @InjectMocks
     private InstanceController instanceController = new InstanceController();
 
+    private MockMvc controller;
+
     @Before
     public void setUp() {
-        initMocks(this);
+        controller = MockMvcBuilders.standaloneSetup(instanceController).build();
     }
 
     @Test
@@ -99,5 +114,38 @@ public class InstanceControllerTest {
         assertEquals(2, listCaptor.getValue().size());
         assertTrue(listCaptor.getValue().contains("id"));
         assertTrue(listCaptor.getValue().contains("date"));
+    }
+
+    @Test
+    public void shouldRetrieveRelatedFieldValues() throws Exception {
+        Records<TestRecord> records = new Records<>(2, 5, 7, recordsList());
+
+        when(instanceService.<TestRecord>getRelatedFieldValue(eq(1L), eq(6L), eq("relField"), any(QueryParams.class)))
+                .thenReturn(records);
+
+        controller.perform(get("/instances/1/instance/6/relField?rows=5&page=2&sortColumn=age&sortDirection=desc"))
+            .andExpect(status().isOk()).andExpect(content().type(RestTestUtil.JSON_UTF8))
+            .andExpect(content().string(new ObjectMapper().writeValueAsString(records)));
+
+        ArgumentCaptor<QueryParams> captor = ArgumentCaptor.forClass(QueryParams.class);
+        verify(instanceService).getRelatedFieldValue(eq(1L), eq(6L), eq("relField"), captor.capture());
+        QueryParams queryParams = captor.getValue();
+
+        // check query params
+        assertNotNull(queryParams);
+        assertEquals(Integer.valueOf(5), queryParams.getPageSize());
+        assertEquals(Integer.valueOf(2), queryParams.getPage());
+        assertNotNull(queryParams.getOrder());
+        assertEquals("age", queryParams.getOrder().getField());
+        assertEquals(Order.Direction.DESC, queryParams.getOrder().getDirection());
+    }
+
+    private List<TestRecord> recordsList() {
+        List<TestRecord> records = new ArrayList<>();
+
+        records.add(new TestRecord("n1", 22));
+        records.add(new TestRecord("test", 7));
+
+        return records;
     }
 }

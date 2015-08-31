@@ -7,6 +7,7 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
+import org.motechproject.mds.web.domain.Records;
 
 import java.util.List;
 import java.util.Map;
@@ -285,4 +286,16 @@ public interface InstanceService {
      * @param entityId the id of the entity
      */
     void verifyEntityAccess(Long entityId);
+
+    /**
+     * Returns the related field as collection, applying filtering. Allows retrieval of related fields for
+     * grids, etc.
+     * @param entityId the id of entity (the entity with the related field)
+     * @param instanceId the id of the instance we want to retrieve the field for
+     * @param fieldName the name of the related field
+     * @param queryParams the query params which will be used for retrieval
+     * @param <T> the type of the related entity
+     * @return the records object containing the values for the related field
+     */
+    <T> Records<T> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName, QueryParams queryParams);
 }

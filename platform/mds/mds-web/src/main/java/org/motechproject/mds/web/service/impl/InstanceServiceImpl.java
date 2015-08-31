@@ -42,6 +42,7 @@ import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.service.impl.history.HistoryTrashClassHelper;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.query.InMemoryQueryFilter;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.MemberUtil;
 import org.motechproject.mds.util.PropertyUtil;
@@ -51,6 +52,7 @@ import org.motechproject.mds.web.domain.ComboboxHolder;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
+import org.motechproject.mds.web.domain.Records;
 import org.motechproject.mds.web.service.InstanceService;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.Bundle;
@@ -85,6 +87,7 @@ import java.util.Set;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
+import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 
 /**
  * Default implementation of the {@link org.motechproject.mds.web.service.InstanceService} interface.
@@ -94,7 +97,6 @@ public class InstanceServiceImpl implements InstanceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstanceServiceImpl.class);
     private static final DateTimeFormatter DTF = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z");
-    private static final String ID = "id";
     private static final Integer TO_STRING_MAX_LENGTH = 80;
 
     private EntityService entityService;
@@ -135,7 +137,7 @@ public class InstanceServiceImpl implements InstanceService {
                 }
 
             } else {
-                instance = service.retrieve(ID, entityRecord.getId());
+                instance = service.retrieve(ID_FIELD_NAME, entityRecord.getId());
                 if (instance == null) {
                     throw new ObjectNotFoundException(entity.getName(), entityRecord.getId());
                 }
@@ -236,7 +238,7 @@ public class InstanceServiceImpl implements InstanceService {
         MotechDataService service = getServiceForEntity(entity);
         validateCredentialsForReading(entity);
 
-        Object instance = service.retrieve(ID, instanceId);
+        Object instance = service.retrieve(ID_FIELD_NAME, instanceId);
 
         return service.getDetachedField(instance, fieldName);
     }
@@ -353,7 +355,7 @@ public class InstanceServiceImpl implements InstanceService {
         validateCredentialsForReading(entity);
         MotechDataService service = getServiceForEntity(entity);
 
-        Object instance = service.retrieve(ID, instanceId);
+        Object instance = service.retrieve(ID_FIELD_NAME, instanceId);
 
         List history = historyService.getHistoryForInstance(instance, queryParams);
         List<HistoryRecord> result = new ArrayList<>();
@@ -369,7 +371,7 @@ public class InstanceServiceImpl implements InstanceService {
         validateCredentialsForReading(entity);
         MotechDataService service = getServiceForEntity(entity);
 
-        Object instance = service.retrieve(ID, instanceId);
+        Object instance = service.retrieve(ID_FIELD_NAME, instanceId);
 
         return historyService.countHistoryRecords(instance);
     }
@@ -380,7 +382,7 @@ public class InstanceServiceImpl implements InstanceService {
         validateCredentialsForReading(entity);
         MotechDataService service = getServiceForEntity(entity);
 
-        Object instance = service.retrieve(ID, instanceId);
+        Object instance = service.retrieve(ID_FIELD_NAME, instanceId);
 
         Object historyInstance = historyService.getSingleHistoryInstance(instance, historyId);
 
@@ -408,7 +410,7 @@ public class InstanceServiceImpl implements InstanceService {
         validateCredentialsForReading(entity);
         MotechDataService service = getServiceForEntity(entity);
 
-        Object instance = service.retrieve(ID, instanceId);
+        Object instance = service.retrieve(ID_FIELD_NAME, instanceId);
         if (instance == null) {
             throw new ObjectNotFoundException(entity.getName(), instanceId);
         }
@@ -446,7 +448,7 @@ public class InstanceServiceImpl implements InstanceService {
         validateNonEditableProperty(entity);
         MotechDataService service = getServiceForEntity(entity);
 
-        service.delete(ID, instanceId);
+        service.delete(ID_FIELD_NAME, instanceId);
     }
 
     @Override
@@ -461,7 +463,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         try {
             for (FieldDto field : entityService.getEntityFields(entity.getId())) {
-                if ("id".equalsIgnoreCase(field.getBasic().getDisplayName())) {
+                if (ID_FIELD_NAME.equalsIgnoreCase(field.getBasic().getDisplayName())) {
                     continue;
                 }
                 Field f = FieldUtils.getField(trash.getClass(), StringUtils.uncapitalize(field.getBasic().getName()), true);
@@ -485,6 +487,35 @@ public class InstanceServiceImpl implements InstanceService {
     public void verifyEntityAccess(Long entityId) {
         EntityDto entity = getEntity(entityId);
         validateCredentialsForReading(entity);
+    }
+
+    @Override
+    @Transactional
+    public <T> Records<T> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName,
+                                              QueryParams queryParams) {
+        EntityDto entity = getEntity(entityId);
+        validateCredentials(entity);
+        String entityName = entity.getName();
+
+        MotechDataService service = getServiceForEntity(entity);
+        Object instance = service.findById(instanceId);
+
+        if (instance == null) {
+            throw new ObjectNotFoundException(entityName, instanceId);
+        }
+
+        try {
+            Collection<T> relatedAsColl = TypeHelper.asCollection(PropertyUtil.getProperty(instance, fieldName));
+
+            List<T> filtered = InMemoryQueryFilter.filter(relatedAsColl, queryParams);
+
+            int recordCount = relatedAsColl.size();
+            int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
+
+            return new Records<>(queryParams.getPage(), rowCount, recordCount, filtered);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+           throw new ObjectReadException(entityName, e);
+        }
     }
 
     private void populateDefaultFields(List<FieldRecord> fieldRecords) {
@@ -526,7 +557,7 @@ public class InstanceServiceImpl implements InstanceService {
                               Long deleteValueFieldId, boolean retainId)
             throws NoSuchMethodException, ClassNotFoundException, CannotCompileException, InstantiationException, IllegalAccessException, NoSuchFieldException {
         for (FieldRecord fieldRecord : fieldRecords) {
-            if (!(retainId && ID.equals(fieldRecord.getName())) && !fieldRecord.getType().isRelationship()) {
+            if (!(retainId && ID_FIELD_NAME.equals(fieldRecord.getName())) && !fieldRecord.getType().isRelationship()) {
                 setProperty(instance, fieldRecord, service, deleteValueFieldId);
             } else if (fieldRecord.getType().isRelationship()) {
                 setRelationProperty(instance, fieldRecord);
@@ -564,7 +595,7 @@ public class InstanceServiceImpl implements InstanceService {
                 fieldRecords.add(fieldRecord);
             }
 
-            Number id = (Number) PropertyUtil.safeGetProperty(instance, ID);
+            Number id = (Number) PropertyUtil.safeGetProperty(instance, ID_FIELD_NAME);
             return new EntityRecord(id == null ? null : id.longValue(), entityDto.getId(), fieldRecords);
         } catch (Exception e) {
             throw new ObjectReadException(entityDto.getName(), e);
@@ -715,7 +746,7 @@ public class InstanceServiceImpl implements InstanceService {
 
            for (Object object : (Collection) fieldValue) {
                if (isFromUI(object)) {
-                   ((Collection) parsedValue).add(findRelatedObjectById(((Map) object).get(ID), service));
+                   ((Collection) parsedValue).add(findRelatedObjectById(((Map) object).get(ID_FIELD_NAME), service));
                } else if (isHistoricalObject(object)) {
                    String currentVersion = HistoryTrashClassHelper.currentVersion(object.getClass());
                    ((Collection) parsedValue).add(findRelatedObjectById(PropertyUtil.safeGetProperty(object, currentVersion), service));
@@ -723,7 +754,7 @@ public class InstanceServiceImpl implements InstanceService {
            }
        } else {
            if (isFromUI(fieldValue)) {
-               parsedValue = findRelatedObjectById(((Map) fieldValue).get(ID), service);
+               parsedValue = findRelatedObjectById(((Map) fieldValue).get(ID_FIELD_NAME), service);
            } else if (isHistoricalObject(fieldValue)) {
                String currentVersion = HistoryTrashClassHelper.currentVersion(fieldValue.getClass());
                parsedValue = findRelatedObjectById(PropertyUtil.safeGetProperty(fieldValue, currentVersion), service);
