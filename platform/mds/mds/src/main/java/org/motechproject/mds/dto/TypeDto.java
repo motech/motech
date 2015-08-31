@@ -120,7 +120,7 @@ public class TypeDto {
     );
 
     /**
-     * Constant <code>LOCAL_DATE8</code> is a representation of the Java8 LocalDate type.
+     * Constant <code>LOCAL_DATE8</code> is a representation of the MDS Java8 LocalDate type.
      */
     public static final TypeDto LOCAL_DATE8 = new TypeDto(
             "mds.field.localDate8", "mds.field.description.localDate", "localDate", java.time.LocalDate.class.getName()

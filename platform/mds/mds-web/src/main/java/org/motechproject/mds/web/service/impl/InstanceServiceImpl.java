@@ -66,6 +66,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -821,6 +822,10 @@ public class InstanceServiceImpl implements InstanceService {
             parsedValue = parsedValue.toString();
         } else if (parsedValue instanceof java.time.LocalDate) {
             parsedValue = parsedValue.toString();
+        } else if (parsedValue instanceof LocalDateTime) {
+            //Some string manipulations to be consistent with Joda
+            //and format in which date time pickers show DateTimes
+            parsedValue = (parsedValue.toString()).replace("T", " ").concat(" +0200");
         } else if (relatedFieldMetadata != null) {
             parsedValue = removeCircularRelations(parsedValue, relatedFieldMetadata.getValue());
         }

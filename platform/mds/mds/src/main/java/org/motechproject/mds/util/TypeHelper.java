@@ -19,6 +19,7 @@ import org.motechproject.commons.date.model.Time;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.time.LocalDateTime;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -465,7 +466,12 @@ public final class TypeHelper {
         return DateTime.class.isAssignableFrom(toClass)
                 || Date.class.isAssignableFrom(toClass)
                 || LocalDate.class.isAssignableFrom(toClass)
-                || java.time.LocalDate.class.isAssignableFrom(toClass);
+                || isJavaTimeDate(toClass);
+    }
+
+    private static boolean isJavaTimeDate(Class<?> toClass) {
+        return java.time.LocalDate.class.isAssignableFrom(toClass)
+                || java.time.LocalDateTime.class.isAssignableFrom(toClass);
     }
 
     private static Object parseDateTime(DateTime val, String toClass) {
@@ -515,9 +521,38 @@ public final class TypeHelper {
             return LocalDate.parse(val);
         } else if (java.time.LocalDate.class.isAssignableFrom(toClass)) {
             return java.time.LocalDate.parse(str);
+        } else if (java.time.LocalDateTime.class.isAssignableFrom(toClass)) {
+            return parseJavaLocalDateTime(str);
         } else {
             return null;
         }
+    }
+
+    private static LocalDateTime parseJavaLocalDateTime(String str) {
+        //Split string to parts representing DateTime and time zone offset
+        String[] dateParts = str.replaceFirst(" ", "-").split(" ");
+        //Create LocalDateTime from DateTime part of string
+        LocalDateTime localDateTime = LocalDateTime.parse(dateParts[0],
+                java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm"));
+        //Get direction of time zone offset and cut it from dateParts
+        char zoneModifier = dateParts[1].charAt(0);
+        dateParts[1] = dateParts[1].substring(1);
+        //Split rest of the zone offset to hours and minutes parts
+        int[] hoursMinutesParts = new int[] {
+                Integer.parseInt(dateParts[1].substring(0, 2)),
+                Integer.parseInt(dateParts[1].substring(2))
+        };
+        //Modify date by wanted offset
+        if (zoneModifier == '+') {
+            localDateTime = localDateTime.minusHours(hoursMinutesParts[0]);
+            localDateTime = localDateTime.minusMinutes(hoursMinutesParts[1]);
+        } else {
+            localDateTime = localDateTime.plusHours(hoursMinutesParts[0]);
+            localDateTime = localDateTime.plusMinutes(hoursMinutesParts[1]);
+        }
+        //Default offset equals +0200, its needed to add this after modifications
+        localDateTime = localDateTime.plusHours(2);
+        return localDateTime;
     }
 
     public static Collection parseCollection(Collection val, Class<?> toClassDefinition, Class<?> generic) {

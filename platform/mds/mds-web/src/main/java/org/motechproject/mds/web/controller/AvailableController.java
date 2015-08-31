@@ -1,6 +1,8 @@
 package org.motechproject.mds.web.controller;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.motechproject.mds.domain.Relationship;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.TypeService;
@@ -46,6 +48,10 @@ public class AvailableController extends MdsController {
         list.remove(typeService.findType(Long.class));
         list.remove(typeService.findType(Date.class));
         list.remove(typeService.findType(Relationship.class));
+
+        //The DateTime and LocalDate types from Joda are available for DDEs exclusively
+        list.remove(typeService.findType(DateTime.class));
+        list.remove(typeService.findType(LocalDate.class));
 
         // TextArea type is available only from UI
         TypeDto textAreaType = new TypeDto();
