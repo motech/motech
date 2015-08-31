@@ -5,6 +5,7 @@ import org.motechproject.commons.api.ThreadSuspender;
 import org.motechproject.mds.annotations.internal.EntityProcessorOutput;
 import org.motechproject.mds.annotations.internal.MDSAnnotationProcessor;
 import org.motechproject.mds.annotations.internal.MDSProcessorOutput;
+import org.motechproject.mds.annotations.internal.SchemaComparator;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.ex.MdsException;
@@ -32,9 +33,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.apache.commons.lang.StringUtils.startsWith;
@@ -61,6 +64,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
     private List<Bundle> bundlesToRefresh;
     private SchemaChangeLockManager schemaChangeLockManager;
     private EditableLookupsLoader editableLookupsLoader;
+    private SchemaComparator schemaComparator;
 
     private boolean processingSuspended = false;
     private Queue<AwaitingBundle> awaitingBundles = new LinkedBlockingQueue<>();
@@ -275,6 +279,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
 
     private void processAnnotationScanningResults(List<EntityProcessorOutput> entityProcessorOutput, Map<String, List<LookupDto>> lookupProcessingResult) {
         Map<String, Long> entityIdMappings = new HashMap<>();
+        Set<String> newEntities = new HashSet<>();
 
         for (EntityProcessorOutput result : entityProcessorOutput) {
             EntityDto processedEntity = result.getEntityProcessingResult();
@@ -283,6 +288,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
 
             if (entity == null) {
                 entity = entityService.createEntity(processedEntity);
+                newEntities.add(entity.getClassName());
             }
             entityIdMappings.put(entity.getClassName(), entity.getId());
 
@@ -298,7 +304,14 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         }
 
         for (Map.Entry<String, List<LookupDto>> entry : lookupProcessingResult.entrySet()) {
-            entityService.addLookups(entityIdMappings.get(entry.getKey()), entry.getValue());
+            String entityClassName = entry.getKey();
+            Long entityId = entityIdMappings.get(entityClassName);
+            if (schemaComparator.lookupsDiffer(entityId, entry.getValue())) {
+                entityService.addLookups(entityId, entry.getValue());
+                if (!newEntities.contains(entityClassName)) {
+                    entityService.incrementVersion(entityId);
+                }
+            }
         }
     }
 
@@ -363,6 +376,11 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
     @Autowired
     public void setEditableLookupsLoader(EditableLookupsLoader editableLookupsLoader) {
         this.editableLookupsLoader = editableLookupsLoader;
+    }
+
+    @Autowired
+    public void setSchemaComparator(SchemaComparator schemaComparator) {
+        this.schemaComparator = schemaComparator;
     }
 
     private class AwaitingBundle {
