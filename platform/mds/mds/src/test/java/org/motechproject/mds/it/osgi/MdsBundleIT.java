@@ -111,12 +111,12 @@ public class MdsBundleIT extends BasePaxIT {
     private static final Period NEW_PERIOD = new Period().withYears(2).withMinutes(10);
     private static final Map<String, TestClass> TEST_MAP = new HashMap<>();
     private static final Map<String, TestClass> TEST_MAP2 = new HashMap<>();
-    private static final DateTime NOW = DateUtil.now();
+    private static final DateTime NOW = DateUtil.now().secondOfMinute().roundFloorCopy();
     private static final DateTime YEAR_LATER = NOW.plusYears(1);
-    private static final LocalDate LD_NOW = DateUtil.now().toLocalDate();
+    private static final LocalDate LD_NOW = NOW.toLocalDate();
     private static final LocalDate LD_YEAR_AGO = LD_NOW.minusYears(1);
-    private static final Date DATE_NOW = DateUtil.now().toDate();
-    private static final Date DATE_TOMORROW = DateUtil.now().plusDays(1).toDate();
+    private static final Date DATE_NOW = NOW.toDate();
+    private static final Date DATE_TOMORROW = NOW.plusDays(1).toDate();
     private static final Double DOUBLE_VALUE_1 = 4.725;
     private static final Double DOUBLE_VALUE_2 = 3.14;
     private static final Time MORNING_TIME = new Time(8, 15);
