@@ -11,6 +11,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.mds.web.util.UIRepresentationUtil;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
@@ -97,7 +98,9 @@ public class InstanceServiceImpl implements InstanceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstanceServiceImpl.class);
     private static final DateTimeFormatter DTF = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z");
+    private static final String ELLIPSIS = "...";
     private static final Integer TO_STRING_MAX_LENGTH = 80;
+    private static final Integer UI_REPRESENTATION_MAX_LENGTH = 80;
 
     private EntityService entityService;
     private BundleContext bundleContext;
@@ -602,6 +605,19 @@ public class InstanceServiceImpl implements InstanceService {
         }
     }
 
+    private String buildDisplayValue(Object value) {
+        String uiRepresentation = UIRepresentationUtil.uiRepresentationString(value);
+        if (uiRepresentation != null) {
+            return uiRepresentation.length() > UI_REPRESENTATION_MAX_LENGTH ?
+                    uiRepresentation.substring(0, UI_REPRESENTATION_MAX_LENGTH + 1) + ELLIPSIS : uiRepresentation;
+        } else {
+            String toStringResult = value.toString();
+            return toStringResult.length() > TO_STRING_MAX_LENGTH ?
+                    toStringResult.substring(0, TO_STRING_MAX_LENGTH + 1) + ELLIPSIS : toStringResult;
+        }
+    }
+
+
     private Object getDisplayValueForField(FieldDto field, Object value) throws InvocationTargetException, IllegalAccessException {
         Object displayValue = null;
         if (field.getType().isRelationship()) {
@@ -609,9 +625,7 @@ public class InstanceServiceImpl implements InstanceService {
                 displayValue = buildDisplayValuesMap((Collection) value);
             } else {
                 if (value != null) {
-                    String toStringResult = value.toString();
-                    displayValue = toStringResult.length() > TO_STRING_MAX_LENGTH ?
-                            toStringResult.substring(0, TO_STRING_MAX_LENGTH + 1) + "..." : toStringResult;
+                    displayValue = buildDisplayValue(value);
                 }
             }
         } else if (field.getType().isCombobox()) {
@@ -650,9 +664,15 @@ public class InstanceServiceImpl implements InstanceService {
         for (Object obj : values) {
             Method method = MethodUtils.getAccessibleMethod(obj.getClass(), "getId", (Class[]) null);
             Long key = (Long) method.invoke(obj);
-            String toStringResult = obj.toString();
-            displayValues.put(key, toStringResult.length() > TO_STRING_MAX_LENGTH ?
-                        toStringResult.substring(0 , TO_STRING_MAX_LENGTH + 1) + "..." : toStringResult);
+            String uiRepresentation = UIRepresentationUtil.uiRepresentationString(obj);
+            if(uiRepresentation != null) {
+                displayValues.put(key, uiRepresentation.length() > UI_REPRESENTATION_MAX_LENGTH ?
+                        uiRepresentation.substring(0, UI_REPRESENTATION_MAX_LENGTH + 1) + ELLIPSIS : uiRepresentation);
+            } else {
+                String toStringResult = obj.toString();
+                displayValues.put(key, toStringResult.length() > TO_STRING_MAX_LENGTH ?
+                        toStringResult.substring(0, TO_STRING_MAX_LENGTH + 1) + ELLIPSIS : toStringResult);
+            }
         }
         return displayValues;
     }
