@@ -9,6 +9,7 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.EnumDisplayName;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
+import org.motechproject.mds.annotations.IndexedManyToMany;
 import org.motechproject.mds.annotations.NotInSet;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.ManyToManyRelationship;
@@ -158,18 +159,18 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             boolean isRelationship = ReflectionsUtil.hasAnnotationClassLoaderSafe(
                     genericType, genericType, Entity.class);
 
-            String relatedFieldName = isRelationship ? findRelatedFieldName(ac, genericType, declaringClass) : null;
-
             boolean isOwningSide = isRelationship && getMappedBy(ac) == null;
 
             boolean isCollection = Collection.class.isAssignableFrom(classType);
+
+            Field annotation = getAnnotationClassLoaderSafe(ac, classType, Field.class);
+
+            String relatedFieldName = getRelatedFieldName(ac, classType, genericType, declaringClass, isRelationship);
 
             java.lang.reflect.Field relatedField = (relatedFieldName != null) ?
                     ReflectionUtils.findField(genericType, relatedFieldName) : null;
 
             boolean relatedFieldIsCollection = isRelatedFieldCollection(relatedField);
-
-            Field annotation = getAnnotationClassLoaderSafe(ac, classType, Field.class);
 
             boolean isTextArea = getAnnotationValue(annotation, TYPE, EMPTY).equalsIgnoreCase("text");
 
@@ -216,6 +217,15 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         } else {
             LOGGER.warn("Field type is unknown in: {}", ac);
         }
+    }
+
+    private String getRelatedFieldName(AccessibleObject ac, Class<?> classType, Class<?> genericType, Class<?> declaringClass, boolean isRelationship) {
+        IndexedManyToMany manyToMany = getAnnotationClassLoaderSafe(ac, classType, IndexedManyToMany.class);
+
+        if (manyToMany != null) {
+            return manyToMany.relatedField();
+        }
+        return isRelationship ? findRelatedFieldName(ac, genericType, declaringClass) : null;
     }
 
     private boolean isRelatedFieldCollection(java.lang.reflect.Field relatedField) {

@@ -2,13 +2,13 @@ package org.motechproject.mds.test.domain;
 
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.IndexedManyToMany;
 
-import javax.jdo.annotations.Persistent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
+@Entity(recordHistory = true)
 public class Actor {
 
     private Long id;
@@ -17,7 +17,7 @@ public class Actor {
     private String name;
 
     @Field
-    @Persistent(mappedBy = "actors")
+    @IndexedManyToMany(relatedField = "actors")
     private List<Movie> movies;
 
     public Actor() {
