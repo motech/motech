@@ -19,6 +19,7 @@ import org.motechproject.commons.date.model.Time;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.time.LocalDateTime;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -467,7 +468,13 @@ public final class TypeHelper {
     private static boolean isDate(Class<?> toClass) {
         return DateTime.class.isAssignableFrom(toClass)
                 || Date.class.isAssignableFrom(toClass)
-                || LocalDate.class.isAssignableFrom(toClass);
+                || LocalDate.class.isAssignableFrom(toClass)
+                || isJavaTimeDate(toClass);
+    }
+
+    private static boolean isJavaTimeDate(Class<?> toClass) {
+        return java.time.LocalDate.class.isAssignableFrom(toClass)
+                || java.time.LocalDateTime.class.isAssignableFrom(toClass);
     }
 
     private static Object parseDateTime(DateTime val, String toClass) {
@@ -515,9 +522,32 @@ public final class TypeHelper {
                 val = str.substring(0, tIndex);
             }
             return LocalDate.parse(val);
+        } else if (java.time.LocalDate.class.isAssignableFrom(toClass)) {
+            return java.time.LocalDate.parse(str);
+        } else if (java.time.LocalDateTime.class.isAssignableFrom(toClass)) {
+            return str.contains("T") ? parseJavaLocalDateTimeBackend(str) : parseJavaLocalDateTimeUI(str);
         } else {
             return null;
         }
+    }
+
+    private static LocalDateTime parseJavaLocalDateTimeUI(String str) {
+        //First parse to Joda DateTime for timezone calculation
+        DateTime dateTime = DTF.parseDateTime(str);
+        //Then create LocalDateTime from Joda DateTime and return it
+        return LocalDateTime.of(
+                dateTime.getYear(),
+                dateTime.getMonthOfYear(),
+                dateTime.getDayOfMonth(),
+                dateTime.getHourOfDay(),
+                dateTime.getMinuteOfHour(),
+                dateTime.getSecondOfMinute());
+    }
+
+    private static LocalDateTime parseJavaLocalDateTimeBackend(String str) {
+        String pattern = str.contains(".") ? "yyyy-MM-dd-HH:mm:ss.SSS" : "yyyy-MM-dd-HH:mm";
+        return LocalDateTime.parse(str.replace("T", "-"),
+                java.time.format.DateTimeFormatter.ofPattern(pattern));
     }
 
     public static Collection parseCollection(Collection val, Class<?> toClassDefinition, Class<?> generic) {

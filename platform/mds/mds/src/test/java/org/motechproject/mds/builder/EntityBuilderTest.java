@@ -31,6 +31,7 @@ import javax.jdo.annotations.Unique;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -79,7 +80,8 @@ public class EntityBuilderTest {
                 field("time", Time.class), field("str", String.class), field("dec", Double.class),
                 field("bool", Boolean.class), field("date", Date.class), field("dt", DateTime.class),
                 field("ld", LocalDate.class), field("locale", Locale.class), enumListField, field("CapitalizedName", String.class),
-                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true), field(MODIFIED_BY_FIELD_NAME, String.class, true)));
+                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true), field(MODIFIED_BY_FIELD_NAME, String.class, true),
+                field("jd", java.time.LocalDate.class), field("jdt", LocalDateTime.class)));
 
         Class<?> clazz = buildClass();
 
@@ -93,6 +95,8 @@ public class EntityBuilderTest {
         assertField(clazz, "dt", DateTime.class);
         assertField(clazz, "ld", LocalDate.class);
         assertField(clazz, "locale", Locale.class);
+        assertField(clazz, "jd", java.time.LocalDate.class);
+        assertField(clazz, "jdt", LocalDateTime.class);
         // should use uncapitalized version
         assertField(clazz, "capitalizedName", String.class);
     }
@@ -102,12 +106,15 @@ public class EntityBuilderTest {
         final Date date = new Date();
         final DateTime dateTime = DateUtil.now();
         final LocalDate localDate = DateUtil.now().plusYears(1).toLocalDate();
+        final LocalDateTime javaLocalDateTime = LocalDateTime.now().plusDays(1);
+        final java.time.LocalDate javaLocalDate = java.time.LocalDate.now().plusDays(1);
 
         when(entity.getFields()).thenReturn(asList(field("count", Integer.class, 1),
                 field("time", Time.class, new Time(10, 10)), field("str", String.class, "defStr"),
                 field("dec", Double.class, 3.1), field("bool", Boolean.class, (Object) true),
                 field("date", Date.class, date), field("dt", DateTime.class, dateTime),
                 field("ld", LocalDate.class, localDate), field("locale", Locale.class, Locale.CANADA_FRENCH),
+                field("jd", java.time.LocalDate.class, javaLocalDate), field("jdt", LocalDateTime.class, javaLocalDateTime),
                 field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true), field(MODIFIED_BY_FIELD_NAME, String.class, true)));
 
         Class<?> clazz = buildClass();
@@ -122,6 +129,8 @@ public class EntityBuilderTest {
         assertField(clazz, "dt", DateTime.class, dateTime);
         assertField(clazz, "ld", LocalDate.class, localDate);
         assertField(clazz, "locale", Locale.class, Locale.CANADA_FRENCH);
+        assertField(clazz, "jd", java.time.LocalDate.class, javaLocalDate);
+        assertField(clazz, "jdt", LocalDateTime.class, javaLocalDateTime);
     }
 
     @Test
@@ -156,7 +165,8 @@ public class EntityBuilderTest {
                 field("bool", Boolean.class), field("date", Date.class),
                 field("dt", DateTime.class), field("list", List.class),
                 field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true),
-                field(MODIFIED_BY_FIELD_NAME, String.class, true)));
+                field(MODIFIED_BY_FIELD_NAME, String.class, true),
+                field("jd", java.time.LocalDate.class), field("jld", LocalDateTime.class)));
 
         when(entity.getField("id")).thenReturn(field("id", Long.class));
 
@@ -175,6 +185,8 @@ public class EntityBuilderTest {
         assertField(clazz, "bool", Boolean.class);
         assertField(clazz, "date", Date.class);
         assertField(clazz, "dt", DateTime.class);
+        assertField(clazz, "jd", java.time.LocalDate.class);
+        assertField(clazz, "jld", LocalDateTime.class);
         assertField(clazz, "list", List.class);
     }
 

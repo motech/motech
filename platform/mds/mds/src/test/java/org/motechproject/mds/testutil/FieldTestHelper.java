@@ -16,6 +16,8 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.TypeHelper;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -135,6 +137,10 @@ public final class FieldTestHelper {
             return true;
         } else if (Locale.class.equals(clazz)) {
             return Locale.ENGLISH;
+        } else if (LocalDate.class.equals(clazz)) {
+            return LocalDate.now();
+        } else if (LocalDateTime.class.equals(clazz)) {
+            return LocalDateTime.now();
         } else {
             return clazz.newInstance();
         }

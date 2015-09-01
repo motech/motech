@@ -116,7 +116,7 @@ public final class JavassistUtil {
             try {
                 ctClass.removeField(field);
             } catch (NotFoundException e) {
-                throw new IllegalStateException("Field was removed from class before we could do it - possible concurrency issue");
+                throw new IllegalStateException("Field was removed from class before we could do it - possible concurrency issue", e);
             }
         }
     }
@@ -127,7 +127,7 @@ public final class JavassistUtil {
             try {
                 ctClass.removeField(field);
             } catch (NotFoundException e) {
-                throw new IllegalStateException("Field was removed from class before we could do it - possible concurrency issue");
+                throw new IllegalStateException("Field was removed from class before we could do it - possible concurrency issue", e);
             }
         }
     }
@@ -174,7 +174,7 @@ public final class JavassistUtil {
             try {
                 ctClass.removeMethod(method);
             } catch (NotFoundException e) {
-                throw new IllegalStateException("Method was removed from class before we could do it - possible concurrency issue");
+                throw new IllegalStateException("Method was removed from class before we could do it - possible concurrency issue", e);
             }
         }
     }
@@ -185,7 +185,7 @@ public final class JavassistUtil {
             try {
                 ctClass.removeMethod(method);
             } catch (NotFoundException e) {
-                throw new IllegalStateException("Method was removed from class before we could do it - possible concurrency issue");
+                throw new IllegalStateException("Method was removed from class before we could do it - possible concurrency issue", e);
             }
         }
     }
