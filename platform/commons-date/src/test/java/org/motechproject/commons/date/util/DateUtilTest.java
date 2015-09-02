@@ -11,6 +11,8 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.datetime.DateTimeSource;
 import org.motechproject.commons.date.util.datetime.DefaultDateTimeSource;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 
@@ -158,8 +160,18 @@ public class DateUtilTest {
             }
 
             @Override
+            public ZoneId timeZoneId() {
+                return null;
+            }
+
+            @Override
             public DateTime now() {
                 return currentDate;
+            }
+
+            @Override
+            public LocalDateTime javaTimeNow() {
+                return null;
             }
 
             @Override

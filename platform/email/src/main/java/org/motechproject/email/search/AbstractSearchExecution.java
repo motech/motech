@@ -1,7 +1,6 @@
 package org.motechproject.email.search;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;
 import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.domain.DeliveryStatus;
@@ -16,6 +15,7 @@ import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.SecurityUtil;
 
 import javax.jdo.Query;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -40,10 +40,10 @@ public abstract class AbstractSearchExecution<T> implements QueryExecution<T> {
     public T execute(Query query, InstanceSecurityRestriction restriction) {
         List<Property> properties = new ArrayList<>();
 
-        Range<DateTime> deliveryTimeRange = criteria.getDeliveryTimeRange();
+        Range<LocalDateTime> deliveryTimeRange = criteria.getDeliveryTimeRange();
         boolean dateRangeUsed = isUsableRange(deliveryTimeRange);
         if (dateRangeUsed) {
-            properties.add(new RangeProperty<>("deliveryTime", deliveryTimeRange, DateTime.class.getName()));
+            properties.add(new RangeProperty<>("deliveryTime", deliveryTimeRange, LocalDateTime.class.getName()));
         }
 
         Set<DeliveryStatus> deliveryStatuses = criteria.getDeliveryStatuses();

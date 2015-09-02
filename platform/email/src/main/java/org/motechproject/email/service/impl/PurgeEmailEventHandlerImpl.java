@@ -1,12 +1,12 @@
 package org.motechproject.email.service.impl;
 
-import org.joda.time.DateTime;
 import org.motechproject.email.domain.EmailRecord;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -27,26 +27,24 @@ public class PurgeEmailEventHandlerImpl {
         String purgeTime = (String) event.getParameters().get("purgeTime");
         String purgeMultiplier = (String) event.getParameters().get("purgeMultiplier");
 
-        DateTime deadline;
+        LocalDateTime deadline;
 
         switch (purgeMultiplier) {
             case "hours" :
-                deadline = DateTime.now().toLocalDateTime().minusHours(Integer.parseInt(purgeTime)).toDateTime();
-                /* Using LocalDateTime, we make sure that a correct hour will be used in case of
-                   change in the TimeZone */
+                deadline = LocalDateTime.now().minusHours(Integer.parseInt(purgeTime));
                 break;
             case "days" :
-                deadline = DateTime.now().minusDays(Integer.parseInt(purgeTime));
+                deadline = LocalDateTime.now().minusDays(Integer.parseInt(purgeTime));
                 break;
             case "weeks" :
-                deadline = DateTime.now().minusWeeks(Integer.parseInt(purgeTime));
+                deadline = LocalDateTime.now().minusWeeks(Integer.parseInt(purgeTime));
                 break;
             case "months" :
-                deadline = DateTime.now().minusMonths(Integer.parseInt(purgeTime));
+                deadline = LocalDateTime.now().minusMonths(Integer.parseInt(purgeTime));
                 break;
             case "years" : // Fall through to the default value
             default :
-                deadline = DateTime.now().minusYears(Integer.parseInt(purgeTime));
+                deadline = LocalDateTime.now().minusYears(Integer.parseInt(purgeTime));
                 break;
         }
 

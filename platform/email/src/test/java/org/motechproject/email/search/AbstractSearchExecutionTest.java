@@ -1,6 +1,5 @@
 package org.motechproject.email.search;
 
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +19,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.jdo.Query;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,8 +35,8 @@ import static org.mockito.Mockito.when;
 @PrepareForTest(SecurityUtil.class)
 public abstract class AbstractSearchExecutionTest {
 
-    private static final DateTime PAST = DateUtil.now().minusYears(20);
-    private static final DateTime FUTURE = DateUtil.now().plusYears(15);
+    private static final LocalDateTime PAST = DateUtil.javaTimeNow().minusYears(20);
+    private static final LocalDateTime FUTURE = DateUtil.javaTimeNow().plusYears(15);
 
     protected abstract Object queryResult();
     protected abstract void verifyImplementationDetails();
@@ -75,7 +75,7 @@ public abstract class AbstractSearchExecutionTest {
         verify(query).setFilter("deliveryTime>=param0lb && deliveryTime<=param0ub && " +
                 "(deliveryStatus == param1_0 || deliveryStatus == param1_1) && (fromAddress.matches(param2) || "+
                 "message.matches(param3)) && creator == param4");
-        verify(query).declareParameters("org.joda.time.DateTime param0lb, org.joda.time.DateTime param0ub, " +
+        verify(query).declareParameters("java.time.LocalDateTime param0lb, java.time.LocalDateTime param0ub, " +
                 DeliveryStatus.class.getName() + " param1_0, " + DeliveryStatus.class.getName() + " param1_1, " +
                 "java.lang.String param2, java.lang.String param3, java.lang.String param4");
 

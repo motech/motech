@@ -3,7 +3,6 @@ package org.motechproject.email.web;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 import org.motechproject.commons.api.Range;
 import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.constants.EmailRolesConstants;
@@ -31,6 +30,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static org.apache.commons.lang.CharEncoding.UTF_8;
 
 /**
@@ -91,8 +94,8 @@ public class EmailController {
 
         List<EmailRecord> records = auditService.findAllEmailRecords();
         for (EmailRecord record : records) {
-            String month = record.getDeliveryTime().monthOfYear().getAsText();
-            String year = record.getDeliveryTime().year().getAsText();
+            String month = record.getDeliveryTime().getMonth().toString();
+            String year = String.valueOf(record.getDeliveryTime().getYear());
 
             if (!availableMonths.contains(month + " " + year)) {
                 availableMonths.add(month + " " + year);
@@ -132,15 +135,20 @@ public class EmailController {
                 fixedMonth = month;
             }
             GridSettings oneMonthFilter = new GridSettings();
-            DateTime monthBegin = new DateTime(Integer.parseInt(fixedMonth.substring(3 - moved, 7 - moved)), // NO CHECKSTYLE MagicNumber
-                    Integer.parseInt(fixedMonth.substring(0, 2 - moved)), 1, 0, 0);
-            DateTime monthFall = new DateTime().withYear(Integer.parseInt(fixedMonth.substring(3 - moved, 7 - moved))).  // NO CHECKSTYLE MagicNumber
-                    withMonthOfYear(Integer.parseInt(fixedMonth.substring(0, 2 - moved))).
-                    dayOfMonth().withMaximumValue().
-                    hourOfDay().withMaximumValue().
-                    minuteOfHour().withMaximumValue().
-                    secondOfMinute().withMaximumValue().
-                    millisOfSecond().withMaximumValue();
+
+            LocalDateTime monthBegin = LocalDateTime.of(
+                    Integer.parseInt(fixedMonth.substring(3 - moved, 7 - moved)),
+                    Integer.parseInt(fixedMonth.substring(0, 2 - moved)),
+                    1, 0, 0
+            );
+            LocalDateTime monthFall = LocalDateTime.now()
+                    .withYear(Integer.parseInt(fixedMonth.substring(3 - moved, 7 - moved)))
+                    .withMonth(Integer.parseInt(fixedMonth.substring(0, 2 - moved)))
+                    .with(lastDayOfMonth())
+                    .withHour((int) ChronoField.HOUR_OF_DAY.range().getMaximum())
+                    .withMinute((int) ChronoField.MINUTE_OF_HOUR.range().getMaximum())
+                    .withSecond((int) ChronoField.SECOND_OF_MINUTE.range().getMaximum())
+                    .withNano((int) ChronoField.NANO_OF_SECOND.range().getMaximum());
             Set<DeliveryStatus> allDeliveryStatuses = Sets.newHashSet(DeliveryStatus.values());
 
             List<EmailRecord> monthEmails = auditService.findEmailRecords(new EmailRecordSearchCriteria().
@@ -204,10 +212,11 @@ public class EmailController {
     private EmailRecordSearchCriteria prepareCriteria(GridSettings filter) {
         EmailRecordSearchCriteria criteria = new EmailRecordSearchCriteria();
 
-        DateTime from = StringUtils.isBlank(filter.getTimeFrom()) ? null :
-                DateTimeFormat.forPattern("Y-MM-dd HH:mm:ss").parseDateTime(filter.getTimeFrom());
-        DateTime to = StringUtils.isBlank(filter.getTimeTo()) ? null :
-                DateTimeFormat.forPattern("Y-MM-dd HH:mm:ss").parseDateTime(filter.getTimeTo());
+        LocalDateTime from = StringUtils.isBlank(filter.getTimeFrom()) ? null :
+                LocalDateTime.parse(filter.getTimeFrom(), DateTimeFormatter.ofPattern("y-MM-dd HH:mm:ss"));
+
+        LocalDateTime to = StringUtils.isBlank(filter.getTimeTo()) ? null :
+                LocalDateTime.parse(filter.getTimeTo(), DateTimeFormatter.ofPattern("y-MM-dd HH:mm:ss"));
 
         criteria.withMessageTimeRange(new Range<>(from, to));
 

@@ -129,7 +129,7 @@
                             <tomcatShutdownPort>${tomcat.shutdown.port}</tomcatShutdownPort>
                             <tomcatShutdownCommand>SHUTDOWN</tomcatShutdownCommand>
                             <tomcatSetAwait>false</tomcatSetAwait>
-                            <tomcatVersion>7.0.28</tomcatVersion>
+                            <tomcatVersion>7.0.62</tomcatVersion>
                             <lookInside>false</lookInside>
                             <webapps>
                                 <webapp>

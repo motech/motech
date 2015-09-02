@@ -1,6 +1,5 @@
 package org.motechproject.email.it;
 
-import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +19,7 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -81,7 +81,7 @@ public class EmailAuditServiceBundleIT extends BasePaxIT {
         EmailRecordSearchCriteria criteria = new EmailRecordSearchCriteria().withToAddress("address")
                 .withDeliveryStatuses(DeliveryStatus.SENT, DeliveryStatus.RECEIVED)
                 .withQueryParams(queryParams)
-                .withMessageTimeRange(new Range<DateTime>(null, null));
+                .withMessageTimeRange(new Range<LocalDateTime>(null, null));
 
         assertEquals(3, emailAuditService.countEmailRecords(criteria));
 
@@ -96,7 +96,7 @@ public class EmailAuditServiceBundleIT extends BasePaxIT {
     }
 
     private EmailRecord createEmailRecord(String toAddress, String subject, DeliveryStatus deliveryStatus) {
-        return new EmailRecord("from@address", toAddress, subject, "message", DateTime.now(), deliveryStatus);
+        return new EmailRecord("from@address", toAddress, subject, "message", LocalDateTime.now(), deliveryStatus);
     }
 
     @After

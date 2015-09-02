@@ -1,6 +1,5 @@
 package org.motechproject.email.web;
 
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -23,13 +22,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -131,8 +136,8 @@ public class EmailControllerTest {
         assertArrayEquals(new DeliveryStatus[]{DeliveryStatus.SENT}, captor.getValue().getDeliveryStatuses().toArray());
         assertEquals(filter.getPage(), captor.getValue().getQueryParams().getPage());
         assertEquals(filter.getRows(), captor.getValue().getQueryParams().getPageSize());
-        assertTrue(captor.getValue().getDeliveryTimeRange().getMin().isEqual(DateTime.parse("1969-01-01T00:00:00")));
-        assertTrue(captor.getValue().getDeliveryTimeRange().getMax().isEqual(DateTime.parse("1969-01-31T23:59:59")));
+        assertTrue(captor.getValue().getDeliveryTimeRange().getMin().isEqual(LocalDateTime.parse("1969-01-01T00:00:00")));
+        assertTrue(captor.getValue().getDeliveryTimeRange().getMax().isEqual(LocalDateTime.parse("1969-01-31T23:59:59")));
         assertEquals(getTestEmailRecordsAsCsv(), writer.toString());
     }
 
@@ -146,8 +151,8 @@ public class EmailControllerTest {
 
         verify(auditService).findEmailRecords(captor.capture());
 
-        assertTrue(captor.getValue().getDeliveryTimeRange().getMin().isEqual(DateTime.parse("1969-01-01T00:00:00.000")));
-        assertTrue(captor.getValue().getDeliveryTimeRange().getMax().isEqual(DateTime.parse("1969-01-31T23:59:59.999")));
+        assertTrue(captor.getValue().getDeliveryTimeRange().getMin().isEqual(LocalDateTime.parse("1969-01-01T00:00:00.000000000")));
+        assertTrue(captor.getValue().getDeliveryTimeRange().getMax().isEqual(LocalDateTime.parse("1969-01-31T23:59:59.999999999")));
         assertEquals(writer.toString(), getTestEmailRecordsAsCsv());
     }
 
@@ -162,15 +167,15 @@ public class EmailControllerTest {
     private List<EmailRecord> getTestEmailRecords() {
         List<EmailRecord> records = new ArrayList<>();
         records.add(new EmailRecord("abc@gmail.com", "def@gmail.com", "subject", "message",
-               new DateTime(1000), DeliveryStatus.SENT));
+               LocalDateTime.ofEpochSecond(1, 0, ZoneOffset.UTC), DeliveryStatus.SENT));
         records.add(new EmailRecord("def@gmail.com", "abc@gmail.com", "subject2", "message2",
-               new DateTime(2000), DeliveryStatus.SENT));
+               LocalDateTime.ofEpochSecond(2, 0, ZoneOffset.UTC), DeliveryStatus.SENT));
         records.add(new EmailRecord("abc@yahoo.com", "def@gmail.com", "Asubject3", "message3",
-               new DateTime(3000), DeliveryStatus.SENT));
+               LocalDateTime.ofEpochSecond(3, 0, ZoneOffset.UTC), DeliveryStatus.SENT));
         records.add(new EmailRecord("abc@yahoo.com", "abc@gmail.com", "subject4", "message4",
-               new DateTime(5000), DeliveryStatus.SENT));
+               LocalDateTime.ofEpochSecond(5, 0, ZoneOffset.UTC), DeliveryStatus.SENT));
         records.add(new EmailRecord("abc@yahoo.com", "def@yahoo.com", "Bsubject5", "message5",
-               new DateTime(4000), DeliveryStatus.SENT));
+               LocalDateTime.ofEpochSecond(4, 0, ZoneOffset.UTC), DeliveryStatus.SENT));
         return records;
     }
 

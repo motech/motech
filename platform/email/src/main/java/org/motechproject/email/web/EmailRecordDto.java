@@ -1,9 +1,9 @@
 package org.motechproject.email.web;
 
-import org.joda.time.format.DateTimeFormat;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.email.domain.EmailRecord;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
@@ -21,7 +21,7 @@ public class EmailRecordDto extends BasicEmailRecordDto {
 
     public EmailRecordDto(EmailRecord record) {
         this.setDeliveryStatus(record.getDeliveryStatus().toString());
-        this.setDeliveryTime(DateTimeFormat.forPattern("Y-MM-dd hh:mm:ss").print(DateUtil.setTimeZone(record.getDeliveryTime())));
+        this.setDeliveryTime(DateTimeFormatter.ofPattern("y-MM-dd hh:mm:ss").format(DateUtil.setTimeZone(record.getDeliveryTime())));
         this.fromAddress = record.getFromAddress();
         this.toAddress = record.getToAddress();
         this.subject = record.getSubject();

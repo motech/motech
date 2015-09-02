@@ -1,12 +1,12 @@
 package org.motechproject.email.domain;
 
-import org.joda.time.DateTime;
 import org.motechproject.email.constants.EmailRolesConstants;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.util.SecurityMode;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -35,7 +35,7 @@ public class EmailRecord {
     private String message;
 
     @Field(required = true)
-    private DateTime deliveryTime;
+    private LocalDateTime deliveryTime;
 
     @Field(required = true)
     private DeliveryStatus deliveryStatus;
@@ -58,7 +58,7 @@ public class EmailRecord {
      * @param deliveryTime  the date and time that the email was sent
      * @param deliveryStatus  the delivery status of the email
      */
-    public EmailRecord(String fromAddress, String toAddress, String subject, String message, DateTime deliveryTime, DeliveryStatus deliveryStatus) {
+    public EmailRecord(String fromAddress, String toAddress, String subject, String message, LocalDateTime deliveryTime, DeliveryStatus deliveryStatus) {
         this.fromAddress = fromAddress;
         this.toAddress = toAddress;
         this.subject = subject;
@@ -144,7 +144,7 @@ public class EmailRecord {
      *
      * @return the time that the email was sent
      */
-    public DateTime getDeliveryTime() {
+    public LocalDateTime getDeliveryTime() {
         return deliveryTime;
     }
 

@@ -5,12 +5,12 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
 import org.motechproject.commons.date.model.DayOfWeek;
 import org.motechproject.commons.date.model.Time;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +32,15 @@ public final class DateUtil {
      */
     public static DateTime now() {
         return DateTimeSourceUtil.now();
+    }
+
+    /**
+     * Returns current time as an instance of {@code LocalDateTime}
+     *
+     * @return the current time
+     */
+    public static LocalDateTime javaTimeNow() {
+        return DateTimeSourceUtil.javaTimeNow();
     }
 
     /**
@@ -87,7 +96,7 @@ public final class DateUtil {
      */
     public static DateTime newDateTime(LocalDate localDate, int hour, int minute, int second) {
         final DateTimeZone zone = DateTimeSourceUtil.timeZone();
-        LocalDateTime localDateTime = new LocalDateTime(zone)
+        org.joda.time.LocalDateTime localDateTime = new org.joda.time.LocalDateTime(zone)
                 .withYear(localDate.getYear())
                 .withMonthOfYear(localDate.getMonthOfYear())
                 .withDayOfMonth(localDate.getDayOfMonth())
@@ -111,6 +120,16 @@ public final class DateUtil {
      */
     public static DateTime setTimeZone(DateTime dateTime) {
         return dateTime == null ? null : dateTime.toDateTime(DateTimeSourceUtil.timeZone());
+    }
+
+    /**
+     * Sets time zone, for given {@code LocalDateTime}, to default.
+     *
+     * @param localDateTime the {@code LocalDateTime} to have time zone set
+     * @return the {@code LocalDateTime} with time zone set
+     */
+    public static LocalDateTime setTimeZone(LocalDateTime localDateTime) {
+        return localDateTime == null ? null : localDateTime.atZone(DateTimeSourceUtil.timeZoneId()).toLocalDateTime();
     }
 
     /**

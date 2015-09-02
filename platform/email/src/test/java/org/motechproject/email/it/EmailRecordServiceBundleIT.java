@@ -1,7 +1,5 @@
 package org.motechproject.email.it;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +15,8 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.extract;
@@ -40,7 +40,7 @@ public class EmailRecordServiceBundleIT extends BasePaxIT {
         String toAddress = "t@adr";
         String subject = "test-subject";
         String message = "test-message";
-        DateTime sentDate = DateUtil.now();
+        LocalDateTime sentDate = DateUtil.javaTimeNow();
 
         EmailRecord emailRecord = new EmailRecord(fromAddress, toAddress, subject, message, sentDate, deliveryStatus);
         emailRecordService.create(emailRecord);
@@ -59,7 +59,7 @@ public class EmailRecordServiceBundleIT extends BasePaxIT {
         String toAddress = "t@adr";
         String subject = "test-subject";
         String message = "test-message";
-        DateTime messageTime = DateUtil.now().toDateTime(DateTimeZone.UTC);
+        LocalDateTime messageTime = DateUtil.javaTimeNow().atZone(ZoneId.of("UTC")).toLocalDateTime();
 
         EmailRecord emailRecord = new EmailRecord(fromAddress, toAddress, subject, message, messageTime, deliveryStatus);
         emailRecordService.create(emailRecord);
@@ -78,7 +78,7 @@ public class EmailRecordServiceBundleIT extends BasePaxIT {
         String toAddress = "t@adr";
         String subject = "test-subject";
         String message = "test-message";
-        DateTime messageTime = DateUtil.now().toDateTime(DateTimeZone.UTC);
+        LocalDateTime messageTime = DateUtil.javaTimeNow().atZone(ZoneId.of("UTC")).toLocalDateTime();
 
         EmailRecord expected = new EmailRecord(fromAddress, toAddress, subject, message, messageTime, deliveryStatus);
         emailRecordService.create(expected);

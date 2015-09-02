@@ -4,6 +4,9 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -13,10 +16,13 @@ import java.util.TimeZone;
 public class DefaultDateTimeSource implements DateTimeSource {
 
     private DateTimeZone timeZone;
+    private ZoneId zoneId;
 
     public DefaultDateTimeSource() {
         TimeZone tz = Calendar.getInstance().getTimeZone();
         this.timeZone = DateTimeZone.forTimeZone(tz);
+
+        this.zoneId = ZonedDateTime.now().getZone();
     }
 
     @Override
@@ -25,8 +31,18 @@ public class DefaultDateTimeSource implements DateTimeSource {
     }
 
     @Override
+    public ZoneId timeZoneId() {
+        return zoneId;
+    }
+
+    @Override
     public DateTime now() {
         return new DateTime(timeZone);
+    }
+
+    @Override
+    public LocalDateTime javaTimeNow() {
+        return LocalDateTime.now(zoneId);
     }
 
     @Override

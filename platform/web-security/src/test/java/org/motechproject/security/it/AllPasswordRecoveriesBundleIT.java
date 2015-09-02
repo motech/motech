@@ -15,6 +15,8 @@ import org.motechproject.security.repository.AllPasswordRecoveries;
 import org.motechproject.security.repository.PasswordRecoveriesDataService;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
 
@@ -57,8 +59,18 @@ public class AllPasswordRecoveriesBundleIT extends BaseIT {
             }
 
             @Override
+            public ZoneId timeZoneId() {
+                return null;
+            }
+
+            @Override
             public DateTime now() {
                 return dateTime;
+            }
+
+            @Override
+            public LocalDateTime javaTimeNow() {
+                return null;
             }
 
             @Override

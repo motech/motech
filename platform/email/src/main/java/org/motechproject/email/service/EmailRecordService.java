@@ -1,6 +1,5 @@
 package org.motechproject.email.service;
 
-import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
@@ -9,6 +8,7 @@ import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.MotechDataService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -50,7 +50,7 @@ public interface EmailRecordService extends MotechDataService<EmailRecord> {
                            @LookupField(name = "toAddress") String toAddress,
                            @LookupField(name = "subject") String subject,
                            @LookupField(name = "message") String message,
-                           @LookupField(name = "deliveryTime") Range<DateTime> deliveryTimeRange,
+                           @LookupField(name = "deliveryTime") Range<LocalDateTime> deliveryTimeRange,
                            @LookupField(name = "deliveryStatus") Set<DeliveryStatus> deliveryStatuses,
                            QueryParams queryParams);
 
@@ -70,6 +70,6 @@ public interface EmailRecordService extends MotechDataService<EmailRecord> {
                            @LookupField(name = "toAddress") String toAddress,
                            @LookupField(name = "subject") String subject,
                            @LookupField(name = "message") String message,
-                           @LookupField(name = "deliveryTime") Range<DateTime> deliveryTimeRange,
+                           @LookupField(name = "deliveryTime") Range<LocalDateTime> deliveryTimeRange,
                            @LookupField(name = "deliveryStatus") Set<DeliveryStatus> deliveryStatuses);
 }

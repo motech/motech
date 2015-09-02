@@ -1,20 +1,20 @@
 package org.motechproject.email.service.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.motechproject.email.contract.Mail;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
-import org.motechproject.email.contract.Mail;
 import org.motechproject.email.service.EmailRecordService;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.server.config.SettingsFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import static org.motechproject.commons.date.util.DateUtil.now;
+import static org.motechproject.commons.date.util.DateUtil.javaTimeNow;
 
 /**
  * The <code>EmailSenderServiceImpl</code> class provides API for sending e-mails
@@ -48,10 +48,10 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         try {
             mailSender.send(getMimeMessagePreparator(mail));
             log(new EmailRecord(mail.getFromAddress(), mail.getToAddress(), mail.getSubject(), mail.getMessage(),
-                    now(), DeliveryStatus.SENT));
+                    javaTimeNow(), DeliveryStatus.SENT));
         } catch (MailException e) {
             log(new EmailRecord(mail.getFromAddress(), mail.getToAddress(), mail.getSubject(), mail.getMessage(),
-                    now(), DeliveryStatus.ERROR));
+                    javaTimeNow(), DeliveryStatus.ERROR));
             throw e;
         }
     }

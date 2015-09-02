@@ -1,10 +1,10 @@
 package org.motechproject.email.builder;
 
-import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.mds.query.QueryParams;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,7 +23,7 @@ public class EmailRecordSearchCriteria {
     private String toAddress;
     private String subject;
     private String message;
-    private Range<DateTime> deliveryTimeRange;
+    private Range<LocalDateTime> deliveryTimeRange;
     private Set<DeliveryStatus> deliveryStatuses = new HashSet<>();
     private QueryParams queryParams;
 
@@ -83,7 +83,7 @@ public class EmailRecordSearchCriteria {
      * @return this <code>EmailRecordSearchCriteria</code> with its deliveryTimeRange criterion
      * set to the specified date/time
      */
-    public EmailRecordSearchCriteria withMessageTime(DateTime deliveryTimeRange) {
+    public EmailRecordSearchCriteria withMessageTime(LocalDateTime deliveryTimeRange) {
         this.deliveryTimeRange = new Range<>(deliveryTimeRange, deliveryTimeRange);
         return this;
     }
@@ -97,7 +97,7 @@ public class EmailRecordSearchCriteria {
      * @return this <code>EmailRecordSearchCriteria</code> with its deliveryTimeRange criterion
      * set to the specified date/time range
      */
-    public EmailRecordSearchCriteria withMessageTimeRange(Range<DateTime> deliveryTimeRange) {
+    public EmailRecordSearchCriteria withMessageTimeRange(Range<LocalDateTime> deliveryTimeRange) {
         this.deliveryTimeRange = deliveryTimeRange;
         return this;
     }
@@ -181,7 +181,7 @@ public class EmailRecordSearchCriteria {
      *
      * @return the deliveryTimeRange criterion for this search criteria
      */
-    public Range<DateTime> getDeliveryTimeRange() {
+    public Range<LocalDateTime> getDeliveryTimeRange() {
         return deliveryTimeRange;
     }
 

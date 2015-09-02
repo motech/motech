@@ -6,6 +6,10 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.motechproject.commons.date.util.datetime.DateTimeSource;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 /**
  * A mock date time source, which is used by time faking. This will
  * be injected into the static class holding the date time source and thus change
@@ -13,6 +17,7 @@ import org.motechproject.commons.date.util.datetime.DateTimeSource;
  */
 public class MockDateTimeSource implements DateTimeSource {
     private DateTime dateTime;
+    private LocalDateTime localDateTime;
 
     public MockDateTimeSource(LocalDate localDate) {
         this(localDate.toDateTime(LocalTime.MIDNIGHT));
@@ -22,14 +27,28 @@ public class MockDateTimeSource implements DateTimeSource {
         this.dateTime = dateTime;
     }
 
+    public MockDateTimeSource(LocalDateTime localDateTime) {
+        this.localDateTime = localDateTime;
+    }
+
     @Override
     public DateTimeZone timeZone() {
         return dateTime.getZone();
     }
 
     @Override
+    public ZoneId timeZoneId() {
+        return ZonedDateTime.now().getZone();
+    }
+
+    @Override
     public DateTime now() {
         return dateTime;
+    }
+
+    @Override
+    public LocalDateTime javaTimeNow() {
+        return localDateTime;
     }
 
     @Override
