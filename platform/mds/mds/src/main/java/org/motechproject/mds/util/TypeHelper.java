@@ -389,11 +389,13 @@ public final class TypeHelper {
         String[] entries = breakStringForCollection(str);
         Map map = new HashMap<>();
 
-        for (String entry : entries) {
-            if (!entry.isEmpty()) {
-                String[] values = split(entry, ":", 2);
-                String val = (values.length > 1) ? values[1].trim() : "";
-                map.put(parseMapValue(values[0].trim(), keyClass, true), parseMapValue(val, valueClass, false));
+        if (entries != null) {
+            for (String entry : entries) {
+                if (!entry.isEmpty()) {
+                    String[] values = split(entry, ":", 2);
+                    String val = (values.length > 1) ? values[1].trim() : "";
+                    map.put(parseMapValue(values[0].trim(), keyClass, true), parseMapValue(val, valueClass, false));
+                }
             }
         }
 

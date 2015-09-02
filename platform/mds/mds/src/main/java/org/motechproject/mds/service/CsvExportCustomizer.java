@@ -27,4 +27,14 @@ public interface CsvExportCustomizer {
      * @return the comparator that will be used for determining the column order
      */
     Comparator<Field> columnOrderComparator();
+
+    /**
+     * Retrieves the display name for the given entity field, that will be shown in the top
+     * row while exporting instances to CSV/PDF file. By default, the display name of the
+     * field is used.
+     *
+     * @param field entity field to retrieve display name for
+     * @return display name of the given field in the exported files
+     */
+    String exportDisplayName(Field field);
 }
