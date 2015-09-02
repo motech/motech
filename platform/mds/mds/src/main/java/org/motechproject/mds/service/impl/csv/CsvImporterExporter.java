@@ -10,7 +10,6 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.ex.csv.CsvImportException;
 import org.motechproject.mds.helper.DataServiceHelper;
-import org.motechproject.mds.helper.FieldHelper;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvExportCustomizer;
 import org.motechproject.mds.service.CsvImportCustomizer;
@@ -33,6 +32,7 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -226,7 +226,7 @@ public class CsvImporterExporter extends AbstractMdsExporter {
     private CsvImportResults importCsv(final Entity entity, final Reader reader, CsvImportCustomizer importCustomizer) {
         final MotechDataService dataService = DataServiceHelper.getDataService(getBundleContext(), entity);
 
-        final Map<String, Field> fieldMap = FieldHelper.fieldMapByName(entity.getFields());
+        Map<String, Field> fieldCacheMap = new HashMap<>();
 
         try (CsvMapReader csvMapReader = new CsvMapReader(reader, CsvPreference.STANDARD_PREFERENCE)) {
 
@@ -239,7 +239,7 @@ public class CsvImporterExporter extends AbstractMdsExporter {
 
             while ((row = csvMapReader.read(headers)) != null) {
                 // import a row
-                RowImportResult rowImportResult = importInstanceFromRow(row, headers, fieldMap, dataService, importCustomizer);
+                RowImportResult rowImportResult = importInstanceFromRow(row, headers, fieldCacheMap, entity.getFields(), dataService, importCustomizer);
                 Long id = rowImportResult.getId();
 
                 // put its ID in the correct list
@@ -256,7 +256,7 @@ public class CsvImporterExporter extends AbstractMdsExporter {
         }
     }
 
-    private RowImportResult importInstanceFromRow(Map<String, String> row, String[] headers, Map<String, Field> fieldMap,
+    private RowImportResult importInstanceFromRow(Map<String, String> row, String[] headers, Map<String, Field> fieldMap, List<Field> fields,
                                               MotechDataService dataService, CsvImportCustomizer importCustomizer) {
         Class entityClass = dataService.getClassType();
 
@@ -276,7 +276,7 @@ public class CsvImporterExporter extends AbstractMdsExporter {
         }
 
         for (String fieldName : headers) {
-            Field field = fieldMap.get(fieldName);
+            Field field = findField(fieldName, fields, fieldMap, importCustomizer);
 
             if (field == null) {
                 LOGGER.warn("No field with name {} in entity {}, however such row exists in CSV. Ignoring.",
@@ -285,15 +285,15 @@ public class CsvImporterExporter extends AbstractMdsExporter {
             }
 
             if (row.containsKey(fieldName)) {
-                String csvValue = row.get(field.getName());
+                String csvValue = row.get(fieldName);
 
                 Object parsedValue = parseValue(csvValue, field, entityClass.getClassLoader());
 
                 try {
-                    PropertyUtil.setProperty(instance, StringUtils.uncapitalize(fieldName), parsedValue);
+                    PropertyUtil.setProperty(instance, StringUtils.uncapitalize(field.getName()), parsedValue);
                 } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     String msg = String.format("Error when processing field: %s, value in CSV file is %s",
-                            field.getName(), csvValue);
+                            fieldName, csvValue);
                     throw new CsvImportException(msg, e);
                 }
             }
@@ -311,6 +311,14 @@ public class CsvImporterExporter extends AbstractMdsExporter {
         return new RowImportResult(importedId, isNewInstance);
     }
 
+    private Field findField(String fieldName, List<Field> fields, Map<String, Field> fieldMap, CsvImportCustomizer importCustomizer) {
+        if (!fieldMap.containsKey(fieldName)) {
+            Field field = importCustomizer.findField(fieldName, fields);
+            fieldMap.put(fieldName, field);
+        }
+        return fieldMap.get(fieldName);
+    }
+
     private Object parseValue(String csvValue, Field field, ClassLoader entityCl) {
         final Type type = field.getType();
 
@@ -322,7 +330,10 @@ public class CsvImporterExporter extends AbstractMdsExporter {
         } else if (type.isMap()) {
             FieldMetadata keyMetadata = field.getMetadata(MAP_KEY_TYPE);
             FieldMetadata valueMetadata = field.getMetadata(MAP_VALUE_TYPE);
-            value = TypeHelper.parseStringToMap(keyMetadata.getValue(), valueMetadata.getValue(), csvValue);
+            String mapKeyType = keyMetadata != null ? keyMetadata.getValue() : String.class.getName();
+            String mapValueType = valueMetadata != null ? valueMetadata.getValue() : String.class.getName();
+
+            value = TypeHelper.parseStringToMap(mapKeyType, mapValueType, csvValue);
         } else {
             value = TypeHelper.parse(csvValue, type.getTypeClass());
         }

@@ -1,13 +1,11 @@
 package org.motechproject.mds.service.impl.csv;
 
-import ch.lambdaj.Lambda;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.ex.csv.DataExportException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.helper.DataServiceHelper;
-import org.motechproject.mds.helper.FieldHelper;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.CsvExportCustomizer;
@@ -59,9 +57,13 @@ public abstract class AbstractMdsExporter {
                            Map<String, Object> lookupFields, CsvExportCustomizer exportCustomizer) {
         final MotechDataService dataService = DataServiceHelper.getDataService(bundleContext, entity);
 
-        final Map<String, Field> fieldMap = FieldHelper.fieldMapByName(entity.getFields());
+        final Map<String, Field> fieldMap = new HashMap<>();
+        for (Field field : entity.getFields()) {
+            fieldMap.put(exportCustomizer.exportDisplayName(field), field);
+        }
+
         // we must respect field ordering
-        String[] orderedHeaders = orderHeaders(headers == null ? fieldsToHeaders(entity.getFields()) : headers.toArray(new String[headers.size()]),
+        String[] orderedHeaders = orderHeaders(headers == null ? fieldsToHeaders(entity.getFields(), exportCustomizer) : headers.toArray(new String[headers.size()]),
                 entity.getFields(), exportCustomizer);
 
         try {
@@ -106,21 +108,24 @@ public abstract class AbstractMdsExporter {
         TreeSet<Field> orderedFields = new TreeSet<>(customizer.columnOrderComparator());
 
         for (Field field : entityFields) {
-            if (selectedHeadersSet.contains(field.getName())) {
+            if (selectedHeadersSet.contains(customizer.exportDisplayName(field))) {
                 orderedFields.add(field);
             }
         }
 
         // after ordering, we are only interested in field names
-        List<String> headers = Lambda.extract(orderedFields, Lambda.on(Field.class).getName());
+        List<String> headers = new ArrayList<>();
+        for (Field field : orderedFields) {
+            headers.add(customizer.exportDisplayName(field));
+        }
 
         return headers.toArray(new String[headers.size()]);
     }
 
-    private String[] fieldsToHeaders(List<Field> fields) {
+    private String[] fieldsToHeaders(List<Field> fields, CsvExportCustomizer customizer) {
         List<String> fieldNames = new ArrayList<>();
         for (Field field : fields) {
-            fieldNames.add(field.getName());
+            fieldNames.add(customizer.exportDisplayName(field));
         }
 
         return fieldNames.toArray(new String[fieldNames.size()]);
@@ -132,7 +137,7 @@ public abstract class AbstractMdsExporter {
         for (String fieldName : headers) {
             Field field = fieldMap.get(fieldName);
 
-            Object value = PropertyUtil.safeGetProperty(instance, fieldName);
+            Object value = PropertyUtil.safeGetProperty(instance, field.getName());
             String csvValue;
 
             if (field.getType().isRelationship()) {

@@ -1,5 +1,8 @@
 package org.motechproject.mds.service;
 
+import org.motechproject.mds.domain.Field;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,5 +42,17 @@ public interface CsvImportCustomizer {
      * @return the updated instance
      */
     Object doUpdate(Object instance, MotechDataService dataService);
+
+    /**
+     * Finds entity field, being provided the display name of the column header.
+     * The default implementation looks for entity field with matching display name.
+     * If such matching cannot be found, it looks for field with matching name. If that
+     * also cannot be found, it returns null.
+     *
+     * @param headerName the column display name from CSV file
+     * @param entityFields the list of entity fields
+     * @return entity field matching the implemented criteria
+     */
+    Field findField(String headerName, List<Field> entityFields);
 
 }

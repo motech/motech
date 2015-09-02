@@ -11,13 +11,15 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.UIDisplayFieldComparator;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.service.CsvExportCustomizer;
 import org.motechproject.mds.service.CsvImportCustomizer;
+import org.motechproject.mds.service.DefaultCsvExportCustomizer;
 import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.domain.UIDisplayFieldComparator;
@@ -38,8 +40,10 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -58,6 +62,7 @@ public class CsvImporterExporterTest {
     private static final String ENTITY_NAMESPACE = "emns";
     private static final String ENTITY_NAME = "Record2";
     private static final int INSTANCE_COUNT = 20;
+    private static final int FIELD_COUNT = 13;
     private static final DateTime NOW = DateTime.now();
 
     @InjectMocks
@@ -91,7 +96,7 @@ public class CsvImporterExporterTest {
     private CsvImportCustomizer csvImportCustomizer;
 
     @Mock
-    private CsvExportCustomizer csvExportCustomizer;
+    private DefaultCsvExportCustomizer csvExportCustomizer;
 
     @Mock
     private MDSLookupService mdsLookupService;
@@ -120,6 +125,7 @@ public class CsvImporterExporterTest {
         when(entityDto.getNamespace()).thenReturn(ENTITY_NAMESPACE);
 
         when(csvExportCustomizer.columnOrderComparator()).thenReturn(new UIDisplayFieldComparator());
+        when(csvExportCustomizer.exportDisplayName(any(Field.class))).thenCallRealMethod();
 
         CsvTestHelper.mockRecord2Fields(entity);
     }
@@ -152,8 +158,8 @@ public class CsvImporterExporterTest {
         when(mdsLookupService.findMany((any(String.class)), eq("lookup"), any(Map.class), any(QueryParams.class))).thenReturn(testInstances(IdMode.INCLUDE_ID));
         StringWriter writer = new StringWriter();
 
-        List<String> headers = Arrays.asList("id", "creator", "owner", "modifiedBy", "creationDate", "modificationDate",
-                "value", "date", "dateIgnoredByRest", "enumField", "enumListField", "singleRelationship", "multiRelationship");
+        List<String> headers = Arrays.asList("ID", "Creator", "Owner", "Modified By", "Creation date", "Modification date",
+                "Value Disp", "Date disp", "dateIgnoredByRest disp", "enumField Disp", "enumListField Disp", "singleRelationship Disp", "multiRelationship Disp");
 
         long result = csvImporterExporter.exportCsv(ENTITY_ID, writer, "lookup", null, headers, null);
 
@@ -186,8 +192,9 @@ public class CsvImporterExporterTest {
 
         ArgumentCaptor<Record2> captor = ArgumentCaptor.forClass(Record2.class);
         verify(csvImportCustomizer, times(INSTANCE_COUNT)).findExistingInstance(anyMap(), eq(motechDataService));
-        verify(csvImportCustomizer, times(INSTANCE_COUNT)).doCreate(captor.capture(),  eq(motechDataService));
-        verify(csvImportCustomizer, never()).doUpdate(captor.capture(),  eq(motechDataService));
+        verify(csvImportCustomizer, times(INSTANCE_COUNT)).doCreate(captor.capture(), eq(motechDataService));
+        verify(csvImportCustomizer, times(FIELD_COUNT)).findField(anyString(), anyList());
+        verify(csvImportCustomizer, never()).doUpdate(captor.capture(), eq(motechDataService));
 
         assertNotNull(results);
         assertEquals(INSTANCE_COUNT, results.totalNumberOfImportedInstances());
@@ -272,15 +279,15 @@ public class CsvImporterExporterTest {
     }
 
     private String getTestEntityRecordsAsCsv(IdMode idMode) {
-        StringBuilder sb = new StringBuilder("value,date,"); // these are UI displayable
+        StringBuilder sb = new StringBuilder("Value Disp,Date disp,"); // these are UI displayable
 
-        if (idMode != IdMode.NO_ID_COLUMN) {
-            sb.append("id,");
+        if ((idMode != IdMode.NO_ID_COLUMN)) {
+            sb.append("ID,");
         }
 
-        sb.append("creator,owner,modifiedBy,creationDate,");
-        sb.append("modificationDate,dateIgnoredByRest,enumField,enumListField");
-        sb.append(",singleRelationship,multiRelationship\r\n");
+        sb.append("Creator,Owner,Modified By,Creation date,");
+        sb.append("Modification date,dateIgnoredByRest disp,enumField Disp,enumListField Disp");
+        sb.append(",singleRelationship Disp,multiRelationship Disp\r\n");
 
         for (int i = 0; i < INSTANCE_COUNT; i++) {
             sb.append("value ").append(i).append(',').append(NOW.plusSeconds(i)).append(','); // value, date

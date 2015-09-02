@@ -121,7 +121,7 @@ public class PdfCsvExporterTest {
     public void shouldExportPdfWithOneEmptyColumn() {
         setUpTestData(false);
 
-        long result = pdfCsvExporter.exportPdf(ENTITY_ID, output, null, null, singletonList("value"), null);
+        long result = pdfCsvExporter.exportPdf(ENTITY_ID, output, null, null, singletonList("Value Disp"), null);
 
         assertEquals(1, result);
         assertNotSame(0, output.size());
