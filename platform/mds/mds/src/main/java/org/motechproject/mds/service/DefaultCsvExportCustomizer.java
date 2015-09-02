@@ -37,4 +37,10 @@ public class DefaultCsvExportCustomizer implements CsvExportCustomizer {
     public Comparator<Field> columnOrderComparator() {
         return new UIDisplayFieldComparator();
     }
+
+    @Override
+    public String exportDisplayName(Field field) {
+        return field.getDisplayName();
+    }
+
 }
