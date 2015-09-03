@@ -209,7 +209,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     }
 
     private void stopBundle(String moduleName) {
-        Bundle bundle = WebBundleUtil.findBundleByName(bundleContext, moduleName);
+        Bundle bundle = WebBundleUtil.findBundleBySymbolicName(bundleContext, moduleName);
         try {
             bundle.stop();
         } catch (BundleException e) {
@@ -218,7 +218,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     }
 
     private void startBundle(String moduleName) {
-        Bundle bundle = WebBundleUtil.findBundleByName(bundleContext, moduleName);
+        Bundle bundle = WebBundleUtil.findBundleBySymbolicName(bundleContext, moduleName);
         try {
             bundle.start();
         } catch (BundleException e) {
@@ -248,7 +248,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private void clearModulesCache(String[] moduleNames) {
         for (String moduleName : moduleNames) {
             if (StringUtils.isNotBlank(moduleName)) {
-                Bundle bundleToRefresh = WebBundleUtil.findBundleByName(bundleContext, moduleName);
+                Bundle bundleToRefresh = WebBundleUtil.findBundleBySymbolicName(bundleContext, moduleName);
 
                 Bundle frameworkBundle = bundleContext.getBundle(0);
                 FrameworkWiring frameworkWiring = frameworkBundle.adapt(FrameworkWiring.class);
@@ -593,7 +593,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
     private void refreshModule(String moduleName) {
         LOGGER.info("Refreshing module '{}' before restarting the entities bundle", moduleName);
-        Bundle bundleToRefresh = WebBundleUtil.findBundleByName(bundleContext, moduleName);
+        Bundle bundleToRefresh = WebBundleUtil.findBundleBySymbolicName(bundleContext, moduleName);
         if (bundleToRefresh != null) {
             Bundle frameworkBundle = bundleContext.getBundle(0);
             FrameworkWiring frameworkWiring = frameworkBundle.adapt(FrameworkWiring.class);

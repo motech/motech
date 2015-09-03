@@ -101,6 +101,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
             String module = ReflectionsUtil.getAnnotationValue(
                     annotation, MODULE, bundleHeaders.getName(), bundleHeaders.getSymbolicName()
             );
+            String bundleSymbolicName = getBundle().getSymbolicName();
             String namespace = ReflectionsUtil.getAnnotationValue(annotation, NAMESPACE);
             String tableName = ReflectionsUtil.getAnnotationValue(annotation, TABLE_NAME);
 
@@ -118,7 +119,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                 entity = new EntityDto(
                         null, className, name, module, namespace, tableName, recordHistory,
                         SecurityMode.EVERYONE, null, null, null, clazz.getSuperclass().getName(),
-                        Modifier.isAbstract(clazz.getModifiers()), false
+                        Modifier.isAbstract(clazz.getModifiers()), false, bundleSymbolicName
                 );
             } else {
                 LOGGER.debug("DDE for {} already exists, updating if necessary", className);
@@ -126,6 +127,9 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                 AdvancedSettingsDto advancedSettings = entityService.getAdvancedSettings(entity.getId(), true);
                 restOptions = advancedSettings.getRestOptions();
                 tracking = advancedSettings.getTracking();
+                entity.setBundleSymbolicName(bundleSymbolicName);
+                entity.setModule(module);
+
             }
 
             if (!tracking.isModifiedByUser()) {

@@ -4,8 +4,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.felix.framework.BundleWiringImpl;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
+import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.osgi.web.util.BundleHeaders;
+import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleWiring;
@@ -46,6 +49,37 @@ public final class MdsBundleHelper {
     public static Bundle findMdsEntitiesBundle(BundleContext bundleContext) {
         return OsgiBundleUtils.findBundleBySymbolicName(bundleContext,
                 Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME);
+    }
+
+    /**
+     * Method used to retrieve bundle of the entity passed as a parameter.
+     * It converts Entity object to EntityDto and then tries to find bundle
+     * basing on module symbolic name. If module symbolic name is null it retrieves
+     * bundle basing on module name.
+     *
+     * @param context BundleContext to be searched
+     * @param entity Entity for which bundle is searched
+     * @return Bundle of the entity passed as a parameter
+     */
+    public static Bundle searchForBundle(BundleContext context, Entity entity) {
+        return searchForBundle(context, entity.toDto());
+    }
+
+    /**
+     * Method used to retrieve bundle of the entity dto passed as a parameter.
+     * It tries to find bundle basing on module symbolic name. If module symbolic
+     * name is null it retrieves bundle basing on module name.
+     *
+     * @param context BundleContext to be searched
+     * @param entity EntityDto for which bundle is searched
+     * @return Bundle of the entity dto passed as a parameter
+     */
+    public static Bundle searchForBundle(BundleContext context, EntityDto entity) {
+        if (entity.getBundleSymbolicName() != null) {
+            return WebBundleUtil.findBundleBySymbolicName(context, entity.getBundleSymbolicName());
+        } else {
+            return WebBundleUtil.findBundleByName(context, entity.getModule());
+        }
     }
 
     public static Bundle findMdsBundle(BundleContext bundleContext) {

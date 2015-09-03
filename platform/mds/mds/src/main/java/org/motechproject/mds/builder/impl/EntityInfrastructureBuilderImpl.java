@@ -13,6 +13,7 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.ex.entity.EntityInfrastructureException;
+import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MotechDataRepository;
@@ -20,7 +21,6 @@ import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TransactionalMotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.JavassistUtil;
-import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -126,7 +126,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
             if (null != entity && MotechClassPool.isServiceInterfaceRegistered(className)) {
                 String ddeInterfaceName = MotechClassPool.getInterfaceName(className);
-                Bundle declaringBundle = WebBundleUtil.findBundleByName(bundleContext, entity.getModule());
+                Bundle declaringBundle = MdsBundleHelper.searchForBundle(bundleContext, entity);
                 if (declaringBundle == null) {
                     LOGGER.error("Unable to find bundle declaring the DDE interface for {}", className);
                 } else {

@@ -20,17 +20,17 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.entity.EntityCreationException;
+import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.helper.EntitySorter;
-import org.motechproject.mds.util.JavassistUtil;
+import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.javassist.JavassistLoader;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.JavassistUtil;
 import org.motechproject.mds.util.MDSClassLoader;
-import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -246,7 +246,7 @@ public class MDSConstructorImpl implements MDSConstructor {
             if (holder.isEnum() || holder.isEnumCollection()) {
                 if (field.isReadOnly()) {
                     String enumName = holder.getEnumName();
-                    Class<?> definition = loadClass(entity.getModule(), enumName);
+                    Class<?> definition = loadClass(entity, enumName);
 
                     if (null != definition) {
                         MotechClassPool.registerEnum(enumName);
@@ -349,7 +349,7 @@ public class MDSConstructorImpl implements MDSConstructor {
 
         if (entity.isDDE()) {
             // for DDE we load the class coming from the bundle
-            Bundle declaringBundle = WebBundleUtil.findBundleByName(bundleContext, entity.getModule());
+            Bundle declaringBundle = MdsBundleHelper.searchForBundle(bundleContext, entity);
 
             if (declaringBundle == null) {
                 throw new EntityCreationException("Declaring bundle unavailable for entity " + entity.getClassName());
@@ -367,7 +367,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         List<ClassData> interfaces = new LinkedList<>();
 
         if (entity.isDDE()) {
-            Bundle declaringBundle = WebBundleUtil.findBundleByName(bundleContext, entity.getModule());
+            Bundle declaringBundle = MdsBundleHelper.searchForBundle(bundleContext, entity);
             try {
                 Class<?> definition = declaringBundle.loadClass(entity.getClassName());
 
@@ -427,7 +427,7 @@ public class MDSConstructorImpl implements MDSConstructor {
             if (!entity.isActualEntity() || isSkippedDDE(entity)) {
                 it.remove();
             } else if (entity.isDDE()) {
-                Class<?> definition = loadClass(entity.getModule(), entity.getClassName());
+                Class<?> definition = loadClass(entity, entity.getClassName());
 
                 if (null == definition) {
                     it.remove();
@@ -503,8 +503,8 @@ public class MDSConstructorImpl implements MDSConstructor {
         return new MdsJDOEnhancer(config, enhancerClassLoader);
     }
 
-    private Class<?> loadClass(String module, String className) {
-        Bundle declaringBundle = WebBundleUtil.findBundleByName(bundleContext, module);
+    private Class<?> loadClass(Entity entity, String className) {
+        Bundle declaringBundle = MdsBundleHelper.searchForBundle(bundleContext, entity);
         Class<?> definition = null;
 
         if (declaringBundle == null) {

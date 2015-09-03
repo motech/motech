@@ -26,6 +26,7 @@ public class EntityDto {
     private String className;
     private String name;
     private String module;
+    private String bundleSymbolicName;
     private String namespace;
     private String tableName;
     private boolean recordHistory;
@@ -81,10 +82,10 @@ public class EntityDto {
     }
 
     public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, String superClass) {
-        this(id, className, name, module, namespace, null, false, securityMode, securityMembers, null, null, superClass, false, false);
+        this(id, className, name, module, namespace, null, false, securityMode, securityMembers, null, null, superClass, false, false, null);
     }
 
-    public EntityDto(Long id, String className, String name, String module, String namespace, String tableName, boolean recordHistory, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers, String superClass, boolean abstractClass, boolean securityOptionsModified) {
+    public EntityDto(Long id, String className, String name, String module, String namespace, String tableName, boolean recordHistory, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers, String superClass, boolean abstractClass, boolean securityOptionsModified, String bundleSymbolicName) {
         this.id = id;
         this.className = className;
         this.name = name;
@@ -100,6 +101,7 @@ public class EntityDto {
         this.superClass = superClass;
         this.abstractClass = abstractClass;
         this.securityOptionsModified = securityOptionsModified;
+        this.bundleSymbolicName = bundleSymbolicName;
     }
 
     public Long getId() {
@@ -132,6 +134,14 @@ public class EntityDto {
 
     public void setModule(String module) {
         this.module = module;
+    }
+
+    public String getBundleSymbolicName() {
+        return bundleSymbolicName;
+    }
+
+    public void setBundleSymbolicName(String bundleSymbolicName) {
+        this.bundleSymbolicName = bundleSymbolicName;
     }
 
     public String getNamespace() {

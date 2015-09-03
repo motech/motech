@@ -41,10 +41,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -324,12 +322,10 @@ public class InstanceServiceTest {
         Bundle entitiesBundle = mock(Bundle.class);
         when(bundleContext.getBundles()).thenReturn(new Bundle[]{ddeBundle, entitiesBundle});
 
-        Dictionary<String, String> headers = new Hashtable<>();
-        headers.put("Bundle-Name", "TestModule");
-        when(entity.getModule()).thenReturn("TestModule");
+        when(entity.getBundleSymbolicName()).thenReturn("org.motechproject.test");
 
         when(entitiesBundle.getSymbolicName()).thenReturn(Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME);
-        when(ddeBundle.getHeaders()).thenReturn(headers);
+        when(ddeBundle.getSymbolicName()).thenReturn("org.motechproject.test");
 
         Class testClass = TestSample.class;
         when(entitiesBundle.loadClass(testClass.getName())).thenReturn(testClass);
