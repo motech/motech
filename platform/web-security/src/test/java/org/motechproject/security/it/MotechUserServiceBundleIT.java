@@ -73,7 +73,7 @@ public class MotechUserServiceBundleIT extends BaseIT {
 
     @Test
     public void shouldActivateUser() {
-        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH, UserStatus.BLOCKED, "");
+        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH, UserStatus.BLOCKED, null);
         motechUserService.activateUser("userName");
         MotechUser motechUser = usersDataService.findByUserName("userName");
         assertEquals(UserStatus.ACTIVE, motechUser.getUserStatus());
@@ -86,7 +86,7 @@ public class MotechUserServiceBundleIT extends BaseIT {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfUserNameIsEmptyForRegisterWithActiveInfo() {
-        motechUserService.register("", "password", "ext_id", "", new ArrayList<String>(), Locale.ENGLISH, UserStatus.ACTIVE, "");
+        motechUserService.register("", "password", "ext_id", "", new ArrayList<String>(), Locale.ENGLISH, UserStatus.ACTIVE, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -107,7 +107,7 @@ public class MotechUserServiceBundleIT extends BaseIT {
 
     @Test
     public void shouldNotActivateInvalidUser() {
-        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH, UserStatus.BLOCKED, "");
+        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH, UserStatus.BLOCKED, null);
         motechUserService.activateUser("userName1");
         MotechUser motechUser = usersDataService.findByUserName("userName");
         assertFalse(motechUser.isActive());
@@ -122,7 +122,7 @@ public class MotechUserServiceBundleIT extends BaseIT {
 
     @Test
     public void shouldCreateBlockedUser() {
-        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH, UserStatus.BLOCKED, "");
+        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH, UserStatus.BLOCKED, null);
         MotechUser motechUser = usersDataService.findByUserName("userName");
         assertEquals(UserStatus.BLOCKED, motechUser.getUserStatus());
     }
