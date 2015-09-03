@@ -28,13 +28,13 @@ public class TaskActivity implements Comparable<TaskActivity> {
     @Field(displayName = "Message")
     private String message;
 
-    @Field(displayName = "Task")
+    @Field(displayName = "Task", required = true)
     private Long task;
 
     @Field(displayName = "Fields")
     private List<String> fields;
 
-    @Field(displayName = "Date")
+    @Field(displayName = "Date", required = true)
     private DateTime date;
 
     @Field(displayName = "Activity Type")

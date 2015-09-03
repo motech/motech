@@ -21,6 +21,8 @@ import org.motechproject.mds.util.SecurityMode;
 @Entity(recordHistory = true)
 @Access(value = SecurityMode.PERMISSIONS, members = {"manageMessages"})
 public class NotificationRule {
+
+    @Field
     private Long id;
 
     @Field(required = true)
