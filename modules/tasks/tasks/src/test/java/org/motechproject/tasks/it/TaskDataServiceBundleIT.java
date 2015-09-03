@@ -86,9 +86,9 @@ public class TaskDataServiceBundleIT extends BasePaxIT {
         TaskTriggerInformation trigger1 = new TaskTriggerInformation("receive-1", "test", "test", "0.14", "RECEIVE-1", null);
         TaskTriggerInformation trigger2 = new TaskTriggerInformation("receive-2", "test", "test", "0.14", "RECEIVE-2", null);
 
-        Task expected1 = new Task("name", trigger1, asList(action), null, true, false);
-        Task expected2 = new Task("name", trigger2, asList(action), null, true, false);
-        Task expected3 = new Task("name", new TaskTriggerInformation(trigger1), asList(action), null, true, false);
+        Task expected1 = new Task("name1", trigger1, asList(action), null, true, true);
+        Task expected2 = new Task("name2", trigger2, asList(action), null, true, false);
+        Task expected3 = new Task("name3", new TaskTriggerInformation(trigger1), asList(action), null, true, true);
 
         tasksDataService.create(expected1);
         tasksDataService.create(expected2);
