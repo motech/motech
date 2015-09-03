@@ -26,14 +26,19 @@ public class ActionParameter extends Parameter implements Comparable<ActionParam
 
     @Field
     private Integer order;
-    @Field
+
+    @Field(required = true)
     private String key;
+
     @Field
     private String value;
+
     @Field
     private Boolean required;
+
     @Field
     private Boolean hidden;
+
     @Field
     @Cascade(delete = true)
     private SortedSet<String> options;

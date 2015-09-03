@@ -28,7 +28,7 @@ public class AllMotechSecurityRulesBundleIT extends BaseIT {
     public void testSavingConfig() {
         assertEquals(0, allSecurityRules.getRules().size());
 
-        List<MotechURLSecurityRule> securityRules = new ArrayList<MotechURLSecurityRule>();
+        List<MotechURLSecurityRule> securityRules = new ArrayList<>();
         addRules(securityRules);
 
         MotechSecurityConfiguration config = new MotechSecurityConfiguration(securityRules);
@@ -41,6 +41,10 @@ public class AllMotechSecurityRulesBundleIT extends BaseIT {
         MotechURLSecurityRule rule1 = new MotechURLSecurityRule();
         MotechURLSecurityRule rule2 = new MotechURLSecurityRule();
         MotechURLSecurityRule rule3 = new MotechURLSecurityRule();
+
+        rule1.setPattern("/**");
+        rule2.setPattern("/test/**");
+        rule3.setPattern("/something/else.html");
 
         securityRules.add(rule1);
         securityRules.add(rule2);

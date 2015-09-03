@@ -2,6 +2,7 @@ package org.motechproject.tasks.domain;
 
 import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 
 import java.io.Serializable;
@@ -17,7 +18,10 @@ import java.util.Objects;
 public abstract class Parameter implements Serializable {
     private static final long serialVersionUID = 7685217883414590275L;
 
+    @Field
     private String displayName;
+
+    @Field
     private ParameterType type;
 
     /**
