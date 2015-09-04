@@ -173,6 +173,7 @@
                             org.springframework.beans.factory.config,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
+                            org.springframework.transaction,
                             org.springframework.web.multipart.commons,
                             org.springframework.web.servlet.config,
                             org.eclipse.gemini.blueprint.config,

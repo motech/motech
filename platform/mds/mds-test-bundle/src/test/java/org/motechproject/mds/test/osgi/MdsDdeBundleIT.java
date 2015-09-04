@@ -48,9 +48,9 @@ import org.motechproject.mds.test.domain.lookupcomboboxrelation.LogStatus;
 import org.motechproject.mds.test.domain.lookupcomboboxrelation.MessageLog;
 import org.motechproject.mds.test.domain.manytomany.Author;
 import org.motechproject.mds.test.domain.manytomany.Book;
-import org.motechproject.mds.test.domain.manytomany.Product;
 import org.motechproject.mds.test.domain.manytomany.Clinic;
 import org.motechproject.mds.test.domain.manytomany.Patient;
+import org.motechproject.mds.test.domain.manytomany.Product;
 import org.motechproject.mds.test.domain.manytomany.Supplier;
 import org.motechproject.mds.test.domain.optimisticlocking.SimpleClassWithVersioning;
 import org.motechproject.mds.test.domain.optimisticlocking.TestMdsVersionedEntity;
@@ -83,9 +83,9 @@ import org.motechproject.mds.test.service.instancelifecyclelistener.SubclassBDat
 import org.motechproject.mds.test.service.lookupcomboboxrelation.MessageLogDataService;
 import org.motechproject.mds.test.service.manytomany.AuthorDataService;
 import org.motechproject.mds.test.service.manytomany.BookDataService;
-import org.motechproject.mds.test.service.manytomany.ProductDataService;
 import org.motechproject.mds.test.service.manytomany.ClinicDataService;
 import org.motechproject.mds.test.service.manytomany.PatientDataService;
+import org.motechproject.mds.test.service.manytomany.ProductDataService;
 import org.motechproject.mds.test.service.manytomany.SupplierDataService;
 import org.motechproject.mds.test.service.optimisticlocking.SimpleClassWithVersioningService;
 import org.motechproject.mds.test.service.optimisticlocking.TestMdsVersionedEntityService;
@@ -291,9 +291,9 @@ public class MdsDdeBundleIT extends BasePaxIT {
         goldfishDataService.deleteAll();
         patientDataService.deleteAll();
         clinicDataService.deleteAll();
+        languageDataService.deleteAll();
         stateDataService.deleteAll();
         districtDataService.deleteAll();
-        languageDataService.deleteAll();
         cityDataService.deleteAll();
         countryDataService.deleteAll();
         testSingleReturnLookupService.deleteAll();
@@ -308,25 +308,49 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     private void removeFromListManyToMany() {
         // we must delete relation to avoid sql integrity constraint violation
-        for (Movie m : movieDataService.retrieveAll()) {
-            m.setActors(new ArrayList<Actor>());
-            movieDataService.update(m);
-        }
-        for (Actor a : actorDataService.retrieveAll()) {
-            a.setMovies(new ArrayList<Movie>());
-            actorDataService.update(a);
-        }
+        movieDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                for (Movie m : movieDataService.retrieveAll()) {
+                    m.setActors(new ArrayList<Actor>());
+                    movieDataService.update(m);
+                }
+            }
+        });
+
+        actorDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                for (Actor a : actorDataService.retrieveAll()) {
+                    a.setMovies(new ArrayList<Movie>());
+                    actorDataService.update(a);
+                }
+            }
+        });
+
         movieDataService.deleteAll();
         actorDataService.deleteAll();
 
-        for (Supplier p : supplierDataService.retrieveAll()) {
-            p.setProducts(new ArrayList<Product>());
-            supplierDataService.update(p);
-        }
-        for (Product c : productDataService.retrieveAll()) {
-            c.setSuppliers(new ArrayList<Supplier>());
-            productDataService.update(c);
-        }
+        supplierDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                for (Supplier p : supplierDataService.retrieveAll()) {
+                    p.setProducts(new ArrayList<Product>());
+                    supplierDataService.update(p);
+                }
+            }
+        });
+
+        productDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                for (Product c : productDataService.retrieveAll()) {
+                    c.setSuppliers(new ArrayList<Supplier>());
+                    productDataService.update(c);
+                }
+            }
+        });
+
         productDataService.deleteAll();
         supplierDataService.deleteAll();
     }
@@ -371,7 +395,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
     public void shouldUpdateRelationshipInTransaction() {
         // Create department and add 2 members
         Department department = new Department("Sales Department");
-        Employee employee1 = new Employee("John D.");
+        final Employee employee1 = new Employee("John D.");
         Employee employee2 = new Employee("Chris T.");
 
         Set<Employee> employees = new LinkedHashSet<>();
@@ -382,19 +406,25 @@ public class MdsDdeBundleIT extends BasePaxIT {
         departmentDataService.create(department);
 
         // Create and add new employee
-        Employee employee = employeeDataService.create(new Employee("Elliot R."));
+        final Employee employee = employeeDataService.create(new Employee("Elliot R."));
         employees.add(employee);
-
-        // Create a set of existing and new employee
-        Set<Employee> otherEmployees = new LinkedHashSet<>();
-        otherEmployees.add(employee1);
-        otherEmployees.add(employee);
 
         // Create a new department
         Department anotherDepartment = departmentDataService.create(new Department("Marketing Department"));
+        final Long anotherDeparmentId = anotherDepartment.getId();
 
-        // Update the department with its members in transaction
-        officeService.saveEmployees(anotherDepartment.getId(), otherEmployees);
+        departmentDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                // Create a set of existing and new employee
+                Set<Employee> otherEmployees = new LinkedHashSet<>();
+                otherEmployees.add(employeeDataService.findById(employee1.getId()));
+                otherEmployees.add(employeeDataService.findById(employee.getId()));
+
+                // Update the department with its members in transaction
+                officeService.saveEmployees(anotherDeparmentId, otherEmployees);
+            }
+        });
 
         //Then
         List<Department> departments = departmentDataService.retrieveAll();
@@ -516,9 +546,10 @@ public class MdsDdeBundleIT extends BasePaxIT {
         stateDataService.doInTransaction(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                state.getLanguages().add(lang);
-                state.getDistricts().add(district);
-                stateDataService.update(state);
+                State stateToUpdate = stateDataService.findByName("state1");
+                stateToUpdate.getLanguages().add(languageDataService.retrieveAll().get(0));
+                stateToUpdate.getDistricts().add(districtDataService.findByName("district1"));
+                stateDataService.update(stateToUpdate);
             }
         });
 
@@ -526,11 +557,10 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertNotNull(audit);
         assertEquals(1, audit.size());
 
-        final State retrievedState = stateDataService.findByName(state.getName());
-
         stateDataService.doInTransaction(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                State retrievedState = stateDataService.findByName(state.getName());
                 retrievedState.getLanguages().clear();
                 stateDataService.update(retrievedState);
             }
@@ -552,12 +582,11 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertNotNull(PropertyUtil.safeGetProperty(lastRevision, "state"));
         assertNull(PropertyUtil.safeGetProperty(lastRevision, "language"));
 
-        final State retrievedState2 = stateDataService.findByName(state.getName());
-
         stateDataService.doInTransaction(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                retrievedState2.setDefaultDistrict(district);
+                State retrievedState2 = stateDataService.findByName(state.getName());
+                retrievedState2.setDefaultDistrict(districtDataService.findByName("district1"));
                 stateDataService.update(retrievedState2);
             }
         });
@@ -565,12 +594,13 @@ public class MdsDdeBundleIT extends BasePaxIT {
         stateDataService.doInTransaction(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                State retrievedState2 = stateDataService.findByName(state.getName());
                 retrievedState2.getLanguages().clear();
                 stateDataService.update(retrievedState2);
             }
         });
 
-        audit = historyService.getHistoryForInstance(retrievedState2, null);
+        audit = historyService.getHistoryForInstance(stateDataService.findByName(state.getName()), null);
         assertNotNull(audit);
         assertEquals(4, audit.size());
 
@@ -598,9 +628,10 @@ public class MdsDdeBundleIT extends BasePaxIT {
         patientDataService.doInTransaction(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                patient.getClinics().add(clinic);
-                patient.getClinics().add(clinic2);
-                patientDataService.update(patient);
+                Patient patientToUpdate = patientDataService.findByName("patient1");
+                patientToUpdate.getClinics().add(clinicDataService.findByName("clinic1"));
+                patientToUpdate.getClinics().add(clinicDataService.findByName("clinic2"));
+                patientDataService.update(patientToUpdate);
             }
         });
 
@@ -621,11 +652,12 @@ public class MdsDdeBundleIT extends BasePaxIT {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
                 // We use the clinic objects we retrieved, since they contain information about existing relationship
-                patient2.getClinics().add(retrievedClinic);
-                patient2.getClinics().add(retrievedClinic2);
-                patient2.getClinics().add(clinic3);
+                Patient patientToUpdate = patientDataService.findByName("patient2");
+                patientToUpdate.getClinics().add(clinicDataService.findByName("clinic1"));
+                patientToUpdate.getClinics().add(clinicDataService.findByName("clinic2"));
+                patientToUpdate.getClinics().add(clinicDataService.findByName("clinic3"));
 
-                patientDataService.update(patient2);
+                patientDataService.update(patientToUpdate);
             }
         });
 
@@ -684,10 +716,15 @@ public class MdsDdeBundleIT extends BasePaxIT {
         m = movieDataService.findByName("movie4");
         verifyMovieActor(m, "actor4", "movie4", 2, 1, 1, 0);
 
-        // Delete m1 and a1
-        m = movieDataService.findByName("movie1");
-        m.getActors().remove(0);
-        movieDataService.update(m);
+        movieDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                // Delete m1 and a1
+                Movie movieToUpdate = movieDataService.findByName("movie1");
+                movieToUpdate.getActors().remove(0);
+                movieDataService.update(movieToUpdate);
+            }
+        });
 
         a = actorDataService.findByName("actor1");
         actorDataService.delete(a);
@@ -695,22 +732,36 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(4l, movieDataService.count());
         assertEquals(3l, actorDataService.count());
 
-        movieDataService.delete(m);
+        movieDataService.delete(movieDataService.findByName("movie1"));
         assertEquals(3l, movieDataService.count());
 
         // m2 -> a2, a3, a5
         Actor a5 = new Actor("actor5");
-        a5 = actorDataService.create(a5);
+        actorDataService.create(a5);
 
-        m = movieDataService.findByName("movie2");
-        m.getActors().add(0, a5);
-        a5.getMovies().add(m);
-        movieDataService.update(m);
-        verifyMovieActor(m, "actor5", "movie2", 1, 3, 0, 0);
+        movieDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Movie movieToUpdate = movieDataService.findByName("movie2");
+                Actor actor5 = actorDataService.findByName("actor5");
+                movieToUpdate.getActors().add(0, actor5);
+                actor5.getMovies().add(movieToUpdate);
+                movieDataService.update(movieToUpdate);
+            }
+        });
 
-        // remove a5 from m2
-        m.getActors().remove(0);
-        movieDataService.update(m);
+        verifyMovieActor(movieDataService.findByName("movie2"), "actor5", "movie2", 1, 3, 0, 0);
+
+        movieDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                // remove a5 from m2
+                Movie movieToUpdate = movieDataService.findByName("movie2");
+                movieToUpdate.getActors().remove(0);
+                movieDataService.update(movieToUpdate);
+            }
+        });
+
         m = movieDataService.findByName("movie2");
         verifyMovieActor(m, "actor2", "movie2", 1, 2, 0, 0);
     }
@@ -730,42 +781,65 @@ public class MdsDdeBundleIT extends BasePaxIT {
         Supplier s1 = new Supplier("supplier1");
         Supplier s2 = new Supplier("supplier2");
 
-        p1 = productDataService.create(p1);
-        p2 = productDataService.create(p2);
-        p3 = productDataService.create(p3);
-        p4 = productDataService.create(p4);
-        p5 = productDataService.create(p5);
-        p6 = productDataService.create(p6);
-        p7 = productDataService.create(p7);
+        productDataService.create(p1);
+        productDataService.create(p2);
+        productDataService.create(p3);
+        productDataService.create(p4);
+        productDataService.create(p5);
+        productDataService.create(p6);
+        productDataService.create(p7);
 
-        s1 = supplierDataService.create(s1);
-        s2 = supplierDataService.create(s2);
+        supplierDataService.create(s1);
+        supplierDataService.create(s2);
 
-        s1.getProducts().add(p1);
-        s1.getProducts().add(p2);
-        s1.getProducts().add(p3);
-        s1.getProducts().add(p4);
-        s1.getProducts().add(p5);
+        supplierDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Supplier s1 = supplierDataService.findBySupplierName("supplier1");
+                Product p1 = productDataService.findByProductName("product1");
+                Product p2 = productDataService.findByProductName("product2");
+                Product p3 = productDataService.findByProductName("product3");
+                Product p4 = productDataService.findByProductName("product4");
+                Product p5 = productDataService.findByProductName("product5");
 
-        p1.getSuppliers().add(s1);
-        p2.getSuppliers().add(s1);
-        p3.getSuppliers().add(s1);
-        p4.getSuppliers().add(s1);
-        p5.getSuppliers().add(s1);
+                s1.getProducts().add(p1);
+                s1.getProducts().add(p2);
+                s1.getProducts().add(p3);
+                s1.getProducts().add(p4);
+                s1.getProducts().add(p5);
 
-        supplierDataService.update(s1);
+                p1.getSuppliers().add(s1);
+                p2.getSuppliers().add(s1);
+                p3.getSuppliers().add(s1);
+                p4.getSuppliers().add(s1);
+                p5.getSuppliers().add(s1);
 
-        s2.getProducts().add(p4);
-        s2.getProducts().add(p5);
-        s2.getProducts().add(p6);
-        s2.getProducts().add(p7);
+                supplierDataService.update(s1);
+            }
+        });
 
-        p4.getSuppliers().add(s2);
-        p5.getSuppliers().add(s2);
-        p6.getSuppliers().add(s2);
-        p7.getSuppliers().add(s2);
+        supplierDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Supplier s2 = supplierDataService.findBySupplierName("supplier2");
+                Product p4 = productDataService.findByProductName("product4");
+                Product p5 = productDataService.findByProductName("product5");
+                Product p6 = productDataService.findByProductName("product6");
+                Product p7 = productDataService.findByProductName("product7");
 
-        supplierDataService.update(s2);
+                s2.getProducts().add(p4);
+                s2.getProducts().add(p5);
+                s2.getProducts().add(p6);
+                s2.getProducts().add(p7);
+
+                p4.getSuppliers().add(s2);
+                p5.getSuppliers().add(s2);
+                p6.getSuppliers().add(s2);
+                p7.getSuppliers().add(s2);
+
+                supplierDataService.update(s2);
+            }
+        });
 
         // verify s1 -> p1, p2, p3, p4, p5
         Supplier supplier = supplierDataService.findBySupplierName("supplier1");
@@ -798,14 +872,27 @@ public class MdsDdeBundleIT extends BasePaxIT {
         authorDataService.create(a2);
         authorDataService.create(a3);
 
-        a1.getBooks().add(b1);
-        a1.getBooks().add(b2);
+        final Long a1Id = a1.getId();
+        final Long a2Id = a2.getId();
+        final Long a3Id = a3.getId();
 
-        // author1 - book1, book2
-        authorDataService.update(a1);
+        final Long b1Id = b1.getId();
+        final Long b2Id = b2.getId();
+        final Long b3Id = b3.getId();
 
-        b3 = bookDataService.findById(b3.getId());
-        a1 = authorDataService.findById(a1.getId());
+        authorDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Author authorToUpdate = authorDataService.findById(a1Id);
+                authorToUpdate.getBooks().add(bookDataService.findById(b1Id));
+                authorToUpdate.getBooks().add(bookDataService.findById(b2Id));
+
+                // author1 - book1, book2
+                authorDataService.update(authorToUpdate);
+            }
+        });
+
+        a1 = authorDataService.findById(a1Id);
 
         // Validate the record is saved and each side points to the other
         assertEquals(2, a1.getBooks().size());
@@ -814,37 +901,48 @@ public class MdsDdeBundleIT extends BasePaxIT {
         Author a = b.getAuthors().iterator().next();
         assertEquals("author1", a.getName());
 
-        a1.getBooks().add(b3);
+        authorDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Author authorToUpdate = authorDataService.findById(a1Id);
+                authorToUpdate.getBooks().add(bookDataService.findById(b3Id));
 
-        // author1 - book3 ( after this update it should be author1 - book1, book2, book3 )
-        authorDataService.update(a1);
+                // author1 - book3 ( after this update it should be author1 - book1, book2, book3 )
+                authorDataService.update(authorToUpdate);
+            }
+        });
 
-        a2 = authorDataService.findById(a2.getId());
-        b2 = bookDataService.findById(b2.getId());
+        authorDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Author authorToUpdate = authorDataService.findById(a2Id);
+                authorToUpdate.getBooks().add(bookDataService.findById(b2Id));
 
-        a2.getBooks().add(b2);
+                // author2 - book2
+                authorDataService.update(authorToUpdate);
+            }
+        });
 
-        // author2 - book2
-        authorDataService.update(a2);
+        authorDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Author authorToUpdate = authorDataService.findById(a3Id);
+                authorToUpdate.getBooks().add(bookDataService.findById(b2Id));
+                authorToUpdate.getBooks().add(bookDataService.findById(b3Id));
 
-        a3 = authorDataService.findById(a3.getId());
-        b2 = bookDataService.findById(b2.getId());
-        b3 = bookDataService.findById(b3.getId());
-
-        a3.getBooks().add(b2);
-        a3.getBooks().add(b3);
-
-        // author3 - book2, book3
-        authorDataService.update(a3);
+                // author3 - book2, book3
+                authorDataService.update(authorToUpdate);
+            }
+        });
 
         // Retrieve all objects to check if many to many works correctly
-        a1 = authorDataService.findById(a1.getId());
-        a2 = authorDataService.findById(a2.getId());
-        a3 = authorDataService.findById(a3.getId());
+        a1 = authorDataService.findById(a1Id);
+        a2 = authorDataService.findById(a2Id);
+        a3 = authorDataService.findById(a3Id);
 
-        b1 = bookDataService.findById(b1.getId());
-        b2 = bookDataService.findById(b2.getId());
-        b3 = bookDataService.findById(b3.getId());
+        b1 = bookDataService.findById(b1Id);
+        b2 = bookDataService.findById(b2Id);
+        b3 = bookDataService.findById(b3Id);
 
         // After all changes relation 'author - book' should look like :
         // author1 - book1, book2, book3
@@ -908,16 +1006,21 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(boat.getYearOfProduction(), created.get(0).getYearOfProduction(), 0.1);
         assertEquals(boat.getMaxSpeed(), created.get(0).getMaxSpeed());
 
-        Boat toUpdate = created.get(0);
-        toUpdate.setMaxSpeed(130);
+        boatDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Boat toUpdate = boatDataService.retrieveAll().get(0);
+                toUpdate.setMaxSpeed(130);
 
-        boatDataService.update(toUpdate);
+                boatDataService.update(toUpdate);
+            }
+        });
 
         List<Boat> updated = boatDataService.retrieveAll();
 
         assertEquals(1, updated.size());
-        assertEquals(toUpdate.getYearOfProduction(), updated.get(0).getYearOfProduction(), 0.1);
-        assertEquals(toUpdate.getMaxSpeed(), updated.get(0).getMaxSpeed());
+        assertEquals(1900, updated.get(0).getYearOfProduction(), 0.1);
+        assertEquals(130, updated.get(0).getMaxSpeed());
 
         boatDataService.delete(updated.get(0));
 
@@ -937,16 +1040,21 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(motorcycle.getYearOfProduction(), created.get(0).getYearOfProduction(), 0.1);
         assertEquals(motorcycle.getProducer(), created.get(0).getProducer());
 
-        Motorcycle toUpdate = created.get(0);
-        toUpdate.setProducer("Some other Producer");
+        motorcycleDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Motorcycle toUpdate = motorcycleDataService.retrieveAll().get(0);
+                toUpdate.setProducer("Some other Producer");
 
-        motorcycleDataService.update(toUpdate);
+                motorcycleDataService.update(toUpdate);
+            }
+        });
 
         List<Motorcycle> updated = motorcycleDataService.retrieveAll();
 
         assertEquals(1, updated.size());
-        assertEquals(toUpdate.getYearOfProduction(), updated.get(0).getYearOfProduction(), 0.1);
-        assertEquals(toUpdate.getProducer(), updated.get(0).getProducer());
+        assertEquals(1900, updated.get(0).getYearOfProduction(), 0.1);
+        assertEquals("Some other Producer", updated.get(0).getProducer());
 
         motorcycleDataService.delete(updated.get(0));
 
@@ -967,17 +1075,22 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(truck.getEngineCapacity(), created.get(0).getEngineCapacity(), 0);
         assertEquals(truck.getVolume(), created.get(0).getVolume(), 0);
 
-        Truck toUpdate = created.get(0);
-        toUpdate.setVolume(2000);
+        truckDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Truck toUpdate = truckDataService.retrieveAll().get(0);
+                toUpdate.setVolume(2000);
 
-        truckDataService.update(toUpdate);
+                truckDataService.update(toUpdate);
+            }
+        });
 
         List<Truck> updated = truckDataService.retrieveAll();
 
         assertEquals(1, updated.size());
-        assertEquals(toUpdate.getYearOfProduction(), updated.get(0).getYearOfProduction(), 0.1);
-        assertEquals(toUpdate.getEngineCapacity(), updated.get(0).getEngineCapacity(), 0);
-        assertEquals(toUpdate.getVolume(), updated.get(0).getVolume(), 0);
+        assertEquals(1900, updated.get(0).getYearOfProduction(), 0.1);
+        assertEquals(2.0, updated.get(0).getEngineCapacity(), 0);
+        assertEquals(2000, updated.get(0).getVolume(), 0);
 
         truckDataService.delete(updated.get(0));
 
@@ -996,15 +1109,20 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(1, created.size());
         assertEquals(dog.getHiddenBones(), created.get(0).getHiddenBones());
 
-        Dog toUpdate = created.get(0);
-        toUpdate.setHiddenBones(5);
+        dogDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Dog toUpdate = dogDataService.retrieveAll().get(0);
+                toUpdate.setHiddenBones(5);
 
-        dogDataService.update(toUpdate);
+                dogDataService.update(toUpdate);
+            }
+        });
 
         List<Dog> updated = dogDataService.retrieveAll();
 
         assertEquals(1, updated.size());
-        assertEquals(toUpdate.getHiddenBones(), updated.get(0).getHiddenBones());
+        assertEquals(5, updated.get(0).getHiddenBones());
 
         dogDataService.delete(updated.get(0));
 
@@ -1023,15 +1141,20 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(1, created.size());
         assertEquals(cat.getLivesLeft(), created.get(0).getLivesLeft());
 
-        Cat toUpdate = created.get(0);
-        toUpdate.setLivesLeft(8);
+        catDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Cat toUpdate = catDataService.retrieveAll().get(0);
+                toUpdate.setLivesLeft(8);
 
-        catDataService.update(toUpdate);
+                catDataService.update(toUpdate);
+            }
+        });
 
         List<Cat> updated = catDataService.retrieveAll();
 
         assertEquals(1, updated.size());
-        assertEquals(toUpdate.getLivesLeft(), updated.get(0).getLivesLeft());
+        assertEquals(8, updated.get(0).getLivesLeft());
 
         catDataService.delete(updated.get(0));
 
@@ -1051,16 +1174,21 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(goldfish.getLength(), created.get(0).getLength());
         assertEquals(goldfish.getWishesLeft(), created.get(0).getWishesLeft());
 
-        Goldfish toUpdate = created.get(0);
-        toUpdate.setWishesLeft(2);
+        goldfishDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Goldfish toUpdate = goldfishDataService.retrieveAll().get(0);
+                toUpdate.setWishesLeft(2);
 
-        goldfishDataService.update(toUpdate);
+                goldfishDataService.update(toUpdate);
+            }
+        });
 
         List<Goldfish> updated = goldfishDataService.retrieveAll();
 
         assertEquals(1, updated.size());
-        assertEquals(toUpdate.getLength(), updated.get(0).getLength());
-        assertEquals(toUpdate.getWishesLeft(), updated.get(0).getWishesLeft());
+        assertEquals(500, updated.get(0).getLength());
+        assertEquals(2, updated.get(0).getWishesLeft());
 
         goldfishDataService.delete(updated.get(0));
 
@@ -1086,16 +1214,21 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(person.getAge(), created.get(0).getAge());
         assertVehicleListEquals(person.getVehicles(), created.get(0).getVehicles());
 
-        VehicleOwner toUpdate = created.get(0);
-        toUpdate.setAge(16);
+        vehicleOwnerDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                VehicleOwner toUpdate = vehicleOwnerDataService.retrieveAll().get(0);
+                toUpdate.setAge(16);
 
-        vehicleOwnerDataService.update(toUpdate);
+                vehicleOwnerDataService.update(toUpdate);
+            }
+        });
 
         List<VehicleOwner> updated = vehicleOwnerDataService.retrieveAll();
 
         assertEquals(1, updated.size());
-        assertEquals(toUpdate.getAge(), updated.get(0).getAge());
-        assertVehicleListEquals(toUpdate.getVehicles(), updated.get(0).getVehicles());
+        assertEquals(16, updated.get(0).getAge());
+        assertVehicleListEquals(person.getVehicles(), updated.get(0).getVehicles());
 
         vehicleOwnerDataService.delete(updated.get(0));
 
@@ -1123,16 +1256,21 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(person.getAge(), created.get(0).getAge());
         assertPetListEquals(person.getPets(), created.get(0).getPets());
 
-        PetOwner toUpdate = created.get(0);
-        toUpdate.setAge(16);
+        petOwnerDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                PetOwner toUpdate = petOwnerDataService.retrieveAll().get(0);
+                toUpdate.setAge(16);
 
-        petOwnerDataService.update(toUpdate);
+                petOwnerDataService.update(toUpdate);
+            }
+        });
 
         List<PetOwner> updated = petOwnerDataService.retrieveAll();
 
         assertEquals(1, updated.size());
-        assertEquals(toUpdate.getAge(), updated.get(0).getAge());
-        assertPetListEquals(toUpdate.getPets(), updated.get(0).getPets());
+        assertEquals(16, updated.get(0).getAge());
+        assertPetListEquals(person.getPets(), updated.get(0).getPets());
 
         petOwnerDataService.delete(updated.get(0));
 
@@ -1352,25 +1490,51 @@ public class MdsDdeBundleIT extends BasePaxIT {
         actorDataService.create(a3);
         actorDataService.create(a4);
 
-        // m1 - > a1
-        m1.getActors().add(a1);
-        a1.getMovies().add(m1);
-        movieDataService.update(m1);
+        movieDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                // m1 - > a1
+                Movie movieToUpdate = movieDataService.findByName("movie1");
+                Actor actor = actorDataService.findByName("actor1");
 
-        // m2 - > a2, a3
-        m2.getActors().add(a2);
-        m2.getActors().add(a3);
-        a2.getMovies().add(m2);
-        a3.getMovies().add(m2);
-        movieDataService.update(m2);
+                movieToUpdate.getActors().add(actor);
+                actor.getMovies().add(movieToUpdate);
+                movieDataService.update(movieToUpdate);
+            }
+        });
 
-        //m3, m4 -> a4
-        m3.getActors().add(a4);
-        m4.getActors().add(a4);
-        a4.getMovies().add(m3);
-        a4.getMovies().add(m4);
-        movieDataService.update(m4);
-        movieDataService.update(m3);
+        movieDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                // m2 - > a2, a3
+                Movie movieToUpdate = movieDataService.findByName("movie2");
+                Actor actor2 = actorDataService.findByName("actor2");
+                Actor actor3 = actorDataService.findByName("actor3");
+
+                movieToUpdate.getActors().add(actor2);
+                movieToUpdate.getActors().add(actor3);
+                actor2.getMovies().add(movieToUpdate);
+                actor3.getMovies().add(movieToUpdate);
+                movieDataService.update(movieToUpdate);
+            }
+        });
+
+        movieDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                //m3, m4 -> a4
+                Movie movie3 = movieDataService.findByName("movie3");
+                Movie movie4 = movieDataService.findByName("movie4");
+                Actor actor4 = actorDataService.findByName("actor4");
+
+                movie3.getActors().add(actor4);
+                movie4.getActors().add(actor4);
+                actor4.getMovies().add(movie3);
+                actor4.getMovies().add(movie4);
+                movieDataService.update(movie4);
+                movieDataService.update(movie3);
+            }
+        });
     }
 
     private void setUpDataForLookupsOnRelationshipFields() {
@@ -1733,19 +1897,27 @@ public class MdsDdeBundleIT extends BasePaxIT {
         TestMdsEntity actual = testMdsEntities.get(0);
 
         assertEquals(actual.getModifiedBy(), "motech");
-        assertEquals(actual.getCreator(),"motech");
-        assertEquals(actual.getOwner(),"motech");
+        assertEquals(actual.getCreator(), "motech");
+        assertEquals(actual.getOwner(), "motech");
         assertNotNull(actual.getId());
 
-        actual.setSomeString("newName");
-        actual.setOwner("newOwner");
         DateTime modificationDate = actual.getModificationDate();
-        testMdsEntityService.update(actual);
+
+        testMdsEntityService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                TestMdsEntity objectToUpdate = testMdsEntityService.retrieveAll().get(0);
+                objectToUpdate.setSomeString("newName");
+                objectToUpdate.setOwner("newOwner");
+                testMdsEntityService.update(objectToUpdate);
+            }
+        });
 
         testMdsEntities = testMdsEntityService.retrieveAll();
-        assertEquals(asList(actual), testMdsEntities);
+        assertEquals(1, testMdsEntities.size());
 
         assertEquals(testMdsEntities.get(0).getOwner(), "newOwner");
+        assertEquals(testMdsEntities.get(0).getSomeString(), "newName");
         //Actual modificationDate of instance should be after previous one
         assertTrue(modificationDate.isBefore(testMdsEntities.get(0).getModificationDate()));
     }

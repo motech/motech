@@ -9,12 +9,12 @@ import org.mockito.Mock;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.MotechSettings;
-import org.motechproject.server.config.domain.SettingsRecord;
+import org.motechproject.server.config.domain.SettingsRecordDto;
 import org.motechproject.server.startup.StartupManager;
-import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.server.web.dto.StartupViewData;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
@@ -63,7 +63,7 @@ public class StartupControllerTest {
     private HttpServletRequest httpServletRequest;
 
     @Mock
-    private SettingsRecord motechSettings;
+    private SettingsRecordDto motechSettings;
 
     @Mock
     private MotechUserService userService;

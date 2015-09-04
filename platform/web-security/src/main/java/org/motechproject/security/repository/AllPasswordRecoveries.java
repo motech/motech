@@ -6,6 +6,8 @@ import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.security.domain.PasswordRecovery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Locale;
@@ -23,6 +25,7 @@ public class AllPasswordRecoveries {
      *
      * @return list that contains recoveries
      */
+    @Transactional
     public List<PasswordRecovery> getExpired() {
         Range<DateTime> range = new Range<>(new DateTime(0), DateUtil.now());
         return dataService.findByExpirationDate(range);
@@ -33,6 +36,7 @@ public class AllPasswordRecoveries {
      *
      * @return list that contains recoveries
      */
+    @Transactional
     public List<PasswordRecovery> allRecoveries() {
         return dataService.retrieveAll();
     }
@@ -43,6 +47,7 @@ public class AllPasswordRecoveries {
      * @param username name of user
      * @return recovery for given name or null in case when username is a null
      */
+    @Transactional
     public PasswordRecovery findForUser(String username) {
         return null == username ? null : dataService.findForUser(username);
     }
@@ -53,6 +58,7 @@ public class AllPasswordRecoveries {
      * @param token for recovery
      * @return recovery for given token or null in case when token is a null
      */
+    @Transactional
     public PasswordRecovery findForToken(String token) {
         return null == token ? null : dataService.findForToken(token);
     }
@@ -67,6 +73,7 @@ public class AllPasswordRecoveries {
      * @param locale for recovery
      * @return recovery with given informations
      */
+    @Transactional
     public PasswordRecovery createRecovery(String username, String email, String token, DateTime expirationDate, Locale locale) {
         PasswordRecovery oldRecovery = findForUser(username);
 
@@ -91,6 +98,7 @@ public class AllPasswordRecoveries {
      *
      * @param passwordRecovery to be updated
      */
+    @Transactional(propagation = Propagation.MANDATORY)
     public void update(PasswordRecovery passwordRecovery) {
         dataService.update(passwordRecovery);
     }
@@ -100,6 +108,7 @@ public class AllPasswordRecoveries {
      *
      * @param passwordRecovery to be added
      */
+    @Transactional
     public void add(PasswordRecovery passwordRecovery) {
         if (findForUser(passwordRecovery.getUsername()) == null) {
             dataService.create(passwordRecovery);
@@ -111,6 +120,7 @@ public class AllPasswordRecoveries {
      *
      * @param passwordRecovery to be removed
      */
+    @Transactional
     public void remove(PasswordRecovery passwordRecovery) {
         dataService.delete(passwordRecovery);
     }

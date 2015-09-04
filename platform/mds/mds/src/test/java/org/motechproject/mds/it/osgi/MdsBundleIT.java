@@ -30,6 +30,7 @@ import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.osgi.TestClass;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryExecutor;
@@ -57,6 +58,8 @@ import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
@@ -192,7 +195,7 @@ public class MdsBundleIT extends BasePaxIT {
         verifyRestDocumentation();
     }
 
-    private void verifyComboboxDataMigration() throws NoSuchFieldException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private void verifyComboboxDataMigration() {
         Long entityId = entityService.getEntityByClassName(FOO_CLASS).getId();
         Long fieldId = getFieldIdByName(entityService.getFields(entityId), "someEnum");
 
@@ -204,7 +207,16 @@ public class MdsBundleIT extends BasePaxIT {
         generator.regenerateMdsDataBundle(true);
         service = (MotechDataService) ServiceRetriever.getService(bundleContext, ClassName.getInterfaceName(FOO_CLASS), true);
 
-        assertValuesEqual(getExpectedComboboxValues(), getValues(service.retrieveAll()));
+        service.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                try {
+                    assertValuesEqual(getExpectedComboboxValues(), getValues(service.retrieveAll()));
+                } catch (NoSuchFieldException | ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+                    throw new MdsException("Error while asserting instance values", ex);
+                }
+            }
+        });
     }
 
     private void assertValuesEqual(List<List<Object>> expected, List<List<Object>> result) {
@@ -465,62 +477,93 @@ public class MdsBundleIT extends BasePaxIT {
     private void verifyInstanceUpdating() throws Exception {
         getLogger().info("Verifying instance updating");
 
-        List<Object> allObjects = service.retrieveAll(QueryParams.descOrder("someDateTime"));
-        assertEquals(allObjects.size(), INSTANCE_COUNT);
+        service.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                try {
+                    List<Object> allObjects = service.retrieveAll(QueryParams.descOrder("someDateTime"));
+                    assertEquals(allObjects.size(), INSTANCE_COUNT);
 
-        Object retrieved = allObjects.get(0);
-        Class objClass = retrieved.getClass();
+                    Object retrieved = allObjects.get(0);
+                    Class objClass = retrieved.getClass();
 
-        updateInstance(retrieved, false, "anotherString", "anotherStringCp", new ArrayList(asList("4", "5")),
-                YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
-                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"));
+                    updateInstance(retrieved, false, "anotherString", "anotherStringCp", new ArrayList(asList("4", "5")),
+                            YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
+                            DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"));
 
-        service.update(retrieved);
+                    service.update(retrieved);
+                } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
+                    throw new MdsException("Error while updating instance", ex);
+                }
+            }
+        });
+
         Object updated = service.retrieveAll(QueryParams.descOrder("someDateTime")).get(0);
 
         assertInstance(updated, false, "anotherString", "anotherStringCp", asList("4", "5"),
-                       YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
-                       DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"));
+                YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
+                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(updated.getClass(), "two"));
     }
 
     private void verifyInstanceCreatingOrUpdating(Class<?> loadedClass) throws Exception {
         getLogger().info("Verifying instance creating or updating using createOrUpdate() method");
 
         // Creating a new object using createOrUpdate() method and checking if it was really added
-        Object instance = loadedClass.newInstance();
+        final Object instance = loadedClass.newInstance();
 
         updateInstance(instance, false, "newInstance", "newInstance", new ArrayList(asList("1", "2", "3")),
                 NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
                 DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1, toEnum(loadedClass, "one"));
 
-        service.createOrUpdate(instance);                           // using createOrUpdate() to create
+        service.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                service.createOrUpdate(instance); // using createOrUpdate() to create
+            }
+        });
 
-        List<Object> allObjects = service.retrieveAll();
-        assertEquals(allObjects.size(), INSTANCE_COUNT + 1);        // should return one extra object
+        service.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                try {
+                    List<Object> allObjects = service.retrieveAll();
+                    assertEquals(INSTANCE_COUNT + 1, allObjects.size());        // should return one extra object
 
+                    // Now update that object using createOrUpdate method and check if it is really updated
+                    Object retrieved = allObjects.get(INSTANCE_COUNT);          // gets the last added object
+                    Class objClass = retrieved.getClass();
 
-        // Now update that object using createOrUpdate method and check if it is really updated
-        Object retrieved = allObjects.get(INSTANCE_COUNT);          // gets the last added object
-        Class objClass = retrieved.getClass();
+                    updateInstance(retrieved, false, "yetAnotherString", "yetAnotherStringCp", new ArrayList(asList("1", "2", "3")),
+                            YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
+                            DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"));
 
-        updateInstance(retrieved, false, "yetAnotherString", "yetAnotherStringCp", new ArrayList(asList("1", "2", "3")),
-                YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
-                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"));
+                    service.createOrUpdate(retrieved); // using createOrUpdate() to update
 
-        service.createOrUpdate(retrieved);                          // using createOrUpdate() to update
-
-        assertEquals(allObjects.size(), INSTANCE_COUNT + 1);        // number of objects shouldn't change since last check
+                    assertEquals(INSTANCE_COUNT + 1, allObjects.size()); // number of objects shouldn't change since last check
+                } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
+                    throw new MdsException("Error while updating instance", ex);
+                }
+            }
+        });
 
         Object updated = service.retrieveAll().get(INSTANCE_COUNT); // gets the last added object
 
         assertInstance(updated, false, "yetAnotherString", "yetAnotherStringCp", asList("1", "2", "3"),
                 YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
-                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"));
+                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(updated.getClass(), "two"));
 
-        // Remove new object for the sake of other tests
-        service.delete(updated);
-        allObjects = service.retrieveAll();
-        assertEquals(allObjects.size(), INSTANCE_COUNT);            // check if the object is removed
+        final Long id = (Long) PropertyUtils.getProperty(updated, "id");
+
+        service.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                // Remove new object for the sake of other tests
+                service.deleteById(id);
+            }
+        });
+
+        List<Object> allObjects = service.retrieveAll();
+        assertEquals(INSTANCE_COUNT, (allObjects.size())); // check if the object is removed
     }
 
     private void verifyColumnNameChange() throws ClassNotFoundException, InterruptedException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -600,29 +643,43 @@ public class MdsBundleIT extends BasePaxIT {
         getLogger().info("Verifying instance deleting");
 
         // 2 instances come from csv
-        int instanceCount = INSTANCE_COUNT + 2;
+        final int instanceCount = INSTANCE_COUNT + 2;
 
-        List<Object> objects = service.retrieveAll();
+        service.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                List<Object> objects = service.retrieveAll();
 
-        for (int i = 0; i < instanceCount; i++) {
-            service.delete(objects.get(i));
-            assertEquals(instanceCount - i - 1, service.retrieveAll().size());
-        }
+                for (int i = 0; i < instanceCount; i++) {
+                    service.delete(objects.get(i));
+                    assertEquals(instanceCount - i - 1, service.retrieveAll().size());
+                }
+            }
+        });
     }
 
-    private void verifyComboboxValueUpdate() throws Exception {
+    private void verifyComboboxValueUpdate() {
         getLogger().info("Verifying combobox value update");
         Long entityId = entityService.getEntityByClassName(FOO_CLASS).getId();
 
-        List<Object> allObjects = service.retrieveAll(QueryParams.ascOrder("someDateTime"));
-        assertEquals(allObjects.size(), INSTANCE_COUNT);
-        Object retrieved = allObjects.get(0);
-        Class objClass = retrieved.getClass();
+        service.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                try {
+                    List<Object> allObjects = service.retrieveAll(QueryParams.ascOrder("someDateTime"));
+                    assertEquals(allObjects.size(), INSTANCE_COUNT);
+                    Object retrieved = allObjects.get(0);
+                    Class objClass = retrieved.getClass();
 
-        updateInstance(retrieved, false, "anotherString", "anotherStringCp", new ArrayList(asList("0", "35")),
-                YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
-                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 3, toEnum(objClass, "two"));
-        service.update(retrieved);
+                    updateInstance(retrieved, false, "anotherString", "anotherStringCp", new ArrayList(asList("0", "35")),
+                            YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
+                            DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 3, toEnum(objClass, "two"));
+                    service.update(retrieved);
+                } catch(NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
+                    throw new MdsException("Error while updating instance", ex);
+                }
+            }
+        });
 
         FieldDto comboboxField = entityService.findEntityFieldByName(entityId, "someList");
 
@@ -857,9 +914,9 @@ public class MdsBundleIT extends BasePaxIT {
         PropertyUtils.setProperty(instance, "someEnum", enumVal);
     }
 
-    private void assertInstance(Object instance, Boolean boolField, String stringField, String capitalizedStrField, List listField,
+    private void assertInstance(final Object instance, Boolean boolField, String stringField, String capitalizedStrField, List listField,
                                 DateTime dateTimeField, LocalDate localDateField, Map map, Period period,
-                                Byte[] blob, Date dateField, Double decimalField, Time timeField, Integer intField,
+                                final Byte[] blob, Date dateField, Double decimalField, Time timeField, Integer intField,
                                 Object enumVal)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         assertNotNull(instance);
@@ -877,9 +934,16 @@ public class MdsBundleIT extends BasePaxIT {
         assertEquals(intField, PropertyUtils.getProperty(instance, "someInt"));
         assertEquals(enumVal, PropertyUtils.getProperty(instance, "someEnum"));
 
+        final Long id = (Long) PropertyUtils.getProperty(instance, "id");
+
         // assert blob
-        Object blobValue = service.getDetachedField(instance, "someBlob");
-        assertEquals(Arrays.toString(blob), Arrays.toString((Byte[]) blobValue));
+        service.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Object blobValue = service.getDetachedField(service.findById(id), "someBlob");
+                assertEquals(Arrays.toString(blob), Arrays.toString((Byte[]) blobValue));
+            }
+        });
     }
 
     private Object toEnum(Class entityClass, String str) throws NoSuchFieldException {

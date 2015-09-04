@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import javax.jdo.Query;
@@ -103,6 +104,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public void save(final Task task) {
         Set<TaskError> errors = TaskValidator.validate(task);
 
@@ -130,6 +132,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public ActionEvent getActionEventFor(TaskActionInformation taskActionInformation)
             throws ActionNotFoundException {
         Channel channel = channelService.getChannel(taskActionInformation.getModuleName());
@@ -152,6 +155,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public List<Task> getAllTasks() {
         List<Task> tasks = tasksDataService.retrieveAll();
 
@@ -161,6 +165,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public List<Task> findTasksByName(String name) {
         List<Task> tasks = tasksDataService.findTasksByName(name);
 
@@ -170,11 +175,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public List<Task> findActiveTasksForTrigger(final TriggerEvent trigger) {
         return (trigger == null) ? Collections.<Task>emptyList() : findActiveTasksForTriggerSubject(trigger.getSubject());
     }
 
     @Override
+    @Transactional
     public List<Task> findActiveTasksForTriggerSubject(final String subject) {
         List<Task> list = null;
 
@@ -203,6 +210,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public TriggerEvent findTrigger(String subject) throws TriggerNotFoundException {
         List<Channel> channels = channelService.getAllChannels();
         TriggerEvent trigger = null;
@@ -255,6 +263,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public Task getTask(Long taskId) {
         Task task = tasksDataService.findById(taskId);
         checkChannelAvailableInTask(task);
@@ -263,6 +272,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public void deleteTask(Long taskId) {
         Task t = getTask(taskId);
 
@@ -274,6 +284,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @MotechListener(subjects = CHANNEL_UPDATE_SUBJECT)
+    @Transactional
     public void validateTasksAfterChannelUpdate(MotechEvent event) {
         String moduleName = event.getParameters().get(CHANNEL_MODULE_NAME).toString();
         Channel channel = channelService.getChannel(moduleName);
@@ -295,6 +306,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @MotechListener(subjects = DATA_PROVIDER_UPDATE_SUBJECT)
+    @Transactional
     public void validateTasksAfterTaskDataProviderUpdate(MotechEvent event) {
         String providerName = event.getParameters().get(DATA_PROVIDER_NAME).toString();
 
@@ -320,6 +332,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public String exportTask(Long taskId) {
         Task task = getTask(taskId);
 
@@ -360,6 +373,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public Task importTask(String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(json);
@@ -388,6 +402,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public List<Task> findTasksDependentOnModule(final String moduleName) {
         List<Task> tasks = tasksDataService.executeQuery(new QueryExecution<List<Task>>() {
             @Override

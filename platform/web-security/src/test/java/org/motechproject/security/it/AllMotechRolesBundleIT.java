@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.MotechRolesDataService;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -60,11 +62,17 @@ public class AllMotechRolesBundleIT extends BaseIT {
     public void editRole() {
         MotechRole motechRoleBeforeEdit = new MotechRole("roleBeforeEdit", asList("per1", "per2"), false);
         allMotechRoles.add(motechRoleBeforeEdit);
-        MotechRole motechRoleAfterEdit = allMotechRoles.findByRoleName("roleBeforeEdit");
-        motechRoleAfterEdit.setRoleName("roleAfterEdit");
-        allMotechRoles.update(motechRoleAfterEdit);
-        assertEquals(null, allMotechRoles.findByRoleName("roleBeforeEdit"));
-        assertEquals("roleAfterEdit", allMotechRoles.findByRoleName("roleAfterEdit").getRoleName());
+
+        rolesDataService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                MotechRole motechRoleAfterEdit = allMotechRoles.findByRoleName("roleBeforeEdit");
+                motechRoleAfterEdit.setRoleName("roleAfterEdit");
+                allMotechRoles.update(motechRoleAfterEdit);
+                assertEquals(null, allMotechRoles.findByRoleName("roleBeforeEdit"));
+                assertEquals("roleAfterEdit", allMotechRoles.findByRoleName("roleAfterEdit").getRoleName());
+            }
+        });
     }
 
     @Test

@@ -6,6 +6,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class PurgeEmailEventHandlerImpl {
     private EmailAuditServiceImpl auditService;
 
     @MotechListener (subjects = { PURGE_EMAIL_SUBJECT })
+    @Transactional
     public void handle(MotechEvent event) {
         String purgeTime = (String) event.getParameters().get("purgeTime");
         String purgeMultiplier = (String) event.getParameters().get("purgeMultiplier");

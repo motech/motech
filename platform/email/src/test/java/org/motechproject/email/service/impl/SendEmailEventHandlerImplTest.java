@@ -27,10 +27,11 @@ public class SendEmailEventHandlerImplTest {
     EmailSenderService emailSenderService;
 
     @InjectMocks
-    SendEmailEventHandlerImpl emailEventHandler = new SendEmailEventHandlerImpl(emailSenderService);
+    SendEmailEventHandlerImpl emailEventHandler = new SendEmailEventHandlerImpl();
 
     @Before
     public void setUp() {
+        emailEventHandler.setEmailSenderService(emailSenderService);
         MockitoAnnotations.initMocks(this);
     }
 
