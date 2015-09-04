@@ -4665,10 +4665,10 @@
 
         $scope.printResult = function (response) {
             $scope.currentError = null;
-             $scope.failRows = 0;
-             $scope.successRows = 0;
-             $('#errorPanel').collapse({'toggle': false});
-             $('#successPanel').collapse({'toggle': false});
+            $scope.failRows = 0;
+            $scope.successRows = 0;
+            $('#errorPanel').collapse({'toggle': false});
+            $('#successPanel').collapse({'toggle': false});
             if (Object.keys(response.rowErrors).length === 0) {
                 $scope.successRows = Object.keys(response.newInstanceIDs).length
                                     + Object.keys(response.updatedInstanceIDs).length;

@@ -17,9 +17,15 @@
                                 <input type="file" id="csvFile" name="csvFile" class="input-file" accept=".csv"/>
                             </span>
                             <a target="_self" href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="fa fa-fw fa-trash-o"></i>&nbsp;{{msg('mds.import.remove')}}</a>
-                            <span class="row">
-                                <input id="continueOnError" name="continueOnError" value="true" type="checkbox">{{msg('mds.import.continueOnError')}}
-                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <div class="checkbox">
+                                <label>
+                                    <input id="continueOnError" name="continueOnError" value="true" type="checkbox">{{msg('mds.import.continueOnError')}}
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -34,7 +40,7 @@
 </div>
 
 <div id="importResultModal" class="mds modal fade" tabindex="-1" role="dialog" aria-labelledby="importResultLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" ng-click="closeImportResultModal()">&times;</button>
@@ -42,33 +48,37 @@
             </div>
             <div class="modal-body" >
                 <div class="collapse" id="successPanel">
-                    <div class="row">
-                        <img class="col-sm-1" src="../tasks/img/icon-ok.png"/>
-                        <div class="col-sm-10 alert alert-success">
-                            <label id="successMessage">{{msg('mds.import.successResult', successRows)}}</label>
+                    <div class="form-group clearfix">
+                        <div class="col-sm-1">
+                            <span class="fa fa-fw fa-check-circle fa-lg fa-2x icon-green"></span>
+                        </div>
+                        <div class="col-sm-10">
+                            <span id="successMessage">{{msg('mds.import.successResult', successRows)}}</span>
                         </div>
                     </div>
                 </div>
-                <div class="collapse" id="errorPanel">
-                    <div class="row">
-                        <img class="col-sm-1" src="../tasks/img/icon-exclamation.png"/>
-                        <div class="col-sm-10 alert alert-danger">
-                            <label id="errorMessage">{{msg('mds.import.errorResult', failRows, successRows)}}</label>
+                <div class="collapse clearfix" id="errorPanel">
+                    <div class="form-group clearfix">
+                        <div class="col-sm-1">
+                            <span class="fa fa-fw fa-exclamation-triangle fa-lg fa-2x icon-red"></span>
+                        </div>
+                        <div class="col-sm-11">
+                            <span id="errorMessage">{{msg('mds.import.errorResult', failRows, successRows)}}</span>
                         </div>
                     </div>
-                    <div class="row">
-                        <table  id="exceptionsTable" class="table table-bordered table-striped">
+                    <div class="form-group">
+                        <table id="exceptionsTable" class="table table-bordered table-striped table-condensed table-lightblue">
                             <thead>
-                            <tr>
-                                <th class="ng-binding">Row </th>
-                                <th class="ng-binding">Error message</th>
-                            </tr>
+                                <tr>
+                                    <th class="ng-binding">{{msg('mds.import.row')}}</th>
+                                    <th class="ng-binding">{{msg('mds.import.errorMessage')}}</th>
+                                </tr>
                             </thead>
-                            <tbody ng-repeat="(key, value) in currentError">
-                            <tr>
-                                <td class="ng-binding">{{key}}</td>
-                                <td class="ng-binding">{{value}}</td>
-                            </tr>
+                            <tbody>
+                                <tr ng-repeat="(key, value) in currentError">
+                                    <td class="ng-binding">{{key}}</td>
+                                    <td class="ng-binding">{{value}}</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
