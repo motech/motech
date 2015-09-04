@@ -16,6 +16,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -44,14 +45,6 @@ public class TaskActionExecutor {
     private TaskActivityService activityService;
     private KeyEvaluator keyEvaluator;
 
-    @Autowired
-    public TaskActionExecutor(TaskService taskService, TaskActivityService activityService,
-                       EventRelay eventRelay) {
-        this.eventRelay = eventRelay;
-        this.taskService = taskService;
-        this.activityService = activityService;
-    }
-
     /**
      * Executes the action for the given task.
      *
@@ -60,6 +53,7 @@ public class TaskActionExecutor {
      * @param taskContext  the context of the current task execution, not null
      * @throws TaskHandlerException when the task couldn't be executed
      */
+    @Transactional
     public void execute(Task task, TaskActionInformation actionInformation, TaskContext taskContext) throws TaskHandlerException {
         this.keyEvaluator = new KeyEvaluator(taskContext);
         ActionEvent action = getActionEvent(actionInformation);
@@ -244,5 +238,20 @@ public class TaskActionExecutor {
 
     void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    @Autowired
+    public void setTaskService(TaskService taskService) {
+        this.taskService = taskService;
+    }
+
+    @Autowired
+    public void setActivityService(TaskActivityService activityService) {
+        this.activityService = activityService;
+    }
+
+    @Autowired
+    public void setEventRelay(EventRelay eventRelay) {
+        this.eventRelay = eventRelay;
     }
 }

@@ -26,6 +26,7 @@ import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,6 +54,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
+    @Transactional
     public void cleanUpExpiredRecoveries() {
         List<PasswordRecovery> expiredRecoveries = allPasswordRecoveries.getExpired();
         for (PasswordRecovery recovery : expiredRecoveries) {
@@ -62,6 +64,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     }
 
     @Override
+    @Transactional
     public boolean validateToken(String token) {
         PasswordRecovery recovery = allPasswordRecoveries.findForToken(token);
         return validateRecovery(recovery);
@@ -78,6 +81,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     }
 
     @Override
+    @Transactional
     public String oneTimeTokenOpenId(String email, DateTime expiration, boolean notify) throws UserNotFoundException, NonAdminUserException {
         MotechUser user = allMotechUsers.findUserByEmail(email);
         DateTime expirationDate = expiration;
@@ -117,6 +121,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     }
 
     @Override
+    @Transactional
     public void validateTokenAndLoginUser(String token, HttpServletRequest request, HttpServletResponse response) throws IOException {
         PasswordRecovery recovery = allPasswordRecoveries.findForToken(token);
         if (validateRecovery(recovery)) {
@@ -133,21 +138,25 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     }
 
     @Override
+    @Transactional
     public String passwordRecoveryRequest(String email) throws UserNotFoundException {
         return passwordRecoveryRequest(email, true);
     }
 
     @Override
+    @Transactional
     public String passwordRecoveryRequest(String email, boolean notify) throws UserNotFoundException {
         return passwordRecoveryRequest(email, DateTime.now().plusHours(DEFAULT_EXPIRATION_HOURS), notify);
     }
 
     @Override
+    @Transactional
     public String passwordRecoveryRequest(String email, DateTime expiration) throws UserNotFoundException {
         return passwordRecoveryRequest(email, expiration, true);
     }
 
     @Override
+    @Transactional
     public String passwordRecoveryRequest(String email, DateTime expiration, boolean notify) throws UserNotFoundException {
         MotechUser user = allMotechUsers.findUserByEmail(email);
         DateTime expirationDate = expiration;
@@ -176,6 +185,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     }
 
     @Override
+    @Transactional
     public void resetPassword(String token, String password, String passwordConfirmation) throws InvalidTokenException {
         if (!password.equals(passwordConfirmation)) {
             throw new IllegalArgumentException("Password and confirmation do not match");

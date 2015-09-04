@@ -4,99 +4,67 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.motechproject.config.core.constants.ConfigurationConstants;
-import org.motechproject.mds.annotations.Access;
-import org.motechproject.mds.annotations.Entity;
-import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.annotations.Ignore;
-import org.motechproject.mds.util.SecurityMode;
 
 import java.io.IOException;
 import java.security.DigestInputStream;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 
 /**
  * Class for storing settings values.
  */
-@Entity(recordHistory = true)
-@Access(value = SecurityMode.PERMISSIONS, members = {"manageSettings"})
-public class SettingsRecord implements MotechSettings {
+public class SettingsRecordDto implements MotechSettings {
 
-    @Field
     private boolean platformInitialized;
-
-    @Field
     private DateTime lastRun;
-
-    @Field
     private String filePath;
-
-    @Field
     private String configFileChecksum;
-
-    @Field
     private Map<String, String> platformSettings;
 
-    public SettingsRecord() {
-        platformSettings = new HashMap<>();
-    }
-
-    @Ignore
     @Override
     public String getLanguage() {
         return platformSettings.get(ConfigurationConstants.LANGUAGE);
     }
 
-    @Ignore
     @Override
     public String getStatusMsgTimeout() {
         return platformSettings.get(ConfigurationConstants.STATUS_MSG_TIMEOUT);
     }
 
-    @Ignore
     @Override
     public LoginMode getLoginMode() {
         return LoginMode.valueOf(platformSettings.get(ConfigurationConstants.LOGINMODE));
     }
 
-    @Ignore
     public String getLoginModeValue() {
         return platformSettings.get(ConfigurationConstants.LOGINMODE);
     }
 
-    @Ignore
     @Override
     public String getProviderName() {
         return platformSettings.get(ConfigurationConstants.PROVIDER_NAME);
     }
 
-    @Ignore
     @Override
     public String getProviderUrl() {
         return platformSettings.get(ConfigurationConstants.PROVIDER_URL);
     }
 
-    @Ignore
     @Override
     public String getServerUrl() {
         return new MotechURL(platformSettings.get(ConfigurationConstants.SERVER_URL)).toString();
     }
 
-    @Ignore
     @Override
     public String getJmxHost() {
         return platformSettings.get(ConfigurationConstants.JMX_HOST);
     }
 
-    @Ignore
     @Override
     public String getJmxBroker() {
         return platformSettings.get(ConfigurationConstants.JMX_BROKER);
     }
 
-    @Ignore
     @Override
     public String getServerHost() {
         return new MotechURL(platformSettings.get(ConfigurationConstants.SERVER_URL)).getHost();
@@ -112,49 +80,41 @@ public class SettingsRecord implements MotechSettings {
         this.platformInitialized = platformInitialized;
     }
 
-    @Ignore
     @Override
     public String getUploadSize() {
         return platformSettings.get(ConfigurationConstants.UPLOAD_SIZE);
     }
 
-    @Ignore
     @Override
     public void setLanguage(final String language) {
         savePlatformSetting(ConfigurationConstants.LANGUAGE, language);
     }
 
-    @Ignore
     @Override
     public void setLoginModeValue(String loginMode) {
         savePlatformSetting(ConfigurationConstants.LOGINMODE, loginMode);
     }
 
-    @Ignore
     @Override
     public void setProviderName(String providerName) {
         savePlatformSetting(ConfigurationConstants.PROVIDER_NAME, providerName);
     }
 
-    @Ignore
     @Override
     public void setProviderUrl(String providerUrl) {
         savePlatformSetting(ConfigurationConstants.PROVIDER_URL, providerUrl);
     }
 
-    @Ignore
     @Override
     public void setJmxHost(String jmxHost) {
         savePlatformSetting(ConfigurationConstants.JMX_HOST, jmxHost);
     }
 
-    @Ignore
     @Override
     public void setJmxBroker(String jmxBroker) {
         savePlatformSetting(ConfigurationConstants.JMX_BROKER, jmxBroker);
     }
 
-    @Ignore
     @Override
     public void setStatusMsgTimeout(final String statusMsgTimeout) {
         savePlatformSetting(ConfigurationConstants.STATUS_MSG_TIMEOUT, statusMsgTimeout);
@@ -170,13 +130,11 @@ public class SettingsRecord implements MotechSettings {
         this.lastRun = lastRun;
     }
 
-    @Ignore
     @Override
     public void setServerUrl(String serverUrl) {
         savePlatformSetting(ConfigurationConstants.SERVER_URL, serverUrl);
     }
 
-    @Ignore
     @Override
     public void setUploadSize(String uploadSize) {
         savePlatformSetting(ConfigurationConstants.UPLOAD_SIZE, uploadSize);
@@ -192,7 +150,6 @@ public class SettingsRecord implements MotechSettings {
         this.configFileChecksum = configFileChecksum;
     }
 
-    @Ignore
     @Override
     public void updateFromProperties(final Properties props) {
         if (props != null) {
@@ -202,7 +159,6 @@ public class SettingsRecord implements MotechSettings {
         }
     }
 
-    @Ignore
     @Override
     public void savePlatformSetting(String key, String value) {
         // cant store nulls in persistent maps
@@ -210,7 +166,6 @@ public class SettingsRecord implements MotechSettings {
     }
 
 
-    @Ignore
     @Override
     public synchronized void load(DigestInputStream dis) throws IOException {
         Properties props = new Properties();
@@ -220,13 +175,11 @@ public class SettingsRecord implements MotechSettings {
         }
     }
 
-    @Ignore
     @Override
     public Properties asProperties() {
         return MapUtils.toProperties(platformSettings);
     }
 
-    @Ignore
     @Override
     public void updateSettings(final String configFileChecksum, String filePath, Properties platformSettings) {
         setConfigFileChecksum(configFileChecksum);
@@ -244,41 +197,6 @@ public class SettingsRecord implements MotechSettings {
         this.filePath = filePath;
     }
 
-    /**
-     * Merges given default configuration into existing platform settings. Keys that already exists won't be overwritten.
-     *
-     * @param defaultConfig  the default configuration to be merged.
-     */
-    @Ignore
-    public void mergeWithDefaults(Properties defaultConfig) {
-        if (defaultConfig != null) {
-            for (Object key : defaultConfig.keySet()) {
-                if (!platformSettings.containsKey(key.toString())) {
-                    savePlatformSetting(key.toString(), defaultConfig.get(key).toString());
-                }
-            }
-        }
-    }
-
-    /**
-     * Removes settings specified in defaultConfig.
-     *
-     * @param defaultConfig
-     */
-    @Ignore
-    public void removeDefaults(Properties defaultConfig) {
-        for (Map.Entry<Object, Object> entry : defaultConfig.entrySet()) {
-            String key = (String) entry.getKey();
-            Object defaultValue = entry.getValue();
-
-            Object currentVal = platformSettings.get(key);
-
-            if (currentVal != null && Objects.equals(currentVal, defaultValue)) {
-                platformSettings.remove(key);
-            }
-        }
-    }
-
     public void setPlatformSettings(Map<String, String> platformSettings) {
         this.platformSettings = platformSettings;
     }
@@ -287,7 +205,6 @@ public class SettingsRecord implements MotechSettings {
         return this.platformSettings;
     }
 
-    @Ignore
     @Override
     public boolean getEmailRequired() {
         return Boolean.parseBoolean(platformSettings.get(ConfigurationConstants.EMAIL_REQUIRED));
@@ -299,8 +216,6 @@ public class SettingsRecord implements MotechSettings {
                 emailRequired);
     }
 
-
-    @Ignore
     @Override
     public Integer getSessionTimeout() {
         return getInteger(ConfigurationConstants.SESSION_TIMEOUT);
@@ -311,7 +226,6 @@ public class SettingsRecord implements MotechSettings {
         savePlatformSetting(ConfigurationConstants.SESSION_TIMEOUT, intToStr(sessionTimeout));
     }
 
-    @Ignore
     @Override
     public String getPasswordValidator() {
         String validator = platformSettings.get(ConfigurationConstants.PASSWORD_VALIDATOR);
@@ -333,7 +247,6 @@ public class SettingsRecord implements MotechSettings {
         platformSettings.put(ConfigurationConstants.MIN_PASSWORD_LENGTH, intToStr(minPasswordLength));
     }
 
-    @Ignore
     @Override
     public int getFailureLoginLimit() {
         String value = platformSettings.get(ConfigurationConstants.FAILURE_LOGIN_LIMIT);
@@ -344,18 +257,6 @@ public class SettingsRecord implements MotechSettings {
     public void setFailureLoginLimit(int limit) {
         savePlatformSetting(ConfigurationConstants.FAILURE_LOGIN_LIMIT,
                 String.valueOf(limit));
-    }
-
-    @Ignore
-    public SettingsRecordDto toDto() {
-        SettingsRecordDto settingsRecordDto = new SettingsRecordDto();
-        settingsRecordDto.setPlatformInitialized(this.platformInitialized);
-        settingsRecordDto.setPlatformSettings(this.platformSettings);
-        settingsRecordDto.setLastRun(this.lastRun);
-        settingsRecordDto.setFilePath(this.filePath);
-        settingsRecordDto.setConfigFileChecksum(this.configFileChecksum);
-
-        return settingsRecordDto;
     }
 
     private Integer getInteger(String key) {

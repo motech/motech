@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.motechproject.commons.date.util.DateUtil.now;
 
@@ -42,6 +43,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailSenderServiceImpl.class);
 
     @Override
+    @Transactional
     public void send(final Mail mail) {
         LOGGER.info(String.format("Sending message [%s] from [%s] to [%s] with subject [%s].",
                 mail.getMessage(), mail.getFromAddress(), mail.getToAddress(), mail.getSubject()));

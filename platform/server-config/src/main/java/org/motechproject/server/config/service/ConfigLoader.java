@@ -7,6 +7,7 @@ import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.SettingsRecord;
+import org.motechproject.server.config.domain.SettingsRecordDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -33,7 +34,7 @@ public class ConfigLoader {
      *
      * @return the {SettingsRecord} object
      */
-    public SettingsRecord loadMotechSettings() {
+    public SettingsRecordDto loadMotechSettings() {
         SettingsRecord settingsRecord;
         ConfigLocation configLocation = coreConfigurationService.getConfigLocation();
         Resource configLocationResource = configLocation.toResource();
@@ -45,7 +46,7 @@ public class ConfigLoader {
         } catch (IOException e) {
             throw new MotechConfigurationException(String.format("Could not read settings from file at location %s", configLocation), e);
         }
-        return settingsRecord;
+        return settingsRecord.toDto();
     }
 
     /**
