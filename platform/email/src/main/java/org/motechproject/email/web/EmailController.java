@@ -2,7 +2,6 @@ package org.motechproject.email.web;
 
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;
 import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.constants.EmailRolesConstants;
@@ -112,7 +111,7 @@ public class EmailController {
                                HttpServletResponse response,
                                HttpServletRequest request) throws IOException {
 
-        DateTime now = new DateTime();
+        LocalDateTime now = LocalDateTime.now();
 
         List<? extends BasicEmailRecordDto> toSave = new ArrayList<>();
 
@@ -159,7 +158,7 @@ public class EmailController {
             toSave = hideColumns(monthEmails, oneMonthFilter);
         }
 
-        String fileName = "motech_email_logs_" + now.toString("yyyy-MM-dd_HH-kk-mm");
+        String fileName = "motech_email_logs_" + now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-kk-mm"));
         response.setContentType("text/csv;charset=utf-8");
         response.setCharacterEncoding(UTF_8);
         response.setHeader(

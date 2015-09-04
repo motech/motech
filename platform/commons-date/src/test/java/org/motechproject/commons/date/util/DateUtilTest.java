@@ -161,6 +161,7 @@ public class DateUtilTest {
 
             @Override
             public ZoneId timeZoneId() {
+                //This method is not used at the moment
                 return null;
             }
 
@@ -171,6 +172,7 @@ public class DateUtilTest {
 
             @Override
             public LocalDateTime javaTimeNow() {
+                //This method is not used at the moment
                 return null;
             }
 

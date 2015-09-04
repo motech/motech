@@ -11,6 +11,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.commons.date.util.datetime.DateTimeSource;
 import org.motechproject.commons.date.util.datetime.DefaultDateTimeSource;
 
+import java.time.LocalDateTime;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +23,8 @@ public class DateTimeSourceUtilTest {
 
     private LocalDate today = new LocalDate();
 
+    private LocalDateTime javaNow = LocalDateTime.now();
+
     @Mock
     private DateTimeSource dateTimeSource;
 
@@ -28,6 +32,7 @@ public class DateTimeSourceUtilTest {
     public void setUp() throws Exception {
         when(dateTimeSource.now()).thenReturn(now);
         when(dateTimeSource.today()).thenReturn(today);
+        when(dateTimeSource.javaTimeNow()).thenReturn(javaNow);
         DateTimeSourceUtil.setSourceInstance(dateTimeSource);
     }
 
@@ -40,5 +45,6 @@ public class DateTimeSourceUtilTest {
     public void shouldUseDateSource() throws Exception {
         assertEquals(DateUtil.now(), now);
         assertEquals(DateUtil.today(), today);
+        assertEquals(DateUtil.javaTimeNow(), javaNow);
     }
 }
