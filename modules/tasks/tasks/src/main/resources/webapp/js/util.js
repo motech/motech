@@ -215,8 +215,8 @@
             isIE: function (scope) {
                 return $.inArray(scope.BrowserDetect.browser, ['Explorer']) !== -1;
             },
-            canHandleModernDragAndDrop: function (scope) {
-                return this.isChrome(scope) || this.isIE(scope);
+            isFirefox: function (scope) {
+                return $.inArray(scope.BrowserDetect.browser, ['Firefox']) !== -1;
             },
             needExpression: function (param) {
                 return param && $.inArray(param, ['task.exist', 'task.afterNow', 'task.beforeNow']) === -1;
@@ -240,7 +240,11 @@
                 span.attr('unselectable', 'on');
                 span.attr('contenteditable', 'false');
 
-                span.addClass('popoverEvent nonEditable triggerField pointer badge');
+                if (data.fieldType !== undefined && data.fieldType === 'format') {
+                    span.addClass('nonEditable triggerField pointer badge');
+                } else {
+                    span.addClass('popoverEvent nonEditable triggerField pointer badge');
+                }
 
                 if (data.param.type === 'UNKNOWN') {
                     span.addClass('badge-unknown');
@@ -257,7 +261,11 @@
                 }
 
                 if (this.isText(data.param.type)) {
-                    span.attr('manipulationpopover', 'STRING');
+                    if (data.fieldType !== undefined && data.fieldType === 'format') {
+                        span.attr('data-popover', 'no');
+                    } else {
+                        span.attr('manipulationpopover', 'STRING');
+                    }
                 } else if (this.isDate(data.param.type)) {
                     if (this.isDate(data.fieldType)) {
                         span.attr('manipulationpopover', 'DATE2DATE');
@@ -326,43 +334,14 @@
                 return msg;
             },
             convertToView: function (scope, type, value) {
-                var regex = new RegExp('\\{\\{ad\\.(.+?)(\\..*?)\\}\\}', "g"),
-                    val = value || '',
-                    replaced = [],
-                    found,
-                    ds;
+                var val = value || '';
 
-                if (this.canHandleModernDragAndDrop(scope)) {
-                    if (this.isBoolean(type) && (val === 'true' || val === 'false')) {
-                        val = val === 'true';
-                        val = this.createBooleanSpan(scope, val);
-                    }
-
-                    val = scope.createDraggableElement(val, type, 'convert');
-                } else {
-                    while ((found = regex.exec(val)) !== null) {
-                        ds = this.find({
-                            where: scope.task.taskConfig.steps,
-                            by: [{
-                                what: '@type',
-                                equalTo: 'DataSource'
-                            }, {
-                                what: 'providerId',
-                                // the id is a number, we must parse the string
-                                equalTo: parseInt(found[1], 10)
-                            }]
-                        });
-
-                        replaced.push({
-                            find: '{{ad.{0}{1}}}'.format(found[1], found[2]),
-                            value: '{{ad.{0}{1}}}'.format(scope.msg(ds.providerName), found[2])
-                        });
-                    }
-
-                    angular.forEach(replaced, function (r) {
-                        val = val.replace(r.find, r.value);
-                    });
+                if (this.isBoolean(type) && (val === 'true' || val === 'false')) {
+                    val = val === 'true';
+                    val = this.createBooleanSpan(scope, val);
                 }
+
+                val = scope.createDraggableElement(val, type, 'convert');
 
                 return val;
             },
@@ -373,9 +352,7 @@
                     found,
                     ds;
 
-                if (this.canHandleModernDragAndDrop(scope)) {
-                    val = scope.refactorDivEditable(val);
-                }
+                val = scope.refactorDivEditable(val);
 
                 while ( (found = regex.exec(val)) !== null )  {
                     ds = this.find({

@@ -753,7 +753,8 @@
         $scope.refactorDivEditable = function (value) {
             var result = $('<div/>').append(value),
                 isChrome = $scope.util.isChrome($scope),
-                isIE = $scope.util.isIE($scope);
+                isIE = $scope.util.isIE($scope),
+                isFirefox = $scope.util.isFirefox($scope);
 
             result.find('em').remove();
 
@@ -803,27 +804,23 @@
                 return val;
             });
 
-            if (isChrome) {
-                result.find("div").replaceWith(function () {
-                    return "\n{0}".format(this.innerHTML);
-                });
-            }
-
             if (isIE) {
                 result.find("p").replaceWith(function () {
                     return "{0}<br>".format(this.innerHTML);
                 });
 
                 result.find("br").last().remove();
+            } else {
+                result.find("div").replaceWith(function () {
+                    return "\n{0}".format(this.innerHTML);
+                });
             }
 
-            if (isChrome || isIE) {
-                if (result[0].childNodes[result[0].childNodes.length - 1] === '<br>') {
-                    result[0].childNodes[result[0].childNodes.length - 1].remove();
-                }
-
-                result.find("br").replaceWith("\n");
+            if (result[0].childNodes[result[0].childNodes.length - 1] === '<br>') {
+                result[0].childNodes[result[0].childNodes.length - 1].remove();
             }
+
+            result.find("br").replaceWith("\n");
 
             return result.text();
         };
@@ -854,11 +851,9 @@
                 regex, found, data, indexOf, prefix, dataArray, key, param;
 
             // check bubbles
-            if ($scope.util.canHandleModernDragAndDrop($scope)) {
-                prefix = $scope.util.TRIGGER_PREFIX;
-                regex = new RegExp('<span.*data-prefix="'+ prefix +'".*data-type="UNKNOWN".*>\\[.*\\]</span>', "g");
-                unknown = regex.exec(value) !== null;
-            }
+            prefix = $scope.util.TRIGGER_PREFIX;
+            regex = new RegExp('<span.*data-prefix="'+ prefix +'".*data-type="UNKNOWN".*>\\[.*\\]</span>', "g");
+            unknown = regex.exec(value) !== null;
 
             // check regular string in the input
             if (!unknown) {
@@ -1099,11 +1094,7 @@
                 }
 
                 angular.forEach(action.actionParameters, function (param) {
-                    if ($scope.util.isChrome($scope) || $scope.util.isIE($scope)) {
-                        $scope.task.actions[idx].values[param.key] = $scope.addDoubleBrackets($scope.util.convertToServer($scope, param.value));
-                    } else {
-                        $scope.task.actions[idx].values[param.key] = $scope.util.convertToServer($scope, param.value);
-                    }
+                    $scope.task.actions[idx].values[param.key] = $scope.addDoubleBrackets($scope.util.convertToServer($scope, param.value));
 
                     if (!param.required && isBlank($scope.task.actions[idx].values[param.key])) {
                         delete $scope.task.actions[idx].values[param.key];
@@ -1150,10 +1141,7 @@
                 return expression;
             } else if ($scope.selectedTrigger !== undefined) {
                 value = prop.value === undefined ? '' : prop.value;
-
-                if ($scope.util.canHandleModernDragAndDrop($scope)) {
-                    value = $scope.refactorDivEditable(value);
-                }
+                value = $scope.refactorDivEditable(value);
 
                 expression = !value || value.length === 0 || value === "\n";
             }
@@ -1191,15 +1179,20 @@
         };
 
         $scope.changeFormatInput = function (newData) {
-            $scope.formatInput = [];
-            $scope.$apply();
-            $scope.formatInput = newData;
-            $scope.$apply();
+            $timeout(function() {
+                $scope.formatInput = [];
+                $scope.formatInput = newData;
+                $scope.$apply();
+            }, 1);
+
+            if (!$scope.$$phase) { // check if we are in digest
+                $scope.$digest(); // run digest
+            }
         };
 
         $scope.showFormatManipulation = function () {
-            $('#formatManipulation').modal();
             $scope.changeFormatInput($scope.getValues('true'));
+            $('#formatManipulation').modal({keyboard: false});
         };
 
         $scope.getValues = function(forFormat) {
@@ -1219,29 +1212,31 @@
             }
 
             angular.forEach(reg, function (value) {
-                convertedValues.push($scope.createDraggableElement(value, forFormat));
+                convertedValues.push($scope.createDraggableElement(value, manipulation, forFormat));
             });
 
             return convertedValues;
         };
 
         $scope.addFormatInput = function () {
-            $scope.formatInput.push("");
-
-            $scope.$apply();
-        };
-
-        $scope.deleteFormatInput = function (index) {
-            var tempArray = [], counter = 0;
 
             $scope.tempSaveInput();
 
-            angular.forEach($scope.formatInput, function (value) {
-                if  (counter !== index) {
+            $timeout(function() {
+                $scope.formatInput.push('');
+                $scope.$apply();
+            }, 0);
+        };
+
+        $scope.deleteFormatInput = function (indexToRemove) {
+            var tempArray = [];
+
+            $scope.tempSaveInput();
+
+            angular.forEach($scope.formatInput, function (value, index) {
+                if  (indexToRemove !== index) {
                     tempArray.push(value);
                 }
-
-                counter = counter + 1;
             });
 
             $scope.changeFormatInput(tempArray);
@@ -1274,10 +1269,10 @@
                 elementManipulation = manipulateElement.attr("manipulate"),
                 regex = new RegExp("format\\(.*?\\)", "g");
 
-            jQuery.each($scope.formatInput, function(value) {
+            angular.forEach($scope.formatInput, function(value, index) {
 
-                manipulation = manipulation + this;
-                if (value !== $scope.formatInput.length - 1) {
+                manipulation = manipulation + value;
+                if (index !== $scope.formatInput.length - 1) {
                     manipulation = manipulation + ",";
                 }
             });
@@ -1287,7 +1282,9 @@
 
             elementManipulation = elementManipulation.replace(regex, manipulation);
             manipulateElement.attr("manipulate", elementManipulation);
-            manipulateElement[0].parentElement.focus();
+            $timeout(function() {
+                manipulateElement[0].focus();
+            }, 0);
         };
 
         $scope.removeDoubleBrackets = function (value) {

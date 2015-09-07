@@ -277,19 +277,6 @@
             expect(utils.isIE(scope)).toEqual(false);
         });
 
-        it('Should can handle modern drag and drop', function () {
-            scope.BrowserDetect = { browser: 'Chrome' };
-            expect(utils.canHandleModernDragAndDrop(scope)).toEqual(true);
-
-            scope.BrowserDetect = { browser: 'Explorer' };
-            expect(utils.canHandleModernDragAndDrop(scope)).toEqual(true);
-        });
-
-        it('Should can not handle modern drag and drop', function () {
-            scope.BrowserDetect = { browser: 'FireFox' };
-            expect(utils.canHandleModernDragAndDrop(scope)).toEqual(false);
-        });
-
         it('Should create boolean span', function () {
             var yes = '<span contenteditable="false" data-value="true" data-prefix="other" class="badge badge-success">Yes</span>',
                 no = '<span contenteditable="false" data-value="false" data-prefix="other" class="badge badge-important">No</span>';

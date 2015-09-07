@@ -119,13 +119,17 @@
     color: #B94A48;
 }
 
+.tasks editable-content {
+    line-height: 1.4em;
+    min-height: 36px;
+    display: inline;
+}
+
 .tasks editable-content .actionField.input-block-level {
     height: auto;
-    min-height: 34px;
+    min-height: 36px;
     width: 100%;
     padding: 6px 12px;
-    background-color: #FFFFFF;
-    border: 1px solid #CCCCCC;
     border-radius: 4px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
     transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
@@ -139,6 +143,11 @@
 
 .tasks editable-content .actionField.input-block-level span.badge {
     margin: 0 2px;
+}
+
+.tasks editable-content > div[contenteditable] {
+  border: 2px dotted #AAAAAA;
+  background-color: #FFFFFF;
 }
 
 .tasks .panel-body.task-content {
@@ -922,7 +931,7 @@
     font-size: 12px;
 }
 
-.no-margin-bottom input[type="text"],
+editable-content .popover .inner-popover, nonEditable, .no-margin-bottom input[type="text"],
 .no-margin-bottom editable-content {
     margin-bottom: 0;
     -webkit-touch-callout: none;

@@ -880,6 +880,19 @@ input.form-control.form-control {
     width: 175%;
 }
 
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.defaultCursor {
+    cursor: default;
+}
+
 /* -----flags ----- */
 
 .flag {
@@ -1396,24 +1409,6 @@ a, li a {
 }
 .offset-09 {
     margin-left: 0.9em;
-}
-.offset-1.0 {
-    margin-left: 1em;
-}
-.offset-1.1 {
-    margin-left: 1.1em;
-}
-.offset-1.2 {
-    margin-left: 1.2em;
-}
-.offset-1.3 {
-    margin-left: 1.3em;
-}
-.offset-1.4 {
-    margin-left: 1.4em;
-}
-.offset-1.5 {
-    margin-left: 1.5em;
 }
 
 .btn-inverse {

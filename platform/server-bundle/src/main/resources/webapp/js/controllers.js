@@ -494,6 +494,32 @@
             return hasMenuWithGivenName;
         };
 
+        $(document).on('keydown',function(e){
+            if(e.keyCode === 8) {
+                var $target = e.target || e.srcElement, preventKeyPress = false;
+                switch($target.tagName) {
+                case 'BODY':
+                    preventKeyPress = true;
+                    break;
+                case 'INPUT':
+                    preventKeyPress = $target.readOnly || $target.disabled || ($target.attributes.type && $.inArray($target.attributes.type.value.toLowerCase(), ["radio", "checkbox", "submit", "button"]) >= 0);
+                    break;
+                case 'TEXTAREA':
+                    preventKeyPress = $target.readOnly || $target.disabled;
+                    break;
+                case 'DIV':
+                    preventKeyPress = $target.readOnly || $target.disabled;
+                    break;
+                default:
+                    preventKeyPress = false;
+                    break;
+                }
+
+                if (preventKeyPress) {
+                    e.preventDefault();
+                }
+            }
+        });
 
         $scope.isActiveLink = function(link) {
             return $scope.activeLink && $scope.activeLink.moduleName === link.moduleName && $scope.activeLink.url === link.url;

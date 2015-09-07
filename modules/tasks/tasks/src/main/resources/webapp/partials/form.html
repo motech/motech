@@ -1,11 +1,11 @@
-<div class="row create-edit-task">
-    <h4 ng-hide="task.id" class="frame-title">{{msg('task.section.newTask')}} <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-danger btn-in-frame-header pull-right"><i class="fa fa-times"></i></a></h4>
-    <h4 ng-show="task.id" class="frame-title">{{msg('task.section.editTask')}} <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="fa fa-level-up"></i></a></h4>
-    <div ng-show="task.validationErrors.length" class="inside">
+<div class="row create-edit-task" data-ng-cloak>
+    <h4 ng-hide="task.id" class="frame-title"><span ng-bind="msg('task.section.newTask')"></span> <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-danger btn-in-frame-header pull-right"><i class="fa fa-times"></i></a></h4>
+    <h4 ng-show="task.id" class="frame-title"><span ng-bind="msg('task.section.editTask')"></span> <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="fa fa-level-up"></i></a></h4>
+    <div ng-show="task.validationErrors.length" class="inside ng-cloak">
         <div class="alert alert-block alert-danger">
             <strong>{{msg('task.header.taskErrors')}}:</strong>
             <ul>
-                <li ng-repeat="error in task.validationErrors">
+                <li class="ng-cloak" ng-repeat="error in task.validationErrors">
                     {{getTaskValidationError(error)}}
                 </li>
             </ul>
@@ -16,7 +16,7 @@
             <form class="inside task form-horizontal">
                 <!------------------ ENTER TASK NAME ------------------>
                 <div class="inside-0">
-                    <div class="form-group" ng-class="{'has-error': !task.name}">
+                    <div class="form-group ng-cloak" ng-class="{'has-error': !task.name}">
                         <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.name')}}</label>
                         <div class="col-md-10 col-sm-9">
                             <input class="form-control" type='text' ng-model='task.name' id="task.name">
@@ -26,7 +26,7 @@
 
                 <!------------------ ENTER TASK DESCRIPTION ------------------>
                 <div class="inside-0">
-                    <div class="form-group">
+                    <div class="form-group ng-cloak">
                         <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.section.taskDescription')}}</label>
                         <div class="col-md-10 col-sm-9">
                             <textarea class="form-control" ng-model="task.description"></textarea>
@@ -37,54 +37,54 @@
                 <!------------------ SELECT TRIGGER ------------------>
                 <div class="panel-group task-group" id="select-trigger" overflow-change expand-accordion>
 
-                        <div class="panel-heading panel-header">
-                            <div class="accordion-toggle cursor-auto">
-                                <i class="fa fa-fw fa-lg fa-caret-down pointer" data-toggle="collapse" data-parent="#select-trigger" target="_self" href="#collapse-trigger"></i> {{msg('task.header.trigger')}}
-                                <span ng-hide="!task.trigger.displayName">
-                                    &raquo; {{msg(task.trigger.channelName)}} : {{taskMsg(task.trigger.displayName)}}
-                                </span>
-                            </div>
+                    <div class="panel-heading panel-header">
+                        <div class="accordion-toggle cursor-auto">
+                            <i class="fa fa-fw fa-lg fa-caret-down pointer" data-toggle="collapse" data-parent="#select-trigger" target="_self" href="#collapse-trigger"></i> {{msg('task.header.trigger')}}
+                            <span ng-hide="!task.trigger.displayName">
+                                &raquo; {{msg(task.trigger.channelName)}} : {{taskMsg(task.trigger.displayName)}}
+                            </span>
                         </div>
-                        <div id="collapse-trigger" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
-                            <div class="panel-body">
-                                <div class="section-source">
-                                    <ul class="task-selector">
-                                        <li class="task-panel pointer" ng-repeat="channel in util.channels.withTriggers(channels)">
-                                            <div id="trigger-{{channel.moduleName}}" select-event="trigger" ng-click="searchTrigger.displayName='' ">
-                                                <div>
-                                                    <a ng-click="removeTrigger($event)" ui-if="task.trigger && task.trigger.moduleName == channel.moduleName">
-                                                        <i class="fa fa-times close-channel"></i>
-                                                    </a>
-                                                    <img ng-src="../tasks/api/channel/icon?moduleName={{channel.moduleName}}&moduleVersion={{channel.moduleVersion}}" class="panel-img" />
+                    </div>
+                    <div id="collapse-trigger" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
+                        <div class="panel-body">
+                            <div class="section-source">
+                                <ul class="task-selector" ng-init="searchTrigger.displayName='' " data-ng-cloak="">
+                                    <li class="task-panel pointer" ng-repeat="channel in util.channels.withTriggers(channels)">
+                                        <div id="trigger-{{channel.moduleName}}" select-event="trigger" ng-click="searchTrigger.displayName='' ">
+                                            <div>
+                                                <a ng-click="removeTrigger($event)" ui-if="task.trigger && task.trigger.moduleName == channel.moduleName">
+                                                    <i class="fa fa-times close-channel"></i>
+                                                </a>
+                                                <img ng-src="../tasks/api/channel/icon?moduleName={{channel.moduleName}}&moduleVersion={{channel.moduleVersion}}" class="panel-img" />
+                                            </div>
+                                            <span>{{taskMsg(channel.displayName)}}</span>
+                                            <div class="content-task popover fade in">
+                                                <div class="arrow"></div>
+                                                <h3 class="popover-title">{{msg('task.tooltip.availableTriggers')}}</h3>
+                                                <div class="search-triggers" ng-show="channel.triggerTaskEvents && channel.triggerTaskEvents.length &gt; 8" task-stop-propagation>
+                                                    <input class="form-control" type='text' ng-model="searchTrigger.displayName" placeholder="{{msg('task.placeholder.searchTrigger')}}">
                                                 </div>
-                                                <span>{{taskMsg(channel.displayName)}}</span>
-                                                <div class="content-task popover fade in">
-                                                    <div class="arrow"></div>
-                                                    <h3 class="popover-title">{{msg('task.tooltip.availableTriggers')}}</h3>
-                                                    <div class="search-triggers" ng-show="channel.triggerTaskEvents && channel.triggerTaskEvents.length &gt; 8" task-stop-propagation>
-                                                        <input class="form-control" type='text' ng-model="searchTrigger.displayName" placeholder="{{msg('task.placeholder.searchTrigger')}}">
-                                                    </div>
-                                                    <div class="popover-content">
-                                                        <ul class="trigger-list">
-                                                            <li ng-repeat="trigger in channel.triggerTaskEvents | filter:searchTrigger">
-                                                                <a ng-click="selectTrigger(channel, trigger)">{{taskMsg(trigger.displayName)}}</a>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
+                                                <div class="popover-content">
+                                                    <ul class="trigger-list">
+                                                        <li ng-repeat="trigger in channel.triggerTaskEvents | filter:searchTrigger">
+                                                            <a ng-click="selectTrigger(channel, trigger)">{{taskMsg(trigger.displayName)}}</a>
+                                                        </li>
+                                                    </ul>
                                                 </div>
                                             </div>
-                                        </li>
-                                    </ul>
-                                    <div class="clearfix"></div>
-                                </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <div class="clearfix"></div>
                             </div>
                         </div>
+                    </div>
 
                 </div>
 
                 <div ng-hide="!task.trigger.subject">
                     <div ng-repeat="step in task.taskConfig.steps">
-                        <div ui-if="step['@type'] == 'FilterSet'" class="panel-group task-group" id="step-{{step.order}}" overflow-change expand-accordion>
+                        <div ui-if="step['@type'] == 'FilterSet'" class="panel-group task-group" id="step-{{step.order}}" overflow-change expand-accordion ng-cloak>
 
                                 <div class="panel-heading panel-header clearfix">
                                     <div class="pull-right">
@@ -205,7 +205,7 @@
                                 </div>
 
                         </div>
-                        <div ui-if="step['@type'] == 'DataSource'" class="panel-group task-group" id="step-{{step.order}}" overflow-change expand-accordion>
+                        <div ui-if="step['@type'] == 'DataSource'" class="panel-group task-group" id="step-{{step.order}}" overflow-change expand-accordion ng-cloak>
 
                                 <div class="panel-heading panel-header clearfix">
                                     <div class="pull-right">
@@ -253,7 +253,7 @@
                                             </div>
                                             <span class="offset-4">{{msg('task.subsubsection.object')}}:</span>
                                             <div class="btn-group offset-15">
-                                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#" ng-click="searchData.displayName='' ">
+                                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#" ng-init="searchData.displayName='' " ng-click="searchData.displayName='' ">
                                                     {{taskMsg(step.displayName) || msg('task.select')}}
                                                     <span class="caret"></span>
                                                 </button>
@@ -290,15 +290,11 @@
                                                 <div class="form-group" ng-class="{'has-error': actionCssClassError(lookupField)}" class="form-group form-inline clearfix">
                                                     <label class="col-md-2 col-sm-3 control-label">{{taskMsg(lookupField.field)}}</label>
 
-                                                    <!------------------------ Chrome & IE ------------------------>
-                                                    <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="form-inline col-md-10 col-sm-9">
-                                                        <editable-content data="lookupField" index="$index" type="UNICODE"></editable-content>
+                                                    <!------------------------ editable fields ------------------------>
+                                                    <div class="form-inline col-md-10 col-sm-9">
+                                                        <editable-content data="lookupField" index="$index" type="UNICODE"> </editable-content>
                                                     </div>
 
-                                                    <!------------------------ Other browsers  ------------------------>
-                                                    <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="col-md-10 col-sm-9">
-                                                        <input type="text" ng-model="lookupField.value" droppable class="dataSourceField form-control" data-index="{{step.providerId}}" data-object-id="{{step.objectId}}" data-type="UNICODE"/>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -314,15 +310,11 @@
                                             <div class="form-group" ng-class="{'has-error': actionCssClass(step.lookup)}" class="form-group form-inline clearfix">
                                                 <label class="col-md-2 col-sm-3 control-label">{{taskMsg(step.lookup.field)}}</label>
 
-                                                <!------------------------ Chrome & IE ------------------------>
-                                                <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="form-inline col-md-10 col-sm-9">
-                                                    <editable-content data="step.lookup" index="$index" type="UNICODE"></editable-content>
+                                                <!------------------------ Editable fields ------------------------>
+                                                <div  class="form-inline col-md-10 col-sm-9">
+                                                    <editable-content data="step.lookup" index="$index" type="UNICODE"> </editable-content>
                                                 </div>
 
-                                                <!------------------------ Other browsers  ------------------------>
-                                                <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="form-inline col-md-10 col-sm-9">
-                                                    <input type="text" ng-model="step.lookup.value" droppable class="dataSourceField input-xlarge-fluid form-control" data-index="{{step.providerId}}" data-object-id="{{step.objectId}}" data-type="UNICODE"/>
-                                                </div>
                                             </div>
                                             <div class="form-group">
                                                 <a target="_self" href="#helpModalFieldSyntaxWithBrackets" role="button" class="btn btn-primary pull-left" data-toggle="modal">{{msg('task.help')}}</a>
@@ -351,7 +343,7 @@
                     </div>
 
                     <!------------------------  ACTION  ------------------------->
-                    <div class="panel-group task-group" id="select-action-{{$index}}" ng-repeat="action in task.actions" overflow-change expand-accordion>
+                    <div class="panel-group task-group" id="select-action-{{$index}}" ng-repeat="action in task.actions" overflow-change expand-accordion ng-cloak>
 
                             <div class="panel-heading panel-header clearfix">
                                 <div class="pull-right">
@@ -396,7 +388,7 @@
                                         </div>
                                         <span class="offset-4">{{msg('task.action')}}:</span>
                                         <div class="btn-group offset-15">
-                                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#" ng-click="searchAction.displayName='' ">
+                                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#" ng-init="searchAction.displayName='' " ng-click="searchAction.displayName='' ">
                                                 {{taskMsg(selectedAction[$index].displayName || 'task.select')}}
                                                 <span class="caret"></span>
                                             </button>
@@ -420,7 +412,7 @@
                                     </div>
                                     <div ui-if="selectedAction[$index]">
                                         <div ng-class="{'has-warning': actionCssClassWarning(i), 'has-error': actionCssClassError(i)}" ng-repeat="i in selectedAction[$index].actionParameters | filter: {hidden: false}" class="form-group clearfix">
-                                            <label class="col-md-2 col-sm-3 control-label tip">
+                                            <label class="col-md-2 col-sm-3 control-label tip unselectable">
                                                 {{taskMsg(i.displayName)}}
                                                 <!------------------------ Tooltips ------------------------>
                                                 <span class="help-inline" ui-if="i.type == 'LIST'" help-popover="list" data-title="{{msg('task.header.listHelp')}}"><i class="fa fa-question-circle"></i></span>
@@ -429,10 +421,10 @@
                                                 <span class="help-inline" ui-if="actionCssClassError(i)" help-popover="error" data-title="{{msg('task.header.error')}}"><i class="fa sfa-exclamation-triangle"></i></span>
                                             </label>
 
-                                            <!------------------------ Chrome & IE ------------------------>
-                                            <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="form-inline col-md-10 col-sm-9">
+                                            <!------------------------ Editable fields ------------------------>
+                                            <div class="form-inline col-md-10 col-sm-9">
                                                 <div ui-if="i.type == 'UNICODE'" data="i">
-                                                    <editable-content  index="{{$index}}" data="i" type="UNICODE"></editable-content>
+                                                    <editable-content  index="{{$index}}" data="i" type="UNICODE"> </editable-content>
                                                 </div>
                                                 <div ui-if="i.type == 'TEXTAREA' || i.type == 'MAP' || i.type == 'LIST' || i.type == 'PERIOD'" data="i" >
                                                     <editable-content  data="i" index="{{$index}}" type="TEXTAREA"></editable-content>
@@ -483,61 +475,6 @@
                                                                     </li>
                                                                 </ul>
                                                             </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div class="alert alert-danger alert-block"
-                                                         ng-show="i.options.length == 0">
-                                                        {{msg('task.info.noParameterOptions')}} {{taskMsg(i.displayName)}}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!------------------------ Other browsers  ------------------------>
-                                            <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="col-md-10 col-sm-9" ng-class="{'form-inline': i.type == 'BOOLEAN'}">
-                                                <textarea ui-if="i.type == 'TEXTAREA' || i.type == 'MAP' || i.type == 'LIST' || i.type == 'PERIOD'" rows="3" ng-model="i.value" droppable class="actionField form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}"></textarea>
-                                                <input ui-if="i.type == 'INTEGER' || i.type == 'LONG'" type="text" ng-model="i.value" droppable class="actionField form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" integer placeholder="{{msg('task.placeholder.numberOnly')}}"/>
-                                                <input ui-if="i.type == 'DOUBLE'" type="text" ng-model="i.value" droppable class="actionField form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" integer placeholder="{{msg('task.placeholder.numberOnly')}}"/>
-                                                <input ui-if="i.type == 'UNICODE'" type="text" ng-model="i.value" droppable class="actionField form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}"/>
-                                                <div ui-if="i.type == 'DATE'" class="input-group">
-                                                    <input  type="text" ng-model="i.value" droppable class="actionField form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" datetime-picker-input placeholder="{{msg('task.placeholder.dateOnly')}}" style="background:white;"/>
-                                                    <div class="input-group-btn" datetime-picker><button class="btn btn-default">{{msg('task.button.selectDate')}}</button></div>
-                                                </div>
-                                                <input ui-if="i.type == 'TIME'" type="text" ng-model="i.value" droppable class="actionField input-xxlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" time-picker-input placeholder="{{msg('task.placeholder.timeOnly')}}" readonly="readonly" style="background:white;"/>
-                                                <div ui-if="i.type == 'BOOLEAN'" class="form-inline">
-                                                    <label class="radio radio-inline">
-                                                        <input type="radio" ng-model="i.value" class="input-block-level" value="true"/> {{msg('yes')}}
-                                                    </label>
-                                                    <label class="radio radio-inline">
-                                                        <input type="radio" ng-model="i.value" class="input-block-level" value="false"/> {{msg('no')}}
-                                                    </label>
-                                                    <label class="radio-inline input-large-fluid">
-                                                        <input type="text" value="{{getBooleanValue(i.value)}}" droppable class="actionField form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" placeholder="{{msg('task.placeholder.booleanOnly')}}" readonly="readonly" style="background:white;"/>
-                                                    </label>
-                                                </div>
-                                                <div ui-if="i.type == 'SELECT'">
-                                                    <div class="btn-group form-group">
-                                                        <button class="btn btn-default dropdown-toggle"
-                                                                data-toggle="dropdown" target="_self" href="#"
-                                                                ng-click="searchOptions=''">
-                                                            {{taskMsg(i.value || 'task.select')}}
-                                                            <span class="caret"></span>
-                                                        </button>
-                                                        <ul class="dropdown-menu">
-                                                            <li class="search-data-source"
-                                                                ng-show="i.options.length &gt; 8"
-                                                                task-stop-propagation>
-                                                                <input class="form-control" type="text"
-                                                                       ng-model="searchOptions"
-                                                                       placeholder="{{msg('task.placeholder.searchOptions')}}">
-                                                            </li>
-                                                            <li>
-                                                                <ul class="select-limit">
-                                                                    <li ng-repeat="a in i.options | filter:searchOptions">
-                                                                        <a ng-click="i.value = a">{{taskMsg(a)}}</a>
-                                                                    </li>
-                                                                </ul>
-                                                            </li>
-
                                                         </ul>
                                                     </div>
                                                     <div class="alert alert-danger alert-block"

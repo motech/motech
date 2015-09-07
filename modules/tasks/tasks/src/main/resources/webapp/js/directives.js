@@ -125,7 +125,7 @@
             link: function (scope, element, attrs) {
                 element.droppable({
                     drop: function (event, ui) {
-                        var parent = scope, value, pos, eventKey, dragElement, browser, emText, dataSource,
+                        var parent = scope, value, eventKey, dragElement, browser, emText, dataSource,
                             position = function (dropElement, dragElement) {
                                 var sel, range, space = document.createTextNode(''), el, frag, node, lastNode, rangeInDropElem;
 
@@ -185,51 +185,7 @@
                             default:
                             }
 
-                            if (browser !== 'Chrome' && browser !== 'Explorer') {
-                                if (element.hasClass('dataSourceField')) {
-                                    dataSource = ManageTaskUtils.find({
-                                        where: parent.task.taskConfig.steps,
-                                        by: [{
-                                            what: 'providerId',
-                                            equalTo: element.data('index')
-                                        }, {
-                                            what: 'objectId',
-                                            equalTo: element.data('object-id')
-                                        }]
-                                    });
-                                }
-
-                                if (emText !== undefined) {
-                                    if (element.hasClass('actionField')) {
-                                        delete parent.filter(parent.selectedAction[element.data('action')].actionParameters, {hidden: false})[element.data('index')].value;
-                                    } else if (element.hasClass('dataSourceField')) {
-                                        if (dataSource) {
-                                            delete scope.lookupField.value;
-                                        }
-                                    }
-                                }
-
-                                if (dragElement.data('prefix') === 'trigger') {
-                                    eventKey = '{{trigger.' + parent.selectedTrigger.eventParameters[dragElement.data('index')].eventKey + '}}';
-                                } else if (dragElement.data('prefix') === 'ad') {
-                                    eventKey = '{{ad.' + parent.msg(dragElement.data('source')) + '.' + dragElement.data('object-type') + "#" + dragElement.data('object-id') + '.' + dragElement.data('field') + '}}';
-                                }
-
-                                pos = element.caret();
-                                value = element.val() || '';
-
-                                if (element.hasClass('actionField')) {
-                                    if(parent.filter(parent.selectedAction[element.data('action')].actionParameters, {hidden: false})[element.data('index')].type === "DATE") {
-                                        parent.filter(parent.selectedAction[element.data('action')].actionParameters, {hidden: false})[element.data('index')].value = eventKey;
-                                    } else {
-                                        parent.filter(parent.selectedAction[element.data('action')].actionParameters, {hidden: false})[element.data('index')].value = value.insert(pos, eventKey);
-                                    }
-                                } else if (element.hasClass('dataSourceField')) {
-                                    if (dataSource) {
-                                        scope.lookupField.value = value.insert(pos, eventKey);
-                                    }
-                                }
-                            } else if (!(dragElement.data('popover') === 'no' && element.data('type') !== 'format')){
+                            if (!(dragElement.data('popover') === 'no' && element.data('type') !== 'format')){
                                 if (emText !== undefined) {
                                     element.empty();
                                     element.append('<em style="color: gray;">' + parent.msg(emText) + '</em>');
@@ -352,7 +308,7 @@
                     return element.html(container);
                 };
 
-                element.bind('focusin', function (event) {
+                element.on('focusin', function (event) {
                     var el = this;
 
                     event.stopPropagation();
@@ -389,7 +345,7 @@
                     }
                 });
 
-                element.bind('keypress', function (event) {
+                element.on('keypress', function (event) {
                     var type = $(this).data('type');
 
                     if (type !== 'TEXTAREA' && type !== 'MAP' && type !== 'LIST') {
@@ -446,7 +402,8 @@
         return {
             restrict: 'A',
             link: function (scope, el, attrs) {
-                var manipulationOptions = '', title = '', loader, manType = attrs.manipulationpopover, elType = attrs.type, msgScope = scope, filter = scope.$parent.filter;
+                var manipulationOptions = '', title = '', loader, manType = attrs.manipulationpopover,
+                elType = attrs.type, msgScope = scope, filter = scope.$parent.filter;
 
                 while (msgScope.msg === undefined) {
                     msgScope = msgScope.$parent;
@@ -472,7 +429,7 @@
                        });
                 }
 
-                el.bind('click', function () {
+                el.on('click', function () {
                     var man = $("[ismanipulate=true]").text();
                     if (man.length === 0) {
                         angular.element(this).attr('ismanipulate', 'true');
@@ -484,7 +441,7 @@
 
                 if (elType === 'UNICODE' || elType === 'TEXTAREA' || elType === 'DATE') {
                     el.popover({
-                        template : '<div unselectable="on" contenteditable="false" class="popover dragpopover"><div unselectable="on" class="arrow"></div><div unselectable="on" class="popover-inner"><h3 unselectable="on" class="popover-title"></h3><div unselectable="on" class="popover-content"><p unselectable="on"></p></div></div></div>',
+                        template : '<div unselectable="on" contenteditable="false" class="popover dragpopover"><div unselectable="on" class="arrow"></div><div unselectable="on" class="popover-inner"><h3 unselectable="on" class="popover-title unselectable defaultCursor"></h3><div unselectable="on" class="popover-content unselectable"><p unselectable="on"></p></div></div></div>',
                         title: title,
                         html: true,
                         content: function () {
@@ -629,6 +586,8 @@
                         if (!$(this).hasClass('hasPopoverShow')) {
                             var otherPopoverElem = $('.hasPopoverShow');
 
+                            window.getSelection().removeAllRanges();
+
                             if (otherPopoverElem !== undefined && $(this) !== otherPopoverElem) {
                                 otherPopoverElem.popover('hide');
                                 otherPopoverElem.removeClass('hasPopoverShow');
@@ -645,6 +604,7 @@
                             $(this).popover('hide');
                             $(this).removeClass('hasPopoverShow');
                             $(this).removeAttr('ismanipulate');
+                            $(this).focus();
                         }
 
                         $('.dragpopover').click(function (event) {
@@ -664,7 +624,7 @@
                         });
                     });
 
-                    el.bind("manipulateChanged", function () {
+                    el.on("manipulateChanged", function () {
                         if (filter.key) {
                             var manipulateAttributes = el.attr('manipulate'),
                                 key = filter.key.split("?")[0], array, i;
@@ -778,7 +738,7 @@
 
                 scope.setSortableArray();
 
-                el.bind('mouseenter mousedown', function() {
+                el.on('mouseenter mousedown', function() {
 
                     scope.dragStart = function(e, ui) {
                         ui.originalPosition.top = 0;
@@ -811,7 +771,7 @@
                     });
                 });
 
-                el.bind("click", function () {
+                el.on("click", function () {
                     var manipulateElement = $("[ismanipulate=true]"), joinSeparator = "", reg, manipulation, manipulateAttributes, manipulationAttributesIndex, nonParamManip = true, i, found,
                     // Every new manipulation that takes parameter should be added to
                     // paramOptions array. Name is just a name of manipulation
@@ -869,6 +829,7 @@
 
                     manipulation = this.getAttribute("setManipulation");
                     manipulateAttributes = manipulateElement.attr("manipulate") || "";
+                    document.getSelection().removeAllRanges();
 
                     if ($(this).parent(".invalid").remove().length) {
                         if (manipulateAttributes.indexOf(manipulation) !== -1) {
@@ -950,7 +911,7 @@
             restrict : 'A',
             require: '?ngModel',
             link : function (scope, el, attrs) {
-                el.bind("focusout focusin keyup", function (event) {
+                el.on("focusout focusin keyup", function (event) {
                     event.stopPropagation();
                     var manipulateElement = $("[ismanipulate=true]"),
                         manipulation = "join(" + $("#joinSeparator").val() + ")",
@@ -970,7 +931,7 @@
             restrict : 'A',
             require: '?ngModel',
             link : function (scope, el, attrs) {
-                el.bind("focusout focusin keyup", function (event) {
+                el.on("focusout focusin keyup", function (event) {
                     event.stopPropagation();
                     var manipulateElement = $("[ismanipulate=true]"),
                         manipulation = "split(" + $("#splitSeparator").val() + ")",
@@ -990,7 +951,7 @@
             restrict : 'A',
             require: '?ngModel',
             link : function (scope, el, attrs) {
-                el.bind("focusout focusin keyup", function (event) {
+                el.on("focusout focusin keyup", function (event) {
                     event.stopPropagation();
                     var manipulateElement = $("[ismanipulate=true]"),
                         manipulation = "substring(" + $("#substringSeparator").val() + ")",
@@ -1010,7 +971,7 @@
             restrict : 'A',
             require: '?ngModel',
             link : function (scope, el, attrs) {
-                el.bind("focusout focusin keyup", function (event) {
+                el.on("focusout focusin keyup", function (event) {
                     event.stopPropagation();
                     var manipulateElement = $("[ismanipulate=true]"),
                         manipulation = "dateTime(" + $("#dateFormat").val() + ")",
@@ -1030,7 +991,7 @@
             restrict : 'A',
             require: '?ngModel',
             link : function (scope, el, attrs) {
-                el.bind("focusout focusin keyup", function (event) {
+                el.on("focusout focusin keyup", function (event) {
                     event.stopPropagation();
                     var
                         manipKind = attrs.manipulationKind,
@@ -1052,7 +1013,7 @@
             restrict : 'A',
             require: '?ngModel',
             link : function (scope, el, attrs) {
-                el.bind("focusout focusin keyup", function (event) {
+                el.on("focusout focusin keyup", function (event) {
                     event.stopPropagation();
                     var manipulateElement = $("[ismanipulate=true]"),
                         manipulation = "parseDate(" + $("#parseDate").val() + ")",
