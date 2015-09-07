@@ -41,12 +41,12 @@ public class ActivityControllerTest {
     }
 
     @Test
-    public void shouldGetAllActivities() {
-        when(activityService.getAllActivities()).thenReturn(expected);
+    public void shouldGetAllLatestActivities() {
+        when(activityService.getLatestActivities()).thenReturn(expected);
 
-        List<TaskActivity> actual = controller.getAllActivities();
+        List<TaskActivity> actual = controller.getRecentActivities();
 
-        verify(activityService).getAllActivities();
+        verify(activityService).getLatestActivities();
         assertEquals(expected, actual);
     }
 

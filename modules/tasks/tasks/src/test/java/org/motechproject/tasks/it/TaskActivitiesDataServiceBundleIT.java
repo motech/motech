@@ -1,12 +1,17 @@
 package org.motechproject.tasks.it;
 
+import org.joda.time.DateTime;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.tasks.domain.TaskActivity;
+import org.motechproject.tasks.domain.TaskActivityType;
+import org.motechproject.tasks.repository.LatestTaskActivitiesQueryExecution;
 import org.motechproject.tasks.repository.TaskActivitiesDataService;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.motechproject.testing.utils.TimeFaker;
 import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
@@ -18,6 +23,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
 import static org.motechproject.tasks.domain.TaskActivityType.SUCCESS;
 import static org.motechproject.tasks.domain.TaskActivityType.WARNING;
@@ -33,6 +39,12 @@ public class TaskActivitiesDataServiceBundleIT extends BasePaxIT {
 
     @Inject
     private TaskActivitiesDataService taskActivitiesDataService;
+
+    @Before
+    @After
+    public void clearActivities() {
+        clearDb();
+    }
 
     @Test
     public void shouldFindTaskActivitiesByTaskId() {
@@ -68,8 +80,39 @@ public class TaskActivitiesDataServiceBundleIT extends BasePaxIT {
         assertEquals(WARNING.getValue(), messages.get(0).getMessage());
     }
 
-    @After
-    public void tearDown() {
+    @Test
+    public void shouldReturnLatestRecordsOrderedByDate() {
+        setUpActivityRecords();
+
+        List<TaskActivity> allActivities = taskActivitiesDataService.retrieveAll();
+        List<TaskActivity> activities = taskActivitiesDataService.executeQuery(new LatestTaskActivitiesQueryExecution());
+
+        //There should always be only 10 records returned
+        assertEquals(10, activities.size());
+
+        //The first activity should have the most recent one
+        DateTime mostRecentDate = new DateTime(0);
+        for (TaskActivity activity : allActivities) {
+            if (activity.getDate().isAfter(mostRecentDate)) {
+                mostRecentDate = activity.getDate();
+            }
+        }
+        assertEquals(mostRecentDate, activities.get(0).getDate());
+
+        //All recent activities should be sorted by date
+        for (int i = 1; i < 10; i++) {
+            assertTrue(activities.get(i - 1).getDate().isAfter(activities.get(i).getDate()));
+        }
+    }
+
+    private void clearDb() {
         taskActivitiesDataService.deleteAll();
+    }
+
+    private void setUpActivityRecords() {
+        for(int i = 0; i < 50; i++) {
+            TimeFaker.fakeNow(new DateTime(2014, 12, 7, 12, 53, i));
+            taskActivitiesDataService.create(new TaskActivity("task executed", 1L, TaskActivityType.SUCCESS));
+        }
     }
 }

@@ -1,6 +1,7 @@
 package org.motechproject.tasks.web;
 
 import org.motechproject.tasks.domain.TaskActivity;
+import org.motechproject.tasks.domain.TaskActivityType;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,14 +33,14 @@ public class ActivityController {
     }
 
     /**
-     * Returns the list of all activities.
+     * Returns the list of recent activities.
      *
      * @return  the list of activities
      */
     @RequestMapping(value = "/activity", method = RequestMethod.GET)
     @ResponseBody
-    public List<TaskActivity> getAllActivities() {
-        return activityService.getAllActivities();
+    public List<TaskActivity> getRecentActivities() {
+        return activityService.getLatestActivities();
     }
 
     /**
@@ -52,6 +53,20 @@ public class ActivityController {
     @ResponseBody
     public List<TaskActivity> getTaskActivities(@PathVariable Long taskId) {
         return activityService.getTaskActivities(taskId);
+    }
+
+    /**
+     * Returns the count of specified activity types for the task with the given ID.
+     *
+     * @param taskId  the ID of the task
+     * @param activityType the type of activities to count; ERROR, WARNING or SUCCESS only
+     * @return  the list of activities
+     */
+    @RequestMapping(value = "/activity/{taskId}/{activityType}", method = RequestMethod.GET)
+    @ResponseBody
+    public long getTaskActivityCount(@PathVariable Long taskId, @PathVariable String activityType) {
+        TaskActivityType type = TaskActivityType.valueOf(activityType);
+        return activityService.getTaskActivitiesCount(taskId, type);
     }
 
     /**
