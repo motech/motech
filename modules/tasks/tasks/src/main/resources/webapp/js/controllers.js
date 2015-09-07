@@ -67,6 +67,19 @@
             $("#filters").addClass(' in active');
         });
 
+        $scope.getNumberOfActivities = function(id, type) {
+            var numberOfActivities;
+            $.ajax({
+                url: '../tasks/api/activity/' + id + '/' + type,
+                success:  function(data) {
+                    numberOfActivities = data;
+                },
+                async: false
+            });
+
+            return numberOfActivities;
+        };
+
         $scope.getTasks = function () {
             $scope.allTasks = [];
 
@@ -77,19 +90,10 @@
                     for (i = 0; i < tasks.length; i += 1) {
                         item = {
                             task: tasks[i],
-                            success: 0,
-                            error: 0
+                            success: $scope.getNumberOfActivities(tasks[i].id, 'SUCCESS'),
+                            error: $scope.getNumberOfActivities(tasks[i].id, 'ERROR')
                         };
 
-                        for (j = 0; j < activities.length; j += 1) {
-                            if (activities[j].task === item.task.id && activities[j].activityType === 'SUCCESS') {
-                                item.success += 1;
-                            }
-
-                            if (activities[j].task === item.task.id && activities[j].activityType === 'ERROR') {
-                                item.error += 1;
-                            }
-                        }
                         $scope.allTasks.push(item);
                     }
 
