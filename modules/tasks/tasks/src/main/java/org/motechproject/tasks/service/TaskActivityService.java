@@ -2,6 +2,7 @@ package org.motechproject.tasks.service;
 
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
+import org.motechproject.tasks.domain.TaskActivityType;
 import org.motechproject.tasks.ex.TaskHandlerException;
 
 import java.util.List;
@@ -76,10 +77,26 @@ public interface TaskActivityService {
     List<TaskActivity> getAllActivities();
 
     /**
+     * Returns 10 most recent activities as a list, ordered by date.
+     *
+     * @return the list of all activities
+     */
+    List<TaskActivity> getLatestActivities();
+
+    /**
      * Returns list of all activities for task with the given ID.
      *
      * @param taskId  the task ID, null returns null
      * @return  the list of all activities for task with given ID
      */
     List<TaskActivity> getTaskActivities(Long taskId);
+
+    /**
+     * Returns the count of all activities for the given task, of the specified type.
+     *
+     * @param taskId the task ID
+     * @param type the type of activity to include in count
+     * @return the count of matching activities
+     */
+    long getTaskActivitiesCount(Long taskId, TaskActivityType type);
 }

@@ -5,6 +5,7 @@ import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
 import org.motechproject.tasks.ex.TaskHandlerException;
+import org.motechproject.tasks.repository.LatestTaskActivitiesQueryExecution;
 import org.motechproject.tasks.repository.TaskActivitiesDataService;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,8 +90,18 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     }
 
     @Override
+    public List<TaskActivity> getLatestActivities() {
+        return taskActivitiesDataService.executeQuery(new LatestTaskActivitiesQueryExecution());
+    }
+
+    @Override
     public List<TaskActivity> getTaskActivities(Long taskId) {
         return sort(taskActivitiesDataService.byTask(taskId));
+    }
+
+    @Override
+    public long getTaskActivitiesCount(Long taskId, TaskActivityType type) {
+        return taskActivitiesDataService.countByTaskAndActivityType(taskId, type);
     }
 
     private List<TaskActivity> sort(List<TaskActivity> messages) {
