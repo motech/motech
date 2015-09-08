@@ -3,6 +3,9 @@ package org.motechproject.mds.domain;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.util.Constants;
 
+import java.util.List;
+import java.util.Set;
+
 import static org.motechproject.mds.util.Constants.MetadataKeys.OWNING_SIDE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
@@ -77,6 +80,14 @@ public class RelationshipHolder extends FieldHolder {
 
     public boolean isBiDirectional() {
         return isManyToMany() || getRelatedField() != null;
+    }
+
+    public boolean isSetManyToMany() {
+        return isManyToMany() && Set.class.getName().equals(getCollectionClassName());
+    }
+
+    public boolean isListManyToMany() {
+        return isManyToMany() && List.class.getName().equals(getCollectionClassName());
     }
 
     public String getCollectionClassName() {

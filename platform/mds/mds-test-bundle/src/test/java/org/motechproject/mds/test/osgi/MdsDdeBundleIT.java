@@ -41,8 +41,10 @@ import org.motechproject.mds.test.domain.lookupcomboboxrelation.LogStatus;
 import org.motechproject.mds.test.domain.lookupcomboboxrelation.MessageLog;
 import org.motechproject.mds.test.domain.manytomany.Author;
 import org.motechproject.mds.test.domain.manytomany.Book;
+import org.motechproject.mds.test.domain.manytomany.Product;
 import org.motechproject.mds.test.domain.manytomany.Clinic;
 import org.motechproject.mds.test.domain.manytomany.Patient;
+import org.motechproject.mds.test.domain.manytomany.Supplier;
 import org.motechproject.mds.test.domain.relationshipswithhistory.District;
 import org.motechproject.mds.test.domain.relationshipswithhistory.Language;
 import org.motechproject.mds.test.domain.relationshipswithhistory.State;
@@ -72,8 +74,10 @@ import org.motechproject.mds.test.service.instancelifecyclelistener.SubclassBDat
 import org.motechproject.mds.test.service.lookupcomboboxrelation.MessageLogDataService;
 import org.motechproject.mds.test.service.manytomany.AuthorDataService;
 import org.motechproject.mds.test.service.manytomany.BookDataService;
+import org.motechproject.mds.test.service.manytomany.ProductDataService;
 import org.motechproject.mds.test.service.manytomany.ClinicDataService;
 import org.motechproject.mds.test.service.manytomany.PatientDataService;
+import org.motechproject.mds.test.service.manytomany.SupplierDataService;
 import org.motechproject.mds.test.service.relationshipswithhistory.DistrictDataService;
 import org.motechproject.mds.test.service.relationshipswithhistory.LanguageDataService;
 import org.motechproject.mds.test.service.relationshipswithhistory.StateDataService;
@@ -230,6 +234,12 @@ public class MdsDdeBundleIT extends BasePaxIT {
     @Inject
     private ActorDataService actorDataService;
 
+    @Inject
+    private ProductDataService productDataService;
+
+    @Inject
+    private SupplierDataService supplierDataService;
+
     private final Object waitLock = new Object();
 
     @Before
@@ -269,8 +279,33 @@ public class MdsDdeBundleIT extends BasePaxIT {
         departmentDataService.deleteAll();
         employeeDataService.deleteAll();
         messageLogDataService.deleteAll();
-        actorDataService.deleteAll();
+        messageDataService.deleteAll();
+        removeFromListManyToMany();
+    }
+
+    private void removeFromListManyToMany() {
+        // we must delete relation to avoid sql integrity constraint violation
+        for (Movie m : movieDataService.retrieveAll()) {
+            m.setActors(new ArrayList<Actor>());
+            movieDataService.update(m);
+        }
+        for (Actor a : actorDataService.retrieveAll()) {
+            a.setMovies(new ArrayList<Movie>());
+            actorDataService.update(a);
+        }
         movieDataService.deleteAll();
+        actorDataService.deleteAll();
+
+        for (Supplier p : supplierDataService.retrieveAll()) {
+            p.setProducts(new ArrayList<Product>());
+            supplierDataService.update(p);
+        }
+        for (Product c : productDataService.retrieveAll()) {
+            c.setSuppliers(new ArrayList<Supplier>());
+            productDataService.update(c);
+        }
+        productDataService.deleteAll();
+        supplierDataService.deleteAll();
     }
 
     @Test
@@ -595,37 +630,129 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     @Test
     public void testManyToManyRelationshipList() {
-        Movie m1 = new Movie("movie1");
+        getLogger().info("Test Many to Many List relationship");
 
-        Actor a1 = new Actor("actor1");
+        setUpActorMovieData();
 
-        movieDataService.create(m1);
-
-        actorDataService.create(a1);
-
-        m1.getActors().add(a1);
-
-        movieDataService.update(m1);
-
-        // Load the actor and verify they have the movie
+        // Verify m1 -> a1
         Actor a = actorDataService.findByName("actor1");
-        assertEquals(1, a.getMovies().size());
+        verifyActorMovie(a, "actor1", "movie1", 1, 1, 0, 0);
 
-        Movie m = a.getMovies().get(0);
-        assertEquals("movie1", m.getName());
+        Movie m = movieDataService.findByName("movie1");
+        verifyMovieActor(m, "actor1", "movie1", 1, 1, 0, 0);
 
-        assertEquals(1, m.getActors().size());
-        assertEquals("actor1", m.getActors().get(0).getName());
+        // Verify m2 -> a2, a3
+        a = actorDataService.findByName("actor2");
+        verifyActorMovie(a, "actor2", "movie2", 1, 2, 0, 0);
+        a = actorDataService.findByName("actor3");
+        verifyActorMovie(a, "actor3", "movie2", 1, 2, 0, 1);
 
-        // Load the movie and verify it has the actor
+        m = movieDataService.findByName("movie2");
+        verifyMovieActor(m, "actor2", "movie2", 1, 2, 0, 0);
+        verifyMovieActor(m, "actor3", "movie2", 1, 2, 0, 1);
+
+        // Verify m3, m4 -> a4
+        a = actorDataService.findByName("actor4");
+        verifyActorMovie(a, "actor4", "movie3", 2, 1, 0, 0);
+        verifyActorMovie(a, "actor4", "movie4", 2, 1, 1, 0);
+
+        m = movieDataService.findByName("movie3");
+        verifyMovieActor(m, "actor4", "movie3", 2, 1, 0, 0);
+        m = movieDataService.findByName("movie4");
+        verifyMovieActor(m, "actor4", "movie4", 2, 1, 1, 0);
+
+        // Delete m1 and a1
         m = movieDataService.findByName("movie1");
-        assertEquals(1, m.getActors().size());
+        m.getActors().remove(0);
+        movieDataService.update(m);
 
-        a = m.getActors().get(0);
-        assertEquals("actor1", a.getName());
+        a = actorDataService.findByName("actor1");
+        actorDataService.delete(a);
 
-        assertEquals(1, a.getMovies().size());
-        assertEquals("movie1", a.getMovies().get(0).getName());
+        assertEquals(4l, movieDataService.count());
+        assertEquals(3l, actorDataService.count());
+
+        movieDataService.delete(m);
+        assertEquals(3l, movieDataService.count());
+
+        // m2 -> a2, a3, a5
+        Actor a5 = new Actor("actor5");
+        a5 = actorDataService.create(a5);
+
+        m = movieDataService.findByName("movie2");
+        m.getActors().add(0, a5);
+        a5.getMovies().add(m);
+        movieDataService.update(m);
+        verifyMovieActor(m, "actor5", "movie2", 1, 3, 0, 0);
+
+        // remove a5 from m2
+        m.getActors().remove(0);
+        movieDataService.update(m);
+        m = movieDataService.findByName("movie2");
+        verifyMovieActor(m, "actor2", "movie2", 1, 2, 0, 0);
+    }
+
+    @Test
+    public void testManyToManyRelationshipListWithCustomTableNames() {
+        getLogger().info("Test Many to Many List relationship with custom table names");
+
+        Product p1 = new Product("product1");
+        Product p2 = new Product("product2");
+        Product p3 = new Product("product3");
+        Product p4 = new Product("product4");
+        Product p5 = new Product("product5");
+        Product p6 = new Product("product6");
+        Product p7 = new Product("product7");
+
+        Supplier s1 = new Supplier("supplier1");
+        Supplier s2 = new Supplier("supplier2");
+
+        p1 = productDataService.create(p1);
+        p2 = productDataService.create(p2);
+        p3 = productDataService.create(p3);
+        p4 = productDataService.create(p4);
+        p5 = productDataService.create(p5);
+        p6 = productDataService.create(p6);
+        p7 = productDataService.create(p7);
+
+        s1 = supplierDataService.create(s1);
+        s2 = supplierDataService.create(s2);
+
+        s1.getProducts().add(p1);
+        s1.getProducts().add(p2);
+        s1.getProducts().add(p3);
+        s1.getProducts().add(p4);
+        s1.getProducts().add(p5);
+
+        p1.getSuppliers().add(s1);
+        p2.getSuppliers().add(s1);
+        p3.getSuppliers().add(s1);
+        p4.getSuppliers().add(s1);
+        p5.getSuppliers().add(s1);
+
+        supplierDataService.update(s1);
+
+        s2.getProducts().add(p4);
+        s2.getProducts().add(p5);
+        s2.getProducts().add(p6);
+        s2.getProducts().add(p7);
+
+        p4.getSuppliers().add(s2);
+        p5.getSuppliers().add(s2);
+        p6.getSuppliers().add(s2);
+        p7.getSuppliers().add(s2);
+
+        supplierDataService.update(s2);
+
+        // verify s1 -> p1, p2, p3, p4, p5
+        Supplier supplier = supplierDataService.findBySupplierName("supplier1");
+        List<String> products = extract(supplier.getProducts(), on(Product.class).getName());
+        assertEquals(asList("product1", "product2", "product3", "product4", "product5"), products);
+
+        // verify s2 -> p4, p5, p6, p7
+        supplier = supplierDataService.findBySupplierName("supplier2");
+        products = extract(supplier.getProducts(), on(Product.class).getName());
+        assertEquals(asList("product4", "product5", "product6", "product7"), products);
     }
 
     @Test
@@ -1159,6 +1286,68 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals("info_2_processed", messageLogs.get(0).getInfo());
         assertEquals("info_3_to_process", messageLogs.get(1).getInfo());
         assertEquals("info_4_to_process", messageLogs.get(2).getInfo());
+    }
+
+    private void verifyActorMovie(Actor a, String actorName, String movieName, int expectedMovies, int expectedActors, int moviePosition, int actorPosition) {
+        assertEquals(expectedMovies, a.getMovies().size());
+
+        Movie m = a.getMovies().get(moviePosition);
+        assertEquals(movieName, m.getName());
+
+        assertEquals(expectedActors, m.getActors().size());
+        assertEquals(actorName, m.getActors().get(actorPosition).getName());
+    }
+
+    private void verifyMovieActor(Movie m, String actorName, String movieName, int expectedMovies, int expectedActors, int moviePosition, int actorPosition) {
+        assertEquals(expectedActors, m.getActors().size());
+
+        Actor a = m.getActors().get(actorPosition);
+        assertEquals(actorName, a.getName());
+
+        assertEquals(expectedMovies, a.getMovies().size());
+        assertEquals(movieName, a.getMovies().get(moviePosition).getName());
+    }
+
+    private void setUpActorMovieData() {
+        Movie m1 = new Movie("movie1");
+        Movie m2 = new Movie("movie2");
+        Movie m3 = new Movie("movie3");
+        Movie m4 = new Movie("movie4");
+
+        Actor a1 = new Actor("actor1");
+        Actor a2 = new Actor("actor2");
+        Actor a3 = new Actor("actor3");
+        Actor a4 = new Actor("actor4");
+
+        movieDataService.create(m1);
+        movieDataService.create(m2);
+        movieDataService.create(m3);
+        movieDataService.create(m4);
+
+        actorDataService.create(a1);
+        actorDataService.create(a2);
+        actorDataService.create(a3);
+        actorDataService.create(a4);
+
+        // m1 - > a1
+        m1.getActors().add(a1);
+        a1.getMovies().add(m1);
+        movieDataService.update(m1);
+
+        // m2 - > a2, a3
+        m2.getActors().add(a2);
+        m2.getActors().add(a3);
+        a2.getMovies().add(m2);
+        a3.getMovies().add(m2);
+        movieDataService.update(m2);
+
+        //m3, m4 -> a4
+        m3.getActors().add(a4);
+        m4.getActors().add(a4);
+        a4.getMovies().add(m3);
+        a4.getMovies().add(m4);
+        movieDataService.update(m4);
+        movieDataService.update(m3);
     }
 
     private void setUpDataForLookupsOnRelationshipFields() {

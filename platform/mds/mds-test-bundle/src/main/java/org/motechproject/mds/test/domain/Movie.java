@@ -2,12 +2,13 @@ package org.motechproject.mds.test.domain;
 
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.IndexedManyToMany;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
+@Entity(recordHistory = true)
 public class Movie {
 
     private Long id;
@@ -16,6 +17,7 @@ public class Movie {
     private String name;
 
     @Field
+    @IndexedManyToMany(relatedField = "movies")
     private List<Actor> actors;
 
     public Movie(String name) {

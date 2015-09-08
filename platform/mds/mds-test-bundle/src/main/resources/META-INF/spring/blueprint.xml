@@ -23,6 +23,8 @@
     <osgi:reference id="authorDataService" interface="org.motechproject.mds.test.service.manytomany.AuthorDataService" />
     <osgi:reference id="patientDataService" interface="org.motechproject.mds.test.service.manytomany.PatientDataService" />
     <osgi:reference id="clinicDataService" interface="org.motechproject.mds.test.service.manytomany.ClinicDataService" />
+    <osgi:reference id="productDataService" interface="org.motechproject.mds.test.service.manytomany.ProductDataService" />
+    <osgi:reference id="supplierDataService" interface="org.motechproject.mds.test.service.manytomany.SupplierDataService" />
     <osgi:reference id="districtDataService" interface="org.motechproject.mds.test.service.relationshipswithhistory.DistrictDataService" />
     <osgi:reference id="stateDataService" interface="org.motechproject.mds.test.service.relationshipswithhistory.StateDataService" />
     <osgi:reference id="languageDataService" interface="org.motechproject.mds.test.service.relationshipswithhistory.LanguageDataService" />

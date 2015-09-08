@@ -467,9 +467,11 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         Join join = fieldDefinition.getAnnotation(Join.class);
 
         // If tables and column names have been specified in annotations, do not set their metadata
-        if (!holder.isOwningSide()) {
+        // Join metadata must be present at exactly one side of the M:N relation when using Sets
+        // When using Lists join metadata must be present at two sides of M:N relation
+        if (!holder.isOwningSide() || holder.isListManyToMany()) {
             JoinMetadata jmd = null;
-            // Join metadata must be present at exactly one side of the M:N relation in Datanucleus 4+
+
             if (join == null || entityType != EntityType.STANDARD) {
                 jmd = fmd.newJoinMetadata();
             }
@@ -483,7 +485,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             if (join != null && StringUtils.isNotEmpty(join.column()) && entityType != EntityType.STANDARD) {
                 setJoinMetadata(jmd, fmd, join.column());
             } else if (join == null || StringUtils.isEmpty(join.column())) {
-                setJoinMetadata(jmd, fmd, ClassName.getSimpleName(field.getEntity().getClassName()) + "_ID".toUpperCase());
+                setJoinMetadata(jmd, fmd, (ClassName.getSimpleName(field.getEntity().getClassName()) + "_ID").toUpperCase());
             }
         }
     }
@@ -491,10 +493,10 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     private void setElementMetadata(FieldMetadata fmd, Element element, RelationshipHolder holder, EntityType entityType) {
         if (element != null && StringUtils.isNotEmpty(element.column()) && entityType != EntityType.STANDARD) {
             ElementMetadata emd = fmd.newElementMetadata();
-            emd.setColumn(element.column());
+            emd.newColumnMetadata().setName(element.column());
         } else if (element == null || StringUtils.isEmpty(element.column())) {
             ElementMetadata emd = fmd.newElementMetadata();
-            emd.setColumn(ClassName.getSimpleName(ClassName.trimTrashHistorySuffix(holder.getRelatedClass()) + "_ID").toUpperCase());
+            emd.newColumnMetadata().setName(ClassName.getSimpleName(ClassName.trimTrashHistorySuffix(holder.getRelatedClass()) + "_ID").toUpperCase());
         }
     }
 
@@ -507,7 +509,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             joinMetadata = jmd;
         }
 
-        joinMetadata.setColumn(column);
+        joinMetadata.newColumnMetadata().setName(column);
     }
 
     private void setTableNameMetadata(FieldMetadata fmd, Persistent persistent, Field field, RelationshipHolder holder, EntityType entityType) {
@@ -540,7 +542,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             colMd.setDependentElement(holder.isCascadeDelete() || entityType == EntityType.TRASH);
         }
 
-        if (holder.isManyToMany() && !holder.isOwningSide() && entityType.equals(EntityType.STANDARD)) {
+        if (holder.isSetManyToMany() && !holder.isOwningSide() && entityType.equals(EntityType.STANDARD)) {
             fmd.setMappedBy(holder.getRelatedField());
         }
     }
@@ -558,7 +560,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             JoinMetadata jm = fmd.newJoinMetadata();
             jm.newForeignKeyMetadata();
             jm.setDeleteAction(ForeignKeyAction.CASCADE);
-            jm.setColumn(fieldName + "_OID");
+            jm.newColumnMetadata().setName(fieldName + "_OID");
         }
         return fmd;
     }
