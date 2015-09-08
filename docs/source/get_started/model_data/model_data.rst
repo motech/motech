@@ -655,9 +655,9 @@ both uni-directional and bi-directional. The way to define relationships for DDE
     }
 
 - **Many-to-many**
-  In this type of a relationship, both classes define a collection of related entity instances. The many to many
-  relationships are bi-directional by definition, which means it's not possible to create a uni-directional
-  version of such relation. The code below shows an example of a many-to-many relationship.
+  Mds supports two types of many to many relationship. First type is **M-N Set** relation which is bi-directional, if you
+  need more information you should `read datanucleus M-N Set relation documentation <http://www.datanucleus.org/products/accessplatform_4_0/jdo/orm/many_to_many.html#set>`_.
+  The code below shows an example of a many-to-many set relationship.
 
 .. code-block:: java
 
@@ -683,6 +683,62 @@ both uni-directional and bi-directional. The way to define relationships for DDE
 
         ...
     }
+
+
+Second type is **M-N Indexed Lists** relation which is modelled as 2 1-N unidirectional relations using join tables. Very important
+is to use the @IndexedManyToMany annotation at both ends of the relation instead of the @Persistent(mappedBy = "fieldName"). If you need more
+information you should `read datanucleus M-N Indexed List relation documentation <http://www.datanucleus.org/products/accessplatform_4_0/jdo/orm/many_to_many.html#list_indexed>`_.
+The code below shows an example of a many-to-many indexed list relationship.
+
+.. code-block:: java
+
+    @Entity
+    public class Actor {
+
+        @Field
+        private String name;
+
+        @Field
+        @IndexedManyToMany(relatedField = "actors")
+        private List<Movie> movies;
+
+        ...
+    }
+
+    @Entity
+    public class Movie {
+
+        @Field
+        private String name;
+
+        @Field
+        @IndexedManyToMany(relatedField = "movies")
+        private List<Actor> actors;
+
+        ...
+    }
+
+
+The code below shows an example how to properly use many-to-many indexed list relationship.
+
+.. code-block:: java
+
+    Actor actor1 = actorDataService.findByName("actor_1");
+    Actor actor2 = actorDataService.findByName("actor_2");
+    Movie movie = movieDataService.findByName("movie");
+
+    movie.getActors().add(actor1);
+    movie.getActors().add(actor2);
+    actor1.getMovies().add(movie);
+    actor2.getMovies().add(movie);
+
+    movieDataService.update(movie);
+
+
+.. note::
+
+    To add an object to an M-N relationship you need to set it at both ends of the relation. You should also remember to
+    define the methods equals and hashCode so that updates are detected correctly.
 
 - **Master-detail**
   MDS also supports master-detail model, where entity can inherit some fields from another entity. This is achieved by
