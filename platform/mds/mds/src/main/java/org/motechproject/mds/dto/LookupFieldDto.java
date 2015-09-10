@@ -18,6 +18,7 @@ public class LookupFieldDto {
     private boolean useGenericParam;
     private String className;
     private String displayName;
+    private String relatedFieldDisplayName;
     private List<SettingDto> settings;
 
     public LookupFieldDto() {
@@ -127,6 +128,13 @@ public class LookupFieldDto {
         this.relatedName = relatedName;
     }
 
+    public String getRelatedFieldDisplayName() {
+        return relatedFieldDisplayName;
+    }
+
+    public void setRelatedFieldDisplayName(String relatedFieldDisplayName) {
+        this.relatedFieldDisplayName = relatedFieldDisplayName;
+    }
 
     @Override
     public boolean equals(Object o) {
