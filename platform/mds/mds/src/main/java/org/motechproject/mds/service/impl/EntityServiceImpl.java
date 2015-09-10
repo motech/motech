@@ -1353,25 +1353,25 @@ public class EntityServiceImpl implements EntityService {
         return advancedSettingsDto;
     }
 
-
-
     private void addNonPersistentDataForLookupFields(Collection<LookupDto> lookupDtos, Entity entity) {
         for (LookupDto lookup : lookupDtos) {
             for (LookupFieldDto lookupField : lookup.getLookupFields()) {
+                Field field = entity.getField(lookupField.getName());
                 if (StringUtils.isNotBlank(lookupField.getRelatedName())) {
-                    Field field = entity.getField(lookupField.getName());
                     Entity relatedEntity = allEntities.retrieveByClassName(field.getMetadata(Constants.MetadataKeys.RELATED_CLASS).getValue());
-                    addNonPersistentDataForLookupField(relatedEntity.getField(lookupField.getRelatedName()), lookupField, field.getDisplayName());
+                    Field relatedField = relatedEntity.getField(lookupField.getRelatedName());
+                    addNonPersistentDataForLookupField(relatedField, lookupField, field.getDisplayName(), relatedField.getDisplayName());
                 } else {
-                    addNonPersistentDataForLookupField(entity.getField(lookupField.getName()), lookupField, null);
+                    addNonPersistentDataForLookupField(field, lookupField, field.getDisplayName(), null);
                 }
             }
         }
     }
 
-    private void addNonPersistentDataForLookupField(Field field, LookupFieldDto lookupField, String nameParam) {
+    private void addNonPersistentDataForLookupField(Field field, LookupFieldDto lookupField, String displayName, String relatedFieldDisplayName) {
         lookupField.setSettings(field.settingsToDto());
-        lookupField.setDisplayName(StringUtils.isNotBlank(nameParam) ? nameParam : field.getDisplayName());
+        lookupField.setDisplayName(displayName);
+        lookupField.setRelatedFieldDisplayName(relatedFieldDisplayName);
         lookupField.setClassName(field.getType().getTypeClass().getName());
     }
 
