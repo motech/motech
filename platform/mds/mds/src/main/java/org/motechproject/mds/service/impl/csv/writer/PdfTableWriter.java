@@ -8,6 +8,8 @@ import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfAction;
+import com.itextpdf.text.pdf.PdfDestination;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -85,6 +87,9 @@ public class PdfTableWriter implements TableWriter {
             dataTable.setTotalWidth(tableWidth);
 
             changeDocumentSize(tableWidth, dataTable.getTotalHeight());
+
+            pdfWriter.setOpenAction(PdfAction.gotoLocalPage(1, new PdfDestination(PdfDestination.XYZ, 0, 1, 1f),
+                    pdfWriter));
 
             pdfDocument.add(dataTable);
             pdfDocument.close();
