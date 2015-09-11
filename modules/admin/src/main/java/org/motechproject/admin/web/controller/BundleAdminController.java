@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -202,7 +203,6 @@ public class BundleAdminController {
      * @param ex the exception being handled
      * @throws IOException if there were problems writing the stacktrace to the response
      */
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public void handleBundleException(HttpServletRequest request, HttpServletResponse response, Exception ex)
             throws IOException {
@@ -212,6 +212,12 @@ public class BundleAdminController {
         statusMessageService.error(msg, ADMIN_MODULE_NAME);
 
         LOGGER.error("Error when processing request: {}", request.getPathInfo(), ex);
+
+        if (ex instanceof AccessDeniedException) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        } else {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
 
         try (Writer writer = response.getWriter()) {
             writer.write(ExceptionUtils.getStackTrace(ex));
