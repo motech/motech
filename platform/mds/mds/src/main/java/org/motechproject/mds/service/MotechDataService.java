@@ -216,4 +216,11 @@ public interface MotechDataService<T> {
      * @return class type
      */
     Class<T> getClassType();
+
+    /**
+     * Returns the name of the version field. Version field is not required so this method can return null value.
+     *
+     * @return the name of the version field
+     */
+    String getVersionFieldName();
 }

@@ -1,6 +1,8 @@
 package org.motechproject.mds.web.rest;
 
 import org.apache.commons.lang.StringUtils;
+import org.datanucleus.exceptions.NucleusOptimisticException;
+import org.datanucleus.exceptions.NucleusUserException;
 import org.motechproject.mds.ex.rest.RestBadBodyFormatException;
 import org.motechproject.mds.ex.rest.RestEntityNotFoundException;
 import org.motechproject.mds.ex.rest.RestLookupExecutionForbiddenException;
@@ -15,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.orm.jdo.JdoOptimisticLockingFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -225,7 +228,8 @@ public class MdsRestController  {
         LOGGER.debug("Forbidden error", e);
     }
 
-    @ExceptionHandler({RestBadBodyFormatException.class, InvalidParameterException.class, JDOUserException.class, IllegalArgumentException.class})
+    @ExceptionHandler({RestBadBodyFormatException.class, InvalidParameterException.class, JDOUserException.class,
+            IllegalArgumentException.class, NucleusUserException.class, org.springframework.orm.jdo.JdoUsageException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public String handleBadBodyException(RuntimeException e) {
@@ -238,6 +242,14 @@ public class MdsRestController  {
     @ResponseBody
     public String handleConstraintViolationException(ConstraintViolationException e) {
         LOGGER.debug("Invalid parameters in the request", e);
+        return e.getMessage();
+    }
+
+    @ExceptionHandler({JdoOptimisticLockingFailureException.class, NucleusOptimisticException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public String handleOptimisticTransactionException(ConstraintViolationException e) {
+        LOGGER.debug("Optimistic locking exception", e);
         return e.getMessage();
     }
 }

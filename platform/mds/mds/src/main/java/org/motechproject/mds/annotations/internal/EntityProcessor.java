@@ -1,12 +1,15 @@
 package org.motechproject.mds.annotations.internal;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.ReadAccess;
 import org.motechproject.mds.domain.MdsEntity;
+import org.motechproject.mds.domain.MdsVersionedEntity;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.helper.EntityDefaultFieldsHelper;
@@ -24,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 
+import javax.jdo.annotations.Version;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
@@ -145,12 +149,15 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
             entityProcessorOutput.setEntityProcessingResult(entity);
 
             fields = findFields(clazz, entity);
+
+            String versionField = getVersionFieldName(clazz);
+            addVersionMetadata(fields, versionField);
             addDefaultFields(entity, fields);
 
             restOptions = processRestOperations(clazz, restOptions);
             restOptions = findRestFields(clazz, restOptions, fields);
 
-            updateResults(entityProcessorOutput, clazz, fields, restOptions, tracking);
+            updateResults(entityProcessorOutput, clazz, fields, restOptions, tracking, versionField);
 
             add(entity);
             processingResult.add(entityProcessorOutput);
@@ -158,6 +165,30 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
         } else {
             LOGGER.debug("Did not find Entity annotation in class: {}", clazz.getName());
         }
+    }
+
+    private void addVersionMetadata(Collection<FieldDto> fields, String versionField) {
+        if (StringUtils.isNotBlank(versionField)) {
+            for (FieldDto fieldDto : fields) {
+                if (fieldDto.getBasic().getName().equals(versionField)) {
+                    fieldDto.addMetadata(new MetadataDto(Constants.MetadataKeys.VERSION_FIELD, "true"));
+                }
+            }
+        }
+    }
+
+    private String getVersionFieldName(Class clazz) {
+        if (MdsVersionedEntity.class.getName().equalsIgnoreCase(clazz.getSuperclass().getName())) {
+            return "instanceVersion";
+        }
+
+        Class<Version> verAnn = ReflectionsUtil.getAnnotationClass(clazz, Version.class);
+        Version versionAnnotation = AnnotationUtils.findAnnotation(clazz, verAnn);
+        if (versionAnnotation != null && versionAnnotation.extensions().length !=0 && versionAnnotation.extensions()[0].key().equals("field-name")) {
+            return versionAnnotation.extensions()[0].value();
+        }
+
+        return null;
     }
 
     private void setMaxFetchDepth(EntityDto entity, Annotation annotation) {
@@ -168,13 +199,13 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     }
 
     private void addDefaultFields(EntityDto entity, Collection<FieldDto> fields) {
-        if (!MdsEntity.class.getName().equalsIgnoreCase(entity.getSuperClass())) {
+        if (!MdsEntity.class.getName().equalsIgnoreCase(entity.getSuperClass()) && !MdsVersionedEntity.class.getName().equalsIgnoreCase(entity.getSuperClass())) {
             fields.addAll(EntityDefaultFieldsHelper.defaultFields(typeService));
         }
     }
 
-    private void updateResults(EntityProcessorOutput entityProcessorOutput, Class<?> clazz,
-                               Collection<FieldDto> fields, RestOptionsDto restOptions, TrackingDto tracking) {
+    private void updateResults(EntityProcessorOutput entityProcessorOutput, Class<?> clazz, Collection<FieldDto> fields,
+                               RestOptionsDto restOptions, TrackingDto tracking, String versionField) {
         entityProcessorOutput.setFieldProcessingResult(fields);
 
         entityProcessorOutput.setUiFilterableProcessingResult(findFilterableFields(clazz));
@@ -183,7 +214,12 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
 
         entityProcessorOutput.setRestProcessingResult(restOptions);
 
-        entityProcessorOutput.setNonEditableProcessingResult(findNonEditableFields(clazz));
+        Map<String, Boolean> nonEditableFields = findNonEditableFields(clazz);
+        //we must set non editable for version field
+        if (StringUtils.isNotBlank(versionField)) {
+            nonEditableFields.put(versionField, true);
+        }
+        entityProcessorOutput.setNonEditableProcessingResult(nonEditableFields);
     }
 
     @Override

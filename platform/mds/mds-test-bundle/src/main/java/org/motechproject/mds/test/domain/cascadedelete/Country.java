@@ -3,14 +3,14 @@ package org.motechproject.mds.test.domain.cascadedelete;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.domain.MdsEntity;
+import org.motechproject.mds.domain.MdsVersionedEntity;
 
 import javax.jdo.annotations.Persistent;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class Country extends MdsEntity {
+public class Country extends MdsVersionedEntity {
     @Field
     private String name;
 

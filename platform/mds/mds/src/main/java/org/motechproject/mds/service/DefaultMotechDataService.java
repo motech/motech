@@ -7,6 +7,7 @@ import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.object.SecurityException;
 import org.motechproject.mds.filter.Filters;
+import org.motechproject.mds.util.StateManagerUtil;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryParams;
@@ -85,6 +86,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private String module;
     private String entityName;
     private String namespace;
+    private Field versionField;
 
     @PostConstruct
     public void initializeSecurityState() {
@@ -111,6 +113,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         Map<String, String> fieldTypeMap = new HashMap<>();
         for (Field field : entity.getFields()) {
             fieldTypeMap.put(field.getName(), field.getType().getTypeClassName());
+            if (field.isVersionField()) {
+                versionField = field;
+            }
         }
 
         repository.setFieldTypeMap(fieldTypeMap);
@@ -208,6 +213,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
+    @Transactional
     public T updateFromTransient(T transientObject) {
         return updateFromTransient(transientObject, null);
     }
@@ -222,6 +228,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
             fromDbInstance = create(transientObject);
         } else {
             PropertyUtil.copyProperties(fromDbInstance, transientObject, fieldsToUpdate);
+            if (versionField != null) {
+                StateManagerUtil.setTransactionVersion(fromDbInstance, versionField.getName());
+            }
         }
 
         updateModificationData(fromDbInstance);
@@ -361,6 +370,14 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Override
     public Class<T> getClassType() {
         return repository.getClassType();
+    }
+
+    @Override
+    public String getVersionFieldName(){
+        if (versionField != null) {
+            return versionField.getName();
+        }
+        return null;
     }
 
     @Override

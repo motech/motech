@@ -15,6 +15,7 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldSetting;
 import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.reflections.ReflectionsUtil;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Element;
+import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.ForeignKeyAction;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -40,6 +42,7 @@ import javax.jdo.annotations.NullValue;
 import javax.jdo.annotations.PersistenceModifier;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.Value;
+import javax.jdo.annotations.Version;
 import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
 import javax.jdo.metadata.CollectionMetadata;
@@ -54,6 +57,7 @@ import javax.jdo.metadata.MapMetadata;
 import javax.jdo.metadata.MemberMetadata;
 import javax.jdo.metadata.PackageMetadata;
 import javax.jdo.metadata.ValueMetadata;
+import javax.jdo.metadata.VersionMetadata;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
@@ -65,6 +69,7 @@ import static org.motechproject.mds.util.Constants.Util.CREATION_DATE_FIELD_NAME
 import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.DATANUCLEUS;
 import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
+import static org.motechproject.mds.util.Constants.Util.INSTANCE_VERSION_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
@@ -104,8 +109,10 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         addInheritanceMetadata(cmd, definition);
 
-        if (!entity.isSubClassOfMdsEntity()) {
+        if (!entity.isSubClassOfMdsEntity() && !entity.isSubClassOfMdsVersionedEntity()) {
             addIdField(cmd, entity);
+            //we add versioning metadata only for Standard class.
+            addVersioningMetadata(cmd, definition);
         }
 
         addMetadataForFields(cmd, null, entity, EntityType.STANDARD, definition);
@@ -172,6 +179,23 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     public void addBaseMetadata(JDOMetadata jdoMetadata, ClassData classData, EntityType entityType, Class<?> definition) {
         addHelperClassMetadata(jdoMetadata, classData, null, entityType, definition);
     }
+
+    private void addVersioningMetadata(ClassMetadata cmd, Class<?> definition) {
+        Class<Version> ann = ReflectionsUtil.getAnnotationClass(definition, Version.class);
+        Version versionAnnotation = AnnotationUtils.findAnnotation(definition, ann);
+
+        if (versionAnnotation != null) {
+            VersionMetadata vmd = cmd.newVersionMetadata();
+            vmd.setColumn(versionAnnotation.column());
+            vmd.setStrategy(versionAnnotation.strategy());
+            if (versionAnnotation.extensions().length == 0 || !versionAnnotation.extensions()[0].key().equals("field-name")) {
+                throw new MdsException(String.format("Cannot create metadata fo %s. Extension not found in @Version annotation.", cmd.getName()));
+            }
+            Extension extension = versionAnnotation.extensions()[0];
+            vmd.newExtensionMetadata(DATANUCLEUS, "field-name", extension.value());
+        }
+    }
+
 
     private void fixCollectionMetadata(CollectionMetadata collMd) {
         String elementType = collMd.getElementType();
@@ -241,28 +265,36 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     private void addMetadataForFields(ClassMetadata cmd, ClassData classData, Entity entity, EntityType entityType,
                                       Class<?> definition) {
         for (Field field : entity.getFields()) {
+            if (field.isVersionField() && entityType != EntityType.STANDARD) {
+                continue;
+            }
+
             String fieldName = getNameForMetadata(field);
+            processField(cmd, classData, entity, entityType, definition, fieldName, field);
+        }
+    }
 
-            // Metadata for ID field has been added earlier in addIdField() method
-            if (!fieldName.equals(ID_FIELD_NAME)) {
-                FieldMetadata fmd = null;
+    public void processField(ClassMetadata cmd, ClassData classData, Entity entity, EntityType entityType,
+                             Class<?> definition, String fieldName, Field field) {
+        // Metadata for ID field has been added earlier in addIdField() method
+        if (!fieldName.equals(ID_FIELD_NAME)) {
+            FieldMetadata fmd = null;
 
-                if (isFieldNotInherited(fieldName, entity)) {
-                    fmd = setFieldMetadata(cmd, classData, entity, entityType, field, definition);
+            if (isFieldNotInherited(fieldName, entity)) {
+                fmd = setFieldMetadata(cmd, classData, entity, entityType, field, definition);
+            }
+            // when field is in Lookup, we set field metadata indexed to retrieve instance faster
+            if (!field.getLookups().isEmpty() && entityType.equals(EntityType.STANDARD)) {
+                if (fmd == null) {
+                    String inheritedFieldName = ClassName.getSimpleName(entity.getSuperClass()) + "." + fieldName;
+                    fmd = cmd.newFieldMetadata(inheritedFieldName);
                 }
-                // when field is in Lookup, we set field metadata indexed to retrieve instance faster
-                if (!field.getLookups().isEmpty() && entityType.equals(EntityType.STANDARD)) {
-                    if (fmd == null) {
-                        String inheritedFieldName = ClassName.getSimpleName(entity.getSuperClass()) + "." + fieldName;
-                        fmd = cmd.newFieldMetadata(inheritedFieldName);
-                    }
-                    fmd.setIndexed(true);
-                }
-                if (fmd != null) {
-                    setColumnParameters(fmd, field, definition);
-                    // Check whether the field is required and set appropriate metadata
-                    fmd.setNullValue(isFieldRequired(field, entityType) ? NullValue.EXCEPTION : NullValue.NONE);
-                }
+                fmd.setIndexed(true);
+            }
+            if (fmd != null) {
+                setColumnParameters(fmd, field, definition);
+                // Check whether the field is required and set appropriate metadata
+                fmd.setNullValue(isFieldRequired(field, entityType) ? NullValue.EXCEPTION : NullValue.NONE);
             }
         }
     }
@@ -272,7 +304,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
     private boolean isFieldNotInherited(String fieldName, Entity entity) {
-        if (entity.isSubClassOfMdsEntity() && (ArrayUtils.contains(FIELD_VALUE_GENERATOR, fieldName))) {
+        if ((entity.isSubClassOfMdsEntity() || entity.isSubClassOfMdsVersionedEntity()) && (ArrayUtils.contains(FIELD_VALUE_GENERATOR, fieldName))
+                || isVersionFieldFromMdsVersionedEntity(entity, fieldName)) {
             return false;
         } else {
             // return false if it is inherited field from superclass
@@ -280,6 +313,9 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
     }
 
+    private boolean isVersionFieldFromMdsVersionedEntity(Entity entity, String fieldName) {
+        return entity.isSubClassOfMdsVersionedEntity() && INSTANCE_VERSION_FIELD_NAME.equals(fieldName);
+    }
     private boolean isFieldFromSuperClass(String className, String fieldName) {
         Entity entity = allEntities.retrieveByClassName(className);
         return entity.getField(fieldName) != null;

@@ -50,21 +50,32 @@
         #end
     #end
 
-  <!-- We override the allowCreate from mds, we must create persistence managers for OSGi callers -->
-  <bean id="persistenceManagerFactory" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">
-      <property name="targetPersistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
-      <property name="allowCreate" value="true"/>
-  </bean>
+    <bean id="mdsSqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
+        <constructor-arg>
+            <bean factory-bean="jdoListenerRegister" factory-method="addJdoListener">
+                <constructor-arg>
+                    <bean factory-bean="mdsConfig" factory-method="getDataNucleusProperties" />
+                </constructor-arg>
+            </bean>
+        </constructor-arg>
+    </bean>
 
-  <!-- Override the properties, adding listener entries -->
-  <bean id="mdsSqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
-      <constructor-arg>
-        <bean factory-bean="jdoListenerRegister" factory-method="addJdoListener">
-            <constructor-arg>
-                <bean factory-bean="mdsConfig" factory-method="getDataNucleusProperties" />
-            </constructor-arg>
-        </bean>
-      </constructor-arg>
-  </bean>
+    <bean id="persistenceManagerFactoryBean" class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean">
+        <property name="jdoPropertyMap" ref="mdsSqlProperties"/>
+    </bean>
+
+    <bean id="persistenceManagerFactory" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">
+        <property name="targetPersistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
+        <property name="allowCreate" value="true"/>
+    </bean>
+
+    <bean id="mdsJdoDialect" class="org.motechproject.mds.jdo.MdsJdoDialect">
+        <constructor-arg value="#{persistenceManagerFactory.getConnectionFactory()}"/>
+    </bean>
+
+    <bean id="transactionManager" class="org.motechproject.mds.jdo.MdsTransactionManager">
+        <property name="persistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
+        <property name="jdoDialect" ref="mdsJdoDialect"/>
+    </bean>
 
 </beans>

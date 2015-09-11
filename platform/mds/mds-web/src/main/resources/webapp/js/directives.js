@@ -98,48 +98,61 @@
         }
     }
 
-    function buildGridColModel(colModel, fields, scope) {
-        var i, cmd, field;
+    function buildGridColModel(colModel, fields, scope, removeVersionField) {
+        var i, j, cmd, field, skip = false;
 
         for (i = 0; i < fields.length; i += 1) {
             field = fields[i];
+            skip = false;
 
-            //if name is reserved for jqgrid need to change field name
-            field.basic.name = changeIfReservedFieldName(field.basic.name);
-
-            cmd = {
-               label: field.basic.displayName,
-               name: field.basic.name,
-               index: field.basic.name,
-               jsonmap: "fields." + i + ".value"
-            };
-
-            cmd.formatter = stringEscapeFormatter;
-
-            if (scope.isDateField(field)) {
-                cmd.formatter = 'date';
-                cmd.formatoptions = { newformat: 'Y-m-d'};
+            // for history and trash we don't generate version field
+            if (removeVersionField && field.metadata !== undefined && field.metadata.length > 0) {
+                for (j = 0; j < field.metadata.length; j += 1) {
+                    if (field.metadata[j].key === "version.field" && field.metadata[j].value === "true") {
+                        skip = true;
+                        break;
+                    }
+                }
             }
 
-            if (scope.isRelationshipField(field)) {
-                // append a formatter for relationships
-                cmd.formatter = relationshipFormatter;
-            }
+            if (!skip) {
+                //if name is reserved for jqgrid need to change field name
+                field.basic.name = changeIfReservedFieldName(field.basic.name);
 
-            if (scope.isTextArea(field.settings)) {
-                cmd.formatter = textFormatter;
-                cmd.classes = 'text';
-            }
+                cmd = {
+                   label: field.basic.displayName,
+                   name: field.basic.name,
+                   index: field.basic.name,
+                   jsonmap: "fields." + i + ".value"
+                };
 
-            if (scope.isMapField(field)) {
-                cmd.formatter = mapFormatter;
-            }
+                cmd.formatter = stringEscapeFormatter;
 
-            if (scope.isComboboxField(field)) {
-                cmd.jsonmap = "fields." + i + ".displayValue";
-            }
+                if (scope.isDateField(field)) {
+                    cmd.formatter = 'date';
+                    cmd.formatoptions = { newformat: 'Y-m-d'};
+                }
 
-            colModel.push(cmd);
+                if (scope.isRelationshipField(field)) {
+                    // append a formatter for relationships
+                    cmd.formatter = relationshipFormatter;
+                }
+
+                if (scope.isTextArea(field.settings)) {
+                    cmd.formatter = textFormatter;
+                    cmd.classes = 'text';
+                }
+
+                if (scope.isMapField(field)) {
+                    cmd.formatter = mapFormatter;
+                }
+
+                if (scope.isComboboxField(field)) {
+                    cmd.jsonmap = "fields." + i + ".displayValue";
+                }
+
+                colModel.push(cmd);
+            }
         }
     }
 
@@ -1180,7 +1193,7 @@
                         var colMd, colModel = [], i, noSelectedFields = true, spanText,
                         noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
-                        buildGridColModel(colModel, result, scope);
+                        buildGridColModel(colModel, result, scope, false);
 
                         elem.jqGrid({
                             url: "../mds/entities/" + scope.selectedEntity.id + "/instances",
@@ -1308,7 +1321,7 @@
                         success: function (result) {
                             var colMd, colModel = [], i, spanText;
 
-                            buildGridColModel(colModel, result, scope);
+                            buildGridColModel(colModel, result, scope, false);
 
                             elem.jqGrid({
                                 url: "../mds/entities/" + scope.relatedEntity.id + "/instances",
@@ -1500,7 +1513,7 @@
                             sortable: false
                         });
 
-                        buildGridColModel(colModel, result, scope);
+                        buildGridColModel(colModel, result, scope, true);
 
                         elem.jqGrid({
                             url: "../mds/instances/" + scope.selectedEntity.id + "/" + scope.instanceId + "/history",
@@ -1606,7 +1619,7 @@
                         var colModel = [], i, noSelectedFields = true, spanText,
                         noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
-                        buildGridColModel(colModel, result, scope);
+                        buildGridColModel(colModel, result, scope, true);
 
                         elem.jqGrid({
                             url: "../mds/entities/" + scope.selectedEntity.id + "/trash",
