@@ -8,7 +8,6 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.javassist.MotechClassPool;
-import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.service.EntityService;
@@ -33,9 +32,6 @@ public abstract class BaseInstanceIT extends BaseIT {
 
     @Autowired
     private MDSConstructor mdsConstructor;
-
-    @Autowired
-    private AllEntities allEntities;
 
     @Autowired
     private MetadataHolder metadataHolder;
@@ -159,7 +155,7 @@ public abstract class BaseInstanceIT extends BaseIT {
         PropertyUtil.safeSetProperty(repository, "persistenceManagerFactory", getPersistenceManagerFactory());
         PropertyUtil.safeSetProperty(service, "transactionManager", getTransactionManager());
         PropertyUtil.safeSetProperty(service, "repository", repository);
-        PropertyUtil.safeSetProperty(service, "allEntities", allEntities);
+        PropertyUtil.safeSetProperty(service, "allEntities", getAllEntities());
         PropertyUtil.safeSetProperty(service, "historyService", getHistoryService());
         PropertyUtil.safeSetProperty(service, "trashService", getTrashService());
 
@@ -183,7 +179,7 @@ public abstract class BaseInstanceIT extends BaseIT {
         tracking.setAllowDeleteEvent(false);
         entityService.updateTracking(entity.getId(), tracking);
 
-        mdsConstructor.constructEntities();
+        mdsConstructor.constructEntities(createContext());
 
         PersistenceManagerFactory factory = getPersistenceManagerFactory();
 

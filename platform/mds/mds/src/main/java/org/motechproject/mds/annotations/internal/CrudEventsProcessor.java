@@ -31,7 +31,7 @@ public class CrudEventsProcessor implements Processor<CrudEvents> {
     }
 
     @Override
-    public void execute(Bundle bundle) {
+    public void execute(Bundle bundle, AnnotationProcessingContext context) {
         CrudEvents annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(clazz, clazz, CrudEvents.class);
 
         //When user modified settings on the UI, annotation is omitted

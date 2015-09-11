@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.motechproject.commons.api.ThreadSuspender;
 import org.motechproject.mds.MDSDataProvider;
+import org.motechproject.mds.annotations.internal.AnnotationProcessingContext;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
@@ -25,6 +26,7 @@ import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.repository.AllTypes;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.JdoListenerRegistryService;
@@ -43,7 +45,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import javax.annotation.Resource;
@@ -102,40 +107,48 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private EntitiesBundleMonitor monitor;
     private BundleContext bundleContext;
     private AllEntities allEntities;
+    private AllTypes allTypes;
+    private PlatformTransactionManager txManager;
     private final Object lock = new Object();
     private boolean moduleRefreshed;
 
     @Override
-    @Transactional
     public synchronized void regenerateMdsDataBundle() {
         regenerateMdsDataBundle(true);
     }
 
     @Override
-    @Transactional
     public void regenerateMdsDataBundleAfterDdeEnhancement(String... moduleNames) {
-        regenerateMdsDataBundle(true, null == moduleNames ? new String[0] : moduleNames);
+        regenerateMdsDataBundle(null, true, null == moduleNames ? new String[0] : moduleNames);
     }
 
-    @Transactional
+    @Override
     public void regenerateMdsDataBundle(boolean startBundle) {
-        regenerateMdsDataBundle(startBundle, new String[0]);
+        regenerateMdsDataBundle(null, startBundle);
     }
 
-    private synchronized void regenerateMdsDataBundle(boolean startBundle, String... moduleNames) {
+    @Override
+    public void regenerateMdsDataBundle(boolean startBundle, AnnotationProcessingContext context) {
+        regenerateMdsDataBundle(context, startBundle);
+    }
+
+    private synchronized void regenerateMdsDataBundle(AnnotationProcessingContext providedCtx, boolean startBundle,
+                                                      String... moduleNames) {
         LOGGER.info("Regenerating the mds entities bundle");
+
+        AnnotationProcessingContext context = providedCtx == null ? createContext() : providedCtx;
 
         clearModulesCache(moduleNames);
         cleanEntitiesBundleCachedClasses();
 
-        boolean constructed = mdsConstructor.constructEntities();
+        boolean constructed = mdsConstructor.constructEntities(context);
 
         if (!constructed) {
             return;
         }
 
         LOGGER.info("Updating mds data provider");
-        mdsDataProvider.updateDataProvider();
+        mdsDataProvider.updateDataProvider(context);
 
         File dest = new File(monitor.bundleLocation());
         if (dest.exists()) {
@@ -148,7 +161,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
         try {
             LOGGER.info("Generating bundle jar");
-            tmpBundleFile = generate();
+            tmpBundleFile = generate(context);
             LOGGER.info("Generated bundle jar");
         } catch (IOException e) {
             throw new MdsException("Unable to generate entities bundle", e);
@@ -264,8 +277,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     }
 
     @Override
-    @Transactional
-    public File generate() throws IOException {
+    public File generate(AnnotationProcessingContext context) throws IOException {
         Path tempDir = Files.createTempDirectory("mds");
         Path tempFile = Files.createTempFile(tempDir, "mds-entities", ".jar");
 
@@ -331,7 +343,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                         }
                     }
 
-                    Entity entity = allEntities.retrieveByClassName(classData.getClassName());
+                    Entity entity = context.getEntityByClassName(classData.getClassName());
 
                     info.setFieldsInfo(getFieldsInfo(entity));
                     info.setEntityName(entity.getName());
@@ -343,16 +355,21 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
             }
 
             String blueprint = mergeTemplate(information, BLUEPRINT_TEMPLATE);
-            String context = mergeTemplate(information, MDS_ENTITIES_CONTEXT_TEMPLATE);
+            String appContext = mergeTemplate(information, MDS_ENTITIES_CONTEXT_TEMPLATE);
             String channel = mergeTemplate(information, MDS_CHANNEL_TEMPLATE);
-            jdoListenerRegistryService.updateEntityNames();
+            jdoListenerRegistryService.updateEntityNames(context);
             jdoListenerRegistryService.removeInactiveListeners(entityNamesSb.toString());
             String entityWithListenersNames = jdoListenerRegistryService.getEntitiesListenerStr();
 
-            addEntries(output, blueprint, context, channel, entityNamesSb.toString(), historyEntitySb.toString(), entityWithListenersNames);
+            addEntries(output, blueprint, appContext, channel, entityNamesSb.toString(), historyEntitySb.toString(), entityWithListenersNames);
 
             return tempFile.toFile();
         }
+    }
+
+    @Override
+    public File generate() throws IOException {
+        return generate(createContext());
     }
 
     private EntityInfo buildEntityInfo(ClassData classData) {
@@ -636,6 +653,23 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         }
     }
 
+    private AnnotationProcessingContext createContext() {
+        LOGGER.debug("Creating context for MDS bundle generation");
+
+        TransactionTemplate tmpl = new TransactionTemplate(txManager);
+
+        AnnotationProcessingContext context = tmpl.execute(new TransactionCallback<AnnotationProcessingContext>() {
+            @Override
+            public AnnotationProcessingContext doInTransaction(TransactionStatus status) {
+                return new AnnotationProcessingContext(allEntities.retrieveAll(), allTypes.retrieveAll());
+            }
+        });
+
+        LOGGER.debug("Context for bundle generation created");
+
+        return context;
+    }
+
     @Autowired
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
@@ -673,7 +707,17 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     }
 
     @Autowired
+    public void setAllTypes(AllTypes allTypes) {
+        this.allTypes = allTypes;
+    }
+
+    @Autowired
     public void setListenerRegistryService(JdoListenerRegistryService jdoListenerRegistryService) {
         this.jdoListenerRegistryService = jdoListenerRegistryService;
+    }
+
+    @Autowired
+    public void setTxManager(PlatformTransactionManager txManager) {
+        this.txManager = txManager;
     }
 }

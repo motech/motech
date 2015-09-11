@@ -1,10 +1,8 @@
 package org.motechproject.mds.helper;
 
-import org.joda.time.DateTime;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.Constants;
 
 import java.util.Arrays;
@@ -20,11 +18,7 @@ import static org.motechproject.mds.util.Constants.Util.TRUE;
  */
 public final class EntityDefaultFieldsHelper {
 
-    public static List<FieldDto> defaultFields(TypeService typeService) {
-        TypeDto longType = typeService.findType(Long.class);
-        TypeDto stringType = typeService.findType(String.class);
-        TypeDto dateTimeType = typeService.findType(DateTime.class);
-
+    public static List<FieldDto> defaultFields(TypeDto longType, TypeDto stringType, TypeDto dateTimeType) {
         FieldDto idField = new FieldDto(Constants.Util.ID_FIELD_NAME, Constants.Util.ID_DISPLAY_FIELD_NAME, longType, true);
         idField.setReadOnly(true);
         idField.setMetadata(Arrays.asList(new MetadataDto(AUTO_GENERATED, TRUE)));

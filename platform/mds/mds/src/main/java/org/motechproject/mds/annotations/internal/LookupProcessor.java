@@ -8,6 +8,7 @@ import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.annotations.RestExposed;
 import org.motechproject.mds.domain.ComboboxHolder;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -19,12 +20,10 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.lookup.IllegalLookupException;
 import org.motechproject.mds.ex.lookup.LookupWrongParameterTypeException;
 import org.motechproject.mds.reflections.ReflectionsUtil;
-import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.LookupName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -54,9 +53,6 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
 
     private Paranamer paranamer = new BytecodeReadingParanamer();
     private List<EntityProcessorOutput> entityProcessorOutputs;
-
-    @Autowired
-    private EntityService entityService;
 
     @Override
     public Class<Lookup> getAnnotationType() {
@@ -340,7 +336,10 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
     }
 
     private boolean restOptionsModifiedByUser(EntityDto entity) {
-        AdvancedSettingsDto advancedSettings = entityService.safeGetAdvancedSettingsCommitted(entity.getClassName());
+        Entity existingEntity = findExistingEntity(entity.getClassName());
+
+        AdvancedSettingsDto advancedSettings =  existingEntity == null ? null : existingEntity.advancedSettingsDto();
+
         if (advancedSettings == null) {
             return false;
         } else {

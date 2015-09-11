@@ -9,7 +9,9 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TrackingDto;
+import org.motechproject.mds.util.SecurityHolder;
 import org.motechproject.mds.util.SecurityMode;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -58,6 +60,11 @@ public interface EntityService {
      */
     EntityDto getEntity(Long entityId);
 
+    @Transactional
+    void updateEntity(Long entityId, RestOptionsDto restOptions, TrackingDto tracking,
+                      Collection<FieldDto> fields, Collection<String> filterableFieldNames,
+                      Map<String, Long> fieldDisplayPositions, SecurityHolder securityHolder);
+
     /**
      * Returns a map which contains lookup fields. Fields may come from related entities. Map keys represents lookup
      * fields name which can contains a dot operator(for example relationshipField.id).
@@ -100,14 +107,6 @@ public interface EntityService {
      */
     EntityDto getEntityByClassName(String className);
 
-
-    /**
-     * Retrieves entities for the given package
-     *
-     * @param packageName the package name
-     * @return A list of entities
-     */
-    List<EntityDto> findEntitiesByPackage(String packageName);
 
     /**
      * Adds or updates lookups for the given entity.

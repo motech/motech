@@ -1,5 +1,7 @@
 package org.motechproject.mds.service;
 
+import org.motechproject.mds.annotations.internal.AnnotationProcessingContext;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -32,12 +34,14 @@ public interface JarGeneratorService {
      * @return file that points to the entities bundle jar.
      * @throws IOException if an I/O error occurs while creating the jar file.
      */
+    File generate(AnnotationProcessingContext context) throws IOException;
+
     File generate() throws IOException;
 
     /**
      * Constructs entities, builds and starts the entities bundle jar
      *
-     * @see #generate()
+     * @see #generate(AnnotationProcessingContext)
      */
     void regenerateMdsDataBundle();
 
@@ -48,7 +52,7 @@ public interface JarGeneratorService {
      * and refresh modules from which the DDE being enhanced comes from.
      *
      * @param moduleNames modules names of the entities from which the enhanced DDE comes from
-     * @see #generate()
+     * @see #generate(AnnotationProcessingContext)
      */
     void regenerateMdsDataBundleAfterDdeEnhancement(String... moduleNames);
 
@@ -58,7 +62,17 @@ public interface JarGeneratorService {
      *
      * @param startBundle {@code true} if the generated bundle should start;
      *                    otherwise {@code false}.
-     * @see #generate()
+     * @see #generate(AnnotationProcessingContext)
      */
     void regenerateMdsDataBundle(boolean startBundle);
+
+    /**
+     * Constructs entities, builds the entities bundle jar. The generated bundle will start only if
+     * the <strong>startBundle</strong> will be set to {@code true}.
+     *
+     * @param startBundle {@code true} if the generated bundle should start;
+     *                    otherwise {@code false}.
+     * @see #generate(AnnotationProcessingContext)
+     */
+    void regenerateMdsDataBundle(boolean startBundle, AnnotationProcessingContext context);
 }

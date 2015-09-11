@@ -31,7 +31,7 @@ public class RestOperationsProcessor implements Processor<RestOperations> {
     }
 
     @Override
-    public void execute(Bundle bundle) {
+    public void execute(Bundle bundle, AnnotationProcessingContext context) {
         RestOperations annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(clazz, clazz, RestOperations.class);
 
         //When user modified settings on the UI, annotation is omitted

@@ -6,6 +6,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.mds.annotations.internal.AnnotationProcessingContext;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
@@ -18,16 +19,13 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.reflections.ReflectionsUtil;
-import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Element;
@@ -86,10 +84,9 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             MODIFIED_BY_FIELD_NAME, MODIFICATION_DATE_FIELD_NAME
     };
 
-    private AllEntities allEntities;
-
     @Override
-    public void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity, Class<?> definition) {
+    public void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity, Class<?> definition,
+                                  AnnotationProcessingContext context) {
         String className = (entity.isDDE()) ? entity.getClassName() : ClassName.getEntityName(entity.getClassName());
         String packageName = ClassName.getPackage(className);
         String tableName = ClassTableName.getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace(), entity.getTableName(), null);
@@ -108,12 +105,12 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             addIdField(cmd, entity);
         }
 
-        addMetadataForFields(cmd, null, entity, EntityType.STANDARD, definition);
+        addMetadataForFields(cmd, null, entity, EntityType.STANDARD, definition, context);
     }
 
     @Override
     public void addHelperClassMetadata(JDOMetadata jdoMetadata, ClassData classData, Entity entity,
-                                       EntityType entityType, Class<?> definition) {
+                                       EntityType entityType, Class<?> definition, AnnotationProcessingContext context) {
         String packageName = ClassName.getPackage(classData.getClassName());
         String simpleName = ClassName.getSimpleName(classData.getClassName());
         String tableName = ClassTableName.getTableName(classData.getClassName(), classData.getModule(), classData.getNamespace(),
@@ -133,18 +130,17 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         addIdField(cmd, classData.getClassName());
 
         if (entity != null) {
-            addMetadataForFields(cmd, classData, entity, entityType, definition);
+            addMetadataForFields(cmd, classData, entity, entityType, definition, context);
         }
     }
 
     @Override
-    @Transactional
-    public void fixEnhancerIssuesInMetadata(JDOMetadata jdoMetadata) {
+    public void fixEnhancerIssuesInMetadata(JDOMetadata jdoMetadata, AnnotationProcessingContext context) {
         for (PackageMetadata pmd : jdoMetadata.getPackages()) {
             for (ClassMetadata cmd : pmd.getClasses()) {
                 String className = String.format("%s.%s", pmd.getName(), cmd.getName());
                 String trimmedClassName = ClassName.trimTrashHistorySuffix(className);
-                Entity entity = allEntities.retrieveByClassName(trimmedClassName);
+                Entity entity = context.getEntityByClassName(trimmedClassName);
                 EntityType entityType = EntityType.forClassName(className);
 
                 if (null != entity) {
@@ -169,8 +165,9 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
     @Override
-    public void addBaseMetadata(JDOMetadata jdoMetadata, ClassData classData, EntityType entityType, Class<?> definition) {
-        addHelperClassMetadata(jdoMetadata, classData, null, entityType, definition);
+    public void addBaseMetadata(JDOMetadata jdoMetadata, ClassData classData, EntityType entityType, Class<?> definition,
+                                AnnotationProcessingContext context) {
+        addHelperClassMetadata(jdoMetadata, classData, null, entityType, definition, context);
     }
 
     private void fixCollectionMetadata(CollectionMetadata collMd) {
@@ -239,7 +236,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
     private void addMetadataForFields(ClassMetadata cmd, ClassData classData, Entity entity, EntityType entityType,
-                                      Class<?> definition) {
+                                      Class<?> definition, AnnotationProcessingContext context) {
         for (Field field : entity.getFields()) {
             String fieldName = getNameForMetadata(field);
 
@@ -247,7 +244,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             if (!fieldName.equals(ID_FIELD_NAME)) {
                 FieldMetadata fmd = null;
 
-                if (isFieldNotInherited(fieldName, entity)) {
+                if (isFieldNotInherited(fieldName, entity, context)) {
                     fmd = setFieldMetadata(cmd, classData, entity, entityType, field, definition);
                 }
                 // when field is in Lookup, we set field metadata indexed to retrieve instance faster
@@ -271,17 +268,17 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         return field.isRequired() && !(entityType.equals(EntityType.TRASH) && field.getType().isRelationship());
     }
 
-    private boolean isFieldNotInherited(String fieldName, Entity entity) {
+    private boolean isFieldNotInherited(String fieldName, Entity entity, AnnotationProcessingContext context) {
         if (entity.isSubClassOfMdsEntity() && (ArrayUtils.contains(FIELD_VALUE_GENERATOR, fieldName))) {
             return false;
         } else {
             // return false if it is inherited field from superclass
-            return entity.isBaseEntity() || !isFieldFromSuperClass(entity.getSuperClass(), fieldName);
+            return entity.isBaseEntity() || !isFieldFromSuperClass(entity.getSuperClass(), fieldName, context);
         }
     }
 
-    private boolean isFieldFromSuperClass(String className, String fieldName) {
-        Entity entity = allEntities.retrieveByClassName(className);
+    private boolean isFieldFromSuperClass(String className, String fieldName, AnnotationProcessingContext context) {
+        Entity entity = context.getEntityByClassName(className);
         return entity.getField(fieldName) != null;
     }
 
@@ -669,10 +666,5 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private String getNameForMetadata(Field field) {
         return StringUtils.uncapitalize(field.getName());
-    }
-
-    @Autowired
-    public void setAllEntities(AllEntities allEntities) {
-        this.allEntities = allEntities;
     }
 }

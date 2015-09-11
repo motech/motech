@@ -16,8 +16,10 @@ import java.util.List;
 @Repository
 public class AllEntities extends MotechDataRepository<Entity> {
 
+    private static final int FETCH_DEPTH = 5;
+
     public AllEntities() {
-        super(Entity.class);
+        super(Entity.class, FETCH_DEPTH);
     }
 
     public Entity create(EntityDto dto) {

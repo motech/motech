@@ -28,14 +28,11 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.ex.field.EnumFieldAccessException;
 import org.motechproject.mds.reflections.ReflectionsUtil;
-import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MemberUtil;
 import org.motechproject.mds.util.PropertyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
@@ -96,7 +93,7 @@ import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
  * By default all public fields (the field is public if it has public modifier or single methods
  * called 'getter and 'setter') will be added in the MDS definition of the entity. The field type
  * will be mapped on the appropriate type in the MDS system. If the appropriate mapping does not
- * exist an {@link org.motechproject.mds.ex.type.TypeNotFoundException} exception will be raised.
+ * exist an {@link org.motechproject.mds.ex.type.NoSuchTypeException} exception will be raised.
  * <p/>
  * Fields or acceptable methods with the {@link org.motechproject.mds.annotations.Ignore}
  * annotation are ignored by the processor and they are not added into entity definition.
@@ -109,9 +106,7 @@ import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
 class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     private static final Logger LOGGER = LoggerFactory.getLogger(FieldProcessor.class);
 
-    private TypeService typeService;
-    private EntityService entityService;
-    private List<FieldDto> cachedFields;
+    private List<org.motechproject.mds.domain.Field> cachedFields;
     private String cachedClassname;
 
     private EntityDto entity;
@@ -154,7 +149,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
             String fieldName = MemberUtil.getFieldName(ac);
 
-            FieldDto currentField = getFieldByName(declaringClass.getName(), fieldName);
+            org.motechproject.mds.domain.Field currentField = getFieldByName(declaringClass.getName(), fieldName);
 
             boolean isRelationship = ReflectionsUtil.hasAnnotationClassLoaderSafe(
                     genericType, genericType, Entity.class);
@@ -178,7 +173,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
             FieldBasicDto basic = new FieldBasicDto();
 
-            basic.setDisplayName(isUiChanged(currentField) ? currentField.getBasic().getDisplayName()
+            basic.setDisplayName(isUiChanged(currentField) ? currentField.getDisplayName()
                     : getAnnotationValue(annotation, DISPLAY_NAME, convertFromCamelCase(fieldName)));
 
             basic.setName(fieldName);
@@ -190,7 +185,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
             if (null != annotation) {
 
-                basic.setTooltip(isUiChanged(currentField) ? currentField.getBasic().getTooltip()
+                basic.setTooltip(isUiChanged(currentField) ? currentField.getTooltip()
                         : annotation.tooltip());
 
                 basic.setPlaceholder(annotation.placeholder());
@@ -232,18 +227,18 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         return relatedField != null && Collection.class.isAssignableFrom(relatedField.getType());
     }
 
-    private boolean isUiChanged(FieldDto currentField) {
+    private boolean isUiChanged(org.motechproject.mds.domain.Field currentField) {
         return currentField != null && currentField.isUiChanged();
     }
 
-    private FieldDto getFieldByName(String className, String fieldName) {
+    private org.motechproject.mds.domain.Field getFieldByName(String className, String fieldName) {
 
         if (!StringUtils.equals(cachedClassname, className)) {
 
-            EntityDto entityDto = entityService.getEntityByClassName(className);
+            org.motechproject.mds.domain.Entity entity = findExistingEntity(className);
 
-            if (entityDto != null) {
-                cachedFields = entityService.getEntityFields(entityDto.getId());
+            if (entity != null) {
+                cachedFields = entity.getFields();
             } else {
                 cachedFields = new ArrayList<>();
             }
@@ -251,8 +246,8 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             cachedClassname = className;
         }
 
-        for (FieldDto field : cachedFields) {
-            if (StringUtils.equals(field.getBasic().getName(), fieldName)) {
+        for (org.motechproject.mds.domain.Field field : cachedFields) {
+            if (StringUtils.equals(field.getName(), fieldName)) {
                 return field;
             }
         }
@@ -368,20 +363,20 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         if (isRelationship) {
 
             if (isCollection && relatedFieldIsCollection) {
-                type = typeService.findType(ManyToManyRelationship.class);
+                type =  findType(ManyToManyRelationship.class);
             } else if (isCollection) {
-                type = typeService.findType(OneToManyRelationship.class);
+                type = findType(OneToManyRelationship.class);
             } else if (relatedFieldIsCollection) {
                 // a collection is mapped by this field
-                type = typeService.findType(ManyToOneRelationship.class);
+                type = findType(ManyToOneRelationship.class);
             } else {
                 // its one to one
-                type = typeService.findType(OneToOneRelationship.class);
+                type = findType(OneToOneRelationship.class);
             }
         } else if (isCollection || classType.isEnum()) {
-            type = typeService.findType(Collection.class);
+            type = findType(Collection.class);
         } else {
-            type = typeService.findType(classType);
+            type = findType(classType);
         }
 
         return type;
@@ -389,16 +384,6 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
     @Override
     protected void afterExecution() {
-    }
-
-    @Autowired
-    public void setTypeService(TypeService typeService) {
-        this.typeService = typeService;
-    }
-
-    @Autowired
-    public void setEntityService(EntityService entityService) {
-        this.entityService = entityService;
     }
 
     public void setEntity(EntityDto entity) {
@@ -510,11 +495,11 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         FieldValidationDto validationDto = null;
 
         for (Annotation annotation : ac.getAnnotations()) {
-            List<TypeValidation> validations = typeService.findValidations(type, annotation.annotationType());
+            List<TypeValidation> validations = findValidations(type, annotation.annotationType());
 
             for (TypeValidation validation : validations) {
                 String displayName = validation.getDisplayName();
-                Type valueType = typeService.getType(validation);
+                Type valueType = getContext().getType(validation.getValueType().getTypeClass());
 
                 if (null == valueType) {
                     throw new IllegalStateException("The valueType is not set in: " + validation);

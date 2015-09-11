@@ -39,7 +39,6 @@ public class UIFilterableProcessorTest {
     @Before
     public void setUp() throws Exception {
         processor = new UIFilterableProcessor();
-        processor.setTypeService(typeService);
         processor.setClazz(Sample.class);
         processor.setBundle(bundle);
     }

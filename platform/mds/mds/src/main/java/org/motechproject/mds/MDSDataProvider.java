@@ -4,6 +4,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.commons.api.AbstractDataProvider;
 import org.motechproject.commons.api.DataProvider;
+import org.motechproject.mds.annotations.internal.AnnotationProcessingContext;
 import org.motechproject.mds.builder.MDSDataProviderBuilder;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -159,8 +160,8 @@ public class MDSDataProvider extends AbstractDataProvider {
         return "org.motechproject.mds.entity";
     }
 
-    public void updateDataProvider() {
-        setBody(mdsDataProviderBuilder.generateDataProvider());
+    public void updateDataProvider(AnnotationProcessingContext context) {
+        setBody(mdsDataProviderBuilder.generateDataProvider(context));
         // we unregister the service, then register again
         if (serviceRegistration != null) {
             serviceRegistration.unregister();

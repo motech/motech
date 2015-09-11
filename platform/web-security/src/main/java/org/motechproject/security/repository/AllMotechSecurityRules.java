@@ -72,14 +72,17 @@ public class AllMotechSecurityRules {
         LOGGER.debug("Processing rules: {}/{}/{} (Create/Update/Delete)", create.size(), update.size(), delete.size());
 
         for (MotechURLSecurityRule rule : create) {
+            LOGGER.debug("Creating rule {}", rule);
             dataService.create(rule);
         }
 
         for (MotechURLSecurityRule rule : update) {
+            LOGGER.debug("Updating rule {}", rule);
             dataService.update(rule);
         }
 
         for (MotechURLSecurityRule rule : delete) {
+            LOGGER.debug("Delete rule {}", rule);
             dataService.delete(rule);
         }
 

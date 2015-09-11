@@ -11,6 +11,8 @@ import javax.jdo.annotations.PrimaryKey;
 import java.util.List;
 import java.util.Objects;
 
+import static org.motechproject.mds.util.Constants.Util.TRUE;
+
 /**
  * The <code>RestOptions</code> class represents rest options of an entity. This class
  * is related with table in database with the same name.
@@ -22,7 +24,7 @@ public class RestOptions {
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
     private Long id;
 
-    @Persistent
+    @Persistent(defaultFetchGroup = TRUE)
     private Entity entity;
 
     @Persistent

@@ -41,7 +41,7 @@ public class Field {
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
     private Long id;
 
-    @Persistent
+    @Persistent(defaultFetchGroup = TRUE)
     private Entity entity;
 
     @Persistent
@@ -65,7 +65,7 @@ public class Field {
     @Persistent
     private boolean exposedViaRest;
 
-    @Persistent
+    @Persistent(defaultFetchGroup = TRUE)
     private Type type;
 
     @Persistent
@@ -89,19 +89,19 @@ public class Field {
     @Persistent
     private boolean uiChanged;
 
-    @Persistent(mappedBy = "field")
+    @Persistent(mappedBy = "field", defaultFetchGroup = TRUE)
     @Element(dependent = "true")
     private List<FieldMetadata> metadata = new ArrayList<>();
 
-    @Persistent(mappedBy = "field")
+    @Persistent(mappedBy = "field", defaultFetchGroup = TRUE)
     @Element(dependent = "true")
     private List<FieldValidation> validations = new ArrayList<>();
 
-    @Persistent(mappedBy = "field")
+    @Persistent(mappedBy = "field", defaultFetchGroup = TRUE)
     @Element(dependent = "TRUE")
     private List<FieldSetting> settings = new ArrayList<>();
 
-    @Persistent(mappedBy = "fields")
+    @Persistent(mappedBy = "fields", defaultFetchGroup = TRUE)
     private Set<Lookup> lookups = new HashSet<>();
 
     public Field() {

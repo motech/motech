@@ -13,7 +13,10 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.motechproject.mds.util.Constants.Util.TRUE;
 
 /**
  * The <code>Type</code> class contains information about a single type in MDS. The MDS
@@ -38,12 +41,12 @@ public class Type {
     @Persistent
     private Class<?> typeClass;
 
-    @Persistent(table = "TYPE_TYPE_SETTING")
+    @Persistent(table = "TYPE_TYPE_SETTING", defaultFetchGroup = TRUE)
     @Join(column = "TYPE_ID_OID")
     @Element(column = "TYPE_SETTING_ID_EID")
     private List<TypeSetting> settings;
 
-    @Persistent(table = "TYPE_TYPE_VALIDATION")
+    @Persistent(table = "TYPE_TYPE_VALIDATION", defaultFetchGroup = TRUE)
     @Join(column = "TYPE_ID_OID")
     @Element(column = "TYPE_VALIDATION_ID_EID")
     private List<TypeValidation> validations;
@@ -157,5 +160,17 @@ public class Type {
 
     public boolean isMap() {
         return Constants.DisplayNames.MAP.equalsIgnoreCase(displayName);
+    }
+
+    public List<TypeValidation> findValidations(Class clazz) {
+        List<TypeValidation> validations = new ArrayList<>();
+
+        for (TypeValidation validation : getValidations()) {
+            if (validation.getAnnotations().contains(clazz)) {
+                validations.add(validation);
+            }
+        }
+
+        return validations;
     }
 }

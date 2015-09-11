@@ -28,6 +28,7 @@ public class FieldSetting implements Pair<String, String> {
     @Persistent
     private Field field;
 
+    @Persistent(defaultFetchGroup = TRUE)
     @Column(name = "DETAILS_ID")
     private TypeSetting details;
 

@@ -15,6 +15,7 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.NotInSet;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.ManyToOneRelationship;
 import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
@@ -40,6 +41,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -84,11 +86,9 @@ public class FieldProcessorTest {
     @Before
     public void setUp() throws Exception {
         processor = new FieldProcessor();
-        processor.setTypeService(typeService);
         processor.setEntity(entity);
         processor.setClazz(Sample.class);
         processor.setBundle(bundle);
-        processor.setEntityService(entityService);
 
         doReturn(TypeDto.BOOLEAN).when(typeService).findType(Boolean.class);
         doReturn(TypeDto.STRING).when(typeService).findType(String.class);
@@ -290,7 +290,7 @@ public class FieldProcessorTest {
         doReturn(asList(minLength)).when(typeService).findValidations(TypeDto.STRING, DecimalMin.class);
         doReturn(asList(maxLength)).when(typeService).findValidations(TypeDto.STRING, DecimalMax.class);
 
-        processor.execute();
+        processor.execute(new AnnotationProcessingContext(Collections.<Entity>emptyList(), Collections.<Type>emptyList()));
         Collection<FieldDto> fields = processor.getElements();
 
         FieldDto pi = findFieldWithName(fields, "pi");

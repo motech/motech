@@ -1,5 +1,6 @@
 package org.motechproject.mds.annotations.internal;
 
+import org.joda.time.DateTime;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.ReadAccess;
@@ -9,11 +10,10 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TrackingDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.helper.EntityDefaultFieldsHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.reflections.ReflectionsUtil;
-import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.SecurityMode;
@@ -55,8 +55,6 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.TABLE_NAME;
 class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityProcessor.class);
 
-    private EntityService entityService;
-    private TypeService typeService;
     private FieldProcessor fieldProcessor;
     private UIFilterableProcessor uiFilterableProcessor;
     private UIDisplayableProcessor uiDisplayableProcessor;
@@ -108,12 +106,14 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
             boolean recordHistory = Boolean.parseBoolean(ReflectionsUtil.getAnnotationValue(annotation, HISTORY));
             boolean nonEditable = Boolean.parseBoolean(ReflectionsUtil.getAnnotationValue(annotation, NON_EDITABLE));
 
-            EntityDto entity = entityService.getEntityByClassName(className);
+            org.motechproject.mds.domain.Entity existingEntity = findExistingEntity(className);
+
             RestOptionsDto restOptions = new RestOptionsDto();
             TrackingDto tracking = new TrackingDto();
             Collection<FieldDto> fields;
+            EntityDto entity;
 
-            if (entity == null) {
+            if (existingEntity == null) {
                 LOGGER.debug("Creating DDE for {}", className);
 
                 entity = new EntityDto(
@@ -124,9 +124,12 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
             } else {
                 LOGGER.debug("DDE for {} already exists, updating if necessary", className);
 
-                AdvancedSettingsDto advancedSettings = entityService.getAdvancedSettings(entity.getId(), true);
+
+                AdvancedSettingsDto advancedSettings = existingEntity.advancedSettingsDto();
                 restOptions = advancedSettings.getRestOptions();
                 tracking = advancedSettings.getTracking();
+
+                entity = existingEntity.toDto();
                 entity.setBundleSymbolicName(bundleSymbolicName);
                 entity.setModule(module);
 
@@ -169,7 +172,11 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
 
     private void addDefaultFields(EntityDto entity, Collection<FieldDto> fields) {
         if (!MdsEntity.class.getName().equalsIgnoreCase(entity.getSuperClass())) {
-            fields.addAll(EntityDefaultFieldsHelper.defaultFields(typeService));
+            TypeDto longType = findType(Long.class);
+            TypeDto stringType = findType(String.class);
+            TypeDto dateTimeType = findType(DateTime.class);
+
+            fields.addAll(EntityDefaultFieldsHelper.defaultFields(longType, stringType, dateTimeType));
         }
     }
 
@@ -200,33 +207,33 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     private RestOptionsDto processRestOperations(Class clazz, RestOptionsDto restOptions) {
         restOperationsProcessor.setClazz(clazz);
         restOperationsProcessor.setRestOptions(restOptions);
-        restOperationsProcessor.execute(getBundle());
+        restOperationsProcessor.execute(getBundle(), getContext());
         return restOperationsProcessor.getProcessingResult();
     }
 
     private TrackingDto processCrudEvents(Class clazz, TrackingDto tracking) {
         crudEventsProcessor.setClazz(clazz);
         crudEventsProcessor.setTrackingDto(tracking);
-        crudEventsProcessor.execute(getBundle());
+        crudEventsProcessor.execute(getBundle(), getContext());
         return crudEventsProcessor.getProcessingResult();
     }
 
     private Collection<FieldDto> findFields(Class clazz, EntityDto entity) {
         fieldProcessor.setClazz(clazz);
         fieldProcessor.setEntity(entity);
-        fieldProcessor.execute(getBundle());
+        fieldProcessor.execute(getBundle(), getContext());
         return fieldProcessor.getProcessingResult();
     }
 
     private Collection<String> findFilterableFields(Class clazz) {
         uiFilterableProcessor.setClazz(clazz);
-        uiFilterableProcessor.execute(getBundle());
+        uiFilterableProcessor.execute(getBundle(), getContext());
         return uiFilterableProcessor.getProcessingResult();
     }
 
     private Map<String, Long> findDisplayedFields(Class clazz) {
         uiDisplayableProcessor.setClazz(clazz);
-        uiDisplayableProcessor.execute(getBundle());
+        uiDisplayableProcessor.execute(getBundle(), getContext());
         return uiDisplayableProcessor.getProcessingResult();
     }
 
@@ -234,13 +241,13 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
         restIgnoreProcessor.setClazz(clazz);
         restIgnoreProcessor.setRestOptions(restOptions);
         restIgnoreProcessor.setFields(new ArrayList<>(fields));
-        restIgnoreProcessor.execute(getBundle());
+        restIgnoreProcessor.execute(getBundle(), getContext());
         return restIgnoreProcessor.getProcessingResult();
     }
 
     private Map<String, Boolean> findNonEditableFields(Class clazz) {
         nonEditableProcessor.setClazz(clazz);
-        nonEditableProcessor.execute(getBundle());
+        nonEditableProcessor.execute(getBundle(), getContext());
         return nonEditableProcessor.getProcessingResult();
     }
 
@@ -287,16 +294,6 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
             }
         }
         return securityMembers;
-    }
-
-    @Autowired
-    public void setEntityService(EntityService entityService) {
-        this.entityService = entityService;
-    }
-
-    @Autowired
-    public void setTypeService(TypeService typeService) {
-        this.typeService = typeService;
     }
 
     @Autowired

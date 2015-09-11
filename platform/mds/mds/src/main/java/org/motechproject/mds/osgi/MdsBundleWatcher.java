@@ -2,6 +2,7 @@ package org.motechproject.mds.osgi;
 
 import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
 import org.motechproject.commons.api.ThreadSuspender;
+import org.motechproject.mds.annotations.internal.AnnotationProcessingContext;
 import org.motechproject.mds.annotations.internal.EntityProcessorOutput;
 import org.motechproject.mds.annotations.internal.MDSAnnotationProcessor;
 import org.motechproject.mds.annotations.internal.MDSProcessorOutput;
@@ -11,10 +12,13 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.loader.EditableLookupsLoader;
+import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.repository.AllTypes;
 import org.motechproject.mds.repository.SchemaChangeLockManager;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MigrationService;
+import org.motechproject.mds.util.SecurityHolder;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -26,12 +30,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jdo.JdoTransactionManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -65,6 +70,8 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
     private SchemaChangeLockManager schemaChangeLockManager;
     private EditableLookupsLoader editableLookupsLoader;
     private SchemaComparator schemaComparator;
+    private AllEntities allEntities;
+    private AllTypes allTypes;
 
     private boolean processingSuspended = false;
     private Queue<AwaitingBundle> awaitingBundles = new LinkedBlockingQueue<>();
@@ -78,31 +85,67 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
 
         TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
 
-        tmpl.execute(new TransactionCallbackWithoutResult() {
+        // load types and entities beforehand
+        AnnotationProcessingContext context = tmpl.execute(new TransactionCallback<AnnotationProcessingContext>() {
             @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() + " - start annotation processing");
+            public AnnotationProcessingContext doInTransaction(TransactionStatus status) {
+                schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() +
+                        " - retrieving context for annotation processing");
 
-                processInstalledBundles();
+                AnnotationProcessingContext context = createContext();
 
-                schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - start annotation processing");
+                schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() +
+                        " - retrieving context for annotation processing");
+
+                return context;
             }
         });
 
-        tmpl.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() + " - start refreshing bundles");
+        final Map<String, MDSProcessorOutput> outputs = processInstalledBundles(context);
 
-                // if we found annotations, we will refresh the bundle in order to start weaving the
-                // classes it exposes
-                if (!bundlesToRefresh.isEmpty()) {
-                    refreshBundles(bundlesToRefresh);
+        context = tmpl.execute(new TransactionCallback<AnnotationProcessingContext>() {
+            @Override
+            public AnnotationProcessingContext doInTransaction(TransactionStatus status) {
+                schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() + " - saving annotation processing results");
+
+                LOGGER.info("Processing bundles for migrations and JSON lookups");
+
+                for (Bundle bundle : bundleContext.getBundles()) {
+                    if (hasNonEmptyOutput(outputs.get(bundle.getSymbolicName()))) {
+
+                        LOGGER.debug("Processing {} for migrations and JSON", bundle.getSymbolicName());
+
+                        try {
+                            migrationService.processBundle(bundle);
+                        } catch (IOException e) {
+                            LOGGER.error("An error occurred while copying the migrations from bundle: {}", bundle.getSymbolicName(), e);
+                        }
+
+                        try {
+                            editableLookupsLoader.addEditableLookups(outputs.get(bundle.getSymbolicName()), bundle);
+                        } catch (MdsException e) {
+                            LOGGER.error("Unable to read JSON defined lookups from bundle: {}", bundle, e);
+                        }
+                    }
                 }
 
-                schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - start refreshing bundles");
+                for (Map.Entry<String, MDSProcessorOutput> entry : outputs.entrySet()) {
+                    final String symbolicName = entry.getKey();
+                    final MDSProcessorOutput output = entry.getValue();
+
+                    LOGGER.debug("Saving processor output for {}", symbolicName);
+                    processAnnotationScanningResults(output.getEntityProcessorOutputs(), output.getLookupProcessorOutputs());
+                }
+
+                AnnotationProcessingContext context = createContext();
+
+                schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - saving annotation processing results");
+
+                return context;
             }
         });
+
+        refreshBundles(bundlesToRefresh, context);
 
         bundleContext.addBundleListener(this);
     }
@@ -127,32 +170,19 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         handleBundleEvent(bundle, eventType);
     }
 
-    private void processInstalledBundles() {
-        List<MDSProcessorOutput> outputs = new ArrayList<>();
+    private Map<String, MDSProcessorOutput> processInstalledBundles(AnnotationProcessingContext context) {
+        Map<String, MDSProcessorOutput> outputs = new HashMap<>();
 
         for (Bundle bundle : bundleContext.getBundles()) {
-            MDSProcessorOutput output = process(bundle);
+            MDSProcessorOutput output = process(bundle, context);
             if (hasNonEmptyOutput(output)) {
-                outputs.add(output);
+                outputs.put(bundle.getSymbolicName(), output);
 
                 bundlesToRefresh.add(bundle);
-                try {
-                    migrationService.processBundle(bundle);
-                } catch (IOException e) {
-                    LOGGER.error("An error occurred while copying the migrations from bundle: {}", bundle.getSymbolicName(), e);
-                }
-
-                try {
-                    editableLookupsLoader.addEditableLookups(output, bundle);
-                } catch (MdsException e) {
-                    LOGGER.error("Unable to read JSON defined lookups from bundle: {}", bundle, e);
-                }
             }
         }
 
-        for (MDSProcessorOutput output : outputs) {
-            processAnnotationScanningResults(output.getEntityProcessorOutputs(), output.getLookupProcessorOutputs());
-        }
+        return outputs;
     }
 
     private void handleBundleEvent(final Bundle bundle, final int eventType) {
@@ -166,12 +196,17 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
             LOGGER.info("Unregistering JDO classes for Bundle: {}", bundle.getSymbolicName());
             MdsBundleHelper.unregisterBundleJDOClasses(bundle);
         } else if (eventType == BundleEvent.UNINSTALLED && !skipBundle(bundle)) {
-            refreshBundle(bundle);
+            refreshBundle(bundle, null);
         }
     }
 
     private void processBundle(final Bundle bundle) {
-        final MDSProcessorOutput output = process(bundle);
+        // load types and entities beforehand
+        AnnotationProcessingContext context = new AnnotationProcessingContext(allEntities.retrieveAll(),
+                allTypes.retrieveAll());
+
+        final MDSProcessorOutput output = process(bundle, context);
+
         if (hasNonEmptyOutput(output)) {
             TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
             tmpl.execute(new TransactionCallbackWithoutResult() {
@@ -208,7 +243,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
                     schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() + " - refreshing after bundle event");
 
-                    refreshBundle(bundle);
+                    refreshBundle(bundle, createContext());
 
                     schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - refreshing after bundle event");
                 }
@@ -216,7 +251,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         }
     }
 
-    private MDSProcessorOutput process(Bundle bundle) {
+    private MDSProcessorOutput process(Bundle bundle, AnnotationProcessingContext context) {
         if (skipBundle(bundle)) {
             return null;
         }
@@ -230,7 +265,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
             }
 
             LOGGER.debug("Processing bundle {}", bundle.getSymbolicName());
-            return processor.processAnnotations(bundle);
+            return processor.processAnnotations(bundle, context);
         }
     }
 
@@ -252,11 +287,11 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         return !MdsBundleHelper.isBundleMdsDependent(bundle);
     }
 
-    private void refreshBundle(Bundle bundle) {
-        refreshBundles(Arrays.asList(bundle));
+    private void refreshBundle(Bundle bundle, AnnotationProcessingContext context) {
+        refreshBundles(Collections.singletonList(bundle), context);
     }
 
-    private void refreshBundles(List<Bundle> bundles) {
+    private void refreshBundles(List<Bundle> bundles, AnnotationProcessingContext context) {
         if (LOGGER.isInfoEnabled()) {
             for (Bundle bundle : bundles) {
                 LOGGER.info("Refreshing wiring for bundle {}", bundle.getSymbolicName());
@@ -265,7 +300,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
 
         // we generate the entities bundle but not start it to avoid exceptions when the framework
         // will refresh bundles
-        jarGeneratorService.regenerateMdsDataBundle(false);
+        jarGeneratorService.regenerateMdsDataBundle(false, context);
 
         FrameworkWiring framework = bundleContext.getBundle(0).adapt(FrameworkWiring.class);
         framework.refreshBundles(bundles);
@@ -277,11 +312,14 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         monitor.start();
     }
 
-    private void processAnnotationScanningResults(List<EntityProcessorOutput> entityProcessorOutput, Map<String, List<LookupDto>> lookupProcessingResult) {
+    private void processAnnotationScanningResults(List<EntityProcessorOutput> entityProcessorOutput,
+                                                  Map<String, List<LookupDto>> lookupProcessingResult) {
         Map<String, Long> entityIdMappings = new HashMap<>();
         Set<String> newEntities = new HashSet<>();
 
         for (EntityProcessorOutput result : entityProcessorOutput) {
+            LOGGER.debug("Processing result for {}", result.getEntityProcessingResult().getClassName());
+
             EntityDto processedEntity = result.getEntityProcessingResult();
 
             EntityDto entity = entityService.getEntityByClassName(processedEntity.getClassName());
@@ -292,15 +330,14 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
             }
             entityIdMappings.put(entity.getClassName(), entity.getId());
 
-            entityService.updateRestOptions(entity.getId(), result.getRestProcessingResult());
-            entityService.updateTracking(entity.getId(), result.getTrackingProcessingResult());
-            entityService.addFields(entity, result.getFieldProcessingResult());
-            entityService.addFilterableFields(entity, result.getUiFilterableProcessingResult());
-            entityService.addDisplayedFields(entity, result.getUiDisplayableProcessingResult());
-            entityService.updateSecurityOptions(entity.getId(), processedEntity.getSecurityMode(),
-                    processedEntity.getSecurityMembers(), processedEntity.getReadOnlySecurityMode(), processedEntity.getReadOnlySecurityMembers());
-            entityService.updateMaxFetchDepth(entity.getId(), processedEntity.getMaxFetchDepth());
-            entityService.addNonEditableFields(entity, result.getNonEditableProcessingResult());
+            SecurityHolder securityHolder = new SecurityHolder(processedEntity.getSecurityMode(),
+                    processedEntity.getReadOnlySecurityMode(), processedEntity.getSecurityMembers(),
+                    processedEntity.getReadOnlySecurityMembers());
+
+            entityService.updateEntity(entity.getId(), result.getRestProcessingResult(),
+                    result.getTrackingProcessingResult(), result.getFieldProcessingResult(),
+                    result.getUiFilterableProcessingResult(), result.getUiDisplayableProcessingResult(),
+                    securityHolder);
         }
 
         for (Map.Entry<String, List<LookupDto>> entry : lookupProcessingResult.entrySet()) {
@@ -331,6 +368,10 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
             AwaitingBundle awaitingBundle = awaitingBundles.poll();
             processBundle(awaitingBundle.bundle);
         }
+    }
+
+    private AnnotationProcessingContext createContext() {
+        return new AnnotationProcessingContext(allEntities.retrieveAll(), allTypes.retrieveAll());
     }
 
     @Autowired
@@ -381,6 +422,16 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
     @Autowired
     public void setSchemaComparator(SchemaComparator schemaComparator) {
         this.schemaComparator = schemaComparator;
+    }
+
+    @Autowired
+    public void setAllEntities(AllEntities allEntities) {
+        this.allEntities = allEntities;
+    }
+
+    @Autowired
+    public void setAllTypes(AllTypes allTypes) {
+        this.allTypes = allTypes;
     }
 
     private class AwaitingBundle {

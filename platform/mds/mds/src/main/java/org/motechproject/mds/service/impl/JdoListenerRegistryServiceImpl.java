@@ -1,13 +1,12 @@
 package org.motechproject.mds.service.impl;
 
 import org.motechproject.mds.annotations.InstanceLifecycleListenerType;
-import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.annotations.internal.AnnotationProcessingContext;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.listener.MotechLifecycleListener;
-import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JdoListenerRegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,8 +26,6 @@ public class JdoListenerRegistryServiceImpl implements JdoListenerRegistryServic
     private List<MotechLifecycleListener> listeners = new ArrayList<>();
     private Set<String> entitiesWithListeners = new HashSet<>();
 
-    private EntityService entityService;
-
     @Override
     public void registerListener(MotechLifecycleListener listener) {
         if (listeners.contains(listener)) {
@@ -43,13 +40,13 @@ public class JdoListenerRegistryServiceImpl implements JdoListenerRegistryServic
     }
 
     @Override
-    public void updateEntityNames() {
+    public void updateEntityNames(AnnotationProcessingContext context) {
         for (MotechLifecycleListener listener : listeners) {
             String packageName = listener.getPackageName();
             if (!packageName.isEmpty()) {
                 List<String> entityNames = new ArrayList<>();
-                for (EntityDto entityDto : entityService.findEntitiesByPackage(packageName)) {
-                    entityNames.add(entityDto.getClassName());
+                for (Entity entity : context.findEntitiesByPackage(packageName)) {
+                    entityNames.add(entity.getClassName());
                 }
                 listener.setEntityNames(entityNames);
             }
@@ -131,11 +128,6 @@ public class JdoListenerRegistryServiceImpl implements JdoListenerRegistryServic
     @Override
     public void registerEntityWithListeners(String entity) {
         entitiesWithListeners.add(entity);
-    }
-
-    @Autowired
-    public void setEntityService(EntityService entityService) {
-        this.entityService = entityService;
     }
 
     private Set<String> getEntities(String entities) {

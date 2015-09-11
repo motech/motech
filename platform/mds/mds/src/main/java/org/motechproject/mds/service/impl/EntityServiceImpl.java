@@ -37,9 +37,6 @@ import org.motechproject.mds.ex.entity.EntityReadOnlyException;
 import org.motechproject.mds.ex.field.FieldNotFoundException;
 import org.motechproject.mds.ex.lookup.LookupNotFoundException;
 import org.motechproject.mds.ex.type.NoSuchTypeException;
-import org.motechproject.mds.filter.Filter;
-import org.motechproject.mds.filter.FilterValue;
-import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.helper.ComboboxDataMigrationHelper;
 import org.motechproject.mds.helper.EntityHelper;
 import org.motechproject.mds.helper.FieldHelper;
@@ -53,6 +50,7 @@ import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.LookupName;
+import org.motechproject.mds.util.SecurityHolder;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.validation.EntityValidator;
@@ -684,6 +682,24 @@ public class EntityServiceImpl implements EntityService {
         addOrUpdateLookups(entity, lookups);
     }
 
+    @Override
+    @Transactional
+    public void updateEntity(Long entityId, RestOptionsDto restOptions, TrackingDto tracking,
+                             Collection<FieldDto> fields, Collection<String> filterableFieldNames,
+                             Map<String, Long> fieldDisplayPositions, SecurityHolder securityHolder) {
+        Entity entity = allEntities.retrieveById(entityId);
+        assertEntityExists(entity, entityId);
+
+        entity.updateRestOptions(restOptions);
+        entity.updateTracking(tracking);
+        addFields(entity, fields);
+        addFilterableFields(entity, filterableFieldNames);
+        addDisplayedFields(entity, fieldDisplayPositions);
+
+        updateSecurityOptions(entity, securityHolder.getSecurityMode(), securityHolder.getSecurityMembers(),
+                securityHolder.getReadOnlySecurityMode(), securityHolder.getReadOnlySecurityMembers());
+    }
+
     private void removeLookup(Entity entity, Collection<LookupDto> lookups) {
         Iterator<Lookup> iterator = entity.getLookups().iterator();
 
@@ -842,40 +858,6 @@ public class EntityServiceImpl implements EntityService {
     public EntityDto getEntityByClassName(String className) {
         Entity entity = allEntities.retrieveByClassName(className);
         return (entity == null) ? null : entity.toDto();
-    }
-
-    @Override
-    @Transactional
-    public List<EntityDto> findEntitiesByPackage(String packageName) {
-        List<EntityDto> entities = new ArrayList<>();
-
-        FilterValue filterValue = new FilterValue() {
-            @Override
-            public Object valueForQuery() {
-                return super.getValue();
-            }
-
-            @Override
-            public String paramTypeForQuery() {
-                return String.class.getName();
-            }
-
-            @Override
-            public List<String> operatorForQueryFilter() {
-                return Arrays.asList(".startsWith(", ")");
-            }
-        };
-        filterValue.setValue(packageName);
-
-        Filter filter = new Filter("className", new FilterValue[]{filterValue});
-
-        for (Entity entity : allEntities.filter(new Filters(filter), null, null)) {
-            if (entity.isActualEntity()) {
-                entities.add(entity.toDto());
-            }
-        }
-
-        return entities;
     }
 
     @Override
@@ -1068,7 +1050,10 @@ public class EntityServiceImpl implements EntityService {
         Entity entity = allEntities.retrieveById(entityId);
 
         assertEntityExists(entity, entityId);
+        addFields(entity, fields);
+    }
 
+    private void addFields(Entity entity, Collection<FieldDto> fields) {
         removeFields(entity, fields);
 
         for (FieldDto fieldDto : fields) {
@@ -1163,13 +1148,8 @@ public class EntityServiceImpl implements EntityService {
     @Transactional
     public void addFilterableFields(EntityDto entityDto, Collection<String> fieldNames) {
         Entity entity = allEntities.retrieveById(entityDto.getId());
-
         assertEntityExists(entity, entityDto.getId());
-
-        for (Field field : entity.getFields()) {
-            boolean isUIFilterable = fieldNames.contains(field.getName());
-            field.setUIFilterable(isUIFilterable);
-        }
+        addFilterableFields(entity, fieldNames);
     }
 
     @Override
@@ -1214,74 +1194,24 @@ public class EntityServiceImpl implements EntityService {
     @Transactional
     public void addNonEditableFields(EntityDto entityDto, Map<String, Boolean> nonEditableFields) {
         Entity entity = allEntities.retrieveById(entityDto.getId());
-
         assertEntityExists(entity, entityDto.getId());
-
-        List<Field> fields = entity.getFields();
-
-        for (Field field : fields) {
-            boolean isNonEditable = nonEditableFields.containsKey(field.getName());
-            Boolean display = nonEditableFields.get(field.getName());
-
-            field.setNonEditable(isNonEditable);
-
-            if (display != null) {
-                field.setNonDisplayable(!display);
-            } else {
-                field.setNonDisplayable(false);
-            }
-        }
+        addNonEditableFields(entity, nonEditableFields);
     }
 
     @Override
     @Transactional
     public void addDisplayedFields(EntityDto entityDto, Map<String, Long> positions) {
         Entity entity = allEntities.retrieveById(entityDto.getId());
-
         assertEntityExists(entity, entityDto.getId());
-
-        List<Field> fields = entity.getFields();
-
-
-        if (MapUtils.isEmpty(positions)) {
-            // all fields will be added
-
-            for (long i = 0; i < fields.size(); ++i) {
-                Field field = fields.get((int) i);
-                // user fields and auto generated fields are ignored
-                if (isFieldFromDde(field)) {
-                    field.setUIDisplayable(true);
-                    field.setUIDisplayPosition(i);
-                }
-            }
-        } else {
-            // only fields in map should be added
-
-            for (Field field : fields) {
-                String fieldName = field.getName();
-
-                boolean isUIDisplayable = positions.containsKey(fieldName);
-                Long uiDisplayPosition = positions.get(fieldName);
-
-                field.setUIDisplayable(isUIDisplayable);
-                field.setUIDisplayPosition(uiDisplayPosition);
-            }
-        }
+        addDisplayedFields(entity, positions);
     }
 
     @Override
     @Transactional
     public void updateSecurityOptions(Long entityId, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers) {
         Entity entity = allEntities.retrieveById(entityId);
-
         assertEntityExists(entity, entityId);
-
-        entity.setSecurityMode(securityMode);
-        entity.setSecurityMembers(securityMembers);
-        entity.setReadOnlySecurityMode(readOnlySecurityMode);
-        entity.setReadOnlySecurityMembers(readOnlySecurityMembers);
-
-        allEntities.update(entity);
+        updateSecurityOptions(entity, securityMode, securityMembers, readOnlySecurityMode, readOnlySecurityMembers);
     }
 
     @Override
@@ -1386,6 +1316,70 @@ public class EntityServiceImpl implements EntityService {
                 } else {
                     lookupDto.setReferenced(false);
                 }
+            }
+        }
+    }
+
+    private void addFilterableFields(Entity entity, Collection<String> fieldNames) {
+        for (Field field : entity.getFields()) {
+            boolean isUIFilterable = fieldNames.contains(field.getName());
+            field.setUIFilterable(isUIFilterable);
+        }
+    }
+
+    private void addDisplayedFields(Entity entity, Map<String, Long> positions) {
+        List<Field> fields = entity.getFields();
+
+
+        if (MapUtils.isEmpty(positions)) {
+            // all fields will be added
+
+            for (long i = 0; i < fields.size(); ++i) {
+                Field field = fields.get((int) i);
+                // user fields and auto generated fields are ignored
+                if (isFieldFromDde(field)) {
+                    field.setUIDisplayable(true);
+                    field.setUIDisplayPosition(i);
+                }
+            }
+        } else {
+            // only fields in map should be added
+
+            for (Field field : fields) {
+                String fieldName = field.getName();
+
+                boolean isUIDisplayable = positions.containsKey(fieldName);
+                Long uiDisplayPosition = positions.get(fieldName);
+
+                field.setUIDisplayable(isUIDisplayable);
+                field.setUIDisplayPosition(uiDisplayPosition);
+            }
+        }
+    }
+
+    public void updateSecurityOptions(Entity entity, SecurityMode securityMode, Set<String> securityMembers,
+                                      SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers) {
+        entity.setSecurityMode(securityMode);
+        entity.setSecurityMembers(securityMembers);
+        entity.setReadOnlySecurityMode(readOnlySecurityMode);
+        entity.setReadOnlySecurityMembers(readOnlySecurityMembers);
+
+        allEntities.update(entity);
+    }
+
+    private void addNonEditableFields(Entity entity, Map<String, Boolean> nonEditableFields) {
+        List<Field> fields = entity.getFields();
+
+        for (Field field : fields) {
+            boolean isNonEditable = nonEditableFields.containsKey(field.getName());
+            Boolean display = nonEditableFields.get(field.getName());
+
+            field.setNonEditable(isNonEditable);
+
+            if (display != null) {
+                field.setNonDisplayable(!display);
+            } else {
+                field.setNonDisplayable(false);
             }
         }
     }

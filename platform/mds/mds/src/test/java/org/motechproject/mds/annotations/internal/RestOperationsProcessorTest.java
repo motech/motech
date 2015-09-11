@@ -4,6 +4,7 @@ import org.eclipse.gemini.blueprint.mock.MockBundle;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.dto.RestOptionsDto;
@@ -15,6 +16,9 @@ public class RestOperationsProcessorTest {
 
     @Spy
     private MockBundle bundle = new MockBundle();
+
+    @Mock
+    private AnnotationProcessingContext context;
 
     private RestOperationsProcessor processor;
 
@@ -30,7 +34,7 @@ public class RestOperationsProcessorTest {
     @Test
     public void shouldSetEntityRestOperations() {
         processor.setClazz(Sample.class);
-        processor.execute(bundle);
+        processor.execute(bundle, context);
 
         assertEquals(restOptions.isCreate(), false);
         assertEquals(restOptions.isRead(), false);
@@ -41,7 +45,7 @@ public class RestOperationsProcessorTest {
     @Test
     public void shouldSetAllEntityRestOperations() {
         processor.setClazz(RelatedSample.class);
-        processor.execute(bundle);
+        processor.execute(bundle, context);
 
         assertEquals(restOptions.isCreate(), true);
         assertEquals(restOptions.isRead(), true);
@@ -52,7 +56,7 @@ public class RestOperationsProcessorTest {
     @Test
     public void shouldNotSetRestOperationsForMissingValue() {
         processor.setClazz(AnotherSample.class);
-        processor.execute(bundle);
+        processor.execute(bundle, context);
 
         assertEquals(restOptions.isCreate(), false);
         assertEquals(restOptions.isRead(), false);

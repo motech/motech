@@ -23,6 +23,9 @@ public class CrudEventsProcessorTest {
     @Mock
     private TrackingDto initialTrackingDto;
 
+    @Mock
+    private AnnotationProcessingContext context;
+
     private CrudEventsProcessor processor;
 
     @Before
@@ -36,7 +39,7 @@ public class CrudEventsProcessorTest {
 
         processor.setClazz(Sample.class);
         processor.setTrackingDto(initialTrackingDto);
-        processor.execute(bundle);
+        processor.execute(bundle, context);
 
         verify(initialTrackingDto, atLeastOnce()).setAllEvents(false);
         verify(initialTrackingDto).setAllowCreateEvent(true);
@@ -48,7 +51,7 @@ public class CrudEventsProcessorTest {
 
         processor.setClazz(RelatedSample.class);
         processor.setTrackingDto(initialTrackingDto);
-        processor.execute(bundle);
+        processor.execute(bundle, context);
 
         verify(initialTrackingDto).setAllEvents(true);
     }
@@ -59,7 +62,7 @@ public class CrudEventsProcessorTest {
 
         processor.setClazz(AnotherSample.class);
         processor.setTrackingDto(initialTrackingDto);
-        processor.execute(bundle);
+        processor.execute(bundle, context);
 
         verify(initialTrackingDto, times(2)).setAllEvents(false);
     }

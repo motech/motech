@@ -87,15 +87,15 @@ public class Entity {
     @Persistent
     private Integer maxFetchDepth;
 
-    @Persistent(mappedBy = ENTITY)
+    @Persistent(mappedBy = ENTITY, defaultFetchGroup = TRUE)
     @Element(dependent = TRUE)
     private List<Lookup> lookups;
 
-    @Persistent(mappedBy = ENTITY)
+    @Persistent(mappedBy = ENTITY, defaultFetchGroup = TRUE)
     @Element(dependent = TRUE)
     private List<Field> fields;
 
-    @Persistent(mappedBy = ENTITY)
+    @Persistent(mappedBy = ENTITY, defaultFetchGroup = TRUE)
     @Element(dependent = TRUE)
     private Tracking tracking;
 
@@ -105,13 +105,15 @@ public class Entity {
 
     private Long entityVersion = 1L;
 
-    @Persistent(mappedBy = ENTITY, dependent = TRUE)
+    @Persistent(mappedBy = ENTITY, dependent = TRUE, defaultFetchGroup = TRUE)
     private RestOptions restOptions;
 
+    @Persistent(defaultFetchGroup = TRUE)
     @Join(column = "Entity_OID")
     @Element(column = "SecurityMember")
     private Set<String> securityMembers;
 
+    @Persistent(defaultFetchGroup = TRUE)
     @Join(column = "Entity_OID")
     @Element(column = "ReadOnlySecurityMember")
     private Set<String> readOnlySecurityMembers;
@@ -145,11 +147,11 @@ public class Entity {
     }
 
     public EntityDto toDto() {
-        EntityDto dto = new EntityDto(id, className, getName(), module, namespace, tableName, getTracking() != null ? getTracking().isRecordHistory() : false,
+        EntityDto dto = new EntityDto(id, className, getName(), module, namespace, tableName, getTracking() != null && getTracking().isRecordHistory(),
                 securityMode, securityMembers, readOnlySecurityMode, readOnlySecurityMembers, superClass, abstractClass, securityOptionsModified, bundleSymbolicName);
 
         dto.setMaxFetchDepth(maxFetchDepth);
-        dto.setNonEditable(getTracking() != null ? getTracking().isNonEditable() : false);
+        dto.setNonEditable(getTracking() != null && getTracking().isNonEditable());
         dto.setReadOnlyAccess(dto.checkIfUserHasOnlyReadAccessAuthorization());
 
         return dto;

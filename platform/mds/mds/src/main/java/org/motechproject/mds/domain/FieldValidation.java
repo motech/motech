@@ -25,6 +25,7 @@ public class FieldValidation {
     @Persistent
     private Field field;
 
+    @Persistent(defaultFetchGroup = TRUE)
     @Column(name = "DETAILS_ID")
     private TypeValidation details;
 

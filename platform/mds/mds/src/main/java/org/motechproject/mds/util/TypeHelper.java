@@ -831,6 +831,17 @@ public final class TypeHelper {
         }
     }
 
+    public static String getClassNameForType(Class<?> clazz) {
+        Class<?> chosenClass = clazz;
+
+        // box primitives
+        if (clazz.isPrimitive() || byte[].class.equals(clazz)) {
+            chosenClass = TypeHelper.getWrapperForPrimitive(clazz);
+        }
+
+        return chosenClass.getName();
+    }
+
     private static boolean bothNumbers(Object val, String toClass) {
         return val instanceof Number && Number.class.isAssignableFrom(getClassDefinition(toClass));
     }

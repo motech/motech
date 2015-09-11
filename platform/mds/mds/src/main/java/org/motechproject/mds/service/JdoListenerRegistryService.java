@@ -1,6 +1,7 @@
 package org.motechproject.mds.service;
 
 import org.motechproject.mds.annotations.InstanceLifecycleListenerType;
+import org.motechproject.mds.annotations.internal.AnnotationProcessingContext;
 import org.motechproject.mds.listener.MotechLifecycleListener;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public interface JdoListenerRegistryService {
      * Updates entity names for package listeners
      *
      */
-    void updateEntityNames();
+    void updateEntityNames(AnnotationProcessingContext context);
 
     /**
      * Gets entities from listeners in one string, where every

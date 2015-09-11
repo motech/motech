@@ -6,6 +6,7 @@ import javassist.CtClass;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.sql.service.SqlDBManager;
+import org.motechproject.mds.annotations.internal.AnnotationProcessingContext;
 import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.builder.EntityInfrastructureBuilder;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
@@ -65,8 +66,8 @@ public class MDSConstructorImpl implements MDSConstructor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MDSConstructorImpl.class);
 
-    private MdsConfig mdsConfig;
     private AllEntities allEntities;
+    private MdsConfig mdsConfig;
     private EntityBuilder entityBuilder;
     private EntityInfrastructureBuilder infrastructureBuilder;
     private EntityMetadataBuilder metadataBuilder;
@@ -77,7 +78,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     private SqlDBManager sqlDBManager;
 
     @Override
-    public synchronized boolean constructEntities() {
+    public synchronized boolean constructEntities(AnnotationProcessingContext context) {
         // To be able to register updated class, we need to reload class loader
         // and therefore add all the classes again
         MotechClassPool.clearEnhancedData();
@@ -90,7 +91,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         JavassistLoader loader = new JavassistLoader(tmpClassLoader);
 
         // process only entities that are not drafts
-        List<Entity> entities = allEntities.retrieveAll();
+        List<Entity> entities = new ArrayList<>(context.getAllEntities());
         filterEntities(entities);
         sortEntities(entities);
 
@@ -142,19 +143,24 @@ public class MDSConstructorImpl implements MDSConstructor {
         }
 
         // Prepare metadata
-        buildMetadata(entities, jdoMetadata, classDataMap, classes);
+        LOGGER.debug("Preparing metadata");
+        buildMetadata(entities, jdoMetadata, classDataMap, classes, context);
 
         // after the classes are defined, we register their metadata
+        LOGGER.debug("Registering metadata");
         enhancer.registerMetadata(jdoMetadata);
 
         // then, we commence with enhancement
+        LOGGER.debug("Enhancing entity classes");
         enhancer.enhance();
 
         // we register the enhanced class bytes
         // and build the infrastructure classes
+        LOGGER.debug("Registering enhanced class bytecode");
         registerEnhancedClassBytes(entities, enhancer);
 
-        metadataBuilder.fixEnhancerIssuesInMetadata(jdoMetadata);
+        LOGGER.debug("Fixing JDO metadata after enhancement");
+        metadataBuilder.fixEnhancerIssuesInMetadata(jdoMetadata, context);
 
         return CollectionUtils.isNotEmpty(entities);
     }
@@ -211,7 +217,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     private void buildMetadata(List<Entity> entities, JDOMetadata jdoMetadata, Map<String, ClassData> classDataMap,
-                               List<Class> classes) {
+                               List<Class> classes, AnnotationProcessingContext context) {
         for (Entity entity : entities) {
             String className = entity.getClassName();
             Class definition = null;
@@ -223,13 +229,13 @@ public class MDSConstructorImpl implements MDSConstructor {
                 }
             }
 
-            metadataBuilder.addEntityMetadata(jdoMetadata, entity, definition);
+            metadataBuilder.addEntityMetadata(jdoMetadata, entity, definition, context);
             if (entity.isRecordHistory()) {
                 metadataBuilder.addHelperClassMetadata(jdoMetadata, classDataMap.get(ClassName.getHistoryClassName(className)),
-                        entity, EntityType.HISTORY, definition);
+                        entity, EntityType.HISTORY, definition, context);
             }
             metadataBuilder.addHelperClassMetadata(jdoMetadata, classDataMap.get(ClassName.getTrashClassName(className)),
-                    entity, EntityType.TRASH, definition);
+                    entity, EntityType.TRASH, definition, context);
         }
     }
 

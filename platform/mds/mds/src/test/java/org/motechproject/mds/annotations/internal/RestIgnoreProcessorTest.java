@@ -5,6 +5,7 @@ import org.eclipse.gemini.blueprint.mock.MockBundle;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.dto.FieldBasicDto;
@@ -27,6 +28,9 @@ public class RestIgnoreProcessorTest {
     @Spy
     private MockBundle bundle = new MockBundle();
 
+    @Mock
+    private AnnotationProcessingContext context;
+
     private RestIgnoreProcessor processor;
 
     @Before
@@ -42,7 +46,7 @@ public class RestIgnoreProcessorTest {
         processor.setClazz(AnotherSample.class);
         processor.setFields(fields);
         processor.setRestOptions(restOptionsDto);
-        processor.execute(bundle);
+        processor.execute(bundle, context);
 
         // entity fields + auto generated fields
         Assert.assertEquals(7, processor.getProcessingResult().getFieldNames().size());

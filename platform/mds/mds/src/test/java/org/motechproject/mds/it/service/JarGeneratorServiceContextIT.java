@@ -95,7 +95,7 @@ public class JarGeneratorServiceContextIT extends BaseIT {
         setProperty(monitor, "bundleInstalled", true);
         setProperty(monitor, "contextInitialized", true);
 
-        constructor.constructEntities();
+        constructor.constructEntities(createContext());
     }
 
     @Test

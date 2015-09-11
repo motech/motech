@@ -1,5 +1,7 @@
 package org.motechproject.mds.domain;
 
+import org.motechproject.mds.util.Constants;
+
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -28,6 +30,7 @@ public class TypeValidation {
     @Column(name = "TYPE_ID")
     private Type valueType;
 
+    @Persistent(defaultFetchGroup = Constants.Util.TRUE)
     @Join
     @Element(column = "ANNOTATION")
     private List<Class<? extends Annotation>> annotations;

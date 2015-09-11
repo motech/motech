@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.TrackingDto;
@@ -23,6 +24,7 @@ import org.osgi.framework.wiring.BundleWiring;
 
 import java.io.File;
 import java.lang.reflect.AnnotatedElement;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -76,6 +78,9 @@ public class EntityProcessorTest extends MockBundle {
     @Mock
     private BundleWiring bundleWiring;
 
+    @Mock
+    private AnnotationProcessingContext context;
+
     @Captor
     private ArgumentCaptor<EntityDto> captor;
 
@@ -96,8 +101,6 @@ public class EntityProcessorTest extends MockBundle {
     @Before
     public void setUp() throws Exception {
         processor = new EntityProcessor();
-        processor.setEntityService(entityService);
-        processor.setTypeService(typeService);
         processor.setFieldProcessor(fieldProcessor);
         processor.setUIFilterableProcessor(uiFilterableProcessor);
         processor.setUIDisplayableProcessor(uiDisplayableProcessor);
@@ -149,20 +152,23 @@ public class EntityProcessorTest extends MockBundle {
 
     @Test
     public void shouldProcessClassWithAnnotation() throws Exception {
+        AnnotationProcessingContext context = new AnnotationProcessingContext(
+                Collections.<org.motechproject.mds.domain.Entity>emptyList(), Collections.<Type>emptyList());
+
         processor.process(Sample.class);
 
         verify(fieldProcessor).setClazz(Sample.class);
         verify(fieldProcessor).setEntity(any(EntityDto.class));
-        verify(fieldProcessor).execute(bundle);
+        verify(fieldProcessor).execute(bundle, context);
 
         verify(uiFilterableProcessor).setClazz(Sample.class);
-        verify(uiFilterableProcessor).execute(bundle);
+        verify(uiFilterableProcessor).execute(bundle, context);
 
         verify(uiDisplayableProcessor).setClazz(Sample.class);
-        verify(uiDisplayableProcessor).execute(bundle);
+        verify(uiDisplayableProcessor).execute(bundle, context);
 
         verify(nonEditableProcessor).setClazz(Sample.class);
-        verify(nonEditableProcessor).execute(bundle);
+        verify(nonEditableProcessor).execute(bundle, context);
     }
 
     @Test
@@ -171,7 +177,7 @@ public class EntityProcessorTest extends MockBundle {
 
         verify(crudEventsProcessor).setClazz(AnotherSample.class);
         verify(crudEventsProcessor).setTrackingDto(trackingDtoCaptor.capture());
-        verify(crudEventsProcessor).execute(bundle);
+        verify(crudEventsProcessor).execute(bundle, context);
 
         TrackingDto trackingDto = trackingDtoCaptor.getValue();
         assertFalse(trackingDto.isRecordHistory());
@@ -180,7 +186,7 @@ public class EntityProcessorTest extends MockBundle {
 
         verify(crudEventsProcessor).setClazz(Sample.class);
         verify(crudEventsProcessor, times(2)).setTrackingDto(trackingDtoCaptor.capture());
-        verify(crudEventsProcessor, times(2)).execute(bundle);
+        verify(crudEventsProcessor, times(2)).execute(bundle, context);
 
         trackingDto = trackingDtoCaptor.getValue();
         assertTrue(trackingDto.isRecordHistory());
@@ -271,7 +277,7 @@ public class EntityProcessorTest extends MockBundle {
 
         verify(crudEventsProcessor).setClazz(AnotherSample.class);
         verify(crudEventsProcessor).setTrackingDto(trackingDtoCaptor.capture());
-        verify(crudEventsProcessor).execute(bundle);
+        verify(crudEventsProcessor).execute(bundle, context);
 
         TrackingDto trackingDto = trackingDtoCaptor.getValue();
         assertTrue(trackingDto.isNonEditable());
@@ -280,7 +286,7 @@ public class EntityProcessorTest extends MockBundle {
 
         verify(crudEventsProcessor).setClazz(Sample.class);
         verify(crudEventsProcessor, times(2)).setTrackingDto(trackingDtoCaptor.capture());
-        verify(crudEventsProcessor, times(2)).execute(bundle);
+        verify(crudEventsProcessor, times(2)).execute(bundle, context);
 
         trackingDto = trackingDtoCaptor.getValue();
         assertFalse(trackingDto.isNonEditable());

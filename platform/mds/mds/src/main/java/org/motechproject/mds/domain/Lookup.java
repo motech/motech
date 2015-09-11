@@ -51,7 +51,7 @@ public class Lookup {
     @Persistent
     private String methodName;
 
-    @Persistent(table = "LookupFields")
+    @Persistent(table = "LookupFields", defaultFetchGroup = TRUE)
     @Join
     private List<Field> fields;
 
@@ -121,6 +121,11 @@ public class Lookup {
 
         for (String lookupFieldName : getFieldsOrder()) {
             Field field = getLookupFieldByName(LookupName.getFieldName(lookupFieldName));
+
+            if (field == null) {
+                continue;
+            }
+
             LookupFieldType lookupFieldType = LookupFieldType.VALUE;
 
             if (isRangeParam(lookupFieldName)) {

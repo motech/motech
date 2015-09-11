@@ -3,11 +3,14 @@ package org.motechproject.mds.it;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.motechproject.mds.annotations.internal.AnnotationProcessingContext;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityAudit;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.repository.AllTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.jdo.JdoTransactionManager;
@@ -30,6 +33,12 @@ import java.util.List;
 public abstract class BaseIT {
     private PersistenceManagerFactory persistenceManagerFactory;
     private JdoTransactionManager transactionManager;
+
+    @Autowired
+    private AllEntities allEntities;
+
+    @Autowired
+    private AllTypes allTypes;
 
     @Before
     public void setUp() throws Exception {
@@ -142,12 +151,21 @@ public abstract class BaseIT {
         } finally {
             field.setAccessible(accessible);
         }
-    }
+}
 
     protected <T> List<T> getAll(Class<T> clazz) {
         PersistenceManager persistenceManager = getPersistenceManager();
         Query query = persistenceManager.newQuery(clazz);
 
         return cast(clazz, (Collection) query.execute());
+    }
+
+    protected AnnotationProcessingContext createContext() {
+        return new AnnotationProcessingContext(allEntities.retrieveAll(),
+                allTypes.retrieveAll());
+    }
+
+    protected AllEntities getAllEntities() {
+        return allEntities;
     }
 }

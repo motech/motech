@@ -1,5 +1,8 @@
 package org.motechproject.mds.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -11,6 +14,9 @@ import java.lang.reflect.Method;
  * @param <T> the type of argument data
  */
 public abstract class Loader<T> {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     public abstract Class<?> getClassDefinition(T arg);
 
     public abstract void doWhenClassNotFound(String name);
@@ -21,6 +27,8 @@ public abstract class Loader<T> {
 
     public void loadFieldsAndMethodsOfClass(Class<?> definition) {
         if (definition != null) {
+            logger.debug("Loading fields and method for {}", definition.getName());
+
             while (true) {
                 try {
                     for (Field field : definition.getDeclaredFields()) {

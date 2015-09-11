@@ -27,7 +27,7 @@ public interface Processor<A extends Annotation> {
      *
      * @param bundle instance of bundle that represent the given module.
      */
-    void execute(Bundle bundle);
+    void execute(Bundle bundle, AnnotationProcessingContext context);
 
     /**
      * Checks if the processor found some data.

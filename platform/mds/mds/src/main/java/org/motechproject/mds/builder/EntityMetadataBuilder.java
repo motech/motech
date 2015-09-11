@@ -1,5 +1,6 @@
 package org.motechproject.mds.builder;
 
+import org.motechproject.mds.annotations.internal.AnnotationProcessingContext;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
@@ -20,7 +21,8 @@ public interface EntityMetadataBuilder {
      * @param entity      a instance of {@link org.motechproject.mds.domain.Entity}
      * @param definition  the definition of the class
      */
-    void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity, Class<?> definition);
+    void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity, Class<?> definition,
+                           AnnotationProcessingContext context);
 
     /**
      * Adds base information about package and class name to a
@@ -31,7 +33,8 @@ public interface EntityMetadataBuilder {
      * @param entityType type of the entity(regular, history or trash)
      * @param definition  the definition of the parent class
      */
-    void addBaseMetadata(JDOMetadata jdoMetadata, ClassData classData, EntityType entityType, Class<?> definition);
+    void addBaseMetadata(JDOMetadata jdoMetadata, ClassData classData, EntityType entityType, Class<?> definition,
+                         AnnotationProcessingContext context);
 
     /**
      * Creates metadata with basic information about package and class name to the
@@ -47,11 +50,11 @@ public interface EntityMetadataBuilder {
      * @param definition  the definition of the parent class
      */
     void addHelperClassMetadata(JDOMetadata jdoMetadata, ClassData classData, Entity entity,
-                                EntityType entityType, Class<?> definition);
+                                EntityType entityType, Class<?> definition, AnnotationProcessingContext context);
 
     /**
      * This updates the metadata after enhancement. Nucleus makes some "corrections" which do not work with
      * the runtime enhancer.
      */
-    void fixEnhancerIssuesInMetadata(JDOMetadata jdoMetadata);
+    void fixEnhancerIssuesInMetadata(JDOMetadata jdoMetadata, AnnotationProcessingContext context);
 }

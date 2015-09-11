@@ -39,7 +39,7 @@ public class TypeServiceImpl implements TypeService {
     @Override
     @Transactional
     public TypeDto findType(Class<?> clazz) {
-        String className = getClassNameForType(clazz);
+        String className = TypeHelper.getClassNameForType(clazz);
 
         Type type = allTypes.retrieveByClassName(className);
 
@@ -54,16 +54,7 @@ public class TypeServiceImpl implements TypeService {
     @Transactional
     public List<TypeValidation> findValidations(TypeDto type, Class<? extends Annotation> aClass) {
         Type typeSource = allTypes.retrieveByClassName(type.getTypeClass());
-        List<TypeValidation> list = null == typeSource ? new ArrayList<TypeValidation>() : typeSource.getValidations();
-        List<TypeValidation> validations = new ArrayList<>();
-
-        for (TypeValidation validation : list) {
-            if (validation.getAnnotations().contains(aClass)) {
-                validations.add(validation);
-            }
-        }
-
-        return validations;
+        return null == typeSource ? new ArrayList<TypeValidation>() : typeSource.findValidations(aClass);
     }
 
     @Override
@@ -71,17 +62,6 @@ public class TypeServiceImpl implements TypeService {
     public Type getType(TypeValidation validation) {
         TypeValidation retrieve = allTypeValidations.retrieve(validation.getId());
         return null == retrieve ? null : retrieve.getValueType();
-    }
-
-    private String getClassNameForType(Class<?> clazz) {
-        Class<?> chosenClass = clazz;
-
-        // box primitives
-        if (clazz.isPrimitive() || byte[].class.equals(clazz)) {
-            chosenClass = TypeHelper.getWrapperForPrimitive(clazz);
-        }
-
-        return chosenClass.getName();
     }
 
     @Autowired
