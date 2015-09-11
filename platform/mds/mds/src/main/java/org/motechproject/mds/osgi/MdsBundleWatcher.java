@@ -33,6 +33,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.StopWatch;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -80,12 +81,15 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
 
     // called by the initializer after the initial entities bundle was generated
     public void start() {
+        StopWatch stopWatch = new StopWatch();
+
         LOGGER.info("Scanning for MDS annotations");
         bundlesToRefresh = new ArrayList<>();
 
         TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
 
         // load types and entities beforehand
+        stopWatch.start();
         AnnotationProcessingContext context = tmpl.execute(new TransactionCallback<AnnotationProcessingContext>() {
             @Override
             public AnnotationProcessingContext doInTransaction(TransactionStatus status) {
@@ -100,9 +104,17 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
                 return context;
             }
         });
+        stopWatch.stop();
 
+        LOGGER.debug("Retrieval of context finished in {} ms", stopWatch.getTotalTimeMillis());
+
+        stopWatch.start();
         final Map<String, MDSProcessorOutput> outputs = processInstalledBundles(context);
+        stopWatch.stop();
 
+        LOGGER.debug("Annotation processing finished in {} ms", stopWatch.getTotalTimeMillis());
+
+        stopWatch.start();
         context = tmpl.execute(new TransactionCallback<AnnotationProcessingContext>() {
             @Override
             public AnnotationProcessingContext doInTransaction(TransactionStatus status) {
@@ -144,6 +156,9 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
                 return context;
             }
         });
+        stopWatch.stop();
+
+        LOGGER.debug("Annotation results saved in {} ms", stopWatch.getTotalTimeMillis());
 
         refreshBundles(bundlesToRefresh, context);
 

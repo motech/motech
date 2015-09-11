@@ -106,6 +106,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         module = entity.getModule();
         entityName = entity.getName();
         namespace = entity.getNamespace();
+        comboboxStringFields = entity.getStringComboboxFields();
 
         // we need the field types for handling lookups with null values
         Map<String, String> fieldTypeMap = new HashMap<>();
@@ -123,8 +124,8 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
         final T createdInstance = repository.create(object);
 
-        if (!getComboboxStringFields().isEmpty()) {
-            updateComboList(object);
+        if (!comboboxStringFields.isEmpty()) {
+            //updateComboList(object);
         }
 
         if (recordHistory) {
@@ -174,8 +175,8 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         updateModificationData(object);
         final T updatedInstance = repository.update(object);
 
-        if (!getComboboxStringFields().isEmpty()) {
-            updateComboList(object);
+        if (!comboboxStringFields.isEmpty()) {
+            //updateComboList(object);
         }
 
         if (recordHistory) {
@@ -226,8 +227,8 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
         updateModificationData(fromDbInstance);
 
-        if (!getComboboxStringFields().isEmpty()) {
-            updateComboList(fromDbInstance);
+        if (comboboxStringFields.isEmpty()) {
+            //updateComboList(fromDbInstance);
         }
 
         if (recordHistory) {
@@ -455,14 +456,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         if (!fieldUpdateMap.isEmpty()) {
             entityService.updateComboboxValues(entityId, fieldUpdateMap);
         }
-    }
-
-    private List<Field> getComboboxStringFields() {
-        if (comboboxStringFields == null) {
-            comboboxStringFields = allEntities.retrieveById(entityId).getStringComboboxFields();
-        }
-
-        return comboboxStringFields;
     }
 
     private void sendEvent(Long id, CrudEventType action) {

@@ -50,6 +50,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.velocity.VelocityEngineUtils;
+import org.springframework.util.StopWatch;
 
 import javax.annotation.Resource;
 import java.io.File;
@@ -113,7 +114,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private boolean moduleRefreshed;
 
     @Override
-    public synchronized void regenerateMdsDataBundle() {
+    public void regenerateMdsDataBundle() {
         regenerateMdsDataBundle(true);
     }
 
@@ -134,35 +135,63 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
     private synchronized void regenerateMdsDataBundle(AnnotationProcessingContext providedCtx, boolean startBundle,
                                                       String... moduleNames) {
+        StopWatch stopWatch = new StopWatch();
+
         LOGGER.info("Regenerating the mds entities bundle");
 
         AnnotationProcessingContext context = providedCtx == null ? createContext() : providedCtx;
 
+        LOGGER.info("Clearing caches");
+
+        stopWatch.start();
         clearModulesCache(moduleNames);
         cleanEntitiesBundleCachedClasses();
+        stopWatch.stop();
 
+        LOGGER.debug("Cache cleared in {} ms", stopWatch.getTotalTimeMillis());
+
+        LOGGER.info("Constructing entities");
+
+        stopWatch.start();
         boolean constructed = mdsConstructor.constructEntities(context);
+        stopWatch.stop();
+
+        LOGGER.debug("Entities constructed in {} ms", stopWatch.getTotalTimeMillis());
 
         if (!constructed) {
             return;
         }
 
         LOGGER.info("Updating mds data provider");
+
+        stopWatch.start();
         mdsDataProvider.updateDataProvider(context);
+        stopWatch.stop();
+
+        LOGGER.debug("Data provider generated in {} ms", stopWatch.getTotalTimeMillis());
 
         File dest = new File(monitor.bundleLocation());
         if (dest.exists()) {
             // proceed when the bundles context is ready, we want the context processors to finish
             LOGGER.info("Waiting for entities context");
+
+            stopWatch.start();
             monitor.waitForEntitiesContext();
+            stopWatch.stop();
+
+            LOGGER.debug("Context ready. Was waiting for {} ms", stopWatch.getTotalTimeMillis());
         }
 
         File tmpBundleFile;
 
         try {
             LOGGER.info("Generating bundle jar");
+
+            stopWatch.start();
             tmpBundleFile = generate(context);
-            LOGGER.info("Generated bundle jar");
+            stopWatch.stop();
+
+            LOGGER.info("Generated bundle jar in {} ms", stopWatch.getTotalTimeMillis());
         } catch (IOException e) {
             throw new MdsException("Unable to generate entities bundle", e);
         }
@@ -177,25 +206,61 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
             dest = tmpBundleFile;
         }
 
+        LOGGER.debug("Stopping entities bundle");
+
+        stopWatch.start();
         monitor.stopEntitiesBundle();
+        stopWatch.stop();
+
+        LOGGER.debug("Entities bundle stopped after {} ms", stopWatch.getTotalTimeMillis());
 
         // In case of some core bundles, we must first stop some modules in order to avoid problems during refresh
-        stopModulesForCoreBundleRefresh(moduleNames);
+        LOGGER.debug("Stopping core bundles for refresh");
 
+        stopWatch.start();
+        stopModulesForCoreBundleRefresh(moduleNames);
+        stopWatch.stop();
+
+        LOGGER.debug("Stopped core bundles in {} ms", stopWatch.getTotalTimeMillis());
+
+        LOGGER.debug("Starting entities bundle");
+
+        stopWatch.start();
         try {
             monitor.start(dest, false);
         } finally {
             FileUtils.deleteQuietly(tmpBundleFile);
         }
+        stopWatch.stop();
 
+        LOGGER.debug("Started entities bundle in {} ms", stopWatch.getTotalTimeMillis());
+
+        LOGGER.debug("Refreshing modules");
+
+        stopWatch.start();
         refreshModules(moduleNames);
+        stopWatch.stop();
+
+        LOGGER.debug("Modules refreshed in {} ms", stopWatch.getTotalTimeMillis());
 
         if (startBundle) {
+            LOGGER.debug("Starting entities bundle");
+
+            stopWatch.start();
             monitor.start();
+            stopWatch.stop();
+
+            LOGGER.debug("Entities bundle started in {} ms", stopWatch.getTotalTimeMillis());
         }
 
         // Start bundles again if we stopped them manually
+        LOGGER.debug("Starting core bundles after refresh");
+
+        stopWatch.start();
         startModulesForCoreBundleRefresh(moduleNames);
+        stopWatch.stop();
+
+        LOGGER.debug("Core bundles refreshed in {} ms", stopWatch.getTotalTimeMillis());
 
         // Give framework some time before returning to the caller
         ThreadSuspender.sleep(2000);

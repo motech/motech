@@ -41,7 +41,7 @@ public class Field {
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
     private Long id;
 
-    @Persistent(defaultFetchGroup = TRUE)
+    @Persistent
     private Entity entity;
 
     @Persistent
@@ -89,19 +89,19 @@ public class Field {
     @Persistent
     private boolean uiChanged;
 
-    @Persistent(mappedBy = "field", defaultFetchGroup = TRUE)
+    @Persistent(mappedBy = "field")
     @Element(dependent = "true")
     private List<FieldMetadata> metadata = new ArrayList<>();
 
-    @Persistent(mappedBy = "field", defaultFetchGroup = TRUE)
+    @Persistent(mappedBy = "field")
     @Element(dependent = "true")
     private List<FieldValidation> validations = new ArrayList<>();
 
-    @Persistent(mappedBy = "field", defaultFetchGroup = TRUE)
+    @Persistent(mappedBy = "field")
     @Element(dependent = "TRUE")
     private List<FieldSetting> settings = new ArrayList<>();
 
-    @Persistent(mappedBy = "fields", defaultFetchGroup = TRUE)
+    @Persistent(mappedBy = "fields")
     private Set<Lookup> lookups = new HashSet<>();
 
     public Field() {

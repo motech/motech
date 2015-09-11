@@ -82,7 +82,7 @@ public class AllMotechSecurityRules {
         }
 
         for (MotechURLSecurityRule rule : delete) {
-            LOGGER.debug("Delete rule {}", rule);
+            LOGGER.debug("Deleting rule {}", rule);
             dataService.delete(rule);
         }
 

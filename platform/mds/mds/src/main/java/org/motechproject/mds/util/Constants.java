@@ -441,6 +441,8 @@ public final class Constants {
         public static final String MDS_TABLE_PREFIX = "MDS_";
         public static final String MDS_DATABASE = "motech_data_services";
 
+        public static final String FULL_FETCH = "full-fetch";
+
         public static final String[] GENERATED_FIELD_NAMES = new String[]{
                 CREATOR_FIELD_NAME, OWNER_FIELD_NAME, CREATION_DATE_FIELD_NAME,
                 MODIFIED_BY_FIELD_NAME, MODIFICATION_DATE_FIELD_NAME, ID_FIELD_NAME

@@ -10,6 +10,7 @@ import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.util.ValidationUtil;
@@ -17,6 +18,7 @@ import org.motechproject.mds.util.ValidationUtil;
 import javax.jdo.annotations.Discriminator;
 import javax.jdo.annotations.DiscriminatorStrategy;
 import javax.jdo.annotations.Element;
+import javax.jdo.annotations.FetchGroup;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.Join;
@@ -45,6 +47,11 @@ import static org.motechproject.mds.util.Constants.Util.TRUE;
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 @Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
 @Unique(name = "DRAFT_USER_IDX", members = {"parentEntity", "draftOwnerUsername"})
+@FetchGroup(name = Constants.Util.FULL_FETCH, members = {
+        @Persistent(name = "lookups"),
+        @Persistent(name = "fields"),
+        @Persistent(name = "tracking"),
+})
 public class Entity {
 
     @PrimaryKey
@@ -87,15 +94,15 @@ public class Entity {
     @Persistent
     private Integer maxFetchDepth;
 
-    @Persistent(mappedBy = ENTITY, defaultFetchGroup = TRUE)
+    @Persistent(mappedBy = ENTITY)
     @Element(dependent = TRUE)
     private List<Lookup> lookups;
 
-    @Persistent(mappedBy = ENTITY, defaultFetchGroup = TRUE)
+    @Persistent(mappedBy = ENTITY)
     @Element(dependent = TRUE)
     private List<Field> fields;
 
-    @Persistent(mappedBy = ENTITY, defaultFetchGroup = TRUE)
+    @Persistent(mappedBy = ENTITY)
     @Element(dependent = TRUE)
     private Tracking tracking;
 
