@@ -1,5 +1,7 @@
 package org.motechproject.tasks.web;
 
+import org.motechproject.mds.query.QueryParams;
+import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
 import org.motechproject.tasks.service.TaskActivityService;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Controller for managing activities.
@@ -51,8 +54,19 @@ public class ActivityController {
      */
     @RequestMapping(value = "/activity/{taskId}", method = RequestMethod.GET)
     @ResponseBody
-    public List<TaskActivity> getTaskActivities(@PathVariable Long taskId) {
-        return activityService.getTaskActivities(taskId);
+    public TaskActivityRecords getTaskActivities(@PathVariable Long taskId, GridSettings settings) {
+        if (settings != null) {
+            QueryParams params = new QueryParams(settings.getPage(), settings.getRows(), new Order("date", Order.Direction.DESC));
+            Set<TaskActivityType> types = settings.getTypesFromString();
+
+            List<TaskActivity> activities = activityService.getTaskActivities(taskId, types, params);
+            long count = activityService.getTaskActivitiesCount(taskId, types);
+            int totalPages = (int) Math.ceil((double) count / settings.getRows());
+
+            return new TaskActivityRecords(settings.getPage(), totalPages, count, activities);
+        } else {
+            return null;
+        }
     }
 
     /**

@@ -3,13 +3,21 @@ package org.motechproject.tasks.web;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.tasks.domain.TaskActivity;
+import org.motechproject.tasks.domain.TaskActivityType;
 import org.motechproject.tasks.service.TaskActivityService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -27,6 +35,11 @@ public class ActivityControllerTest {
     ActivityController controller;
 
     List<TaskActivity> expected;
+    Set<TaskActivityType> activityTypes;
+    QueryParams queryParams;
+
+    Integer page = 1;
+    Integer pageSize = 10;
 
     @Before
     public void setup() throws Exception {
@@ -38,6 +51,11 @@ public class ActivityControllerTest {
         expected.add(new TaskActivity(SUCCESS.getValue(), TASK_ID, SUCCESS));
         expected.add(new TaskActivity(WARNING.getValue(), TASK_ID, WARNING));
         expected.add(new TaskActivity(ERROR.getValue(), TASK_ID, ERROR));
+
+        activityTypes = new HashSet<>();
+        activityTypes.addAll(Arrays.asList(TaskActivityType.values()));
+
+        queryParams = new QueryParams(page, pageSize);
     }
 
     @Test
@@ -52,12 +70,16 @@ public class ActivityControllerTest {
 
     @Test
     public void shouldGetTaskActivities() {
-        when(activityService.getTaskActivities(TASK_ID)).thenReturn(expected);
+        when(activityService.getTaskActivities(eq(TASK_ID), anySet(), any(QueryParams.class))).thenReturn(expected);
+        GridSettings settings = new GridSettings();
+        settings.setPage(page);
+        settings.setRows(pageSize);
 
-        List<TaskActivity> actual = controller.getTaskActivities(TASK_ID);
+        TaskActivityRecords actual = controller.getTaskActivities(TASK_ID, settings);
 
-        verify(activityService).getTaskActivities(TASK_ID);
-        assertEquals(expected, actual);
+        verify(activityService).getTaskActivities(eq(TASK_ID), anySet(), any(QueryParams.class));
+        assertEquals(expected, actual.getRows());
+        assertEquals(page, actual.getPage());
     }
 
     @Test

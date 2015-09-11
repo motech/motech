@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
@@ -12,8 +13,11 @@ import org.motechproject.tasks.repository.TaskActivitiesDataService;
 import org.motechproject.tasks.service.TaskActivityService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.exception.ExceptionUtils.getStackTrace;
@@ -144,20 +148,13 @@ public class TaskActivityServiceImplTest {
     }
 
     @Test
-    public void shouldReturnAllActivities() {
-        when(taskActivitiesDataService.retrieveAll()).thenReturn(activities);
+    public void shouldReturnPaginatedActivitiesForGivenTask() {
+        Set<TaskActivityType> types = new HashSet<>();
+        types.addAll(Arrays.asList(TaskActivityType.values()));
+        QueryParams queryParams = new QueryParams(null);
+        when(taskActivitiesDataService.byTaskAndActivityTypes(TASK_ID, types, queryParams)).thenReturn(activities);
 
-        List<TaskActivity> actual = activityService.getAllActivities();
-
-        assertNotNull(actual);
-        assertEquals(activities, actual);
-    }
-
-    @Test
-    public void shouldReturnAllActivitiesForGivenTask() {
-        when(taskActivitiesDataService.byTask(TASK_ID)).thenReturn(activities);
-
-        List<TaskActivity> actual = activityService.getTaskActivities(TASK_ID);
+        List<TaskActivity> actual = activityService.getTaskActivities(TASK_ID, types, queryParams);
 
         assertNotNull(actual);
         assertEquals(activities, actual);

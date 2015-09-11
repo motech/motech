@@ -5,6 +5,91 @@
 
     var directives = angular.module('tasks.directives', []);
 
+    directives.directive('taskHistoryGrid', function($compile, $http) {
+        return {
+            restrict: 'A',
+            link: function(scope, element, attrs) {
+                try {
+                    if (typeof($('#outsideTaskHistoryTable')[0].grid) !== 'undefined') {
+                        return;
+                    }
+                }
+                catch (e) {
+                    return;
+                }
+
+                var elem = angular.element(element), k, rows, activity, message, date;
+
+                elem.jqGrid({
+                    url: '../tasks/api/activity/' + scope.taskId,
+                    datatype: 'json',
+                    jsonReader:{
+                        repeatitems:false
+                    },
+                    colModel: [{
+                        name: 'activityType',
+                        index: 'activityType',
+                        sortable: false,
+                        width: 50
+                    }, {
+                        name: 'message',
+                        index: 'message',
+                        sortable: false,
+                        width: 220
+                    }, {
+                        name: 'date',
+                        formatter: function (value) {
+                            return moment(parseInt(value, 10)).fromNow();
+                        },
+                        index: 'date',
+                        sortable: false,
+                        width: 80
+                    }],
+                    pager: '#' + attrs.taskHistoryGrid,
+                    viewrecords: true,
+                    gridComplete: function () {
+                        elem.jqGrid('setLabel', 'activityType', scope.msg('task.subsection.status'));
+                        elem.jqGrid('setLabel', 'message', scope.msg('task.subsection.message'));
+                        elem.jqGrid('setLabel', 'date', scope.msg('task.subsection.information'));
+
+                        $('#outsideTaskHistoryTable').children('div').width('100%');
+                        $('.ui-jqgrid-htable').addClass("table-lightblue");
+                        $('.ui-jqgrid-btable').addClass("table-lightblue");
+                        $('.ui-jqgrid-htable').width('100%');
+                        $('.ui-jqgrid-bdiv').width('100%');
+                        $('.ui-jqgrid-hdiv').width('100%');
+                        $('.ui-jqgrid-view').width('100%');
+                        $('#t_taskHistoryTable').width('auto');
+                        $('.ui-jqgrid-pager').width('100%');
+                        $('.ui-jqgrid-hbox').css({'padding-right':'0'});
+                        $('.ui-jqgrid-hbox').width('100%');
+                        $('#outsideTaskHistoryTable').children('div').each(function() {
+                            $(this).find('table').width('100%');
+                        });
+                        rows = $("#taskHistoryTable").getDataIDs();
+                        for (k = 0; k < rows.length; k+=1) {
+                            activity = $("#taskHistoryTable").getCell(rows[k],"activityType").toLowerCase();
+                            message = $("#taskHistoryTable").getCell(rows[k],"message");
+                            date = $("#taskHistoryTable").getCell(rows[k],"date");
+                            if (activity !== undefined) {
+                                if (activity === 'success') {
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-ok.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                } else if (activity === 'warning') {
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-question.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                } else if (activity === 'error') {
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-exclamation.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                }
+                            }
+                            if (message !== undefined) {
+                                $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',scope.msg(message),'ok',{ },'');
+                            }
+                        }
+                    }
+                });
+            }
+        };
+    });
+
     directives.directive('taskPanelsResize', function ($window, $timeout) {
         return {
             restrict: 'A',
