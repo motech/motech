@@ -1,11 +1,12 @@
 package org.motechproject.tasks.service.impl;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.motechproject.mds.query.QueryParams;
+import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
 import org.motechproject.tasks.ex.TaskHandlerException;
-import org.motechproject.tasks.repository.LatestTaskActivitiesQueryExecution;
 import org.motechproject.tasks.repository.TaskActivitiesDataService;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class TaskActivityServiceImpl implements TaskActivityService {
@@ -58,26 +59,6 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     }
 
     @Override
-    public List<TaskActivity> errorsFromLastRun(Task task) {
-        List<TaskActivity> messages = taskActivitiesDataService.byTask(task.getId());
-        Collections.sort(messages);
-        List<TaskActivity> result = new ArrayList<>(messages.size());
-
-        for (int i = messages.size() - 1; i >= 0; --i) {
-            TaskActivity msg = messages.get(i);
-
-            if ("task.warning.taskDisabled".equals(msg.getMessage()) ||
-                    msg.getActivityType() == TaskActivityType.SUCCESS) {
-                break;
-            }
-
-            result.add(msg);
-        }
-
-        return result;
-    }
-
-    @Override
     public void deleteActivitiesForTask(Long taskId) {
         for (TaskActivity msg : taskActivitiesDataService.byTask(taskId)) {
             taskActivitiesDataService.delete(msg);
@@ -85,33 +66,22 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     }
 
     @Override
-    public List<TaskActivity> getAllActivities() {
-        return sort(taskActivitiesDataService.retrieveAll());
-    }
-
-    @Override
     public List<TaskActivity> getLatestActivities() {
-        return taskActivitiesDataService.executeQuery(new LatestTaskActivitiesQueryExecution());
+        return taskActivitiesDataService.retrieveAll(new QueryParams(1, 10, new Order("date", Order.Direction.DESC)));
     }
 
     @Override
-    public List<TaskActivity> getTaskActivities(Long taskId) {
-        return sort(taskActivitiesDataService.byTask(taskId));
+    public List<TaskActivity> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypes, QueryParams queryParams) {
+        return taskActivitiesDataService.byTaskAndActivityTypes(taskId, activityTypes, queryParams);
+    }
+
+    @Override
+    public long getTaskActivitiesCount(Long taskId, Set<TaskActivityType> activityTypes) {
+        return taskActivitiesDataService.countByTaskAndActivityTypes(taskId, activityTypes);
     }
 
     @Override
     public long getTaskActivitiesCount(Long taskId, TaskActivityType type) {
-        return taskActivitiesDataService.countByTaskAndActivityType(taskId, type);
-    }
-
-    private List<TaskActivity> sort(List<TaskActivity> messages) {
-        Collections.sort(messages, new Comparator<TaskActivity>() {
-            @Override
-            public int compare(TaskActivity o1, TaskActivity o2) {
-                return o2.getDate().compareTo(o1.getDate());
-            }
-        });
-
-        return messages;
+        return taskActivitiesDataService.countByTaskAndActivityTypes(taskId, new HashSet<>(Arrays.asList(type)));
     }
 }
