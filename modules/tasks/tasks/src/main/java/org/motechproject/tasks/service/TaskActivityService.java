@@ -1,11 +1,13 @@
 package org.motechproject.tasks.service;
 
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
 import org.motechproject.tasks.ex.TaskHandlerException;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Service for managing task activities. Task activities are used for storing information about past task executions.
@@ -61,13 +63,6 @@ public interface TaskActivityService {
     void deleteActivitiesForTask(Long taskId);
 
     /**
-     * Returns all activities as a list ordered by date.
-     *
-     * @return the list of all activities
-     */
-    List<TaskActivity> getAllActivities();
-
-    /**
      * Returns 10 most recent activities as a list, ordered by date.
      *
      * @return the list of all activities
@@ -78,9 +73,20 @@ public interface TaskActivityService {
      * Returns list of all activities for task with the given ID.
      *
      * @param taskId  the task ID, null returns null
+     * @param activityTypeSet the type of activities
+     * @param queryParams query parameters to use while retrieving
      * @return  the list of all activities for task with given ID
      */
-    List<TaskActivity> getTaskActivities(Long taskId);
+    List<TaskActivity> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypeSet, QueryParams queryParams);
+
+    /**
+     * Returns the count of all activities for the given task, of the specified type.
+     *
+     * @param taskId the task ID
+     * @param activityTypes the type of activities to include in count
+     * @return the count of matching activities
+     */
+    long getTaskActivitiesCount(Long taskId, Set<TaskActivityType> activityTypes);
 
     /**
      * Returns the count of all activities for the given task, of the specified type.

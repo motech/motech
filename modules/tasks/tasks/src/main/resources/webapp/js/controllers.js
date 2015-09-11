@@ -203,6 +203,19 @@
             $scope.activities = [];
             $scope.formatInput = [];
 
+            $scope.getNumberOfActivities = function(id, type) {
+                var numberOfActivities;
+                $.ajax({
+                    url: '../tasks/api/activity/' + id + '/' + type,
+                    success:  function(data) {
+                        numberOfActivities = data;
+                    },
+                    async: false
+                });
+
+                return numberOfActivities;
+            };
+
             $scope.getTasks = function () {
 
                 tasks = Tasks.query(function () {
@@ -212,19 +225,9 @@
                         for (i = 0; i < tasks.length; i += 1) {
                             item = {
                                 task: tasks[i],
-                                success: 0,
-                                error: 0
+                                success: $scope.getNumberOfActivities(tasks[i].id, 'SUCCESS'),
+                                error: $scope.getNumberOfActivities(tasks[i].id, 'ERROR')
                             };
-
-                            for (j = 0; j < activities.length; j += 1) {
-                                if (activities[j].task === item.task.id && activities[j].activityType === 'SUCCESS') {
-                                    item.success += 1;
-                                }
-
-                                if (activities[j].task === item.task.id && activities[j].activityType === 'ERROR') {
-                                    item.error += 1;
-                                }
-                            }
                         }
 
                         for (i = 0; i < RECENT_TASK_COUNT && i < activities.length; i += 1) {
@@ -1375,24 +1378,8 @@
     });
 
     controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $routeParams, $filter) {
-        var data, task, searchMatch = function (activity, filterHistory) {
-            var result;
-
-            if (filterHistory === $scope.histories[0]) {
-                result = true;
-            } else {
-                result = activity.activityType === filterHistory;
-            }
-
-            return result;
-        };
-
-        $scope.resetItemsPagination();
-        $scope.filteredItems = [];
-        $scope.limitPages = [10, 20, 50, 100];
-        $scope.itemsPerPage = $scope.limitPages[0];
-        $scope.histories = ['ALL', 'WARNING', 'SUCCESS', 'ERROR'];
-        $scope.filterHistory = $scope.histories[0];
+        var data, task;
+        $scope.taskId = $routeParams.taskId;
 
         innerLayout({
             spacing_closed: 30,
@@ -1401,14 +1388,9 @@
         });
 
         if ($routeParams.taskId !== undefined) {
-            data = { taskId: $routeParams.taskId };
+            data = { taskId: $scope.taskId };
 
             task = Tasks.get(data, function () {
-                $scope.activities = Activities.query(data, $scope.search);
-
-                setInterval(function () {
-                    $scope.activities = Activities.query(data);
-                }, 30 * 1000);
 
                 if (task.trigger) {
                     $scope.trigger = {
@@ -1434,32 +1416,17 @@
             });
         }
 
-        $scope.changeItemsPerPage = function () {
-            $scope.setCurrentPage(0);
-            $scope.groupToPages($scope.filteredItems, $scope.itemsPerPage);
-        };
-
-        $scope.changeFilterHistory = function () {
-            $scope.search();
-        };
-
-        $scope.search = function () {
-            $scope.filteredItems = $filter('filter')($scope.activities, function (activity) {
-                return activity && searchMatch(activity, $scope.filterHistory);
-            });
-
-            $scope.setCurrentPage(0);
-            $scope.groupToPages($scope.filteredItems, $scope.itemsPerPage);
-        };
-
         $scope.clearHistory = function () {
             motechConfirm('task.history.confirm.clearHistory', 'task.history.confirm.clear',function (r) {
                 if (!r) {
                     return;
                 }
-                Activities.remove({taskId: $routeParams.taskId});
-                $scope.activities = [];
-                $scope.search();
+                Activities.remove({taskId: $routeParams.taskId}, function () {
+                     $("#taskHistoryTable").trigger('reloadGrid');
+                 }, function (response) {
+                     handleResponse('task.header.error', 'task.history.deleteError', response);
+                     $("#taskHistoryTable").trigger('reloadGrid');
+                 });
             });
         };
     });

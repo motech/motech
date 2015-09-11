@@ -5,9 +5,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.mds.query.QueryParams;
+import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
-import org.motechproject.tasks.repository.LatestTaskActivitiesQueryExecution;
 import org.motechproject.tasks.repository.TaskActivitiesDataService;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
@@ -85,7 +86,7 @@ public class TaskActivitiesDataServiceBundleIT extends BasePaxIT {
         setUpActivityRecords();
 
         List<TaskActivity> allActivities = taskActivitiesDataService.retrieveAll();
-        List<TaskActivity> activities = taskActivitiesDataService.executeQuery(new LatestTaskActivitiesQueryExecution());
+        List<TaskActivity> activities = taskActivitiesDataService.retrieveAll(new QueryParams(1, 10, new Order("date", Order.Direction.DESC)));
 
         //There should always be only 10 records returned
         assertEquals(10, activities.size());
