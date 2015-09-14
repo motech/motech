@@ -2,12 +2,12 @@ package org.motechproject.testing.tomcat;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
@@ -165,13 +165,22 @@ public class BaseTomcatIT {
         logger.info("Trying to get a list of bundles installed in MOTECH");
 
         String uri = String.format("http://%s:%d/motech-platform-server/module/admin/api/bundles", HOST, PORT);
-        String response = httpClient.execute(new HttpGet(uri), new BasicResponseHandler());
-        logger.info("Collected the list of bundles installed in MOTECH");
 
-        assertNotNull(response, "Unable to retrieve bundle status from server");
+        return httpClient.execute(new HttpGet(uri), new ResponseHandler<JSONArray>() {
+            @Override
+            public JSONArray handleResponse(HttpResponse response) throws IOException {
+                logger.info("Collected the list of bundles installed in MOTECH");
 
-        logger.debug("Server response for bundle status request: \n" + response);
+                assertNotNull("Unable to retrieve bundle status from server", response);
 
-        return new JSONArray(response);
+                logger.debug("Server response status for bundle status request: {}", response.getStatusLine());
+
+                String responseBody = EntityUtils.toString(response.getEntity());
+
+                logger.debug("Response body: {}", responseBody);
+
+                return new JSONArray(responseBody);
+            }
+        });
     }
 }
