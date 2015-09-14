@@ -49,9 +49,9 @@
         <jslint.enable>true</jslint.enable>
         <unitTests.skip>${skipTests}</unitTests.skip>
 
-        <scm.connection>scm:git:https://code.google.com/p/motech</scm.connection>
-        <scm.developerConnection>scm:git:https://code.google.com/p/motech</scm.developerConnection>
-        <scm.url>https://code.google.com/p/motech</scm.url>
+        <scm.connection>scm:git:https://github.com/motech/motech.git</scm.connection>
+        <scm.developerConnection>scm:git:https://github.com/motech/motech.git</scm.developerConnection>
+        <scm.url>https://github.com/motech/motech.git</scm.url>
     </properties>
 
     <dependencies>
