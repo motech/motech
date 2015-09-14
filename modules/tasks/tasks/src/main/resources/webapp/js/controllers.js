@@ -288,6 +288,8 @@
 
         $scope.filter = $filter('filter');
 
+        blockUI();
+
         $q.all([$scope.util.doQuery($q, Channels), $scope.util.doQuery($q, DataSources)]).then(function(data) {
             blockUI();
 
