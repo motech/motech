@@ -306,6 +306,8 @@ public class MdsDdeBundleIT extends BasePaxIT {
         }
         productDataService.deleteAll();
         supplierDataService.deleteAll();
+        entryDataService.deleteAll();
+        messageDataService.deleteAll();
     }
 
     @Test
