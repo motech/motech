@@ -53,6 +53,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(MdsBundleWatcher.class);
 
     private static final int MAX_WAIT_TO_RESOLVE = 10;
+    private static final int WAIT_TIME = 500;
 
     private MDSAnnotationProcessor processor;
     private JarGeneratorService jarGeneratorService;
@@ -224,13 +225,33 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         synchronized (lock) {
             // Before we process annotations, we wait until bundle resolves its dependencies
             int count = 0;
-            while (bundle.getState() < Bundle.RESOLVED && count < MAX_WAIT_TO_RESOLVE) {
-                ThreadSuspender.sleep(500);
+            while (!isBundleResolved(bundle) && count < MAX_WAIT_TO_RESOLVE) {
+                ThreadSuspender.sleep(WAIT_TIME);
                 count++;
             }
 
+            // Assert the bundle is resolved before processing annotations, to log any problems before annotation processing fails.
+            assertBundleClassLoading(bundle);
+
             LOGGER.debug("Processing bundle {}", bundle.getSymbolicName());
             return processor.processAnnotations(bundle);
+        }
+    }
+
+    private boolean isBundleResolved(Bundle bundle) {
+        return bundle.getState() >= Bundle.RESOLVED;
+    }
+
+    private void assertBundleClassLoading(Bundle bundle) {
+        // We attempt to find a class that any bundle should be able to load.
+        // If exception is thrown, this signals a problem with resolving the bundle.
+        // This is done to get access to the BundleException and its stracktrace that lies behind the ClassNotFoundException
+        try {
+            bundle.loadClass(Object.class.getName());
+        } catch (ClassNotFoundException e) {
+            LOGGER.error("The {} [{}] bundle cannot be resolved. This might indicate a problem with bundle dependencies. " +
+                            "Any further exceptions are most likely caused by this problem.",
+                    bundle.getSymbolicName(), bundle.getBundleId(), e.getCause());
         }
     }
 
