@@ -16,7 +16,7 @@ sudo sed -e 's/<broker /<broker schedulerSupport="true" /' -i /etc/activemq/inst
 
 #Then start ActiveMQ
 sudo service activemq restart
-sudo curl -L http://nexus.motechproject.org/service/local/artifact/maven/redirect?r=releases&g=org.motechproject&a=motech-platform-server&v=LATEST&e=war -o motech-platform-server.war
-sudo mv motech-platform-server.war /var/lib/tomcat7/webapps/
+sudo curl -L http://nexus.motechproject.org/service/local/artifact/maven/redirect?r=releases\&g=org.motechproject\&a=motech-platform-server\&v=RELEASE\&e=war -o motech-platform-server.war
+sudo cp motech-platform-server.war /var/lib/tomcat7/webapps/
 sudo service tomcat7 start
 echo "Setup Complete! Navigate to http://localhost:8080/motech-platform-server to configure the bootstrap settings."
