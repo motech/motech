@@ -243,9 +243,7 @@ public class InstanceServiceImpl implements InstanceService {
         MotechDataService service = getServiceForEntity(entity);
         validateCredentialsForReading(entity);
 
-        Object instance = service.retrieve(ID_FIELD_NAME, instanceId);
-
-        return service.getDetachedField(instance, fieldName);
+        return service.getDetachedField(instanceId, fieldName);
     }
 
     @Override
@@ -836,7 +834,8 @@ public class InstanceServiceImpl implements InstanceService {
         Object parsedValue;
         if ((ArrayUtils.EMPTY_BYTE_OBJECT_ARRAY.equals(fieldRecord.getValue()) || ArrayUtils.EMPTY_BYTE_ARRAY.equals(fieldRecord.getValue()))
                 && !fieldRecord.getId().equals(deleteValueFieldId)) {
-            parsedValue = service.getDetachedField(instance, fieldName);
+            Long id = (Long) PropertyUtil.safeGetProperty(instance, ID_FIELD_NAME);
+            parsedValue = service.getDetachedField(id, fieldName);
         } else {
             parsedValue = fieldRecord.getValue();
         }
@@ -928,7 +927,8 @@ public class InstanceServiceImpl implements InstanceService {
             LOGGER.debug("Invocation target exception thrown when retrieving field {}. This may indicate a non loaded field",
                     fieldName, e);
             // fallback to the service
-            return service.getDetachedField(instance, fieldName);
+            Long id = (Long) PropertyUtil.safeGetProperty(instance, ID_FIELD_NAME);
+            return service.getDetachedField(id, fieldName);
         }
     }
 

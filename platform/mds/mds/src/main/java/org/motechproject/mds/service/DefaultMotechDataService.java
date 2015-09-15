@@ -4,9 +4,10 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.event.CrudEventType;
-import org.motechproject.mds.ex.UpdateFromTransientException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
+import org.motechproject.mds.ex.object.DetachedFieldFromTransientObjectException;
 import org.motechproject.mds.ex.object.SecurityException;
+import org.motechproject.mds.ex.object.UpdateFromTransientException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.util.StateManagerUtil;
 import org.motechproject.mds.query.Property;
@@ -341,7 +342,16 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     @Override
     @Transactional
+    public Object getDetachedField(Long id, String fieldName) {
+        return getDetachedField(findById(id), fieldName);
+    }
+
+    @Override
+    @Transactional
     public Object getDetachedField(T instance, String fieldName) {
+        if (JDOHelper.getObjectState(instance) == ObjectState.TRANSIENT) {
+            throw new DetachedFieldFromTransientObjectException();
+        }
         return repository.getDetachedField(instance, fieldName);
     }
 

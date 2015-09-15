@@ -1,4 +1,6 @@
-package org.motechproject.mds.ex;
+package org.motechproject.mds.ex.object;
+
+import org.motechproject.mds.ex.MdsException;
 
 /**
  * Exception, that signalizes updating object from transient state

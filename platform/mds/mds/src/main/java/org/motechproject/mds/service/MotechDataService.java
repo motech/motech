@@ -140,6 +140,15 @@ public interface MotechDataService<T> {
     /**
      * Makes instance persistent and retrieves field values from that persisted instance.
      *
+     * @param id id of the instance
+     * @param fieldName name of the field to retrieve
+     * @return value from the field
+     */
+    Object getDetachedField(Long id, String fieldName);
+
+    /**
+     * Makes instance persistent and retrieves field values from that persisted instance.
+     *
      * @param instance instance to retrieve field value from
      * @param fieldName name of the field to retrieve
      * @return value from the field

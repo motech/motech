@@ -934,16 +934,10 @@ public class MdsBundleIT extends BasePaxIT {
         assertEquals(intField, PropertyUtils.getProperty(instance, "someInt"));
         assertEquals(enumVal, PropertyUtils.getProperty(instance, "someEnum"));
 
-        final Long id = (Long) PropertyUtils.getProperty(instance, "id");
-
         // assert blob
-        service.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                Object blobValue = service.getDetachedField(service.findById(id), "someBlob");
-                assertEquals(Arrays.toString(blob), Arrays.toString((Byte[]) blobValue));
-            }
-        });
+        Long id = (Long) PropertyUtils.getProperty(instance, "id");
+        Object blobValue = service.getDetachedField(id, "someBlob");
+        assertEquals(Arrays.toString(blob), Arrays.toString((Byte[]) blobValue));
     }
 
     private Object toEnum(Class entityClass, String str) throws NoSuchFieldException {
