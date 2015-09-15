@@ -1382,7 +1382,10 @@
 
     controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $routeParams, $filter) {
         var data, task;
+
         $scope.taskId = $routeParams.taskId;
+        $scope.activityTypes = ['All', 'Warning', 'Success', 'Error'];
+        $scope.selectedActivityType = 'All';
 
         innerLayout({
             spacing_closed: 30,
@@ -1419,13 +1422,31 @@
             });
         }
 
+        $scope.changeActivityTypeFilter = function () {
+            $('#taskHistoryTable').jqGrid('setGridParam', {
+                page: 1,
+                postData: {
+                    activityType: ($scope.selectedActivityType === 'All') ? '' : $scope.selectedActivityType.toUpperCase()
+                }}).trigger('reloadGrid');
+        };
+
+        $scope.refresh = function () {
+            $("#taskHistoryTable").trigger('reloadGrid');
+        };
+
         $scope.clearHistory = function () {
             motechConfirm('task.history.confirm.clearHistory', 'task.history.confirm.clear',function (r) {
                 if (!r) {
                     return;
                 }
-                Activities.remove({taskId: $routeParams.taskId});
-                $("#taskHistoryTable").trigger('reloadGrid');
+                blockUI();
+                Activities.remove({taskId: $routeParams.taskId}, function () {
+                     $scope.refresh();
+                     unblockUI();
+                 }, function (response) {
+                     unblockUI();
+                     handleResponse('task.header.error', 'task.history.deleteError', response);
+                 });
             });
         };
     });
