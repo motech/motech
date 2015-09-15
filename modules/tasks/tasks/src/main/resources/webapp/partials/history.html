@@ -48,7 +48,11 @@
                 </div>
             </div>
             <div class="clearfix"></div><div class="margin-before2"></div>
-
+            <div class="form-group form-inline inside">
+                <label >{{msg('task.header.filterActivity')}}</label>
+                <select class="form-control input-auto" ng-model="selectedActivityType" ng-change="changeActivityTypeFilter()" ng-options="activity for activity in activityTypes"></select>
+                <a class="btn btn-default" ng-click="refresh()"><i class="fa fa-refresh"></i>&nbsp;{{msg('admin.refresh')}}</a>
+            </div>
             <div id="outsideTaskHistoryTable" class="overrideJqgridTable">
                 <table id="taskHistoryTable" task-history-grid="pageTaskHistoryTable"></table>
                 <div id="pageTaskHistoryTable"></div>
