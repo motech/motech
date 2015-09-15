@@ -10,21 +10,22 @@ The instructions below will let you know how to get started with adding/editing 
 
 .. note::
 
-    If you are a writer (not a software developer!) and you find that committing documentation to git is a bit daunting, `drop us a line <mailto:motech-dev@googlegroups.com>`_. We can provide extra support through the process (or even check in your docs for you).
+    If you are a writer (not a software developer!) and you find that committing documentation to GitHub is a bit daunting, `drop us a line <mailto:motech-dev@googlegroups.com>`_. We can provide extra support through the process (or even check in your docs for you).
 
 Mailing Lists and Accounts
 ==========================
 
 #. Sign up for the MOTECH Developer `mailing list <https://groups.google.com/forum/?fromgroups#!forum/motech-dev>`_ - this is the best place to get help with any questions about MOTECH documentation or code.
-#. Create an account on `Gerrit <http://review.motechproject.org>`_, our code review system.
-#. Get a Jira account if you'll be working on documentation tickets - there is no self-serve way to request a Jira account yet, so please just email the MOTECH Developer list and we'll get you set up.
+#. Create an account on `GitHub <https://github.com>`_, our code repository and review system.
+#. Get a Jira account if you'll be working on documentation tickets - there is no self-serve way to request a Jira account yet, so please just email the `MOTECH Developer list <mailto:motech-dev@googlegroups.com>`_ and we'll get you set up.
 
 Doc Environment & Tools
 =======================
 
-#. Install Sphinx and Javasphinx, and test out building the docs locally. Full instructions :doc:`here <../development/documentation>`.
-#. Configure your Git client to :doc:`submit changes via Gerrit <../development/patch>`.
+#. `Fork our GitHub repository <https://github.com/motech/motech#fork-destination-box>`_.
+#. Clone your repository locally and enter the motech/docs directory.
 #. Install an editor for reStructuredText. Any editor will work, but we find that `Sublime <http://www.sublimetext.com/>`_ works pretty well.
+#. Install Sphinx and Javasphinx, and test out building the docs locally. Full instructions :doc:`here <../development/documentation>`.
 
 Finding Something to Work On
 ============================
@@ -38,6 +39,7 @@ Writing and Submitting Your Doc
 
 #. As you are writing your doc, we recommend building periodically to ensure that the doc looks the way you expect. It can take some trial and error to get the hang of reStructuredText markup.
 #. When you're ready to push your changes, please squash your commits to keep the change history concise, and write a commit message that conforms to our :doc:`guidelines <../development/commit_message>`.
-#. Submit your doc using **git push origin** - if you configured your environment correctly, this sends your changes to Gerrit, our code review system.
-#. Please incorporate review feedback and update your patch as needed - once your change has passed code review, one of the project maintainers will merge your change to the repo.
+#. Submit your doc using *git push origin* - this sends your changes to the MOTECH fork on your GitHub repository.
+#. Now, you have to create a pull request from your GitHub fork to our repository for review. This is easily done through the GitHub user interface.
+#. Please incorporate review feedback and update your pull request as needed - once your change has passed code review, one of the project maintainers will merge your change to the repo.
 #. Resolve the relevant issue(s) in Jira.
