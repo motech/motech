@@ -3,6 +3,7 @@ package org.motechproject.tasks.domain;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
@@ -24,7 +25,10 @@ public class TaskError implements Serializable {
 
     private static final long serialVersionUID = -602791178447970480L;
 
+    @Field
     private List<String> args;
+
+    @Field(required = true)
     private String message;
 
     /**

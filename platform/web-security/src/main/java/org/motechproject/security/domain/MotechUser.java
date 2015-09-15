@@ -11,6 +11,7 @@ import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.security.constants.PermissionNames;
 
+import javax.jdo.annotations.Unique;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,13 +27,15 @@ public class MotechUser {
     @Field
     private String externalId;
 
-    @Field
+    @Field(required = true)
+    @Unique
     private String userName;
 
-    @Field
+    @Field(required = true)
     private String password;
 
     @Field
+    @Unique
     private String email;
 
     @Field
@@ -42,6 +45,7 @@ public class MotechUser {
     private UserStatus userStatus;
 
     @Field
+    @Unique
     private String openId;
 
     @Field
