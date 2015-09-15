@@ -48,7 +48,6 @@ public interface TaskActivitiesDataService extends MotechDataService<TaskActivit
      * @param activityTypes the set of activity types
      * @return the count of matching task activities
      */
-    @Lookup(name = "Count by Task and Activity Types")
     long countByTaskAndActivityTypes(@LookupField(name = TASK) final Long task,
                                      @LookupField(name = ACTIVITY_TYPE) final Set<TaskActivityType> activityTypes);
 
