@@ -98,48 +98,61 @@
         }
     }
 
-    function buildGridColModel(colModel, fields, scope) {
-        var i, cmd, field;
+    function buildGridColModel(colModel, fields, scope, removeVersionField) {
+        var i, j, cmd, field, skip = false;
 
         for (i = 0; i < fields.length; i += 1) {
             field = fields[i];
+            skip = false;
 
-            //if name is reserved for jqgrid need to change field name
-            field.basic.name = changeIfReservedFieldName(field.basic.name);
-
-            cmd = {
-               label: field.basic.displayName,
-               name: field.basic.name,
-               index: field.basic.name,
-               jsonmap: "fields." + i + ".value"
-            };
-
-            cmd.formatter = stringEscapeFormatter;
-
-            if (scope.isDateField(field)) {
-                cmd.formatter = 'date';
-                cmd.formatoptions = { newformat: 'Y-m-d'};
+            // for history and trash we don't generate version field
+            if (removeVersionField && field.metadata !== undefined && field.metadata.length > 0) {
+                for (j = 0; j < field.metadata.length; j += 1) {
+                    if (field.metadata[j].key === "version.field" && field.metadata[j].value === "true") {
+                        skip = true;
+                        break;
+                    }
+                }
             }
 
-            if (scope.isRelationshipField(field)) {
-                // append a formatter for relationships
-                cmd.formatter = relationshipFormatter;
-            }
+            if (!skip) {
+                //if name is reserved for jqgrid need to change field name
+                field.basic.name = changeIfReservedFieldName(field.basic.name);
 
-            if (scope.isTextArea(field.settings)) {
-                cmd.formatter = textFormatter;
-                cmd.classes = 'text';
-            }
+                cmd = {
+                   label: field.basic.displayName,
+                   name: field.basic.name,
+                   index: field.basic.name,
+                   jsonmap: "fields." + i + ".value"
+                };
 
-            if (scope.isMapField(field)) {
-                cmd.formatter = mapFormatter;
-            }
+                cmd.formatter = stringEscapeFormatter;
 
-            if (scope.isComboboxField(field)) {
-                cmd.jsonmap = "fields." + i + ".displayValue";
-            }
+                if (scope.isDateField(field)) {
+                    cmd.formatter = 'date';
+                    cmd.formatoptions = { newformat: 'Y-m-d'};
+                }
 
-            colModel.push(cmd);
+                if (scope.isRelationshipField(field)) {
+                    // append a formatter for relationships
+                    cmd.formatter = relationshipFormatter;
+                }
+
+                if (scope.isTextArea(field.settings)) {
+                    cmd.formatter = textFormatter;
+                    cmd.classes = 'text';
+                }
+
+                if (scope.isMapField(field)) {
+                    cmd.formatter = mapFormatter;
+                }
+
+                if (scope.isComboboxField(field)) {
+                    cmd.jsonmap = "fields." + i + ".displayValue";
+                }
+
+                colModel.push(cmd);
+            }
         }
     }
 
@@ -1180,7 +1193,7 @@
                         var colMd, colModel = [], i, noSelectedFields = true, spanText,
                         noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
-                        buildGridColModel(colModel, result, scope);
+                        buildGridColModel(colModel, result, scope, false);
 
                         elem.jqGrid({
                             url: "../mds/entities/" + scope.selectedEntity.id + "/instances",
@@ -1308,7 +1321,7 @@
                         success: function (result) {
                             var colMd, colModel = [], i, spanText;
 
-                            buildGridColModel(colModel, result, scope);
+                            buildGridColModel(colModel, result, scope, false);
 
                             elem.jqGrid({
                                 url: "../mds/entities/" + scope.relatedEntity.id + "/instances",
@@ -1500,7 +1513,7 @@
                             sortable: false
                         });
 
-                        buildGridColModel(colModel, result, scope);
+                        buildGridColModel(colModel, result, scope, true);
 
                         elem.jqGrid({
                             url: "../mds/instances/" + scope.selectedEntity.id + "/" + scope.instanceId + "/history",
@@ -1606,7 +1619,7 @@
                         var colModel = [], i, noSelectedFields = true, spanText,
                         noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
-                        buildGridColModel(colModel, result, scope);
+                        buildGridColModel(colModel, result, scope, true);
 
                         elem.jqGrid({
                             url: "../mds/entities/" + scope.selectedEntity.id + "/trash",
@@ -1969,13 +1982,12 @@
             restrict: 'A',
             require : 'ngModel',
             link: function (scope, element, attrs, ngModel) {
-                var viewScope = findCurrentScope(scope, 'draft'),
+                var entity, value, resetDefaultValue, checkIfNeedReset,
+                viewScope = findCurrentScope(scope, 'draft'),
                 fieldPath = attrs.mdsPath,
                 fieldId = attrs.mdsFieldId,
-                typeField = attrs.defaultMultiselectList,
-                entity,
-                value,
-                resetDefaultValue;
+                typeField = attrs.defaultMultiselectList;
+
                 element.multiselect({
                     buttonClass : 'btn btn-default',
                     buttonWidth : 'auto',
@@ -2095,6 +2107,12 @@
 
                 };
 
+                checkIfNeedReset = function () {
+                    return scope.field.basic.defaultValue !== null
+                        && scope.field.basic.defaultValue.length > 0
+                        && scope.field.basic.defaultValue !== '';
+                };
+
                 scope.$watch(function () {
                     return element[0].length;
                 }, function () {
@@ -2109,8 +2127,14 @@
                     element.multiselect('refresh');
                 });
 
+                $("#mdsfieldsettings_" + scope.field.id + '_1').on("click", function () {
+                    if (checkIfNeedReset()) {
+                        resetDefaultValue();
+                    }
+                });
+
                 $("#mdsfieldsettings_" + scope.field.id + '_2').on("click", function () {
-                    if (scope.field.basic.defaultValue !== null && scope.field.basic.defaultValue.length > 0 && scope.field.basic.defaultValue !== '') {
+                    if (checkIfNeedReset()) {
                         resetDefaultValue();
                     }
                 });
@@ -2127,7 +2151,7 @@
                 element.multiselect({
                     buttonClass : 'btn btn-default',
                     buttonWidth : 'auto',
-                    buttonContainer : '<div class="btn-group" />',
+                    buttonContainer : '<div class="btn-group pull-left" />',
                     maxHeight : false,
                     numberDisplayed: 3,
                     buttonText : function(options) {
@@ -2564,6 +2588,92 @@
                         // it is invalid, return undefined (no model update)
                         ctrl.$setValidity('period', false);
                         return undefined;
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('illegalValueValidity', function() {
+        var RESERVED_WORDS = [
+            'abstract',
+            'assert',
+            'boolean',
+            'break',
+            'byte',
+            'case',
+            'catch',
+            'char',
+            'class',
+            'const*',
+            'continue',
+            'default',
+            'do',
+            'double',
+            'else',
+            'enum',
+            'extends',
+            'false',
+            'final',
+            'finally',
+            'float',
+            'for',
+            'goto*',
+            'if',
+            'int',
+            'interface',
+            'instanceof',
+            'implements',
+            'import',
+            'long',
+            'native',
+            'new',
+            'null',
+            'package',
+            'private',
+            'protected',
+            'public',
+            'return',
+            'short',
+            'static',
+            'strictfp',
+            'super',
+            'synchronized',
+            'switch',
+            'synchronized',
+            'this',
+            'throw',
+            'throws',
+            'transient',
+            'true',
+            'try',
+            'void',
+            'volatile',
+            'while'
+        ],
+        LEGAL_REGEXP = /^[\w]+$/;
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                var validateReservedWords;
+
+                validateReservedWords = function (viewValue) {
+                    if (ctrl.$viewValue === '' || attrs.illegalValueValidity === 'true' || (LEGAL_REGEXP.test(ctrl.$viewValue) && $.inArray(ctrl.$viewValue, RESERVED_WORDS) === -1) ) {
+                        // it is valid
+                        ctrl.$setValidity('illegalvalue', true);
+                        return viewValue;
+                    } else {
+                        // it is invalid, return undefined (no model update)
+                        ctrl.$setValidity('illegalvalue', false);
+                        return '';
+                    }
+                };
+
+                ctrl.$parsers.unshift(validateReservedWords);
+
+                scope.$watch("field.settings[1].value", function(newValue, oldValue) {
+                    if (newValue !== oldValue) {
+                        ctrl.$setViewValue(ctrl.$viewValue);
                     }
                 });
             }

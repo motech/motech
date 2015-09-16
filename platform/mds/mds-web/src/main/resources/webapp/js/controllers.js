@@ -113,7 +113,7 @@
         },
         loadEntity;
 
-    controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, Entities) {
+    controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, Entities, MDSUtils) {
         var schemaEditorPath = '/mds/{0}'.format($scope.AVAILABLE_TABS[1]);
 
         $scope.DATA_BROWSER = "dataBrowser";
@@ -558,6 +558,54 @@
                 return s1Lower > s2Lower? 1 : (s1Lower < s2Lower? -1 : 0);
             });
         };
+
+        /**
+        * Return available values for combobox field.
+        *
+        * @param {Array} setting A array of field settings.
+        * @return {Array} A array of possible combobox values.
+        */
+        $scope.getComboboxValues = function (settings) {
+            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value, keys = [], key;
+            // Check the user supplied flag, if true return string set
+            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
+                return labelValues;
+            } else {
+                if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
+                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
+                    for(key in labelValues) {
+                        keys.push(key);
+                    }
+                    return keys;
+                } else {        // there is no colon, so we are dealing with a string set, not a map
+                    return labelValues;
+                }
+            }
+        };
+
+        $scope.getComboboxDisplayName = function (settings, value) {
+            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value;
+            // Check the user supplied flag, if true return string set
+            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
+                return value;
+            } else {
+                if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
+                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
+                    return labelValues[value];
+                } else {         // there is no colon, so we are dealing with a string set, not a map
+                    return value;
+                }
+            }
+        };
+
+        $scope.getAndSplitComboboxValues = function (labelValues) {
+            var doublet, i, map = {};
+            for (i = 0; i < labelValues.length; i += 1) {
+                doublet = labelValues[i].split(":");
+                map[doublet[0]] = doublet[1];
+            }
+            return map;
+        };
     });
 
     /**
@@ -768,6 +816,7 @@
         */
         checkActiveIndex = function (initialSetTrue) {
             if (!_.isNull($scope.advancedSettings)
+                    && !_.isUndefined($scope.advancedSettings)
                     && !_.isUndefined($scope.advancedSettings.indexes)
                     && $scope.advancedSettings.indexes.length > 0) {
                 if ($scope.activeIndex === -1 || initialSetTrue) {
@@ -841,7 +890,7 @@
             }
 
             $scope.securitySettings.securityMode = $scope.selectedEntity.securityMode.valueOf();
-            $scope.securitySettings.readOnlySecurityMode = $scope.selectedEntity.readOnlySecurityMode.valueOf();
+            $scope.securitySettings.readOnlySecurityMode = $scope.selectedEntity.readOnlySecurityMode === null ? 'NO ACCESS' : $scope.selectedEntity.readOnlySecurityMode.valueOf();
 
             if ($scope.securitySettings.securityMode === 'USERS'){
                 $scope.securitySettings.users = $scope.selectedEntity.securityMembers;
@@ -1507,10 +1556,10 @@
                         param: $scope.newField.name
                     }, function () {
                         $scope.fields.push(field);
-                        if ($scope.advancedSettings.browsing !== undefined) {
+                        if ($scope.advancedSettings !== undefined && $scope.advancedSettings.browsing !== undefined) {
                             $scope.advancedSettings.browsing.displayedFields.push(field.id);
                         }
-                        if ($scope.advancedSettings.restOptions !== undefined) {
+                        if ($scope.advancedSettings !== undefined && $scope.advancedSettings.restOptions !== undefined) {
                             $scope.advancedSettings.restOptions.fieldNames.push(field.basic.name);
                         }
                         setBrowsing();
@@ -2692,16 +2741,6 @@
         };
 
         /**
-        * Return available values for combobox field.
-        *
-        * @param {Array} setting A array of field settings.
-        * @return {Array} A array of possible combobox values.
-        */
-        $scope.getComboboxValues = function (settings) {
-            return MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value;
-        };
-
-        /**
         * Check that all options in the given setting are valid.
         *
         * @param {object} setting The given setting to check
@@ -3455,7 +3494,7 @@
         };
 
         $scope.shouldHideButton = function() {
-            return $scope.selectedEntity.nonEditable || $scope.selectedEntity.readOnlyAccess;
+            return $scope.selectedEntity && ($scope.selectedEntity.nonEditable || $scope.selectedEntity.readOnlyAccess);
         };
 
         $scope.closeRelatedEntityModal = function() {
@@ -3647,6 +3686,8 @@
                         $scope.showTrashInstance = true;
                         $scope.previousInstance = id;
                         $scope.selectedInstance = id;
+                        $scope.currentRecord = data;
+                        $scope.fields = data.fields;
                         unblockUI();
                     }
                 );
@@ -4031,7 +4072,7 @@
                 return ['ALL', 'YES', 'NO'];
             } else if (type === "java.util.Date" || type === "org.joda.time.DateTime" || type === "org.joda.time.LocalDate") {
                 return ['ALL', 'TODAY', 'PAST_7_DAYS', 'THIS_MONTH', 'THIS_YEAR'];
-            } else if (type === "java.util.List") {
+            } else if (type === "java.util.Collection") {
                 return  ['ALL'].concat($scope.getComboboxValues(field.settings));
             }
         };
@@ -4438,54 +4479,7 @@
             return type.displayName.substring(type.displayName.lastIndexOf('.') + 1);
         };
 
-        /**
-        * Return available values for combobox field.
-        *
-        * @param {Array} setting A array of field settings.
-        * @return {Array} A array of possible combobox values.
-        */
-        $scope.getComboboxValues = function (settings) {
-            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value, keys = [], key;
-            // Check the user supplied flag, if true return string set
-            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
-                return labelValues;
-            } else {
-                if (labelValues[0].indexOf(":") === -1) {       // there is no colon, so we are dealing with a string set, not a map
-                    return labelValues;
-                } else {
-                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
-                    for(key in labelValues) {
-                        keys.push(key);
-                    }
-                    return keys;
-                }
-            }
-        };
 
-        $scope.getComboboxDisplayName = function (settings, value) {
-            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value;
-            // Check the user supplied flag, if true return string set
-            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
-                return value;
-            } else {
-                if (labelValues[0].indexOf(":") === -1) { // there is no colon, so we are dealing with a string set, not a map
-                    return value;
-                } else {
-                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
-                    return labelValues[value];
-                }
-            }
-
-        };
-
-        $scope.getAndSplitComboboxValues = function (labelValues) {
-            var doublet, i, map = {};
-            for (i = 0; i < labelValues.length; i += 1) {
-                doublet = labelValues[i].split(":");
-                map[doublet[0]] = doublet[1];
-            }
-            return map;
-        };
 
         /**
         * Checks if entities belonging to certain module are currently visible

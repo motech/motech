@@ -24,6 +24,8 @@ import org.motechproject.mds.testutil.RelatedClass;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.osgi.framework.Bundle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.jdo.annotations.PersistenceCapable;
@@ -47,6 +49,8 @@ import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EntityBuilderTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EntityBuilderTest.class);
 
     private static final String ENTITY_NAME = "xx.yy.BuilderTest";
 
@@ -176,6 +180,36 @@ public class EntityBuilderTest {
         assertField(clazz, "date", Date.class);
         assertField(clazz, "dt", DateTime.class);
         assertField(clazz, "list", List.class);
+    }
+
+    @Test(expected = NoSuchFieldException.class)
+    public void shouldNotAddVersionFieldToTheHistoryClass() throws Exception {
+        Field versionField = field("version", Long.class);
+        versionField.addMetadata(new FieldMetadata(versionField, Constants.MetadataKeys.VERSION_FIELD, "true"));
+        when(entity.getFields()).thenReturn(asList(
+                field("id", Long.class), versionField,
+                field("count", Integer.class), field("str", String.class),
+                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true),
+                field(MODIFIED_BY_FIELD_NAME, String.class, true)));
+
+        when(entity.getField("id")).thenReturn(field("id", Long.class));
+
+        ClassData classData = entityBuilder.buildHistory(entity);
+        assertEquals("xx.yy.history.BuilderTest__History", classData.getClassName());
+
+        Class<?> clazz = mdsClassLoader.safeDefineClass(classData.getClassName(), classData.getBytecode());
+
+        assertNotNull(clazz);
+
+        try {
+            assertField(clazz, "id", Long.class);
+            assertField(clazz, "count", Integer.class);
+            assertField(clazz, "str", String.class);
+        } catch (NoSuchFieldException e) {
+            LOGGER.error("Cannot find field in the history class", e);
+            fail();
+        }
+        assertField(clazz, "version", Long.class);
     }
 
     @Test

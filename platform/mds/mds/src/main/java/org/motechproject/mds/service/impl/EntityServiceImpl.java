@@ -12,6 +12,7 @@ import org.motechproject.mds.domain.FieldSetting;
 import org.motechproject.mds.domain.FieldValidation;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.MdsEntity;
+import org.motechproject.mds.domain.MdsVersionedEntity;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.domain.TypeValidation;
@@ -204,8 +205,9 @@ public class EntityServiceImpl implements EntityService {
 
         Entity entity = allEntities.create(entityDto);
 
-        LOGGER.debug("Adding default fields to the entity which do not extend MdsEntity");
-        if (!MdsEntity.class.getName().equalsIgnoreCase(entityDto.getSuperClass())) {
+        LOGGER.debug("Adding default fields to the entity which do not extend MdsEntity or MdsVersionedEntity");
+        if (!MdsEntity.class.getName().equalsIgnoreCase(entityDto.getSuperClass())
+                && !MdsVersionedEntity.class.getName().equalsIgnoreCase(entityDto.getSuperClass())) {
             EntityHelper.addDefaultFields(entity, allTypes);
         }
 

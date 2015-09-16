@@ -12,6 +12,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.web.util.UIRepresentationUtil;
+import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
@@ -33,6 +34,7 @@ import org.motechproject.mds.ex.object.SecurityException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.helper.MdsBundleHelper;
+import org.motechproject.mds.util.StateManagerUtil;
 import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
@@ -194,7 +196,7 @@ public class InstanceServiceImpl implements InstanceService {
         MotechDataService service = getServiceForEntity(entity);
         List instances = service.retrieveAll(queryParams);
 
-        return instancesToRecords(instances, entity, fields, service);
+        return instancesToRecords(instances, entity, fields, service, EntityType.STANDARD);
     }
 
     @Override
@@ -212,7 +214,7 @@ public class InstanceServiceImpl implements InstanceService {
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         Collection collection = trashService.getInstancesFromTrash(entity.getClassName(), queryParams);
 
-        return instancesToRecords(collection, entity, fields, service);
+        return instancesToRecords(collection, entity, fields, service, EntityType.TRASH);
     }
 
     @Override
@@ -232,7 +234,7 @@ public class InstanceServiceImpl implements InstanceService {
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         Object instance = trashService.findTrashById(instanceId, entityId);
 
-        return instanceToRecord(instance, entity, fields, service);
+        return instanceToRecord(instance, entity, fields, service, EntityType.TRASH);
     }
 
     @Override
@@ -264,11 +266,11 @@ public class InstanceServiceImpl implements InstanceService {
             Object result = lookupExecutor.execute(lookupMap, queryParams);
 
             if (lookup.isSingleObjectReturn()) {
-                EntityRecord record = instanceToRecord(result, entity, fields, service);
+                EntityRecord record = instanceToRecord(result, entity, fields, service, EntityType.STANDARD);
                 return (record == null) ? new ArrayList<EntityRecord>() : Collections.singletonList(record);
             } else {
                 List instances = (List) result;
-                return instancesToRecords(instances, entity, fields, service);
+                return instancesToRecords(instances, entity, fields, service, EntityType.STANDARD);
             }
         } catch (RuntimeException e) {
             throw new LookupExecutionException(e);
@@ -285,7 +287,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         List instances = service.filter(filters, queryParams);
 
-        return instancesToRecords(instances, entity, fields, service);
+        return instancesToRecords(instances, entity, fields, service, EntityType.STANDARD);
     }
 
     @Override
@@ -420,7 +422,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         List<FieldDto> fields = entityService.getEntityFields(entityId);
 
-        return instanceToRecord(instance, entity, fields, service);
+        return instanceToRecord(instance, entity, fields, service, EntityType.STANDARD);
     }
 
     @Override
@@ -466,7 +468,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         try {
             for (FieldDto field : entityService.getEntityFields(entity.getId())) {
-                if (ID_FIELD_NAME.equalsIgnoreCase(field.getBasic().getDisplayName())) {
+                if (ID_FIELD_NAME.equalsIgnoreCase(field.getBasic().getDisplayName()) || field.isVersionField()) {
                     continue;
                 }
                 Field f = FieldUtils.getField(trash.getClass(), StringUtils.uncapitalize(field.getBasic().getName()), true);
@@ -561,7 +563,7 @@ public class InstanceServiceImpl implements InstanceService {
             throws NoSuchMethodException, ClassNotFoundException, CannotCompileException, InstantiationException, IllegalAccessException, NoSuchFieldException {
         for (FieldRecord fieldRecord : fieldRecords) {
             if (!(retainId && ID_FIELD_NAME.equals(fieldRecord.getName())) && !fieldRecord.getType().isRelationship()) {
-                setProperty(instance, fieldRecord, service, deleteValueFieldId);
+                setProperty(instance, fieldRecord, service, deleteValueFieldId, retainId);
             } else if (fieldRecord.getType().isRelationship()) {
                 setRelationProperty(instance, fieldRecord);
             }
@@ -569,17 +571,17 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     private List<EntityRecord> instancesToRecords(Collection instances, EntityDto entity, List<FieldDto> fields,
-                                                  MotechDataService service) {
+                                                  MotechDataService service, EntityType entityType) {
         List<EntityRecord> records = new ArrayList<>();
         for (Object instance : instances) {
-            EntityRecord record = instanceToRecord(instance, entity, fields, service);
+            EntityRecord record = instanceToRecord(instance, entity, fields, service, entityType);
             records.add(record);
         }
         return records;
     }
 
     private EntityRecord instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
-                                          MotechDataService service) {
+                                          MotechDataService service, EntityType entityType) {
         if (instance == null) {
             return null;
         }
@@ -587,6 +589,10 @@ public class InstanceServiceImpl implements InstanceService {
             List<FieldRecord> fieldRecords = new ArrayList<>();
 
             for (FieldDto field : fields) {
+                if (entityType != EntityType.STANDARD && field.isVersionField()) {
+                    continue;
+                }
+
                 Object value = getProperty(instance, field, service);
                 Object displayValue = getDisplayValueForField(field, value);
 
@@ -681,7 +687,7 @@ public class InstanceServiceImpl implements InstanceService {
                                                  MotechDataService service) {
         Long entityId = entity.getId();
 
-        EntityRecord entityRecord = instanceToRecord(object, entity, entityService.getEntityFields(entityId), service);
+        EntityRecord entityRecord = instanceToRecord(object, entity, entityService.getEntityFields(entityId), service, EntityType.HISTORY);
         Long historyInstanceSchemaVersion = (Long) PropertyUtil.safeGetProperty(object,
                 HistoryTrashClassHelper.schemaVersion(object.getClass()));
         Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
@@ -690,7 +696,7 @@ public class InstanceServiceImpl implements InstanceService {
                 historyInstanceSchemaVersion.equals(currentSchemaVersion), entityRecord.getFields());
     }
 
-    private void setProperty(Object instance, FieldRecord fieldRecord, MotechDataService service, Long deleteValueFieldId) throws NoSuchMethodException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+    private void setProperty(Object instance, FieldRecord fieldRecord, MotechDataService service, Long deleteValueFieldId, boolean retainId) throws NoSuchMethodException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
         String fieldName = fieldRecord.getName();
         TypeDto type = getType(fieldRecord);
 
@@ -712,7 +718,8 @@ public class InstanceServiceImpl implements InstanceService {
             parsedValue = parseValue(holder, methodParameterType, fieldRecord, classLoader);
         }
 
-        validateNonEditableField(fieldRecord, instance, parsedValue);
+        MetadataDto versionMetadata = fieldRecord.getMetadata(Constants.MetadataKeys.VERSION_FIELD);
+        validateNonEditableField(fieldRecord, instance, parsedValue, versionMetadata);
 
         Method method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, parameterType);
 
@@ -725,6 +732,13 @@ public class InstanceServiceImpl implements InstanceService {
         }
 
         invokeMethod(method, instance, parsedValue, methodName, fieldName);
+        setTransactionVersion(instance, fieldRecord, retainId, versionMetadata);
+    }
+
+    private void setTransactionVersion(Object instance, FieldRecord fieldRecord, boolean retainId, MetadataDto versionMetadata) {
+        if (versionMetadata != null && Constants.Util.TRUE.equals(versionMetadata.getValue()) && retainId) {
+            StateManagerUtil.setTransactionVersion(instance, fieldRecord.getValue(), fieldRecord.getName());
+        }
     }
 
     private void setRelationProperty(Object instance, FieldRecord fieldRecord) throws NoSuchMethodException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, CannotCompileException {
@@ -1021,7 +1035,7 @@ public class InstanceServiceImpl implements InstanceService {
         }
     }
 
-    private void validateNonEditableField(FieldRecord fieldRecord, Object instance, Object parsedValue) throws IllegalAccessException {
+    private void validateNonEditableField(FieldRecord fieldRecord, Object instance, Object parsedValue, MetadataDto versionMetadata) throws IllegalAccessException {
 
         Object fieldOldValue = FieldUtils.readField(instance,
                         StringUtils.uncapitalize(fieldRecord.getName()),
@@ -1033,6 +1047,10 @@ public class InstanceServiceImpl implements InstanceService {
                 // There is need to use Objects.equals as values - one or both - can be null
                 // which would cause NullPointerException when just .equals() on null value
                 && !Objects.equals(fieldOldValue, parsedValue)) {
+            // Skip for version field
+            if (versionMetadata != null && Constants.Util.TRUE.equals(versionMetadata.getValue())) {
+                return;
+            }
             throw new FieldReadOnlyException(instance.getClass().getName(), fieldRecord.getName());
         }
     }

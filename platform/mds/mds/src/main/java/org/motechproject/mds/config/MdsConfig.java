@@ -100,6 +100,14 @@ public class MdsConfig {
         return (result == null ? new Properties() : result);
     }
 
+    public Properties getDataNucleusPropertiesForInternalInfrastructure() {
+        Properties properties = new Properties();
+        properties.putAll(coreConfigurationService.loadDatanucleusConfig());
+        properties.remove("javax.jdo.option.Optimistic");
+        properties.remove("datanucleus.flush.mode");
+        return properties;
+    }
+
     public Properties getDataNucleusProperties() {
         return coreConfigurationService.loadDatanucleusConfig();
     }

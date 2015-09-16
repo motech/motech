@@ -83,6 +83,11 @@ public abstract class BasePersistenceService {
         valueGetter.updateRecordFields(recordInstance, instance);
 
         for (Field field : entity.getFields()) {
+            // we don't generate version field for trash and history
+            if (field.isVersionField()) {
+                continue;
+            }
+
             Object value = valueGetter.getValue(field, instance, recordInstance, type, objectReferenceRepository);
 
             if (null != value) {

@@ -136,9 +136,11 @@ public class FieldRecord {
     }
 
     public MetadataDto getMetadata(String key) {
-        for (MetadataDto meta : metadata) {
-            if (StringUtils.equals(key, meta.getKey())) {
-                return meta;
+        if (metadata != null) {
+            for (MetadataDto meta : metadata) {
+                if (StringUtils.equals(key, meta.getKey())) {
+                    return meta;
+                }
             }
         }
         return null;
