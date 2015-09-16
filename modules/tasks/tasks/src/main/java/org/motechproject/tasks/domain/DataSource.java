@@ -27,6 +27,7 @@ import java.util.Objects;
 public class DataSource extends TaskConfigStep {
     private static final long serialVersionUID = 6652124746431496660L;
 
+    @Field
     private String providerName;
     private Long providerId;
     private Long objectId;

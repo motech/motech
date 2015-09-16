@@ -3,9 +3,11 @@ package org.motechproject.security.domain;
 import org.joda.time.DateTime;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.security.constants.PermissionNames;
 
+import javax.jdo.annotations.Unique;
 import java.util.Locale;
 
 /**
@@ -14,10 +16,22 @@ import java.util.Locale;
 @Entity
 @Access(value = SecurityMode.PERMISSIONS, members = {PermissionNames.MANAGE_USER_PERMISSION})
 public class PasswordRecovery {
+
+    @Field(required = true)
+    @Unique
     private String token;
+
+    @Field(required = true)
+    @Unique
     private String username;
+
+    @Field
     private String email;
+
+    @Field
     private DateTime expirationDate;
+
+    @Field
     private Locale locale;
 
     public String getToken() {
