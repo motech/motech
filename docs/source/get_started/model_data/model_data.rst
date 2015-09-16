@@ -1016,7 +1016,7 @@ Record versioning and optimistic locking
 DDE entities support versioning of records. A version will be automatically increased after each update. This feature is
 useful when other user or other thread is working with the same record. When user performs update but record has been changed
 before this update an optimistic exception will be thrown. To enable versioning for the entity developer can extend **MdsVersionedEntity**
-or can use the @Version annotation. The following example shows how to use annotation.
+or can use the @Version annotation. The following example shows how to use the annotation.
 
 .. code-block:: java
 
