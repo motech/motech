@@ -32,8 +32,8 @@ Install and Configure Dependencies
 
 		.. code-block:: bash
 
+			sudo service tomcat7 stop
 			sudo chown -R tomcat7:tomcat7 /var/lib/tomcat7/ /usr/share/tomcat7/
-			sudo service tomcat7 restart
 
 
 	#. Configure ActiveMQ
@@ -49,20 +49,15 @@ Install and Configure Dependencies
 			sudo service activemq restart
 
 
-
 Deploy MOTECH .war file
 -----------------------
 
-We have to deploy the latest MOTECH release from our Nexus repository. The following code uses curl to download motech-platform-server v 0.25.1 to the tomcat webapps folder so it will automatically deploy.
-
-	This tutorial was written for v.0.26 which hasn't been released. Please check the `Nexus Server`_ for more recent releases.
-
-	.. _Nexus Server: http://nexus.motechproject.org/content/repositories/releases/org/motechproject/motech-platform-server/
+We have to deploy the latest MOTECH release from our Nexus repository. The following code uses curl to download the latest released version of the motech-platform-server to the tomcat webapps folder so it will automatically deploy. Once downloaded, we start tomcat7
 
 .. code-block:: bash
 
-	sudo curl -L http://nexus.motechproject.org/service/local/artifact/maven/redirect?r=releases&g=org.motechproject&a=motech-platform-server&v=LATEST&e=war -o motech-platform-server.war
-
+	sudo curl -L "http://nexus.motechproject.org/service/local/artifact/maven/redirect?r=releases&g=org.motechproject&a=motech-platform-server&v=RELEASE&e=war" -o /var/lib/tomcat7/webapps/motech-platform-server.war
+	sudo service tomcat7 start
 
 Navigate to http://localhost:8080/motech-platform-server
 

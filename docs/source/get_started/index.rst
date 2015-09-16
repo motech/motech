@@ -10,6 +10,7 @@ As the platform matures, most of the features below will be usable by implemente
     :titlesonly:
 
     installing
+    motech_first-run_experience
     config
     model_data/model_data
     messaging

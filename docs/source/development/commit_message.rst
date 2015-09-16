@@ -27,5 +27,3 @@ Here is an example of a MOTECH commit message:
     Disables pillreminder, message-campaign and scheduletracking modules
     from main pom.xml as they've moved to a new repo on github -
     https://github.com/motech/platform-campaigns
-
-    Change-Id: I5964249887160c868fa9598c413aebb93a49fa32

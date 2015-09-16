@@ -10,6 +10,7 @@ import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.contract.TriggerEventRequest;
 
+import javax.jdo.annotations.Unique;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -22,6 +23,7 @@ import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
  */
 @Entity(maxFetchDepth = 2)
 @Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
+@Unique(name = "MODULENAME_VERSION", members = {"moduleName", "moduleVersion"})
 public class Channel {
 
     @Field
@@ -35,10 +37,10 @@ public class Channel {
     @Field
     private String description;
 
-    @Field
+    @Field(required = true)
     private String displayName;
 
-    @Field
+    @Field(required = true)
     private String moduleName;
 
     @Field

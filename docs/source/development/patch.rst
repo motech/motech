@@ -2,94 +2,38 @@
 Developing and Submitting a Patch
 =================================
 
-We use a web-based code review system called `Gerrit <https://code.google.com/p/gerrit/>`_. Using this system, anyone can comment on a proposed change before it is merged to our Git repository. It's pretty easy to use; the instructions below will get you started.
+We use GitHub to manage our source code. MOTECH org members are able to create branches and commit changes to the MOTECH code repositories. Community members utilize the `fork and pull GitHub workflow <https://help.github.com/articles/using-pull-requests/>`_.
 
-Create a Gerrit Account
-=======================
-1. Navigate to http://review.motechproject.org/
-2. Click sign in on top-right
-3. Select Open ID provider (only **Ubuntu One** and **Yahoo!** accounts are permitted at the moment)
-4. Select user name
-5. Upload your SSH public key
+Community Member Development Workflow
+=====================================
+This is the most straightforward way to submit a patch as a community member. Note that GitHub allows you to submit only one pull request per branch at a time. If you wish to work on multiple features at once, it's best to create a branch for each feature and create a pull request from that branch to our repository.
 
-Configuring Your Git Client to Use Gerrit
-=========================================
-
-Follow these steps once for each :doc:`MOTECH code repository <repositories>` that you clone.
- 
-1. Get source code
-
-    .. code-block:: bash
-
-        git clone ssh://<userid>@review.motechproject.org:29418/motech
-
-2. Set up review branch
-
-    .. code-block:: bash
-
-        cd motech
-        git config remote.origin.push refs/heads/*:refs/for/*
-
-3. Install change-id generation hook
-
-    .. code-block:: bash
-
-        scp -p -P 29418 <userid>@review.motechproject.org:hooks/commit-msg .git/hooks/
-
-Development Workflow
-====================
-    
-1. Checkout to feature branch
+#. Fork the :doc:`MOTECH repository <repositories>` you wish to develop
+#. Clone your fork on your development machine
+#. Checkout a new feature branch
 
     .. code-block:: bash
 
         git checkout -b newfeature
 
-2. Make changes/test/multiple commits
-3. When ready to submit changes: update master, squash commits and merge feature branch
+#. Make changes/test/multiple commits
+#. When ready to submit changes: update master, squash commits and merge the feature branch
 
     .. code-block:: bash
 
         git checkout master && git pull --rebase
         git merge --squash newfeature
-        git gui 
+        git gui
 
-4. Edit commit message using the proper :doc:`commit message format <commit_message>`
-5. Push changes
+#. Edit commit message using the proper :doc:`commit message format <commit_message>`
+#. Push changes
 
     .. code-block:: bash
 
         git push origin
+#. Submit a pull request
 
-Submitting Changes (Patch Set) to Incorporate Review Comments
-=============================================================
+Submitting Changes to Incorporate Review Comments
+=================================================
 
-If you've received some code review feedback and you'd like to make some changes, follow the steps below to add your changes as a new "patch set" to the existing Gerrit code review.
-
-1. Checkout patch from gerrit change:
-    a. Navigate to http://review.motechproject.org/#/c/<change id>/
-    b. Copy pull url under patch set section and run
-2. Make changes
-3. Copy change ID from Gerrit (top section in Gerrit change page)
-4. Amend change ID in commit message
-5. `Squash commits <http://gerrit.googlecode.com/svn-history/r6114/documentation/2.1.7/error-squash-commits-first.html>`_
-6. Push changes
-
-Pushing to Remote Branches (Not for Review)
-===========================================
-This practice enables developers to share in-progress feature work with others without actually submitting the changes for review.
-
-1. Use branch namespace dev
-
-    .. code-block:: bash
-
-        git checkout -b dev/newfeature
-        git add . && git commit -m "message"
-        git push -u origin dev/newfeature:dev/newfeature
-
-2. Once done with feature, squash commits and merge with master. Submit for review as mentioned above.
-
-Additional Information
-======================
-* http://review.motechproject.org/Documentation/user-upload.html
-* http://review.motechproject.org/Documentation/user-changeid.html
+Our team will review your pull request in GitHub. If you received feedback during this process, GitHub allows you to add commits to your pull request. Just commit your changes and the pull request will automatically update.

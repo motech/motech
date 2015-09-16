@@ -184,14 +184,16 @@ public class PollingHttpClient {
                     response = httpClient.execute(httpUriRequest);
 
                     if (responseNotFound(response, expectedErrorCode)) {
-                        LOGGER.warn("Response not found. Thread stopped for 2 seconds.");
-                        if (response != null) {
-                            LOGGER.warn("Response status: {}", response.getStatusLine().getStatusCode());
+                        if (response == null) {
+                            LOGGER.warn("Response not found. Thread stopped for 2 seconds.");
+                        } else {
+                            LOGGER.warn("Wrong response status: {}. Thread stopped for 2 seconds",
+                                    response.getStatusLine().getStatusCode());
                         }
                         Thread.sleep(2 * MILLIS_PER_SEC);
                     }
                 } catch (IOException e) {
-                    LOGGER.error(e.getMessage(), e);
+                    LOGGER.error("Error while executing request. Stopping thread for 2 seconds", e);
                     Thread.sleep(2 * MILLIS_PER_SEC);
                 }
 

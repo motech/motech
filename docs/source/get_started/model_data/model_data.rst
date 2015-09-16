@@ -1326,6 +1326,7 @@ The data browsing settings allow to control several data browser UI options for 
 - The ordering of the entity fields
 - The fields to display on the UI by default
 - Allow filtering by chosen field values (only available for some types)
+- Change UI representation for relationship type fields.
 
 The automatically generated fields are not displayable by default, but all other fields are. The display order is determined
 based on the order in which they were added. No fields will be marked filterable by default.
@@ -1396,7 +1397,34 @@ The following code presents the usage of the two annotations:
     @UIDisplayable(position = 1)
     private String description;
 
+Changing the UI representation of relationship type fields through annotation
+#############################################################################
+The way relationship type fields are displayed can be changed through the **@UIRepresentation** annotation. This annotation
+can be placed on a method which takes no arguments and returns String. The **@UIRepresentation** annotation works only when
+placed on supported method.
 
+.. note::
+
+    Use the **@UIRepresentation** annotation only on method for an entity.
+
+By default, the toString method of an entity would be used to get the display value. You can customize this
+with the **@UIRepresentation** annotation.
+
+
+The following code presents the usage of the annotation
+
+.. code-block:: java
+
+    @Field
+    private String externalId;
+
+    @Field
+    private String name;
+
+    @UIRepresentation
+    public String displayValue() {
+            return "Sample Display Value";
+    }
 
 ############
 The REST API

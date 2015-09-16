@@ -1,6 +1,7 @@
 package org.motechproject.mds.domain;
 
 import org.joda.time.DateTime;
+import org.motechproject.mds.util.Constants;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -13,7 +14,7 @@ import javax.jdo.annotations.Unique;
 /**
  * The object used for locking schema change access.
  */
-@PersistenceCapable(identityType = IdentityType.DATASTORE)
+@PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = Constants.Util.TRUE)
 public class SchemaChangeLock {
 
     public static final long LOCK_ID = 1L;

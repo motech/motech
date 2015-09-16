@@ -40,14 +40,12 @@ Option 2 - Manual Process
 
     VERSION={version}
 
-    USERNAME={username}
-
 2. Create branches for the release (one for each repo):
 
     .. code-block:: bash
 
-        mvn release:branch -!DbranchName=0.$VERSION.X -Dscm.connection=scm:git:ssh://$USERNAME@review.motechproject.org:29418/motech -Dscm.developerConnection=scm:git:ssh://$USERNAME@review.motechproject.org:29418/motech
-        mvn release:branch -!DbranchName=0.$VERSION.X -Dscm.connection=scm:git:ssh://$USERNAME@review.motechproject.org:29418/modules -Dscm.developerConnection=scm:git:ssh://$USERNAME@review.motechproject.org:29418/modules
+        mvn release:branch -!DbranchName=0.$VERSION.X -Dscm.connection=scm:git:git@github.com:motech/motech.git -Dscm.developerConnection=scm:git:git@github.com:motech/motech.git
+        mvn release:branch -!DbranchName=0.$VERSION.X -Dscm.connection=scm:git:git@github.com:motech/modules.git -Dscm.developerConnection=scm:git:git@github.com:motech/modules.git
 
 3. In the Jenkins UI, create CI jobs for the new branches. List of jobs:
 

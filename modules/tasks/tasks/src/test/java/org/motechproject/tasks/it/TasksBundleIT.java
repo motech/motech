@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -56,7 +56,7 @@ public class TasksBundleIT extends BasePaxIT {
 
     @Override
     protected Collection<String> getAdditionalTestDependencies() {
-        return asList("org.motechproject:motech-tasks-test-bundle");
+        return singletonList("org.motechproject:motech-tasks-test-bundle");
     }
 
     @Test

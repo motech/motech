@@ -6,8 +6,8 @@ Code Review Workflow and Checklist
 Principles
 ##########
 
-In general, we aim to have all code reviewed prior to submission, with very few – hopefully rare – exceptions
-Please be conscientious about turning around reviews quickly – investing in good code review karma will pay off when it comes time for you to solicit reviews from your peers
+In general, we aim to have all code reviewed prior to submission, with very few – hopefully rare – exceptions.
+Please be conscientious about turning around reviews quickly. Investing in good code review karma will pay off when it comes time for you to solicit reviews from your peers.
 
 #####################################
 Exceptions to Code Review Requirement
@@ -19,12 +19,12 @@ Urgent fix for a build break. Unless the fix is completely trivial, please remem
 Workflow
 ########
 
-#. **Write code:** Follow the development workflow described :doc:`here <patch>` to develop code changes and submit for review
-#. **Choose code reviewers:** Add your chosen code reviewers as reviewers in Gerrit. For most changes, one reviewer should be sufficient; if your change is complex and/or represents core platform functionality, it is ideal to involve more than one reviewer. If a particular individual has significant expertise in the code you are changing, it’s a good practice to include that person as a revewier. If not, it's a great practice to choose someone from a different organization to review your code, in order to facilitate cross-pollination of ideas across the project.
+#. **Write code:** Follow the development workflow described :doc:`here <patch>` to develop code changes and submit a pull request for review
+#. **Choose code reviewers:** Add your chosen code reviewers as reviewers to your pull request. For most changes, one reviewer should be sufficient; if your change is complex and/or represents core platform functionality, it is ideal to involve more than one reviewer. If a particular individual has significant expertise in the code you are changing, it’s a good practice to include that person as a revewier. If not, it's a great practice to choose someone from a different organization to review your code, in order to facilitate cross-pollination of ideas across the project.
 #. **Wait for reviews to come in:** Code reviewers should attempt to provide comments within 2 business days – in the case of time-sensitive fixes, reviews should be turned around faster. (TIP: If you aren’t seeing email notifications for code reviews assigned to you, check your junk mail folder.)
-#. **Address feedback:** It should be possible to address most code review feedback prior to submission. If changes are non-trivial, create a new patch and send it out for re-review as described :doc:`here <patch>`.
-#. **Track any future work identified:** For larger issues that are flagged during code review, discuss with the reviewer whether the feedback should block submission. If not, open a new Trello card to track the suggestion for a later code change.
-#. **Submit:** Once reviewers have signed off, submit change. Gerrit has a button that allows you to merge directly from the site.
+#. **Address feedback:** It should be possible to address most code review feedback prior to merging. If changes are non-trivial, create a new pull request and send it out for re-review as described :doc:`here <patch>`.
+#. **Track any future work identified:** For larger issues that are flagged during code review, discuss with the reviewer whether the feedback should block merging. If not, open a new Jira ticket to track the suggestion for a later code change.
+#. **Merge:** Once reviewers have signed off, they'll merge the pull request. If this is the only feature for that branch, it is best to delete the branch after the code is merged.
 
 #########
 Checklist
