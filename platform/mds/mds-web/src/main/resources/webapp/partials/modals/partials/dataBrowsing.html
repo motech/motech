@@ -51,7 +51,7 @@
                     </div>
                     <div class="panel-body scroll-container">
                         <div class="container-space" tabindex="0" connected-list-target="browsingDisplayed" connect-with="browsing" droppable="true" on-content-change="onDisplayedChange">
-                            <div class="container-item" connect-with="browsing" item-index="{{$index}}" connected-list-target-item  ng-repeat="field in browsingDisplayed">
+                            <div class="container-item" connect-with="browsing" item-index="{{$index}}" connected-list-target-item  ng-repeat="field in browsingDisplayed track by $index">
                                 {{field.basic.displayName}}
                             </div>
                         </div>

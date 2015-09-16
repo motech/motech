@@ -45,7 +45,7 @@
             <input class="form-control input-xlarge-fluid" id="field-tooltip-{{$index}}" type="text" ng-model="field.basic.tooltip" mds-auto-save-field-change mds-field-id="{{field.id}}">
         </div>
     </div>
-    <div class="form-group">
+    <div class="form-group" ng-hide="field.type.typeClass === 'java.util.Collection' || field.type.typeClass === 'java.lang.Boolean'">
         <label class="col-md-2 col-sm-3 control-label">
             {{msg('mds.form.label.placeholder')}}
         </label>
