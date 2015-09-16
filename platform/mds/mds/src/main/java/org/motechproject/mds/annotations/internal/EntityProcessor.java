@@ -171,7 +171,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
         if (StringUtils.isNotBlank(versionField)) {
             for (FieldDto fieldDto : fields) {
                 if (fieldDto.getBasic().getName().equals(versionField)) {
-                    fieldDto.addMetadata(new MetadataDto(Constants.MetadataKeys.VERSION_FIELD, "true"));
+                    fieldDto.addMetadata(new MetadataDto(Constants.MetadataKeys.VERSION_FIELD, Constants.Util.TRUE));
                 }
             }
         }

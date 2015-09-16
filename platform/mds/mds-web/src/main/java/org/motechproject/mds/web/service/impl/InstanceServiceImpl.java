@@ -736,7 +736,7 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     private void setTransactionVersion(Object instance, FieldRecord fieldRecord, boolean retainId, MetadataDto versionMetadata) {
-        if (versionMetadata != null && versionMetadata.getValue().equals("true") && retainId) {
+        if (versionMetadata != null && Constants.Util.TRUE.equals(versionMetadata.getValue()) && retainId) {
             StateManagerUtil.setTransactionVersion(instance, fieldRecord.getValue(), fieldRecord.getName());
         }
     }
@@ -1048,7 +1048,7 @@ public class InstanceServiceImpl implements InstanceService {
                 // which would cause NullPointerException when just .equals() on null value
                 && !Objects.equals(fieldOldValue, parsedValue)) {
             // Skip for version field
-            if (versionMetadata != null && versionMetadata.getValue().equals("true")) {
+            if (versionMetadata != null && Constants.Util.TRUE.equals(versionMetadata.getValue())) {
                 return;
             }
             throw new FieldReadOnlyException(instance.getClass().getName(), fieldRecord.getName());

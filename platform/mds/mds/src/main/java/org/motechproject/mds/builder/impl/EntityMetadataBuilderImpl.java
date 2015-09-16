@@ -188,7 +188,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             VersionMetadata vmd = cmd.newVersionMetadata();
             vmd.setColumn(versionAnnotation.column());
             vmd.setStrategy(versionAnnotation.strategy());
-            if (versionAnnotation.extensions().length == 0 || !versionAnnotation.extensions()[0].key().equals("field-name")) {
+            if (versionAnnotation.extensions().length == 0 || !"field-name".equals(versionAnnotation.extensions()[0].key())) {
                 throw new MdsException(String.format("Cannot create metadata fo %s. Extension not found in @Version annotation.", cmd.getName()));
             }
             Extension extension = versionAnnotation.extensions()[0];

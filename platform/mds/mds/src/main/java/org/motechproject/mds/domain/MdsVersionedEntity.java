@@ -6,7 +6,6 @@ import org.motechproject.mds.annotations.NonEditable;
 
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.Version;
@@ -32,11 +31,6 @@ public abstract class MdsVersionedEntity extends MdsEntity {
     }
 
     public void setInstanceVersion(Long instanceVersion) {
-        this.instanceVersion = instanceVersion;
-    }
-
-    @NotPersistent
-    public void someNewValue(Long instanceVersion) {
         this.instanceVersion = instanceVersion;
     }
 
