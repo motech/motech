@@ -18,7 +18,7 @@
                     return;
                 }
 
-                var elem = angular.element(element), k, rows, activity, message, date;
+                var elem = angular.element(element), k, rows, activity, message, date, stackTraceElement;
 
                 elem.jqGrid({
                     url: '../tasks/api/activity/' + scope.taskId,
@@ -44,7 +44,12 @@
                         index: 'date',
                         sortable: false,
                         width: 80
-                    }],
+                    }, {
+                       name: 'stackTraceElement',
+                       index: 'stackTraceElement',
+                       sortable: false,
+                       hidden: true
+                   }],
                     pager: '#' + attrs.taskHistoryGrid,
                     viewrecords: true,
                     gridComplete: function () {
@@ -70,7 +75,6 @@
                         for (k = 0; k < rows.length; k+=1) {
                             activity = $("#taskHistoryTable").getCell(rows[k],"activityType").toLowerCase();
                             message = $("#taskHistoryTable").getCell(rows[k],"message");
-                            date = $("#taskHistoryTable").getCell(rows[k],"date");
                             if (activity !== undefined) {
                                 if (activity === 'success') {
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-ok.png" class="recent-activity-task-img"/>','ok',{ },'');
@@ -80,7 +84,16 @@
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-exclamation.png" class="recent-activity-task-img"/>','ok',{ },'');
                                 }
                             }
-                            if (message !== undefined) {
+
+                            stackTraceElement = $("#taskHistoryTable").getCell(rows[k],"stackTraceElement");
+                            if (message !== undefined && activity === 'error' && stackTraceElement !== undefined && stackTraceElement !== null) {
+                                $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',
+                                    '<p class="wrap-paragraph">' + scope.msg(message) +
+                                    '&nbsp;&nbsp;<span class="label label-danger pointer" data-toggle="collapse" data-target="#stackTraceElement' + k + '">' +
+                                    scope.msg('task.button.showStackTrace') + '</span></p>' +
+                                    '<pre id="stackTraceElement' + k + '" class="collapse">' + stackTraceElement + '</pre>'
+                                    ,'ok',{ },'');
+                            } else if (message !== undefined) {
                                 $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',scope.msg(message),'ok',{ },'');
                             }
                         }
