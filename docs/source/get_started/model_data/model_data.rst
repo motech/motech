@@ -1013,10 +1013,10 @@ Once the service instance is obtained, the only thing left to do is to just call
 Record versioning and optimistic locking
 ########################################
 
-DDE entities supports versioning of records. Version will be automatically increased after each update. This feature is
-useful when other user or other thread are working with the same record. When user perform update but record has been changed
-before this update optimistic exception will be thrown. To enable versioning for the entity developer can extend **MdsVersionedEntity**
-or can use @Version annotation. The following example shows how use annotation.
+DDE entities support versioning of records. A version will be automatically increased after each update. This feature is
+useful when other user or other thread is working with the same record. When user performs update but record has been changed
+before this update an optimistic exception will be thrown. To enable versioning for the entity developer can extend **MdsVersionedEntity**
+or can use the @Version annotation. The following example shows how to use annotation.
 
 .. code-block:: java
 
