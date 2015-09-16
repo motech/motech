@@ -2,10 +2,10 @@ package org.motechproject.mds.test.domain.cascadedelete;
 
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.domain.MdsEntity;
+import org.motechproject.mds.domain.MdsVersionedEntity;
 
 @Entity
-public class City extends MdsEntity {
+public class City extends MdsVersionedEntity {
 
     @Field
     private String name;

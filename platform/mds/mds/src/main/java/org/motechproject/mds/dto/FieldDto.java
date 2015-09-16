@@ -6,6 +6,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.motechproject.mds.util.Constants;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -207,6 +208,16 @@ public class FieldDto {
     public String getSettingsValueAsString(String name) {
         SettingDto setting = getSetting(name);
         return setting == null ? null : setting.getValueAsString();
+    }
+
+    public boolean isVersionField() {
+        MetadataDto md = getMetadata(Constants.MetadataKeys.VERSION_FIELD);
+        String metadataValue = md == null ? null : md.getValue();
+        if (StringUtils.isNotBlank(metadataValue)) {
+            return new Boolean(metadataValue);
+        }
+
+        return false;
     }
 
     public List<SettingDto> getSettings() {

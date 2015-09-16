@@ -32,27 +32,4 @@
         <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_NEVER" />
     </bean>
 
-    <bean id="mdsSqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
-        <constructor-arg>
-            <bean factory-bean="mdsConfig" factory-method="getDataNucleusProperties" />
-        </constructor-arg>
-    </bean>
-
-    <bean id="persistenceManagerFactoryBean" class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean">
-        <property name="jdoPropertyMap" ref="mdsSqlProperties"/>
-    </bean>
-
-    <bean id="persistenceManagerFactory" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">
-        <property name="targetPersistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
-        <property name="allowCreate" value="false"/>
-    </bean>
-
-    <bean id="mdsJdoDialect" class="org.motechproject.mds.jdo.MdsJdoDialect">
-        <constructor-arg value="#{persistenceManagerFactory.getConnectionFactory()}"/>
-    </bean>
-
-    <bean id="transactionManager" class="org.motechproject.mds.jdo.MdsTransactionManager">
-        <property name="persistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
-        <property name="jdoDialect" ref="mdsJdoDialect"/>
-    </bean>
 </beans>

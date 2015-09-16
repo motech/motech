@@ -325,7 +325,11 @@ public class Entity {
     }
 
     public boolean isSubClassOfMdsEntity () {
-        return MdsEntity.class.getName().equalsIgnoreCase(getSuperClass());
+        return MdsEntity.class.getName().equalsIgnoreCase(getSuperClass()) || MdsVersionedEntity.class.getName().equalsIgnoreCase(getSuperClass());
+    }
+
+    public boolean isSubClassOfMdsVersionedEntity () {
+        return MdsVersionedEntity.class.getName().equalsIgnoreCase(getSuperClass());
     }
 
     public boolean isAbstractClass() {
@@ -355,7 +359,8 @@ public class Entity {
     @NotPersistent
     public boolean isBaseEntity() {
         return Object.class.getName().equalsIgnoreCase(getSuperClass()) ||
-                MdsEntity.class.getName().equalsIgnoreCase(getSuperClass());
+                MdsEntity.class.getName().equalsIgnoreCase(getSuperClass()) ||
+                MdsVersionedEntity.class.getName().equalsIgnoreCase(getSuperClass());
     }
 
     @NotPersistent

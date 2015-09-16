@@ -568,6 +568,16 @@ public class Field {
         }
     }
 
+    @NotPersistent
+    public boolean isVersionField() {
+        String metadataValue = getMetadataValue(Constants.MetadataKeys.VERSION_FIELD);
+        if (StringUtils.isNotBlank(metadataValue)) {
+            return new Boolean(metadataValue);
+        }
+
+        return false;
+    }
+
     private void updateSettings(List<SettingDto> settingsList) {
         if (settingsList != null) {
             for (SettingDto settingDto : settingsList) {

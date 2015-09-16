@@ -161,6 +161,12 @@ public class EntityBuilderImpl implements EntityBuilder {
         // create properties (add fields, getters and setters)
         for (Field field : entity.getFields()) {
             try {
+
+                // We skip version fields for trash and history
+                if (field.isVersionField() && type != EntityType.STANDARD) {
+                    continue;
+                }
+
                 String fieldName = field.getName();
                 CtField ctField;
 

@@ -331,7 +331,6 @@ public class MdsBundleIT extends BasePaxIT {
         assertEquals(INSTANCE_COUNT, service.retrieveAll().size());
     }
 
-
     private void verifyLookups(boolean usingLookupService) throws Exception{
         // if using lookup service set tot true then all data access
         // is done through the MdsLookupService
@@ -632,7 +631,6 @@ public class MdsBundleIT extends BasePaxIT {
         assertEquals("[1, 2, 3, 4, 0, 35]", comboboxField.getSetting(Constants.Settings.COMBOBOX_VALUES).getValue().toString());
     }
 
-
     private void verifyCsvImport() throws Exception {
         getLogger().info("Verifying CSV Import");
 
@@ -818,7 +816,7 @@ public class MdsBundleIT extends BasePaxIT {
         lookupFields = new ArrayList<>();
         lookupFields.add(new LookupFieldDto(null, "someString", LookupFieldType.VALUE,
                 Constants.Operators.MATCHES_CASE_INSENSITIVE));
-;       lookups.add(new LookupDto("With matches case insensitive", false, false, lookupFields, true, "matchesOperatorCI",
+        lookups.add(new LookupDto("With matches case insensitive", false, false, lookupFields, true, "matchesOperatorCI",
                 singletonList("someString")));
 
         entityService.addLookups(entityDto.getId(), lookups);
