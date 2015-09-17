@@ -1010,6 +1010,30 @@ Once the service instance is obtained, the only thing left to do is to just call
     Usually a module should provide a service layer between the end user and the data layer implemented by MDS.
     It is not required however and left to the implementer.
 
+Record versioning and optimistic locking
+########################################
+
+DDE entities support versioning of records. A version will be automatically increased after each update. This feature is
+useful when other user or other thread is working with the same record. When user performs update but record has been changed
+before this update an optimistic exception will be thrown. To enable versioning for the entity developer can extend **MdsVersionedEntity**
+or can use the @Version annotation. The following example shows how to use the annotation.
+
+.. code-block:: java
+
+    @Entity
+    @Version(strategy = VersionStrategy.VERSION_NUMBER, column = "version",
+        extensions={@Extension(vendorName = "datanucleus", key="field-name", value="version")})
+    public class VersionedEntity {
+
+        @Field
+        private Long version;
+    }
+
+.. note::
+
+    Very important with REST API is to expose version field.
+
+
 .. _MEDE:
 
 ##############################################
