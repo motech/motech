@@ -725,16 +725,21 @@
         workInProgress.setList(Entities);
 
         if (loadEntity) {
+            blockUI();
             $.ajax("../mds/entities/" + loadEntity).done(function (data) {
                 $scope.selectedEntity = data;
                 loadEntity = undefined;
+                unblockUI();
             });
         }
 
         if ($scope.$parent.selectedEntity) {
+            blockUI();
             $.ajax("../mds/entities/getEntity/" + $scope.$parent.selectedEntity.module + "/" + $scope.$parent.selectedEntity.name).done(function (data) {
                 $scope.selectedEntity = data;
                 $scope.$parent.selectedEntity = undefined;
+                $scope.selectedEntityChanged();
+                unblockUI();
             });
         }
 
@@ -2843,9 +2848,12 @@
         * the entity in situation in which the entity was selected from the entity list.
         */
         $scope.$watch('selectedEntity', function () {
-            blockUI();
+            $scope.selectedEntityChanged();
+        });
 
+        $scope.selectedEntityChanged = function() {
             if ($scope.selectedEntity && $scope.selectedEntity.id) {
+                blockUI();
                 workInProgress.setActualEntity(Entities, $scope.selectedEntity.id);
 
                 $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
@@ -2853,16 +2861,14 @@
                     setAdvancedSettings();
                     $scope.draft({});
                 });
-
                 unblockUI();
             } else {
                 workInProgress.setActualEntity(Entities, undefined);
 
                 delete $scope.fields;
                 delete $scope.advancedSettings;
-                unblockUI();
             }
-        });
+        };
 
         /**
         * Set an additional watcher for $scope.newField.type. Its role is to set name for created
