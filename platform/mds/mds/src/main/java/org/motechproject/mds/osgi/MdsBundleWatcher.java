@@ -1,5 +1,6 @@
 package org.motechproject.mds.osgi;
 
+import org.apache.commons.lang.time.StopWatch;
 import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
 import org.motechproject.commons.api.ThreadSuspender;
 import org.motechproject.mds.annotations.internal.EntityProcessorOutput;
@@ -77,8 +78,11 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         LOGGER.info("Scanning for MDS annotations");
         bundlesToRefresh = new ArrayList<>();
 
+        StopWatch stopWatch = new StopWatch();
+
         TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
 
+        stopWatch.start();
         tmpl.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -89,7 +93,13 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
                 schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - start annotation processing");
             }
         });
+        stopWatch.stop();
 
+        LOGGER.info("Annotation processing finished in {} ms", stopWatch.getTime());
+        LOGGER.info("Starting bundle refresh");
+
+        stopWatch.reset();
+        stopWatch.start();
         tmpl.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -104,6 +114,9 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
                 schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - start refreshing bundles");
             }
         });
+        stopWatch.stop();
+
+        LOGGER.info("Bundle refresh finished in {} ms", stopWatch.getTime());
 
         bundleContext.addBundleListener(this);
     }
