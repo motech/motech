@@ -10,6 +10,7 @@ This is the most straightforward way to submit a patch as a community member. No
 
 #. Fork the :doc:`MOTECH repository <repositories>` you wish to develop
 #. Clone your fork on your development machine
+#. `Add an upstream branch <https://help.github.com/articles/configuring-a-remote-for-a-fork/>`_ to your fork for easy syncing
 #. Checkout a new feature branch
 
     .. code-block:: bash
@@ -17,11 +18,14 @@ This is the most straightforward way to submit a patch as a community member. No
         git checkout -b newfeature
 
 #. Make changes/test/multiple commits
-#. When ready to submit changes: update master, squash commits and merge the feature branch
+#. When ready to submit changes: update master from upstream, squash commits and merge the feature branch
 
     .. code-block:: bash
 
-        git checkout master && git pull --rebase
+        git checkout master
+        git fetch upstream
+        git merge upstream/master
+        #This merge is optional because you can push your local branch to your fork and create a pull request from there
         git merge --squash newfeature
         git gui
 
@@ -31,7 +35,8 @@ This is the most straightforward way to submit a patch as a community member. No
     .. code-block:: bash
 
         git push origin
-#. Submit a pull request
+
+#. Submit a pull request from your fork to the motech repo.
 
 Submitting Changes to Incorporate Review Comments
 =================================================
