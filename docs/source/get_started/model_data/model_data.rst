@@ -770,22 +770,104 @@ The code below shows an example how to properly use many-to-many indexed list re
     }
 
 - **Eager/lazy loading**
-  By default loading an entity with relationship will load its related entities, but that behaviour can be configured through @Persistent(defaultFetchGroup = "true/false") annotation.
-  Please see the code below for an example.
+  By default loading an entity with relationship will load its related entities, but that behaviour can be configured
+  through @Persistent(defaultFetchGroup = "true/false") annotation. Please see the code below for an example.
 
-.. code-block:: java
+  .. code-block:: java
 
-    @Entity
-    public class Author {
-        @Field
-        private String name;
+      @Entity
+      public class Author {
 
-        @Field
-        @Persistent(defaultFetchGroup = "false")
-        private Set<Book> book;
+          @Field
+          private String name;
 
-        ...
-    }
+          @Field
+          @Persistent(defaultFetchGroup = "false")
+          private Set<Book> books;
+
+          ...
+      }
+
+  By defining class this way the set of books won't be fetched from the database unless it is explicitly said (e.g. by
+  calling :code:`getBooks()` method on object of the :code:`Author` class) to. This approach simplifies the queries sent
+  to the database and lower its overall usage.
+
+  Lets take a look at the following example using :code:`Subscriber` and :code:`Subscription` classes.
+
+  .. code-block:: java
+
+      @Entity()
+      public class Subscriber extends MdsEntity {
+
+          @Field
+          private Long callingNumber;
+
+          @Field
+          @Persistent(mappedBy = "subscriber")
+          private Set<Subscription> subscriptions;
+
+          ...
+
+      }
+
+  .. code-block:: java
+
+      @Entity
+      public class Subscription extends MdsEntity {
+
+          @Field
+          private String subscriptionId;
+
+          @Field
+          private Subscriber subscriber;
+
+          ...
+
+      }
+
+  With the default approach query responsible for fetching subscriptions will look like this
+
+  .. code-block:: sql
+
+      SELECT 'entity.class.name.Subscription' AS
+          NUCLEUS_TYPE,
+          A0.creationDate,
+          A0.creator,
+          A0.id,
+          A0.modificationDate,
+          A0.modifiedBy,
+          A0.owner,
+          A0.subscriber_id_OID,
+          A0.subscriptionId
+      FROM MOTECH_PLATFORM_DATA_SERVICES_TEST_BUNDLE_SUBSCRIPTION A0
+          WHERE EXISTS (
+              SELECT 'entity.class.name.Subscriber' AS
+                  NUCLEUS_TYPE,
+                  A0_SUB.id AS DN_APPID
+              FROM MOTECH_PLATFORM_DATA_SERVICES_TEST_BUNDLE_SUBSCRIBER A0_SUB
+                  WHERE A0.subscriber_id_OID = A0_SUB.id)
+
+
+  which gets simplified to
+
+  .. code-block:: sql
+
+      SELECT 'entity.class.name.Subscription' AS
+          NUCLEUS_TYPE,
+          A0.creationDate,
+          A0.creator,
+          A0.id,
+          A0.modificationDate,
+          A0.modifiedBy,
+          A0.owner,
+          A0.subscriber_id_OID,
+          A0.subscriptionId
+      FROM MOTECH_PLATFORM_DATA_SERVICES_TEST_BUNDLE_SUBSCRIPTION A0
+          WHERE A0.subscriber_id_OID = 1
+
+  if we remove :code:`Subscriptions` field from the default fetch group (by adding :code:`@Persistent(defaultFetchGroup = "false")
+  annotation to the :code:`Subscriptions` field. This query requires one table scan less and won't be sent to the
+  database unless explicitly ordered to.
 
 Using DataNucleus annotations
 #############################
