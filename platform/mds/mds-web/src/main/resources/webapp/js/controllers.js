@@ -113,7 +113,48 @@
         },
         loadEntity;
 
-    controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, Entities, MDSUtils) {
+    controllers.controller('MdsEmbeddedCtrl', function ($scope, MDSUtils) {
+        /**
+        * Return available values for combobox field.
+        *
+        * @param {Array} setting A array of field settings.
+        * @return {Array} A array of possible combobox values.
+        */
+        $scope.getComboboxValues = function (settings) {
+            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value, keys = [], key;
+            // Check the user supplied flag, if true return string set
+            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
+                return labelValues;
+            } else {
+                if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
+                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
+                    for(key in labelValues) {
+                        keys.push(key);
+                    }
+                    return keys;
+                } else {        // there is no colon, so we are dealing with a string set, not a map
+                    return labelValues;
+                }
+            }
+        };
+
+        $scope.getAndSplitComboboxValues = function (labelValues) {
+            var doublet, i, map = {};
+            for (i = 0; i < labelValues.length; i += 1) {
+                doublet = labelValues[i].split(":");
+                map[doublet[0]] = doublet[1];
+            }
+            return map;
+        };
+    });
+
+    controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, $controller, Entities, MDSUtils) {
+
+        angular.extend(this, $controller('MdsEmbeddedCtrl', {
+            $scope: $scope,
+            MDSUtils: MDSUtils
+        }));
+
         var schemaEditorPath = '/mds/{0}'.format($scope.AVAILABLE_TABS[1]);
 
         $scope.DATA_BROWSER = "dataBrowser";
@@ -559,30 +600,6 @@
             });
         };
 
-        /**
-        * Return available values for combobox field.
-        *
-        * @param {Array} setting A array of field settings.
-        * @return {Array} A array of possible combobox values.
-        */
-        $scope.getComboboxValues = function (settings) {
-            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value, keys = [], key;
-            // Check the user supplied flag, if true return string set
-            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
-                return labelValues;
-            } else {
-                if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
-                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
-                    for(key in labelValues) {
-                        keys.push(key);
-                    }
-                    return keys;
-                } else {        // there is no colon, so we are dealing with a string set, not a map
-                    return labelValues;
-                }
-            }
-        };
-
         $scope.getComboboxDisplayName = function (settings, value) {
             var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value;
             // Check the user supplied flag, if true return string set
@@ -596,15 +613,6 @@
                     return value;
                 }
             }
-        };
-
-        $scope.getAndSplitComboboxValues = function (labelValues) {
-            var doublet, i, map = {};
-            for (i = 0; i < labelValues.length; i += 1) {
-                doublet = labelValues[i].split(":");
-                map[doublet[0]] = doublet[1];
-            }
-            return map;
         };
     });
 

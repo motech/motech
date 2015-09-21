@@ -3213,4 +3213,23 @@
             }
         };
     });
+
+    directives.directive('embeddedMdsGrid', function($http, $templateCache, $compile) {
+        return function(scope, element, attrs) {
+            $http.get('../mds/resources/partials/embeddedMdsGrid.html', { cache: $templateCache }).success(function(response) {
+                var contents = element.html(response).contents();
+                $compile(contents)(scope);
+            });
+        };
+    });
+
+    directives.directive('embeddedMdsFilters', function($http, $templateCache, $compile) {
+        return function(scope, element, attrs) {
+            $http.get('../mds/resources/partials/embeddedMdsFilters.html', { cache: $templateCache }).success(function(response) {
+                var contents = element.html(response).contents();
+                $compile(contents)(scope);
+            });
+        };
+    });
+
 }());
