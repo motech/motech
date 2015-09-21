@@ -38,7 +38,7 @@ public class BundleTypeTest {
 
     @Test
     public void shouldRecognizeMdsBundle() {
-        when(bundle.getSymbolicName()).thenReturn(PlatformConstants.MDS_BUNDLE_PREFIX);
+        when(bundle.getSymbolicName()).thenReturn(PlatformConstants.MDS_BUNDLE_NAME);
         assertEquals(BundleType.MDS_BUNDLE, BundleType.forBundle(bundle));
     }
 
