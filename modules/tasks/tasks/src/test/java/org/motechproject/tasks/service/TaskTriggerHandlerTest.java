@@ -173,11 +173,7 @@ public class TaskTriggerHandlerTest {
         when(settingsFacade.getProperty("task.possible.errors")).thenReturn("5");
         when(dataProvider.getName()).thenReturn(TASK_DATA_PROVIDER_NAME);
 
-        taskActionExecutor = new TaskActionExecutor();
-        taskActionExecutor.setActivityService(taskActivityService);
-        taskActionExecutor.setEventRelay(eventRelay);
-        taskActionExecutor.setTaskService(taskService);
-
+        taskActionExecutor = new TaskActionExecutor(taskService, taskActivityService, eventRelay);
         handler = new TaskTriggerHandler(taskService, taskActivityService, registryService, eventRelay, taskActionExecutor, settingsFacade);
         handler.addDataProvider(dataProvider);
         handler.setBundleContext(null);

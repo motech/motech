@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import javax.jdo.Query;
@@ -80,21 +79,18 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    @Transactional
     public void registerChannel(ChannelRequest channelRequest) {
         LOGGER.info("Registering channel: {}", channelRequest.getModuleName());
         addOrUpdate(new Channel(channelRequest));
     }
 
     @Override
-    @Transactional
     public void unregisterChannel(String moduleName) {
         LOGGER.info("Unregistering Channel: {}", moduleName);
         delete(moduleName);
     }
 
     @Override
-    @Transactional
     public void registerChannel(final InputStream stream, String moduleName, String moduleVersion) {
         LOGGER.info("Registering channel: {}", moduleName);
 
@@ -115,7 +111,6 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    @Transactional
     public synchronized void addOrUpdate(final Channel channel) {
         Set<TaskError> errors = ChannelValidator.validate(channel);
 
@@ -149,7 +144,6 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    @Transactional
     public synchronized void delete(final String moduleName) {
 
         channelsDataService.doInTransaction(new TransactionCallbackWithoutResult() {
@@ -169,7 +163,6 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    @Transactional
     public List<Channel> getAllChannels() {
         return channelsDataService.executeQuery(new QueryExecution<List<Channel>>() {
             @Override
@@ -185,7 +178,6 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    @Transactional
     public Channel getChannel(final String moduleName) {
         List<String> symbolicNames = WebBundleUtil.getSymbolicNames(bundleContext);
 

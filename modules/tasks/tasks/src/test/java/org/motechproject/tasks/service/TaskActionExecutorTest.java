@@ -48,10 +48,7 @@ public class TaskActionExecutorTest {
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
 
-        TaskActionExecutor taskActionExecutor = new TaskActionExecutor();
-        taskActionExecutor.setActivityService(activityService);
-        taskActionExecutor.setEventRelay(eventRelay);
-        taskActionExecutor.setTaskService(taskService);
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
         taskActionExecutor.setBundleContext(bundleContext);
 
         taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
@@ -72,10 +69,7 @@ public class TaskActionExecutorTest {
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
 
-        TaskActionExecutor taskActionExecutor = new TaskActionExecutor();
-        taskActionExecutor.setActivityService(activityService);
-        taskActionExecutor.setEventRelay(eventRelay);
-        taskActionExecutor.setTaskService(taskService);
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
         taskActionExecutor.setBundleContext(bundleContext);
 
         taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
@@ -97,10 +91,7 @@ public class TaskActionExecutorTest {
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
 
-        TaskActionExecutor taskActionExecutor = new TaskActionExecutor();
-        taskActionExecutor.setActivityService(activityService);
-        taskActionExecutor.setEventRelay(eventRelay);
-        taskActionExecutor.setTaskService(taskService);
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
         taskActionExecutor.setBundleContext(bundleContext);
 
         taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
@@ -123,10 +114,7 @@ public class TaskActionExecutorTest {
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
 
-        TaskActionExecutor taskActionExecutor = new TaskActionExecutor();
-        taskActionExecutor.setActivityService(activityService);
-        taskActionExecutor.setEventRelay(eventRelay);
-        taskActionExecutor.setTaskService(taskService);
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
         taskActionExecutor.setBundleContext(bundleContext);
 
         taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
@@ -145,10 +133,7 @@ public class TaskActionExecutorTest {
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
 
-        TaskActionExecutor taskActionExecutor = new TaskActionExecutor();
-        taskActionExecutor.setActivityService(activityService);
-        taskActionExecutor.setEventRelay(eventRelay);
-        taskActionExecutor.setTaskService(taskService);
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
 
         taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
     }
@@ -164,10 +149,7 @@ public class TaskActionExecutorTest {
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
 
-        TaskActionExecutor taskActionExecutor = new TaskActionExecutor();
-        taskActionExecutor.setActivityService(activityService);
-        taskActionExecutor.setEventRelay(eventRelay);
-        taskActionExecutor.setTaskService(taskService);
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
 
         taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
     }
@@ -185,10 +167,7 @@ public class TaskActionExecutorTest {
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
 
-        TaskActionExecutor taskActionExecutor = new TaskActionExecutor();
-        taskActionExecutor.setActivityService(activityService);
-        taskActionExecutor.setEventRelay(eventRelay);
-        taskActionExecutor.setTaskService(taskService);
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
         taskActionExecutor.setBundleContext(bundleContext);
 
         taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));

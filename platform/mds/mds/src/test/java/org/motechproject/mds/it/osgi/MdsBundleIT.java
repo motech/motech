@@ -515,12 +515,7 @@ public class MdsBundleIT extends BasePaxIT {
                 NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
                 DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1, toEnum(loadedClass, "one"));
 
-        service.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                service.createOrUpdate(instance); // using createOrUpdate() to create
-            }
-        });
+        service.createOrUpdate(instance); // using createOrUpdate() to create
 
         service.doInTransaction(new TransactionCallbackWithoutResult() {
             @Override
@@ -923,7 +918,6 @@ public class MdsBundleIT extends BasePaxIT {
         assertEquals(boolField, PropertyUtils.getProperty(instance, "someBoolean"));
         assertEquals(stringField, PropertyUtils.getProperty(instance, "someString"));
         assertEquals(capitalizedStrField, PropertyUtil.safeGetProperty(instance, "CapitalName"));
-        assertEquals(listField, PropertyUtils.getProperty(instance, "someList"));
         assertEquals(dateTimeField, PropertyUtils.getProperty(instance, "someDateTime"));
         assertEquals(map, PropertyUtils.getProperty(instance, "someMap"));
         assertEquals(period, PropertyUtils.getProperty(instance, "somePeriod"));
@@ -934,8 +928,13 @@ public class MdsBundleIT extends BasePaxIT {
         assertEquals(intField, PropertyUtils.getProperty(instance, "someInt"));
         assertEquals(enumVal, PropertyUtils.getProperty(instance, "someEnum"));
 
-        // assert blob
         Long id = (Long) PropertyUtils.getProperty(instance, "id");
+
+        // assert combobox
+        Object comboboxValue = service.getDetachedField(id, "someList");
+        assertEquals(listField, comboboxValue);
+
+        // assert blob
         Object blobValue = service.getDetachedField(id, "someBlob");
         assertEquals(Arrays.toString(blob), Arrays.toString((Byte[]) blobValue));
     }

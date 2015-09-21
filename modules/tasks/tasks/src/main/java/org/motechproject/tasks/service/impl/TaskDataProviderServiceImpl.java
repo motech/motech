@@ -60,7 +60,6 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
     }
 
     @Override
-    @Transactional
     public void registerProvider(final String body) {
         byte[] bytes = body.getBytes(Charset.forName("UTF-8"));
         InputStream stream = new ByteArrayInputStream(bytes);
@@ -84,19 +83,16 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
     }
 
     @Override
-    @Transactional
     public TaskDataProvider getProvider(String name) {
         return dataProviderDataService.findByName(name);
     }
 
     @Override
-    @Transactional
     public TaskDataProvider getProviderById(Long providerId) {
         return dataProviderDataService.findById(providerId);
     }
 
     @Override
-    @Transactional
     public List<TaskDataProvider> getProviders() {
         return dataProviderDataService.retrieveAll();
     }
@@ -121,7 +117,6 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
     }
 
     @Override
-    @Transactional
     public void unregister(String providerName) {
         TaskDataProvider provider = dataProviderDataService.findByName(providerName);
         if (provider != null) {

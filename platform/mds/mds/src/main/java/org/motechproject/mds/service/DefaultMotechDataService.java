@@ -9,7 +9,6 @@ import org.motechproject.mds.ex.object.DetachedFieldFromTransientObjectException
 import org.motechproject.mds.ex.object.SecurityException;
 import org.motechproject.mds.ex.object.UpdateFromTransientException;
 import org.motechproject.mds.filter.Filters;
-import org.motechproject.mds.util.StateManagerUtil;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryParams;
@@ -20,6 +19,7 @@ import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.mds.util.StateManagerUtil;
 import org.motechproject.server.osgi.event.OsgiEventProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.jdo.JdoTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
@@ -177,7 +176,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
-    @Transactional(propagation = Propagation.MANDATORY)
+    @Transactional
     public T update(final T object) {
         validateCredentials(object);
         if (JDOHelper.getObjectState(object) == ObjectState.TRANSIENT) {
@@ -338,6 +337,12 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     public long count() {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
         return repository.count(securityRestriction);
+    }
+
+    @Override
+    @Transactional
+    public T getDetachedObject(T object) {
+        return repository.getDetachedObject(object);
     }
 
     @Override

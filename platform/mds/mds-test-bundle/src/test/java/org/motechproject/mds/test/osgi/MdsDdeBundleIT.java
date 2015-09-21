@@ -1,11 +1,6 @@
 package org.motechproject.mds.test.osgi;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.module.SimpleModule;
-import org.datanucleus.exceptions.NucleusOptimisticException;
-import org.datanucleus.state.StateManagerImpl;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -96,7 +91,6 @@ import org.motechproject.mds.test.service.setofenumandstring.MessageDataService;
 import org.motechproject.mds.test.service.transactions.DepartmentDataService;
 import org.motechproject.mds.test.service.transactions.EmployeeDataService;
 import org.motechproject.mds.test.service.transactions.OfficeService;
-import org.motechproject.mds.util.BlobDeserializer;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.StateManagerUtil;
@@ -108,6 +102,7 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.springframework.orm.jdo.JdoOptimisticLockingFailureException;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.util.CollectionUtils;
 
@@ -1699,89 +1694,119 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     @Test
     public void shouldAutomaticallyIncrementTheVersionInMdsVersionedEntityClass() throws InterruptedException {
-        TestMdsVersionedEntity record = testMdsVersionedEntityService.create( new TestMdsVersionedEntity("value_1"));
+        final TestMdsVersionedEntity record = testMdsVersionedEntityService.create(new TestMdsVersionedEntity("value_1"));
         assertEquals(new Long(1l), record.getInstanceVersion());
 
-        record.setStringField("value_2");
-        record = testMdsVersionedEntityService.update(record);
-        assertEquals(new Long(2l), record.getInstanceVersion());
+        TestMdsVersionedEntity recordFromDatabase = testMdsVersionedEntityService.doInTransaction(new TransactionCallback<TestMdsVersionedEntity>() {
+            @Override
+            public TestMdsVersionedEntity doInTransaction(TransactionStatus status) {
+                TestMdsVersionedEntity recordFromDatabase = testMdsVersionedEntityService.findById(record.getId());
+                recordFromDatabase.setStringField("value_2");
+                return testMdsVersionedEntityService.update(recordFromDatabase);
+            }
+        });
 
-        Thread simpleThread = new SimpleThread(testMdsVersionedEntityService, record.getId(), "stringField");
+        assertEquals(new Long(2l), recordFromDatabase.getInstanceVersion());
+
+        Thread simpleThread = new SimpleThread(testMdsVersionedEntityService, recordFromDatabase.getId(), "stringField");
+
         simpleThread.run();
         simpleThread.join();
 
-        record = testMdsVersionedEntityService.findById(record.getId());
-        assertEquals(new Long(3l), record.getInstanceVersion());
+        recordFromDatabase = testMdsVersionedEntityService.findById(record.getId());
+        assertEquals(new Long(3l), recordFromDatabase.getInstanceVersion());
     }
 
     @Test(expected = JdoOptimisticLockingFailureException.class)
     public void shouldUseInstanceVersioningFromMdsVersionedEntityClass() throws InterruptedException {
-        TestMdsVersionedEntity record = testMdsVersionedEntityService.create( new TestMdsVersionedEntity("name"));
-        TestMdsVersionedEntity recordFromDatabase = testMdsVersionedEntityService.findById(record.getId());
-        recordFromDatabase.setStringField("new_name");
+        final TestMdsVersionedEntity record = testMdsVersionedEntityService.create(new TestMdsVersionedEntity("name"));
 
-        try {
-            testMdsVersionedEntityService.update(recordFromDatabase);
-        } catch (Exception e) {
-            getLogger().error("Cannot update record of {} class", TestMdsEntity.class.getName());
-            fail();
-        }
+        final TestMdsVersionedEntity recordFromDatabase = testMdsVersionedEntityService.doInTransaction(new TransactionCallback<TestMdsVersionedEntity>() {
+            @Override
+            public TestMdsVersionedEntity doInTransaction(TransactionStatus status) {
+                TestMdsVersionedEntity recordFromDatabase = testMdsVersionedEntityService.findById(record.getId());
+                recordFromDatabase.setStringField("new_name");
+
+                try {
+                    recordFromDatabase = testMdsVersionedEntityService.update(recordFromDatabase);
+                    return testMdsVersionedEntityService.getDetachedObject(recordFromDatabase);
+                } catch (Exception e) {
+                    getLogger().error("Cannot update record of {} class", TestMdsEntity.class.getName());
+                    fail();
+                    return null;
+                }
+            }
+        });
 
         Thread simpleThread = new SimpleThread(testMdsVersionedEntityService, recordFromDatabase.getId(), "stringField");
-        recordFromDatabase = testMdsVersionedEntityService.findById(recordFromDatabase.getId());
 
         simpleThread.run();
         simpleThread.join();
 
         assertEquals("new_name", recordFromDatabase.getStringField());
+        assertEquals(new Long(2L), recordFromDatabase.getInstanceVersion());
 
         recordFromDatabase.setStringField("sample_name");
         recordFromDatabase.setCreator("Somebody");
-
         //should throw exception
         testMdsVersionedEntityService.update(recordFromDatabase);
     }
 
     @Test
     public void shouldAutomaticallyIncrementTheVersionInClassWithVersionAnnotation() throws InterruptedException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        SimpleClassWithVersioning record = simpleClassWithVersioningService.create( new SimpleClassWithVersioning("value_1"));
+        final SimpleClassWithVersioning record = simpleClassWithVersioningService.create(new SimpleClassWithVersioning("value_1"));
         assertEquals(new Long(1l), record.getVersion());
 
-        record.setStringField("value_2");
-        record = simpleClassWithVersioningService.update(record);
-        assertEquals(new Long(2l), record.getVersion());
+        SimpleClassWithVersioning recordFromDatabase = simpleClassWithVersioningService.doInTransaction(new TransactionCallback<SimpleClassWithVersioning>() {
+            @Override
+            public SimpleClassWithVersioning doInTransaction(TransactionStatus status) {
+                SimpleClassWithVersioning recordFromDatabase = simpleClassWithVersioningService.findById(record.getId());
+                recordFromDatabase.setStringField("value_2");
+                return simpleClassWithVersioningService.update(recordFromDatabase);
+            }
+        });
 
-        Thread simpleThread = new SimpleThread(simpleClassWithVersioningService, (Long) PropertyUtils.getProperty(record, "id"), "stringField");
+        assertEquals(new Long(2l), recordFromDatabase.getVersion());
+
+        Thread simpleThread = new SimpleThread(simpleClassWithVersioningService, recordFromDatabase.getId(), "stringField");
+
         simpleThread.run();
         simpleThread.join();
 
-        record = simpleClassWithVersioningService.findById((Long) PropertyUtils.getProperty(record, "id"));
-        assertEquals(new Long(3l), record.getVersion());
+        recordFromDatabase = simpleClassWithVersioningService.findById(record.getId());
+        assertEquals(new Long(3l), recordFromDatabase.getVersion());
     }
 
     @Test(expected = JdoOptimisticLockingFailureException.class)
     public void shouldUseInstanceVersioningFromClassWithVersionAnnotation() throws InterruptedException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        SimpleClassWithVersioning record = simpleClassWithVersioningService.create( new SimpleClassWithVersioning("name"));
-        SimpleClassWithVersioning recordFromDatabase = simpleClassWithVersioningService.findById((Long) PropertyUtils.getProperty(record, "id"));
-        recordFromDatabase.setStringField("new_name");
+        final SimpleClassWithVersioning record = simpleClassWithVersioningService.create(new SimpleClassWithVersioning("name"));
 
-        try {
-            simpleClassWithVersioningService.update(recordFromDatabase);
-        } catch (Exception e) {
-            getLogger().error("Cannot update record of {} class", SimpleClassWithVersioning.class.getName());
-            fail();
-        }
+        final SimpleClassWithVersioning recordFromDatabase = simpleClassWithVersioningService.doInTransaction(new TransactionCallback<SimpleClassWithVersioning>() {
+            @Override
+            public SimpleClassWithVersioning doInTransaction(TransactionStatus status) {
+                SimpleClassWithVersioning recordFromDatabase = simpleClassWithVersioningService.findById(record.getId());
+                recordFromDatabase.setStringField("new_name");
 
-        Thread simpleThread = new SimpleThread(simpleClassWithVersioningService, (Long) PropertyUtils.getProperty(record, "id"), "stringField");
-        recordFromDatabase = simpleClassWithVersioningService.findById((Long) PropertyUtils.getProperty(record, "id"));
+                try {
+                    recordFromDatabase = simpleClassWithVersioningService.update(recordFromDatabase);
+                    return simpleClassWithVersioningService.getDetachedObject(recordFromDatabase);
+                } catch (Exception e) {
+                    getLogger().error("Cannot update record of {} class", SimpleClassWithVersioning.class.getName());
+                    fail();
+                    return null;
+                }
+            }
+        });
+
+        Thread simpleThread = new SimpleThread(simpleClassWithVersioningService, recordFromDatabase.getId(), "stringField");
 
         simpleThread.run();
         simpleThread.join();
 
         assertEquals("new_name", recordFromDatabase.getStringField());
+        assertEquals(new Long(2L), recordFromDatabase.getVersion());
 
         recordFromDatabase.setStringField("sample_name");
-
         //should throw exception
         simpleClassWithVersioningService.update(recordFromDatabase);
     }
@@ -1789,23 +1814,30 @@ public class MdsDdeBundleIT extends BasePaxIT {
     //This test is for StateManagerUtil.class
     @Test(expected = JdoOptimisticLockingFailureException.class)
     public void shouldThrowOptimisticExceptionWithTransientObject() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        SimpleClassWithVersioning instance = new SimpleClassWithVersioning("version_1");
-        instance = simpleClassWithVersioningService.create(instance);
+        final SimpleClassWithVersioning instance = simpleClassWithVersioningService.create(new SimpleClassWithVersioning("version_1"));
 
-        SimpleClassWithVersioning recordFromDatabase1 = simpleClassWithVersioningService.findById((Long) PropertyUtils.getProperty(instance, "id"));
-        SimpleClassWithVersioning recordFromDatabase2 = simpleClassWithVersioningService.findById((Long) PropertyUtils.getProperty(instance, "id"));
+        SimpleClassWithVersioning recordFromDatabase2 = simpleClassWithVersioningService.findById(instance.getId());
+
+        simpleClassWithVersioningService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                SimpleClassWithVersioning recordFromDatabase1 = simpleClassWithVersioningService.findById(instance.getId());
+                recordFromDatabase1.setStringField("version_2");
+
+                try {
+                    simpleClassWithVersioningService.update(recordFromDatabase1);
+                } catch (Exception e) {
+                    getLogger().error("Cannot update record of {} class", SimpleClassWithVersioning.class.getName());
+                    fail();
+                }
+            }
+        });
 
         Set<String> fieldsToUpdate = new HashSet<>();
         fieldsToUpdate.add("stringField");
         fieldsToUpdate.add("version");
 
-        recordFromDatabase1.setStringField("version_2");
-        try {
-            simpleClassWithVersioningService.update(recordFromDatabase1);
-        } catch (Exception e) {
-            getLogger().error("Cannot update record of {} class", SimpleClassWithVersioning.class.getName());
-            fail();
-        }
+        assertEquals("version_1", recordFromDatabase2.getStringField());
 
         recordFromDatabase2.setStringField("version_3");
         simpleClassWithVersioningService.updateFromTransient(recordFromDatabase2, fieldsToUpdate);
@@ -1814,23 +1846,40 @@ public class MdsDdeBundleIT extends BasePaxIT {
     //This test is for StateManagerUtil.class
     @Test(expected = JdoOptimisticLockingFailureException.class)
     public void shouldSetProperTransactionVersion() throws Exception {
-        TestMdsVersionedEntity record1 = testMdsVersionedEntityService.create(new TestMdsVersionedEntity("value_1"));
-        final Long id = (Long) PropertyUtils.getProperty(record1, "id");
-        try {
-            record1.setStringField("value_2");
-            record1 = testMdsVersionedEntityService.update(record1);
-            record1.setStringField("value_3");
-            testMdsVersionedEntityService.update(record1);
-            TestMdsVersionedEntity record1FromDb = testMdsVersionedEntityService.findById(id);
-        } catch (Exception e) {
-            getLogger().error("Cannot update record of {} class", TestMdsVersionedEntity.class.getName());
-            fail();
-        }
+        final TestMdsVersionedEntity record1 = testMdsVersionedEntityService.create(new TestMdsVersionedEntity("value_1"));
+
+        testMdsVersionedEntityService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    TestMdsVersionedEntity recordToUpdate = testMdsVersionedEntityService.findById(record1.getId());
+                    recordToUpdate.setStringField("value_2");
+                    testMdsVersionedEntityService.update(recordToUpdate);
+                } catch (Exception e) {
+                    getLogger().error("Cannot update record of {} class", TestMdsVersionedEntity.class.getName());
+                    fail();
+                }
+            }
+        });
+
+        testMdsVersionedEntityService.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    TestMdsVersionedEntity recordToUpdate = testMdsVersionedEntityService.findById(record1.getId());
+                    recordToUpdate.setStringField("value_3");
+                    testMdsVersionedEntityService.update(recordToUpdate);
+                } catch (Exception e) {
+                    getLogger().error("Cannot update record of {} class", TestMdsVersionedEntity.class.getName());
+                    fail();
+                }
+            }
+        });
 
         testMdsVersionedEntityService.doInTransaction(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                TestMdsVersionedEntity instance = testMdsVersionedEntityService.findById(id);
+                TestMdsVersionedEntity instance = testMdsVersionedEntityService.findById(record1.getId());
                 instance.setStringField("value_4");
                 // we set older version
                 instance.setInstanceVersion(2l);

@@ -138,6 +138,14 @@ public interface MotechDataService<T> {
     long count();
 
     /**
+     * Returns detached copy of the given object
+     *
+     * @param object the object to be detached
+     * @return the detached copy of the given object
+     */
+    T getDetachedObject(T object);
+
+    /**
      * Makes instance persistent and retrieves field values from that persisted instance.
      *
      * @param id id of the instance

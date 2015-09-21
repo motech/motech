@@ -80,9 +80,7 @@ public class TaskControllerTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        taskActionExecutor = new TaskActionExecutor();
-        taskActionExecutor.setTaskService(taskService);
-
+        taskActionExecutor = new TaskActionExecutor(taskService, null, null);
         triggerHandler = new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, taskActionExecutor, null);
     }
 
