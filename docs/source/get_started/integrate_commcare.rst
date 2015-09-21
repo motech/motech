@@ -47,12 +47,12 @@ To add configuration you must use **Add configuration** button . After filling i
                 :alt: Commcare account settings
                 :align: center
 
-To verify the provided data, click the **Verify** button. THe Commcare module will send a test request to the CommCareHQ,
+To verify the provided data, click the **Verify** button. The Commcare module will send a test request to the CommCareHQ,
 attempting to authenticate with the credentials you have provided. If everything works OK, you will be notified about
 successful connection. If there were any problems connecting to the CommCareHQ, an error will be displayed and you will
 not be able to work with the Commcare module, until valid credentials are provided.
 
-You can provide more then one account configuration. Only one of the supplied configuration can be the default. The
+You can provide more than one account configuration. Only one of the supplied configuration can be the default. The
 default configuration will be selected whenever you do not specify a particular configuration. To mark the configuration
 as default you must save the configuration(if it is new) and use **Make default** button.
 
@@ -105,10 +105,10 @@ from there. The Commcare module can only set up the rules, but cannot disable th
                 :alt: CommCareHQ data forwarding
                 :align: center
 
-As you can see the provided url :code:`http://demo.motechproject.org/module/commcare/forms/` doesn't have specified configuration.
-So if the Commcare module will receive data then the default configuration will be used. To work with more then one
-configuration you will must use for example such url :code:`http://demo.motechproject.org/module/commcare/forms/myProjectConf`.
-The URL with the configuration name should be automatically added by the Commcare module.
+As you can see the provided URL :code:`http://demo.motechproject.org/module/commcare/forms/` doesn't have specified configuration.
+So if the Commcare module receives data, the default configuration will be used. To work with more than one configuration
+you will have to use for example such URL :code:`http://demo.motecproject.org/module/commcare/forms/myProjectConf`. The URL
+with the configuration name should be automatically added by the Commcare module.
 
 ############
 Fired events
@@ -129,7 +129,7 @@ Fired events
 |org.motechproject.commcare.api.formstub                 |Fired, when a new form has been received on CommCareHQ.                   |
 |                                                        |Contains only IDs of affected form and cases.                             |
 +--------------------------------------------------------+--------------------------------------------------------------------------+
-|org.motechproject.commcare.api.receivedStockTransaction |Fired for each stock transaction object which was fetched by querying the |
+|org.motechproject.commcare.api.receivedStockTransaction |Fired, when a stock transaction object was fetched by querying the        |
 |                                                        |CommCareHQ stock ledger.                                                  |
 +--------------------------------------------------------+--------------------------------------------------------------------------+
 
@@ -148,4 +148,4 @@ The Commcare module will automatically update the Tasks triggers and data source
 is received. For each form and for each case type, a separate trigger and data source object will be created. This means
 that you can trigger tasks, when a certain form or case is received and use its fields in an action you select. The fields
 of forms and cases are based on the schema received from CommCareHQ. The Commcare module also provides an action for
-querying the CommcareHQ stock ledger for the stock transactions and trigger for retrieving the stock transactions.
+querying the CommCareHQ stock ledger for the stock transactions and a trigger for retrieving the stock transactions.
