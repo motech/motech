@@ -8,6 +8,7 @@ import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.service.EmailRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,33 +21,38 @@ public class EmailAuditServiceImpl implements EmailAuditService {
 
     private EmailRecordService emailRecordService;
 
-    @Autowired
-    public EmailAuditServiceImpl(EmailRecordService emailRecordService) {
-        this.emailRecordService = emailRecordService;
-    }
-
     @Override
+    @Transactional
     public EmailRecord findById(long id) {
         return emailRecordService.retrieve("id", id);
     }
 
     @Override
+    @Transactional
     public List<EmailRecord> findAllEmailRecords() {
         return emailRecordService.retrieveAll();
     }
 
     @Override
+    @Transactional
     public void delete(EmailRecord emailRecord) {
         emailRecordService.delete(emailRecord);
     }
 
     @Override
+    @Transactional
     public List<EmailRecord> findEmailRecords(EmailRecordSearchCriteria criteria) {
         return emailRecordService.executeQuery(new RecordSearch(criteria));
     }
 
     @Override
+    @Transactional
     public long countEmailRecords(EmailRecordSearchCriteria criteria) {
         return emailRecordService.executeQuery(new CountSearch(criteria));
+    }
+
+    @Autowired
+    public void setEmailRecordService(EmailRecordService emailRecordService) {
+        this.emailRecordService = emailRecordService;
     }
 }

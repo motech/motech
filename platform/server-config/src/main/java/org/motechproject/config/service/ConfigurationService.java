@@ -4,7 +4,7 @@ import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.domain.ModulePropertiesRecord;
 import org.motechproject.server.config.domain.MotechSettings;
-import org.motechproject.server.config.domain.SettingsRecord;
+import org.motechproject.server.config.domain.SettingsRecordDto;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.Resource;
 
@@ -315,14 +315,14 @@ public interface ConfigurationService {
      *
      * @return default settings
      */
-    SettingsRecord loadDefaultConfig();
+    SettingsRecordDto loadDefaultConfig();
 
     /**
      * Loads current MOTECH configuration
      *
      * @return current MOTECH settings
      */
-    SettingsRecord loadConfig();
+    SettingsRecordDto loadConfig();
 
     /**
      * Checks whether set MOTECH configuration requires the configuraton files to be present

@@ -19,6 +19,7 @@ import org.motechproject.config.service.BundlePropertiesService;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
+import org.motechproject.server.config.domain.SettingsRecordDto;
 import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.SettingService;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -126,6 +128,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     @Caching(cacheable = {@Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName") })
     public MotechSettings getPlatformSettings() {
         if (settingService == null) {
@@ -133,10 +136,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
         SettingsRecord settings = getSettings();
         settings.mergeWithDefaults(defaultConfig);
-        return settings;
+        return settings.toDto();
     }
 
     @Override
+    @Transactional
     public void savePlatformSettings(Properties settings) {
         SettingsRecord dbSettings = getSettings();
 
@@ -158,11 +162,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public void savePlatformSettings(MotechSettings settings) {
         savePlatformSettings(settings.asProperties());
     }
 
     @Override
+    @Transactional
     public void setPlatformSetting(final String key, final String value) {
         SettingsRecord dbSettings = getSettings();
 
@@ -180,6 +186,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public FileInputStream createZipWithConfigFiles(String propertyFile, String fileName) throws IOException {
 
         File file = new File(propertyFile);
@@ -234,6 +241,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
      * @param defaultProperties the default properties of the bundle
      * @return properties for given bundle and file name
      */
+    @Transactional
     public Properties getBundleProperties(String bundle, String filename, Properties defaultProperties) throws IOException {
         ModulePropertiesRecord record;
         Properties properties;
@@ -249,6 +257,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public Map<String, Properties> getAllBundleProperties(String bundle, Map<String, Properties> allDefaultProperties) throws IOException {
         Map<String, Properties> allProperties = new HashMap<>();
 
@@ -285,6 +294,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public void addOrUpdateProperties(String bundle, String version, String filename, Properties newProperties, Properties defaultProperties) throws IOException {
         Properties toPersist;
         if (ConfigSource.UI.equals(configSource)) {
@@ -307,6 +317,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public void updatePropertiesAfterReinstallation(String bundle, String version, String filename, Properties defaultProperties, Properties newProperties) throws IOException {
         if (!registersProperties(bundle, filename)) {
             addOrUpdateProperties(bundle, version, filename, newProperties, defaultProperties);
@@ -381,6 +392,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public void processExistingConfigs(List<File> files) {
         if (bundlePropertiesService == null) {
             LOGGER.warn("Unable to retrieve bundle properties ");
@@ -422,6 +434,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public void addOrUpdate(File file) {
         if (isPlatformCoreConfigFile(file)) {
             savePlatformSettings(loadConfig());
@@ -450,6 +463,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public void saveRawConfig(String bundle, String version, String filename, InputStream rawData) throws IOException {
         if (ConfigSource.UI.equals(configSource)) {
             Properties p = new Properties();
@@ -467,6 +481,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public List<String> retrieveRegisteredBundleNames() {
         List<String> bundleNames = new ArrayList<>();
         if (ConfigSource.UI.equals(configSource)) {
@@ -493,6 +508,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public List<String> listRawConfigNames(String bundle) {
         List<String> fileNames = new ArrayList<>();
         if (ConfigSource.UI.equals(configSource)) {
@@ -522,6 +538,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public InputStream getRawConfig(String bundle, String filename, Resource resource) throws IOException {
         if (ConfigSource.UI.equals(configSource)) {
             ModulePropertiesRecord rec = getBundlePropertiesRecord(bundle, filename);
@@ -545,6 +562,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public boolean registersProperties(String bundle, String filename) {
         this.loadBootstrapConfig();
         if (ConfigSource.UI.equals(configSource)) {
@@ -566,6 +584,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public void deleteByBundle(String bundle) {
         List<ModulePropertiesRecord> records = bundlePropertiesService.findByBundle(bundle);
         for (ModulePropertiesRecord record : records) {
@@ -574,6 +593,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public void deleteByBundleAndFileName(String bundle, String filename) {
         List<ModulePropertiesRecord> records = bundlePropertiesService.findByBundleAndFileName(bundle, filename);
         for (ModulePropertiesRecord record : records) {
@@ -582,6 +602,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public boolean rawConfigExists(String bundle, String filename) {
         if (ConfigSource.UI.equals(configSource)) {
             ModulePropertiesRecord rec = getBundlePropertiesRecord(bundle, filename);
@@ -609,18 +630,20 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public SettingsRecord loadDefaultConfig() {
+    @Transactional
+    public SettingsRecordDto loadDefaultConfig() {
         SettingsRecord settingsRecord = null;
         org.springframework.core.io.Resource defaultSettings = resourceLoader.getResource("classpath:motech-settings.properties");
         if (defaultSettings != null) {
             settingsRecord = loadSettingsFromStream(defaultSettings);
         }
 
-        return settingsRecord;
+        return settingsRecord != null ? settingsRecord.toDto() : null;
     }
 
     @Override
-    public SettingsRecord loadConfig() {
+    @Transactional
+    public SettingsRecordDto loadConfig() {
         return configLoader.loadMotechSettings();
     }
 
@@ -661,7 +684,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
      * @param records the records to be searched
      * @return list of file names
      */
-    List<String> getFileNameList(List<ModulePropertiesRecord> records) {
+    @Transactional
+    public List<String> getFileNameList(List<ModulePropertiesRecord> records) {
         if (records.isEmpty()) {
             return null;
         }
@@ -674,6 +698,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public void addOrUpdateBundleRecord(ModulePropertiesRecord record) {
         ModulePropertiesRecord rec = getBundlePropertiesRecord(record.getBundle(), record.getFilename());
         if (rec == null) {
@@ -685,6 +710,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public void addOrUpdateBundleRecords(List<ModulePropertiesRecord> records) {
         for (ModulePropertiesRecord rec : records) {
             addOrUpdateBundleRecord(rec);
@@ -692,12 +718,14 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     public void removeBundleRecords(List<ModulePropertiesRecord> records) {
         for (ModulePropertiesRecord rec : records) {
             bundlePropertiesService.delete(rec);
         }
     }
 
+    @Transactional
     public SettingsRecord getSettings() {
         SettingsRecord settingRecord = settingService.retrieve("id", 1);
         return (settingRecord == null ? new SettingsRecord() :
@@ -709,6 +737,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
      *
      * @param settingsRecord  the settings to be add
      */
+    @Transactional
     public void addOrUpdateSettings(SettingsRecord settingsRecord) {
         SettingsRecord record = settingService.retrieve("id", 1);
         if (record == null) {
@@ -729,7 +758,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
      * @param filename  the name of the file
      * @return the {@code ModulePropertiesRecord} matching given information
      */
-    ModulePropertiesRecord getBundlePropertiesRecord(String bundle, String filename) {
+    @Transactional
+    public ModulePropertiesRecord getBundlePropertiesRecord(String bundle, String filename) {
         List<ModulePropertiesRecord>  records = (bundlePropertiesService == null) ? null :
                 bundlePropertiesService.findByBundleAndFileName(bundle, filename);
         if (records != null) {

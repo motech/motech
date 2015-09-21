@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.event.CrudEventType;
+import org.motechproject.mds.ex.UpdateFromTransientException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.object.SecurityException;
 import org.motechproject.mds.filter.Filters;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.jdo.JdoTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
@@ -33,6 +35,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
+import javax.jdo.JDOHelper;
+import javax.jdo.ObjectState;
 import javax.jdo.Query;
 import java.util.Arrays;
 import java.util.Collection;
@@ -172,9 +176,12 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.MANDATORY)
     public T update(final T object) {
         validateCredentials(object);
+        if (JDOHelper.getObjectState(object) == ObjectState.TRANSIENT) {
+            throw new UpdateFromTransientException();
+        }
 
         updateModificationData(object);
         final T updatedInstance = repository.update(object);

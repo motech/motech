@@ -15,6 +15,7 @@ import org.motechproject.config.domain.ModulePropertiesRecord;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.config.service.BundlePropertiesService;
 import org.motechproject.server.config.domain.SettingsRecord;
+import org.motechproject.server.config.domain.SettingsRecordDto;
 import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.SettingService;
 import org.motechproject.testing.utils.FileHelper;
@@ -121,7 +122,7 @@ public class ConfigurationServiceTest {
     public void shouldUpdatePlatformCoreConfigWhileProcessingExistingConfigs() {
         List<SettingsRecord> dbRecords = new ArrayList<>();
         dbRecords.add(new SettingsRecord());
-        when(configLoader.loadMotechSettings()).thenReturn(new SettingsRecord());
+        when(configLoader.loadMotechSettings()).thenReturn(new SettingsRecordDto());
         when(settingService.retrieve("id", 1)).thenReturn(null);
 
         File file = FileHelper.getResourceFile("config/motech-settings.properties");
@@ -188,7 +189,7 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldUpdateMotechSettings() {
-        when(configLoader.loadMotechSettings()).thenReturn(new SettingsRecord());
+        when(configLoader.loadMotechSettings()).thenReturn(new SettingsRecordDto());
         final SettingsRecord settingsRecord = new SettingsRecord();
         when(settingService.retrieve("id", 1)).thenReturn(settingsRecord);
         configurationService.addOrUpdate(FileHelper.getResourceFile("config/motech-settings.properties"));
