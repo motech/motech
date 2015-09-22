@@ -1912,6 +1912,8 @@
                     $scope.selectedEntity.modified = false;
                     $scope.selectedEntity.outdated = false;
                     $scope.fields = Entities.getFields(pre, successCallback);
+                    $scope.newField = {};
+                    $scope.tryToCreate = false;
                 },
                 errorCallback = function (data) {
                     $scope.setErrorFromData(data);
