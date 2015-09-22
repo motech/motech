@@ -107,6 +107,10 @@ public abstract class BaseInstanceIT extends BaseIT {
         return entity;
     }
 
+    protected AllEntities getAllEntities() {
+        return allEntities;
+    }
+
     /**
      * Use this to get a handle for the generated instance service.
      *

@@ -3,7 +3,6 @@ package org.motechproject.mds.service.impl;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.builder.MDSConstructor;
-import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
@@ -16,6 +15,7 @@ import org.motechproject.mds.domain.MdsVersionedEntity;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.domain.TypeValidation;
+import org.motechproject.mds.domain.UIDisplayFieldComparator;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.DraftData;
 import org.motechproject.mds.dto.DraftResult;
@@ -42,6 +42,7 @@ import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.filter.FilterValue;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.helper.ComboboxDataMigrationHelper;
+import org.motechproject.mds.helper.ComboboxValueHelper;
 import org.motechproject.mds.helper.EntityHelper;
 import org.motechproject.mds.helper.FieldHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -55,7 +56,6 @@ import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.SecurityMode;
-import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.validation.EntityValidator;
 import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.osgi.framework.BundleContext;
@@ -70,7 +70,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -104,6 +103,7 @@ public class EntityServiceImpl implements EntityService {
     private AllEntityDrafts allEntityDrafts;
     private AllEntityAudits allEntityAudits;
     private MDSConstructor mdsConstructor;
+    private ComboboxValueHelper cbValueHelper;
 
     private BundleContext bundleContext;
     private EntityValidator entityValidator;
@@ -116,50 +116,6 @@ public class EntityServiceImpl implements EntityService {
         assertEntityExists(entity, className);
 
         return entity.getEntityVersion();
-    }
-
-    @Override
-    @Transactional
-    public void updateComboboxValues(Long entityId, Map<String, Collection> fieldValuesToUpdate) {
-        Entity entity = allEntities.retrieveById(entityId);
-        assertEntityExists(entity, entityId);
-
-        boolean doEntityUpdate = false;
-
-        for (Map.Entry<String, Collection> fieldUpdate : fieldValuesToUpdate.entrySet()) {
-            Field field = entity.getField(fieldUpdate.getKey());
-            if (field == null) {
-                throw new FieldNotFoundException(entity.getClassName(), fieldUpdate.getKey());
-            }
-
-            ComboboxHolder cbHolder = new ComboboxHolder(field);
-            List<String> cbValues = new ArrayList<>(Arrays.asList(cbHolder.getValues()));
-            boolean updateField = false;
-
-            for (Object peristedVal : fieldUpdate.getValue()) {
-                String peristedValAsStr = peristedVal.toString();
-                peristedValAsStr = peristedValAsStr.trim().replaceAll(" ", "%20");
-                if (!cbValues.contains(peristedValAsStr)) {
-                    cbValues.add(peristedValAsStr);
-                    updateField = true;
-                }
-            }
-
-            if (updateField) {
-                FieldSetting cbValuesSetting = field.getSettingByName(Constants.Settings.COMBOBOX_VALUES);
-                if (cbValuesSetting == null) {
-                    throw new IllegalArgumentException("Field " + field.getName() + " is not a comboBox");
-                }
-
-                cbValuesSetting.setValue(TypeHelper.buildStringFromList(cbValues));
-
-                doEntityUpdate = true;
-            }
-        }
-
-        if (doEntityUpdate) {
-            allEntities.updateAndIncrementVersion(entity);
-        }
     }
 
     @Override
@@ -902,13 +858,19 @@ public class EntityServiceImpl implements EntityService {
     @Override
     @Transactional
     public List<FieldDto> getFields(Long entityId) {
-        return getFields(entityId, true);
+        return getFields(entityId, true, true);
     }
 
     @Override
     @Transactional
     public List<FieldDto> getEntityFields(Long entityId) {
-        return getFields(entityId, false);
+        return getFields(entityId, false, false);
+    }
+
+    @Override
+    @Transactional
+    public List<FieldDto> getEntityFields(Long entityId, boolean forUI) {
+        return getFields(entityId, false, forUI);
     }
 
     @Override
@@ -917,14 +879,13 @@ public class EntityServiceImpl implements EntityService {
         Entity entity = allEntities.retrieveByClassName(className);
         assertEntityExists(entity, className);
 
-        List<FieldDto> fieldDtos = new ArrayList<>();
-        for (Field field : entity.getFields()) {
-            fieldDtos.add(field.toDto());
-        }
-        return fieldDtos;
+        List<Field> fields = new ArrayList<>(entity.getFields());
+        Collections.sort(fields, new UIDisplayFieldComparator());
+
+        return toFieldDtos(entity, fields, true);
     }
 
-    private List<FieldDto> getFields(Long entityId, boolean forDraft) {
+    private List<FieldDto> getFields(Long entityId, boolean forDraft, boolean forUi) {
         Entity entity = (forDraft) ? getEntityDraft(entityId) : allEntities.retrieveById(entityId);
 
         assertEntityExists(entity, entityId);
@@ -934,38 +895,15 @@ public class EntityServiceImpl implements EntityService {
 
         // for data browser purposes, we sort the fields by their ui display order
         if (!forDraft) {
-            Collections.sort(fields, new Comparator<Field>() {
-                @Override
-                public int compare(Field o1, Field o2) {
-                    // check if one is displayable and the other isn't
-                    if (o1.isUIDisplayable() && !o2.isUIDisplayable()) {
-                        return -1;
-                    } else if (!o1.isUIDisplayable() && o2.isUIDisplayable()) {
-                        return 1;
-                    }
-
-                    // compare positions
-                    Long position1 = o1.getUIDisplayPosition();
-                    Long position2 = o2.getUIDisplayPosition();
-
-                    if (position1 == null) {
-                        return -1;
-                    } else if (position2 == null) {
-                        return 1;
-                    } else {
-                        return (position1 > position2) ? 1 : -1;
-                    }
-                }
-            });
+            Collections.sort(fields, new UIDisplayFieldComparator());
         }
 
-        List<FieldDto> fieldDtos = new ArrayList<>();
-        for (Field field : fields) {
-            fieldDtos.add(field.toDto());
-        }
+        // if it's for the UI, then we add combobox options
+        List<FieldDto> fieldDtos = toFieldDtos(entity, fields, forUi);
 
         return addNonPersistentFieldsData(fieldDtos, entity);
     }
+
 
     @Override
     @Transactional
@@ -1297,6 +1235,21 @@ public class EntityServiceImpl implements EntityService {
         allEntities.update(entity);
     }
 
+    @Override
+    @Transactional
+    public List<String> getAllComboboxValues(Long entityId, String fieldName) {
+        Entity entity = allEntities.retrieveById(entityId);
+        assertEntityExists(entity, entityId);
+
+        Field field = entity.getField(fieldName);
+        if (field == null) {
+            throw new FieldNotFoundException(entity.getClassName(), fieldName);
+        }
+
+        return cbValueHelper.getAllValuesForCombobox(entity, field);
+    }
+
+
     private void assertEntityExists(Entity entity, Long entityId) {
         if (entity == null) {
             throw new EntityNotFoundException(entityId);
@@ -1392,6 +1345,23 @@ public class EntityServiceImpl implements EntityService {
         }
     }
 
+    private List<FieldDto> toFieldDtos(Entity entity, List<Field> fields, boolean fetchComboboxOptions) {
+        List<FieldDto> fieldDtos = new ArrayList<>();
+
+        for (Field field : fields) {
+            FieldDto fieldDto = field.toDto();
+
+            if (fetchComboboxOptions && field.getType().isCombobox()) {
+                List<String> values = cbValueHelper.getAllValuesForCombobox(entity, field);
+                fieldDto.setSetting(Constants.Settings.COMBOBOX_VALUES, values);
+            }
+
+            fieldDtos.add(fieldDto);
+        }
+
+        return fieldDtos;
+    }
+
     @Autowired
     public void setAllEntities(AllEntities allEntities) {
         this.allEntities = allEntities;
@@ -1430,5 +1400,10 @@ public class EntityServiceImpl implements EntityService {
     @Autowired
     public void setComboboxDataMigrationHelper(ComboboxDataMigrationHelper comboboxDataMigrationHelper) {
         this.comboboxDataMigrationHelper = comboboxDataMigrationHelper;
+    }
+
+    @Autowired
+    public void setCbValueHelper(ComboboxValueHelper cbValueHelper) {
+        this.cbValueHelper = cbValueHelper;
     }
 }

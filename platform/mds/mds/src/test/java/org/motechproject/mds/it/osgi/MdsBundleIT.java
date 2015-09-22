@@ -624,11 +624,7 @@ public class MdsBundleIT extends BasePaxIT {
                 DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 3, toEnum(objClass, "two"));
         service.update(retrieved);
 
-        FieldDto comboboxField = entityService.findEntityFieldByName(entityId, "someList");
-
-        // If this test fails be sure to check if any unexpected values were added to comboboxField earlier.
-        // At the moment all values remain in comboboxField, even after the object instances that added them were deleted.
-        assertEquals("[1, 2, 3, 4, 0, 35]", comboboxField.getSetting(Constants.Settings.COMBOBOX_VALUES).getValue().toString());
+        assertEquals("[1, 2, 3, 4, 0, 35]", entityService.getAllComboboxValues(entityId, "someList"));
     }
 
     private void verifyCsvImport() throws Exception {

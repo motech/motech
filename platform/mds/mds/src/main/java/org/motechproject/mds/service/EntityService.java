@@ -452,22 +452,14 @@ public interface EntityService {
     Long getCurrentSchemaVersion(String entityClassName);
 
     /**
-     * Updates available combobox choices. Allows users to extend available values, for comboboxes that
-     * allow user-supplied values.
-     *
-     * @param entityId id of an entity
-     * @param fieldValuesToUpdate a map of the field names and values to add to these fields
-     * @throws org.motechproject.mds.ex.entity.EntityNotFoundException when entity of the given id does not exist
-     * @throws org.motechproject.mds.ex.field.FieldNotFoundException when field of the passed name does not exist
-     * @throws java.lang.IllegalArgumentException when field passed to the method is not of the combobox type
-     */
-    void updateComboboxValues(Long entityId, Map<String, Collection> fieldValuesToUpdate);
-
-    /**
      * Increments the version of the entity.
      *
      * @param entityId id of an entity
      * @throws org.motechproject.mds.ex.entity.EntityNotFoundException when entity of the given id does not exist
      */
     void incrementVersion(Long entityId);
+
+    List<FieldDto> getEntityFields(Long entityId, boolean forUI);
+
+    List<String> getAllComboboxValues(Long entityId, String fieldName);
 }

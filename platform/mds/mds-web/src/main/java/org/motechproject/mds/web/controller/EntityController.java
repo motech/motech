@@ -217,8 +217,8 @@ public class EntityController extends MdsController {
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
     public List<FieldDto> getEntityFields(@PathVariable Long entityId) {
-        return entityService.getEntityFields(entityId);
-    }
+        return entityService.getEntityFields(entityId, true);
+}
 
     @RequestMapping(value = "/entities/entityFieldsByClassName", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
