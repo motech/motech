@@ -1196,12 +1196,20 @@ MDS supports multiple types
 |           |java.util.Date          |datetime       |timestamp with      |A type representing the java.util.Date.     |
 |           |                        |               |time zone           |Only available for DDE.                     |
 +-----------+------------------------+---------------+--------------------+--------------------------------------------+
-|Date       |org.joda.time.LocalDate |date           |date                |A type representing the LocalDate class     |
+|           |org.joda.time.LocalDate |date           |date                |A type representing the LocalDate class     |
 |           |                        |               |                    |from the Joda library. Does not represent   |
+|           |                        |               |                    |time, only date. Only available for DDE.    |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
+|           |org.joda.time.DateTime  |datetime       |timestamp with      |A type representing the DateTime class      |
+|           |                        |               |time zone           |from the Joda library. Only available for   |
+|           |                        |               |                    |DDE.                                        |
++-----------+------------------------+---------------+--------------------+--------------------------------------------+
+|Date       |java.time.LocalDate     |date           |date                |A type representing the LocalDate class     |
+|           |                        |               |                    |from Java8 time API. Does not represent     |
 |           |                        |               |                    |time, only date.                            |
 +-----------+------------------------+---------------+--------------------+--------------------------------------------+
-|DateTime   |org.joda.time.DateTime  |datetime       |timestamp with      |A type representing the DateTime class      |
-|           |                        |               |time zone           |from the Joda library.                      |
+|DateTime   |java.time.LocalDateTime |datetime       |timestamp with      |A type representing the LocalDateTime class |
+|           |                        |               |time zone           |from Java8 time API.                        |
 +-----------+------------------------+---------------+--------------------+--------------------------------------------+
 |Decimal    |java.lang.Double        |double         |double precision    |A decimal field number.                     |
 +-----------+------------------------+---------------+--------------------+--------------------------------------------+

@@ -998,7 +998,8 @@
         */
         $scope.filterableTypes = [
             "mds.field.combobox", "mds.field.boolean", "mds.field.date",
-            "mds.field.datetime", "mds.field.localDate"
+            "mds.field.datetime", "mds.field.localDate", "mds.field.date8",
+            "mds.field.datetime8"
         ];
 
         $scope.relationshipClasses = [{
@@ -3957,7 +3958,7 @@
         };
 
         $scope.isDateField = function(field) {
-            return field.type.typeClass === "org.joda.time.LocalDate";
+            return field.type.typeClass === "org.joda.time.LocalDate" || field.type.typeClass === "java.time.LocalDate";
         };
 
         $scope.isTextArea = function (field) {
@@ -4072,7 +4073,7 @@
             var type = field.type.typeClass;
             if (type === "java.lang.Boolean") {
                 return ['ALL', 'YES', 'NO'];
-            } else if (type === "java.util.Date" || type === "org.joda.time.DateTime" || type === "org.joda.time.LocalDate") {
+            } else if (type === "java.util.Date" || type === "org.joda.time.DateTime" || type === "org.joda.time.LocalDate" || type === "java.time.LocalDateTime" || type === "java.time.LocalDate") {
                 return ['ALL', 'TODAY', 'PAST_7_DAYS', 'THIS_MONTH', 'THIS_YEAR'];
             } else if (type === "java.util.Collection") {
                 return  ['ALL'].concat($scope.getComboboxValues(field.settings));
@@ -4127,9 +4128,9 @@
                 value = "boolean";
             } else if (field.className === "java.util.Collection") {
                 value = "list";
-            } else if (field.className === "org.joda.time.DateTime" || field.className === "java.util.Date") {
+            } else if (field.className === "org.joda.time.DateTime" || field.className === "java.util.Date" || field.className === "java.time.LocalDateTime") {
                 value = "datetime";
-            } else if (field.className === "org.joda.time.LocalDate") {
+            } else if (field.className === "org.joda.time.LocalDate" || field.className === "java.time.LocalDate") {
                 value = "date";
             }
 
@@ -4265,7 +4266,7 @@
         };
 
         $scope.typeIsDate = function (type) {
-            return type === "java.util.Date" || type === "org.joda.time.DateTime" || type === "org.joda.time.LocalDate";
+            return type === "java.util.Date" || type === "org.joda.time.DateTime" || type === "org.joda.time.LocalDate" || type === "java.time.LocalDateTime" || type === "java.time.LocalDate";
         };
 
         $scope.typeIsTime = function (type) {

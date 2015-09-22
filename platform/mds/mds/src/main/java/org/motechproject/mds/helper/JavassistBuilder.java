@@ -15,6 +15,7 @@ import org.motechproject.mds.util.JavassistUtil;
 import org.motechproject.mds.util.MemberUtil;
 import org.motechproject.mds.util.TypeHelper;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -109,6 +110,17 @@ public final class JavassistBuilder {
     public static CtField.Initializer createInitializer(String typeClass, String defaultValueAsString) {
         Object defaultValue = TypeHelper.parse(defaultValueAsString, typeClass);
 
+        //The distinction made in order to avoid the cyclomatic complexity error
+        if(typeClass.startsWith("java")) {
+            return createInitializerForJavaPlatformPackages(typeClass, defaultValue, defaultValueAsString);
+        } else {
+            return createInitializerForThirdPartyPackages(typeClass, defaultValue);
+        }
+    }
+
+    private static CtField.Initializer createInitializerForJavaPlatformPackages(String typeClass,
+                                                                                Object defaultValue,
+                                                                                String defaultValueAsString) {
         switch (typeClass) {
             case "java.lang.Integer":
             case "java.lang.Double":
@@ -116,22 +128,36 @@ public final class JavassistBuilder {
                 return createSimpleInitializer(typeClass, defaultValue);
             case "java.lang.String":
                 return CtField.Initializer.constant((String) defaultValue);
+            case "java.time.LocalDateTime":
+                LocalDateTime localDateTime = (LocalDateTime) defaultValue;
+                return createJavaTimeInitializer(typeClass, localDateTime.toString());
+            case "java.util.Date":
+                Date date = (Date) defaultValue;
+                return createSimpleInitializer(typeClass, date.getTime() + "l"); // explicit long
+            case "java.time.LocalDate":
+                java.time.LocalDate javaLocalDate = (java.time.LocalDate) defaultValue;
+                return createJavaTimeInitializer(typeClass, javaLocalDate.toString());
+            case "java.util.Locale":
+                return createLocaleInitializer(defaultValueAsString);
+            default:
+                return null;
+        }
+    }
+
+    private static CtField.Initializer createInitializerForThirdPartyPackages(String typeClass,
+                                                                              Object defaultValue) {
+        switch (typeClass) {
             case "org.motechproject.commons.date.model.Time":
                 Time time = (Time) defaultValue;
                 return createSimpleInitializer(typeClass, '"' + time.timeStr() + '"');
             case "org.joda.time.DateTime":
                 DateTime dateTime = (DateTime) defaultValue;
                 return createSimpleInitializer(typeClass, dateTime.getMillis() + "l"); // explicit long
-            case "java.util.Date":
-                Date date = (Date) defaultValue;
-                return createSimpleInitializer(typeClass, date.getTime() + "l"); // explicit long
             case "org.joda.time.LocalDate":
                 LocalDate localDate = (LocalDate) defaultValue;
                 String initStr = String.format("%d, %d, %d",
                         localDate.getYear(), localDate.getMonthOfYear(), localDate.getDayOfMonth());
                 return createSimpleInitializer(typeClass, initStr);
-            case "java.util.Locale":
-                return createLocaleInitializer(defaultValueAsString);
             default:
                 return null;
         }
@@ -254,6 +280,17 @@ public final class JavassistBuilder {
      */
     public static CtField.Initializer createSimpleInitializer(String type, String defaultValue) {
         return CtField.Initializer.byExpr(String.format("new %s(%s)", type, defaultValue));
+    }
+
+    /**
+     * Makes a initializer for {@link java.time.LocalDate} or {@link java.time.LocalDateTime} class
+     *
+     * @param type the field type
+     * @param defaultValue the default value as string
+     * @return {@link java.time.LocalDate} or {@link java.time.LocalDateTime} initializer based on a type parameter
+     */
+    public static CtField.Initializer createJavaTimeInitializer(String type, String defaultValue) {
+        return CtField.Initializer.byExpr(String.format("%s.parse(\"%s\")", type, defaultValue));
     }
 
     /**

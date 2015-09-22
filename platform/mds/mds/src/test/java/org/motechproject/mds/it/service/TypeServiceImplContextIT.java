@@ -14,6 +14,7 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.TypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class TypeServiceImplContextIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 19;
+    private static final int START_NUMBER_OF_TYPES = 21;
 
     @Autowired
     private TypeService typeService;
@@ -47,6 +48,7 @@ public class TypeServiceImplContextIT extends BaseIT {
         testFindType(Collection.class, Collection.class);
         testFindType(Date.class, Date.class);
         testFindType(DateTime.class, DateTime.class);
+        testFindType(LocalDateTime.class, LocalDateTime.class);
         testFindType(String.class, String.class);
         testFindType(Map.class, Map.class);
         testFindType(Period.class, Period.class);
@@ -54,6 +56,7 @@ public class TypeServiceImplContextIT extends BaseIT {
         testFindType(Byte[].class, Byte[].class);
         testFindType(Long.class, Long.class);
         testFindType(LocalDate.class, LocalDate.class);
+        testFindType(java.time.LocalDate.class, java.time.LocalDate.class);
         testFindType(Relationship.class, Relationship.class);
         testFindType(OneToManyRelationship.class, OneToManyRelationship.class);
         testFindType(OneToOneRelationship.class, OneToOneRelationship.class);
