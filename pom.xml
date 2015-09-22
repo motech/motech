@@ -1714,7 +1714,7 @@
     </organization>
 
     <ciManagement>
-        <system>hudson</system>
+        <system>Jenkins</system>
         <url>http://ci.motechproject.org/</url>
     </ciManagement>
 
