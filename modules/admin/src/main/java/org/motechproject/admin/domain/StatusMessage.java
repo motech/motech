@@ -18,6 +18,7 @@ import org.motechproject.mds.util.SecurityMode;
 @Entity(nonEditable = true)
 @Access(value = SecurityMode.PERMISSIONS, members = {"manageMessages"})
 public class StatusMessage {
+
     @Field(required = true)
     private String text;
 

@@ -20,10 +20,11 @@ import java.util.Objects;
 @Access(value = SecurityMode.PERMISSIONS, members = {EmailRolesConstants.BASIC_EMAIL_LOGS})
 public class EmailRecord {
 
-    private String fromAddress;
-
     @Field
     private Long id;
+
+    @Field
+    private String fromAddress;
 
     @Field(required = true)
     private String toAddress;

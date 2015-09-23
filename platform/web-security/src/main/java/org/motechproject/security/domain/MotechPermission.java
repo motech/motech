@@ -2,8 +2,11 @@ package org.motechproject.security.domain;
 
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.security.constants.PermissionNames;
+
+import javax.jdo.annotations.Unique;
 
 /**
  * Entity representing permission
@@ -11,7 +14,12 @@ import org.motechproject.security.constants.PermissionNames;
 @Entity
 @Access(value = SecurityMode.PERMISSIONS, members = {PermissionNames.MANAGE_ROLE_AND_PERMISSION_PERMISSION})
 public class MotechPermission {
+
+    @Field(required = true)
+    @Unique
     private String permissionName;
+
+    @Field
     private String bundleName;
 
     public MotechPermission() {
