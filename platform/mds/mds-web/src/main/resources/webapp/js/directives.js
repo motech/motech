@@ -115,7 +115,7 @@
                 }
             }
 
-            if (!skip) {
+            if (!skip && !field.nonDisplayable) {
                 //if name is reserved for jqgrid need to change field name
                 field.basic.name = changeIfReservedFieldName(field.basic.name);
 
