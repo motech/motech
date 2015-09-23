@@ -3,7 +3,7 @@
     <button ng-click="unselectInstanceHistory()" type="button" class="btn btn-primary">
         {{msg('mds.btn.backToInstance')}}
     </button>
-    <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in allEntityFields"
+    <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in availableFieldsForDisplay"
             multiple="multiple" multiselect-dropdown target-table="historyTable">
     </select>
 </div>
