@@ -165,4 +165,48 @@ public interface MotechSettings {
      * @param limit the failure login limit
      */
     void setFailureLoginLimit(int limit);
+
+    /**
+     * Gets the number of days after which the user will have to change password.
+     *
+     * @return the number of days after to change password.
+     */
+    int getNumberOfDaysToChangePassword();
+
+    /**
+     * Sets the number of days after which the user will have to change password.
+     *
+     * @param days the number of days to change password
+     */
+    void setNumberOfDaysToChangePassword(int days);
+
+    /**
+     * Checks whether the reminding about password reset is enabled.
+     *
+     * @return true when the reminding is enabled
+     */
+    boolean isPasswordResetReminderEnabled();
+
+    /**
+     * Sets the password reset remind flag. If it is set to the true then reminder about requirements of the password
+     * changing will be send to the user.
+     *
+     * @param remind
+     */
+    void setPasswordResetReminder(String remind);
+
+    /**
+     * Gets the number of days before password expiration to send the reminder at.
+     *
+     * @return the number of days before password expiration to send the reminder at
+     */
+    int getNumberOfDaysForReminder();
+
+    /**
+     * Sets the number of days before password expiration to send the reminder at.
+     *
+     * @param days the number of days before password expiration to send the reminder at
+     */
+    void setNumberOfDaysForReminder(int days);
+
 }

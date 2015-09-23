@@ -346,6 +346,44 @@ public class SettingsRecord implements MotechSettings {
                 String.valueOf(limit));
     }
 
+    @Ignore
+    @Override
+    public int getNumberOfDaysToChangePassword() {
+        String value = platformSettings.get(ConfigurationConstants.PASSWORD_RESET_DAYS);
+        return value == null ? 0 : Integer.parseInt(value);
+    }
+
+    @Override
+    public void setNumberOfDaysToChangePassword(int days) {
+        savePlatformSetting(ConfigurationConstants.PASSWORD_RESET_DAYS,
+                String.valueOf(days));
+    }
+
+    @Ignore
+    @Override
+    public boolean isPasswordResetReminderEnabled() {
+        return Boolean.parseBoolean(platformSettings.get(ConfigurationConstants.PASSWORD_REMINDER));
+    }
+
+    @Override
+    public void setPasswordResetReminder(String remind) {
+        savePlatformSetting(ConfigurationConstants.PASSWORD_REMINDER,
+                remind);
+    }
+
+    @Ignore
+    @Override
+    public int getNumberOfDaysForReminder() {
+        String value = platformSettings.get(ConfigurationConstants.PASSWORD_REMINDER_DAYS);
+        return value == null ? 0 : Integer.parseInt(value);
+    }
+
+    @Override
+    public void setNumberOfDaysForReminder(int days) {
+        savePlatformSetting(ConfigurationConstants.PASSWORD_REMINDER_DAYS,
+                String.valueOf(days));
+    }
+
     private Integer getInteger(String key) {
         String value = platformSettings.get(key);
         return StringUtils.isBlank(value) ? null : Integer.valueOf(value);
