@@ -3289,6 +3289,8 @@
 
         $scope.allEntityFields = [];
 
+        $scope.availableFieldsForDisplay= [];
+
         $scope.validatePattern = '';
 
         $rootScope.filters = [];
@@ -3852,6 +3854,16 @@
                 callback);
         };
 
+        $scope.setAvailableFieldsForDisplay = function() {
+            var i;
+            $scope.availableFieldsForDisplay = [];
+            for (i = 0; i < $scope.allEntityFields.length; i += 1) {
+                if (!$scope.allEntityFields[i].nonDisplayable) {
+                    $scope.availableFieldsForDisplay.push($scope.allEntityFields[i]);
+                }
+            }
+        };
+
         $scope.retrieveAndSetEntityData = function(entityUrl, callback) {
           $scope.lookupBy = {};
           $scope.selectedLookup = undefined;
@@ -3867,6 +3879,7 @@
 
               $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
                    $scope.allEntityFields = data;
+                   $scope.setAvailableFieldsForDisplay();
 
                    if ($routeParams.entityId === undefined) {
                       var hash = window.location.hash.substring(2, window.location.hash.length) + "/" + $scope.selectedEntity.id;
