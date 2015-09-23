@@ -104,6 +104,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void save(final Task task) {
+        LOGGER.info("Saving the task with name: {} and ID: {}", task.getName(), task.getId());
         Set<TaskError> errors = TaskValidator.validate(task);
 
         if (task.isEnabled() && !isEmpty(errors)) {
@@ -126,7 +127,7 @@ public class TaskServiceImpl implements TaskService {
 
         addOrUpdate(task);
         registerHandler(task.getTrigger().getEffectiveListenerSubject());
-        LOGGER.info(format("Saved task: %s", task.getId()));
+        LOGGER.info("Saved the task with name: {} and ID: {}", task.getName(), task.getId());
     }
 
     @Override
@@ -270,6 +271,7 @@ public class TaskServiceImpl implements TaskService {
             throw new TaskNotFoundException(taskId);
         }
 
+        LOGGER.info("Deleting the task with name: {} and ID: {}", t.getName(), taskId);
         tasksDataService.delete(t);
     }
 
@@ -278,7 +280,7 @@ public class TaskServiceImpl implements TaskService {
         String moduleName = event.getParameters().get(CHANNEL_MODULE_NAME).toString();
         Channel channel = channelService.getChannel(moduleName);
 
-        LOGGER.debug(String.format("Handling Channel update %s for module %s", channel.getDisplayName(), moduleName));
+        LOGGER.debug(String.format("Handling Channel update: %s for module: %s", channel.getDisplayName(), moduleName));
 
         List<Task> tasks = findTasksDependentOnModule(moduleName);
         for (Task task : tasks) {
@@ -299,6 +301,8 @@ public class TaskServiceImpl implements TaskService {
         String providerName = event.getParameters().get(DATA_PROVIDER_NAME).toString();
 
         TaskDataProvider provider = providerService.getProvider(providerName);
+
+        LOGGER.debug(String.format("Handling DataProvider update: %s", providerName));
 
         for (Task task : getAllTasks()) {
             SortedSet<DataSource> dataSources = task.getTaskConfig().getDataSources(provider.getId());
@@ -324,6 +328,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = getTask(taskId);
 
         if (null != task) {
+            LOGGER.info("Exporting the task with name: {} and ID: {}", task.getName(), task.getId());
             JsonNode node = new ObjectMapper().valueToTree(task);
             removeIgnoredFields(node);
 
@@ -361,6 +366,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task importTask(String json) throws IOException {
+        LOGGER.info("Importing the task from json");
+
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(json);
         removeIgnoredFields(node);
@@ -449,6 +456,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private Set<TaskError> validateTrigger(Task task) {
+        LOGGER.debug("Validating the trigger in the task with name: {} and ID: {}", task.getName(), task.getId());
         TaskTriggerInformation trigger = task.getTrigger();
         Channel channel = channelService.getChannel(trigger.getModuleName());
 
@@ -456,6 +464,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private Set<TaskError> validateTrigger(Task task, Channel channel) {
+        LOGGER.debug("Validating the trigger in the task with name: {} and ID: {}", task.getName(), task.getId());
         Set<TaskError> errors = new HashSet<>();
 
         TaskTriggerInformation trigger = task.getTrigger();
@@ -476,6 +485,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private Set<TaskError> validateDataSources(Task task) {
+        LOGGER.debug("Validating the DataSources in the task with name: {} and ID: {}", task.getName(), task.getId());
         Set<TaskError> errors = new HashSet<>();
         Map<Long, TaskDataProvider> availableDataProviders = new HashMap<>();
 
@@ -492,6 +502,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private Set<TaskError> validateProvider(TaskDataProvider provider, DataSource dataSource, Task task, Map<Long, TaskDataProvider> availableDataProviders) {
+        LOGGER.debug("Validating the TaskDataProvider in the task with name: {} and ID: {}", task.getName(), task.getId());
         Set<TaskError> errors = new HashSet<>();
 
         TaskTriggerInformation trigger = task.getTrigger();
@@ -510,6 +521,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private Set<TaskError> validateActions(Task task) {
+        LOGGER.debug("Validating the actions in the task with name: {} and ID: {}", task.getName(), task.getId());
         Set<TaskError> errors = new HashSet<>();
 
         for (TaskActionInformation action : task.getActions()) {
@@ -521,6 +533,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private Set<TaskError> validateActions(Task task, Channel channel) {
+        LOGGER.debug("Validating the actions in the task with name: {} and ID: {}", task.getName(), task.getId());
         Set<TaskError> errors = new HashSet<>();
 
         for (TaskActionInformation action : task.getActions()) {
@@ -531,6 +544,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private Set<TaskError> validateAction(Task task, Channel channel, TaskActionInformation action) {
+        LOGGER.debug("Validating the action with name: {} in the task with name: {} and ID: {}", action.getName(), task.getName(), task.getId());
         Set<TaskError> errors = new HashSet<>();
 
         if (channel == null) {
@@ -566,6 +580,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private void handleValidationErrors(Task task, Set<TaskError> errors, String... messages) {
+        LOGGER.debug("Handling the validation errors for the task with name: {} and ID: {}", task.getName(), task.getId());
         if (CollectionUtils.isNotEmpty(errors)) {
             setTaskValidationErrors(task, errors);
         } else {
@@ -628,10 +643,12 @@ public class TaskServiceImpl implements TaskService {
 
                     checkChannelAvailableInTask(existing);
 
+                    LOGGER.debug("Updating the task with name: {} and ID: {}", existing.getName(), existing.getId());
                     tasksDataService.update(existing);
                 } else {
                     checkChannelAvailableInTask(task);
 
+                    LOGGER.debug("Creating the task with name: {} and ID: {}", task.getName(), task.getId());
                     tasksDataService.create(task);
                 }
             }

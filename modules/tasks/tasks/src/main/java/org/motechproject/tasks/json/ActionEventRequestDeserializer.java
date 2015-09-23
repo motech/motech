@@ -9,6 +9,8 @@ import com.google.gson.JsonParseException;
 import org.motechproject.tasks.contract.ActionEventRequestBuilder;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
 
@@ -18,6 +20,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  * {@code JsonDeserializer} for the {@code ActionEventRequest} class.
  */
 public class ActionEventRequestDeserializer implements JsonDeserializer<ActionEventRequest> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActionEventRequestDeserializer.class);
 
     public static final String DESCRIPTION_FIELD = "description";
     public static final String NAME_FIELD = "name";
@@ -30,6 +33,7 @@ public class ActionEventRequestDeserializer implements JsonDeserializer<ActionEv
 
     @Override
     public ActionEventRequest deserialize(JsonElement element, Type type, JsonDeserializationContext context) {
+        LOGGER.debug("Deserializing the json into ActionEventRequest object");
         ActionEventRequest actionEvent = null;
 
         if (element.isJsonObject()) {

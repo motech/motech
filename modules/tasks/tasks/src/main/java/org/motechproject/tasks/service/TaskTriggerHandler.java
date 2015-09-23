@@ -82,6 +82,8 @@ public class TaskTriggerHandler implements TriggerHandler {
 
     @Override
     public final void registerHandlerFor(String subject) {
+        LOGGER.debug("Registering handler for {}", subject);
+
         String serviceName = "taskTriggerHandler";
         Method method = ReflectionUtils.findMethod(this.getClass(), "handle", MotechEvent.class);
         Object obj = CollectionUtils.find(
@@ -105,6 +107,8 @@ public class TaskTriggerHandler implements TriggerHandler {
 
     @Override
     public void handle(MotechEvent event) throws TriggerNotFoundException {
+        LOGGER.debug("Handling the motech event with subject: {}", event.getSubject());
+
         // Look for custom event parser
         Map<String, Object> eventParams = event.getParameters();
 
@@ -139,7 +143,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     }
 
     private void handleError(Map<String, Object> params, Task task, TaskHandlerException e) {
-        LOGGER.debug(String.format("Omitted task with ID: %s because: ", task.getId()), e);
+        LOGGER.debug(String.format("Omitted the task with name: %s and ID: %s because: ", task.getName(), task.getId()), e);
 
         activityService.addError(task, e);
         task.incrementFailuresInRow();
@@ -174,6 +178,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     }
 
     private void handleSuccess(Map<String, Object> params, Task task) {
+        LOGGER.debug("The actions from the task with name: {} and ID: {} were successfully executed", task.getName(), task.getId());
 
         activityService.addSuccess(task);
         task.resetFailuresInRow();

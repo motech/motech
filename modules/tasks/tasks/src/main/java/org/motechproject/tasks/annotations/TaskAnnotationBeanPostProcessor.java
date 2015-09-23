@@ -8,6 +8,8 @@ import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.service.ChannelService;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ReflectionUtils;
@@ -31,6 +33,7 @@ import static org.springframework.util.ReflectionUtils.findMethod;
  * @since 0.19
  */
 public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskAnnotationBeanPostProcessor.class);
 
     private BundleContext bundleContext;
     private ChannelService channelService;
@@ -68,10 +71,12 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
         if (bean == null) {
             return null;
         }
+
         final Class<?> targetClass = getTargetClass(bean);
         final TaskChannel taskChannel = targetClass.getAnnotation(TaskChannel.class);
 
         if (taskChannel != null) {
+            LOGGER.debug("The @TaskChannel annotation was found in {}", targetClass.getName());
             doWithMethods(targetClass, new ReflectionUtils.MethodCallback() {
 
                 @Override

@@ -37,6 +37,7 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
     @Override
     public Task deserialize(JsonParser jsonParser,
                             DeserializationContext deserializationContext) throws IOException {
+        LOGGER.debug("Deserializing the json into Task object");
         jsonNode = jsonParser.readValueAsTree();
         task = new Task();
 

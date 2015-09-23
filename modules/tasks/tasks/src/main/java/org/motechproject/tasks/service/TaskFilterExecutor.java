@@ -11,6 +11,8 @@ import org.motechproject.tasks.domain.OperatorType;
 import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.events.constants.TaskFailureCause;
 import org.motechproject.tasks.ex.TaskHandlerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -32,6 +34,7 @@ import static org.motechproject.tasks.domain.KeyInformation.parse;
  * <p/>
  */
 public class TaskFilterExecutor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskFilterExecutor.class);
 
     /**
      * Default constructor.
@@ -50,6 +53,7 @@ public class TaskFilterExecutor {
      */
     public boolean checkFilters(List<Filter> filters, LogicalOperator logicalOperator, TaskContext taskContext)
             throws TaskHandlerException {
+        LOGGER.debug("Checking if the task with name: {} matches the filters", taskContext.getTask().getName());
         Map<String, Object> parameters = taskContext.getTriggerParameters();
         if (isEmpty(filters) || parameters == null) {
             return true;
