@@ -3182,7 +3182,7 @@
         $scope.availableExportColumns = ['All','selected'];
         $scope.availableExportFormats = ['csv','pdf'];
         $scope.actualExportRecords = 'All';
-        $scope.actualExportColumns = 'All';
+        $scope.actualExportColumns = 'selected';
         $scope.exportFormat = 'csv';
         $scope.checkboxModel = {
             exportWithLookup : false,
@@ -4305,6 +4305,10 @@
 
         $scope.changeExportColumns = function (columns) {
             $scope.actualExportColumns = columns;
+        };
+
+        $scope.setDefaultExportColumns = function () {
+            $scope.actualExportColumns = 'selected';
         };
 
         $scope.changeExportFormat = function (format) {
