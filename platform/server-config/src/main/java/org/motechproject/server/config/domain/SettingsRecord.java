@@ -348,15 +348,13 @@ public class SettingsRecord implements MotechSettings {
 
     @Ignore
     @Override
-    public int getNumberOfDaysToChangePassword() {
-        String value = platformSettings.get(ConfigurationConstants.PASSWORD_RESET_DAYS);
-        return value == null ? 0 : Integer.parseInt(value);
+    public Integer getNumberOfDaysToChangePassword() {
+        return getInteger(ConfigurationConstants.PASSWORD_RESET_DAYS);
     }
 
     @Override
-    public void setNumberOfDaysToChangePassword(int days) {
-        savePlatformSetting(ConfigurationConstants.PASSWORD_RESET_DAYS,
-                String.valueOf(days));
+    public void setNumberOfDaysToChangePassword(Integer days) {
+        savePlatformSetting(ConfigurationConstants.PASSWORD_RESET_DAYS, intToStr(days));
     }
 
     @Ignore
@@ -373,15 +371,13 @@ public class SettingsRecord implements MotechSettings {
 
     @Ignore
     @Override
-    public int getNumberOfDaysForReminder() {
-        String value = platformSettings.get(ConfigurationConstants.PASSWORD_REMINDER_DAYS);
-        return value == null ? 0 : Integer.parseInt(value);
+    public Integer getNumberOfDaysForReminder() {
+        return getInteger(ConfigurationConstants.PASSWORD_REMINDER_DAYS);
     }
 
     @Override
-    public void setNumberOfDaysForReminder(int days) {
-        savePlatformSetting(ConfigurationConstants.PASSWORD_REMINDER_DAYS,
-                String.valueOf(days));
+    public void setNumberOfDaysForReminder(Integer days) {
+        savePlatformSetting(ConfigurationConstants.PASSWORD_REMINDER_DAYS, intToStr(days));
     }
 
     private Integer getInteger(String key) {

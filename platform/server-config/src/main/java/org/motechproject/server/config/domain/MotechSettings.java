@@ -171,14 +171,14 @@ public interface MotechSettings {
      *
      * @return the number of days after to change password.
      */
-    int getNumberOfDaysToChangePassword();
+    Integer getNumberOfDaysToChangePassword();
 
     /**
      * Sets the number of days after which the user will have to change password.
      *
      * @param days the number of days to change password
      */
-    void setNumberOfDaysToChangePassword(int days);
+    void setNumberOfDaysToChangePassword(Integer days);
 
     /**
      * Checks whether the reminding about password reset is enabled.
@@ -200,13 +200,13 @@ public interface MotechSettings {
      *
      * @return the number of days before password expiration to send the reminder at
      */
-    int getNumberOfDaysForReminder();
+    Integer getNumberOfDaysForReminder();
 
     /**
      * Sets the number of days before password expiration to send the reminder at.
      *
      * @param days the number of days before password expiration to send the reminder at
      */
-    void setNumberOfDaysForReminder(int days);
+    void setNumberOfDaysForReminder(Integer days);
 
 }

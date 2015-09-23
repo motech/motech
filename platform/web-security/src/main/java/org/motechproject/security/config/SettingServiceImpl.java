@@ -75,4 +75,24 @@ public class SettingServiceImpl implements SettingService {
         MotechSettings motechSettings = configurationService.getPlatformSettings();
         return motechSettings.getFailureLoginLimit();
     }
+
+    @Override
+    public int getNumberOfDaysToChangePassword() {
+        MotechSettings motechSettings = configurationService.getPlatformSettings();
+        Integer days = motechSettings.getNumberOfDaysToChangePassword();
+        return days == null ? 0 : days;
+    }
+
+    @Override
+    public boolean isPasswordResetReminderEnabled() {
+        MotechSettings motechSettings = configurationService.getPlatformSettings();
+        return motechSettings.isPasswordResetReminderEnabled();
+    }
+
+    @Override
+    public int getNumberOfDaysForReminder() {
+        MotechSettings motechSettings = configurationService.getPlatformSettings();
+        Integer days = motechSettings.getNumberOfDaysForReminder();
+        return days == null ? 0 : days;
+    }
 }
