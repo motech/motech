@@ -998,7 +998,8 @@
         */
         $scope.filterableTypes = [
             "mds.field.combobox", "mds.field.boolean", "mds.field.date",
-            "mds.field.datetime", "mds.field.localDate"
+            "mds.field.datetime", "mds.field.localDate", "mds.field.date8",
+            "mds.field.datetime8"
         ];
 
         $scope.relationshipClasses = [{
@@ -1912,6 +1913,8 @@
                     $scope.selectedEntity.modified = false;
                     $scope.selectedEntity.outdated = false;
                     $scope.fields = Entities.getFields(pre, successCallback);
+                    $scope.newField = {};
+                    $scope.tryToCreate = false;
                 },
                 errorCallback = function (data) {
                     $scope.setErrorFromData(data);
@@ -3182,7 +3185,7 @@
         $scope.availableExportColumns = ['All','selected'];
         $scope.availableExportFormats = ['csv','pdf'];
         $scope.actualExportRecords = 'All';
-        $scope.actualExportColumns = 'All';
+        $scope.actualExportColumns = 'selected';
         $scope.exportFormat = 'csv';
         $scope.checkboxModel = {
             exportWithLookup : false,
@@ -3286,6 +3289,8 @@
         $scope.currentRecord = undefined;
 
         $scope.allEntityFields = [];
+
+        $scope.availableFieldsForDisplay= [];
 
         $scope.validatePattern = '';
 
@@ -3852,6 +3857,16 @@
                 callback);
         };
 
+        $scope.setAvailableFieldsForDisplay = function() {
+            var i;
+            $scope.availableFieldsForDisplay = [];
+            for (i = 0; i < $scope.allEntityFields.length; i += 1) {
+                if (!$scope.allEntityFields[i].nonDisplayable) {
+                    $scope.availableFieldsForDisplay.push($scope.allEntityFields[i]);
+                }
+            }
+        };
+
         $scope.retrieveAndSetEntityData = function(entityUrl, callback) {
           $scope.lookupBy = {};
           $scope.selectedLookup = undefined;
@@ -3867,6 +3882,7 @@
 
               $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
                    $scope.allEntityFields = data;
+                   $scope.setAvailableFieldsForDisplay();
 
                    if ($routeParams.entityId === undefined) {
                       var hash = window.location.hash.substring(2, window.location.hash.length) + "/" + $scope.selectedEntity.id;
@@ -3955,7 +3971,7 @@
         };
 
         $scope.isDateField = function(field) {
-            return field.type.typeClass === "org.joda.time.LocalDate";
+            return field.type.typeClass === "org.joda.time.LocalDate" || field.type.typeClass === "java.time.LocalDate";
         };
 
         $scope.isTextArea = function (field) {
@@ -4070,7 +4086,7 @@
             var type = field.type.typeClass;
             if (type === "java.lang.Boolean") {
                 return ['ALL', 'YES', 'NO'];
-            } else if (type === "java.util.Date" || type === "org.joda.time.DateTime" || type === "org.joda.time.LocalDate") {
+            } else if (type === "java.util.Date" || type === "org.joda.time.DateTime" || type === "org.joda.time.LocalDate" || type === "java.time.LocalDateTime" || type === "java.time.LocalDate") {
                 return ['ALL', 'TODAY', 'PAST_7_DAYS', 'THIS_MONTH', 'THIS_YEAR'];
             } else if (type === "java.util.Collection") {
                 return  ['ALL'].concat($scope.getComboboxValues(field.settings));
@@ -4125,9 +4141,9 @@
                 value = "boolean";
             } else if (field.className === "java.util.Collection") {
                 value = "list";
-            } else if (field.className === "org.joda.time.DateTime" || field.className === "java.util.Date") {
+            } else if (field.className === "org.joda.time.DateTime" || field.className === "java.util.Date" || field.className === "java.time.LocalDateTime") {
                 value = "datetime";
-            } else if (field.className === "org.joda.time.LocalDate") {
+            } else if (field.className === "org.joda.time.LocalDate" || field.className === "java.time.LocalDate") {
                 value = "date";
             }
 
@@ -4263,7 +4279,7 @@
         };
 
         $scope.typeIsDate = function (type) {
-            return type === "java.util.Date" || type === "org.joda.time.DateTime" || type === "org.joda.time.LocalDate";
+            return type === "java.util.Date" || type === "org.joda.time.DateTime" || type === "org.joda.time.LocalDate" || type === "java.time.LocalDateTime" || type === "java.time.LocalDate";
         };
 
         $scope.typeIsTime = function (type) {
@@ -4307,6 +4323,10 @@
 
         $scope.changeExportColumns = function (columns) {
             $scope.actualExportColumns = columns;
+        };
+
+        $scope.setDefaultExportColumns = function () {
+            $scope.actualExportColumns = 'selected';
         };
 
         $scope.changeExportFormat = function (format) {

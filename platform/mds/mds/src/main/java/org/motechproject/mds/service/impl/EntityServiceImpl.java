@@ -1142,7 +1142,7 @@ public class EntityServiceImpl implements EntityService {
 
         List<FieldDto> displayFields = new ArrayList<>();
         for (Field field : entity.getFields()) {
-            if (field.isUIDisplayable()) {
+            if (field.isUIDisplayable() && !field.isNonDisplayable()) {
                 displayFields.add(field.toDto());
             }
         }
