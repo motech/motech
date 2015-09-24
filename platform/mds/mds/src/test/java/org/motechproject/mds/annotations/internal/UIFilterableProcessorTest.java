@@ -78,4 +78,13 @@ public class UIFilterableProcessorTest {
 
         assertEquals("serverDate", fieldName);
     }
+
+    @Test
+    public void shouldNotProcessElementWithIncorrectType() throws Exception {
+        java.lang.reflect.Field pi = getDeclaredField(Sample.class, "pi", true);
+
+        processor.process(pi);
+
+        assertEquals(0, processor.getProcessingResult().size());
+    }
 }
