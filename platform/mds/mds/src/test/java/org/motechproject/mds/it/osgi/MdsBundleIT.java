@@ -651,7 +651,7 @@ public class MdsBundleIT extends BasePaxIT {
                 JAVA_LD_NOW.minusDays(1), JAVA_NOW.minusHours(1));
         service.update(retrieved);
 
-        assertEquals("[1, 2, 3, 4, 0, 35]", entityService.getAllComboboxValues(entityId, "someList"));
+        assertEquals(asList("0", "35", "2", "4"), entityService.getAllComboboxValues(entityId, "someList"));
     }
 
     private void verifyCsvImport() throws Exception {

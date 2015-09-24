@@ -1,6 +1,8 @@
 package org.motechproject.mds.service.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.domain.Entity;
@@ -1140,14 +1142,17 @@ public class EntityServiceImpl implements EntityService {
         Entity entity = allEntities.retrieveById(entityId);
         assertEntityExists(entity, entityId);
 
-        List<FieldDto> displayFields = new ArrayList<>();
-        for (Field field : entity.getFields()) {
-            if (field.isUIDisplayable() && !field.isNonDisplayable()) {
-                displayFields.add(field.toDto());
-            }
-        }
+        List<Field> displayFields = entity.getFields();
 
-        return displayFields;
+        CollectionUtils.filter(displayFields, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                Field field = (Field) object;
+                return field.isUIDisplayable() && !field.isNonDisplayable();
+            }
+        });
+
+        return toFieldDtos(entity, displayFields, true);
     }
 
     @Override

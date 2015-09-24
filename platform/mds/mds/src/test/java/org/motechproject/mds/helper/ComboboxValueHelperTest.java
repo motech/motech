@@ -12,7 +12,6 @@ import org.motechproject.mds.domain.FieldSetting;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.repository.ComboboxValueRepository;
-import org.motechproject.mds.repository.MetadataHelper;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.TypeHelper;
 
@@ -45,7 +44,7 @@ public class ComboboxValueHelperTest {
     private ComboboxValueRepository cbValueRepository;
 
     @Mock
-    private MetadataHelper metadataRepository;
+    private MetadataHelper metadataHelper;
 
     @Mock
     private Entity entity;
@@ -63,7 +62,7 @@ public class ComboboxValueHelperTest {
         when(field.getEntity()).thenReturn(entity);
         when(field.getType()).thenReturn(type);
         when(type.isCombobox()).thenReturn(true);
-        when(metadataRepository.getComboboxTableName(entity, field)).thenReturn(CB_TABLE_NAME);
+        when(metadataHelper.getComboboxTableName(entity, field)).thenReturn(CB_TABLE_NAME);
     }
 
     @Test

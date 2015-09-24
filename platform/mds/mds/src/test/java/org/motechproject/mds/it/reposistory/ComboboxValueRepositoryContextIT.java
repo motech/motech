@@ -7,9 +7,9 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.helper.MetadataHelper;
 import org.motechproject.mds.it.BaseInstanceIT;
 import org.motechproject.mds.repository.ComboboxValueRepository;
-import org.motechproject.mds.repository.MetadataHelper;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
@@ -34,7 +34,7 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
     private ComboboxValueRepository cbValueRepository;
 
     @Autowired
-    private MetadataHelper metadataRepository;
+    private MetadataHelper metadataHelper;
 
     @Override
     protected String getEntityName() {
@@ -70,7 +70,7 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
     public void shouldRetrieveComboboxMultiSelectValuesFromDb() {
         Entity entity = getAllEntities().retrieveByClassName(ClassName.getEntityName(ENTITY_NAME));
         Field cbField = entity.getField(CB_FIELD_MULTI_NAME);
-        String cbTableName = metadataRepository.getComboboxTableName(entity, cbField);
+        String cbTableName = metadataHelper.getComboboxTableName(entity, cbField);
 
         List<String> values = cbValueRepository.getComboboxValuesForCollection(cbTableName);
 

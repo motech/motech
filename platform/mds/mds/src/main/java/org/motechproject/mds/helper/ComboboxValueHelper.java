@@ -4,7 +4,6 @@ import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.repository.ComboboxValueRepository;
-import org.motechproject.mds.repository.MetadataHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ public class ComboboxValueHelper {
     private ComboboxValueRepository cbValueRepository;
 
     @Autowired
-    private MetadataHelper metadataRepository;
+    private MetadataHelper metadataHelper;
 
     @Transactional
     public List<String> getAllValuesForCombobox(Entity entity, Field field) {
@@ -48,7 +47,7 @@ public class ComboboxValueHelper {
                 List<String> optionsFromDb;
 
                 if (cbHolder.isAllowMultipleSelections()) {
-                    String cbTableName = metadataRepository.getComboboxTableName(entity, field);
+                    String cbTableName = metadataHelper.getComboboxTableName(entity, field);
                     optionsFromDb = cbValueRepository.getComboboxValuesForCollection(cbTableName);
                 } else {
                     optionsFromDb = cbValueRepository.getComboboxValuesForStringField(entity, field);

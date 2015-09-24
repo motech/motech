@@ -1,22 +1,26 @@
-package org.motechproject.mds.repository;
+package org.motechproject.mds.helper;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.helper.ClassTableName;
-import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.metadata.MemberMetadata;
 import javax.jdo.metadata.TypeMetadata;
 
-@Repository
+@Component
 public class MetadataHelper {
+
+    @Autowired
+    private PersistenceManagerFactory persistenceManagerFactory;
 
     public String getComboboxTableName(Entity entity, Field cbField) {
         final String entityClassName = entity.getClassName();
         final String cbFieldName = cbField.getName();
 
-        TypeMetadata typeMetadata = getPersistenceManagerFactory().getMetadata(entityClassName);
+        TypeMetadata typeMetadata = persistenceManagerFactory.getMetadata(entityClassName);
         if (typeMetadata == null) {
             throw new IllegalArgumentException("No type metadata found for " + entityClassName);
         }
