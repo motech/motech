@@ -53,7 +53,7 @@ public class TaskFilterExecutor {
      */
     public boolean checkFilters(List<Filter> filters, LogicalOperator logicalOperator, TaskContext taskContext)
             throws TaskHandlerException {
-        LOGGER.debug("Checking if the task with name: {} matches the filters", taskContext.getTask().getName());
+        LOGGER.debug("Checking if task: {} matches the filters", taskContext.getTask().getName());
         Map<String, Object> parameters = taskContext.getTriggerParameters();
         if (isEmpty(filters) || parameters == null) {
             return true;
@@ -70,8 +70,10 @@ public class TaskFilterExecutor {
                 if (TaskFailureCause.DATA_SOURCE.equals(e.getFailureCause())) {
                     throw e;    // data source lookups disable the task
                 }
+                LOGGER.debug(String.format("There was an error during retrieving manipulated value for: %s", key.getKey()), e);
                 value = null;   // trigger parameter lookups don't disable the task
             } catch (Exception e) {
+                LOGGER.debug(String.format("There was an error during retrieving manipulated value for: %s", key.getKey()), e);
                 value = null;
             }
 
@@ -81,11 +83,15 @@ public class TaskFilterExecutor {
                 filterCheck = !filterCheck;
             }
 
+            LOGGER.debug("Result of checking filter: {} for task: {} is: {}", filter.getDisplayName(), taskContext.getTask().getName(), filterCheck);
+
             if (isFilterConditionFulfilled(filterCheck, logicalOperator)) {
+                LOGGER.debug("Filters condition is fulfilled, because logicalOperator is: {} and filters checking has already: {} value", logicalOperator, filterCheck);
                 break;
             }
         }
 
+        LOGGER.info("Result of checking filters for task: {} is: {}", taskContext.getTask().getName(), filterCheck);
         return filterCheck;
     }
 

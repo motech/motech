@@ -70,7 +70,7 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
         final Type type = new TypeToken<TaskDataProvider>() {} .getType();
         final TaskDataProvider provider = (TaskDataProvider) motechJsonReader.readFromStream(stream, type);
 
-        LOGGER.info("Registering the provider with name: {}", provider.getName());
+        LOGGER.info("Registering a task data provider with name: {}", provider.getName());
 
         Set<TaskError> errors = TaskDataProviderValidator.validate(provider);
 
@@ -98,14 +98,15 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
 
     @Override
     public void bind(Object service, Map properties) {
-        LOGGER.info("Registering providers");
+        LOGGER.info("Registering task data providers");
 
         dataProviderDataService = (DataProviderDataService) service;
 
         // add providers from queue
+        LOGGER.debug("Adding the following task data providers: {}", providersToAdd);
         synchronized (additionLock) {
             for (TaskDataProvider provider : providersToAdd) {
-                LOGGER.info("Registering the provider with name: {}", provider.getName());
+                LOGGER.info("Registering a task data provider with name: {}", provider.getName());
                 addProviderImpl(provider);
             }
             providersToAdd.clear();
@@ -135,7 +136,7 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
 
             // Only update data provider when there's actual change
             if (existing != null && !existing.equals(provider)) {
-                LOGGER.debug("Updating the provider with name: {}", provider.getName());
+                LOGGER.debug("Updating a task data provider with name: {}", provider.getName());
 
                 dataProviderDataService.doInTransaction(new TransactionCallbackWithoutResult() {
                     @Override
@@ -150,11 +151,11 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
 
                 eventRelay.sendEventMessage(new MotechEvent(DATA_PROVIDER_UPDATE_SUBJECT, parameters));
             } else if (existing == null) {
-                LOGGER.debug("Creating the provider with name: {}", provider.getName());
+                LOGGER.debug("Creating a task data provider with name: {}", provider.getName());
                 dataProviderDataService.create(provider);
             }
         } else {
-            LOGGER.debug("DataProviderDataService is not available, storing the provider with name: {} for later addition", provider.getName());
+            LOGGER.debug("DataProviderDataService is not available, storing a task data provider with name: {} for later addition", provider.getName());
             // store for later addition
             providersToAdd.add(provider);
         }

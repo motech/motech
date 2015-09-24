@@ -29,7 +29,7 @@ public class ChannelServiceRegistrationListener implements OsgiServiceRegistrati
     @Override
     public void registered(Object service, Map serviceProperties) {
         if (service instanceof ChannelService && tracker == null) {
-            LOGGER.info("The ChannelService is registered, starting TasksBlueprintApplicationContextTracker");
+            LOGGER.info("ChannelService registered, starting TasksBlueprintApplicationContextTracker");
 
             ChannelService channelService = (ChannelService) service;
 
@@ -41,7 +41,7 @@ public class ChannelServiceRegistrationListener implements OsgiServiceRegistrati
     @Override
     public void unregistered(Object service, Map serviceProperties) {
         if (service instanceof ChannelService && tracker != null) {
-            LOGGER.info("The ChannelService is unregistered");
+            LOGGER.info("ChannelService unregistered");
             tracker.close();
             tracker = null;
         }

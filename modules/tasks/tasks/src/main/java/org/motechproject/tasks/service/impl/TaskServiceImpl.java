@@ -104,7 +104,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void save(final Task task) {
-        LOGGER.info("Saving the task with name: {} and ID: {}", task.getName(), task.getId());
+        LOGGER.info("Saving task: {} with ID: {}", task.getName(), task.getId());
         Set<TaskError> errors = TaskValidator.validate(task);
 
         if (task.isEnabled() && !isEmpty(errors)) {
@@ -127,7 +127,7 @@ public class TaskServiceImpl implements TaskService {
 
         addOrUpdate(task);
         registerHandler(task.getTrigger().getEffectiveListenerSubject());
-        LOGGER.info("Saved the task with name: {} and ID: {}", task.getName(), task.getId());
+        LOGGER.info("Saved task: {} with ID: {}", task.getName(), task.getId());
     }
 
     @Override
@@ -271,8 +271,8 @@ public class TaskServiceImpl implements TaskService {
             throw new TaskNotFoundException(taskId);
         }
 
-        LOGGER.info("Deleting the task with name: {} and ID: {}", t.getName(), taskId);
         tasksDataService.delete(t);
+        LOGGER.info("Deleted task: {} with ID: {}", t.getName(), taskId);
     }
 
     @MotechListener(subjects = CHANNEL_UPDATE_SUBJECT)
@@ -302,7 +302,7 @@ public class TaskServiceImpl implements TaskService {
 
         TaskDataProvider provider = providerService.getProvider(providerName);
 
-        LOGGER.debug(String.format("Handling DataProvider update: %s", providerName));
+        LOGGER.debug(String.format("Handling a task data provider update: %s", providerName));
 
         for (Task task : getAllTasks()) {
             SortedSet<DataSource> dataSources = task.getTaskConfig().getDataSources(provider.getId());
@@ -328,7 +328,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = getTask(taskId);
 
         if (null != task) {
-            LOGGER.info("Exporting the task with name: {} and ID: {}", task.getName(), task.getId());
+            LOGGER.info("Exporting task: {} with ID: {}", task.getName(), task.getId());
             JsonNode node = new ObjectMapper().valueToTree(task);
             removeIgnoredFields(node);
 
@@ -366,7 +366,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task importTask(String json) throws IOException {
-        LOGGER.info("Importing the task from json");
+        LOGGER.info("Importing a task from json");
+        LOGGER.trace("The json file: {}", json);
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(json);
@@ -456,7 +457,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private Set<TaskError> validateTrigger(Task task) {
-        LOGGER.debug("Validating the trigger in the task with name: {} and ID: {}", task.getName(), task.getId());
+        LOGGER.debug("Validating trigger in task: {} with ID: {}", task.getName(), task.getId());
         TaskTriggerInformation trigger = task.getTrigger();
         Channel channel = channelService.getChannel(trigger.getModuleName());
 
@@ -464,7 +465,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private Set<TaskError> validateTrigger(Task task, Channel channel) {
-        LOGGER.debug("Validating the trigger in the task with name: {} and ID: {}", task.getName(), task.getId());
+        LOGGER.debug("Validating trigger in task: {} with ID: {}", task.getName(), task.getId());
         Set<TaskError> errors = new HashSet<>();
 
         TaskTriggerInformation trigger = task.getTrigger();
@@ -481,11 +482,17 @@ public class TaskServiceImpl implements TaskService {
             errors.add(new TaskError("task.validation.error.triggerNotSpecified"));
         }
 
+        if (errors.isEmpty()) {
+            LOGGER.debug("There is no errors in trigger validation for task: {} ", task.getName());
+        } else {
+            LOGGER.debug("In trigger validation for task: {} the following errors occurred: {}", task.getName(), errors);
+        }
+
         return errors;
     }
 
     private Set<TaskError> validateDataSources(Task task) {
-        LOGGER.debug("Validating the DataSources in the task with name: {} and ID: {}", task.getName(), task.getId());
+        LOGGER.debug("Validating task data sources in task: {} with ID: {}", task.getName(), task.getId());
         Set<TaskError> errors = new HashSet<>();
         Map<Long, TaskDataProvider> availableDataProviders = new HashMap<>();
 
@@ -498,11 +505,17 @@ public class TaskServiceImpl implements TaskService {
             }
         }
 
+        if (errors.isEmpty()) {
+            LOGGER.debug("There is no errors in task data sources validation for task: {} ", task.getName());
+        } else {
+            LOGGER.debug("In task data sources validation for task: {} the following errors occurred: {}", task.getName(), errors);
+        }
+
         return errors;
     }
 
     private Set<TaskError> validateProvider(TaskDataProvider provider, DataSource dataSource, Task task, Map<Long, TaskDataProvider> availableDataProviders) {
-        LOGGER.debug("Validating the TaskDataProvider in the task with name: {} and ID: {}", task.getName(), task.getId());
+        LOGGER.debug("Validating task data provider: {} in task: {} with ID: {}", dataSource.getProviderName(), task.getName(), task.getId());
         Set<TaskError> errors = new HashSet<>();
 
         TaskTriggerInformation trigger = task.getTrigger();
@@ -517,11 +530,17 @@ public class TaskServiceImpl implements TaskService {
             errors.add(new TaskError("task.validation.error.providerNotExist", dataSource.getProviderName()));
         }
 
+        if (errors.isEmpty()) {
+            LOGGER.debug("There is no errors in task data provider: {} validation for task: {} ", dataSource.getProviderName(), task.getName());
+        } else {
+            LOGGER.debug("In task data provider: {} validation for task: {} the following errors occurred: {}", dataSource.getProviderName(), task.getName(), errors);
+        }
+
         return errors;
     }
 
     private Set<TaskError> validateActions(Task task) {
-        LOGGER.debug("Validating the actions in the task with name: {} and ID: {}", task.getName(), task.getId());
+        LOGGER.debug("Validating all actions in task: {} with ID: {}", task.getName(), task.getId());
         Set<TaskError> errors = new HashSet<>();
 
         for (TaskActionInformation action : task.getActions()) {
@@ -529,22 +548,34 @@ public class TaskServiceImpl implements TaskService {
             errors.addAll(validateAction(task, channel, action));
         }
 
+        if (errors.isEmpty()) {
+            LOGGER.debug("There is no errors in actions validation for task: {} ", task.getName());
+        } else {
+            LOGGER.debug("In actions validation for task: {} the following errors occurred: {}", task.getName(), errors);
+        }
+
         return errors;
     }
 
     private Set<TaskError> validateActions(Task task, Channel channel) {
-        LOGGER.debug("Validating the actions in the task with name: {} and ID: {}", task.getName(), task.getId());
+        LOGGER.debug("Validating all actions in task: {} with ID: {}", task.getName(), task.getId());
         Set<TaskError> errors = new HashSet<>();
 
         for (TaskActionInformation action : task.getActions()) {
             errors.addAll(validateAction(task, channel, action));
         }
 
+        if (errors.isEmpty()) {
+            LOGGER.debug("There is no errors in actions validation for task: {} ", task.getName());
+        } else {
+            LOGGER.debug("In actions validation for task: {} the following errors occurred: {}", task.getName(), errors);
+        }
+
         return errors;
     }
 
     private Set<TaskError> validateAction(Task task, Channel channel, TaskActionInformation action) {
-        LOGGER.debug("Validating the action with name: {} in the task with name: {} and ID: {}", action.getName(), task.getName(), task.getId());
+        LOGGER.debug("Validating task action: {} from task: {} with ID: {}", action.getName(), task.getName(), task.getId());
         Set<TaskError> errors = new HashSet<>();
 
         if (channel == null) {
@@ -560,6 +591,12 @@ public class TaskServiceImpl implements TaskService {
             if (actionEvent != null) {
                 errors.addAll(TaskValidator.validateActionFields(action, actionEvent, trigger, providers));
             }
+        }
+
+        if (errors.isEmpty()) {
+            LOGGER.debug("There is no errors in task action: {} validation for task: {} ", action.getName(), task.getName());
+        } else {
+            LOGGER.debug("In task action: {} validation for task: {} the following errors occurred: {}", action.getName(), task.getName(), errors);
         }
 
         return errors;
@@ -580,7 +617,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private void handleValidationErrors(Task task, Set<TaskError> errors, String... messages) {
-        LOGGER.debug("Handling the validation errors for the task with name: {} and ID: {}", task.getName(), task.getId());
+        LOGGER.debug("Handling validation errors for task: {} with ID: {}", task.getName(), task.getId());
         if (CollectionUtils.isNotEmpty(errors)) {
             setTaskValidationErrors(task, errors);
         } else {
@@ -626,6 +663,7 @@ public class TaskServiceImpl implements TaskService {
                 Task existing = tasksDataService.findById(task.getId());
 
                 if (null != existing) {
+                    LOGGER.debug("Updating task: {} with ID: {}", existing.getName(), existing.getId());
                     existing.setActions(task.getActions());
                     existing.setDescription(task.getDescription());
                     existing.setFailuresInRow(task.getFailuresInRow());
@@ -643,16 +681,17 @@ public class TaskServiceImpl implements TaskService {
 
                     checkChannelAvailableInTask(existing);
 
-                    LOGGER.debug("Updating the task with name: {} and ID: {}", existing.getName(), existing.getId());
                     tasksDataService.update(existing);
                 } else {
+                    LOGGER.debug("Creating task: {}", task.getName());
                     checkChannelAvailableInTask(task);
 
-                    LOGGER.debug("Creating the task with name: {} and ID: {}", task.getName(), task.getId());
                     tasksDataService.create(task);
                 }
             }
         });
+
+        LOGGER.info("Saved task: {}", task.getName());
     }
 
     private void registerHandler(String effectiveListenerSubject) {

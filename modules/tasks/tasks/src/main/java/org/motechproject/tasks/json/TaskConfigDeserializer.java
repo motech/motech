@@ -8,8 +8,6 @@ import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskConfigStep;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -18,12 +16,10 @@ import java.util.Iterator;
  * {@code JsonDeserializer} for {@code TaskConfig} class.
  */
 public class TaskConfigDeserializer extends JsonDeserializer<TaskConfig> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TaskConfigDeserializer.class);
 
     @Override
     public TaskConfig deserialize(JsonParser parser,
                                   DeserializationContext context) throws IOException {
-        LOGGER.debug("Deserializing the json into TaskConfig object");
         JsonNode jsonNode = parser.readValueAsTree();
         TaskConfig config = new TaskConfig();
         ObjectMapper mapper;

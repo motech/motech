@@ -5,6 +5,8 @@ import org.motechproject.commons.api.MotechException;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.events.constants.TaskFailureCause;
 import org.motechproject.tasks.ex.TaskHandlerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -16,6 +18,8 @@ import java.util.Set;
  * TaskContext holds task trigger event and data provider lookup objects that are used while executing filters/actions.
  */
 public class TaskContext {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskContext.class);
 
     private Task task;
     private Map<String, Object> parameters;
@@ -73,6 +77,8 @@ public class TaskContext {
      * @throws TaskHandlerException
      */
     public Object getDataSourceObjectValue(String objectId, String field, String objectType) throws TaskHandlerException {
+        LOGGER.info("Getting task data source object: {} with ID: {}", objectType, objectId);
+
         DataSourceObject dataSourceObject = getDataSourceObject(objectId);
         if (dataSourceObject == null) {
             throw new TaskHandlerException(TaskFailureCause.DATA_SOURCE, "task.error.objectOfTypeNotFound", objectType);
@@ -82,6 +88,7 @@ public class TaskContext {
             if (dataSourceObject.isFailIfNotFound()) {
                 throw new TaskHandlerException(TaskFailureCause.DATA_SOURCE, "task.error.objectOfTypeNotFound", objectType);
             }
+            LOGGER.warn("Task data source object of type: {} not found", objectType);
             publishWarningActivity("task.warning.notFoundObjectForType", objectType);
             return null;
         }
@@ -92,6 +99,7 @@ public class TaskContext {
             if (dataSourceObject.isFailIfNotFound()) {
                 throw new TaskHandlerException(TaskFailureCause.DATA_SOURCE, "task.error.objectDoesNotContainField", e, field);
             }
+            LOGGER.warn("Task data source object: {} does not contain field: {}", objectType, field);
             publishWarningActivity("task.warning.objectNotContainsField", field);
         }
         return null;

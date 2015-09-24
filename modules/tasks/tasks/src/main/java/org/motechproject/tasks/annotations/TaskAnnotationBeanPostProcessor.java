@@ -89,6 +89,7 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
                         TaskAction taskAction = targetMethod.getAnnotation(TaskAction.class);
 
                         if (taskAction != null) {
+                            LOGGER.debug("The @TaskAction annotation was found in method: {}", targetMethod.getName());
                             String serviceInterface = getServiceInterface(targetClass);
                             Channel channel = getChannel(taskChannel);
 
@@ -118,6 +119,7 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
 
         if (!foundAction) {
             channel.addActionTaskEvent(action);
+            LOGGER.debug("Action task event: {} added to channel: {}", action.getName(), channel.getDisplayName());
         }
 
         channelService.addOrUpdate(channel);
@@ -131,7 +133,10 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
         Channel channel = channelService.getChannel(moduleName);
 
         if (channel == null) {
+            LOGGER.debug("Creating new channel: {}  for module: {}", displayName, moduleName);
             channel = new Channel(displayName, moduleName, moduleVersion);
+        } else {
+            LOGGER.debug("Channel: {}  for module: {} was retrieved", displayName, moduleName);
         }
 
         return channel;
@@ -160,7 +165,9 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
         for (Annotation[] annotations : method.getParameterAnnotations()) {
             for (Annotation annotation : annotations) {
                 if (annotation instanceof TaskActionParam) {
+                    LOGGER.debug("The @TaskActionParam annotation was found in parameters from method: {}", method.getName());
                     TaskActionParam param = (TaskActionParam) annotation;
+                    LOGGER.debug("Task action parameter: {} added", param.displayName());
 
                     parameters.add(new ActionParameterBuilder().setDisplayName(param.displayName()).setKey(param.key())
                             .setType(param.type()).setOrder(order).setRequired(param.required()).createActionParameter());

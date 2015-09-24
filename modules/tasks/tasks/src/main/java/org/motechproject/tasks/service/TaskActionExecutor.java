@@ -64,22 +64,25 @@ public class TaskActionExecutor {
      * @throws TaskHandlerException when the task couldn't be executed
      */
     public void execute(Task task, TaskActionInformation actionInformation, TaskContext taskContext) throws TaskHandlerException {
-        LOGGER.info("Executing the action with name: {} from the task with name: {}", actionInformation.getName(), task.getName());
+        LOGGER.info("Executing task action: {} from task: {}", actionInformation.getName(), task.getName());
         this.keyEvaluator = new KeyEvaluator(taskContext);
         ActionEvent action = getActionEvent(actionInformation);
         Map<String, Object> parameters = createParameters(actionInformation, action);
+        LOGGER.debug("Parameters created: {} for task action: {}", parameters.toString(), action.getName());
 
         if (action.hasService() && bundleContext != null) {
             if (callActionServiceMethod(action, parameters)) {
-                LOGGER.info("The action with name: {} from the task with name: {} was executed", actionInformation.getName(), task.getName());
+                LOGGER.info("Action: {} from task: {} was executed through the service", actionInformation.getName(), task.getName());
                 return;
             }
+            LOGGER.info("There is no service: ", action.getServiceInterface());
             activityService.addWarning(task, "task.warning.serviceUnavailable", action.getServiceInterface());
         }
 
         if (!action.hasSubject()) {
             throw new TaskHandlerException(ACTION, "task.error.cantExecuteAction");
         } else {
+            LOGGER.info("Event: {} was sent", action.getSubject());
             eventRelay.sendEventMessage(new MotechEvent(action.getSubject(), parameters));
         }
     }
