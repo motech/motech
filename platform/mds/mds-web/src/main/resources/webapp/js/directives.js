@@ -374,6 +374,12 @@
                             curDate.setMonth(month - 1);
                             $(this).datepicker("setDate", curDate);
                         }
+                    },
+                    onClose: function (dateText, inst) {
+                        var viewValue = element.val();
+                        scope.safeApply(function () {
+                            ngModel.$setViewValue(viewValue);
+                        });
                     }
                 });
             }
