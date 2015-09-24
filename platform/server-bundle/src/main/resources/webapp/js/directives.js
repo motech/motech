@@ -172,33 +172,73 @@
 
     widgetModule.directive('serverTime', function ($http) {
         return function (scope, element, attributes) {
-            var getTime = function() {
+            var localTime, serverTime, calculatedDate, recalculatedDate, diff,
+            formatPattern = 'YYYY-MM-DD HH:mm',
+            setTime = function () {
+                if (diff !== undefined && !isNaN(diff)) {
+                    localTime = new Date();
+
+                    // Recalculate the difference in seconds between the server date and the client date
+                    recalculatedDate = localTime.getTime() - (parseInt(diff * 1000, 10));
+                    $(element).text(moment(parseInt(recalculatedDate, 10)).format(formatPattern));
+                } else {
+                    $(element).text(' ? ');
+                }
+            },
+            getServerTime = function() {
                 $http.post('gettime').success( function(time, status) {
                      if (status === 200) {
-                        $(element).text(time);
+                         localTime = new Date();
+                         serverTime = new Date(moment(parseInt(time, 10)));
+                         $(element).text(moment(new Date(moment(parseInt(time, 10)))).format(formatPattern));
+
+                         // Calculate the difference  in seconds between the server date and the client date
+                         diff = parseInt((localTime.getTime() / 1000) - (serverTime.getTime() / 1000), 10);
+                         calculatedDate = new Date(localTime.getTime() + diff);
+
+                         $(element).text(moment(calculatedDate).format(formatPattern));
+
                      } else {
-                        $(element).text(' ? ');
+                         setTime();
                      }
                 });
             };
 
-            getTime();
+            getServerTime();
+            setInterval(function () {
+                setTime();
+            }, 60000);
         };
     });
 
     widgetModule.directive('serverUpTime', function ($http) {
         return function (scope, element, attributes) {
-            var getUptime = function() {
+            var currentDate, serverStartTime,
+            setUpTime = function () {
+                if (serverStartTime !== undefined && !isNaN(serverStartTime)) {
+                    $(element).text(moment(parseInt(serverStartTime, 10)).fromNow());
+                } else {
+                    $(element).text(' ? ');
+                }
+            },
+            getUptime = function() {
                 $http.post('getUptime').success( function(data, status) {
                     if (status === 200) {
-                       $(element).text(moment(parseInt(data, 10)).fromNow());
+                        $(element).text(moment(parseInt(data, 10)).fromNow());
+
+                        // Store server start time
+                        serverStartTime = data;
+
                     } else {
-                       $(element).text(' ? ');
+                        setUpTime();
                     }
                 });
             };
 
             getUptime();
+            setInterval(function () {
+                setUpTime();
+            }, 60000);
         };
     });
 

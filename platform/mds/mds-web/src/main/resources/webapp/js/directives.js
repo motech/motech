@@ -95,43 +95,45 @@
         for (i = 0; i < fields.length; i += 1) {
             field = fields[i];
 
-            //if name is reserved for jqgrid need to change field name
-            field.basic.name = changeIfReservedFieldName(field.basic.name);
+            if (!field.nonDisplayable) {
+                //if name is reserved for jqgrid need to change field name
+                field.basic.name = changeIfReservedFieldName(field.basic.name);
 
-            cmd = {
-               label: field.basic.displayName,
-               name: field.basic.name,
-               index: field.basic.name,
-               jsonmap: "fields." + i + ".value",
-               width: 220
-            };
+                cmd = {
+                   label: field.basic.displayName,
+                   name: field.basic.name,
+                   index: field.basic.name,
+                   jsonmap: "fields." + i + ".value",
+                   width: 220
+                };
 
-            cmd.formatter = stringEscapeFormatter;
+                cmd.formatter = stringEscapeFormatter;
 
-            if (scope.isDateField(field)) {
-                cmd.formatter = 'date';
-                cmd.formatoptions = { newformat: 'Y-m-d'};
+                if (scope.isDateField(field)) {
+                    cmd.formatter = 'date';
+                    cmd.formatoptions = { newformat: 'Y-m-d'};
+                }
+
+                if (scope.isRelationshipField(field)) {
+                    // append a formatter for relationships
+                    cmd.formatter = relationshipFormatter;
+                }
+
+                if (scope.isTextArea(field.settings)) {
+                    cmd.formatter = textFormatter;
+                    cmd.classes = 'text';
+                }
+
+                if (scope.isMapField(field)) {
+                    cmd.formatter = mapFormatter;
+                }
+
+                if (scope.isComboboxField(field)) {
+                    cmd.jsonmap = "fields." + i + ".displayValue";
+                }
+
+                colModel.push(cmd);
             }
-
-            if (scope.isRelationshipField(field)) {
-                // append a formatter for relationships
-                cmd.formatter = relationshipFormatter;
-            }
-
-            if (scope.isTextArea(field.settings)) {
-                cmd.formatter = textFormatter;
-                cmd.classes = 'text';
-            }
-
-            if (scope.isMapField(field)) {
-                cmd.formatter = mapFormatter;
-            }
-
-            if (scope.isComboboxField(field)) {
-                cmd.jsonmap = "fields." + i + ".displayValue";
-            }
-
-            colModel.push(cmd);
         }
     }
 

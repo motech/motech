@@ -645,7 +645,7 @@ public class Entity {
 
         for (Field field : getFields()) {
             Long fieldId = field.getId();
-            boolean isDisplayed = dto.containsDisplayedField(fieldId);
+            boolean isDisplayed = dto.containsDisplayedField(fieldId) && !field.isNonDisplayable();
             boolean isFilterable = dto.containsFilterableField(fieldId);
 
             field.setUIDisplayable(isDisplayed);

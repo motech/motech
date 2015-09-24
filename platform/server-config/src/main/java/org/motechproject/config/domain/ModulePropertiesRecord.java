@@ -45,10 +45,10 @@ public class ModulePropertiesRecord {
     @Field
     private String version;
 
-    @Field
+    @Field(required = true)
     private String bundle;
 
-    @Field
+    @Field(required = true)
     private String filename;
 
     @Field
