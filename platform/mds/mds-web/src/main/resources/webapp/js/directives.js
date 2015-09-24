@@ -3129,7 +3129,7 @@
         return function(scope, element, attrs) {
             $http.get('../mds/resources/partials/tabLayoutWithMdsGrid.html', { cache: $templateCache }).success(function(response) {
                 var contents = element.html(response).contents();
-                $compile(contents)(scope);
+                element.replaceWith($compile(contents)(scope));
             });
         };
     });

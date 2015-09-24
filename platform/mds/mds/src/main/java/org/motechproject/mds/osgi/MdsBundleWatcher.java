@@ -5,6 +5,7 @@ import org.motechproject.mds.annotations.internal.EntityProcessorOutput;
 import org.motechproject.mds.annotations.internal.MDSAnnotationProcessor;
 import org.motechproject.mds.annotations.internal.MDSProcessorOutput;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.helper.MdsBundleHelper;
@@ -30,6 +31,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -277,6 +279,8 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
 
             if (entity == null) {
                 entity = entityService.createEntity(processedEntity);
+            } else {
+                updateUiChangedFields(result.getFieldProcessingResult(), entity.getClassName());
             }
             entityIdMappings.put(entity.getClassName(), entity.getId());
 
@@ -294,6 +298,26 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         for (Map.Entry<String, List<LookupDto>> entry : lookupProcessingResult.entrySet()) {
             entityService.addLookups(entityIdMappings.get(entry.getKey()), entry.getValue());
         }
+    }
+
+    private void updateUiChangedFields(Collection<FieldDto> fieldsToUpdate, String entityClassName) {
+        List<FieldDto> currentFields = entityService.getEntityFieldsByClassName(entityClassName);
+        for (FieldDto field : fieldsToUpdate) {
+            FieldDto currentField = getCurrentField(currentFields, field.getBasic().getName());
+            if (currentField != null && currentField.isUiChanged()) {
+                field.setUiFilterable(currentField.isUiFilterable());
+                field.setUiChanged(currentField.isUiChanged());
+            }
+        }
+    }
+
+    private FieldDto getCurrentField(List<FieldDto> currentFields, String fieldName) {
+        for (FieldDto field : currentFields) {
+            if (field.getBasic().getName().equals(fieldName)) {
+                return field;
+            }
+        }
+        return null;
     }
 
     private boolean hasNonEmptyOutput(MDSProcessorOutput output) {
