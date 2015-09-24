@@ -65,7 +65,7 @@
 }
 
 .overrideJqgridTable .ui-jqgrid .ui-jqgrid-view {
-    font-size: 0.95em;
+    font-size: 14px;
 }
 
 .overrideJqgridTable .ui-jqgrid .ui-state-highlight,
@@ -153,4 +153,8 @@ table.ui-pg-table {
 
 .overrideJqgridTable .ui-jqgrid .ui-pg-button:hover {
     border: 1px solid rgba(104, 164, 191, 1);
+}
+
+.overrideJqgridTable {
+    padding-right: 5px;
 }
