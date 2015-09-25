@@ -15,6 +15,12 @@ import java.util.List;
 @Repository
 public class ComboboxValueRepository extends AbstractRepository {
 
+    /**
+     * Retrieves all values for a multi-select combobox given its table name in the database.
+     * Multi-select comboboxes have values stored in a separate table, hence we need the table name.
+     * @param cbTableName the name of the combobox tables
+     * @return all values for the combobox currently in the database
+     */
     public List<String> getComboboxValuesForCollection(String cbTableName) {
         PersistenceManager pm = getPersistenceManager();
 
@@ -25,6 +31,12 @@ public class ComboboxValueRepository extends AbstractRepository {
         return (List<String>) query.execute();
     }
 
+    /**
+     * Retrieves all values for a single-select combobox.
+     * @param entity the entity to which the combobox belongs to
+     * @param cbField the field representing the combobox
+     * @return all values for the combobox currently in the database
+     */
     public List<String> getComboboxValuesForStringField(Entity entity, Field cbField) {
         PersistenceManager pm = getPersistenceManager();
 

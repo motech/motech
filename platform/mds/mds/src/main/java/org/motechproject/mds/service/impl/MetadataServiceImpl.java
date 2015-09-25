@@ -1,25 +1,25 @@
-package org.motechproject.mds.helper;
+package org.motechproject.mds.service.impl;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.service.MetadataService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.metadata.MemberMetadata;
 import javax.jdo.metadata.TypeMetadata;
 
-@Component
-public class MetadataHelper {
+/**
+ * Implementation of the {@link MetadataServiceImpl}. Will use the {@link PersistenceManagerFactory}
+ * available for retrieving metadata. This allows retrieving the DataNucleus metadata without making any
+ * assumptions.
+ */
+public class MetadataServiceImpl implements MetadataService {
 
     @Autowired
     private PersistenceManagerFactory persistenceManagerFactory;
 
-    public String getComboboxTableName(Entity entity, Field cbField) {
-        final String entityClassName = entity.getClassName();
-        final String cbFieldName = cbField.getName();
-
+    @Override
+    public String getComboboxTableName(String entityClassName, String cbFieldName) {
         TypeMetadata typeMetadata = persistenceManagerFactory.getMetadata(entityClassName);
         if (typeMetadata == null) {
             throw new IllegalArgumentException("No type metadata found for " + entityClassName);
@@ -31,14 +31,13 @@ public class MetadataHelper {
                     + entityClassName);
         }
 
-        String cbTableName = cbMetadata.getTable();
-
-        if (cbTableName == null) {
-            String entityTable = getEntityTableName(typeMetadata, entity);
-            cbTableName = ClassTableName.getTableName(entityTable, cbFieldName);
+        final String tableName = cbMetadata.getTable();
+        if (tableName == null) {
+            throw new IllegalArgumentException("No table name specified for member " + cbFieldName + " in "
+                    + entityClassName);
         }
 
-        return cbTableName;
+        return tableName;
     }
 
     private MemberMetadata findMemberMetadata(TypeMetadata typeMetadata, String memberName) {
@@ -51,9 +50,5 @@ public class MetadataHelper {
             }
         }
         return null;
-    }
-
-    private String getEntityTableName(TypeMetadata typeMetadata, Entity entity) {
-        return typeMetadata.getTable() == null ? ClassTableName.getTableName(entity) : typeMetadata.getTable();
     }
 }

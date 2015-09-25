@@ -7,15 +7,18 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.helper.MetadataHelper;
 import org.motechproject.mds.it.BaseInstanceIT;
 import org.motechproject.mds.repository.ComboboxValueRepository;
+import org.motechproject.mds.service.MetadataService;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.impl.MetadataServiceImpl;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.PropertyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.jdo.PersistenceManagerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +37,7 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
     private ComboboxValueRepository cbValueRepository;
 
     @Autowired
-    private MetadataHelper metadataHelper;
+    private PersistenceManagerFactory persistenceManagerFactory;
 
     @Override
     protected String getEntityName() {
@@ -68,9 +71,11 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
 
     @Test
     public void shouldRetrieveComboboxMultiSelectValuesFromDb() {
-        Entity entity = getAllEntities().retrieveByClassName(ClassName.getEntityName(ENTITY_NAME));
-        Field cbField = entity.getField(CB_FIELD_MULTI_NAME);
-        String cbTableName = metadataHelper.getComboboxTableName(entity, cbField);
+        // This service is normally taken from the generated entities bundle
+        MetadataService metadataService = new MetadataServiceImpl();
+        ReflectionTestUtils.setField(metadataService, "persistenceManagerFactory", persistenceManagerFactory);
+
+        String cbTableName = metadataService.getComboboxTableName(ClassName.getEntityClassName(ENTITY_NAME), CB_FIELD_MULTI_NAME);
 
         List<String> values = cbValueRepository.getComboboxValuesForCollection(cbTableName);
 
@@ -80,7 +85,7 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
 
     @Test
     public void shouldRetrieveComboboxSingleSelectValuesFromDb() {
-        Entity entity = getAllEntities().retrieveByClassName(ClassName.getEntityName(ENTITY_NAME));
+        Entity entity = getAllEntities().retrieveByClassName(ClassName.getEntityClassName(ENTITY_NAME));
         Field cbField = entity.getField(CB_FIELD_SINGLE_NAME);
 
         List<String> values = cbValueRepository.getComboboxValuesForStringField(entity, cbField);

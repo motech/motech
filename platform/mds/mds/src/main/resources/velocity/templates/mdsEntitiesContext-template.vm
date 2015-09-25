@@ -78,4 +78,6 @@
         <property name="jdoDialect" ref="mdsJdoDialect"/>
     </bean>
 
+    <bean id="metadataService" class="org.motechproject.mds.service.impl.MetadataServiceImpl" />
+
 </beans>

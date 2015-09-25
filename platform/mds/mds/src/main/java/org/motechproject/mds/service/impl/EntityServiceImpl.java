@@ -44,7 +44,6 @@ import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.filter.FilterValue;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.helper.ComboboxDataMigrationHelper;
-import org.motechproject.mds.helper.ComboboxValueHelper;
 import org.motechproject.mds.helper.EntityHelper;
 import org.motechproject.mds.helper.FieldHelper;
 import org.motechproject.mds.javassist.MotechClassPool;

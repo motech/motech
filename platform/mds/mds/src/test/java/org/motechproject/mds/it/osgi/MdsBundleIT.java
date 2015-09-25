@@ -39,6 +39,7 @@ import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MDSLookupService;
+import org.motechproject.mds.service.MetadataService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.RestDocumentationService;
 import org.motechproject.mds.testutil.DraftBuilder;
@@ -181,6 +182,7 @@ public class MdsBundleIT extends BasePaxIT {
 
         clearInstances();
 
+        verifyMetadataRetrieval();
         verifyInstanceCreatingAndRetrieving(objectClass);
         verifyInstanceCreatingOrUpdating(objectClass);
         verifyLookups(false); // regular lookups
@@ -717,6 +719,11 @@ public class MdsBundleIT extends BasePaxIT {
 
         assertNotNull(docs);
         assertNotSame("", docs);
+    }
+
+    private void verifyMetadataRetrieval() {
+        MetadataService metadataService = ServiceRetriever.getService(bundleContext, MetadataService.class);
+        assertEquals("MDS_FOO_SOMELIST", metadataService.getComboboxTableName(FOO_CLASS, "someList"));
     }
 
     private void prepareTestEntities() throws IOException {

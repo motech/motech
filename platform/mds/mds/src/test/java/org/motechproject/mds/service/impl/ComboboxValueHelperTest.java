@@ -1,4 +1,4 @@
-package org.motechproject.mds.helper;
+package org.motechproject.mds.service.impl;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,8 +12,11 @@ import org.motechproject.mds.domain.FieldSetting;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.repository.ComboboxValueRepository;
+import org.motechproject.mds.service.MetadataService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.TypeHelper;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 import java.util.List;
 
@@ -44,7 +47,7 @@ public class ComboboxValueHelperTest {
     private ComboboxValueRepository cbValueRepository;
 
     @Mock
-    private MetadataHelper metadataHelper;
+    private MetadataServiceImpl metadataService;
 
     @Mock
     private Entity entity;
@@ -55,6 +58,12 @@ public class ComboboxValueHelperTest {
     @Mock
     private Type type;
 
+    @Mock
+    private BundleContext bundleContext;
+
+    @Mock
+    private ServiceReference<MetadataService> ref;
+
     @Before
     public void setUp() {
         when(entity.getClassName()).thenReturn(ENTITY_CLASSNAME);
@@ -62,7 +71,10 @@ public class ComboboxValueHelperTest {
         when(field.getEntity()).thenReturn(entity);
         when(field.getType()).thenReturn(type);
         when(type.isCombobox()).thenReturn(true);
-        when(metadataHelper.getComboboxTableName(entity, field)).thenReturn(CB_TABLE_NAME);
+        when(metadataService.getComboboxTableName(ENTITY_CLASSNAME, FIELD_NAME)).thenReturn(CB_TABLE_NAME);
+
+        when(bundleContext.getServiceReference(MetadataService.class)).thenReturn(ref);
+        when(bundleContext.getService(ref)).thenReturn(metadataService);
     }
 
     @Test

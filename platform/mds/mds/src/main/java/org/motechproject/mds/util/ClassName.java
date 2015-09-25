@@ -71,11 +71,11 @@ public final class ClassName {
     /**
      * Retrieves fully qualified entity class name, for the End User Defined Entity.
      *
-     * @param className class name
+     * @param simpleName the simple class name (without the package)
      * @return fully qualified class name
      */
-    public static String getEntityName(String className) {
-        return String.format("%s.%s", Constants.PackagesGenerated.ENTITY, getSimpleName(className));
+    public static String getEntityClassName(String simpleName) {
+        return String.format("%s.%s", Constants.PackagesGenerated.ENTITY, getSimpleName(simpleName));
     }
 
     /**
