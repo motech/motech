@@ -146,6 +146,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
             restOptions = processRestOperations(clazz, restOptions);
             restOptions = findRestFields(clazz, restOptions, fields);
 
+            updateUiChangedFields(fields, className);
             updateResults(entityProcessorOutput, clazz, fields, restOptions, tracking);
 
             add(entity);
@@ -180,6 +181,28 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
         entityProcessorOutput.setRestProcessingResult(restOptions);
 
         entityProcessorOutput.setNonEditableProcessingResult(findNonEditableFields(clazz));
+    }
+
+    private void updateUiChangedFields(Collection<FieldDto> fieldsToUpdate, String entityClassName) {
+        if (entityService.getEntityByClassName(entityClassName) != null) {
+            List<FieldDto> currentFields = entityService.getEntityFieldsByClassName(entityClassName);
+            for (FieldDto field : fieldsToUpdate) {
+                FieldDto currentField = getCurrentField(currentFields, field.getBasic().getName());
+                if (currentField != null && currentField.isUiChanged()) {
+                    field.setUiFilterable(currentField.isUiFilterable());
+                    field.setUiChanged(currentField.isUiChanged());
+                }
+            }
+        }
+    }
+
+    private FieldDto getCurrentField(List<FieldDto> currentFields, String fieldName) {
+        for (FieldDto field : currentFields) {
+            if (field.getBasic().getName().equals(fieldName)) {
+                return field;
+            }
+        }
+        return null;
     }
 
     @Override
