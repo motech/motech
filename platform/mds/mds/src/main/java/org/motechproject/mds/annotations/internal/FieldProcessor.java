@@ -208,6 +208,8 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             field.setReadOnly(true);
             field.setNonEditable(false);
             field.setNonDisplayable(false);
+            field.setUiChanged(isUiChanged(currentField));
+            field.setUiFilterable(isUiFilterable(currentField));
 
             setFieldSettings(ac, classType, isRelationship, isTextArea, field);
             setFieldMetadata(classType, genericType, valueType, isCollection, isRelationship, relatedFieldIsCollection,
@@ -234,6 +236,10 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
     private boolean isUiChanged(FieldDto currentField) {
         return currentField != null && currentField.isUiChanged();
+    }
+
+    private boolean isUiFilterable(FieldDto field) {
+        return field != null && field.isUiFilterable();
     }
 
     private FieldDto getFieldByName(String className, String fieldName) {
