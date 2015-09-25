@@ -2,6 +2,7 @@ package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.UIFilterable;
 import org.motechproject.mds.reflections.ReflectionsUtil;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -33,9 +33,8 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 @Component
 class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> {
     private static final Logger LOGGER = LoggerFactory.getLogger(UIFilterableProcessor.class);
-    private static final Class[] SUPPORTED_CLASSES = {Date.class, DateTime.class, org.joda.time.LocalDate.class,
-                                                      Boolean.class, Collection.class, boolean.class,
-                                                      LocalDateTime.class, java.time.LocalDate.class};
+    private static final Class[] SUPPORTED_CLASSES = {Date.class, DateTime.class, LocalDate.class,
+                                                      Boolean.class, Collection.class, boolean.class};
 
     private Class clazz;
 
