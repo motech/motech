@@ -5,7 +5,11 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.motechproject.security.domain.MotechUserProfile;
+import org.motechproject.security.service.MotechUserService;
+import org.motechproject.server.web.dto.ChangePasswordViewData;
 import org.motechproject.server.web.dto.ResetViewData;
+import org.motechproject.server.web.form.ChangePasswordForm;
 import org.motechproject.server.web.validator.ResetFormValidator;
 import org.motechproject.security.ex.InvalidTokenException;
 import org.motechproject.security.service.PasswordRecoveryService;
@@ -22,6 +26,7 @@ import java.util.Locale;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +35,7 @@ public class ResetControllerTest {
     private static final String TOKEN = "token";
     private static final String ERROR = "error";
     private static final String PASSWORD = "password";
+    private static final String NEW_PASSWORD = "new_password";
     private static final String PAGE_LANG = "pageLang";
 
     @Mock
@@ -46,6 +52,12 @@ public class ResetControllerTest {
 
     @Mock
     private ResetForm form;
+
+    @Mock
+    private MotechUserService motechUserService;
+
+    @Mock
+    MotechUserProfile motechUserProfile;
 
     @InjectMocks
     private ResetController controller = new ResetController();
@@ -125,5 +137,58 @@ public class ResetControllerTest {
         assertEquals(true, view.isResetSucceed());
         assertEquals(Locale.ENGLISH, view.getPageLang());
         verify(recoveryService).resetPassword(TOKEN, PASSWORD, PASSWORD);
+    }
+
+    @Test
+    public void testShouldNotChangePasswordWhenPasswordIsWrong() {
+        ChangePasswordForm passwordForm = buildPasswordForm(PASSWORD, NEW_PASSWORD, NEW_PASSWORD);
+        when(motechUserService.changePassword(PASSWORD, NEW_PASSWORD)).thenReturn(null);
+
+        ChangePasswordViewData viewData = controller.changePassword(passwordForm);
+
+        List<String> errors = viewData.getErrors();
+        assertEquals(1, errors.size());
+        assertEquals("server.reset.wrongPassword", errors.get(0));
+
+        assertEquals(false, viewData.isChangingSucceed());
+        verify(motechUserService).changePassword(PASSWORD, NEW_PASSWORD);
+    }
+
+    @Test
+    public void testShouldNotChangePasswordWhenConfirmationIsWrong() {
+        ChangePasswordForm passwordForm = buildPasswordForm(PASSWORD, NEW_PASSWORD, PASSWORD);
+        when(motechUserService.changePassword(PASSWORD, NEW_PASSWORD)).thenReturn(motechUserProfile);
+
+        ChangePasswordViewData viewData = controller.changePassword(passwordForm);
+
+        List<String> errors = viewData.getErrors();
+        assertEquals(1, errors.size());
+        assertEquals("server.error.invalid.password", errors.get(0));
+
+        assertEquals(false, viewData.isChangingSucceed());
+        verify(motechUserService, never()).changePassword(PASSWORD, NEW_PASSWORD);
+    }
+
+    @Test
+    public void testShouldChangePassword() {
+        ChangePasswordForm passwordForm = buildPasswordForm(PASSWORD, NEW_PASSWORD, NEW_PASSWORD);
+        when(motechUserService.changePassword(PASSWORD, NEW_PASSWORD)).thenReturn(motechUserProfile);
+
+        ChangePasswordViewData viewData = controller.changePassword(passwordForm);
+
+        List<String> errors = viewData.getErrors();
+        assertEquals(0, errors.size());
+
+        assertEquals(true, viewData.isChangingSucceed());
+        verify(motechUserService).changePassword(PASSWORD, NEW_PASSWORD);
+    }
+
+    private ChangePasswordForm buildPasswordForm(String old, String newPassword, String confirm) {
+        ChangePasswordForm passwordForm = new ChangePasswordForm();
+        passwordForm.setOldPassword(old);
+        passwordForm.setPassword(newPassword);
+        passwordForm.setPasswordConfirmation(confirm);
+
+        return passwordForm;
     }
 }

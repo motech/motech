@@ -1,10 +1,16 @@
 package org.motechproject.server.web.controller;
 
+import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.ex.InvalidTokenException;
+import org.motechproject.security.ex.PasswordValidatorException;
+import org.motechproject.security.service.MotechUserService;
 import org.motechproject.security.service.PasswordRecoveryService;
+import org.motechproject.server.web.dto.ChangePasswordViewData;
 import org.motechproject.server.web.dto.ResetViewData;
+import org.motechproject.server.web.form.ChangePasswordForm;
 import org.motechproject.server.web.form.ResetForm;
 import org.motechproject.server.web.helper.Header;
+import org.motechproject.server.web.validator.ChangePasswordFormValidator;
 import org.motechproject.server.web.validator.ResetFormValidator;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -21,6 +27,9 @@ import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+/**
+ * Controller for resetting and changing user password.
+ */
 @Controller
 public class ResetController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ResetController.class);
@@ -37,11 +46,46 @@ public class ResetController {
     @Autowired
     private BundleContext bundleContext;
 
+    @Autowired
+    private MotechUserService motechUserService;
+
+    @RequestMapping(value = "/changepassword", method = RequestMethod.GET)
+    public ModelAndView changePasswordView(HttpServletRequest request) {
+        ModelAndView mav = new ModelAndView("changePassword");
+        mav.addObject("mainHeader", Header.generateHeader(bundleContext.getBundle()));
+
+        return mav;
+    }
+
+    @RequestMapping(value = "/changepassword", method = RequestMethod.POST)
+    @ResponseBody
+    public ChangePasswordViewData changePassword(@RequestBody ChangePasswordForm form) {
+        ChangePasswordViewData viewData = new ChangePasswordViewData(form);
+        ChangePasswordFormValidator validator = new ChangePasswordFormValidator();
+        List<String> errors = validator.validate(form);
+
+        if (!errors.isEmpty()) {
+            viewData.setChangingSucceed(false);
+            viewData.setErrors(errors);
+        } else {
+            try {
+                MotechUserProfile profile = motechUserService.changePassword(form.getOldPassword(), form.getPassword());
+                if (profile != null) {
+                    viewData.setChangingSucceed(true);
+                } else {
+                    viewData.getErrors().add("server.reset.wrongPassword");
+                }
+            } catch (PasswordValidatorException e) {
+                viewData.getErrors().add(e.getMessage());
+            }
+        }
+        return viewData;
+    }
+
     @RequestMapping(value = "/forgotreset", method = RequestMethod.GET)
     public ModelAndView resetView(HttpServletRequest request) {
         ModelAndView mav = new ModelAndView("reset");
         mav.addObject("mainHeader", Header.generateHeader(bundleContext.getBundle()));
-
         return mav;
     }
 

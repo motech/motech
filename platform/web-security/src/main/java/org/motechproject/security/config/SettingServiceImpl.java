@@ -73,7 +73,8 @@ public class SettingServiceImpl implements SettingService {
     @Override
     public int getFailureLoginLimit() {
         MotechSettings motechSettings = configurationService.getPlatformSettings();
-        return motechSettings.getFailureLoginLimit();
+        Integer failureLoginLimit = motechSettings.getFailureLoginLimit();
+        return failureLoginLimit == null ? 0 : failureLoginLimit;
     }
 
     @Override

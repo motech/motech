@@ -157,7 +157,7 @@ public interface MotechSettings {
      * Gets the failure login limit.
      * @return the failure login limit
      */
-    int getFailureLoginLimit();
+    Integer getFailureLoginLimit();
 
     /**
      * Sets the failure login limit. After reaching this limit user will be blocked.

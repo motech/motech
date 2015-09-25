@@ -335,9 +335,8 @@ public class SettingsRecord implements MotechSettings {
 
     @Ignore
     @Override
-    public int getFailureLoginLimit() {
-        String value = platformSettings.get(ConfigurationConstants.FAILURE_LOGIN_LIMIT);
-        return value == null ? 0 : Integer.parseInt(value);
+    public Integer getFailureLoginLimit() {
+        return getInteger(ConfigurationConstants.FAILURE_LOGIN_LIMIT);
     }
 
     @Override
@@ -382,7 +381,7 @@ public class SettingsRecord implements MotechSettings {
 
     private Integer getInteger(String key) {
         String value = platformSettings.get(key);
-        return StringUtils.isBlank(value) ? null : Integer.valueOf(value);
+        return StringUtils.isBlank(value) || "null".equals(value) ? null : Integer.valueOf(value);
     }
 
     private String intToStr(Integer integer) {

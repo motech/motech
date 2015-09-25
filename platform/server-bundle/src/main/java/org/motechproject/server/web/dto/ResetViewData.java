@@ -5,8 +5,8 @@ import org.motechproject.server.web.form.ResetForm;
 import java.util.List;
 import java.util.Locale;
 
-/*
- * Class responsible for holding data shared between reset controller and its view
+/**
+ * Class responsible for holding data shared between reset controller and the reset password view
  */
 public class ResetViewData {
     private ResetForm resetForm;

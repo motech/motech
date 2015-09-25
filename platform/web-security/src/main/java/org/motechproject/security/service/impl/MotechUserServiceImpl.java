@@ -131,6 +131,9 @@ public class MotechUserServiceImpl implements MotechUserService {
 
         if (motechUser != null && passwordEncoder.isPasswordValid(motechUser.getPassword(), oldPassword)) {
             motechUser.setPassword(passwordEncoder.encodePassword(newPassword));
+            if (UserStatus.MUST_CHANGE_PASSWORD.equals(motechUser.getUserStatus())) {
+                motechUser.setUserStatus(UserStatus.ACTIVE);
+            }
             allMotechUsers.update(motechUser);
             return new MotechUserProfile(motechUser);
         }

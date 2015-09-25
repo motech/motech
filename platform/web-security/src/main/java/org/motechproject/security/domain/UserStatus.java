@@ -11,6 +11,11 @@ public enum UserStatus {
     ACTIVE,
 
     /**
+     * User is active but he must change the password.
+     */
+    MUST_CHANGE_PASSWORD,
+
+    /**
      * User is blocked.
      */
     BLOCKED;
