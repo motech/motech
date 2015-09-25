@@ -870,8 +870,8 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
-    public List<FieldDto> getEntityFields(Long entityId, boolean forUI) {
-        return getFields(entityId, false, forUI);
+    public List<FieldDto> getEntityFieldsForUI(Long entityId) {
+        return getFields(entityId, false, true);
     }
 
     @Override

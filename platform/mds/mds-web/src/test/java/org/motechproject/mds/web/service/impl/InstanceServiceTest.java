@@ -383,7 +383,7 @@ public class InstanceServiceTest {
         when(motechDataService.findById(5l)).thenReturn(test2);
         when(motechDataService.findById(6l)).thenReturn(test3);
 
-        when(entityService.getEntityFields(ANOTHER_ENTITY_ID, true)).thenReturn(asList(
+        when(entityService.getEntityFieldsForUI(ANOTHER_ENTITY_ID)).thenReturn(asList(
                 FieldTestHelper.fieldDto(5L, "title", String.class.getName(), "String field", "Default"),
                 FieldTestHelper.fieldDto(6L, "testSamples", TypeDto.ONE_TO_MANY_RELATIONSHIP.getTypeClass(), "Related field", null)
         ));
@@ -517,7 +517,7 @@ public class InstanceServiceTest {
         mockDataService();
         instanceService.getEntityRecords(entityRecord.getId());
 
-        verify(entityService).getEntityFields(ANOTHER_ENTITY_ID, true);
+        verify(entityService).getEntityFieldsForUI(ANOTHER_ENTITY_ID);
     }
 
     @Test
@@ -534,7 +534,7 @@ public class InstanceServiceTest {
         mockDataService();
         instanceService.getEntityRecords(entityRecord.getId());
 
-        verify(entityService).getEntityFields(ANOTHER_ENTITY_ID, true);
+        verify(entityService).getEntityFieldsForUI(ANOTHER_ENTITY_ID);
     }
 
     @Test
@@ -551,7 +551,7 @@ public class InstanceServiceTest {
         mockDataService();
         instanceService.getEntityRecords(entityRecord.getId());
 
-        verify(entityService).getEntityFields(ANOTHER_ENTITY_ID, true);
+        verify(entityService).getEntityFieldsForUI(ANOTHER_ENTITY_ID);
     }
 
     @Test
@@ -559,7 +559,7 @@ public class InstanceServiceTest {
         mockEntity(SubclassSample.class, ENTITY_ID, entity);
         mockDataService(SubclassSample.class, motechDataService);
         when(motechDataService.retrieve("id", INSTANCE_ID)).thenReturn(new SubclassSample());
-        when(entityService.getEntityFields(ENTITY_ID, true)).thenReturn(asList(
+        when(entityService.getEntityFieldsForUI(ENTITY_ID)).thenReturn(asList(
                 FieldTestHelper.fieldDto(1L, "superclassInteger", Integer.class.getName(), "Superclass Integer", 7),
                 FieldTestHelper.fieldDto(2L, "subclassString", String.class.getName(), "Subclass String", "test"),
                 FieldTestHelper.fieldDto(3L, "superclassRelation", TypeDto.ONE_TO_ONE_RELATIONSHIP.getTypeClass(), "Superclass Relationship", null)
@@ -688,7 +688,7 @@ public class InstanceServiceTest {
 
     private void mockSampleFields() {
 
-        when(entityService.getEntityFields(ENTITY_ID, true)).thenReturn(asList(
+        when(entityService.getEntityFieldsForUI(ENTITY_ID)).thenReturn(asList(
                 FieldTestHelper.fieldDto(1L, "strField", String.class.getName(), "String field", "Default"),
                 FieldTestHelper.fieldDto(2L, "intField", Integer.class.getName(), "Integer field", 7),
                 FieldTestHelper.fieldDto(3L, "dtField", DateTime.class.getName(), "DateTime field", null),
