@@ -6,7 +6,7 @@
         <version>0.27-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
-    <artifactId>motech-platform-server-api</artifactId>
+    <groupId>testGroupId</groupId>
     <name>MOTECH Platform Server API</name>
     <packaging>bundle</packaging>
     <properties>

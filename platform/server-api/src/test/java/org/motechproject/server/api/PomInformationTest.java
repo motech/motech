@@ -6,6 +6,7 @@ import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.artifact.JavaScopes;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -16,15 +17,16 @@ public class PomInformationTest {
     private PomInformation pomInformation;
 
     @Test
-    public void shouldParsePomFile() {
+    public void shouldParsePomFile() throws IOException {
         Properties properties = new Properties();
         properties.put("test.properties", "test");
         properties.put("modules.root.dir", "${basedir}/../..");
-        // Because we use <version> tag in our tested pom, the parsing method should add this as property
+        // Because we use <version> and <groupId> tags in our tested pom, the parsing method should add this as properties
         properties.put("project.version", "0-27-SNAPSHOT");
+        properties.put("project.groupId", "testGroupId");
 
         Dependency dependency = new Dependency(new DefaultArtifact(
-                "org.motechproject",
+                "${project.groupId}",
                 "motech-osgi-platform",
                 "",
                 "jar",
@@ -34,6 +36,7 @@ public class PomInformationTest {
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("pom.xml");
         pomInformation = new PomInformation();
         pomInformation.parsePom(inputStream);
+        inputStream.close();
 
         assertEquals(properties, pomInformation.getProperties());
 
@@ -46,15 +49,17 @@ public class PomInformationTest {
     }
 
     @Test
-    public void shouldParseParentPomFile() {
+    public void shouldParseParentPomFile() throws IOException {
         Properties properties = new Properties();
         properties.put("test.properties", "testParent");
-        // Because we use <version> tag in our tested pom, the parsing method should add this as property
+        // Because we use <version> and <artifactId> tags in our tested pom, the parsing method should add this as properties
         properties.put("project.version", "0-27-SNAPSHOT");
+        properties.put("project.artifactId", "motech-platform-server-api");
 
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("parentPom.xml");
         pomInformation = new PomInformation();
         pomInformation.parseParentPom(inputStream);
+        inputStream.close();
 
         PomInformation parentPom = pomInformation.getParentPomInformation();
         assertEquals(properties, parentPom.getProperties());

@@ -13,7 +13,7 @@ import org.sonatype.aether.util.artifact.JavaScopes;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,15 +33,14 @@ public class PomInformation {
     private Properties properties;
     private List<RemoteRepository> repositories;
 
-    public void parsePom(File file) {
-        try {
-            parsePom(new FileInputStream(file));
-        } catch (FileNotFoundException ex) {
-            LOGGER.error("Error while opening POM file", ex);
-        }
+    public void parsePom(File file) throws IOException {
+        FileInputStream fileInputStream = new FileInputStream(file);
+        parsePom(fileInputStream);
+
+        fileInputStream.close();
     }
 
-    public void parsePom(InputStream inputStream) {
+    public void parsePom(InputStream inputStream) throws IOException {
         try {
             MavenXpp3Reader reader = new MavenXpp3Reader();
 
@@ -60,7 +59,7 @@ public class PomInformation {
             for (org.apache.maven.model.Dependency dependency : model.getDependencies()) {
                 if (!"test".equalsIgnoreCase(dependency.getScope())) {
                     dependencies.add(new Dependency(new DefaultArtifact(
-                            (dependency.getGroupId().contains("${")) ? parent.getGroupId() : dependency.getGroupId(),
+                            dependency.getGroupId(),
                             dependency.getArtifactId(),
                             dependency.getClassifier(),
                             "jar",
@@ -74,18 +73,19 @@ public class PomInformation {
             }
         } catch (Exception e) {
             LOGGER.error("Error while reading POM file", e);
+        } finally {
+            inputStream.close();
         }
     }
 
-    public void parseParentPom(File file) {
-        try {
-            parseParentPom(new FileInputStream(file));
-        } catch (FileNotFoundException ex) {
-            LOGGER.error("Error while opening parent POM file", ex);
-        }
+    public void parseParentPom(File file) throws IOException {
+        FileInputStream fileInputStream = new FileInputStream(file);
+        parseParentPom(fileInputStream);
+
+        fileInputStream.close();
     }
 
-    public void parseParentPom(InputStream inputStream) {
+    public void parseParentPom(InputStream inputStream) throws IOException {
         try {
             MavenXpp3Reader reader = new MavenXpp3Reader();
 
@@ -99,13 +99,15 @@ public class PomInformation {
             this.parentPomInformation = parentPom;
         } catch (Exception ex) {
             LOGGER.error("Error while reading parent POM file", ex);
+        } finally {
+            inputStream.close();
         }
     }
 
     /**
      * Sets properties from parsed pom file to the pomInformation object.
-     * Additionally this method adds project.version as property if the
-     * version tag is used in the pom file.
+     * Additionally this method adds project.version, project.artifactId,
+     * project.groupID as properties if the suitable tags are used in the pom file.
      *
      * @param pomInformation the information about parsed pom file
      * @param model the model from parsed pom file
@@ -115,6 +117,14 @@ public class PomInformation {
 
         if (model.getVersion() != null) {
             propertiesFromModel.put("project.version", model.getVersion());
+        }
+
+        if (model.getArtifactId() != null) {
+            propertiesFromModel.put("project.artifactId", model.getArtifactId());
+        }
+
+        if (model.getGroupId() != null) {
+            propertiesFromModel.put("project.groupId", model.getGroupId());
         }
 
         pomInformation.setProperties(propertiesFromModel);
