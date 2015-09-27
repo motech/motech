@@ -55,4 +55,8 @@
 
     <osgi:reference id="localeService" interface="org.motechproject.osgi.web.LocaleService"/>
 
+    <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService">
+        <osgi:reference-listener ref="passwordExpirationChecker"/>
+    </osgi:reference>
+
 </beans>
