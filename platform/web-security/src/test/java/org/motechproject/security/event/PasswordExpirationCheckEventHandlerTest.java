@@ -75,18 +75,18 @@ public class PasswordExpirationCheckEventHandlerTest {
 
     @Test
     public void shouldNotSentEventIfTheUserShouldNotResetPassword() throws Exception {
-        List<MotechUser> users = prepareMotechUsersOne();
+        List<MotechUser> users = prepareMotechUsersTwo();
 
-        when(settingService.isPasswordResetReminderEnabled()).thenReturn(false);
+        when(settingService.isPasswordResetReminderEnabled()).thenReturn(true);
         when(allUsers.retrieveAll()).thenReturn(users);
 
         eventHandler.handleEvent(event);
 
-        verify(allUsers, times(0)).retrieveAll();
+        verify(allUsers, times(1)).retrieveAll();
         verify(eventRelay, times(0)).sendEventMessage(any(MotechEvent.class));
         verify(settingService, times(1)).isPasswordResetReminderEnabled();
-        verify(settingService, times(0)).getNumberOfDaysForReminder();
-        verify(settingService, times(0)).getNumberOfDaysToChangePassword();
+        verify(settingService, times(1)).getNumberOfDaysForReminder();
+        verify(settingService, times(1)).getNumberOfDaysToChangePassword();
     }
 
     @Test
@@ -144,7 +144,7 @@ public class PasswordExpirationCheckEventHandlerTest {
         return users;
     }
 
-    private List<MotechUser> prepareMotechUsersOTwo() {
+    private List<MotechUser> prepareMotechUsersTwo() {
         List<MotechUser> users = new ArrayList<>();
         Calendar date = Calendar.getInstance();
         date.add(Calendar.DAY_OF_YEAR, -14);
