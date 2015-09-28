@@ -1157,8 +1157,9 @@ public class EntityServiceImpl implements EntityService {
         assertEntityExists(entity, entityDto.getId());
 
         for (Field field : entity.getFields()) {
-            boolean isUIFilterable = fieldNames.contains(field.getName());
-            field.setUIFilterable(isUIFilterable);
+            if (!field.isUiChanged()) {
+                field.setUIFilterable(fieldNames.contains(field.getName()));
+            }
         }
     }
 
