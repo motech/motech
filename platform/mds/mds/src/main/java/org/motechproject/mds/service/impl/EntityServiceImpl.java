@@ -877,13 +877,23 @@ public class EntityServiceImpl implements EntityService {
     @Override
     @Transactional
     public List<FieldDto> getEntityFieldsByClassName(String className) {
+        return getEntityFieldsByClassName(className, false);
+    }
+
+    @Override
+    @Transactional
+    public List<FieldDto> getEntityFieldsByClassNameForUI(String className) {
+        return getEntityFieldsByClassName(className, true);
+    }
+
+    private List<FieldDto> getEntityFieldsByClassName(String className, boolean forUI) {
         Entity entity = allEntities.retrieveByClassName(className);
         assertEntityExists(entity, className);
 
         List<Field> fields = new ArrayList<>(entity.getFields());
         Collections.sort(fields, new UIDisplayFieldComparator());
 
-        return toFieldDtos(entity, fields, true);
+        return toFieldDtos(entity, fields, forUI);
     }
 
     private List<FieldDto> getFields(Long entityId, boolean forDraft, boolean forUi) {

@@ -10,6 +10,7 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.util.SecurityMode;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -171,9 +172,20 @@ public interface EntityService {
      * Retrieves a list of all fields for the given entity class name. This will not include any draft fields.
      *
      * @param className the entity class name
-     * @return a list of fields for an entity
+     * @return a list of fields for the entity
      */
     List<FieldDto> getEntityFieldsByClassName(String className);
+
+    /**
+     * Retrieves a list of all fields for the given entity class name. This will not include any draft fields.
+     * Since this for the UI, additional display options such as all combobox values will be added to the resultant
+     * fields.
+     *
+     * @param className the entity class name
+     * @return a list of fields for the entity
+     */
+    @Transactional
+    List<FieldDto> getEntityFieldsByClassNameForUI(String className);
 
     /**
      * Retrieves a field by name. This will be able to find any draft fields,
