@@ -114,6 +114,9 @@
         loadEntity;
 
     controllers.controller('MdsEmbeddableCtrl', function ($scope, MDSUtils) {
+
+        $scope.maps = [];
+
         /**
         * Return available values for combobox field.
         *
@@ -145,6 +148,141 @@
                 map[doublet[0]] = doublet[1];
             }
             return map;
+        };
+
+        $scope.initMap = function (mapObject, fieldId) {
+            var resultMaps = [], map = [];
+            angular.forEach($scope.maps, function (scopeMap, index) {
+                if (scopeMap.id === fieldId) {
+                    $scope.maps.splice(index, 1);
+                }
+            });
+            if (mapObject !== null && typeof mapObject === "object" && mapObject !== undefined && Object.keys(mapObject).length > 0) {
+                angular.forEach(Object.keys(mapObject), function (key, index) {
+                        resultMaps.push({key: '', value: ''});
+                        resultMaps[index].key = key;
+                        resultMaps[index].value = mapObject[key];
+                },
+                resultMaps);
+            } else if (mapObject !== null && typeof mapObject === "string" && mapObject !== undefined && mapObject.toString().indexOf(':') > 0) {
+                map = mapObject.split('\n');
+                angular.forEach(map, function (map, index) {
+                    var str;
+                    str = map.split(':');
+                    if (str.length > 1) {
+                        resultMaps.push({key: '', value: ''});
+                        resultMaps[index].key = str[0].trim();
+                        resultMaps[index].value = str[1].trim();
+                    }
+                },
+               resultMaps);
+            } else {
+                resultMaps.push({key: '', value: ''});
+            }
+            resultMaps.reverse();
+            $scope.maps.push({id: fieldId, fieldMap: resultMaps});
+        };
+
+        /**
+        * Get map from field data by field id.
+        */
+        $scope.getMap = function (fieldId) {
+            var resultMap = [];
+            angular.forEach($scope.maps, function (map, index) {
+                if (parseInt(fieldId, 10) === parseInt(map.id, 10)) {
+                    resultMap = map;
+                }
+            }, resultMap);
+            return resultMap;
+        };
+
+        /**
+        * Convert map to java map object.
+        */
+        $scope.mapToMapObject = function (maps) {
+            var result = {};
+            angular.forEach(maps,
+                function (map, index) {
+                    if (map.key && map.value) {
+                        result[map.key] = map.value;
+                    }
+                }, result);
+            return result;
+        };
+
+        /**
+        * Add new map with empty key/value fields.
+        */
+        $scope.addMap = function (fieldId) {
+            angular.forEach($scope.maps, function (map, index) {
+                if (fieldId === map.id) {
+                    $scope.maps[index].fieldMap.push({key: '', value: ''});
+                }
+            });
+        };
+
+        /**
+        * Removes the key/value pair with the specified id field and index element.
+        */
+        $scope.deleteElementMap = function (fieldId, keyIndex) {
+            fieldId = parseInt(fieldId, 10);
+            angular.forEach($scope.maps, function (map, index) {
+                if (fieldId === map.id) {
+                    angular.forEach($scope.maps[index].fieldMap, function (fieldMap, indexElement) {
+                        if (indexElement === keyIndex) {
+                            $scope.safeApply(function () {
+                                $scope.maps[index].fieldMap.splice(indexElement, 1);
+                            });
+                        }
+                    });
+                }
+            });
+        };
+
+        /**
+        * Checks if the keys are unique.
+        */
+        $scope.uniqueMapKey = function (mapKey, fieldId, elementIndex) {
+            elementIndex = parseInt(elementIndex, 10);
+            var fieldMaps = $scope.getMap(fieldId),
+            keysList = function () {
+                var resultKeysList = [];
+                angular.forEach(fieldMaps.fieldMap, function (map, index) {
+                    if (map !== null && map.key !== undefined && map.key.toString() !== '') {
+                        if (index !== elementIndex) {
+                            resultKeysList.push(map.key.toString());
+                        }
+                    }
+                }, resultKeysList);
+                return resultKeysList;
+            };
+            return $.inArray(mapKey, keysList()) !== -1;
+        };
+
+        /**
+        * Checks if the pair is empty.
+        */
+        $scope.emptyMap = function (mapKey, mapValue) {
+            return mapKey.toString().length > 0 && mapValue.toString().length < 1;
+        };
+
+        $scope.getMapLength = function (obj) {
+            return Object.keys(obj).length;
+        };
+
+        $scope.getComboboxDisplayName = function (settings, value) {
+            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value;
+            // Check the user supplied flag, if true return string set
+            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
+                return value;
+            } else {
+                if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
+                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
+                    return labelValues[value];
+                } else {         // there is no colon, so we are dealing with a string set, not a map
+                    return value;
+                }
+            }
         };
     });
 
@@ -212,8 +350,6 @@
             $('body').children("#periodModal").modal('hide');
         };
 
-        $scope.maps = [];
-
         /**
         * Convert string to map.
         */
@@ -250,20 +386,6 @@
         };
 
         /**
-        * Convert map to java map object.
-        */
-        $scope.mapToMapObject = function (maps) {
-            var result = {};
-            angular.forEach(maps,
-                function (map, index) {
-                    if (map.key && map.value) {
-                        result[map.key] = map.value;
-                    }
-                }, result);
-            return result;
-        };
-
-        /**
         * Init map values.
         */
         $scope.initDefaultValueMap = function (stringValue, fieldId) {//only string to map
@@ -289,112 +411,6 @@
                 resultMaps.push({key: '', value: ''});
             }
             $scope.maps.push({id: fieldId, fieldMap: resultMaps});
-        };
-
-        $scope.initMap = function (mapObject, fieldId) {
-            var resultMaps = [], map = [];
-            angular.forEach($scope.maps, function (scopeMap, index) {
-                if (scopeMap.id === fieldId) {
-                    $scope.maps.splice(index, 1);
-                }
-            });
-            if (mapObject !== null && typeof mapObject === "object" && mapObject !== undefined && Object.keys(mapObject).length > 0) {
-                angular.forEach(Object.keys(mapObject), function (key, index) {
-                        resultMaps.push({key: '', value: ''});
-                        resultMaps[index].key = key;
-                        resultMaps[index].value = mapObject[key];
-                },
-                resultMaps);
-            } else if (mapObject !== null && typeof mapObject === "string" && mapObject !== undefined && mapObject.toString().indexOf(':') > 0) {
-                map = mapObject.split('\n');
-                angular.forEach(map, function (map, index) {
-                    var str;
-                    str = map.split(':');
-                    if (str.length > 1) {
-                        resultMaps.push({key: '', value: ''});
-                        resultMaps[index].key = str[0].trim();
-                        resultMaps[index].value = str[1].trim();
-                    }
-                },
-               resultMaps);
-            } else {
-                resultMaps.push({key: '', value: ''});
-            }
-            resultMaps.reverse();
-            $scope.maps.push({id: fieldId, fieldMap: resultMaps});
-        };
-
-        /**
-        * Get map from field data by field id.
-        */
-        $scope.getMap = function (fieldId) {
-            var resultMap = [];
-            angular.forEach($scope.maps, function (map, index) {
-                if (parseInt(fieldId, 10) === parseInt(map.id, 10)) {
-                    resultMap = map;
-                }
-            }, resultMap);
-            return resultMap;
-        };
-
-        /**
-        * Add new map with empty key/value fields.
-        */
-        $scope.addMap = function (fieldId) {
-            angular.forEach($scope.maps, function (map, index) {
-                if (fieldId === map.id) {
-                    $scope.maps[index].fieldMap.push({key: '', value: ''});
-                }
-            });
-        };
-
-        /**
-        * Removes the key/value pair with the specified id field and index element.
-        */
-        $scope.deleteElementMap = function (fieldId, keyIndex) {
-            fieldId = parseInt(fieldId, 10);
-            angular.forEach($scope.maps, function (map, index) {
-                if (fieldId === map.id) {
-                    angular.forEach($scope.maps[index].fieldMap, function (fieldMap, indexElement) {
-                        if (indexElement === keyIndex) {
-                            $scope.safeApply(function () {
-                                $scope.maps[index].fieldMap.splice(indexElement, 1);
-                            });
-                        }
-                    });
-                }
-            });
-        };
-
-        /**
-        * Checks if the keys are unique.
-        */
-        $scope.uniqueMapKey = function (mapKey, fieldId, elementIndex) {
-            elementIndex = parseInt(elementIndex, 10);
-            var fieldMaps = $scope.getMap(fieldId),
-            keysList = function () {
-                var resultKeysList = [];
-                angular.forEach(fieldMaps.fieldMap, function (map, index) {
-                    if (map !== null && map.key !== undefined && map.key.toString() !== '') {
-                        if (index !== elementIndex) {
-                            resultKeysList.push(map.key.toString());
-                        }
-                    }
-                }, resultKeysList);
-                return resultKeysList;
-            };
-            return $.inArray(mapKey, keysList()) !== -1;
-        };
-
-        /**
-        * Checks if the pair is empty.
-        */
-        $scope.emptyMap = function (mapKey, mapValue) {
-            return mapKey.toString().length > 0 && mapValue.toString().length < 1;
-        };
-
-        $scope.getMapLength = function (obj) {
-            return Object.keys(obj).length;
         };
 
         /**
@@ -598,21 +614,6 @@
                 var s1Lower = s1.toLowerCase(), s2Lower = s2.toLowerCase();
                 return s1Lower > s2Lower? 1 : (s1Lower < s2Lower? -1 : 0);
             });
-        };
-
-        $scope.getComboboxDisplayName = function (settings, value) {
-            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value;
-            // Check the user supplied flag, if true return string set
-            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
-                return value;
-            } else {
-                if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
-                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
-                    return labelValues[value];
-                } else {         // there is no colon, so we are dealing with a string set, not a map
-                    return value;
-                }
-            }
         };
     });
 
