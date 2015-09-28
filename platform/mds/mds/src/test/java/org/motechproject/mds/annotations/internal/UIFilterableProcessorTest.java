@@ -4,25 +4,19 @@ import org.eclipse.gemini.blueprint.mock.MockBundle;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.annotations.UIFilterable;
-import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.service.TypeService;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import static org.apache.commons.lang.reflect.FieldUtils.getDeclaredField;
 import static org.apache.commons.lang.reflect.MethodUtils.getAccessibleMethod;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
 import static org.motechproject.mds.testutil.MemberTestUtil.assertHasField;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -31,15 +25,11 @@ public class UIFilterableProcessorTest {
     @Spy
     private MockBundle bundle = new MockBundle();
 
-    @Mock
-    private TypeService typeService;
-
     private UIFilterableProcessor processor;
 
     @Before
     public void setUp() throws Exception {
         processor = new UIFilterableProcessor();
-        processor.setTypeService(typeService);
         processor.setClazz(Sample.class);
         processor.setBundle(bundle);
     }
@@ -63,11 +53,7 @@ public class UIFilterableProcessorTest {
     public void shouldProcessField() throws Exception {
         java.lang.reflect.Field world = getDeclaredField(Sample.class, "world", true);
 
-        doReturn(TypeDto.BOOLEAN).when(typeService).findType(Boolean.class);
-
         processor.process(world);
-
-        verify(typeService).findType(Boolean.class);
 
         Collection<String> fields = processor.getElements();
 
@@ -82,11 +68,7 @@ public class UIFilterableProcessorTest {
     public void shouldProcessGetter() throws Exception {
         Method getServerDate = getAccessibleMethod(Sample.class, "getServerDate", new Class[0]);
 
-        doReturn(TypeDto.DATE).when(typeService).findType(Date.class);
-
         processor.process(getServerDate);
-
-        verify(typeService).findType(Date.class);
 
         Collection<String> fields = processor.getElements();
 
@@ -101,10 +83,8 @@ public class UIFilterableProcessorTest {
     public void shouldNotProcessElementWithIncorrectType() throws Exception {
         java.lang.reflect.Field pi = getDeclaredField(Sample.class, "pi", true);
 
-        doReturn(TypeDto.INTEGER).when(typeService).findType(Integer.class);
-
         processor.process(pi);
 
-        verify(typeService).findType(Integer.class);
+        assertEquals(0, processor.getProcessingResult().size());
     }
 }
