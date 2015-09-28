@@ -36,7 +36,6 @@
                     dateFormat: "yy-mm-dd",
                     changeMonth: true,
                     changeYear: true,
-                    maxDate: +0,
                     timeFormat: "HH:mm:ss",
                     onSelect: function (selectedDateTime){
                         endDateTextBox.datetimepicker('option', 'minDate', elem.datetimepicker('getDate') );
@@ -51,12 +50,13 @@
                             curDate.setMonth(month - 1);
                             $(this).datepicker("setDate", curDate);
                         }
-                        endDateTextBox.datetimepicker('option', 'minDate', elem.datetimepicker('getDate') );
                     },
                     onClose: function () {
                         var viewValue = $(this).val();
                         if (viewValue === '') {
                             endDateTextBox.datetimepicker('option', 'minDate', null);
+                        } else {
+                            endDateTextBox.datetimepicker('option', 'minDate', elem.datetimepicker('getDate') );
                         }
                     }
                 });
@@ -75,7 +75,6 @@
                     dateFormat: "yy-mm-dd",
                     changeMonth: true,
                     changeYear: true,
-                    maxDate: +0,
                     timeFormat: "HH:mm:ss",
                     onSelect: function (selectedDateTime){
                         startDateTextBox.datetimepicker('option', 'maxDate', elem.datetimepicker('getDate') );
@@ -90,12 +89,13 @@
                             curDate.setMonth(month - 1);
                             $(this).datepicker("setDate", curDate);
                         }
-                        startDateTextBox.datetimepicker('option', 'maxDate', elem.datetimepicker('getDate') );
                     },
                     onClose: function () {
                         var viewValue = $(this).val();
                         if (viewValue === '') {
                             startDateTextBox.datetimepicker('option', 'maxDate', null);
+                        } else {
+                            startDateTextBox.datetimepicker('option', 'maxDate', elem.datetimepicker('getDate') );
                         }
                     }
                 });
