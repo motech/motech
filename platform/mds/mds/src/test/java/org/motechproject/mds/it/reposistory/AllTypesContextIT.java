@@ -14,6 +14,7 @@ import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.repository.AllTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class AllTypesContextIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 19;
+    private static final int START_NUMBER_OF_TYPES = 21;
 
     @Autowired
     private AllTypes allTypes;
@@ -65,6 +66,10 @@ public class AllTypesContextIT extends BaseIT {
                 null, null
         );
         assertType(
+                "mds.field.datetime8", "mds.field.description.datetime", LocalDateTime.class.getName(),
+                null, null
+        );
+        assertType(
                 "mds.field.decimal", "mds.field.description.decimal", Double.class.getName(),
                 asList("mds.form.label.precision", "mds.form.label.scale"), asList("mds.field.validation.minValue", "mds.field.validation.maxValue", "mds.field.validation.mustBeInSet", "mds.field.validation.cannotBeInSet")
         );
@@ -90,6 +95,10 @@ public class AllTypesContextIT extends BaseIT {
         );
         assertType(
                 "mds.field.date", "mds.field.description.localDate", LocalDate.class.getName(),
+                null, null
+        );
+        assertType(
+                "mds.field.date8", "mds.field.description.localDate", java.time.LocalDate.class.getName(),
                 null, null
         );
         assertType(

@@ -1,6 +1,7 @@
 package org.motechproject.mds.domain;
 
 import org.joda.time.DateTime;
+import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 
 import javax.jdo.annotations.Column;
@@ -39,6 +40,15 @@ public class EntityDraft extends Entity {
 
     @Persistent
     private Map<String, String> fieldNameChanges;
+
+    @Override
+    public void updateAdvancedSetting(AdvancedSettingsDto advancedSettings) {
+        updateIndexes(advancedSettings.getIndexes());
+        updateBrowsingSettings(advancedSettings, true);
+        updateRestOptions(advancedSettings);
+        updateTracking(advancedSettings);
+    }
+
 
     public EntityDraft() {
         fieldNameChanges = new HashMap<>();

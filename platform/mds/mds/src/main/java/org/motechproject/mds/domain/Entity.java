@@ -581,7 +581,7 @@ public class Entity {
         updateTracking(advancedSettings);
     }
 
-    private void updateRestOptions(AdvancedSettingsDto advancedSettings) {
+    protected void updateRestOptions(AdvancedSettingsDto advancedSettings) {
         RestOptionsDto dto = advancedSettings.getRestOptions();
         updateRestOptions(dto);
     }
@@ -658,6 +658,10 @@ public class Entity {
     }
 
     private void updateBrowsingSettings(AdvancedSettingsDto advancedSettings) {
+        updateBrowsingSettings(advancedSettings, false);
+    }
+
+    protected void updateBrowsingSettings(AdvancedSettingsDto advancedSettings, boolean shouldSetUiChanged) {
         BrowsingSettingsDto dto = advancedSettings.getBrowsing();
 
         if (null == dto) {
@@ -666,11 +670,15 @@ public class Entity {
 
         for (Field field : getFields()) {
             Long fieldId = field.getId();
-            boolean isDisplayed = dto.containsDisplayedField(fieldId);
+            boolean isDisplayed = dto.containsDisplayedField(fieldId) && !field.isNonDisplayable();
             boolean isFilterable = dto.containsFilterableField(fieldId);
 
             field.setUIDisplayable(isDisplayed);
-            field.setUIFilterable(isFilterable);
+
+            if ((field.isUIFilterable() != isFilterable) && shouldSetUiChanged) {
+                field.setUIFilterable(isFilterable);
+                field.setUiChanged(true);
+            }
 
             if (isDisplayed) {
                 long position = dto.indexOfDisplayedField(fieldId);
@@ -679,7 +687,7 @@ public class Entity {
         }
     }
 
-    private void updateTracking(AdvancedSettingsDto advancedSettings) {
+    protected void updateTracking(AdvancedSettingsDto advancedSettings) {
         TrackingDto trackingDto = advancedSettings.getTracking();
         updateTracking(trackingDto);
     }

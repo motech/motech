@@ -36,6 +36,7 @@ import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.util.StateManagerUtil;
 import org.motechproject.mds.lookup.LookupExecutor;
+import org.motechproject.mds.query.InMemoryQueryFilter;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
@@ -45,7 +46,6 @@ import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.service.impl.history.HistoryTrashClassHelper;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.mds.query.InMemoryQueryFilter;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.MemberUtil;
 import org.motechproject.mds.util.PropertyUtil;
@@ -72,6 +72,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -943,6 +946,12 @@ public class InstanceServiceImpl implements InstanceService {
             parsedValue = ((Time) parsedValue).timeStr();
         } else if (parsedValue instanceof LocalDate) {
             parsedValue = parsedValue.toString();
+        } else if (parsedValue instanceof java.time.LocalDate) {
+            parsedValue = parsedValue.toString();
+        } else if (parsedValue instanceof LocalDateTime) {
+            //Using ZonedDateTime for retrieving timezone
+            ZonedDateTime zonedDateTime = ZonedDateTime.of((LocalDateTime) parsedValue, ZoneOffset.systemDefault());
+            parsedValue = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm xxxx").format(zonedDateTime);
         } else if (relatedFieldMetadata != null) {
             parsedValue = removeCircularRelations(parsedValue, relatedFieldMetadata.getValue());
         }

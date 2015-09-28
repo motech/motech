@@ -69,7 +69,7 @@ public enum BundleType {
             return BundleType.FRAGMENT_BUNDLE;
         } else if (symbolicName == null || PlatformConstants.PAX_IT_SYMBOLIC_NAME.equals(symbolicName)) {
             return BundleType.THIRD_PARTY_BUNDLE;
-        } else if (symbolicName.startsWith(PlatformConstants.MDS_BUNDLE_PREFIX)) {
+        } else if (symbolicName.equals(PlatformConstants.MDS_BUNDLE_NAME)) {
             return BundleType.MDS_BUNDLE;
         } else if (symbolicName.equals(PlatformConstants.SECURITY_SYMBOLIC_NAME)) {
             return BundleType.WS_BUNDLE;

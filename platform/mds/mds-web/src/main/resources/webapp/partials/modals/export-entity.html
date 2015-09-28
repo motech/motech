@@ -28,7 +28,7 @@
                             {{msg('mds.form.exportColumns')}}
                         </label>
                         <div class="form-inline col-md-4 col-sm-4">
-                            <div class="btn-group" id="columns">
+                            <div ng-init="setDefaultExportColumns()" class="btn-group" id="columns">
                                 <a class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                                     {{msg('mds.form.exportColumns.' + actualExportColumns)}}
                                     <span class="caret"></span>
