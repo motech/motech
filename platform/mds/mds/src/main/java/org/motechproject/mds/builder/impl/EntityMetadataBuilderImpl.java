@@ -164,7 +164,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                         }
 
                         if (null != collMd) {
-                            fixCollectionMetadata(collMd);
+                            fixCollectionMetadata(collMd, field, entityType);
                         }
 
                         //Defining column name for join and element results in setting it both as XML attribute and child element
@@ -197,12 +197,16 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
 
-    private void fixCollectionMetadata(CollectionMetadata collMd) {
+    private void fixCollectionMetadata(CollectionMetadata collMd, Field field, EntityType entityType) {
         String elementType = collMd.getElementType();
         String trimmedElementType = ClassName.trimTrashHistorySuffix(elementType);
+        RelationshipHolder holder = new RelationshipHolder(field);
 
         if (null != MotechClassPool.getEnhancedClassData(trimmedElementType)) {
             collMd.setEmbeddedElement(false);
+        }
+        if (holder.isOneToMany() && holder.getRelatedField() == null) {
+            collMd.setDependentElement(holder.isCascadeDelete() || entityType == EntityType.TRASH);
         }
     }
 
@@ -220,6 +224,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             ForeignKeyMetadata rfkmd = rfmd.newForeignKeyMetadata();
             rfkmd.setDeleteAction(ForeignKeyAction.CASCADE);
         }
+
     }
 
     private void fixDuplicateColumnDefinitions(MemberMetadata mmd) {
