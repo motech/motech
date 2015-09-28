@@ -1495,7 +1495,9 @@
 
         $scope.data = $scope.$parent.$parent.$parent.i;
         $scope.pairs = [];
+        $scope.pair = { key:"", value:""};
         $scope.dataTransformed = false;
+        $scope.mapError = "";
 
         $scope.$watch(function (scope) {
             return scope.data.value;
@@ -1523,11 +1525,40 @@
             }
         });
 
-       $scope.addPair = function (pair) {
-           $scope.addToDataValue(pair, $scope.pairs.length);
-           $scope.pairs.push({key: pair.key , value : pair.value});
-           $scope.pair = null;
+        $scope.addPair = function (pair) {
+            if ($scope.uniquePairKey(pair.key)) {
+                $scope.mapError = $scope.msg('task.error.duplicateMapKeys');
+            } else if ($scope.emptyMap(pair.key, pair.value)) {
+                $scope.mapError = $scope.msg('task.error.emptyMapPair');
+            } else {
+                $scope.addToDataValue(pair, $scope.pairs.length);
+                $scope.pairs.push({key: pair.key , value : pair.value});
+                $scope.pair = { key:"", value:""};
+                $scope.mapError = "";
+            }
+        };
 
+       /**
+       * Checks if the keys are unique.
+       */
+       $scope.uniquePairKey = function (mapKey) {
+           var keysList = function () {
+               var resultKeysList = [];
+               angular.forEach($scope.pairs, function (pair) {
+                   if (pair !== null && pair.key !== undefined && pair.key.toString() !== '') {
+                       resultKeysList.push(pair.key.toString());
+                   }
+               }, resultKeysList);
+               return resultKeysList;
+           };
+           return $.inArray(mapKey, keysList()) !== -1;
+       };
+
+       /**
+       * Checks if the pair is empty.
+       */
+       $scope.emptyMap = function (pairKey, pairValue) {
+           return !(pairKey.toString().length > 0 && pairValue.toString().length > 0);
        };
 
         $scope.remove = function (index) {

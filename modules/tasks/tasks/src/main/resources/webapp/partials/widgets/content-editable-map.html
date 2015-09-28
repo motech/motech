@@ -1,27 +1,24 @@
 <div ng-controller="MapsCtrl"  ng-model="data.value" data-index="{{index}}" data-type="{{data.type}}">
-    <table>
-        <tr>
-            <th>{{msg('task.map.key')}}</th>
-            <th>{{msg('task.map.value')}}</th>
-        </tr>
-        <tr>
-            <td><editable-content ng-model="pair.key" data="pair.key" index="{{$index}}" type="MAP-INPUT"></editable-content></td>
-            <td><editable-content ng-model="pair.value" data="pair.value" index="{{$index}}" type="MAP-INPUT"></editable-content></td>
-            <td><button class="btn btn-success" ng-click="addPair(pair)"> {{msg('task.map.add')}}</button></td>
-
-        </tr>
-    </table>
-
-    <br><br>
-
-    <table>
-        <tr ng-repeat="pair in pairs">
-            <td><editable-content ng-model="pair.key" data="pair.key" index="{{$index}}" type="MAP-VALUES"></editable-content></td>
-            <td><editable-content ng-model="pair.value" data="pair.value" index="{{$index}}" type="MAP-VALUES"></editable-content></td>
-            <td><button class="btn btn-warning" ng-click="remove($index)">{{msg('task.map.remove')}}</button></td>
-        </tr>
-    </table>
-
-    <button class="btn btn-danger" ng-click="reset()">{{msg('task.map.reset')}}</button>
+    <div class="clearfix margin-before07">
+        <label class="input-large-fluid">{{msg('task.map.key')}}/{{msg('task.map.value')}}</label>
+    </div>
+    <div class="clearfix">
+        <textarea extend-input class="input-extra-fluid map-key" type="text" placeholder="{{msg('task.map.key')}}" ng-model="pair.key"></textarea>
+        <textarea extend-input class="input-extra-fluid map-value" type="text" placeholder="{{msg('task.map.value')}}" ng-model="pair.value"></textarea>
+        <button class="btn btn-success" ng-click="addPair(pair)"> {{msg('task.map.add')}}</button>
+        <div class="text-danger clearfix" ng-show="mapError">
+            <span class="form-hint form-hint-bottom">
+                {{mapError}}
+            </span>
+        </div>
+    </div>
+    <div class="clearfix" ng-repeat="pair in pairs">
+        <textarea readonly extend-input class="input-extra-fluid map-key" index="{{$index}}" type="text" placeholder="{{msg('task.map.key')}}" ng-model="pair.key"></textarea>
+        <textarea readonly extend-input class="input-extra-fluid map-value" index="{{$index}}" type="text" placeholder="{{msg('task.map.value')}}" ng-model="pair.value"></textarea>
+        <button class="btn btn-warning" ng-click="remove($index)">{{msg('task.map.remove')}}</button>
+    </div>
+    <div class="clearfix">
+        <button class="btn btn-danger" ng-click="reset()">{{msg('task.map.reset')}}</button>
+    </div>
 </div>
 
