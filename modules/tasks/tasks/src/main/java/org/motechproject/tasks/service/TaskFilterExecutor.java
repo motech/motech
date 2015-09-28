@@ -11,6 +11,8 @@ import org.motechproject.tasks.domain.OperatorType;
 import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.events.constants.TaskFailureCause;
 import org.motechproject.tasks.ex.TaskHandlerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -32,6 +34,7 @@ import static org.motechproject.tasks.domain.KeyInformation.parse;
  * <p/>
  */
 public class TaskFilterExecutor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskFilterExecutor.class);
 
     /**
      * Default constructor.
@@ -50,6 +53,7 @@ public class TaskFilterExecutor {
      */
     public boolean checkFilters(List<Filter> filters, LogicalOperator logicalOperator, TaskContext taskContext)
             throws TaskHandlerException {
+        LOGGER.debug("Checking if task: {} matches the filters", taskContext.getTask().getName());
         Map<String, Object> parameters = taskContext.getTriggerParameters();
         if (isEmpty(filters) || parameters == null) {
             return true;
@@ -66,8 +70,10 @@ public class TaskFilterExecutor {
                 if (TaskFailureCause.DATA_SOURCE.equals(e.getFailureCause())) {
                     throw e;    // data source lookups disable the task
                 }
+                LOGGER.debug("During retrieving manipulated value for: {}, the following error occurred: {}", key.getKey(), e);
                 value = null;   // trigger parameter lookups don't disable the task
             } catch (Exception e) {
+                LOGGER.debug("During retrieving manipulated value for: {}, the following error occurred: {}", key.getKey(), e);
                 value = null;
             }
 
@@ -77,11 +83,15 @@ public class TaskFilterExecutor {
                 filterCheck = !filterCheck;
             }
 
+            LOGGER.debug("Result of checking filter: {} for task: {} is: {}", filter.getDisplayName(), taskContext.getTask().getName(), filterCheck);
+
             if (isFilterConditionFulfilled(filterCheck, logicalOperator)) {
+                LOGGER.debug("Filters condition is fulfilled, because logicalOperator is: {} and filters checking has already: {} value", logicalOperator, filterCheck);
                 break;
             }
         }
 
+        LOGGER.info("Result of checking filters for task: {} is: {}", taskContext.getTask().getName(), filterCheck);
         return filterCheck;
     }
 

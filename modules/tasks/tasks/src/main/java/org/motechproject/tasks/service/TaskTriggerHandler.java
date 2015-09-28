@@ -82,6 +82,8 @@ public class TaskTriggerHandler implements TriggerHandler {
 
     @Override
     public final void registerHandlerFor(String subject) {
+        LOGGER.info("Registering handler for {}", subject);
+
         String serviceName = "taskTriggerHandler";
         Method method = ReflectionUtils.findMethod(this.getClass(), "handle", MotechEvent.class);
         Object obj = CollectionUtils.find(
@@ -105,6 +107,8 @@ public class TaskTriggerHandler implements TriggerHandler {
 
     @Override
     public void handle(MotechEvent event) throws TriggerNotFoundException {
+        LOGGER.info("Handling the motech event with subject: {}", event.getSubject());
+
         // Look for custom event parser
         Map<String, Object> eventParams = event.getParameters();
 
@@ -124,12 +128,14 @@ public class TaskTriggerHandler implements TriggerHandler {
             TaskInitializer initializer = new TaskInitializer(taskContext);
 
             try {
+                LOGGER.info("Executing all actions from task: {}", task.getName());
                 if (initializer.evalConfigSteps(dataProviders)) {
                     for (TaskActionInformation action : task.getActions()) {
                         executor.execute(task, action, taskContext);
                     }
                     handleSuccess(parameters, task);
                 }
+                LOGGER.warn("Actions from task: {} weren't executed, because config steps didn't pass the evaluation", task.getName());
             } catch (TaskHandlerException e) {
                 handleError(parameters, task, e);
             } catch (Exception e) {
@@ -139,10 +145,12 @@ public class TaskTriggerHandler implements TriggerHandler {
     }
 
     private void handleError(Map<String, Object> params, Task task, TaskHandlerException e) {
-        LOGGER.debug(String.format("Omitted task with ID: %s because: ", task.getId()), e);
+        LOGGER.warn("Omitted task: {} with ID: {} because: {}", task.getName(), task.getId(), e);
 
         activityService.addError(task, e);
         task.incrementFailuresInRow();
+
+        LOGGER.warn("The number of failures for task: {} is: {}", task.getName(), task.getFailuresInRow());
 
         int failureNumber = task.getFailuresInRow();
         int possibleErrorsNumber = getPossibleErrorsNumber();
@@ -174,6 +182,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     }
 
     private void handleSuccess(Map<String, Object> params, Task task) {
+        LOGGER.debug("All actions from task: {} with ID: {} were successfully executed", task.getName(), task.getId());
 
         activityService.addSuccess(task);
         task.resetFailuresInRow();

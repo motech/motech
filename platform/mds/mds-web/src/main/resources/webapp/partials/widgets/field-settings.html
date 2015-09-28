@@ -30,8 +30,8 @@
                 </div>
             </div>
             <div ui-if="hasType(setting, 'BOOLEAN')" class="checkbox"><input type="checkbox" id="mdsfieldsettings_{{field.id}}_{{$index}}" ng-model="setting.value" mds-auto-save-field-change="click" mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly"></div>
-            <input class="form-control input-large-fluid" ui-if="hasType(setting, 'INTEGER')" type="number" step="1" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
-            <input class="form-control input-large-fluid" ui-if="hasType(setting, 'LONG')" type="number" step="any" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
+            <input class="form-control input-large-fluid" ui-if="hasType(setting, 'INTEGER')" type="number" step="1" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-readonly="field.readOnly">
+            <input class="form-control input-large-fluid" ui-if="hasType(setting, 'LONG')" type="number" step="any" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-readonly="field.readOnly">
 
             <span class="form-hint form-hint-bottom" ng-show="hasOption(setting, 'REQUIRE') && !hasValue(setting) && !checkIfAllowSupplied(field)">
                 {{msg('mds.error.fieldIsRequired')}}

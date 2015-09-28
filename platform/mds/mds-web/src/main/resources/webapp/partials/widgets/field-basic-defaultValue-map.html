@@ -4,8 +4,8 @@
             <label class="input-large-fluid">{{msg('mds.form.label.keyValuePairs')}}&nbsp;<span class="glyphicon glyphicon-info-sign" data-trigger="hover" data-placement="top" bs-popover="{{msg('mds.tooltip.map')}}"></span></label>
         </div>
         <div ng-repeat="map in fieldMaps.fieldMap" class="clearfix" default-field-name-valid="{{field.basic.name}}" ng-class="{'has-error ng-invalid': uniqueMapKey(map.key, field.id, $index) || emptyMap(map.key, map.value), 'margin-before': $index > 0}">
-            <input mds-basic-update-map="{{$index}}" mds-path="field.basic.defaultValue" class="form-control input-large-fluid map-key" type="text" placeholder="{{msg('mds.form.label.key')}}" ng-model="map.key" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
-            <input mds-basic-update-map="{{$index}}" mds-path="field.basic.defaultValue" class="form-control input-large-fluid map-value" type="text" placeholder="{{msg('mds.form.label.value')}}" ng-model="map.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
+            <input mds-basic-update-map="{{$index}}" mds-path="field.basic.defaultValue" class="form-control input-large-fluid map-key" type="text" placeholder="{{msg('mds.form.label.key')}}" ng-model="map.key" mds-field-id="{{field.id}}" ng-readonly="field.readOnly">
+            <input mds-basic-update-map="{{$index}}" mds-path="field.basic.defaultValue" class="form-control input-large-fluid map-value" type="text" placeholder="{{msg('mds.form.label.value')}}" ng-model="map.value" mds-field-id="{{field.id}}" ng-readonly="field.readOnly">
             <a class="btn btn-danger btn-sm" ng-hide="field.readOnly" mds-basic-delete-map="{{$index}}" mds-path="field.basic.defaultValue" mds-field-id="{{field.id}}">
                 <i class="fa fa-lg fa-trash-o"></i>
             </a>
