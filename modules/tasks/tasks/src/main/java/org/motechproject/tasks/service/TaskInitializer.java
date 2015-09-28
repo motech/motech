@@ -6,6 +6,8 @@ import org.motechproject.tasks.domain.FilterSet;
 import org.motechproject.tasks.domain.Lookup;
 import org.motechproject.tasks.domain.TaskConfigStep;
 import org.motechproject.tasks.ex.TaskHandlerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,6 +30,8 @@ import static org.motechproject.tasks.events.constants.TaskFailureCause.FILTER;
  */
 class TaskInitializer {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskInitializer.class);
+
     private TaskContext taskContext;
 
     /**
@@ -47,6 +51,7 @@ class TaskInitializer {
      * @throws TaskHandlerException if there were error while handling task
      */
     public boolean evalConfigSteps(Map<String, DataProvider> dataProviders) throws TaskHandlerException {
+        LOGGER.info("Executing all config steps for task: {}", taskContext.getTask().getName());
         Iterator<TaskConfigStep> iterator = taskContext.getTask().getTaskConfig().getSteps().iterator();
         boolean result = true;
 
@@ -58,10 +63,11 @@ class TaskInitializer {
             if (step instanceof DataSource) {
                 DataSource ds = (DataSource) step;
                 taskContext.addDataSourceObject(ds.getObjectId().toString(), getDataSourceObject(ds, dataProviders), ds.isFailIfDataNotFound());
+                LOGGER.info("Task data source: {} for task: {} added", ds.getName(), taskContext.getTask().getName());
             } else if (step instanceof FilterSet) {
                 try {
                     FilterSet filterSet = (FilterSet) step;
-                    result = taskFilterExecutor.checkFilters(filterSet.getFilters(), filterSet.getOperator(), taskContext);
+                    result = taskFilterExecutor.checkFilters(filterSet.getFilters(), filterSet.getOperator(), taskContext);;
                 } catch (TaskHandlerException e) {
                     throw e;
                 } catch (Exception e) {
