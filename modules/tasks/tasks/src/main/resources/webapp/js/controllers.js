@@ -1485,17 +1485,11 @@
     });
 
     controllers.controller('MapsCtrl', function ($scope) {
-        var exp, values, dragAndDrop = $scope.BrowserDetect.browser === 'Chrome' || $scope.BrowserDetect.browser === 'Explorer';
-
-        if (dragAndDrop) {
-            exp = /((?::)((?!<span|<br>|>)[\w\W\s])+(?=$|<span|<\/span>|<br>))|((?:<br>)((?!<span|<br>)[\w\W\s])*(?=:))|(<span((?!<span)[\w\W\s])*<\/span>)/g;
-        } else {
-            exp = /((?:^|\n|\r)[\w{}\.#\s]*(?=:)|(:[\w{}\.#\s]*)(?=\n|$))/g;
-        }
+        var values, dragAndDrop = $scope.BrowserDetect.browser === 'Chrome' || $scope.BrowserDetect.browser === 'Explorer';
 
         $scope.data = $scope.$parent.$parent.$parent.i;
         $scope.pairs = [];
-        $scope.pair = { key:"", value:""};
+        $scope.pair = {key:"", value:""};
         $scope.dataTransformed = false;
         $scope.mapError = "";
 
@@ -1503,22 +1497,15 @@
             return scope.data.value;
 
         }, function () {
-            var i,key,value;
+            var i,key,value,keyValue;
             if ($scope.pairs.length === 0 && $scope.data.value !== "" && $scope.data.value !== null && !$scope.dataTransformed) {
 
-                values = $scope.data.value.match(exp);
+                values = $scope.data.value.split("<br>");
 
-                for (i = 0; i < values.length; i += 2) {
-                    key = values[i].replace("<br>", "");
-                    value =  values[i + 1].replace("<br>", "");
-
-                    if (key.startsWith(":")) {
-                        key = key.substr(1);
-                    }
-
-                    if (value.startsWith(":")) {
-                        value = value.substr(1);
-                    }
+                for (i = 0; i < values.length; i += 1) {
+                    keyValue = values[i].split(":");
+                    key = keyValue[0];
+                    value =  keyValue[1];
                     $scope.pairs.push({key:key, value:value});
                 }
                 $scope.dataTransformed = true;
@@ -1533,7 +1520,7 @@
             } else {
                 $scope.addToDataValue(pair, $scope.pairs.length);
                 $scope.pairs.push({key: pair.key , value : pair.value});
-                $scope.pair = { key:"", value:""};
+                $scope.pair = {key:"", value:""};
                 $scope.mapError = "";
             }
         };
