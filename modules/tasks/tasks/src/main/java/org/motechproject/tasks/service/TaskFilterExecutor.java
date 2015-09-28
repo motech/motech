@@ -70,10 +70,10 @@ public class TaskFilterExecutor {
                 if (TaskFailureCause.DATA_SOURCE.equals(e.getFailureCause())) {
                     throw e;    // data source lookups disable the task
                 }
-                LOGGER.debug(String.format("There was an error during retrieving manipulated value for: %s", key.getKey()), e);
+                LOGGER.debug("During retrieving manipulated value for: {}, the following error occurred: {}", key.getKey(), e);
                 value = null;   // trigger parameter lookups don't disable the task
             } catch (Exception e) {
-                LOGGER.debug(String.format("There was an error during retrieving manipulated value for: %s", key.getKey()), e);
+                LOGGER.debug("During retrieving manipulated value for: {}, the following error occurred: {}", key.getKey(), e);
                 value = null;
             }
 

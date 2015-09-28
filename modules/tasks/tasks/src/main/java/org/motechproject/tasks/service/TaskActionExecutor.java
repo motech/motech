@@ -72,10 +72,10 @@ public class TaskActionExecutor {
 
         if (action.hasService() && bundleContext != null) {
             if (callActionServiceMethod(action, parameters)) {
-                LOGGER.info("Action: {} from task: {} was executed through the service", actionInformation.getName(), task.getName());
+                LOGGER.info("Action: {} from task: {} was executed through an OSGi service call", actionInformation.getName(), task.getName());
                 return;
             }
-            LOGGER.info("There is no service: ", action.getServiceInterface());
+            LOGGER.info("There is no service: {}", action.getServiceInterface());
             activityService.addWarning(task, "task.warning.serviceUnavailable", action.getServiceInterface());
         }
 

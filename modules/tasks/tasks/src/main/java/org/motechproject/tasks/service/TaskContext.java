@@ -77,7 +77,7 @@ public class TaskContext {
      * @throws TaskHandlerException
      */
     public Object getDataSourceObjectValue(String objectId, String field, String objectType) throws TaskHandlerException {
-        LOGGER.info("Getting task data source object: {} with ID: {}", objectType, objectId);
+        LOGGER.info("Retrieving task data source object: {} with ID: {}", objectType, objectId);
 
         DataSourceObject dataSourceObject = getDataSourceObject(objectId);
         if (dataSourceObject == null) {

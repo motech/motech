@@ -482,11 +482,7 @@ public class TaskServiceImpl implements TaskService {
             errors.add(new TaskError("task.validation.error.triggerNotSpecified"));
         }
 
-        if (errors.isEmpty()) {
-            LOGGER.debug("There is no errors in trigger validation for task: {} ", task.getName());
-        } else {
-            LOGGER.debug("In trigger validation for task: {} the following errors occurred: {}", task.getName(), errors);
-        }
+        logResultOfValidation("trigger", task.getName(), errors);
 
         return errors;
     }
@@ -505,11 +501,7 @@ public class TaskServiceImpl implements TaskService {
             }
         }
 
-        if (errors.isEmpty()) {
-            LOGGER.debug("There is no errors in task data sources validation for task: {} ", task.getName());
-        } else {
-            LOGGER.debug("In task data sources validation for task: {} the following errors occurred: {}", task.getName(), errors);
-        }
+        logResultOfValidation("task data sources", task.getName(), errors);
 
         return errors;
     }
@@ -530,11 +522,7 @@ public class TaskServiceImpl implements TaskService {
             errors.add(new TaskError("task.validation.error.providerNotExist", dataSource.getProviderName()));
         }
 
-        if (errors.isEmpty()) {
-            LOGGER.debug("There is no errors in task data provider: {} validation for task: {} ", dataSource.getProviderName(), task.getName());
-        } else {
-            LOGGER.debug("In task data provider: {} validation for task: {} the following errors occurred: {}", dataSource.getProviderName(), task.getName(), errors);
-        }
+        logResultOfValidation("task data provider", task.getName(), errors);
 
         return errors;
     }
@@ -548,11 +536,7 @@ public class TaskServiceImpl implements TaskService {
             errors.addAll(validateAction(task, channel, action));
         }
 
-        if (errors.isEmpty()) {
-            LOGGER.debug("There is no errors in actions validation for task: {} ", task.getName());
-        } else {
-            LOGGER.debug("In actions validation for task: {} the following errors occurred: {}", task.getName(), errors);
-        }
+        logResultOfValidation("actions", task.getName(), errors);
 
         return errors;
     }
@@ -565,11 +549,7 @@ public class TaskServiceImpl implements TaskService {
             errors.addAll(validateAction(task, channel, action));
         }
 
-        if (errors.isEmpty()) {
-            LOGGER.debug("There is no errors in actions validation for task: {} ", task.getName());
-        } else {
-            LOGGER.debug("In actions validation for task: {} the following errors occurred: {}", task.getName(), errors);
-        }
+        logResultOfValidation("actions", task.getName(), errors);
 
         return errors;
     }
@@ -593,13 +573,17 @@ public class TaskServiceImpl implements TaskService {
             }
         }
 
-        if (errors.isEmpty()) {
-            LOGGER.debug("There is no errors in task action: {} validation for task: {} ", action.getName(), task.getName());
-        } else {
-            LOGGER.debug("In task action: {} validation for task: {} the following errors occurred: {}", action.getName(), task.getName(), errors);
-        }
+        logResultOfValidation("task action", task.getName(), errors);
 
         return errors;
+    }
+
+    private void logResultOfValidation(String validationName, String taskName, Set<TaskError> errors) {
+        if (errors.isEmpty()) {
+            LOGGER.debug("There is no errors in {} validation for task: {} ", validationName, taskName);
+        } else {
+            LOGGER.debug("In {} validation for task: {} the following errors occurred: {}", validationName, taskName, errors);
+        }
     }
 
     private Map<Long, TaskDataProvider> getProviders(Task task) {

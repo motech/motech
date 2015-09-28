@@ -98,7 +98,7 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
 
     @Override
     public void bind(Object service, Map properties) {
-        LOGGER.info("Registering task data providers");
+        LOGGER.info("Data Service for task data providers registered, starting to register queued providers");
 
         dataProviderDataService = (DataProviderDataService) service;
 

@@ -135,7 +135,7 @@ public class TaskTriggerHandler implements TriggerHandler {
                     }
                     handleSuccess(parameters, task);
                 }
-                LOGGER.warn("Actions from task: {} weren't executed, because config steps didn't pass the evaluation ", task.getName());
+                LOGGER.warn("Actions from task: {} weren't executed, because config steps didn't pass the evaluation", task.getName());
             } catch (TaskHandlerException e) {
                 handleError(parameters, task, e);
             } catch (Exception e) {
@@ -145,7 +145,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     }
 
     private void handleError(Map<String, Object> params, Task task, TaskHandlerException e) {
-        LOGGER.warn(String.format("Omitted task: %s with ID: %s because: ", task.getName(), task.getId()), e);
+        LOGGER.warn("Omitted task: {} with ID: {} because: {}", task.getName(), task.getId(), e);
 
         activityService.addError(task, e);
         task.incrementFailuresInRow();
