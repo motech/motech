@@ -142,8 +142,8 @@ public class MdsBundleIT extends BasePaxIT {
     private JarGeneratorService generator;
     private EntityService entityService;
     private MotechDataService service;
-    private FileOutputStream outputStream;
     private File configurationFile;
+    private String startingCacheType;
 
     @Inject
     private SqlDBManager sqlDBManager;
@@ -174,11 +174,14 @@ public class MdsBundleIT extends BasePaxIT {
         //turn off and on l2 cache
         configurationFile = new File(coreConfigurationService.getConfigLocation().getLocation()
                 .concat("/" + ConfigurationConstants.DATANUCLEUS_SETTINGS_FILE_NAME));
+        //Remember starting cache type. It will be restored after tests
+        startingCacheType = coreConfigurationService.loadDatanucleusConfig().getProperty("datanucleus.cache.level2.type");
     }
 
     @After
     public void tearDown() throws Exception {
         clearEntities();
+        setCacheType(startingCacheType);
     }
 
     @Test
@@ -187,23 +190,9 @@ public class MdsBundleIT extends BasePaxIT {
         //Run tests with l2 cache active
         testEntitiesBundleInstallsProperly(true);
 
-        //Turn off l2 cache
-        outputStream =  new FileOutputStream(configurationFile);
-        Properties datanucleusProps = coreConfigurationService.loadDatanucleusConfig();
-        datanucleusProps.setProperty("datanucleus.cache.level2.type", "none");
-        datanucleusProps.store(outputStream, null);
-        outputStream.close();
-
         //Run tests without l2 cache
+        setCacheType("none");
         testEntitiesBundleInstallsProperly(false);
-
-        //Remove added l2 cache property after test was done
-        //New FileOutputStream is created so the config won't be appended
-        //to existing one
-        outputStream = new FileOutputStream(configurationFile);
-        datanucleusProps.remove("datanucleus.cache.level2.type", "none");
-        datanucleusProps.store(outputStream, null);
-        outputStream.close();
     }
 
     private void testEntitiesBundleInstallsProperly(boolean withCache) throws Exception {
@@ -996,5 +985,17 @@ public class MdsBundleIT extends BasePaxIT {
             }
         }
         return null;
+    }
+
+    private void setCacheType(String type) throws IOException {
+        try (FileOutputStream outputStream = new FileOutputStream(configurationFile)) {
+            Properties datanucleusProps = coreConfigurationService.loadDatanucleusConfig();
+            if(type != null) {
+                datanucleusProps.setProperty("datanucleus.cache.level2.type", type);
+            } else {
+                datanucleusProps.remove("datanucleus.cache.level2.type");
+            }
+            datanucleusProps.store(outputStream, null);
+        }
     }
 }
