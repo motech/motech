@@ -360,7 +360,7 @@
                             if (curDate === null) {
                                 return;
                             }
-                            if (curDate.getYear() !== year || curDate.getMonth() !== month - 1) {
+                            if (curDate.getFullYear() !== year || curDate.getMonth() !== month - 1) {
                                 curDate.setYear(year);
                                 curDate.setMonth(month - 1);
                                 $(this).datepicker("setDate", curDate);
@@ -396,7 +396,7 @@
                             if (curDate === null) {
                                 return;
                             }
-                            if (curDate.getYear() !== year || curDate.getMonth() !== month - 1) {
+                            if (curDate.getFullYear() !== year || curDate.getMonth() !== month - 1) {
                                 curDate.setYear(year);
                                 curDate.setMonth(month - 1);
                                 $(this).datepicker("setDate", curDate);
