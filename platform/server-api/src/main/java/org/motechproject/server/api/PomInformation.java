@@ -1,5 +1,6 @@
 package org.motechproject.server.api;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
 import org.apache.maven.model.Repository;
@@ -33,14 +34,15 @@ public class PomInformation {
     private Properties properties;
     private List<RemoteRepository> repositories;
 
-    public void parsePom(File file) throws IOException {
-        FileInputStream fileInputStream = new FileInputStream(file);
-        parsePom(fileInputStream);
-
-        fileInputStream.close();
+    public void parsePom(File file) {
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            parsePom(fileInputStream);
+        } catch (IOException ex) {
+            LOGGER.error("Error while reading POM file", ex);
+        }
     }
 
-    public void parsePom(InputStream inputStream) throws IOException {
+    public void parsePom(InputStream inputStream) {
         try {
             MavenXpp3Reader reader = new MavenXpp3Reader();
 
@@ -71,21 +73,22 @@ public class PomInformation {
             for (Repository remoteRepository : model.getRepositories()) {
                 repositories.add(new RemoteRepository(remoteRepository.getId(), "default", remoteRepository.getUrl()));
             }
-        } catch (Exception e) {
-            LOGGER.error("Error while reading POM file", e);
+        } catch (Exception ex) {
+            LOGGER.error("Error while reading POM file", ex);
         } finally {
-            inputStream.close();
+            IOUtils.closeQuietly(inputStream);
         }
     }
 
-    public void parseParentPom(File file) throws IOException {
-        FileInputStream fileInputStream = new FileInputStream(file);
-        parseParentPom(fileInputStream);
-
-        fileInputStream.close();
+    public void parseParentPom(File file) {
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            parseParentPom(fileInputStream);
+        } catch (IOException ex) {
+            LOGGER.error("Error while reading parent POM file", ex);
+        }
     }
 
-    public void parseParentPom(InputStream inputStream) throws IOException {
+    public void parseParentPom(InputStream inputStream) {
         try {
             MavenXpp3Reader reader = new MavenXpp3Reader();
 
@@ -100,7 +103,7 @@ public class PomInformation {
         } catch (Exception ex) {
             LOGGER.error("Error while reading parent POM file", ex);
         } finally {
-            inputStream.close();
+            IOUtils.closeQuietly(inputStream);
         }
     }
 

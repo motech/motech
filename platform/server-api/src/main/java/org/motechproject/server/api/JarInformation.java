@@ -55,9 +55,8 @@ public class JarInformation {
      * Reads information from pom file and stores information about repositories and dependencies in this object.
      *
      * @param file  the file representation of a jar file or directory containing extracted jar
-     * @throws IOException if an I/O error has occurred
      */
-    public void readPOMInformation(File file) throws IOException {
+    public void readPOMInformation(File file) {
         if (file.isDirectory()) {
             readPOMFromDirectory(file);
         } else {
@@ -109,7 +108,7 @@ public class JarInformation {
         }
     }
 
-    private void readPOMFromDirectory(File file) throws IOException {
+    private void readPOMFromDirectory(File file) {
         File pomFile = new File(file, "META-INF/maven/" + bundleSymbolicName.replaceAll("\\.", "/") + "/pom.xml");
         pomInformation.parsePom(pomFile);
     }

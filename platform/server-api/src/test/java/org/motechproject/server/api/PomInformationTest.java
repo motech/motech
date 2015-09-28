@@ -33,10 +33,10 @@ public class PomInformationTest {
                 "${project.version}"
         ), JavaScopes.RUNTIME);
 
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("pom.xml");
-        pomInformation = new PomInformation();
-        pomInformation.parsePom(inputStream);
-        inputStream.close();
+        try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("pom.xml")) {
+            pomInformation = new PomInformation();
+            pomInformation.parsePom(inputStream);
+        }
 
         assertEquals(properties, pomInformation.getProperties());
 
@@ -56,10 +56,10 @@ public class PomInformationTest {
         properties.put("project.version", "0-27-SNAPSHOT");
         properties.put("project.artifactId", "motech-platform-server-api");
 
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("parentPom.xml");
-        pomInformation = new PomInformation();
-        pomInformation.parseParentPom(inputStream);
-        inputStream.close();
+        try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("parentPom.xml")) {
+            pomInformation = new PomInformation();
+            pomInformation.parseParentPom(inputStream);
+        }
 
         PomInformation parentPom = pomInformation.getParentPomInformation();
         assertEquals(properties, parentPom.getProperties());

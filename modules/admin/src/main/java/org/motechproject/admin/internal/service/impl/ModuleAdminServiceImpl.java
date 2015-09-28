@@ -238,7 +238,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         return bundleInfo;
     }
 
-    private List<ArtifactResult> resolveDependencies(Dependency dependency, PomInformation pomInformation) throws RepositoryException, IOException {
+    private List<ArtifactResult> resolveDependencies(Dependency dependency, PomInformation pomInformation) throws RepositoryException {
         LOGGER.info("Resolving dependencies for {}", dependency);
 
         org.apache.maven.repository.internal.DefaultServiceLocator locator = new org.apache.maven.repository.internal.DefaultServiceLocator();
@@ -286,7 +286,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     }
 
     private String parseDependencyVersion(Dependency dependency, MavenRepositorySystemSession mvnRepository, RepositorySystem system,
-                                          RemoteRepository remoteRepository, PomInformation pomInformation) throws ArtifactResolutionException, IOException {
+                                          RemoteRepository remoteRepository, PomInformation pomInformation) throws ArtifactResolutionException {
         String parsedVersion;
         String version = dependency.getArtifact().getVersion();
 
@@ -317,7 +317,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     }
 
     private String parseDependencyGroupId(Dependency dependency, MavenRepositorySystemSession mvnRepository, RepositorySystem system,
-                                          RemoteRepository remoteRepository, PomInformation pomInformation) throws ArtifactResolutionException, IOException {
+                                          RemoteRepository remoteRepository, PomInformation pomInformation) throws ArtifactResolutionException {
         String parsedGroupId;
         String groupId = dependency.getArtifact().getGroupId();
 
@@ -359,7 +359,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     }
 
     private String getPropertyFromPom(String propertyName, MavenRepositorySystemSession mvnRepository, RepositorySystem system,
-                                      RemoteRepository remoteRepository, PomInformation pomInformation) throws ArtifactResolutionException, IOException {
+                                      RemoteRepository remoteRepository, PomInformation pomInformation) throws ArtifactResolutionException {
         Properties properties = pomInformation.getProperties();
         String property = properties.getProperty(propertyName);
 
