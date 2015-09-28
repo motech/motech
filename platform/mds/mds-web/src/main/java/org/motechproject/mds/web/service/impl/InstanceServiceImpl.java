@@ -67,7 +67,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -403,7 +402,7 @@ public class InstanceServiceImpl implements InstanceService {
                 throw new ObjectNotFoundException(service.getClassType().getName(), instanceId);
             }
             fieldRecord = new FieldRecord(field);
-            fieldRecord.setValue(parseValueForDisplay(instance, field.getMetadata(Constants.MetadataKeys.RELATED_FIELD)));
+            fieldRecord.setValue(parseValueForDisplay(instance, field.getMetadata(Constants.MetadataKeys.RELATED_CLASS)));
             fieldRecord.setDisplayValue(instance.toString());
             return fieldRecord;
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -528,7 +527,7 @@ public class InstanceServiceImpl implements InstanceService {
                 Object value = getProperty(instance, field, service);
                 Object displayValue = getDisplayValueForField(field, value);
 
-                value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_FIELD));
+                value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_CLASS));
 
                 FieldRecord fieldRecord = new FieldRecord(field);
                 fieldRecord.setValue(value);
@@ -835,11 +834,13 @@ public class InstanceServiceImpl implements InstanceService {
             LOGGER.debug("Invocation target exception thrown when retrieving field {}. This may indicate a non loaded field",
                     fieldName, e);
             // fallback to the service
-            return service.getDetachedField(instance, fieldName);
+            Long id = (Long) PropertyUtil.safeGetProperty(instance, ID_FIELD_NAME);
+            return service.getDetachedField(id == null ? instance : service.findById(id), fieldName);
         }
     }
 
-    private Object parseValueForDisplay(Object value, MetadataDto relatedFieldMetadata) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    private Object parseValueForDisplay(Object value, MetadataDto relatedClassMetadata)
+            throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Object parsedValue = value;
 
         if (parsedValue instanceof DateTime) {
@@ -850,25 +851,32 @@ public class InstanceServiceImpl implements InstanceService {
             parsedValue = ((Time) parsedValue).timeStr();
         } else if (parsedValue instanceof LocalDate) {
             parsedValue = parsedValue.toString();
-        } else if (relatedFieldMetadata != null) {
-            parsedValue = removeCircularRelations(parsedValue, relatedFieldMetadata.getValue());
+        } else if (relatedClassMetadata != null) {
+            // We do not want to return the whole chain of relationships for UI display, but just the first level.
+            // Fetching whole relationship tree may cause trouble when serializing
+            parsedValue = breakDeepRelationChainForDisplay(parsedValue, relatedClassMetadata.getValue());
         }
 
         return parsedValue;
     }
 
-    private Object removeCircularRelations(Object object, String relatedField) {
-        // we must also handle a field that is a collection
-        // because of this we handle regular fields as single objects collection here
-        Collection objectsCollection = (object instanceof Collection) ? (Collection) object : Arrays.asList(object);
+    private Object breakDeepRelationChainForDisplay(Object value, String relatedClassName) {
+        Long entityId = entityService.getEntityByClassName(relatedClassName).getId();
+        List<FieldDto> fields = getEntityFields(entityId);
+        boolean isCollection = value instanceof Collection;
 
-        for (Object item : objectsCollection) {
-            if (item != null) {
-                PropertyUtil.safeSetProperty(item, relatedField, null);
+        // Set any relationship fields to null
+        for (FieldDto fieldDto : fields) {
+            if (fieldDto.getMetadata(Constants.MetadataKeys.RELATED_CLASS) != null && isCollection) {
+                for (Object instance : (Collection) value) {
+                    PropertyUtil.safeSetProperty(instance, fieldDto.getBasic().getName(), null);
+                }
+            } else if (fieldDto.getMetadata(Constants.MetadataKeys.RELATED_CLASS) != null && !isCollection) {
+                PropertyUtil.safeSetProperty(value, fieldDto.getBasic().getName(), null);
             }
         }
 
-        return object;
+        return value;
     }
 
     private Class<?> getEntityClass(EntityDto entity) throws ClassNotFoundException {
