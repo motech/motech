@@ -113,7 +113,48 @@
         },
         loadEntity;
 
-    controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, Entities, MDSUtils) {
+    controllers.controller('MdsEmbeddableCtrl', function ($scope, MDSUtils) {
+        /**
+        * Return available values for combobox field.
+        *
+        * @param {Array} setting A array of field settings.
+        * @return {Array} A array of possible combobox values.
+        */
+        $scope.getComboboxValues = function (settings) {
+            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value, keys = [], key;
+            // Check the user supplied flag, if true return string set
+            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
+                return labelValues;
+            } else {
+                if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
+                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
+                    for(key in labelValues) {
+                        keys.push(key);
+                    }
+                    return keys;
+                } else {        // there is no colon, so we are dealing with a string set, not a map
+                    return labelValues;
+                }
+            }
+        };
+
+        $scope.getAndSplitComboboxValues = function (labelValues) {
+            var doublet, i, map = {};
+            for (i = 0; i < labelValues.length; i += 1) {
+                doublet = labelValues[i].split(":");
+                map[doublet[0]] = doublet[1];
+            }
+            return map;
+        };
+    });
+
+    controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, $controller, Entities, MDSUtils) {
+
+        angular.extend(this, $controller('MdsEmbeddableCtrl', {
+            $scope: $scope,
+            MDSUtils: MDSUtils
+        }));
+
         var schemaEditorPath = '/mds/{0}'.format($scope.AVAILABLE_TABS[1]);
 
         $scope.DATA_BROWSER = "dataBrowser";
@@ -559,30 +600,6 @@
             });
         };
 
-        /**
-        * Return available values for combobox field.
-        *
-        * @param {Array} setting A array of field settings.
-        * @return {Array} A array of possible combobox values.
-        */
-        $scope.getComboboxValues = function (settings) {
-            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value, keys = [], key;
-            // Check the user supplied flag, if true return string set
-            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
-                return labelValues;
-            } else {
-                if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
-                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
-                    for(key in labelValues) {
-                        keys.push(key);
-                    }
-                    return keys;
-                } else {        // there is no colon, so we are dealing with a string set, not a map
-                    return labelValues;
-                }
-            }
-        };
-
         $scope.getComboboxDisplayName = function (settings, value) {
             var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value;
             // Check the user supplied flag, if true return string set
@@ -596,15 +613,6 @@
                     return value;
                 }
             }
-        };
-
-        $scope.getAndSplitComboboxValues = function (labelValues) {
-            var doublet, i, map = {};
-            for (i = 0; i < labelValues.length; i += 1) {
-                doublet = labelValues[i].split(":");
-                map[doublet[0]] = doublet[1];
-            }
-            return map;
         };
     });
 
@@ -2357,18 +2365,17 @@
         * Function called each time when user changes the checkbox state on 'Browsing settings' view.
         * Responsible for updating the model.
         */
-        $scope.onFilterableChange = function(field) {
-            var selected = $scope.advancedSettings.browsing.filterableFields.indexOf(field.id);
+        $scope.onFilterableChange = function(field, newValue) {
 
             $scope.draft({
                 edit: true,
                 values: {
-                    path: 'browsing.${0}'.format(selected ? 'addFilterableField' : 'removeFilterableField'),
+                    path: 'browsing.${0}'.format(newValue ? 'addFilterableField' : 'removeFilterableField'),
                     advanced: true,
                     value: [field.id]
                 }
             }, function () {
-                if(selected) {
+                if(newValue) {
                     $scope.advancedSettings.browsing.filterableFields.push(field.id);
                 } else {
                     $scope.advancedSettings.browsing.filterableFields.removeObject(field.id);
@@ -3185,7 +3192,7 @@
         $scope.availableExportColumns = ['All','selected'];
         $scope.availableExportFormats = ['csv','pdf'];
         $scope.actualExportRecords = 'All';
-        $scope.actualExportColumns = 'All';
+        $scope.actualExportColumns = 'selected';
         $scope.exportFormat = 'csv';
         $scope.checkboxModel = {
             exportWithLookup : false,
@@ -3289,6 +3296,8 @@
         $scope.currentRecord = undefined;
 
         $scope.allEntityFields = [];
+
+        $scope.availableFieldsForDisplay= [];
 
         $scope.validatePattern = '';
 
@@ -3855,6 +3864,16 @@
                 callback);
         };
 
+        $scope.setAvailableFieldsForDisplay = function() {
+            var i;
+            $scope.availableFieldsForDisplay = [];
+            for (i = 0; i < $scope.allEntityFields.length; i += 1) {
+                if (!$scope.allEntityFields[i].nonDisplayable) {
+                    $scope.availableFieldsForDisplay.push($scope.allEntityFields[i]);
+                }
+            }
+        };
+
         $scope.retrieveAndSetEntityData = function(entityUrl, callback) {
           $scope.lookupBy = {};
           $scope.selectedLookup = undefined;
@@ -3870,6 +3889,7 @@
 
               $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
                    $scope.allEntityFields = data;
+                   $scope.setAvailableFieldsForDisplay();
 
                    if ($routeParams.entityId === undefined) {
                       var hash = window.location.hash.substring(2, window.location.hash.length) + "/" + $scope.selectedEntity.id;
@@ -4310,6 +4330,10 @@
 
         $scope.changeExportColumns = function (columns) {
             $scope.actualExportColumns = columns;
+        };
+
+        $scope.setDefaultExportColumns = function () {
+            $scope.actualExportColumns = 'selected';
         };
 
         $scope.changeExportFormat = function (format) {
