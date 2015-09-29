@@ -1,10 +1,15 @@
 package org.motechproject.tasks.domain;
 
+
 import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 
+import javax.jdo.annotations.Discriminator;
+import javax.jdo.annotations.DiscriminatorStrategy;
+import javax.jdo.annotations.Inheritance;
+import javax.jdo.annotations.InheritanceStrategy;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -17,6 +22,8 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  */
 @Entity
 @CrudEvents(CrudEventType.NONE)
+@Inheritance(strategy= InheritanceStrategy.NEW_TABLE)
+@Discriminator(strategy= DiscriminatorStrategy.CLASS_NAME)
 public abstract class TaskEventInformation implements Serializable {
     private static final long serialVersionUID = -4931626162036319942L;
 

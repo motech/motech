@@ -4,6 +4,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.api.DataProvider;
 import org.motechproject.commons.api.TasksEventParser;
 import org.motechproject.event.MotechEvent;
@@ -11,7 +13,11 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
+import org.motechproject.scheduler.contract.RunOnceJobId;
+import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.tasks.domain.SchedulerTaskTriggerInformation;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
@@ -25,7 +31,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
+import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +59,7 @@ import static org.motechproject.tasks.service.HandlerPredicates.withServiceName;
 public class TaskTriggerHandler implements TriggerHandler {
 
     private static final String TASK_POSSIBLE_ERRORS_KEY = "task.possible.errors";
+    private static final String SCHEDULER_TASK_TRIGGER_WILDCARD = "org.motechproject.tasks.scheduler(.*)";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskTriggerHandler.class);
 
@@ -60,6 +69,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     private EventRelay eventRelay;
     private SettingsFacade settings;
     private Map<String, DataProvider> dataProviders;
+    private MotechSchedulerService schedulerService;
 
     private TaskActionExecutor executor;
 
@@ -67,14 +77,19 @@ public class TaskTriggerHandler implements TriggerHandler {
     public TaskTriggerHandler(TaskService taskService, TaskActivityService activityService,
                               EventListenerRegistryService registryService, EventRelay eventRelay,
                               TaskActionExecutor taskActionExecutor,
-                              @Qualifier("tasksSettings") SettingsFacade settings) {
+                              @Qualifier("tasksSettings") SettingsFacade settings,
+                              MotechSchedulerService schedulerService) {
         this.taskService = taskService;
         this.activityService = activityService;
         this.registryService = registryService;
         this.eventRelay = eventRelay;
         this.settings = settings;
         this.executor = taskActionExecutor;
+        this.schedulerService = schedulerService;
+    }
 
+    @PostConstruct
+    public void registerHandlerForSavedTasks(){
         for (Task task : taskService.getAllTasks()) {
             registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
         }
@@ -85,7 +100,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         String serviceName = "taskTriggerHandler";
         Method method = ReflectionUtils.findMethod(this.getClass(), "handle", MotechEvent.class);
         Object obj = CollectionUtils.find(
-            registryService.getListeners(subject), withServiceName(serviceName)
+                registryService.getListeners(subject), withServiceName(serviceName)
         );
 
         try {
@@ -101,6 +116,10 @@ public class TaskTriggerHandler implements TriggerHandler {
                     exp
             );
         }
+
+        if (subject.matches(SCHEDULER_TASK_TRIGGER_WILDCARD)) {
+            scheduleTriggerRunOnceJob(subject);
+        }
     }
 
     @Override
@@ -113,11 +132,17 @@ public class TaskTriggerHandler implements TriggerHandler {
             parser = taskService.findCustomParser((String) eventParams.get(TasksEventParser.CUSTOM_PARSER_EVENT_KEY));
         }
 
-        // Use custom event parser, if it exists, to modify event
-        TriggerEvent trigger = taskService.findTrigger(parser == null ? event.getSubject() : parser.parseEventSubject(event.getSubject(), event.getParameters()));
+        List<Task> tasks;
+        if (event.getSubject().matches(SCHEDULER_TASK_TRIGGER_WILDCARD)){
+            tasks = Arrays.asList(getSingleTaskBySubject(event.getSubject()));
+        } else {
+            // Use custom event parser, if it exists, to modify event
+            TriggerEvent trigger = taskService.findTrigger(parser == null ? event.getSubject() : parser.parseEventSubject(event.getSubject(), event.getParameters()));
+            tasks = taskService.findActiveTasksForTrigger(trigger);
+        }
+
         Map<String, Object> parameters = parser == null ? event.getParameters() : parser.parseEventParameters(event.getSubject(), event.getParameters());
 
-        List<Task> tasks = taskService.findActiveTasksForTrigger(trigger);
 
         for (Task task : tasks) {
             TaskContext taskContext = new TaskContext(task, parameters, activityService);
@@ -154,7 +179,7 @@ public class TaskTriggerHandler implements TriggerHandler {
             publishTaskDisabledMessage(task.getName());
         }
 
-        taskService.save(task);
+        taskService.save(task, !task.getTrigger().getEffectiveListenerSubject().matches(SCHEDULER_TASK_TRIGGER_WILDCARD));
 
         Map<String, Object> errorParam = new HashMap<>();
         errorParam.put(TASK_FAIL_MESSAGE, e.getMessage());
@@ -177,7 +202,8 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         activityService.addSuccess(task);
         task.resetFailuresInRow();
-        taskService.save(task);
+
+        taskService.save(task, !task.getTrigger().getEffectiveListenerSubject().matches(SCHEDULER_TASK_TRIGGER_WILDCARD));
 
         eventRelay.sendEventMessage(new MotechEvent(
             createHandlerSuccessSubject(task.getName()),
@@ -233,5 +259,53 @@ public class TaskTriggerHandler implements TriggerHandler {
     public void setBundleContext(BundleContext bundleContext) {
         this.executor.setBundleContext(bundleContext);
     }
+
+    private void scheduleTriggerRunOnceJob(String subject) {
+
+        MotechEvent motechEvent = prepareSchedulerEvent(subject);
+
+        Task task = getSingleTaskBySubject(subject);
+
+        SchedulerTaskTriggerInformation trigger = (SchedulerTaskTriggerInformation) task.getTrigger();
+
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yy-MM-dd HH:mm Z");
+        DateTime dt = formatter.parseDateTime(trigger.getStartDate());
+
+        DateTime now = new DateTime();
+
+
+        // todo check if start date is not in the past, or the exception will be thrown, add 'else' scenario
+        if (now.isBefore(dt)) {
+            RunOnceSchedulableJob job = new RunOnceSchedulableJob(motechEvent, dt.toDate());
+            schedulerService.safeScheduleRunOnceJob(job);
+        }
+    }
+
+    public void unscheduleTaskTriggerFor(Task task){
+
+        // Since no jobId is assigned when creating motechEvent "null" is put here. Fix when event jobId will be used.
+        // todo actually we can use task name as a jobID
+        RunOnceJobId jobId = new RunOnceJobId(task.getTrigger().getEffectiveListenerSubject(), "null");
+        schedulerService.unscheduleJob(jobId);
+    }
+
+    public MotechEvent prepareSchedulerEvent(String subject) {
+        Map<String, Object> values = new HashMap<>();
+
+        return new MotechEvent(subject, values);
+    }
+
+    private Task getSingleTaskBySubject(String subject) {
+        List<Task> tasks;
+        String[] name = subject.split("\\.");
+        tasks = taskService.findTasksByName(name[name.length-1]);
+
+        if (tasks.size() == 1) {
+            return tasks.get(0);
+        } else {
+            return null;
+        }
+    }
+
 
 }

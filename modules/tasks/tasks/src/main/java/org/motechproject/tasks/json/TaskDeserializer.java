@@ -10,6 +10,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
 import org.codehaus.jackson.type.JavaType;
 import org.joda.time.DateTime;
+import org.motechproject.tasks.domain.SchedulerTaskTriggerInformation;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskConfig;
@@ -29,10 +30,13 @@ import java.util.Set;
 public class TaskDeserializer extends JsonDeserializer<Task> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskDeserializer.class);
+    private static final String SCHEDULER_TASK = "org.motechproject.tasks.scheduler.";
 
     private ObjectMapper mapper;
     private Task task;
     private JsonNode jsonNode;
+
+
 
     @Override
     public Task deserialize(JsonParser jsonParser,
@@ -64,7 +68,12 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
         setProperty("enabled", stringType);
         setProperty("hasRegisteredChannel", stringType);
         setProperty("taskConfig", typeFactory.constructType(TaskConfig.class));
-        setProperty("trigger", typeFactory.constructType(TaskTriggerInformation.class));
+
+        if (jsonNode.get("trigger").toString().contains(SCHEDULER_TASK)){
+            setProperty("trigger", typeFactory.constructType(SchedulerTaskTriggerInformation.class));
+        } else {
+            setProperty("trigger", typeFactory.constructType(TaskTriggerInformation.class));
+        }
 
         setProperty(
                 "validationErrors",

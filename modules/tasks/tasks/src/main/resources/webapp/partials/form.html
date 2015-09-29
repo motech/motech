@@ -77,9 +77,18 @@
                                     </ul>
                                     <div class="clearfix"></div>
                                 </div>
+
+                                <div  >
+                                    <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="col-md-10 col-sm-9">
+                                        <label class="col-md-2 col-sm-3 control-label"> start date </label>
+                                        <div  class="input-group">
+                                            <input  id="startDate" type="text"  droppable class="actionField form-control" data-index="{{$index}}" data-type="DATE" datetime-picker-trigger-input placeholder="{{msg('task.placeholder.dateOnly')}}" style="background:white;"/>
+                                            <div class="input-group-btn" datetime-picker><button class="btn btn-default">{{msg('task.button.selectDate')}}</button></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
                 </div>
 
                 <div ng-hide="!task.trigger.subject">

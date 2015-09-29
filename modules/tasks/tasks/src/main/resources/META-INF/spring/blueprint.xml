@@ -58,6 +58,9 @@
     <osgi:reference id="tasksDataServiceOSGi"
                     interface="org.motechproject.tasks.repository.TasksDataService"/>
 
+    <osgi:reference id="motechSchedulerService"
+                    interface="org.motechproject.scheduler.service.MotechSchedulerService"/>
+
 
     <osgi:service id="channelServiceOsgi" auto-export="interfaces" ref="channelService"
                   interface="org.motechproject.tasks.service.ChannelService">

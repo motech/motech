@@ -11,6 +11,9 @@ import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
 
+import javax.jdo.annotations.Inheritance;
+import javax.jdo.annotations.InheritanceStrategy;
+
 /**
  * Represents information about a single task trigger. A task trigger is an event that triggers execution of a task. It
  * is a part of the task model.
@@ -18,6 +21,7 @@ import org.motechproject.tasks.constants.TasksRoles;
 @Entity(recordHistory = true)
 @CrudEvents(CrudEventType.NONE)
 @Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
+@Inheritance(strategy = InheritanceStrategy.SUPERCLASS_TABLE)
 public class TaskTriggerInformation extends TaskEventInformation {
 
     private static final long serialVersionUID = 2024337448953130758L;
@@ -72,5 +76,11 @@ public class TaskTriggerInformation extends TaskEventInformation {
     @JsonIgnore
     public String getEffectiveListenerSubject() {
         return StringUtils.isEmpty(triggerListenerSubject) ? super.getSubject() : triggerListenerSubject;
+    }
+
+    @Ignore
+    @JsonIgnore
+    public void setEffectiveListenerSubject(String effectiveListenerSubject){
+        this.triggerListenerSubject = effectiveListenerSubject;
     }
 }

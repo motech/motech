@@ -1,6 +1,7 @@
 package org.motechproject.tasks.service;
 
 import org.motechproject.event.MotechEvent;
+import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
 
 /**
@@ -27,5 +28,8 @@ public interface TriggerHandler {
      * @throws TriggerNotFoundException if the trigger for the given event wasn't found
      */
     void handle(MotechEvent event) throws TriggerNotFoundException;
+
+    // todo
+    void unscheduleTaskTriggerFor(Task task);
 
 }

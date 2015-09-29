@@ -79,6 +79,7 @@ import static org.motechproject.tasks.validation.TaskValidator.TASK;
 @Service("taskService")
 public class TaskServiceImpl implements TaskService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskServiceImpl.class);
+    private static final String SCHEDULER_TASK_TRIGGER_WILDCARD = "org.motechproject.tasks.scheduler(.*)";
 
     private TasksDataService tasksDataService;
     private ChannelService channelService;
@@ -102,8 +103,13 @@ public class TaskServiceImpl implements TaskService {
         );
     }
 
+
+    public void save(final Task task){
+        save(task, true);
+    }
+
     @Override
-    public void save(final Task task) {
+    public void save(final Task task, boolean registerHandler) {
         Set<TaskError> errors = TaskValidator.validate(task);
 
         if (task.isEnabled() && !isEmpty(errors)) {
@@ -124,8 +130,17 @@ public class TaskServiceImpl implements TaskService {
             task.setValidationErrors(null);
         }
 
+        // todo clean those ifs somehow
+        if (task.getTrigger().getSubject().matches(SCHEDULER_TASK_TRIGGER_WILDCARD)) {
+            task.getTrigger().setEffectiveListenerSubject(task.getTrigger().getSubject() + task.getName());
+        }
+
         addOrUpdate(task);
-        registerHandler(task.getTrigger().getEffectiveListenerSubject());
+
+        if (registerHandler) {
+            registerHandler(task.getTrigger().getEffectiveListenerSubject());
+        }
+
         LOGGER.info(format("Saved task: %s", task.getId()));
     }
 
@@ -269,6 +284,8 @@ public class TaskServiceImpl implements TaskService {
         if (t == null) {
             throw new TaskNotFoundException(taskId);
         }
+
+        unscheduleTaskTrigger(t);
 
         tasksDataService.delete(t);
     }
@@ -672,6 +689,14 @@ public class TaskServiceImpl implements TaskService {
                     }
                 }
             }
+        }
+    }
+
+    private void unscheduleTaskTrigger(Task task) {
+        ServiceReference<TriggerHandler> serviceReference = bundleContext.getServiceReference(TriggerHandler.class);
+        if (serviceReference != null) {
+            TriggerHandler triggerHandler = bundleContext.getService(serviceReference);
+            triggerHandler.unscheduleTaskTriggerFor(task);
         }
     }
 
