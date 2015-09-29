@@ -8,6 +8,8 @@ import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.service.ChannelService;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ReflectionUtils;
@@ -31,6 +33,7 @@ import static org.springframework.util.ReflectionUtils.findMethod;
  * @since 0.19
  */
 public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskAnnotationBeanPostProcessor.class);
 
     private BundleContext bundleContext;
     private ChannelService channelService;
@@ -68,10 +71,12 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
         if (bean == null) {
             return null;
         }
+
         final Class<?> targetClass = getTargetClass(bean);
         final TaskChannel taskChannel = targetClass.getAnnotation(TaskChannel.class);
 
         if (taskChannel != null) {
+            LOGGER.debug("The @TaskChannel annotation was found in {}", targetClass.getName());
             doWithMethods(targetClass, new ReflectionUtils.MethodCallback() {
 
                 @Override
@@ -84,6 +89,7 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
                         TaskAction taskAction = targetMethod.getAnnotation(TaskAction.class);
 
                         if (taskAction != null) {
+                            LOGGER.debug("The @TaskAction annotation was found in method: {}", targetMethod.getName());
                             String serviceInterface = getServiceInterface(targetClass);
                             Channel channel = getChannel(taskChannel);
 
@@ -113,6 +119,7 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
 
         if (!foundAction) {
             channel.addActionTaskEvent(action);
+            LOGGER.debug("Action task event: {} added to channel: {}", action.getName(), channel.getDisplayName());
         }
 
         channelService.addOrUpdate(channel);
@@ -126,7 +133,10 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
         Channel channel = channelService.getChannel(moduleName);
 
         if (channel == null) {
+            LOGGER.debug("Creating new channel: {}  for module: {}", displayName, moduleName);
             channel = new Channel(displayName, moduleName, moduleVersion);
+        } else {
+            LOGGER.debug("Channel: {}  for module: {} was retrieved", displayName, moduleName);
         }
 
         return channel;
@@ -155,7 +165,9 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
         for (Annotation[] annotations : method.getParameterAnnotations()) {
             for (Annotation annotation : annotations) {
                 if (annotation instanceof TaskActionParam) {
+                    LOGGER.debug("The @TaskActionParam annotation was found in parameters from method: {}", method.getName());
                     TaskActionParam param = (TaskActionParam) annotation;
+                    LOGGER.debug("Task action parameter: {} added", param.displayName());
 
                     parameters.add(new ActionParameterBuilder().setDisplayName(param.displayName()).setKey(param.key())
                             .setType(param.type()).setOrder(order).setRequired(param.required()).createActionParameter());

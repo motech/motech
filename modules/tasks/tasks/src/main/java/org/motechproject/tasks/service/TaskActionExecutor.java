@@ -14,6 +14,8 @@ import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TaskHandlerException;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +38,7 @@ import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
  */
 @Component
 public class TaskActionExecutor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskActionExecutor.class);
 
     private BundleContext bundleContext;
     private EventRelay eventRelay;
@@ -61,20 +64,25 @@ public class TaskActionExecutor {
      * @throws TaskHandlerException when the task couldn't be executed
      */
     public void execute(Task task, TaskActionInformation actionInformation, TaskContext taskContext) throws TaskHandlerException {
+        LOGGER.info("Executing task action: {} from task: {}", actionInformation.getName(), task.getName());
         this.keyEvaluator = new KeyEvaluator(taskContext);
         ActionEvent action = getActionEvent(actionInformation);
         Map<String, Object> parameters = createParameters(actionInformation, action);
+        LOGGER.debug("Parameters created: {} for task action: {}", parameters.toString(), action.getName());
 
         if (action.hasService() && bundleContext != null) {
             if (callActionServiceMethod(action, parameters)) {
+                LOGGER.info("Action: {} from task: {} was executed through an OSGi service call", actionInformation.getName(), task.getName());
                 return;
             }
+            LOGGER.info("There is no service: {}", action.getServiceInterface());
             activityService.addWarning(task, "task.warning.serviceUnavailable", action.getServiceInterface());
         }
 
         if (!action.hasSubject()) {
             throw new TaskHandlerException(ACTION, "task.error.cantExecuteAction");
         } else {
+            LOGGER.info("Event: {} was sent", action.getSubject());
             eventRelay.sendEventMessage(new MotechEvent(action.getSubject(), parameters));
         }
     }
