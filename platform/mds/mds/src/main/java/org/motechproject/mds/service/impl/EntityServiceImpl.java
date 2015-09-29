@@ -162,7 +162,7 @@ public class EntityServiceImpl implements EntityService {
 
         Entity entity = allEntities.create(entityDto);
 
-        LOGGER.debug("Adding default fields to the entity which do not extend MdsEntity or MdsVersionedEntity");
+        LOGGER.debug("Adding default fields to the entity, since it doesn't extend MdsEntity or MdsVersionedEntity");
         if (!MdsEntity.class.getName().equalsIgnoreCase(entityDto.getSuperClass())
                 && !MdsVersionedEntity.class.getName().equalsIgnoreCase(entityDto.getSuperClass())) {
             EntityHelper.addDefaultFields(entity, allTypes);
@@ -1152,7 +1152,7 @@ public class EntityServiceImpl implements EntityService {
         Entity entity = allEntities.retrieveById(entityId);
         assertEntityExists(entity, entityId);
 
-        List<Field> displayFields = entity.getFields();
+        List<Field> displayFields = new ArrayList<>(entity.getFields());
 
         CollectionUtils.filter(displayFields, new Predicate() {
             @Override

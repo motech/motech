@@ -10,7 +10,6 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.util.SecurityMode;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -184,7 +183,6 @@ public interface EntityService {
      * @param className the entity class name
      * @return a list of fields for the entity
      */
-    @Transactional
     List<FieldDto> getEntityFieldsByClassNameForUI(String className);
 
     /**
