@@ -4,8 +4,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.api.DataProvider;
 import org.motechproject.commons.api.TasksEventParser;
 import org.motechproject.event.MotechEvent;
@@ -14,10 +12,8 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.scheduler.contract.RunOnceJobId;
-import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.tasks.domain.SchedulerTaskTriggerInformation;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
@@ -70,6 +66,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     private SettingsFacade settings;
     private Map<String, DataProvider> dataProviders;
     private MotechSchedulerService schedulerService;
+    private SchedulerTaskTriggerUtil schedulerTaskTriggerUtil;
 
     private TaskActionExecutor executor;
 
@@ -78,7 +75,8 @@ public class TaskTriggerHandler implements TriggerHandler {
                               EventListenerRegistryService registryService, EventRelay eventRelay,
                               TaskActionExecutor taskActionExecutor,
                               @Qualifier("tasksSettings") SettingsFacade settings,
-                              MotechSchedulerService schedulerService) {
+                              MotechSchedulerService schedulerService,
+                              SchedulerTaskTriggerUtil schedulerTaskTriggerUtil) {
         this.taskService = taskService;
         this.activityService = activityService;
         this.registryService = registryService;
@@ -86,6 +84,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         this.settings = settings;
         this.executor = taskActionExecutor;
         this.schedulerService = schedulerService;
+        this.schedulerTaskTriggerUtil = schedulerTaskTriggerUtil;
     }
 
     @PostConstruct
@@ -118,7 +117,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         }
 
         if (subject.matches(SCHEDULER_TASK_TRIGGER_WILDCARD)) {
-            scheduleTriggerRunOnceJob(subject);
+            schedulerTaskTriggerUtil.scheduleTriggerJob(subject);
         }
     }
 
@@ -134,7 +133,7 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         List<Task> tasks;
         if (event.getSubject().matches(SCHEDULER_TASK_TRIGGER_WILDCARD)){
-            tasks = Arrays.asList(getSingleTaskBySubject(event.getSubject()));
+            tasks = Arrays.asList(schedulerTaskTriggerUtil.getSingleTaskBySubject(event.getSubject()));
         } else {
             // Use custom event parser, if it exists, to modify event
             TriggerEvent trigger = taskService.findTrigger(parser == null ? event.getSubject() : parser.parseEventSubject(event.getSubject(), event.getParameters()));
@@ -206,8 +205,8 @@ public class TaskTriggerHandler implements TriggerHandler {
         taskService.save(task, !task.getTrigger().getEffectiveListenerSubject().matches(SCHEDULER_TASK_TRIGGER_WILDCARD));
 
         eventRelay.sendEventMessage(new MotechEvent(
-            createHandlerSuccessSubject(task.getName()),
-            params
+                createHandlerSuccessSubject(task.getName()),
+                params
         ));
     }
 
@@ -260,27 +259,6 @@ public class TaskTriggerHandler implements TriggerHandler {
         this.executor.setBundleContext(bundleContext);
     }
 
-    private void scheduleTriggerRunOnceJob(String subject) {
-
-        MotechEvent motechEvent = prepareSchedulerEvent(subject);
-
-        Task task = getSingleTaskBySubject(subject);
-
-        SchedulerTaskTriggerInformation trigger = (SchedulerTaskTriggerInformation) task.getTrigger();
-
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("yy-MM-dd HH:mm Z");
-        DateTime dt = formatter.parseDateTime(trigger.getStartDate());
-
-        DateTime now = new DateTime();
-
-
-        // todo check if start date is not in the past, or the exception will be thrown, add 'else' scenario
-        if (now.isBefore(dt)) {
-            RunOnceSchedulableJob job = new RunOnceSchedulableJob(motechEvent, dt.toDate());
-            schedulerService.safeScheduleRunOnceJob(job);
-        }
-    }
-
     public void unscheduleTaskTriggerFor(Task task){
 
         // Since no jobId is assigned when creating motechEvent "null" is put here. Fix when event jobId will be used.
@@ -289,23 +267,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         schedulerService.unscheduleJob(jobId);
     }
 
-    public MotechEvent prepareSchedulerEvent(String subject) {
-        Map<String, Object> values = new HashMap<>();
 
-        return new MotechEvent(subject, values);
-    }
-
-    private Task getSingleTaskBySubject(String subject) {
-        List<Task> tasks;
-        String[] name = subject.split("\\.");
-        tasks = taskService.findTasksByName(name[name.length-1]);
-
-        if (tasks.size() == 1) {
-            return tasks.get(0);
-        } else {
-            return null;
-        }
-    }
 
 
 }

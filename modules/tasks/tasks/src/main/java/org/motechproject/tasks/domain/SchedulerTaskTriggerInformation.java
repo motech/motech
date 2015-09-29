@@ -1,6 +1,9 @@
 package org.motechproject.tasks.domain;
 
 
+import org.joda.time.Period;
+import org.motechproject.commons.date.model.DayOfWeek;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
@@ -44,7 +47,7 @@ public class SchedulerTaskTriggerInformation extends TaskTriggerInformation {
     private String endDate;
 
     @Field
-    private long interval;
+    private int interval;
 
     @Field
     private String cronExpression;
@@ -53,7 +56,16 @@ public class SchedulerTaskTriggerInformation extends TaskTriggerInformation {
     private int repeatCount;
 
     @Field
-    private List<String> days;
+    private List<DayOfWeek> days;
+
+    @Field
+    private boolean ignoreFiresignorePastFiresAtStart;
+
+    @Field
+    private Time time;
+
+    @Field
+    private Period repeatPeriod;
 
 
     /**
@@ -105,11 +117,11 @@ public class SchedulerTaskTriggerInformation extends TaskTriggerInformation {
         this.endDate = endDate;
     }
 
-    public long getInterval() {
+    public int getInterval() {
         return interval;
     }
 
-    public void setInterval(long interval) {
+    public void setInterval(int interval) {
         this.interval = interval;
     }
 
@@ -129,11 +141,35 @@ public class SchedulerTaskTriggerInformation extends TaskTriggerInformation {
         this.repeatCount = repeatCount;
     }
 
-    public List<String> getDays() {
+    public List<DayOfWeek> getDays() {
         return days;
     }
 
-    public void setDays(List<String> days) {
+    public void setDays(List<DayOfWeek> days) {
         this.days = days;
+    }
+
+    public boolean isIgnoreFiresignorePastFiresAtStart() {
+        return ignoreFiresignorePastFiresAtStart;
+    }
+
+    public void setIgnoreFiresignorePastFiresAtStart(boolean ignoreFiresignorePastFiresAtStart) {
+        this.ignoreFiresignorePastFiresAtStart = ignoreFiresignorePastFiresAtStart;
+    }
+
+    public Time getTime() {
+        return time;
+    }
+
+    public void setTime(Time time) {
+        this.time = time;
+    }
+
+    public Period getRepeatPeriod() {
+        return repeatPeriod;
+    }
+
+    public void setRepeatPeriod(Period repeatPeriod) {
+        this.repeatPeriod = repeatPeriod;
     }
 }

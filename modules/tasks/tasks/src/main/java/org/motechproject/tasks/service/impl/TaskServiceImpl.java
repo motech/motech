@@ -20,6 +20,7 @@ import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.FilterSet;
 import org.motechproject.tasks.domain.Lookup;
+import org.motechproject.tasks.domain.SchedulerTaskTriggerInformation;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskConfigStep;
@@ -34,6 +35,7 @@ import org.motechproject.tasks.ex.TriggerNotFoundException;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.TasksDataService;
 import org.motechproject.tasks.service.ChannelService;
+import org.motechproject.tasks.service.SchedulerTaskTriggerUtil;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TriggerHandler;
@@ -79,13 +81,13 @@ import static org.motechproject.tasks.validation.TaskValidator.TASK;
 @Service("taskService")
 public class TaskServiceImpl implements TaskService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskServiceImpl.class);
-    private static final String SCHEDULER_TASK_TRIGGER_WILDCARD = "org.motechproject.tasks.scheduler(.*)";
 
     private TasksDataService tasksDataService;
     private ChannelService channelService;
     private TaskDataProviderService providerService;
     private EventRelay eventRelay;
     private BundleContext bundleContext;
+    private SchedulerTaskTriggerUtil schedulerTaskTriggerUtil;
 
 
     private static final String[] TASK_TRIGGER_VALIDATION_ERRORS = new String[]{"task.validation.error.triggerNotExist",
@@ -131,8 +133,9 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // todo clean those ifs somehow
-        if (task.getTrigger().getSubject().matches(SCHEDULER_TASK_TRIGGER_WILDCARD)) {
+        if (task.getTrigger() instanceof SchedulerTaskTriggerInformation) {
             task.getTrigger().setEffectiveListenerSubject(task.getTrigger().getSubject() + task.getName());
+            schedulerTaskTriggerUtil.setSchedulerTaskTriggerType(task);
         }
 
         addOrUpdate(task);
@@ -700,6 +703,8 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
+
+
     @Autowired
     public void setTasksDataService(TasksDataService tasksDataService) {
         this.tasksDataService = tasksDataService;
@@ -723,5 +728,10 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    @Autowired
+    public void setSchedulerTaskTriggerUtil(SchedulerTaskTriggerUtil schedulerTaskTriggerUtil) {
+        this.schedulerTaskTriggerUtil = schedulerTaskTriggerUtil;
     }
 }

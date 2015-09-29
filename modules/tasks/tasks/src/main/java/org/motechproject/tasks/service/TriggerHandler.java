@@ -29,7 +29,7 @@ public interface TriggerHandler {
      */
     void handle(MotechEvent event) throws TriggerNotFoundException;
 
-    // todo
-    void unscheduleTaskTriggerFor(Task task);
+    //todo
+    public void unscheduleTaskTriggerFor(Task task);
 
 }
