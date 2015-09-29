@@ -192,7 +192,7 @@
                             net.sf.cglib.core,
                             org.motechproject.scheduler.contract;resolution:=optional,
                             org.motechproject.scheduler.service;resolution:=optional,
-                                                                                  *
+                            *
                         </Import-Package>
                         <Bundle-DocURL>
                             http://docs.motechproject.org/en/latest/get_started/dynamic_urls_security_rules.html

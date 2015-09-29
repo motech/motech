@@ -14,7 +14,7 @@ import javax.annotation.PostConstruct;
 import java.util.Map;
 
 /**
- * Waits for the scheduler module to start an then schedules password expiration checker job.
+ * Waits for the scheduler module to start and then schedules password expiration checker job.
  */
 @Component
 public class PasswordExpirationChecker implements OsgiServiceLifecycleListener, ServiceTrackerCustomizer {

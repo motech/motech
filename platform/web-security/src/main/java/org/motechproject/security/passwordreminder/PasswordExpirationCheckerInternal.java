@@ -7,7 +7,8 @@ import org.motechproject.scheduler.service.MotechSchedulerService;
 import static org.motechproject.security.constants.EventSubjects.PASSWORD_EXPIRATION_CHECK;
 
 /**
- * Responsible for scheduling job that will
+ * Responsible for scheduling job that will trigger a check on last password change for all users and will send an event
+ * notifying the user about incoming, required password change if needed.
  */
 public class PasswordExpirationCheckerInternal {
 

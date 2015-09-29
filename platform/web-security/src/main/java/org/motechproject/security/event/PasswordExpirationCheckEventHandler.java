@@ -1,7 +1,7 @@
 package org.motechproject.security.event;
 
-import org.joda.time.DateTime;
 import org.joda.time.Days;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListener;
@@ -18,6 +18,10 @@ import java.util.Map;
 
 import static org.motechproject.security.constants.EventSubjects.PASSWORD_EXPIRATION_CHECK;
 
+/**
+ * Responsible for handling PASSWORD_EXPIRATION_CHECK event. It will check password expiration date and send an motech
+ * event if the user should change the password. This event is then handled and an e-mail is send to the user.
+ */
 @Component
 public class PasswordExpirationCheckEventHandler {
 
@@ -35,30 +39,42 @@ public class PasswordExpirationCheckEventHandler {
      */
     @MotechListener(subjects = {PASSWORD_EXPIRATION_CHECK})
     public void handleEvent(MotechEvent event) {
+
         LOGGER.info("Daily password reset reminder triggered");
+
         if (settingService.isPasswordResetReminderEnabled()) {
-            int daysTilReminder = daysTilReminder();
+            int daysTillReminder = daysTillReminder();
             for (MotechUser user : allUsers.retrieveAll()) {
-                if (daysWithoutPasswordChange(user) == daysTilReminder) {
-                    sendPasswordReminderEvent(user);
+                int daysWithoutPasswordChange = daysWithoutPasswordChange(user);
+
+                LOGGER.debug("User {} hasn't changed password in {} days. Notification should be sent at day {}",
+                        user.getUserName(), daysWithoutPasswordChange, daysTillReminder);
+
+                if (daysWithoutPasswordChange == daysTillReminder) {
+                    sendPasswordReminderEvent(user, daysTillReminder);
                 }
             }
         }
     }
 
-    private void sendPasswordReminderEvent(MotechUser user) {
+    private void sendPasswordReminderEvent(MotechUser user, int daysTillReminder) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("username", user.getUserName());
         parameters.put("email", user.getEmail());
+        parameters.put("expirationDate", user.getLastPasswordChange().plusDays(daysTillReminder));
         eventRelay.sendEventMessage(new MotechEvent(EventSubjects.PASSWORD_RESET_REMINDER, parameters));
+
+        LOGGER.info("Event notifying user {} about incoming required password change sent. The password should be" +
+                        "changed at {}. User e-mail is {}", user.getUserName(),
+                parameters.get("expirationDate").toString(), user.getEmail());
     }
 
-    private int daysTilReminder() {
+    private int daysTillReminder() {
         return settingService.getNumberOfDaysToChangePassword() - settingService.getNumberOfDaysForReminder();
     }
 
     private int daysWithoutPasswordChange(MotechUser user) {
-        return Days.daysBetween(user.getLastPasswordChange(), DateTime.now()).getDays();
+        return Days.daysBetween(user.getLastPasswordChange(), DateUtil.now()).getDays();
     }
 
     @Autowired

@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.security.config.SettingService;
@@ -13,13 +14,13 @@ import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.repository.MotechUsersDataService;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,6 +29,9 @@ import static org.motechproject.security.constants.EventSubjects.PASSWORD_EXPIRA
 import static org.motechproject.security.constants.EventSubjects.PASSWORD_RESET_REMINDER;
 
 public class PasswordExpirationCheckEventHandlerTest {
+
+    private static final int DAYS_FOR_REMINDER = 5;
+    private static final int DAYS_TO_CHANGE_PASSWORD = 20;
 
     @Mock
     private SettingService settingService;
@@ -62,15 +66,15 @@ public class PasswordExpirationCheckEventHandlerTest {
 
         eventHandler.handleEvent(event);
 
-        MotechEvent expectedEvent = prepareExpectedEvent(users.get(1));
+        List<MotechEvent> expectedEvent = prepareExpectedEvent(users);
 
         verify(allUsers, times(1)).retrieveAll();
-        verify(eventRelay, times(1)).sendEventMessage(eventCaptor.capture());
+        verify(eventRelay, times(2)).sendEventMessage(eventCaptor.capture());
         verify(settingService, times(1)).isPasswordResetReminderEnabled();
         verify(settingService, times(1)).getNumberOfDaysForReminder();
         verify(settingService, times(1)).getNumberOfDaysToChangePassword();
 
-        assertEquals(expectedEvent, eventCaptor.getValue());
+        assertEquals(expectedEvent, eventCaptor.getAllValues());
     }
 
     @Test
@@ -83,7 +87,7 @@ public class PasswordExpirationCheckEventHandlerTest {
         eventHandler.handleEvent(event);
 
         verify(allUsers, times(1)).retrieveAll();
-        verify(eventRelay, times(0)).sendEventMessage(any(MotechEvent.class));
+        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
         verify(settingService, times(1)).isPasswordResetReminderEnabled();
         verify(settingService, times(1)).getNumberOfDaysForReminder();
         verify(settingService, times(1)).getNumberOfDaysToChangePassword();
@@ -98,18 +102,33 @@ public class PasswordExpirationCheckEventHandlerTest {
 
         eventHandler.handleEvent(event);
 
-        verify(allUsers, times(0)).retrieveAll();
-        verify(eventRelay, times(0)).sendEventMessage(any(MotechEvent.class));
+        verify(allUsers, never()).retrieveAll();
+        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
         verify(settingService, times(1)).isPasswordResetReminderEnabled();
-        verify(settingService, times(0)).getNumberOfDaysForReminder();
-        verify(settingService, times(0)).getNumberOfDaysToChangePassword();
+        verify(settingService, never()).getNumberOfDaysForReminder();
+        verify(settingService, never()).getNumberOfDaysToChangePassword();
     }
 
-    private MotechEvent prepareExpectedEvent(MotechUser motechUser) {
+    private List<MotechEvent> prepareExpectedEvent(List<MotechUser> users) {
+        List<MotechEvent> events = new ArrayList<>();
+
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("username", motechUser.getUserName());
-        parameters.put("email", motechUser.getEmail());
-        return new MotechEvent(PASSWORD_RESET_REMINDER, parameters);
+        parameters.put("username", users.get(1).getUserName());
+        parameters.put("email", users.get(1).getEmail());
+        parameters.put("expirationDate", calculateExpirationDate(users.get(1)));
+        events.add(new MotechEvent(PASSWORD_RESET_REMINDER, parameters));
+
+        parameters = new HashMap<>();
+        parameters.put("username", users.get(2).getUserName());
+        parameters.put("email", users.get(2).getEmail());
+        parameters.put("expirationDate", calculateExpirationDate(users.get(2)));
+        events.add(new MotechEvent(PASSWORD_RESET_REMINDER, parameters));
+
+        return events;
+    }
+
+    private DateTime calculateExpirationDate(MotechUser user) {
+        return user.getLastPasswordChange().plusDays(DAYS_TO_CHANGE_PASSWORD - DAYS_FOR_REMINDER);
     }
 
     private void prepareEvent() {
@@ -125,20 +144,30 @@ public class PasswordExpirationCheckEventHandlerTest {
 
     private List<MotechUser> prepareMotechUsersOne() {
         List<MotechUser> users = new ArrayList<>();
-        Calendar date = Calendar.getInstance();
+        DateTime date = DateUtil.now().minusDays(14);
 
         MotechUser user = new MotechUser();
         user.setUserName("fooUsernameOne");
         user.setEmail("foouserone@foodomain.com");
-        date.add(Calendar.DAY_OF_YEAR, -14);
-        user.setLastPasswordChange(new DateTime(date.getTime()));
+        user.setLastPasswordChange(date);
         users.add(user);
 
         user = new MotechUser();
         user.setUserName("fooUsernameTwo");
         user.setEmail("foousertwo@foodomain.com");
-        date.add(Calendar.DAY_OF_YEAR, -1);
-        user.setLastPasswordChange(new DateTime(date.getTime()));
+        user.setLastPasswordChange(date.minusDays(1));
+        users.add(user);
+
+        user = new MotechUser();
+        user.setUserName("fooUsernameThree");
+        user.setEmail("foouserthree@foodomain.com");
+        user.setLastPasswordChange(date.minusDays(1));
+        users.add(user);
+
+        user = new MotechUser();
+        user.setUserName("fooUsernameFour");
+        user.setEmail("foouserfour@foodomain.com");
+        user.setLastPasswordChange(date.minusDays(2));
         users.add(user);
 
         return users;
@@ -146,19 +175,30 @@ public class PasswordExpirationCheckEventHandlerTest {
 
     private List<MotechUser> prepareMotechUsersTwo() {
         List<MotechUser> users = new ArrayList<>();
-        Calendar date = Calendar.getInstance();
-        date.add(Calendar.DAY_OF_YEAR, -14);
+        DateTime date = DateUtil.now().minusDays(14);
 
         MotechUser user = new MotechUser();
         user.setUserName("fooUsernameOne");
         user.setEmail("foouserone@foodomain.com");
-        user.setLastPasswordChange(new DateTime(date.getTime()));
+        user.setLastPasswordChange(date);
         users.add(user);
 
         user = new MotechUser();
         user.setUserName("fooUsernameTwo");
         user.setEmail("foousertwo@foodomain.com");
-        user.setLastPasswordChange(new DateTime(date.getTime()));
+        user.setLastPasswordChange(date);
+        users.add(user);
+
+        user = new MotechUser();
+        user.setUserName("fooUsernameThree");
+        user.setEmail("foouserthree@foodomain.com");
+        user.setLastPasswordChange(date.minusDays(2));
+        users.add(user);
+
+        user = new MotechUser();
+        user.setUserName("fooUsernameFour");
+        user.setEmail("foouserfour@foodomain.com");
+        user.setLastPasswordChange(date.minusDays(2));
         users.add(user);
 
         return users;
