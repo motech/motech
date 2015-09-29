@@ -7,3 +7,4 @@ Deployment
 
     sticky_session_apache
     multibyte_characters
+    felix_webconsole
