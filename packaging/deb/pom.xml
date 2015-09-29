@@ -106,10 +106,6 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.shell</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.webconsole</artifactId>
-        </dependency>
     </dependencies>
 
     <profiles>
