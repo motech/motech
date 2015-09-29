@@ -40,6 +40,24 @@
                     timeFormat: "HH:mm:ss",
                     onSelect: function (selectedDateTime){
                         endDateTextBox.datetimepicker('option', 'minDate', elem.datetimepicker('getDate') );
+                    },
+                    onChangeMonthYear: function (year, month, inst) {
+                        var curDate = $(this).datepicker("getDate");
+                        if (curDate === null) {
+                            return;
+                        }
+                        if (curDate.getFullYear() !== year || curDate.getMonth() !== month - 1) {
+                            curDate.setYear(year);
+                            curDate.setMonth(month - 1);
+                            $(this).datepicker("setDate", curDate);
+                        }
+                        endDateTextBox.datetimepicker('option', 'minDate', elem.datetimepicker('getDate') );
+                    },
+                    onClose: function () {
+                        var viewValue = $(this).val();
+                        if (viewValue === '') {
+                            endDateTextBox.datetimepicker('option', 'minDate', null);
+                        }
                     }
                 });
             }
@@ -61,6 +79,24 @@
                     timeFormat: "HH:mm:ss",
                     onSelect: function (selectedDateTime){
                         startDateTextBox.datetimepicker('option', 'maxDate', elem.datetimepicker('getDate') );
+                    },
+                    onChangeMonthYear: function (year, month, inst) {
+                        var curDate = $(this).datepicker("getDate");
+                        if (curDate === null) {
+                            return;
+                        }
+                        if (curDate.getFullYear() !== year || curDate.getMonth() !== month - 1) {
+                            curDate.setYear(year);
+                            curDate.setMonth(month - 1);
+                            $(this).datepicker("setDate", curDate);
+                        }
+                        startDateTextBox.datetimepicker('option', 'maxDate', elem.datetimepicker('getDate') );
+                    },
+                    onClose: function () {
+                        var viewValue = $(this).val();
+                        if (viewValue === '') {
+                            startDateTextBox.datetimepicker('option', 'maxDate', null);
+                        }
                     }
                 });
             }
