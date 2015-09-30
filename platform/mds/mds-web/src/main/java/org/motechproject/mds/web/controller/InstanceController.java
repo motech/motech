@@ -321,7 +321,7 @@ public class InstanceController extends MdsController {
     private QueryParams buildQueryParams(GridSettings settings, List<Order> orderList) {
         // just check if the page is set
         int page = (settings.getPage() == null) ? 1 : settings.getPage();
-        int pageSize = (settings.getPage() == null) ? 1 : settings.getRows();
+        int pageSize = (settings.getPage() == null) ? 10 : settings.getRows();
 
         return new QueryParams(page, pageSize, orderList);
     }
