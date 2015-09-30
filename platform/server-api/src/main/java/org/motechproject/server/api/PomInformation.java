@@ -1,6 +1,5 @@
 package org.motechproject.server.api;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
 import org.apache.maven.model.Repository;
@@ -75,8 +74,6 @@ public class PomInformation {
             }
         } catch (Exception ex) {
             LOGGER.error("Error while reading POM file", ex);
-        } finally {
-            IOUtils.closeQuietly(inputStream);
         }
     }
 
@@ -102,9 +99,7 @@ public class PomInformation {
             this.parentPomInformation = parentPom;
         } catch (Exception ex) {
             LOGGER.error("Error while reading parent POM file", ex);
-        } finally {
-            IOUtils.closeQuietly(inputStream);
-        }
+        } 
     }
 
     /**
