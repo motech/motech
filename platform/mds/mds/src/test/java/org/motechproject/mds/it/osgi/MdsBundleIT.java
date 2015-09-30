@@ -17,6 +17,8 @@ import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.commons.sql.service.SqlDBManager;
+import org.motechproject.config.core.constants.ConfigurationConstants;
+import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.DraftData;
@@ -64,6 +66,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import javax.jdo.Query;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -85,6 +89,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
@@ -140,6 +145,8 @@ public class MdsBundleIT extends BasePaxIT {
     private JarGeneratorService generator;
     private EntityService entityService;
     private MotechDataService service;
+    private File configurationFile;
+    private String startingCacheType;
 
     @Inject
     private SqlDBManager sqlDBManager;
@@ -153,6 +160,9 @@ public class MdsBundleIT extends BasePaxIT {
     @Inject
     private RestDocumentationService restDocService;
 
+    @Inject
+    private CoreConfigurationService coreConfigurationService;
+
     @Before
     public void setUp() throws Exception {
         WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext, MDS_BUNDLE_SYMBOLIC_NAME, 10000, 12);
@@ -162,23 +172,48 @@ public class MdsBundleIT extends BasePaxIT {
 
         clearEntities();
         setUpSecurityContextForDefaultUser("mdsSchemaAccess");
+
+        //Prepare file with datanucleus configuration for later use to
+        //turn off and on l2 cache
+        configurationFile = new File(coreConfigurationService.getConfigLocation().getLocation()
+                .concat("/" + ConfigurationConstants.DATANUCLEUS_SETTINGS_FILE_NAME));
+        //Remember starting cache type. It will be restored after tests
+        startingCacheType = coreConfigurationService.loadDatanucleusConfig().getProperty("datanucleus.cache.level2.type");
     }
 
     @After
     public void tearDown() throws Exception {
         clearEntities();
+        setCacheType(startingCacheType);
     }
 
     @Test
     public void testEntitiesBundleInstallsProperly() throws Exception {
+
+        //Run tests with l2 cache active
+        testEntitiesBundleInstallsProperly(true);
+
+        //Run tests without l2 cache
+        setCacheType("none");
+        testEntitiesBundleInstallsProperly(false);
+    }
+
+    private void testEntitiesBundleInstallsProperly(boolean withCache) throws Exception {
         final String serviceName = ClassName.getInterfaceName(FOO_CLASS);
+
+        //Some additional preparation needed for second run without l2 cache
+        if(!withCache) {
+            clearEntities();
+            generator.regenerateMdsDataBundle();
+        }
 
         prepareTestEntities();
 
         Bundle entitiesBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, MDS_ENTITIES_SYMBOLIC_NAME);
         assertNotNull(entitiesBundle);
 
-        service = (MotechDataService) ServiceRetriever.getService(bundleContext, serviceName);
+        service = (MotechDataService) ServiceRetriever.getService(bundleContext, serviceName, true);
+
         Class<?> objectClass = entitiesBundle.loadClass(FOO_CLASS);
         getLogger().info("Loaded class: " + objectClass.getName());
 
@@ -522,9 +557,10 @@ public class MdsBundleIT extends BasePaxIT {
         Object updated = service.retrieveAll(QueryParams.descOrder("someDateTime")).get(0);
 
         assertInstance(updated, false, "anotherString", "anotherStringCp", asList("4", "5"),
-                       YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
-                       DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(updated.getClass(), "two"),
-                       JAVA_LD_NOW.plusDays(5), JAVA_NOW.plusHours(5));
+                YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
+                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(updated.getClass(), "two"),
+                JAVA_LD_NOW.plusDays(5), JAVA_NOW.plusHours(5));
+
     }
 
     private void verifyInstanceCreatingOrUpdating(Class<?> loadedClass) throws Exception {
@@ -735,12 +771,12 @@ public class MdsBundleIT extends BasePaxIT {
         assertNotNull(list);
         assertEquals(2, list.size());
         assertInstance(list.get(0), false, "fromCsv", "Capital CSV", Collections.emptyList(), null, new LocalDate(2012, 10, 14),
-                null, new Period(2, 0, 0, 0, 0, 0, 0, 0), null, new DateTime(2014, 12, 2, 16, 13, 40, 120, DateTimeZone.UTC).toDate(),
+                null, new Period(2, 0, 0, 0, 0, 0, 0, 0), null, new DateTime(2014, 12, 2, 16, 13, 40, 0, DateTimeZone.UTC).toDate(),
                 null, new Time(20, 20), null, null, null, null);
         assertInstance(list.get(1), true, "fromCsv", "Capital CSV", new ArrayList(asList("one", "two")),
-                new DateTime(2014, 12, 2, 13, 10, 40, 120, DateTimeZone.UTC).withZone(DateTimeZone.getDefault()),
+                new DateTime(2014, 12, 2, 13, 10, 40, 0, DateTimeZone.UTC).withZone(DateTimeZone.getDefault()),
                 new LocalDate(2012, 10, 15), null, new Period(1, 0, 0, 0, 0, 0, 0, 0), null,
-                new DateTime(2014, 12, 2, 13, 13, 40, 120, DateTimeZone.UTC).toDate(), null, new Time(10, 30),
+                new DateTime(2014, 12, 2, 13, 13, 40, 0, DateTimeZone.UTC).toDate(), null, new Time(10, 30),
                 null, null, null, null);
     }
 
@@ -1008,5 +1044,17 @@ public class MdsBundleIT extends BasePaxIT {
             }
         }
         return null;
+    }
+
+    private void setCacheType(String type) throws IOException {
+        try (FileOutputStream outputStream = new FileOutputStream(configurationFile)) {
+            Properties datanucleusProps = coreConfigurationService.loadDatanucleusConfig();
+            if(type != null) {
+                datanucleusProps.setProperty("datanucleus.cache.level2.type", type);
+            } else {
+                datanucleusProps.remove("datanucleus.cache.level2.type");
+            }
+            datanucleusProps.store(outputStream, null);
+        }
     }
 }

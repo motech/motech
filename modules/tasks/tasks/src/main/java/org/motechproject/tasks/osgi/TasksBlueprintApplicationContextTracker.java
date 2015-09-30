@@ -83,6 +83,8 @@ public class TasksBlueprintApplicationContextTracker extends ApplicationContextT
         Bundle module = reference.getBundle();
         super.removedService(reference, service);
 
+        LOGGER.debug("Removed service {} from {}", service, module.getSymbolicName());
+
         if (isMDS(module.getSymbolicName())) {
             return;
         }
