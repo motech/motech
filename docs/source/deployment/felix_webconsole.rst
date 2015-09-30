@@ -1,5 +1,5 @@
 ===================================
-Using Felix Web Console with Motech
+Using Felix Web Console with MOTECH
 ===================================
 
 .. contents:: Table of Contents
