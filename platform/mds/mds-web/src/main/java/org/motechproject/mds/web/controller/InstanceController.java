@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,16 +135,7 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/history", method = RequestMethod.GET)
     @ResponseBody
     public Records<HistoryRecord> getHistory(@PathVariable Long entityId, @PathVariable Long instanceId, GridSettings settings) {
-        Order order = null;
-        if (settings.getSortColumn() != null && !settings.getSortColumn().isEmpty()) {
-            order = new Order(settings.getSortColumn(), settings.getSortDirection());
-        }
-
-        if (settings.getPage() == null) {
-            settings.setPage(1);
-            settings.setRows(10);
-        }
-        QueryParams queryParams = new QueryParams(settings.getPage(), settings.getRows(), order);
+        QueryParams queryParams = buildQueryParams(settings);
         List<HistoryRecord> historyRecordsList = instanceService.getInstanceHistory(entityId, instanceId, queryParams);
 
         long recordCount = instanceService.countHistoryRecords(entityId, instanceId);
@@ -193,12 +185,7 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/entities/{entityId}/trash", method = RequestMethod.GET)
     @ResponseBody
     public Records<EntityRecord> getTrash(@PathVariable Long entityId, GridSettings settings) {
-        Order order = null;
-        if (settings.getSortColumn() != null && !settings.getSortColumn().isEmpty()) {
-            order = new Order(settings.getSortColumn(), settings.getSortDirection());
-        }
-
-        QueryParams queryParams = new QueryParams(settings.getPage(), settings.getRows(), order);
+        QueryParams queryParams = buildQueryParams(settings);
         List<EntityRecord> trashRecordsList = instanceService.getTrashRecords(entityId, queryParams);
 
         long recordCount = instanceService.countTrashRecords(entityId);
@@ -233,8 +220,8 @@ public class InstanceController extends MdsController {
                 "Content-Disposition",
                 "attachment; filename=" + fileName + "." + outputFormat.toLowerCase());
 
-        Order order = StringUtils.isNotEmpty(settings.getSortColumn()) ? new Order(settings.getSortColumn(), settings.getSortDirection()) : null;
-        QueryParams queryParams = new QueryParams(1, StringUtils.equalsIgnoreCase(exportRecords, "all") ? null : Integer.valueOf(exportRecords), order);
+        final Integer pageSize = StringUtils.equalsIgnoreCase(exportRecords, "all") ? null : Integer.valueOf(exportRecords);
+        QueryParams queryParams = new QueryParams(1, pageSize, buildOrderList(settings));
 
         if (Constants.ExportFormat.PDF.equals(outputFormat)) {
             csvImportExportService.exportPdf(entityId, response.getOutputStream(), settings.getLookup(), queryParams,
@@ -248,12 +235,7 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
     @ResponseBody
     public Records<?> getInstances(@PathVariable Long entityId, GridSettings settings) throws IOException {
-        Order order = null;
-        if (!settings.getSortColumn().isEmpty()) {
-            order = new Order(settings.getSortColumn(), settings.getSortDirection());
-        }
-
-        QueryParams queryParams = new QueryParams(settings.getPage(), settings.getRows(), order);
+        QueryParams queryParams = buildQueryParams(settings);
 
         String lookup = settings.getLookup();
         String filterStr = settings.getFilter();
@@ -330,5 +312,37 @@ public class InstanceController extends MdsController {
         int index = ArrayUtils.indexOf(content, (byte) ',') + 1;
 
         return ArrayUtils.toObject(decoder.decode(ArrayUtils.subarray(content, index, content.length)));
+    }
+
+    private QueryParams buildQueryParams(GridSettings settings) {
+        return buildQueryParams(settings, buildOrderList(settings));
+    }
+
+    private QueryParams buildQueryParams(GridSettings settings, List<Order> orderList) {
+        // just check if the page is set
+        int page = (settings.getPage() == null) ? 1 : settings.getPage();
+        int pageSize = (settings.getPage() == null) ? 1 : settings.getRows();
+
+        return new QueryParams(page, pageSize, orderList);
+    }
+
+    private List<Order> buildOrderList(GridSettings settings) {
+        Order order = null;
+
+        if (settings.getSortColumn() != null && !settings.getSortColumn().isEmpty()) {
+            order = new Order(settings.getSortColumn(), settings.getSortDirection());
+        }
+
+        List<Order> orderList = new ArrayList<>();
+        if (order != null) {
+            orderList.add(order);
+            if (!Constants.Util.ID_FIELD_NAME.equalsIgnoreCase(order.getField())) {
+                // if the ordering is done on a field other then id
+                // we want to add the id ordering as backup, so that results stay consistent
+                orderList.add(new Order(Constants.Util.ID_FIELD_NAME, Order.Direction.ASC));
+            }
+        }
+
+        return orderList;
     }
 }
