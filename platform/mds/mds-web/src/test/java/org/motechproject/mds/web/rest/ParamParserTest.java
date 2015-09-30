@@ -10,6 +10,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class ParamParserTest {
 
@@ -25,9 +26,10 @@ public class ParamParserTest {
 
         assertEquals(Integer.valueOf(14), queryParams.getPage());
         assertEquals(Integer.valueOf(120), queryParams.getPageSize());
-        assertNotNull(queryParams.getOrder());
-        assertEquals("someColumn", queryParams.getOrder().getField());
-        assertEquals(Order.Direction.DESC, queryParams.getOrder().getDirection());
+        assertNotNull(queryParams.getOrderList());
+        assertEquals(1, queryParams.getOrderList().size());
+        assertEquals("someColumn", queryParams.getOrderList().get(0).getField());
+        assertEquals(Order.Direction.DESC, queryParams.getOrderList().get(0).getDirection());
 
         // null order
 
@@ -36,7 +38,7 @@ public class ParamParserTest {
 
         queryParams = ParamParser.buildQueryParams(requestParams);
 
-        assertNull(queryParams.getOrder());
+        assertTrue(queryParams.getOrderList().isEmpty());
 
         // default order direction
 
@@ -44,9 +46,10 @@ public class ParamParserTest {
 
         queryParams = ParamParser.buildQueryParams(requestParams);
 
-        assertNotNull(queryParams.getOrder());
-        assertEquals("anotherColumn", queryParams.getOrder().getField());
-        assertEquals(Order.Direction.ASC, queryParams.getOrder().getDirection());
+        assertNotNull(queryParams.getOrderList());
+        assertEquals(1, queryParams.getOrderList().size());
+        assertEquals("anotherColumn", queryParams.getOrderList().get(0).getField());
+        assertEquals(Order.Direction.ASC, queryParams.getOrderList().get(0).getDirection());
     }
 
     @Test

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
@@ -40,7 +41,7 @@ public class QueryUtilTest {
     public void shouldSetQueryParams() {
         when(queryParams.isOrderSet()).thenReturn(true);
         when(queryParams.isPagingSet()).thenReturn(true);
-        when(queryParams.getOrder()).thenReturn(new Order("field", "ascending"));
+        when(queryParams.getOrderList()).thenReturn(singletonList(new Order("field", "ascending")));
         when(queryParams.getPage()).thenReturn(2);
         when(queryParams.getPageSize()).thenReturn(10);
 
@@ -106,6 +107,16 @@ public class QueryUtilTest {
     public void shouldSetCountResult() {
         QueryUtil.setCountResult(query);
         verify(query).setResult("count(this)");
+    }
+
+    @Test
+    public void shouldSetMultipleOrders() {
+        QueryParams queryParams = new QueryParams(null, null, asList(new Order("field1", Order.Direction.DESC),
+                new Order("field2", Order.Direction.ASC), new Order("field3", Order.Direction.ASC)));
+
+        QueryUtil.setQueryParams(query, queryParams);
+
+        verify(query).setOrdering("field1 descending, field2 ascending, field3 ascending");
     }
 
     @Test(expected = IllegalArgumentException.class)
