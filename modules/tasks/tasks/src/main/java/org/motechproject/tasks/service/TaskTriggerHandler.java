@@ -11,7 +11,6 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
-import org.motechproject.scheduler.contract.RunOnceJobId;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.tasks.domain.Task;
@@ -254,20 +253,12 @@ public class TaskTriggerHandler implements TriggerHandler {
         return number;
     }
 
+    public void unscheduleTaskTriggerFor(Task task){
+        schedulerTaskTriggerUtil.unscheduleTaskTrigger(task);
+    }
+
     @Autowired(required = false)
     public void setBundleContext(BundleContext bundleContext) {
         this.executor.setBundleContext(bundleContext);
     }
-
-    public void unscheduleTaskTriggerFor(Task task){
-
-        // Since no jobId is assigned when creating motechEvent "null" is put here. Fix when event jobId will be used.
-        // todo actually we can use task name as a jobID
-        RunOnceJobId jobId = new RunOnceJobId(task.getTrigger().getEffectiveListenerSubject(), "null");
-        schedulerService.unscheduleJob(jobId);
-    }
-
-
-
-
 }

@@ -288,7 +288,9 @@ public class TaskServiceImpl implements TaskService {
             throw new TaskNotFoundException(taskId);
         }
 
-        unscheduleTaskTrigger(t);
+        if (t.getTrigger() instanceof SchedulerTaskTriggerInformation) {
+            unscheduleTaskTrigger(t);
+        }
 
         tasksDataService.delete(t);
     }

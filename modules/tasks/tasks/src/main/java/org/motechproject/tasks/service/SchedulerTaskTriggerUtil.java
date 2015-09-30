@@ -7,10 +7,15 @@ import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.date.model.DayOfWeek;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.event.MotechEvent;
+import org.motechproject.scheduler.contract.CronJobId;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
+import org.motechproject.scheduler.contract.JobId;
+import org.motechproject.scheduler.contract.RepeatingJobId;
+import org.motechproject.scheduler.contract.RepeatingPeriodJobId;
 import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
+import org.motechproject.scheduler.contract.RunOnceJobId;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.tasks.domain.SchedulerTaskTriggerInformation;
@@ -55,10 +60,11 @@ public class SchedulerTaskTriggerUtil {
         switch (triggerType) {
             case RUN_ONCE_JOB:
                 startDate = formatter.parseDateTime(trigger.getStartDate());
-                // todo check if start date is not in the past, or the exception will be thrown, add 'else' scenario
                 if (now.isBefore(startDate)) {
-                    RunOnceSchedulableJob job = new RunOnceSchedulableJob(motechEvent, startDate.toDate());
-                    schedulerService.safeScheduleRunOnceJob(job);
+                    schedulerService.safeScheduleRunOnceJob(
+                            new RunOnceSchedulableJob(motechEvent, startDate.toDate()));
+                } else {
+                    //todo add throwing a message box here informing that start date cannot be in past
                 }
                 break;
 
@@ -67,12 +73,9 @@ public class SchedulerTaskTriggerUtil {
                 endDate = formatter.parseDateTime(trigger.getEndDate());
                 interval = trigger.getInterval();
                 ignorePastFiresAtStart = trigger.isIgnoreFiresignorePastFiresAtStart();
-                // todo check if start date is not in the past, or the exception will be thrown, add 'else' scenario
-                if (now.isBefore(startDate)) {
-                    RepeatingSchedulableJob job = new RepeatingSchedulableJob(motechEvent, interval,
-                            startDate.toDate(), endDate.toDate(), ignorePastFiresAtStart);
-                    schedulerService.safeScheduleRepeatingJob(job);
-                }
+                schedulerService.safeScheduleRepeatingJob(
+                        new RepeatingSchedulableJob(motechEvent, interval, startDate.toDate(), endDate.toDate(),
+                                ignorePastFiresAtStart));
                 break;
 
             case CRON_JOB:
@@ -80,12 +83,9 @@ public class SchedulerTaskTriggerUtil {
                 endDate = formatter.parseDateTime(trigger.getEndDate());
                 cronExpression = trigger.getCronExpression();
                 ignorePastFiresAtStart = trigger.isIgnoreFiresignorePastFiresAtStart();
-                // todo check if start date is not in the past, or the exception will be thrown, add 'else' scenario
-                if (now.isBefore(startDate)) {
-                    CronSchedulableJob job = new CronSchedulableJob(motechEvent, cronExpression,
-                            startDate.toDate(), endDate.toDate(), ignorePastFiresAtStart);
-                    schedulerService.safeScheduleJob(job);
-                }
+                schedulerService.safeScheduleJob(
+                        new CronSchedulableJob(motechEvent, cronExpression, startDate.toDate(), endDate.toDate(),
+                                ignorePastFiresAtStart));
                 break;
 
             case DAY_OF_WEEK_JOB:
@@ -94,12 +94,9 @@ public class SchedulerTaskTriggerUtil {
                 days = trigger.getDays();
                 time = trigger.getTime();
                 ignorePastFiresAtStart = trigger.isIgnoreFiresignorePastFiresAtStart();
-                // todo check if start date is not in the past, or the exception will be thrown, add 'else' scenario
-                if (now.isBefore(startDate)) {
-                    DayOfWeekSchedulableJob job = new DayOfWeekSchedulableJob(motechEvent, startDate.toLocalDate(),
-                            endDate.toLocalDate(), days, time, ignorePastFiresAtStart);
-                    schedulerService.scheduleDayOfWeekJob(job);
-                }
+                schedulerService.scheduleDayOfWeekJob(
+                        new DayOfWeekSchedulableJob(motechEvent, startDate.toLocalDate(), endDate.toLocalDate(),
+                                days, time, ignorePastFiresAtStart));
                 break;
 
             case REPEATING_JOB_WITH_PERIOD_INTERVAL:
@@ -107,12 +104,9 @@ public class SchedulerTaskTriggerUtil {
                 endDate = formatter.parseDateTime(trigger.getEndDate());
                 repeatPeriod = trigger.getRepeatPeriod();
                 ignorePastFiresAtStart = trigger.isIgnoreFiresignorePastFiresAtStart();
-                // todo check if start date is not in the past, or the exception will be thrown, add 'else' scenario
-                if (now.isBefore(startDate)) {
-                    RepeatingPeriodSchedulableJob job = new RepeatingPeriodSchedulableJob(motechEvent, startDate.toDate(),
-                            endDate.toDate(), repeatPeriod, ignorePastFiresAtStart);
-                    schedulerService.safeScheduleRepeatingPeriodJob(job);
-                }
+                schedulerService.safeScheduleRepeatingPeriodJob(
+                        new RepeatingPeriodSchedulableJob(motechEvent, startDate.toDate(), endDate.toDate(),
+                                repeatPeriod, ignorePastFiresAtStart));
                 break;
 
             default:
@@ -142,6 +136,9 @@ public class SchedulerTaskTriggerUtil {
             case "repeatingJobWithPeriodInterval":
                 ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerTaskTriggerInformation.SchedulerJobType.REPEATING_JOB_WITH_PERIOD_INTERVAL);
                 break;
+
+            default:
+                break;
         }
     }
 
@@ -161,6 +158,33 @@ public class SchedulerTaskTriggerUtil {
         } else {
             return null;
         }
+    }
+
+    public void unscheduleTaskTrigger(Task task){
+        // Since no jobId is assigned when creating motechEvent "null" is put here. Fix when event jobId will be used.
+        // todo actually we can use task name as a jobID
+        JobId jobId = null;
+
+        if (task.getTrigger() instanceof SchedulerTaskTriggerInformation) {
+            switch (((SchedulerTaskTriggerInformation) task.getTrigger()).getType()) {
+                case RUN_ONCE_JOB:
+                    jobId = new RunOnceJobId(task.getTrigger().getEffectiveListenerSubject(), "null");
+                    break;
+                case REPEATING_JOB:
+                    jobId = new RepeatingJobId(task.getTrigger().getEffectiveListenerSubject(), "null");
+                    break;
+                case CRON_JOB:
+                    jobId = new CronJobId(task.getTrigger().getEffectiveListenerSubject(), "null");
+                    break;
+                case DAY_OF_WEEK_JOB:
+                    jobId = new CronJobId(task.getTrigger().getEffectiveListenerSubject(), "null");
+                    break;
+                case REPEATING_JOB_WITH_PERIOD_INTERVAL:
+                    jobId = new RepeatingPeriodJobId(task.getTrigger().getEffectiveListenerSubject(), "null");
+                    break;
+            }
+        }
+        schedulerService.unscheduleJob(jobId);
     }
 
 }
