@@ -29,7 +29,7 @@ public class SchedulerTaskTriggerInformation extends TaskTriggerInformation {
 
     private static final long serialVersionUID = 4921423073444417178L;
 
-    public enum schedulerJobType {
+    public enum SchedulerJobType {
         CRON_JOB,
         REPEATING_JOB,
         RUN_ONCE_JOB,
@@ -38,7 +38,7 @@ public class SchedulerTaskTriggerInformation extends TaskTriggerInformation {
     }
 
     @Field
-    private schedulerJobType type;
+    private SchedulerJobType type;
 
     @Field
     private String startDate;
@@ -93,11 +93,11 @@ public class SchedulerTaskTriggerInformation extends TaskTriggerInformation {
     }
 
 
-    public schedulerJobType getType() {
+    public SchedulerJobType getType() {
         return type;
     }
 
-    public void setType(schedulerJobType type) {
+    public void setType(SchedulerJobType type) {
         this.type = type;
     }
 

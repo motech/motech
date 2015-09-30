@@ -110,14 +110,16 @@
                         scope.task = {};
                     }
 
-                    scope.task.trigger = {
-                        displayName: trigger.displayName,
-                        channelName: channel.displayName,
-                        moduleName: channel.moduleName,
-                        moduleVersion: channel.moduleVersion,
-                        subject: trigger.subject,
-                        triggerListenerSubject: trigger.triggerListenerSubject
-                    };
+                    if (!scope.task.trigger) {
+                        scope.task.trigger = {
+                            displayName: trigger.displayName,
+                            channelName: channel.displayName,
+                            moduleName: channel.moduleName,
+                            moduleVersion: channel.moduleVersion,
+                            subject: trigger.subject,
+                            triggerListenerSubject: trigger.triggerListenerSubject
+                        };
+                    }
 
                     angular.element("#trigger-" + channel.moduleName).parent('li').addClass('selectedTrigger').addClass('active');
 

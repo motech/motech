@@ -50,7 +50,7 @@ public class SchedulerTaskTriggerUtil {
 
         SchedulerTaskTriggerInformation trigger = (SchedulerTaskTriggerInformation) task.getTrigger();
 
-        SchedulerTaskTriggerInformation.schedulerJobType triggerType = trigger.getType();
+        SchedulerTaskTriggerInformation.SchedulerJobType triggerType = trigger.getType();
 
         switch (triggerType) {
             case RUN_ONCE_JOB:
@@ -124,23 +124,23 @@ public class SchedulerTaskTriggerUtil {
         String[] name = task.getTrigger().getSubject().split("\\.");
         switch (name[name.length-1]) {
             case "runOnceJob":
-                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerTaskTriggerInformation.schedulerJobType.RUN_ONCE_JOB);
+                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerTaskTriggerInformation.SchedulerJobType.RUN_ONCE_JOB);
                 break;
 
             case "repeatingJob":
-                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerTaskTriggerInformation.schedulerJobType.REPEATING_JOB);
+                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerTaskTriggerInformation.SchedulerJobType.REPEATING_JOB);
                 break;
 
             case "cronJob":
-                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerTaskTriggerInformation.schedulerJobType.CRON_JOB);
+                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerTaskTriggerInformation.SchedulerJobType.CRON_JOB);
                 break;
 
             case "dayOfWeekJob":
-                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerTaskTriggerInformation.schedulerJobType.DAY_OF_WEEK_JOB);
+                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerTaskTriggerInformation.SchedulerJobType.DAY_OF_WEEK_JOB);
                 break;
 
             case "repeatingJobWithPeriodInterval":
-                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerTaskTriggerInformation.schedulerJobType.REPEATING_JOB_WITH_PERIOD_INTERVAL);
+                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerTaskTriggerInformation.SchedulerJobType.REPEATING_JOB_WITH_PERIOD_INTERVAL);
                 break;
         }
     }
