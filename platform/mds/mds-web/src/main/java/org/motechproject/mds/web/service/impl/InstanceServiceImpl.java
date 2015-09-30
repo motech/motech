@@ -103,7 +103,7 @@ public class InstanceServiceImpl implements InstanceService {
     public Object saveInstance(EntityRecord entityRecord, Long deleteValueFieldId) {
         EntityDto entity = getEntity(entityRecord.getEntitySchemaId());
         validateCredentials(entity);
-        validateNonEditableProperty(entity);
+        validateNonEditableProperty(entity.getId());
 
         try {
             MotechDataService service = getServiceForEntity(entity);
@@ -280,7 +280,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public void revertPreviousVersion(Long entityId, Long instanceId, Long historyId) {
-        validateNonEditableProperty(getEntity(entityId));
+        validateNonEditableProperty(entityId);
         HistoryRecord historyRecord = getHistoryRecord(entityId, instanceId, historyId);
         if (!historyRecord.isRevertable()) {
             throw new EntitySchemaMismatchException();
@@ -401,7 +401,7 @@ public class InstanceServiceImpl implements InstanceService {
     public void deleteInstance(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
         validateCredentials(entity);
-        validateNonEditableProperty(entity);
+        validateNonEditableProperty(entityId);
         MotechDataService service = getServiceForEntity(entity);
 
         service.delete(ID, instanceId);
@@ -411,7 +411,7 @@ public class InstanceServiceImpl implements InstanceService {
     public void revertInstanceFromTrash(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
         validateCredentials(entity);
-        validateNonEditableProperty(entity);
+        validateNonEditableProperty(entityId);
         MotechDataService service = getServiceForEntity(entity);
 
         Object trash = service.findTrashInstanceById(instanceId, entityId);
@@ -443,6 +443,13 @@ public class InstanceServiceImpl implements InstanceService {
     public void verifyEntityAccess(Long entityId) {
         EntityDto entity = getEntity(entityId);
         validateCredentialsForReading(entity);
+    }
+
+    @Override
+    public void validateNonEditableProperty(Long entityId) {
+        if (getEntity(entityId).isNonEditable()) {
+            throw new EntityInstancesNonEditableException();
+        }
     }
 
     private void populateDefaultFields(List<FieldRecord> fieldRecords) {
@@ -900,12 +907,6 @@ public class InstanceServiceImpl implements InstanceService {
 
     private boolean isAuthorizedByReadAccessOrIsInstanceRestriction(boolean authorized, SecurityMode readOnlySecurityMode, SecurityMode securityMode) {
         return !authorized && !readOnlySecurityMode.isInstanceRestriction() && !securityMode.isInstanceRestriction();
-    }
-
-    private void validateNonEditableProperty(EntityDto entity) {
-        if (entity.isNonEditable()) {
-            throw new EntityInstancesNonEditableException();
-        }
     }
 
     @Autowired

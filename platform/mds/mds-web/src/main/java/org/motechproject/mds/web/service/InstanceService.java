@@ -282,7 +282,15 @@ public interface InstanceService {
 
     /**
      * Checks whether the logged in user has access to the entity with the given ID.
+     *
      * @param entityId the id of the entity
      */
     void verifyEntityAccess(Long entityId);
+
+    /**
+     * Checks whether the entity with the given ID is non editable.
+     *
+     * @param entityId the id of the entity
+     */
+    void validateNonEditableProperty(Long entityId);
 }

@@ -22,7 +22,7 @@
             </select>
         </span>
         <div class="btn-group">
-            <button ng-click="importEntityInstances()" type="button" class="btn btn-default" ng-show="showImportButton">
+            <button ng-click="importEntityInstances()" type="button" class="btn btn-default" ng-hide="shouldHideButton()">
                 <span class="glyphicon glyphicon-import"></span>
                 {{msg('mds.btn.importCsv')}}
             </button>
