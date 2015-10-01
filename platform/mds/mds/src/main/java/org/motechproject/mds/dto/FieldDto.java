@@ -219,6 +219,7 @@ public class FieldDto {
         return setting == null ? null : setting.getValueAsString();
     }
 
+    @JsonIgnore
     public boolean isVersionField() {
         MetadataDto md = getMetadata(Constants.MetadataKeys.VERSION_FIELD);
         String metadataValue = md == null ? null : md.getValue();
