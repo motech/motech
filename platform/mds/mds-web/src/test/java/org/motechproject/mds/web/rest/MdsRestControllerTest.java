@@ -536,7 +536,7 @@ public class MdsRestControllerTest {
         assertNotNull(queryParams);
         assertEquals(Integer.valueOf(5), queryParams.getPage());
         assertEquals(Integer.valueOf(14), queryParams.getPageSize());
-        Order order = queryParams.getOrder();
+        Order order = queryParams.getOrderList().get(0);
         assertNotNull(order);
         assertEquals("name", order.getField());
         assertEquals(Order.Direction.DESC, order.getDirection());
