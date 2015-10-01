@@ -29,7 +29,6 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -83,7 +82,10 @@ public class InstanceControllerTest {
                 "attachment; filename=Entity_1_instances.csv");
 
         assertNull(captor.getValue().getPageSize());
-        assertFalse(captor.getValue().isOrderSet());
+        assertTrue(captor.getValue().isOrderSet());
+        assertEquals(1, captor.getValue().getOrderList().size());
+        assertEquals(Constants.Util.ID_FIELD_NAME, captor.getValue().getOrderList().get(0).getField());
+        assertEquals(Order.Direction.ASC, captor.getValue().getOrderList().get(0).getDirection());
     }
 
     @Test
