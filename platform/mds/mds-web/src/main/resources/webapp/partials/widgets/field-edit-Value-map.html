@@ -4,8 +4,8 @@
             <label class="input-large-fluid">{{msg('mds.form.label.keyValuePairs')}}&nbsp;<span class="glyphicon glyphicon-info-sign" data-trigger="hover" data-placement="bottom" bs-popover="{{msg('mds.tooltip.map')}}"></span></label>
         </div>
         <div ng-repeat="map in fieldMaps.fieldMap" class="clearfix" ng-class="{'has-error ng-invalid': uniqueMapKey(map.key, field.id, $index), 'margin-before': $index &gt; 0}">
-            <input mds-update-map="{{$index}}" mds-path="field.value" class="form-control input-large-fluid map-key" type="text" placeholder="{{msg('mds.form.label.key')}}" ng-model="map.key" mds-field-id="{{field.id}}" ng-disabled="shouldHideEdition(field)">
-            <input mds-update-map="{{$index}}" mds-path="field.value" class="form-control input-large-fluid map-value" type="text" placeholder="{{msg('mds.form.label.value')}}" ng-model="map.value" mds-field-id="{{field.id}}" ng-disabled="shouldHideEdition(field)">
+            <input mds-update-map="{{$index}}" mds-path="field.value" class="form-control input-large-fluid map-key" type="text" placeholder="{{msg('mds.form.label.key')}}" ng-model="map.key" mds-field-id="{{field.id}}" ng-readonly="shouldHideEdition(field)">
+            <input mds-update-map="{{$index}}" mds-path="field.value" class="form-control input-large-fluid map-value" type="text" placeholder="{{msg('mds.form.label.value')}}" ng-model="map.value" mds-field-id="{{field.id}}" ng-readonly="shouldHideEdition(field)">
             <a class="btn btn-danger btn-sm" ng-hide="shouldHideEdition(field) || fieldMaps.fieldMap.length &lt; 2">
                 <i class="fa fa-lg fa-trash-o"></i>
             </a>

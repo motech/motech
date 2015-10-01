@@ -131,12 +131,23 @@ public class Field {
     }
 
     public Field(Entity entity, String name, String displayName, boolean required,
-                 boolean readOnly, boolean uiChanged, String defaultValue, String tooltip, String placeholder, Set<Lookup> lookups) {
+                 boolean readOnly, boolean uiChanged, String defaultValue,
+                 String tooltip, String placeholder, Set<Lookup> lookups) {
+        this(entity, name, displayName, required, readOnly, false, false, false, uiChanged, defaultValue,
+                tooltip, placeholder, lookups);
+    }
+
+    public Field(Entity entity, String name, String displayName, boolean required,
+                 boolean readOnly, boolean nonEditable, boolean nonDisplayable, boolean uiFilterable, boolean uiChanged,
+                 String defaultValue, String tooltip, String placeholder, Set<Lookup> lookups) {
         this.entity = entity;
         this.displayName = displayName;
         setName(name);
         this.required = required;
         this.readOnly = readOnly;
+        this.nonEditable = nonEditable;
+        this.nonDisplayable = nonDisplayable;
+        this.uiFilterable = uiFilterable;
         this.uiChanged = uiChanged;
         this.defaultValue = defaultValue;
         this.tooltip = tooltip;
@@ -196,7 +207,7 @@ public class Field {
         }
 
         return new FieldDto(id, entity == null ? null : entity.getId(), typeDto, basic, readOnly, nonEditable,
-                nonDisplayable, uiChanged, metaDto, validationDto, settingsDto, lookupDtos);
+                nonDisplayable, uiFilterable, uiChanged, metaDto, validationDto, settingsDto, lookupDtos);
     }
 
     private TypeDto generateTypeForTextArea(FieldSetting setting) {
@@ -492,6 +503,9 @@ public class Field {
         setTooltip(field.getBasic().getTooltip());
         setPlaceholder(field.getBasic().getPlaceholder());
         setReadOnly(field.isReadOnly());
+        setNonEditable(field.isNonEditable());
+        setNonDisplayable(field.isNonDisplayable());
+        setUIFilterable(field.isUiFilterable());
         setUiChanged(field.isUiChanged());
 
         if (field.getBasic().getDefaultValue() != null) {

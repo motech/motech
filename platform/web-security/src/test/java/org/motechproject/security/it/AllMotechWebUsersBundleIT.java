@@ -71,10 +71,10 @@ public class AllMotechWebUsersBundleIT extends BaseIT {
 
     @Test
     public void shouldListWebUsersByRole() {
-        MotechUser provider1 = new MotechUser("provider1", "testpassword", "email1@example.com", "id1", asList("PROVIDER"), "", Locale.ENGLISH);
-        MotechUser provider2 = new MotechUser("provider2", "testpassword", "email12@example.com", "id2", asList("PROVIDER"), "", Locale.ENGLISH);
-        MotechUser cmfAdmin = new MotechUser("cmfadmin", "testpassword", "email13@example.com", "id3", asList("CMFADMIN"), "", Locale.ENGLISH);
-        MotechUser itAdmin = new MotechUser("itadmin", "testpassword", "email4@example.com", "id4", asList("ITADMIN"), "", Locale.ENGLISH);
+        MotechUser provider1 = new MotechUser("provider1", "testpassword", "email1@example.com", "id1", asList("PROVIDER"), null, Locale.ENGLISH);
+        MotechUser provider2 = new MotechUser("provider2", "testpassword", "email12@example.com", "id2", asList("PROVIDER"), null, Locale.ENGLISH);
+        MotechUser cmfAdmin = new MotechUser("cmfadmin", "testpassword", "email13@example.com", "id3", asList("CMFADMIN"), null, Locale.ENGLISH);
+        MotechUser itAdmin = new MotechUser("itadmin", "testpassword", "email4@example.com", "id4", asList("ITADMIN"), null, Locale.ENGLISH);
         allMotechUsers.add(provider1);
         allMotechUsers.add(provider2);
         allMotechUsers.add(cmfAdmin);

@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.mds.query.QueryParams;
+import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
@@ -151,7 +152,7 @@ public class TaskActivityServiceImplTest {
     public void shouldReturnPaginatedActivitiesForGivenTask() {
         Set<TaskActivityType> types = new HashSet<>();
         types.addAll(Arrays.asList(TaskActivityType.values()));
-        QueryParams queryParams = new QueryParams(null);
+        QueryParams queryParams = new QueryParams((Order) null);
         when(taskActivitiesDataService.byTaskAndActivityTypes(TASK_ID, types, queryParams)).thenReturn(activities);
 
         List<TaskActivity> actual = activityService.getTaskActivities(TASK_ID, types, queryParams);

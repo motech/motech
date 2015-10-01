@@ -2,9 +2,11 @@ package org.motechproject.security.domain;
 
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.security.constants.PermissionNames;
 
+import javax.jdo.annotations.Unique;
 import java.util.List;
 
 /**
@@ -13,8 +15,15 @@ import java.util.List;
 @Entity(recordHistory = true)
 @Access(value = SecurityMode.PERMISSIONS, members = {PermissionNames.MANAGE_ROLE_AND_PERMISSION_PERMISSION})
 public class MotechRole {
+
+    @Field(required = true)
+    @Unique
     private String roleName;
+
+    @Field
     private List<String> permissionNames;
+
+    @Field
     private boolean deletable;
 
     public MotechRole() {

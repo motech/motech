@@ -2,4 +2,4 @@
         ng-options="getComboboxDisplayName(field.settings, value) for value in getComboboxValues(field.settings)" multiselect-list="single">
     <option value="">{{msg('mds.form.label.select')}}</option>
 </select>
-<input ng-if="shouldHideEdition(field)" class="form-control input-xlarge-fluid" ng-disabled="shouldHideEdition(field)" ng-model="field.value">
+<input ng-if="shouldHideEdition(field)" class="form-control input-xlarge-fluid" ng-readonly="shouldHideEdition(field)" ng-model="field.value">

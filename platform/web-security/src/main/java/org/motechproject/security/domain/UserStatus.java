@@ -18,5 +18,5 @@ public enum UserStatus {
     /**
      * User is blocked.
      */
-    BLOCKED;
+    BLOCKED
 }

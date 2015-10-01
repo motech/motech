@@ -4,7 +4,7 @@
             <label class="control-label">
                 {{msg('mds.form.label.key')}}
             </label>
-            <input class="form-control input-large-fluid" type="text" ng-model="meta.key" mds-auto-save-field-change mds-path="metadata.{{$index}}.key" mds-field-id="{{field.id}}" ng-disabled="field.readOnly || isMetadataNotEditable(meta.key)">
+            <input class="form-control input-large-fluid" type="text" ng-model="meta.key" mds-auto-save-field-change mds-path="metadata.{{$index}}.key" mds-field-id="{{field.id}}" ng-readonly="field.readOnly || isMetadataNotEditable(meta.key)">
             <div class="text-danger">
                 <span class="form-hint form-hint-bottom" ng-class="{hide: uniqueMetadataKey(field, meta.key)}">
                     {{msg('mds.error.duplicateMetadataKeys')}}
@@ -16,23 +16,23 @@
                 {{msg('mds.form.label.value')}}
             </label>
             <input class="form-control input-large-fluid" type="text" ng-model="meta.value" mds-auto-save-field-change
-                   mds-path="metadata.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly || meta.key == 'related.owningSide' || meta.key == 'enum.className'"
+                   mds-path="metadata.{{$index}}.value" mds-field-id="{{field.id}}" ng-readonly="field.readOnly || meta.key == 'related.owningSide' || meta.key == 'enum.className'"
                    ui-if="!isMetadataNotEditable(meta.key) || meta.key === 'related.owningSide' || meta.key == 'enum.className'">
 
             <div class="form-group" ui-if="meta.key == 'related.class'">
                 <input type="hidden" ui-select2="SELECT_RELATIONSHIP_ENTITY" select2-ng-change="relationMetadataChanged"
                        ng-model="meta.value" class="select-entity col-md-4" mds-path="metadata.{{$index}}.value"
-                       meta-key="related.class" mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
+                       meta-key="related.class" mds-field-id="{{field.id}}" ng-readonly="field.readOnly">
             </div>
 
             <div class="form-group" ui-if="meta.key == 'related.collectionType'">
                 <input type="hidden" ui-select2="SELECT_RELATIONSHIP_COLLECTION_TYPE" select2-ng-change="relationMetadataChanged"
                        ng-model="meta.value" class="select-entity col-md-4" mds-path="metadata.{{$index}}.value" mds-field-id="{{field.id}}"
-                       meta-key="related.collectionType" ng-disabled="field.readOnly">
+                       meta-key="related.collectionType" ng-readonly="field.readOnly">
             </div>
 
             <input class="form-control input-large-fluid" type="text" ng-model="meta.value" mds-auto-save-field-change
-                   mds-path="metadata.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="field.readOnly"
+                   mds-path="metadata.{{$index}}.value" mds-field-id="{{field.id}}" ng-readonly="field.readOnly"
                    ui-if="meta.key == 'related.field'">
 
             <a class="btn btn-danger btn-sm" ui-if="!field.readOnly && !isMetadataNotEditable(meta.key)" ng-click="removeMetadata(field, $index)">

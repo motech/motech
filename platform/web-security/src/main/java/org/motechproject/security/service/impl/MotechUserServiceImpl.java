@@ -55,7 +55,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     @Override
     public void register(String username, String password, String email, String externalId, List<String> roles,
                          Locale locale) {
-        this.register(username, password, email, externalId, roles, locale, UserStatus.ACTIVE , "");
+        this.register(username, password, email, externalId, roles, locale, UserStatus.ACTIVE , null);
     }
 
     @Override

@@ -7,10 +7,12 @@ import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.UIFilterable;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.json.TaskDeserializer;
 
+import javax.jdo.annotations.Unique;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -29,9 +31,17 @@ import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 @Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class Task {
 
+    @Field
     private Long id;
+
+    @Field
     private String description;
+
+    @Field(required = true)
+    @Unique
     private String name;
+
+    @Field
     private int failuresInRow;
 
     @Field
@@ -42,6 +52,8 @@ public class Task {
     @Cascade(delete = true)
     private TaskTriggerInformation trigger;
 
+    @Field
+    @UIFilterable
     private boolean enabled;
 
     @Field
@@ -52,6 +64,7 @@ public class Task {
     @Cascade(delete = true)
     private TaskConfig taskConfig;
 
+    @Field
     private boolean hasRegisteredChannel;
 
     /**

@@ -104,7 +104,7 @@ public class HistoryServiceContextIT extends BaseInstanceIT {
     public void shouldCreateHistoricalRecord() throws Exception {
         Object instance = createInstance(ORIGINAL_VALUES[0]);
 
-        QueryParams queryParams = new QueryParams(1,10,null);
+        QueryParams queryParams = new QueryParams(1, 10);
         List records = historyService.getHistoryForInstance(instance, queryParams);
         // The latest revision should not be present in the result
         assertRecords(records, 0);
@@ -139,7 +139,7 @@ public class HistoryServiceContextIT extends BaseInstanceIT {
     @Test
     public void shouldNotMixHistoricalRecords() throws Exception {
         // creates and updates instances one after another
-        QueryParams queryParams = new QueryParams(1,10,null);
+        QueryParams queryParams = new QueryParams(1, 10);
         Object instance1 = createInstance(ORIGINAL_VALUES[0]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[2]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[4]);
@@ -182,7 +182,7 @@ public class HistoryServiceContextIT extends BaseInstanceIT {
 
     @Test
     public void shouldRemoveOnlyCorrectRecords() throws Exception {
-        QueryParams queryParams = new QueryParams(1,10,null);
+        QueryParams queryParams = new QueryParams(1, 10);
         Object instance1 = createInstance(ORIGINAL_VALUES[0]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[2]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[4]);
@@ -206,7 +206,7 @@ public class HistoryServiceContextIT extends BaseInstanceIT {
 
     @Test
     public void shouldConnectHistoricalRecordsWithTrashInstance() throws Exception {
-        QueryParams queryParams = new QueryParams(1, 10, null);
+        QueryParams queryParams = new QueryParams(1, 10);
         Object instance1 = createInstance(ORIGINAL_VALUES[0]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[2]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[4]);
@@ -252,7 +252,7 @@ public class HistoryServiceContextIT extends BaseInstanceIT {
     @Test
     @Ignore
     public void shouldRevertPreviousVersion() throws Exception {
-        QueryParams queryParams = new QueryParams(1,10,null);
+        QueryParams queryParams = new QueryParams(1, 10);
         Object instance = createInstance(ORIGINAL_VALUES[0]);
         instance = updateInstance(instance, ORIGINAL_VALUES[2]);
         instance = updateInstance(instance, ORIGINAL_VALUES[4]);
@@ -286,7 +286,7 @@ public class HistoryServiceContextIT extends BaseInstanceIT {
     @Test
     @Ignore
     public void shouldProperlyAssignRecordsAfterMoveFromTrash() throws Exception {
-        QueryParams queryParams = new QueryParams(1,10,null);
+        QueryParams queryParams = new QueryParams(1, 10);
         Object instance1 = createInstance(ORIGINAL_VALUES[0]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[2]);
         instance1 = updateInstance(instance1, ORIGINAL_VALUES[4]);
