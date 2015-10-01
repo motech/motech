@@ -35,7 +35,7 @@ import org.motechproject.tasks.ex.TriggerNotFoundException;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.TasksDataService;
 import org.motechproject.tasks.service.ChannelService;
-import org.motechproject.tasks.service.SchedulerTaskTriggerUtil;
+import org.motechproject.tasks.util.SchedulerTaskTriggerUtil;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TriggerHandler;

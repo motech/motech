@@ -795,7 +795,7 @@
     });
 
 
-    directives.directive('datetimePickerTriggerInput', function () {
+    directives.directive('datetimePickerStartDateInput', function () {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -817,6 +817,29 @@
             }
         };
     });
+
+    directives.directive('datetimePickerEndDateInput', function () {
+            return {
+                restrict: 'A',
+                link: function (scope, element, attrs) {
+                    var parent = scope;
+
+                    element.datetimepicker({
+                        showTimezone: true,
+                        useLocalTimezone: true,
+                        dateFormat: 'yy-mm-dd',
+                        timeFormat: 'HH:mm z',
+                        showOn: true,
+                        constrainInput: false,
+                        onSelect: function (dateTex) {
+                            //parent.selectedTrigger.eventParameters[$(this).data('index')].value = dateTex;
+                            parent.task.trigger.endDate = dateTex;
+                            parent.$apply();
+                        }
+                    });
+                }
+            };
+        });
 
     directives.directive('datetimePickerInput', function () {
         return {

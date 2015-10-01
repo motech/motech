@@ -1,10 +1,11 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.util;
 
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.contract.EventParameterRequest;
 import org.motechproject.tasks.contract.TriggerEventRequest;
 import org.motechproject.tasks.ex.ValidationException;
+import org.motechproject.tasks.service.ChannelService;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,16 +16,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class TaskServiceNotifier {
+public class SchedulerTriggerRegistration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TaskServiceNotifier.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerTriggerRegistration.class);
 
     private BundleContext bundleContext;
     private ChannelService channelService;
 
 
     @Autowired
-    public TaskServiceNotifier(BundleContext bundleContext, ChannelService channelService ) {
+    public SchedulerTriggerRegistration(BundleContext bundleContext, ChannelService channelService) {
         this.bundleContext = bundleContext;
         this.channelService = channelService;
     }

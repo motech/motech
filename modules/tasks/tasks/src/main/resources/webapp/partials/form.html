@@ -78,11 +78,55 @@
                                     <div class="clearfix"></div>
                                 </div>
                                 <div>
-                                    <div ng-if="task.trigger.subject === 'org.motechproject.tasks.scheduler.runOnceJob.'" class="col-md-10 col-sm-9">
-                                        <label class="col-md-2 col-sm-3 control-label">{{msg('task.trigger.scheduler.fireDate')}}</label>
+                                    <div ng-if="(task.trigger.subject != undefined)" class="col-md-10 col-sm-9">
+                                        <label class="col-md-2 col-sm-3 control-label">{{msg('task.trigger.scheduler.startDate')}}</label>
                                         <div class="input-group">
-                                            <input id="startDate" ng-model="task.trigger.startDate" type="text" class="actionField form-control" data-index="{{$index}}" data-type="DATE" datetime-picker-trigger-input placeholder="{{msg('task.placeholder.dateOnlyNoTrigger')}}" style="background:white;"/>
+                                            <input id="startDate" ng-model="task.trigger.startDate" type="text" class="actionField form-control" data-index="{{$index}}" data-type="DATE" datetime-picker-start-date-input placeholder="{{msg('task.placeholder.dateOnlyNoTrigger')}}" style="background:white;"/>
                                             <div class="input-group-btn" datetime-picker><button class="btn btn-default">{{msg('task.button.selectDate')}}</button></div>
+                                        </div>
+                                        <div ng-if="task.trigger.subject != 'org.motechproject.tasks.scheduler.runOnceJob.'">
+                                            <label class="col-md-2 col-sm-3 control-label">{{msg('task.trigger.scheduler.endDate')}}</label>
+                                            <div class="input-group">
+                                                <input id="endDate" ng-model="task.trigger.endDate" type="text" class="actionField form-control" data-index="{{$index}}" data-type="DATE" datetime-picker-end-date-input placeholder="{{msg('task.placeholder.dateOnlyNoTrigger')}}" style="background:white;"/>
+                                                <div class="input-group-btn" datetime-picker><button class="btn btn-default">{{msg('task.button.selectDate')}}</button></div>
+                                            </div>
+                                        </div>
+                                        <div ng-if="task.trigger.subject === 'org.motechproject.tasks.scheduler.repeatingJob.'">
+                                            <label class="col-md-2 col-sm-3 control-label">{{msg('task.trigger.scheduler.interval')}}</label>
+                                            <div class="input-group">
+                                                <input id="interval" ng-model="task.trigger.interval" class="actionField form-control" type="text" data-index="{{$index}}" data-type="INTEGER" placeholder="{{msg('task.placeholder.intervalTime')}}" style="background:white;"/>
+                                            </div>
+                                        </div>
+                                        <div ng-if="task.trigger.subject === 'org.motechproject.tasks.scheduler.repeatingJobWithPeriodInterval.'">
+                                            <label class="col-md-2 col-sm-3 control-label">{{msg('task.trigger.scheduler.period')}}</label>
+                                            <div class="input-group">
+                                                <input type="text" class="actionField form-control" ng-model="task.trigger.repeatPeriod" data-index="{{$index}}" data-type="PERIOD" placeholder="{{msg('task.placeholder.period')}}" style="background:white;"/>
+                                            </div>
+                                        </div>
+                                        <div ng-if="task.trigger.subject === 'org.motechproject.tasks.scheduler.cronJob.'">
+                                            <label class="col-md-2 col-sm-3 control-label">{{msg('task.trigger.scheduler.cronExpression')}}</label>
+                                            <div class="input-group">
+                                                <input id="cronExpression" ng-model="task.trigger.cronExpression" class="actionField form-control" type="text" data-index="{{$index}}" data-type="TEXT" placeholder="{{msg('task.placeholder.cronExpression')}}" style="background:white;"/>
+                                            </div>
+                                        </div>
+                                        <div ng-if="task.trigger.subject === 'org.motechproject.tasks.scheduler.dayOfWeekJob.'">
+                                            <label class="col-md-2 col-sm-3 control-label">{{msg('task.trigger.scheduler.dayOfWeek')}}</label>
+                                            <div class="input-group">
+                                                <input id="dayOfWeek" ng-model="task.trigger.days" class="actionField form-control" type="text" data-index="{{$index}}" data-type="LIST" placeholder="{{msg('task.placeholder.dayOfWeek')}}" style="background:white;"/>
+                                            </div>
+                                            <label class="col-md-2 col-sm-3 control-label">{{msg('task.trigger.scheduler.time')}}</label>
+                                            <div class="input-group">
+                                                <input id="time" ng-model="task.trigger.time" class="actionField form-control" type="text" data-index="{{$index}}" data-type="TIME" placeholder="{{msg('task.placeholder.timeOnly')}}" style="background:white;"/>
+                                            </div>
+                                        </div>
+                                        <div ng-if="task.trigger.subject != 'org.motechproject.tasks.scheduler.runOnceJob.'">
+                                            <label class="col-md-2 col-sm-3 control-label">{{msg('task.trigger.scheduler.ignorePastFires')}}</label>
+                                            <label class="radio-inline">
+                                                <input type="radio"  data-ng-model="task.trigger.ignoreFiresignorePastFiresAtStart" data-ng-value="true"/> {{msg('yes')}}
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio"  data-ng-model="task.trigger.ignoreFiresignorePastFiresAtStart" data-ng-value="false"/> {{msg('no')}}
+                                            </label>
                                         </div>
                                     </div>
                                 </div>

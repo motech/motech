@@ -105,7 +105,6 @@
             },
             trigger: {
                 select: function (scope, channel, trigger) {
-                angular.element("#simpleTriggerInput").collapse({'toggle' : false});
                     if (!scope.task) {
                         scope.task = {};
                     }
@@ -123,13 +122,10 @@
 
                     angular.element("#trigger-" + channel.moduleName).parent('li').addClass('selectedTrigger').addClass('active');
 
-                    if (channel.displayName === "scheduler"){
-                            angular.element("#simpleTriggerInput").collapse('show');
-                    } else {
-                        if (angular.element("#collapse-trigger").collapse) {
-                            angular.element("#collapse-trigger").collapse('hide');
-                            }
+                    if ((angular.element("#collapse-trigger").collapse) && (channel.displayName !== "scheduler")) {
+                        angular.element("#collapse-trigger").collapse('hide');
                     }
+
 
                     scope.selectedTrigger = trigger;
 

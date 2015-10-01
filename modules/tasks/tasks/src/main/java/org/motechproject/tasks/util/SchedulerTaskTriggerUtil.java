@@ -1,4 +1,4 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.util;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -20,8 +20,10 @@ import org.motechproject.scheduler.contract.RunOnceJobId;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.tasks.domain.SchedulerJobType;
 import org.motechproject.tasks.domain.SchedulerTaskTriggerInformation;
 import org.motechproject.tasks.domain.Task;
+import org.motechproject.tasks.service.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +66,7 @@ public class SchedulerTaskTriggerUtil {
         Period repeatPeriod;
 
         SchedulerTaskTriggerInformation trigger = (SchedulerTaskTriggerInformation) task.getTrigger();
-        SchedulerTaskTriggerInformation.SchedulerJobType triggerType = trigger.getType();
+        SchedulerJobType triggerType = trigger.getType();
 
         switch (triggerType) {
             case RUN_ONCE_JOB:
@@ -131,23 +133,23 @@ public class SchedulerTaskTriggerUtil {
         String[] name = task.getTrigger().getSubject().split("\\.");
         switch (name[name.length-1]) {
             case "runOnceJob":
-                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerTaskTriggerInformation.SchedulerJobType.RUN_ONCE_JOB);
+                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerJobType.RUN_ONCE_JOB);
                 break;
 
             case "repeatingJob":
-                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerTaskTriggerInformation.SchedulerJobType.REPEATING_JOB);
+                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerJobType.REPEATING_JOB);
                 break;
 
             case "cronJob":
-                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerTaskTriggerInformation.SchedulerJobType.CRON_JOB);
+                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerJobType.CRON_JOB);
                 break;
 
             case "dayOfWeekJob":
-                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerTaskTriggerInformation.SchedulerJobType.DAY_OF_WEEK_JOB);
+                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerJobType.DAY_OF_WEEK_JOB);
                 break;
 
             case "repeatingJobWithPeriodInterval":
-                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerTaskTriggerInformation.SchedulerJobType.REPEATING_JOB_WITH_PERIOD_INTERVAL);
+                ((SchedulerTaskTriggerInformation) task.getTrigger()).setType(SchedulerJobType.REPEATING_JOB_WITH_PERIOD_INTERVAL);
                 break;
 
             default:
@@ -155,7 +157,7 @@ public class SchedulerTaskTriggerUtil {
         }
     }
 
-    public MotechEvent prepareSchedulerEvent(String subject) {
+    private MotechEvent prepareSchedulerEvent(String subject) {
         Map<String, Object> values = new HashMap<>();
 
         return new MotechEvent(subject, values);

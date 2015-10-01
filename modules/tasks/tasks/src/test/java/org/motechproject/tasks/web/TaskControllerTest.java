@@ -14,7 +14,7 @@ import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
-import org.motechproject.tasks.service.SchedulerTaskTriggerUtil;
+import org.motechproject.tasks.util.SchedulerTaskTriggerUtil;
 import org.motechproject.tasks.service.TaskActionExecutor;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;

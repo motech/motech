@@ -36,6 +36,7 @@ import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TaskHandlerException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
+import org.motechproject.tasks.util.SchedulerTaskTriggerUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 

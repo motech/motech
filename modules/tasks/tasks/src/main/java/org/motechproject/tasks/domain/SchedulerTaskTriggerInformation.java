@@ -29,14 +29,6 @@ public class SchedulerTaskTriggerInformation extends TaskTriggerInformation {
 
     private static final long serialVersionUID = 4921423073444417178L;
 
-    public enum SchedulerJobType {
-        CRON_JOB,
-        REPEATING_JOB,
-        RUN_ONCE_JOB,
-        DAY_OF_WEEK_JOB,
-        REPEATING_JOB_WITH_PERIOD_INTERVAL
-    }
-
     @Field
     private SchedulerJobType type;
 

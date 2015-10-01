@@ -18,6 +18,7 @@ import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.TaskHandlerException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
+import org.motechproject.tasks.util.SchedulerTaskTriggerUtil;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

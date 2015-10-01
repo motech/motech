@@ -23,8 +23,10 @@ import org.motechproject.scheduler.contract.RunOnceJobId;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.tasks.domain.SchedulerJobType;
 import org.motechproject.tasks.domain.SchedulerTaskTriggerInformation;
 import org.motechproject.tasks.domain.Task;
+import org.motechproject.tasks.util.SchedulerTaskTriggerUtil;
 import org.motechproject.testing.utils.TimeFaker;
 
 import java.util.Arrays;
@@ -77,7 +79,7 @@ public class SchedulerTaskTriggerUtilTest {
         taskName = "Run Once Task Test";
         triggerInformation = new SchedulerTaskTriggerInformation("scheduler.runOnceJobTrigger", CHANNEL, MODULE_NAME,
                 VERSION, BASE_SUBJECT + "runOnceJob.", BASE_SUBJECT + "runOnceJob." + taskName);
-        triggerInformation.setType(SchedulerTaskTriggerInformation.SchedulerJobType.RUN_ONCE_JOB);
+        triggerInformation.setType(SchedulerJobType.RUN_ONCE_JOB);
         triggerInformation.setStartDate("2015-09-25 08:00 +0200");
 
         when(taskService.findTasksByName(taskName)).thenReturn(Arrays.asList(task));
@@ -99,7 +101,7 @@ public class SchedulerTaskTriggerUtilTest {
         taskName = "Run Once Task Test";
         triggerInformation = new SchedulerTaskTriggerInformation("scheduler.runOnceJobTrigger", CHANNEL, MODULE_NAME,
                 VERSION, BASE_SUBJECT + "runOnceJob.", BASE_SUBJECT + "runOnceJob." + taskName);
-        triggerInformation.setType(SchedulerTaskTriggerInformation.SchedulerJobType.RUN_ONCE_JOB);
+        triggerInformation.setType(SchedulerJobType.RUN_ONCE_JOB);
         triggerInformation.setStartDate("2015-09-10 08:00 +0200");
 
         when(taskService.findTasksByName(taskName)).thenReturn(Arrays.asList(task));
@@ -117,7 +119,7 @@ public class SchedulerTaskTriggerUtilTest {
         taskName = "Repeating Task Test";
         triggerInformation = new SchedulerTaskTriggerInformation("scheduler.repeatingJobTrigger", CHANNEL, MODULE_NAME,
                 VERSION, BASE_SUBJECT + "runOnceJob.", BASE_SUBJECT + "runOnceJob." + taskName);
-        triggerInformation.setType(SchedulerTaskTriggerInformation.SchedulerJobType.REPEATING_JOB);
+        triggerInformation.setType(SchedulerJobType.REPEATING_JOB);
         triggerInformation.setStartDate("2015-09-25 08:00 +0200");
         triggerInformation.setEndDate("2015-09-28 08:00 +0200");
         triggerInformation.setInterval(100);
@@ -145,7 +147,7 @@ public class SchedulerTaskTriggerUtilTest {
         taskName = "Cron Task Test";
         triggerInformation = new SchedulerTaskTriggerInformation("scheduler.cronJobTrigger", CHANNEL, MODULE_NAME,
                 VERSION, BASE_SUBJECT + "cronJob.", BASE_SUBJECT + "cronJob." + taskName);
-        triggerInformation.setType(SchedulerTaskTriggerInformation.SchedulerJobType.CRON_JOB);
+        triggerInformation.setType(SchedulerJobType.CRON_JOB);
         triggerInformation.setStartDate("2015-09-25 08:00 +0200");
         triggerInformation.setEndDate("2015-09-28 08:00 +0200");
         triggerInformation.setCronExpression("0 15 10 * * ?");
@@ -173,7 +175,7 @@ public class SchedulerTaskTriggerUtilTest {
         taskName = "Day of week Task Test";
         triggerInformation = new SchedulerTaskTriggerInformation("scheduler.dayOfWeekTrigger", CHANNEL, MODULE_NAME,
                 VERSION, BASE_SUBJECT + "dayOfWeekJob.", BASE_SUBJECT + "dayOfWeekJob." + taskName);
-        triggerInformation.setType(SchedulerTaskTriggerInformation.SchedulerJobType.DAY_OF_WEEK_JOB);
+        triggerInformation.setType(SchedulerJobType.DAY_OF_WEEK_JOB);
         triggerInformation.setStartDate("2015-09-25 08:00 +0200");
         triggerInformation.setEndDate("2015-09-28 08:00 +0200");
         triggerInformation.setDays(Arrays.asList(DayOfWeek.Monday, DayOfWeek.Friday));
@@ -206,7 +208,7 @@ public class SchedulerTaskTriggerUtilTest {
         taskName = "Repeating with period Task Test";
         triggerInformation = new SchedulerTaskTriggerInformation("scheduler.repeatingWithPeriodTrigger", CHANNEL, MODULE_NAME,
                 VERSION, BASE_SUBJECT + "repeatingJobWithPeriod.", BASE_SUBJECT + "repeatingJobWithPeriod." + taskName);
-        triggerInformation.setType(SchedulerTaskTriggerInformation.SchedulerJobType.REPEATING_JOB_WITH_PERIOD_INTERVAL);
+        triggerInformation.setType(SchedulerJobType.REPEATING_JOB_WITH_PERIOD_INTERVAL);
         triggerInformation.setStartDate("2015-09-25 08:00 +0200");
         triggerInformation.setEndDate("2015-09-28 08:00 +0200");
         triggerInformation.setRepeatPeriod(new Period(11, 30, 0, 0));
@@ -234,7 +236,7 @@ public class SchedulerTaskTriggerUtilTest {
         taskName = "Unschedule Test";
         triggerInformation = new SchedulerTaskTriggerInformation("scheduler.trigger", CHANNEL, MODULE_NAME,
                 VERSION, BASE_SUBJECT + "trigger.", BASE_SUBJECT + "trigger." + taskName);
-        triggerInformation.setType(SchedulerTaskTriggerInformation.SchedulerJobType.RUN_ONCE_JOB);
+        triggerInformation.setType(SchedulerJobType.RUN_ONCE_JOB);
 
         when(task.getTrigger()).thenReturn(triggerInformation);
 
@@ -253,7 +255,7 @@ public class SchedulerTaskTriggerUtilTest {
         taskName = "Unschedule Test";
         triggerInformation = new SchedulerTaskTriggerInformation("scheduler.trigger", CHANNEL, MODULE_NAME,
                 VERSION, BASE_SUBJECT + "trigger.", BASE_SUBJECT + "trigger." + taskName);
-        triggerInformation.setType(SchedulerTaskTriggerInformation.SchedulerJobType.REPEATING_JOB);
+        triggerInformation.setType(SchedulerJobType.REPEATING_JOB);
 
         when(task.getTrigger()).thenReturn(triggerInformation);
 
@@ -272,7 +274,7 @@ public class SchedulerTaskTriggerUtilTest {
         taskName = "Unschedule Test";
         triggerInformation = new SchedulerTaskTriggerInformation("scheduler.trigger", CHANNEL, MODULE_NAME,
                 VERSION, BASE_SUBJECT + "trigger.", BASE_SUBJECT + "trigger." + taskName);
-        triggerInformation.setType(SchedulerTaskTriggerInformation.SchedulerJobType.CRON_JOB);
+        triggerInformation.setType(SchedulerJobType.CRON_JOB);
 
         when(task.getTrigger()).thenReturn(triggerInformation);
 
@@ -291,7 +293,7 @@ public class SchedulerTaskTriggerUtilTest {
         taskName = "Unschedule Test";
         triggerInformation = new SchedulerTaskTriggerInformation("scheduler.trigger", CHANNEL, MODULE_NAME,
                 VERSION, BASE_SUBJECT + "trigger.", BASE_SUBJECT + "trigger." + taskName);
-        triggerInformation.setType(SchedulerTaskTriggerInformation.SchedulerJobType.DAY_OF_WEEK_JOB);
+        triggerInformation.setType(SchedulerJobType.DAY_OF_WEEK_JOB);
 
         when(task.getTrigger()).thenReturn(triggerInformation);
 
