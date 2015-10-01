@@ -157,6 +157,9 @@ public class TaskTriggerHandlerTest {
     @Mock
     MotechSchedulerService motechSchedulerService;
 
+    @Mock
+    SchedulerTaskTriggerUtil schedulerTaskTriggerUtil;
+
     TaskActionExecutor taskActionExecutor;
 
     TaskTriggerHandler handler;
@@ -179,7 +182,7 @@ public class TaskTriggerHandlerTest {
 
         taskActionExecutor = new TaskActionExecutor(taskService, taskActivityService, eventRelay);
         handler = new TaskTriggerHandler(taskService, taskActivityService, registryService, eventRelay,
-                taskActionExecutor, settingsFacade, motechSchedulerService);
+                taskActionExecutor, settingsFacade, motechSchedulerService, schedulerTaskTriggerUtil);
         handler.addDataProvider(dataProvider);
         handler.setBundleContext(null);
 
@@ -194,7 +197,7 @@ public class TaskTriggerHandlerTest {
 
         when(taskService.getAllTasks()).thenReturn(new ArrayList<Task>());
 
-        new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, taskActionExecutor, null, motechSchedulerService);
+        new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, taskActionExecutor, null, motechSchedulerService, schedulerTaskTriggerUtil);
         verify(eventListenerRegistryService, never()).registerListener(any(EventListener.class), anyString());
     }
 

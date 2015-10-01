@@ -14,6 +14,7 @@ import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
+import org.motechproject.tasks.service.SchedulerTaskTriggerUtil;
 import org.motechproject.tasks.service.TaskActionExecutor;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
@@ -77,6 +78,9 @@ public class TaskControllerTest {
     @Mock
     Task task;
 
+    @Mock
+    SchedulerTaskTriggerUtil schedulerTaskTriggerUtil;
+
     TaskActionExecutor taskActionExecutor;
 
     TriggerHandler triggerHandler;
@@ -85,7 +89,7 @@ public class TaskControllerTest {
     public void setUp() throws Exception {
         initMocks(this);
         taskActionExecutor = new TaskActionExecutor(taskService, null, null);
-        triggerHandler = new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, taskActionExecutor, null, motechSchedulerService);
+        triggerHandler = new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, taskActionExecutor, null, motechSchedulerService, schedulerTaskTriggerUtil);
     }
 
     @Test

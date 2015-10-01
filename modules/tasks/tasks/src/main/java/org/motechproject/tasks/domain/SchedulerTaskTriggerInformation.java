@@ -67,14 +67,6 @@ public class SchedulerTaskTriggerInformation extends TaskTriggerInformation {
     @Field
     private Period repeatPeriod;
 
-
-    /**
-     * Constructor
-     */
-    public SchedulerTaskTriggerInformation() {
-        this(null, null, null, null, null, null, null);
-    }
-
     /**
      * Constructor.
      *
@@ -86,12 +78,9 @@ public class SchedulerTaskTriggerInformation extends TaskTriggerInformation {
      * @param triggerListener  the trigger listener
      */
     public SchedulerTaskTriggerInformation(String displayName, String channelName, String moduleName,
-                                           String moduleVersion, String subject, String triggerListener,
-                                           String startDate) {
+                                           String moduleVersion, String subject, String triggerListener) {
         super(displayName, channelName, moduleName, moduleVersion, subject, triggerListener);
-        this.startDate = startDate;
     }
-
 
     public SchedulerJobType getType() {
         return type;
