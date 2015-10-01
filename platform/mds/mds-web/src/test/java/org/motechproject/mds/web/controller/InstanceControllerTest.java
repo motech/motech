@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -66,7 +67,7 @@ public class InstanceControllerTest {
                 "attachment; filename=Entity_1_instances.csv");
 
         assertNull(captor.getValue().getPageSize());
-        assertNull(captor.getValue().getOrder());
+        assertFalse(captor.getValue().isOrderSet());
     }
 
     @Test
@@ -91,8 +92,8 @@ public class InstanceControllerTest {
                 "attachment; filename=Entity_1_instances.csv");
 
         QueryParams captorValue = queryParamsCaptor.getValue();
-        assertEquals(Order.Direction.ASC, captorValue.getOrder().getDirection());
-        assertEquals("sortColumn", captorValue.getOrder().getField());
+        assertEquals(Order.Direction.ASC, captorValue.getOrderList().get(0).getDirection());
+        assertEquals("sortColumn", captorValue.getOrderList().get(0).getField());
         assertEquals(Integer.valueOf(1), captorValue.getPage());
         assertEquals(Integer.valueOf(50), captorValue.getPageSize());
 

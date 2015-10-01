@@ -43,7 +43,8 @@ public final class QueryUtil {
                 query.setRange(fromIncl, toExcl);
             }
             if (queryParams.isOrderSet()) {
-                query.setOrdering(queryParams.getOrder().toString());
+                String order = StringUtils.join(queryParams.getOrderList(), ", ");
+                query.setOrdering(order);
             }
         }
     }
