@@ -6,7 +6,7 @@ package org.motechproject.security.constants;
 public final class EventSubjects {
 
     public static final String PASSWORD_EXPIRATION_CHECK = "CheckPasswordExpiration";
-    public static final String PASSWORD_RESET_REMINDER = "PasswordResetReminder";
+    public static final String PASSWORD_CHANGE_REMINDER = "PasswordChangeReminder";
 
     /**
      * Utility class, should not be initiated.

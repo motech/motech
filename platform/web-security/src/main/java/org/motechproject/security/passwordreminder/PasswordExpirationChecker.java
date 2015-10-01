@@ -1,6 +1,5 @@
 package org.motechproject.security.passwordreminder;
 
-import org.eclipse.gemini.blueprint.service.importer.OsgiServiceLifecycleListener;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -11,13 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Map;
 
 /**
  * Waits for the scheduler module to start and then schedules password expiration checker job.
  */
 @Component
-public class PasswordExpirationChecker implements OsgiServiceLifecycleListener, ServiceTrackerCustomizer {
+public class PasswordExpirationChecker implements ServiceTrackerCustomizer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PasswordExpirationChecker.class);
 
@@ -35,22 +33,12 @@ public class PasswordExpirationChecker implements OsgiServiceLifecycleListener, 
     }
 
     @Override
-    public void bind(Object service, Map properties) {
-        LOGGER.info("Configuration service bound");
-        internal.schedulePasswordReminderJob();
-    }
-
-    @Override
-    public void unbind(Object service, Map properties) {
-        LOGGER.info("Configuration service unbound");
-    }
-
-    @Override
     public Object addingService(ServiceReference reference) {
         Object service = bundleContext.getService(reference);
 
         LOGGER.info("Scheduler service bound");
         internal = new PasswordExpirationCheckerInternal(service);
+        internal.schedulePasswordReminderJob();
 
         return service;
     }

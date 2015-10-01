@@ -26,11 +26,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.security.constants.EventSubjects.PASSWORD_EXPIRATION_CHECK;
-import static org.motechproject.security.constants.EventSubjects.PASSWORD_RESET_REMINDER;
+import static org.motechproject.security.constants.EventSubjects.PASSWORD_CHANGE_REMINDER;
 
 public class PasswordExpirationCheckEventHandlerTest {
 
-    private static final int DAYS_FOR_REMINDER = 5;
     private static final int DAYS_TO_CHANGE_PASSWORD = 20;
 
     @Mock
@@ -116,19 +115,19 @@ public class PasswordExpirationCheckEventHandlerTest {
         parameters.put("username", users.get(1).getUserName());
         parameters.put("email", users.get(1).getEmail());
         parameters.put("expirationDate", calculateExpirationDate(users.get(1)));
-        events.add(new MotechEvent(PASSWORD_RESET_REMINDER, parameters));
+        events.add(new MotechEvent(PASSWORD_CHANGE_REMINDER, parameters));
 
         parameters = new HashMap<>();
         parameters.put("username", users.get(2).getUserName());
         parameters.put("email", users.get(2).getEmail());
         parameters.put("expirationDate", calculateExpirationDate(users.get(2)));
-        events.add(new MotechEvent(PASSWORD_RESET_REMINDER, parameters));
+        events.add(new MotechEvent(PASSWORD_CHANGE_REMINDER, parameters));
 
         return events;
     }
 
     private DateTime calculateExpirationDate(MotechUser user) {
-        return user.getLastPasswordChange().plusDays(DAYS_TO_CHANGE_PASSWORD - DAYS_FOR_REMINDER);
+        return user.getLastPasswordChange().plusDays(DAYS_TO_CHANGE_PASSWORD);
     }
 
     private void prepareEvent() {

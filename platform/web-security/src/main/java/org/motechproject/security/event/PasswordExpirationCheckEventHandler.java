@@ -43,7 +43,9 @@ public class PasswordExpirationCheckEventHandler {
         LOGGER.info("Daily password reset reminder triggered");
 
         if (settingService.isPasswordResetReminderEnabled()) {
-            int daysTillReminder = daysTillReminder();
+            int daysTillPasswordChange = settingService.getNumberOfDaysToChangePassword();
+            int daysTillReminder = daysTillPasswordChange - settingService.getNumberOfDaysForReminder();
+
             for (MotechUser user : allUsers.retrieveAll()) {
                 int daysWithoutPasswordChange = daysWithoutPasswordChange(user);
 
@@ -51,26 +53,22 @@ public class PasswordExpirationCheckEventHandler {
                         user.getUserName(), daysWithoutPasswordChange, daysTillReminder);
 
                 if (daysWithoutPasswordChange == daysTillReminder) {
-                    sendPasswordReminderEvent(user, daysTillReminder);
+                    sendPasswordReminderEvent(user, daysTillPasswordChange);
                 }
             }
         }
     }
 
-    private void sendPasswordReminderEvent(MotechUser user, int daysTillReminder) {
+    private void sendPasswordReminderEvent(MotechUser user, int daysTillPasswordChange) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("username", user.getUserName());
         parameters.put("email", user.getEmail());
-        parameters.put("expirationDate", user.getLastPasswordChange().plusDays(daysTillReminder));
-        eventRelay.sendEventMessage(new MotechEvent(EventSubjects.PASSWORD_RESET_REMINDER, parameters));
+        parameters.put("expirationDate", user.getLastPasswordChange().plusDays(daysTillPasswordChange));
+        eventRelay.sendEventMessage(new MotechEvent(EventSubjects.PASSWORD_CHANGE_REMINDER, parameters));
 
         LOGGER.info("Event notifying user {} about incoming required password change sent. The password should be" +
                         "changed at {}. User e-mail is {}", user.getUserName(),
                 parameters.get("expirationDate").toString(), user.getEmail());
-    }
-
-    private int daysTillReminder() {
-        return settingService.getNumberOfDaysToChangePassword() - settingService.getNumberOfDaysForReminder();
     }
 
     private int daysWithoutPasswordChange(MotechUser user) {
