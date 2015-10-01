@@ -14,6 +14,10 @@ public class ChangePasswordFormValidator {
     public List<String> validate(ChangePasswordForm target) {
         List<String> errors = new ArrayList<>();
 
+        if (StringUtils.isBlank(target.getUsername())) {
+            errors.add("server.reset.noUsername");
+        }
+
         if (StringUtils.isBlank(target.getOldPassword())) {
             errors.add("server.reset.oldPasswordRequired");
         }

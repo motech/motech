@@ -14,12 +14,15 @@ public class ChangePasswordViewData {
 
     private List<String> errors;
 
-    private boolean changingSucceed;
+    private boolean changeSucceded;
+
+    private boolean userBlocked;
 
     public ChangePasswordViewData(ChangePasswordForm changePasswordForm) {
         this.changePasswordForm = changePasswordForm;
         this.errors = new ArrayList<>();
-        this.changingSucceed = false;
+        this.changeSucceded = false;
+        this.userBlocked = false;
     }
 
     public ChangePasswordForm getChangePasswordForm() {
@@ -38,11 +41,20 @@ public class ChangePasswordViewData {
         this.errors = errors;
     }
 
-    public boolean isChangingSucceed() {
-        return changingSucceed;
+    public boolean isChangeSucceded() {
+        return changeSucceded;
     }
 
-    public void setChangingSucceed(boolean changingSucceed) {
-        this.changingSucceed = changingSucceed;
+    public void setChangeSucceded(boolean changeSucceded) {
+        this.changeSucceded = changeSucceded;
     }
+
+    public boolean isUserBlocked() {
+        return userBlocked;
+    }
+
+    public void setUserBlocked(boolean userBlocked) {
+        this.userBlocked = userBlocked;
+    }
+
 }

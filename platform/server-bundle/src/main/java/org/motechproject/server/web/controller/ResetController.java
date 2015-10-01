@@ -16,6 +16,7 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +33,7 @@ import java.util.List;
  */
 @Controller
 public class ResetController {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ResetController.class);
 
     @Autowired
@@ -65,20 +67,23 @@ public class ResetController {
         List<String> errors = validator.validate(form);
 
         if (!errors.isEmpty()) {
-            viewData.setChangingSucceed(false);
             viewData.setErrors(errors);
         } else {
             try {
-                MotechUserProfile profile = motechUserService.changePassword(form.getOldPassword(), form.getPassword());
+                MotechUserProfile profile = motechUserService.changeExpiredPassword(form.getUsername(), form.getOldPassword(), form.getPassword());
                 if (profile != null) {
-                    viewData.setChangingSucceed(true);
+                    viewData.setChangeSucceded(true);
                 } else {
                     viewData.getErrors().add("server.reset.wrongPassword");
                 }
             } catch (PasswordValidatorException e) {
                 viewData.getErrors().add(e.getMessage());
+            } catch (LockedException e) {
+                viewData.setUserBlocked(true);
             }
         }
+
+        viewData.getChangePasswordForm().resetPasswordsAndUserName();
         return viewData;
     }
 

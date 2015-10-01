@@ -34,17 +34,18 @@
                     <div id="main-content">
                         <div class="well2 margin-center margin-before spn6">
                             <div class="reset-content">
-                                <div ng-if="!changePasswordViewData.changingSucceed" class="box-header">
+                                <div ng-if="!changePasswordViewData.changeSucceded" class="box-header">
                                      {{msg('server.reset.changeYourPassword')}}
                                 </div>
-                                <div ng-if="changePasswordViewData.changingSucceed" class="box-header">
+                                <div ng-if="changePasswordViewData.changeSucceded" class="box-header">
                                      {{msg('server.information')}}
                                 </div>
                                 <div class="box-content">
                                     <div class="well3">
-                                        <h5 ng-if="!changePasswordViewData.changingSucceed">{{msg('server.reset.passwordExpired')}}</h5>
-                                        <form ng-if="!changePasswordViewData.changingSucceed" method="post" name="changePasswordForm"
+                                        <h5 ng-if="!changePasswordViewData.changeSucceded">{{msg('server.reset.passwordExpired')}}</h5>
+                                        <form ng-if="!changePasswordViewData.changeSucceded" method="post" name="changePasswordForm"
                                             class="inside form-horizontal" ng-submit="submitChangePasswordForm()">
+                                            <input type="hidden" id="username" name="username" ng-model="changePasswordViewData.changePasswordForm.username" />
                                             <div class="form-group">
                                                 <label class="control-label col-md-5">{{msg('server.reset.currentPassword')}}</label>
                                                 <div class="form-inline col-md-6">
@@ -80,11 +81,6 @@
                                                 <div class="col-md-offset-5 col-md-4">
                                                     <input class="btn btn-primary" type="submit" value="{{msg('server.reset.changePassword')}}" ng-disabled="changePasswordForm.$invalid"/>
                                                 </div>
-                                                <div class="col-md-offset-5 col-md-4 margin-before">
-                                                    <a class="btn btn-default" href="<%=request.getContextPath()%>/server/j_spring_security_logout">
-                                                        <span class="fa fa-power-off"></span>&nbsp;{{msg("server.signOut")}}
-                                                    </a>
-                                                </div>
                                             </div>
                                         </form>
                                         <div ng-if="changePasswordViewData.errors != null">
@@ -93,7 +89,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div ng-if="changePasswordViewData.changingSucceed" class="well3">
+                                    <div ng-if="changePasswordViewData.changeSucceded" class="well3">
                                         <div>
                                             <h4>{{msg('server.reset.passwordChanged')}}</h4>
                                             <div class="form-group">

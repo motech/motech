@@ -381,7 +381,7 @@ public class SettingsRecord implements MotechSettings {
 
     private Integer getInteger(String key) {
         String value = platformSettings.get(key);
-        return StringUtils.isBlank(value) || "null".equals(value) ? null : Integer.valueOf(value);
+        return StringUtils.isBlank(value) ? null : Integer.valueOf(value);
     }
 
     private String intToStr(Integer integer) {

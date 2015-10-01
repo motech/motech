@@ -25,6 +25,7 @@
                 <td><span ng-repeat="role in user.roles track by $index">{{role}}<span ng-hide="$index == (user.roles.length-1)">, </span></span></td>
                 <td ng-show="user.userStatus === 'ACTIVE' || user.userStatus === undefined"><a>{{msg('security.user.active')}}</a></td>
                 <td ng-show="user.userStatus === 'BLOCKED'"><a>{{msg('security.user.blocked')}}</a></td>
+                <td ng-show="user.userStatus === 'MUST_CHANGE_PASSWORD'"><a>{{msg('security.user.mustChangePassword')}}</a></td>
             </tr>
             </tbody>
         </table>
@@ -172,6 +173,7 @@
                         <select ng-model="user.userStatus" class="form-control form-control-select">
                             <option value="ACTIVE">{{msg('security.user.active')}}</option>
                             <option value="BLOCKED">{{msg('security.user.blocked')}}</option>
+                            <option value="MUST_CHANGE_PASSWORD">{{msg('security.user.mustChangePassword')}}</option>
                         </select>
                     </div>
                 </div>

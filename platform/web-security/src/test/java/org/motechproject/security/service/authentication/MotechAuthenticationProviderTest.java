@@ -1,13 +1,19 @@
 package org.motechproject.security.service.authentication;
 
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.domain.UserStatus;
+import org.motechproject.security.config.SettingService;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.service.AuthoritiesService;
@@ -20,7 +26,10 @@ import java.util.Locale;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -28,20 +37,27 @@ public class MotechAuthenticationProviderTest {
 
     @Mock
     private AllMotechUsers allMotechUsers;
+
     @Mock
     private MotechPasswordEncoder passwordEncoder;
+
     @Mock
     private AllMotechRoles allMotechRoles;
 
     @Mock
     private AuthoritiesService authoritiesService;
 
+    @Mock
+    SettingService settingService;
+
     private MotechAuthenticationProvider authenticationProvider;
+
+    ArgumentCaptor<MotechUser> userCaptor = ArgumentCaptor.forClass(MotechUser.class);
 
     @Before
     public void setup() {
         initMocks(this);
-        authenticationProvider = new MotechAuthenticationProvider(allMotechUsers, passwordEncoder, authoritiesService);
+        authenticationProvider = new MotechAuthenticationProvider(allMotechUsers, passwordEncoder, authoritiesService, settingService);
     }
 
     @Test
@@ -106,5 +122,26 @@ public class MotechAuthenticationProviderTest {
         when(user.getPassword()).thenReturn("encodedPassword");
 
         authenticationProvider.additionalAuthenticationChecks(user, authentication);
+    }
+
+    @Test
+    public void shouldChangeUserStatus() {
+        MotechUser motechUser = new MotechUser("bob", "encodedPassword", "entity_1", "", asList("some_role"), "", Locale.ENGLISH);
+        motechUser.setUserStatus(UserStatus.ACTIVE);
+        motechUser.setLastPasswordChange(DateTime.now().minusDays(2));
+
+        when(allMotechUsers.findByUserName("bob")).thenReturn(motechUser);
+        when(settingService.getNumberOfDaysToChangePassword()).thenReturn(1);
+
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("bob", "encodedPassword");
+        UserDetails details = authenticationProvider.retrieveUser("bob", authentication);
+        verify(allMotechUsers).update(userCaptor.capture());
+
+        assertTrue(details.isAccountNonLocked());
+        assertFalse(details.isCredentialsNonExpired());
+
+        MotechUser capturedUser = userCaptor.getValue();
+        Assert.assertEquals((Integer) 0, capturedUser.getFailureLoginCounter());
+        Assert.assertEquals(UserStatus.MUST_CHANGE_PASSWORD, capturedUser.getUserStatus());
     }
 }

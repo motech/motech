@@ -138,8 +138,10 @@
     </bean>
 
     <bean id="loginMappingFailureHandler" class="org.motechproject.security.authentication.MotechLoginErrorHandler">
-        <property name="defaultFailureUrl" value="/module/server/login?error=true"/>
-        <property name="userBlockedUrl" value="/module/server/login?blocked=true"/>
+        <constructor-arg value="/module/server/login?error=true"/>
+        <constructor-arg value="/module/server/login?blocked=true"/>
+        <constructor-arg value="/module/server/changepassword"/>
     </bean>
 
+    <bean id="redirectStrategy" class="org.springframework.security.web.DefaultRedirectStrategy" />
 </beans>

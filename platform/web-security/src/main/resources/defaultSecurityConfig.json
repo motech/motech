@@ -46,6 +46,21 @@
            "active": true
        },
        {
+           "pattern": "/**/server/changepassword",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.26",
+           "methodsRequired": [
+               "ANY"
+           ],
+           "active": true
+       },
+       {
            "pattern": "/**/server/lang/**",
            "supportedSchemes": [
                "NO_SECURITY"

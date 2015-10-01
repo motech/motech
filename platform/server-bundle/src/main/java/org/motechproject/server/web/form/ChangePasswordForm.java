@@ -7,11 +7,21 @@ import static org.apache.commons.lang.StringUtils.EMPTY;
  */
 public class ChangePasswordForm {
 
+    private String username;
+
     private String oldPassword;
 
     private String password;
 
     private String passwordConfirmation;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public String getPasswordConfirmation() {
         return passwordConfirmation;
@@ -38,9 +48,10 @@ public class ChangePasswordForm {
     }
 
     /**
-     * Sets empty string to {@code oldPassword}, {@code password} and {@code passwordConfirmation} attributes.
+     * Sets empty string to {@code username}, {@code oldPassword}, {@code password} and {@code passwordConfirmation} attributes.
      */
-    public void resetPasswords() {
+    public void resetPasswordsAndUserName() {
+        this.username = EMPTY;
         this.oldPassword = EMPTY;
         this.password = EMPTY;
         this.passwordConfirmation = EMPTY;

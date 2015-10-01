@@ -14,12 +14,11 @@ import org.motechproject.server.web.validator.ResetFormValidator;
 import org.motechproject.security.ex.InvalidTokenException;
 import org.motechproject.security.service.PasswordRecoveryService;
 import org.motechproject.server.web.form.ResetForm;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -36,6 +35,7 @@ public class ResetControllerTest {
     private static final String ERROR = "error";
     private static final String PASSWORD = "password";
     private static final String NEW_PASSWORD = "new_password";
+    private static final String USER = "sampleUser";
     private static final String PAGE_LANG = "pageLang";
 
     @Mock
@@ -142,7 +142,7 @@ public class ResetControllerTest {
     @Test
     public void testShouldNotChangePasswordWhenPasswordIsWrong() {
         ChangePasswordForm passwordForm = buildPasswordForm(PASSWORD, NEW_PASSWORD, NEW_PASSWORD);
-        when(motechUserService.changePassword(PASSWORD, NEW_PASSWORD)).thenReturn(null);
+        when(motechUserService.changeExpiredPassword(USER, PASSWORD, NEW_PASSWORD)).thenReturn(null);
 
         ChangePasswordViewData viewData = controller.changePassword(passwordForm);
 
@@ -150,14 +150,15 @@ public class ResetControllerTest {
         assertEquals(1, errors.size());
         assertEquals("server.reset.wrongPassword", errors.get(0));
 
-        assertEquals(false, viewData.isChangingSucceed());
-        verify(motechUserService).changePassword(PASSWORD, NEW_PASSWORD);
+        assertEquals(false, viewData.isChangeSucceded());
+        assertEquals(false, viewData.isUserBlocked());
+        verify(motechUserService).changeExpiredPassword(USER, PASSWORD, NEW_PASSWORD);
     }
 
     @Test
     public void testShouldNotChangePasswordWhenConfirmationIsWrong() {
         ChangePasswordForm passwordForm = buildPasswordForm(PASSWORD, NEW_PASSWORD, PASSWORD);
-        when(motechUserService.changePassword(PASSWORD, NEW_PASSWORD)).thenReturn(motechUserProfile);
+        when(motechUserService.changeExpiredPassword(USER, PASSWORD, NEW_PASSWORD)).thenReturn(motechUserProfile);
 
         ChangePasswordViewData viewData = controller.changePassword(passwordForm);
 
@@ -165,22 +166,39 @@ public class ResetControllerTest {
         assertEquals(1, errors.size());
         assertEquals("server.error.invalid.password", errors.get(0));
 
-        assertEquals(false, viewData.isChangingSucceed());
-        verify(motechUserService, never()).changePassword(PASSWORD, NEW_PASSWORD);
+        assertEquals(false, viewData.isChangeSucceded());
+        assertEquals(false, viewData.isUserBlocked());
+        verify(motechUserService, never()).changeExpiredPassword(USER, PASSWORD, NEW_PASSWORD);
     }
 
     @Test
     public void testShouldChangePassword() {
         ChangePasswordForm passwordForm = buildPasswordForm(PASSWORD, NEW_PASSWORD, NEW_PASSWORD);
-        when(motechUserService.changePassword(PASSWORD, NEW_PASSWORD)).thenReturn(motechUserProfile);
+        when(motechUserService.changeExpiredPassword(USER, PASSWORD, NEW_PASSWORD)).thenReturn(motechUserProfile);
 
         ChangePasswordViewData viewData = controller.changePassword(passwordForm);
 
         List<String> errors = viewData.getErrors();
         assertEquals(0, errors.size());
 
-        assertEquals(true, viewData.isChangingSucceed());
-        verify(motechUserService).changePassword(PASSWORD, NEW_PASSWORD);
+        assertEquals(true, viewData.isChangeSucceded());
+        assertEquals(false, viewData.isUserBlocked());
+        verify(motechUserService).changeExpiredPassword(USER, PASSWORD, NEW_PASSWORD);
+    }
+
+    @Test
+    public void shouldSetUserBlockedFlag() {
+        ChangePasswordForm passwordForm = buildPasswordForm(PASSWORD, NEW_PASSWORD, NEW_PASSWORD);
+        when(motechUserService.changeExpiredPassword(USER, PASSWORD, NEW_PASSWORD)).thenThrow(new LockedException("User has been blocked!"));
+
+        ChangePasswordViewData viewData = controller.changePassword(passwordForm);
+
+        List<String> errors = viewData.getErrors();
+        assertEquals(0, errors.size());
+
+        assertEquals(false, viewData.isChangeSucceded());
+        assertEquals(true, viewData.isUserBlocked());
+        verify(motechUserService).changeExpiredPassword(USER, PASSWORD, NEW_PASSWORD);
     }
 
     private ChangePasswordForm buildPasswordForm(String old, String newPassword, String confirm) {
@@ -188,6 +206,7 @@ public class ResetControllerTest {
         passwordForm.setOldPassword(old);
         passwordForm.setPassword(newPassword);
         passwordForm.setPasswordConfirmation(confirm);
+        passwordForm.setUsername(USER);
 
         return passwordForm;
     }
