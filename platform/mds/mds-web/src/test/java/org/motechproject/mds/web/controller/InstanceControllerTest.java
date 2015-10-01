@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvImportExportService;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.domain.Records;
@@ -28,6 +29,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -81,7 +83,7 @@ public class InstanceControllerTest {
                 "attachment; filename=Entity_1_instances.csv");
 
         assertNull(captor.getValue().getPageSize());
-        assertNull(captor.getValue().getOrder());
+        assertFalse(captor.getValue().isOrderSet());
     }
 
     @Test
@@ -106,8 +108,8 @@ public class InstanceControllerTest {
                 "attachment; filename=Entity_1_instances.csv");
 
         QueryParams captorValue = queryParamsCaptor.getValue();
-        assertEquals(Order.Direction.ASC, captorValue.getOrder().getDirection());
-        assertEquals("sortColumn", captorValue.getOrder().getField());
+        assertEquals(Order.Direction.ASC, captorValue.getOrderList().get(0).getDirection());
+        assertEquals("sortColumn", captorValue.getOrderList().get(0).getField());
         assertEquals(Integer.valueOf(1), captorValue.getPage());
         assertEquals(Integer.valueOf(50), captorValue.getPageSize());
 
@@ -135,9 +137,12 @@ public class InstanceControllerTest {
         assertNotNull(queryParams);
         assertEquals(Integer.valueOf(5), queryParams.getPageSize());
         assertEquals(Integer.valueOf(2), queryParams.getPage());
-        assertNotNull(queryParams.getOrder());
-        assertEquals("age", queryParams.getOrder().getField());
-        assertEquals(Order.Direction.DESC, queryParams.getOrder().getDirection());
+        assertNotNull(queryParams.getOrderList());
+        assertEquals(2, queryParams.getOrderList().size());
+        assertEquals("age", queryParams.getOrderList().get(0).getField());
+        assertEquals(Order.Direction.DESC, queryParams.getOrderList().get(0).getDirection());
+        assertEquals(Constants.Util.ID_FIELD_NAME, queryParams.getOrderList().get(1).getField());
+        assertEquals(Order.Direction.ASC, queryParams.getOrderList().get(1).getDirection());
     }
 
     private List<TestRecord> recordsList() {

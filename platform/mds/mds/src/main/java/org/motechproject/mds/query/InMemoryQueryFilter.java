@@ -28,6 +28,9 @@ public final class InMemoryQueryFilter {
         // create the comparator on a bean property
         // if no ordering in the params the use ID, since we must always order here somehow
         // given that collection does not have any order, paging it would not make sense
+
+
+
         final String orderProp = queryParams.isOrderSet() ? queryParams.getOrder().getField() :
                 Constants.Util.ID_FIELD_NAME;
         // ascending is the default direction

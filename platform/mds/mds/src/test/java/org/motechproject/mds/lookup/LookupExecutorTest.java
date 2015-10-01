@@ -197,9 +197,10 @@ public class LookupExecutorTest {
             assertNotNull(queryParams);
             assertEquals(Integer.valueOf(PAGE), queryParams.getPage());
             assertEquals(Integer.valueOf(PAGE_SIZE), queryParams.getPageSize());
-            assertNotNull(queryParams.getOrder());
-            assertEquals(SORT_FIELD, queryParams.getOrder().getField());
-            assertEquals(DIRECTION, queryParams.getOrder().getDirection());
+            assertNotNull(queryParams.getOrderList());
+            assertEquals(1, queryParams.getOrderList().size());
+            assertEquals(SORT_FIELD, queryParams.getOrderList().get(0).getField());
+            assertEquals(DIRECTION, queryParams.getOrderList().get(0).getDirection());
         }
 
         public List<TestClass> findByRelationFields(String strParam, long longParam, int intParam , String strParam2) {
