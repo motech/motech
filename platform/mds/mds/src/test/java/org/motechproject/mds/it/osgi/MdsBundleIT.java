@@ -458,7 +458,7 @@ public class MdsBundleIT extends BasePaxIT {
             assertEquals(3, resultList.size());
             assertInstanceOne(resultList.get(0), objClass);
             assertInstanceTwo(resultList.get(1), objClass);
-            assertInstanceFive(resultList.get(2), objClass);
+            assertInstanceFour(resultList.get(2), objClass);
         }
     }
 
@@ -941,7 +941,7 @@ public class MdsBundleIT extends BasePaxIT {
     }
 
     private void assertInstanceFive(Object instance, Class objClass) throws Exception {
-        updateInstance(instance, true, "notInSet", "notInSetCp", Collections.emptyList(),
+        assertInstance(instance, true, "notInSet", "notInSetCp", Collections.emptyList(),
                 NOW.plusHours(4), LD_NOW, null, TEST_PERIOD, BYTE_ARRAY_VALUE,
                 DATE_NOW, DOUBLE_VALUE_2, MORNING_TIME, 4, toEnum(objClass, "two"));
     }
