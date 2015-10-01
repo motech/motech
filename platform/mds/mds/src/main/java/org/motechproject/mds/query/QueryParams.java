@@ -1,5 +1,6 @@
 package org.motechproject.mds.query;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.Order;
 
@@ -102,6 +103,15 @@ public class QueryParams implements Serializable {
 
     public void addOrder(Order order) {
         orderList.add(order);
+    }
+
+    public boolean containsOrderOnField(String fieldName) {
+        for (Order order : orderList) {
+            if (StringUtils.equals(fieldName, order.getField())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
