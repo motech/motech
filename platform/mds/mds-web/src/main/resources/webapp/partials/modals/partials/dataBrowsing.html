@@ -71,7 +71,7 @@
                 <form class="form-horizontal">
                     <div class="checkboxList col-md-3" ng-repeat="field in fields | filter:isFilterable">
                         <label class="checkbox-inline">
-                            <input type="checkbox" init-filterable ng-model="checked" ng-change="onFilterableChange(field)"/> {{field.basic.displayName}}
+                            <input type="checkbox" init-filterable ng-model="checked" ng-change="onFilterableChange(field, checked)"/> {{field.basic.displayName}}
                         </label>
                     </div>
                 </form>

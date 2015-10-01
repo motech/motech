@@ -8,6 +8,8 @@ import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,6 +38,10 @@ public class TypeHelperTest {
         final DateTime dt2 = new DateTime(2009, 6, 7, 12, 11, 0, 0, DateTimeZone.forOffsetHours(1));
         final LocalDate ld = DateUtil.now().toLocalDate();
         final LocalDate ld2 = new LocalDate(2000, 8, 22);
+        final LocalDateTime ldt = LocalDateTime.now();
+        final LocalDateTime ldt2 = LocalDateTime.of(2015, 9, 1, 10, 15);
+        final java.time.LocalDate jld = java.time.LocalDate.now();
+        final java.time.LocalDate jld2 = java.time.LocalDate.of(1991, 5, 1);
 
         assertEquals(3, TypeHelper.parse(3, Integer.class));
 
@@ -45,6 +51,7 @@ public class TypeHelperTest {
 
         assertEquals(dt, TypeHelper.parse(dt.toString(), DateTime.class));
         assertEquals(dt.toDate(), TypeHelper.parse(dt.toString(), Date.class));
+
         assertEquals(DateUtil.setTimeZoneUTC(dt2),
                 DateUtil.setTimeZoneUTC((DateTime) TypeHelper.parse("2009-06-07 12:11 +01:00", DateTime.class)));
         assertEquals(dt2.toDate(), TypeHelper.parse("2009-06-07 12:11 +01:00", Date.class));
@@ -58,6 +65,16 @@ public class TypeHelperTest {
         assertEquals(ld2, TypeHelper.parse("2000-08-22", LocalDate.class));
         // TODO: do not send such values from the UI
         assertEquals(ld2, TypeHelper.parse("2000-08-22T23:00:00.000Z", LocalDate.class));
+
+        //java.time types cases
+        assertEquals(jld, TypeHelper.parse(jld, java.time.LocalDate.class));
+        assertEquals(jld, TypeHelper.parse(jld.toString(), java.time.LocalDate.class));
+        assertEquals(jld2, TypeHelper.parse("1991-05-01", java.time.LocalDate.class));
+
+        assertEquals(ldt, TypeHelper.parse(ldt, java.time.LocalDateTime.class));
+        assertEquals(ldt, TypeHelper.parse(ldt.toString(), java.time.LocalDateTime.class));
+        assertTrue(ldt2.equals(TypeHelper.parse("2015-09-01 10:15 ".concat(findServerOffset()),
+                java.time.LocalDateTime.class)));
     }
 
     @Test
@@ -226,5 +243,9 @@ public class TypeHelperTest {
         Map<String, String> mapFromUI = new LinkedHashMap<>();
         mapFromUI.put("val", value);
         return mapFromUI;
+    }
+
+    private String findServerOffset() {
+        return ZonedDateTime.now().getOffset().toString();
     }
 }

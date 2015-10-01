@@ -24,6 +24,7 @@ public class FieldDto {
     private boolean readOnly;
     private boolean nonEditable;
     private boolean nonDisplayable;
+    private boolean uiFilterable;
     private boolean uiChanged;
     private List<MetadataDto> metadata;
     private FieldValidationDto validation;
@@ -67,6 +68,22 @@ public class FieldDto {
     public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic, boolean readOnly, boolean nonEditable,
                     boolean nonDisplayable, boolean uiChanged, List<MetadataDto> metadata, FieldValidationDto validation,
                     List<SettingDto> settings, List<LookupDto> lookups) {
+        this(id, entityId, type, basic, readOnly, nonEditable, nonDisplayable, false, uiChanged, metadata, validation,
+                settings, lookups);
+    }
+
+    public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic, boolean readOnly, FieldValidationDto validation) {
+        this.id = id;
+        this.entityId = entityId;
+        this.type = type;
+        this.basic = basic;
+        this.validation = validation;
+        this.readOnly = readOnly;
+    }
+
+    public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic, boolean readOnly, boolean nonEditable,
+                    boolean nonDisplayable, boolean uiFilterable, boolean uiChanged, List<MetadataDto> metadata,
+                    FieldValidationDto validation, List<SettingDto> settings, List<LookupDto> lookups) {
         this.id = id;
         this.entityId = entityId;
         this.type = type;
@@ -74,6 +91,7 @@ public class FieldDto {
         this.readOnly = readOnly;
         this.nonEditable = nonEditable;
         this.nonDisplayable = nonDisplayable;
+        this.uiFilterable = uiFilterable;
         this.uiChanged = uiChanged;
         this.validation = validation;
         this.metadata = CollectionUtils.isEmpty(metadata)
@@ -85,15 +103,6 @@ public class FieldDto {
         this.lookups = CollectionUtils.isEmpty(lookups)
                 ? new LinkedList<LookupDto>()
                 : lookups;
-    }
-
-    public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic, boolean readOnly, FieldValidationDto validation) {
-        this.id = id;
-        this.entityId = entityId;
-        this.type = type;
-        this.basic = basic;
-        this.validation = validation;
-        this.readOnly = readOnly;
     }
 
     public boolean multiSelect() {
@@ -285,5 +294,13 @@ public class FieldDto {
 
     public void setUiChanged(boolean uiChanged) {
         this.uiChanged = uiChanged;
+    }
+
+    public boolean isUiFilterable() {
+        return uiFilterable;
+    }
+
+    public void setUiFilterable(boolean uiFilterable) {
+        this.uiFilterable = uiFilterable;
     }
 }

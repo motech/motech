@@ -1,31 +1,24 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.joda.time.DateTime;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.UIFilterable;
-import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.ex.type.NoSuchTypeException;
 import org.motechproject.mds.reflections.ReflectionsUtil;
-import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.MemberUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import static org.motechproject.mds.annotations.internal.PredicateUtil.uiFilterable;
-import static org.motechproject.mds.dto.TypeDto.BOOLEAN;
-import static org.motechproject.mds.dto.TypeDto.DATE;
-import static org.motechproject.mds.dto.TypeDto.DATETIME;
-import static org.motechproject.mds.dto.TypeDto.COLLECTION;
-import static org.motechproject.mds.dto.TypeDto.LOCAL_DATE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 
 /**
@@ -39,9 +32,10 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 @Component
 class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> {
     private static final Logger LOGGER = LoggerFactory.getLogger(UIFilterableProcessor.class);
-    private static final TypeDto[] SUPPORT_TYPES = {BOOLEAN, DATE, DATETIME, LOCAL_DATE, COLLECTION};
+    private static final Class[] SUPPORTED_CLASSES = {Date.class, DateTime.class, org.joda.time.LocalDate.class,
+                                                      Boolean.class, Collection.class, boolean.class,
+                                                      java.time.LocalDate.class, java.time.LocalDateTime.class};
 
-    private TypeService typeService;
     private Class clazz;
 
     @Override
@@ -71,7 +65,7 @@ class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> 
         Class<?> classType = MemberUtil.getCorrectType(element);
 
         if (null != classType) {
-            UIFilterable annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(element, classType, UIFilterable.class);
+            UIFilterable annotation = ReflectionsUtil.getAnnotationSelfOrAccessor(element, UIFilterable.class);
 
             if (null != annotation) {
                 if (isCorrectType(classType)) {
@@ -96,24 +90,12 @@ class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> 
     protected void afterExecution() {
     }
 
-    @Autowired
-    public void setTypeService(TypeService typeService) {
-        this.typeService = typeService;
-    }
-
     public void setClazz(Class clazz) {
         this.clazz = clazz;
     }
 
     private boolean isCorrectType(Class<?> clazz) {
-        try {
-            TypeDto type = typeService.findType(clazz);
-
-            return ArrayUtils.contains(SUPPORT_TYPES, type);
-        } catch (NoSuchTypeException e) {
-            LOGGER.error("Not found type with given name: {}", clazz.getName());
-            return false;
-        }
+        return ArrayUtils.contains(SUPPORTED_CLASSES, clazz) || clazz.isEnum();
     }
 
 }

@@ -113,99 +113,56 @@
         },
         loadEntity;
 
-    controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, Entities, MDSUtils) {
-        var schemaEditorPath = '/mds/{0}'.format($scope.AVAILABLE_TABS[1]);
-
-        $scope.DATA_BROWSER = "dataBrowser";
-        $scope.SCHEMA_EDITOR = "schemaEditor";
-        $scope.searchText = "";
-
-        workInProgress.setList(Entities);
-
-        $scope.hasWorkInProgress = function () {
-            var expression = workInProgress.list.length > 0,
-                idx;
-
-            for (idx = 0; expression && idx < workInProgress.list.length; idx += 1) {
-                if (workInProgress.list[idx].id === workInProgress.actualEntity) {
-                    expression = false;
-                }
-            }
-
-            return expression;
-        };
-
-        $scope.getWorkInProgress = function () {
-            var list = [];
-
-            angular.forEach(workInProgress.list, function (entity) {
-                if (entity.id !== workInProgress.actualEntity) {
-                    list.push(entity);
-                }
-            });
-
-            return list;
-        };
-
-        $scope.resumeEdits = function (entityId) {
-            if (schemaEditorPath !== $location.path()) {
-                $location.path(schemaEditorPath);
-            } else {
-                $route.reload();
-            }
-
-            loadEntity = entityId;
-        };
-
-        $scope.discard = function (entityId) {
-            motechConfirm('mds.wip.info.discard', 'mds.warning', function (val) {
-                if (val) {
-                    Entities.abandon({id: entityId}, function () {
-                        workInProgress.setList(Entities);
-                    });
-                }
-            });
-        };
-
-        $scope.closePeriodModal = function () {
-            $('body').children("#periodModal").modal('hide');
-        };
+    controllers.controller('MdsEmbeddableCtrl', function ($scope, MDSUtils) {
 
         $scope.maps = [];
 
         /**
-        * Convert string to map.
+        * Return available values for combobox field.
+        *
+        * @param {Array} setting A array of field settings.
+        * @return {Array} A array of possible combobox values.
         */
-        $scope.stringToMap = function (stringValue) {
-            var resultMaps = [], map = [];
-            if (stringValue !== null && stringValue !== undefined && stringValue.toString().indexOf(':') > 0) {
-                map = stringValue.split('\n');
-                angular.forEach(map, function (map, index) {
-                    var str;
-                    str = map.split(':');
-                    if (str.length > 1) {
-                    resultMaps.push({key: '', value: ''});
-                    resultMaps[index].key = str[0].trim();
-                    resultMaps[index].value = str[1].trim();
+        $scope.getComboboxValues = function (settings) {
+            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value, keys = [], key;
+            // Check the user supplied flag, if true return string set
+            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
+                return labelValues;
+            } else {
+                if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
+                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
+                    for(key in labelValues) {
+                        keys.push(key);
                     }
-                },
-                resultMaps);
+                    return keys;
+                } else {        // there is no colon, so we are dealing with a string set, not a map
+                    return labelValues;
                 }
-            return resultMaps;
+            }
         };
 
-        /**
-        * Convert map to string .
-        */
-        $scope.mapToString = function (maps) {
-            var result = '';
-            angular.forEach(maps,
-                function (map, index) {
-                    if (map.key && map.value) {
-                        result = result.concat(map.key, ':', map.value,'\n');
-                    }
-                }, result);
-            return result;
+        $scope.getAndSplitComboboxValues = function (labelValues) {
+            var doublet, i, map = {};
+            for (i = 0; i < labelValues.length; i += 1) {
+                doublet = labelValues[i].split(":");
+                map[doublet[0]] = doublet[1];
+            }
+            return map;
+        };
+
+        $scope.getComboboxDisplayName = function (settings, value) {
+            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value;
+            // Check the user supplied flag, if true return string set
+            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
+                return value;
+            } else {
+                if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
+                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
+                    return labelValues[value];
+                } else {         // there is no colon, so we are dealing with a string set, not a map
+                    return value;
+                }
+            }
         };
 
         /**
@@ -220,34 +177,6 @@
                     }
                 }, result);
             return result;
-        };
-
-        /**
-        * Init map values.
-        */
-        $scope.initDefaultValueMap = function (stringValue, fieldId) {//only string to map
-            var resultMaps = [], map = [];
-            angular.forEach($scope.maps, function (scopeMap, index) {
-                if (scopeMap.id === fieldId) {
-                    $scope.maps.splice(index, 1);
-                }
-            });
-            if (stringValue !== null && stringValue !== undefined && stringValue.toString().indexOf(':') > 0) {
-                map = stringValue.split('\n');
-                angular.forEach(map, function (map, index) {
-                    var str;
-                    str = map.split(':');
-                    if (str.length > 1) {
-                        resultMaps.push({key: '', value: ''});
-                        resultMaps[index].key = str[0].trim();
-                        resultMaps[index].value = str[1].trim();
-                    }
-                },
-                resultMaps);
-            } else {
-                resultMaps.push({key: '', value: ''});
-            }
-            $scope.maps.push({id: fieldId, fieldMap: resultMaps});
         };
 
         $scope.initMap = function (mapObject, fieldId) {
@@ -354,6 +283,134 @@
 
         $scope.getMapLength = function (obj) {
             return Object.keys(obj).length;
+        };
+    });
+
+    controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, $controller, Entities, MDSUtils) {
+
+        angular.extend(this, $controller('MdsEmbeddableCtrl', {
+            $scope: $scope,
+            MDSUtils: MDSUtils
+        }));
+
+        var schemaEditorPath = '/mds/{0}'.format($scope.AVAILABLE_TABS[1]);
+
+        $scope.DATA_BROWSER = "dataBrowser";
+        $scope.SCHEMA_EDITOR = "schemaEditor";
+        $scope.searchText = "";
+
+        workInProgress.setList(Entities);
+
+        $scope.hasWorkInProgress = function () {
+            var expression = workInProgress.list.length > 0,
+                idx;
+
+            for (idx = 0; expression && idx < workInProgress.list.length; idx += 1) {
+                if (workInProgress.list[idx].id === workInProgress.actualEntity) {
+                    expression = false;
+                }
+            }
+
+            return expression;
+        };
+
+        $scope.getWorkInProgress = function () {
+            var list = [];
+
+            angular.forEach(workInProgress.list, function (entity) {
+                if (entity.id !== workInProgress.actualEntity) {
+                    list.push(entity);
+                }
+            });
+
+            return list;
+        };
+
+        $scope.resumeEdits = function (entityId) {
+            if (schemaEditorPath !== $location.path()) {
+                $location.path(schemaEditorPath);
+            } else {
+                $route.reload();
+            }
+
+            loadEntity = entityId;
+        };
+
+        $scope.discard = function (entityId) {
+            motechConfirm('mds.wip.info.discard', 'mds.warning', function (val) {
+                if (val) {
+                    Entities.abandon({id: entityId}, function () {
+                        workInProgress.setList(Entities);
+                    });
+                }
+            });
+        };
+
+        $scope.closePeriodModal = function () {
+            $('body').children("#periodModal").modal('hide');
+        };
+
+        /**
+        * Convert string to map.
+        */
+        $scope.stringToMap = function (stringValue) {
+            var resultMaps = [], map = [];
+            if (stringValue !== null && stringValue !== undefined && stringValue.toString().indexOf(':') > 0) {
+                map = stringValue.split('\n');
+                angular.forEach(map, function (map, index) {
+                    var str;
+                    str = map.split(':');
+                    if (str.length > 1) {
+                    resultMaps.push({key: '', value: ''});
+                    resultMaps[index].key = str[0].trim();
+                    resultMaps[index].value = str[1].trim();
+                    }
+                },
+                resultMaps);
+                }
+            return resultMaps;
+        };
+
+        /**
+        * Convert map to string .
+        */
+        $scope.mapToString = function (maps) {
+            var result = '';
+            angular.forEach(maps,
+                function (map, index) {
+                    if (map.key && map.value) {
+                        result = result.concat(map.key, ':', map.value,'\n');
+                    }
+                }, result);
+            return result;
+        };
+
+        /**
+        * Init map values.
+        */
+        $scope.initDefaultValueMap = function (stringValue, fieldId) {//only string to map
+            var resultMaps = [], map = [];
+            angular.forEach($scope.maps, function (scopeMap, index) {
+                if (scopeMap.id === fieldId) {
+                    $scope.maps.splice(index, 1);
+                }
+            });
+            if (stringValue !== null && stringValue !== undefined && stringValue.toString().indexOf(':') > 0) {
+                map = stringValue.split('\n');
+                angular.forEach(map, function (map, index) {
+                    var str;
+                    str = map.split(':');
+                    if (str.length > 1) {
+                        resultMaps.push({key: '', value: ''});
+                        resultMaps[index].key = str[0].trim();
+                        resultMaps[index].value = str[1].trim();
+                    }
+                },
+                resultMaps);
+            } else {
+                resultMaps.push({key: '', value: ''});
+            }
+            $scope.maps.push({id: fieldId, fieldMap: resultMaps});
         };
 
         /**
@@ -557,54 +614,6 @@
                 var s1Lower = s1.toLowerCase(), s2Lower = s2.toLowerCase();
                 return s1Lower > s2Lower? 1 : (s1Lower < s2Lower? -1 : 0);
             });
-        };
-
-        /**
-        * Return available values for combobox field.
-        *
-        * @param {Array} setting A array of field settings.
-        * @return {Array} A array of possible combobox values.
-        */
-        $scope.getComboboxValues = function (settings) {
-            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value, keys = [], key;
-            // Check the user supplied flag, if true return string set
-            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
-                return labelValues;
-            } else {
-                if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
-                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
-                    for(key in labelValues) {
-                        keys.push(key);
-                    }
-                    return keys;
-                } else {        // there is no colon, so we are dealing with a string set, not a map
-                    return labelValues;
-                }
-            }
-        };
-
-        $scope.getComboboxDisplayName = function (settings, value) {
-            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value;
-            // Check the user supplied flag, if true return string set
-            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
-                return value;
-            } else {
-                if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
-                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
-                    return labelValues[value];
-                } else {         // there is no colon, so we are dealing with a string set, not a map
-                    return value;
-                }
-            }
-        };
-
-        $scope.getAndSplitComboboxValues = function (labelValues) {
-            var doublet, i, map = {};
-            for (i = 0; i < labelValues.length; i += 1) {
-                doublet = labelValues[i].split(":");
-                map[doublet[0]] = doublet[1];
-            }
-            return map;
         };
     });
 
@@ -1003,7 +1012,8 @@
         */
         $scope.filterableTypes = [
             "mds.field.combobox", "mds.field.boolean", "mds.field.date",
-            "mds.field.datetime", "mds.field.localDate"
+            "mds.field.datetime", "mds.field.localDate", "mds.field.date8",
+            "mds.field.datetime8"
         ];
 
         $scope.relationshipClasses = [{
@@ -1917,6 +1927,8 @@
                     $scope.selectedEntity.modified = false;
                     $scope.selectedEntity.outdated = false;
                     $scope.fields = Entities.getFields(pre, successCallback);
+                    $scope.newField = {};
+                    $scope.tryToCreate = false;
                 },
                 errorCallback = function (data) {
                     $scope.setErrorFromData(data);
@@ -2359,18 +2371,17 @@
         * Function called each time when user changes the checkbox state on 'Browsing settings' view.
         * Responsible for updating the model.
         */
-        $scope.onFilterableChange = function(field) {
-            var selected = $scope.advancedSettings.browsing.filterableFields.indexOf(field.id);
+        $scope.onFilterableChange = function(field, newValue) {
 
             $scope.draft({
                 edit: true,
                 values: {
-                    path: 'browsing.${0}'.format(selected ? 'addFilterableField' : 'removeFilterableField'),
+                    path: 'browsing.${0}'.format(newValue ? 'addFilterableField' : 'removeFilterableField'),
                     advanced: true,
                     value: [field.id]
                 }
             }, function () {
-                if(selected) {
+                if(newValue) {
                     $scope.advancedSettings.browsing.filterableFields.push(field.id);
                 } else {
                     $scope.advancedSettings.browsing.filterableFields.removeObject(field.id);
@@ -3188,7 +3199,7 @@
         $scope.availableExportColumns = ['All','selected'];
         $scope.availableExportFormats = ['csv','pdf'];
         $scope.actualExportRecords = 'All';
-        $scope.actualExportColumns = 'All';
+        $scope.actualExportColumns = 'selected';
         $scope.exportFormat = 'csv';
         $scope.checkboxModel = {
             exportWithLookup : false,
@@ -3292,6 +3303,8 @@
         $scope.currentRecord = undefined;
 
         $scope.allEntityFields = [];
+
+        $scope.availableFieldsForDisplay= [];
 
         $scope.validatePattern = '';
 
@@ -3858,6 +3871,16 @@
                 callback);
         };
 
+        $scope.setAvailableFieldsForDisplay = function() {
+            var i;
+            $scope.availableFieldsForDisplay = [];
+            for (i = 0; i < $scope.allEntityFields.length; i += 1) {
+                if (!$scope.allEntityFields[i].nonDisplayable) {
+                    $scope.availableFieldsForDisplay.push($scope.allEntityFields[i]);
+                }
+            }
+        };
+
         $scope.retrieveAndSetEntityData = function(entityUrl, callback) {
           $scope.lookupBy = {};
           $scope.selectedLookup = undefined;
@@ -3873,6 +3896,7 @@
 
               $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
                    $scope.allEntityFields = data;
+                   $scope.setAvailableFieldsForDisplay();
 
                    if ($routeParams.entityId === undefined) {
                       var hash = window.location.hash.substring(2, window.location.hash.length) + "/" + $scope.selectedEntity.id;
@@ -3961,7 +3985,7 @@
         };
 
         $scope.isDateField = function(field) {
-            return field.type.typeClass === "org.joda.time.LocalDate";
+            return field.type.typeClass === "org.joda.time.LocalDate" || field.type.typeClass === "java.time.LocalDate";
         };
 
         $scope.isTextArea = function (field) {
@@ -4076,7 +4100,7 @@
             var type = field.type.typeClass;
             if (type === "java.lang.Boolean") {
                 return ['ALL', 'YES', 'NO'];
-            } else if (type === "java.util.Date" || type === "org.joda.time.DateTime" || type === "org.joda.time.LocalDate") {
+            } else if (type === "java.util.Date" || type === "org.joda.time.DateTime" || type === "org.joda.time.LocalDate" || type === "java.time.LocalDateTime" || type === "java.time.LocalDate") {
                 return ['ALL', 'TODAY', 'PAST_7_DAYS', 'THIS_MONTH', 'THIS_YEAR'];
             } else if (type === "java.util.Collection") {
                 return  ['ALL'].concat($scope.getComboboxValues(field.settings));
@@ -4131,9 +4155,9 @@
                 value = "boolean";
             } else if (field.className === "java.util.Collection") {
                 value = "list";
-            } else if (field.className === "org.joda.time.DateTime" || field.className === "java.util.Date") {
+            } else if (field.className === "org.joda.time.DateTime" || field.className === "java.util.Date" || field.className === "java.time.LocalDateTime") {
                 value = "datetime";
-            } else if (field.className === "org.joda.time.LocalDate") {
+            } else if (field.className === "org.joda.time.LocalDate" || field.className === "java.time.LocalDate") {
                 value = "date";
             }
 
@@ -4269,7 +4293,7 @@
         };
 
         $scope.typeIsDate = function (type) {
-            return type === "java.util.Date" || type === "org.joda.time.DateTime" || type === "org.joda.time.LocalDate";
+            return type === "java.util.Date" || type === "org.joda.time.DateTime" || type === "org.joda.time.LocalDate" || type === "java.time.LocalDateTime" || type === "java.time.LocalDate";
         };
 
         $scope.typeIsTime = function (type) {
@@ -4313,6 +4337,10 @@
 
         $scope.changeExportColumns = function (columns) {
             $scope.actualExportColumns = columns;
+        };
+
+        $scope.setDefaultExportColumns = function () {
+            $scope.actualExportColumns = 'selected';
         };
 
         $scope.changeExportFormat = function (format) {
