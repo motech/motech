@@ -135,16 +135,23 @@
     transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
 }
 
-.tasks editable-content .actionField.map-input {
+.tasks .actionField.map-input {
     height: auto;
-    min-height: 50px;
-    width: 400px;
+    min-height: 36px;
+    width: 30%;
     padding: 6px 12px;
+    border: 2px dotted #AAAAAA;
     background-color: #FFFFFF;
-    border: 1px solid #CCCCCC;
     border-radius: 4px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
     transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+    float:left;
+}
+
+.tasks .actionField.map-input:focus {
+    border-color: rgba(82, 168, 236, 0.8);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+    outline: 0 none;
 }
 
 .tasks editable-content .actionField.input-block-level:focus {
@@ -925,18 +932,6 @@
 
 .tasks textarea.form-control {
     min-height: 77px;
-}
-
-.tasks input.map-input {
-    height: auto;
-    min-height: 50px;
-    width: 400px;
-    padding: 6px 12px;
-    background-color: #FFFFFF;
-    border: 1px solid #CCCCCC;
-    border-radius: 4px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
-    transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
 }
 
 .tasks .panel-heading a {

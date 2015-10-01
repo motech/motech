@@ -1485,7 +1485,13 @@
     });
 
     controllers.controller('MapsCtrl', function ($scope) {
-        var values, dragAndDrop = $scope.BrowserDetect.browser === 'Chrome' || $scope.BrowserDetect.browser === 'Explorer';
+        var exp, values, dragAndDrop = $scope.BrowserDetect.browser === 'Chrome' || $scope.BrowserDetect.browser === 'Explorer' || $scope.BrowserDetect.browser === 'Firefox';
+
+        if (dragAndDrop) {
+            exp = /((?::)((?!<span|<br>|>)[\w\W\s])+(?=$|<span|<\/span>|<br>))|((?:<br>)((?!<span|<br>)[\w\W\s])*(?=:))|(<span((?!<span)[\w\W\s])*<\/span>)/g;
+        } else {
+            exp = /((?:^|\n|\r)[\w{}\.#\s]*(?=:)|(:[\w{}\.#\s]*)(?=\n|$))/g;
+        }
 
         $scope.data = $scope.$parent.$parent.$parent.i;
         $scope.pairs = [];
@@ -1497,17 +1503,24 @@
             return scope.data.value;
 
         }, function () {
-            var i,key,value,keyValue;
+            var i,key,value;
             if ($scope.pairs.length === 0 && $scope.data.value !== "" && $scope.data.value !== null && !$scope.dataTransformed) {
+                values = $scope.data.value.match(exp);
 
-                values = $scope.data.value.split("<br>");
+                for (i = 0; i < values.length; i += 2) {
+                    key = values[i].replace("<br>", "");
+                    value =  values[i + 1].replace("<br>", "");
 
-                for (i = 0; i < values.length; i += 1) {
-                    keyValue = values[i].split(":");
-                    key = keyValue[0];
-                    value =  keyValue[1];
+                    if (key.startsWith(":")) {
+                        key = key.substr(1);
+                    }
+
+                    if (value.startsWith(":")) {
+                        value = value.substr(1);
+                    }
                     $scope.pairs.push({key:key, value:value});
                 }
+
                 $scope.dataTransformed = true;
             }
         });

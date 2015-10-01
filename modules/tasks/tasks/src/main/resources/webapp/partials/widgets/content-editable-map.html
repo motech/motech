@@ -3,8 +3,20 @@
         <label class="input-large-fluid">{{msg('task.map.key')}}/{{msg('task.map.value')}}</label>
     </div>
     <div class="clearfix">
-        <textarea extend-input class="input-extra-fluid map-key" type="text" placeholder="{{msg('task.map.key')}}" ng-model="pair.key"></textarea>
-        <textarea extend-input class="input-extra-fluid map-value" type="text" placeholder="{{msg('task.map.value')}}" ng-model="pair.value"></textarea>
+        <div contenteditable ng-model="pair.key" droppable class="actionField map-input input-extra-fluid" data-type="text">
+            <span ng-bind-html-unsafe="pair.key" ng-model="pair.key" class="html">
+                <h1 contentEditable="false">
+                    <span class="editable"></span>
+                </h1>
+            </span>
+        </div>
+        <div contenteditable ng-model="pair.value" droppable class="actionField map-input input-extra-fluid" data-type="text">
+            <span ng-bind-html-unsafe="pair.value" ng-model="pair.value" class="html">
+                <h1 contentEditable="false">
+                    <span class="editable"></span>
+                </h1>
+            </span>
+        </div>
         <button class="btn btn-success" ng-click="addPair(pair)"> {{msg('task.map.add')}}</button>
         <div class="text-danger clearfix" ng-show="mapError">
             <span class="form-hint form-hint-bottom">
@@ -13,8 +25,21 @@
         </div>
     </div>
     <div class="clearfix" ng-repeat="pair in pairs">
-        <textarea readonly extend-input class="input-extra-fluid map-key" index="{{$index}}" type="text" placeholder="{{msg('task.map.key')}}" ng-model="pair.key"></textarea>
-        <textarea readonly extend-input class="input-extra-fluid map-value" index="{{$index}}" type="text" placeholder="{{msg('task.map.value')}}" ng-model="pair.value"></textarea>
+        <div contenteditable="false" ng-model="pair.key" droppable class="actionField map-input input-extra-fluid" data-index="{{index}}" data-type="{{data.type}}">
+            <span ng-bind-html-unsafe="pair.key" ng-model="pair.key" class="html">
+                <h1 contentEditable="false">
+                    <span class="editable"></span>
+                </h1>
+            </span>
+        </div>
+        <div contenteditable="false" ng-model="pair.value" droppable class="actionField map-input input-extra-fluid" data-index="{{index}}" data-type="{{data.type}}">
+            <span ng-bind-html-unsafe="pair.value" ng-model="pair.value" class="html">
+                <h1 contentEditable="false">
+                    <span class="editable"></span>
+                </h1>
+            </span>
+        </div>
+
         <button class="btn btn-warning" ng-click="remove($index)">{{msg('task.map.remove')}}</button>
     </div>
     <div class="clearfix">
