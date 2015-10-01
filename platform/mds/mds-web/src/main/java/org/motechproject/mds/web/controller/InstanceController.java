@@ -321,7 +321,7 @@ public class InstanceController extends MdsController {
     private QueryParams buildQueryParams(GridSettings settings, List<Order> orderList) {
         // just check if the page is set
         int page = (settings.getPage() == null) ? 1 : settings.getPage();
-        int pageSize = (settings.getPage() == null) ? 10 : settings.getRows();
+        int pageSize = (settings.getRows() == null) ? 10 : settings.getRows();
 
         return new QueryParams(page, pageSize, orderList);
     }
@@ -337,7 +337,7 @@ public class InstanceController extends MdsController {
         if (order != null) {
             orderList.add(order);
             if (!Constants.Util.ID_FIELD_NAME.equalsIgnoreCase(order.getField())) {
-                // if the ordering is done on a field other then id
+                // if the ordering is done on a field other than id
                 // we want to add the id ordering as backup, so that results stay consistent
                 orderList.add(new Order(Constants.Util.ID_FIELD_NAME, Order.Direction.ASC));
             }
