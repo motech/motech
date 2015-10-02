@@ -11,6 +11,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -37,17 +38,13 @@ public class MotechLoginErrorHandler extends ExceptionMappingAuthenticationFailu
     @Autowired
     private SettingService settingService;
 
-    @Autowired
-    private RedirectStrategy redirectStrategy;
+    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     private String userBlockedUrl;
-
-    private String changePasswordBaseUrl;
 
     public MotechLoginErrorHandler(String defaultFailureUrl, String userBlockedUrl, String changePasswordBaseUrl) {
         super();
         this.userBlockedUrl = userBlockedUrl;
-        this.changePasswordBaseUrl = changePasswordBaseUrl;
 
         Map<String, String> failureUrlMap = new HashMap<String, String>();
         failureUrlMap.put(CredentialsExpiredException.class.getName(), changePasswordBaseUrl);
@@ -82,15 +79,6 @@ public class MotechLoginErrorHandler extends ExceptionMappingAuthenticationFailu
                 return;
             }
         }
-
-        if (exception instanceof CredentialsExpiredException) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(changePasswordBaseUrl).append("?user=").append(exception.getAuthentication().getName());
-            String changePasswordUrl = sb.toString();
-            LOGGER.debug("User {} must change password. Redirecting to {}", exception.getAuthentication().getName(), changePasswordUrl);
-            redirectStrategy.sendRedirect(request, response, changePasswordUrl);
-        } else {
-            super.onAuthenticationFailure(request, response, exception);
-        }
+        super.onAuthenticationFailure(request, response, exception);
     }
 }

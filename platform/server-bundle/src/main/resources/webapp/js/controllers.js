@@ -423,18 +423,9 @@
 
         //Used when user must change the password
         $scope.initChangePasswordViewData = function() {
-            var username, userParameter = $scope.getUrlVar("user");
-            if (userParameter !== undefined && userParameter.length > 1) {
-                username = userParameter[1];
-                window.history.pushState(null, "", window.location.href.split("?")[0]);
-            } else { //no username in url params so we must redirect to login page
-                window.location = "./login";
-                return;
-            }
-
             $scope.changePasswordViewData = {
                 changePasswordForm: {
-                        username: username,
+                        username: '',
                         oldPassword: '',
                         password: '',
                         passwordConfirmation: ''
@@ -467,6 +458,10 @@
 
                 $scope.changePasswordViewData.errors = data.errors;
                 $scope.changePasswordViewData.changeSucceded = data.changeSucceded;
+            }).error(function(data) {
+                unblockUI();
+                motechAlert('server.reset.error', 'server.error');
+                $scope.resetViewData.errors = ['server.reset.error'];
             });
         };
 

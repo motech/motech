@@ -151,5 +151,4 @@
         <constructor-arg value="/module/server/changepassword"/>
     </bean>
 
-    <bean id="redirectStrategy" class="org.springframework.security.web.DefaultRedirectStrategy" />
 </beans>

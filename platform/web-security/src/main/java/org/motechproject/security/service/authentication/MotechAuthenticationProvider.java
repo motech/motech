@@ -78,7 +78,7 @@ public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticat
             throw new LockedException(USER_BLOCKED);
         } else {
             if (settingService.getNumberOfDaysToChangePassword() > 0 &&
-                    Days.daysBetween(user.getLastPasswordChange(), DateUtil.now()).getDays() > settingService.getNumberOfDaysToChangePassword()) {
+                    Days.daysBetween(user.getLastPasswordChange(), DateUtil.now()).getDays() >= settingService.getNumberOfDaysToChangePassword()) {
                 user.setUserStatus(UserStatus.MUST_CHANGE_PASSWORD);
                 allMotechUsers.update(user);
             }

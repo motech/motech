@@ -1,19 +1,17 @@
 package org.motechproject.security.service.authentication;
 
 import org.joda.time.DateTime;
-import org.joda.time.Days;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
+import org.motechproject.security.config.SettingService;
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.domain.UserStatus;
-import org.motechproject.security.config.SettingService;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.service.AuthoritiesService;
@@ -131,7 +129,7 @@ public class MotechAuthenticationProviderTest {
         motechUser.setLastPasswordChange(DateTime.now().minusDays(2));
 
         when(allMotechUsers.findByUserName("bob")).thenReturn(motechUser);
-        when(settingService.getNumberOfDaysToChangePassword()).thenReturn(1);
+        when(settingService.getNumberOfDaysToChangePassword()).thenReturn(2);
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("bob", "encodedPassword");
         UserDetails details = authenticationProvider.retrieveUser("bob", authentication);

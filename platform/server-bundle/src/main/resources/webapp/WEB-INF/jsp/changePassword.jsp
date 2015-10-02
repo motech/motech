@@ -47,6 +47,13 @@
                                             class="inside form-horizontal" ng-submit="submitChangePasswordForm()">
                                             <input type="hidden" id="username" name="username" ng-model="changePasswordViewData.changePasswordForm.username" />
                                             <div class="form-group">
+                                                <label class="control-label col-md-5">{{msg('server.username')}}</label>
+                                                <div class="form-inline col-md-6">
+                                                    <input class="form-control input-auto" required id="username" name="username"
+                                                        ng-model="changePasswordViewData.changePasswordForm.username" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
                                                 <label class="control-label col-md-5">{{msg('server.reset.currentPassword')}}</label>
                                                 <div class="form-inline col-md-6">
                                                     <input class="form-control input-auto" type="password" required
