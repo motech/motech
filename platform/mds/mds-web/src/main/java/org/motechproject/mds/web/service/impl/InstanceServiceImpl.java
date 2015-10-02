@@ -499,9 +499,11 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     @Transactional
-    public <T> Records<T> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName,
+    public Records<EntityRecord> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName,
                                               QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
+        List<FieldDto> fields = getEntityFields(entityId);
+
         validateCredentials(entity);
         String entityName = entity.getName();
 
@@ -513,14 +515,16 @@ public class InstanceServiceImpl implements InstanceService {
         }
 
         try {
-            Collection<T> relatedAsColl = TypeHelper.asCollection(PropertyUtil.getProperty(instance, fieldName));
+            Collection relatedAsColl = TypeHelper.asCollection(PropertyUtil.getProperty(instance, fieldName));
 
-            List<T> filtered = InMemoryQueryFilter.filter(relatedAsColl, queryParams);
+            List filtered = InMemoryQueryFilter.filter(relatedAsColl, queryParams);
 
             int recordCount = relatedAsColl.size();
             int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
 
-            return new Records<>(queryParams.getPage(), rowCount, recordCount, filtered);
+            List<EntityRecord> entityRecords = instancesToRecords(filtered, entity, fields, service, EntityType.STANDARD);
+
+            return new Records<>(queryParams.getPage(), rowCount, recordCount, entityRecords);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
            throw new ObjectReadException(entityName, e);
         }
@@ -915,6 +919,11 @@ public class InstanceServiceImpl implements InstanceService {
         String fieldName = StringUtils.uncapitalize(field.getBasic().getName());
 
         PropertyDescriptor propertyDescriptor = PropertyUtil.getPropertyDescriptor(instance, fieldName);
+        if (propertyDescriptor == null) {
+            throw new IllegalStateException("No property with name " + fieldName + " in "
+                    + instance.getClass().getName());
+        }
+
         Method readMethod = propertyDescriptor.getReadMethod();
 
         if (readMethod == null) {

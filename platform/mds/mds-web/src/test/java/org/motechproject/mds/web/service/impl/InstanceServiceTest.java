@@ -616,17 +616,19 @@ public class InstanceServiceTest {
         mockDataService();
         mockAnotherEntity();
         mockEntity();
+        mockSampleFields();
+        mockAnotherEntityFields();
         when(serviceForAnotherSample.findById(INSTANCE_ID)).thenReturn(sampleForRelationshipTesting());
 
         QueryParams queryParams = new QueryParams(1, 2, new Order(Constants.Util.ID_FIELD_NAME, Order.Direction.ASC));
-        Records<AnotherSample> records = instanceService.getRelatedFieldValue(ANOTHER_ENTITY_ID, INSTANCE_ID,
+        Records<EntityRecord> records = instanceService.getRelatedFieldValue(ANOTHER_ENTITY_ID, INSTANCE_ID,
                 "testClasses", queryParams);
 
         assertNotNull(records);
         assertEquals(Integer.valueOf(1), records.getPage()); // page 1
         assertEquals(Integer.valueOf(2), records.getTotal()); // 2 pages total
         assertEquals(Integer.valueOf(3), records.getRecords()); // 3 records total
-        assertEquals(asList(1L, 2L), extract(records.getRows(), on(TestClass.class).getId()));
+        assertEquals(asList(1L, 2L), extract(records.getRows(), on(EntityRecord.class).getFieldByName("id").getValue()));
     }
 
     private List buildRelatedRecord() {
@@ -698,6 +700,12 @@ public class InstanceServiceTest {
                 // InstanceService should be able to make operations on record regardless of field
                 // starts with a capital letter or not.
                 FieldTestHelper.fieldDto(5L, "LongField", Long.class.getName(), "Long field", null)
+        ));
+    }
+
+    private void mockAnotherEntityFields() {
+        when(entityService.getEntityFields(ANOTHER_ENTITY_ID)).thenReturn(asList(
+                FieldTestHelper.fieldDto(1L, "id", Long.class.getName(), "Id", null)
         ));
     }
 

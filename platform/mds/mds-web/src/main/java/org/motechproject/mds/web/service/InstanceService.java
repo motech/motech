@@ -294,8 +294,7 @@ public interface InstanceService {
      * @param instanceId the id of the instance we want to retrieve the field for
      * @param fieldName the name of the related field
      * @param queryParams the query params which will be used for retrieval
-     * @param <T> the type of the related entity
      * @return the records object containing the values for the related field
      */
-    <T> Records<T> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName, QueryParams queryParams);
+    Records<EntityRecord> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName, QueryParams queryParams);
 }
