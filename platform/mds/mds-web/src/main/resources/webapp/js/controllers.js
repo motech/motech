@@ -3920,6 +3920,7 @@
                               });
                           }
                       }
+                      unblockUI();
                    });
 
                    Entities.getDisplayFields({id: $scope.selectedEntity.id}, function(data) {
@@ -3952,7 +3953,6 @@
                         callback();
                     }
                 });
-                unblockUI();
             });
         };
 
