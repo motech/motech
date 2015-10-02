@@ -11,7 +11,6 @@ import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.date.model.Time;
-import org.motechproject.mds.web.util.UIRepresentationUtil;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -22,6 +21,7 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.entity.EntitySchemaMismatchException;
+import org.motechproject.mds.ex.field.FieldNotFoundException;
 import org.motechproject.mds.ex.field.FieldReadOnlyException;
 import org.motechproject.mds.ex.lookup.LookupExecutionException;
 import org.motechproject.mds.ex.lookup.LookupNotFoundException;
@@ -34,7 +34,6 @@ import org.motechproject.mds.ex.object.SecurityException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.helper.MdsBundleHelper;
-import org.motechproject.mds.util.StateManagerUtil;
 import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.InMemoryQueryFilter;
 import org.motechproject.mds.query.QueryParams;
@@ -50,6 +49,7 @@ import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.MemberUtil;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.mds.util.StateManagerUtil;
 import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.web.domain.ComboboxHolder;
 import org.motechproject.mds.web.domain.EntityRecord;
@@ -57,6 +57,7 @@ import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
 import org.motechproject.mds.web.service.InstanceService;
+import org.motechproject.mds.web.util.UIRepresentationUtil;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -501,32 +502,57 @@ public class InstanceServiceImpl implements InstanceService {
     @Transactional
     public Records<EntityRecord> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName,
                                               QueryParams queryParams) {
-        EntityDto entity = getEntity(entityId);
-        List<FieldDto> fields = getEntityFields(entityId);
-
-        validateCredentials(entity);
-        String entityName = entity.getName();
-
-        MotechDataService service = getServiceForEntity(entity);
-        Object instance = service.findById(instanceId);
-
-        if (instance == null) {
-            throw new ObjectNotFoundException(entityName, instanceId);
-        }
-
         try {
+            // first get the entity
+            EntityDto entity = getEntity(entityId);
+            validateCredentials(entity);
+            List<FieldDto> fields = getEntityFields(entityId);
+
+            String entityName = entity.getName();
+            MotechDataService service = getServiceForEntity(entity);
+
+            // then the related entity
+            FieldDto relatedField = findFieldByName(fields, fieldName);
+            if (relatedField == null) {
+                throw new FieldNotFoundException(entity.getClassName(), fieldName);
+            }
+
+            String relatedClass = relatedField.getMetadataValue(Constants.MetadataKeys.RELATED_CLASS);
+            if (StringUtils.isBlank(relatedClass)) {
+                throw new IllegalArgumentException("Field " + fieldName + " in entity " + entity.getClassName() +
+                    " is not a related field");
+            }
+
+            // these will be used for building the records
+            EntityDto relatedEntity = getEntity(relatedClass);
+            List<FieldDto> relatedFields = getEntityFields(relatedEntity.getId());
+            MotechDataService relatedDataService = getServiceForEntity(relatedEntity);
+
+            // get the instance of the original entity
+            Object instance = service.findById(instanceId);
+
+            if (instance == null) {
+                throw new ObjectNotFoundException(entityName, instanceId);
+            }
+
+            // the value of the related field
             Collection relatedAsColl = TypeHelper.asCollection(PropertyUtil.getProperty(instance, fieldName));
 
+            // apply pagination ordering (currently in memory)
             List filtered = InMemoryQueryFilter.filter(relatedAsColl, queryParams);
 
+            // convert the instance to a grid-friendly form
+            List<EntityRecord> entityRecords = instancesToRecords(filtered, relatedEntity, relatedFields,
+                    relatedDataService, EntityType.STANDARD);
+
+            // counts for the grid
             int recordCount = relatedAsColl.size();
             int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
 
-            List<EntityRecord> entityRecords = instancesToRecords(filtered, entity, fields, service, EntityType.STANDARD);
-
+            // package as records
             return new Records<>(queryParams.getPage(), rowCount, recordCount, entityRecords);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-           throw new ObjectReadException(entityName, e);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | IllegalArgumentException e) {
+           throw new ObjectReadException(entityId, e);
         }
     }
 
@@ -551,6 +577,14 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entityDto = entityService.getEntity(entityId);
         if (entityDto == null) {
             throw new EntityNotFoundException(entityId);
+        }
+        return entityDto;
+    }
+
+    private EntityDto getEntity(String entityClassName) {
+        EntityDto entityDto = entityService.getEntityByClassName(entityClassName);
+        if (entityDto == null) {
+            throw new EntityNotFoundException(entityClassName);
         }
         return entityDto;
     }
@@ -1071,6 +1105,15 @@ public class InstanceServiceImpl implements InstanceService {
             }
             throw new FieldReadOnlyException(instance.getClass().getName(), fieldRecord.getName());
         }
+    }
+
+    private FieldDto findFieldByName(List<FieldDto> fields, String fieldName) {
+        for (FieldDto field : fields) {
+            if (StringUtils.equals(fieldName, field.getBasic().getName())) {
+                return field;
+            }
+        }
+        return null;
     }
 
     @Autowired

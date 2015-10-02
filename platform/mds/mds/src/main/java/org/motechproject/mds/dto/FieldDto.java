@@ -185,6 +185,11 @@ public class FieldDto {
         return null;
     }
 
+    public String getMetadataValue(String key) {
+        MetadataDto md = getMetadata(key);
+        return md == null ? null : md.getValue();
+    }
+
     public void setMetadata(List<MetadataDto> metadata) {
         this.metadata = CollectionUtils.isEmpty(metadata)
                 ? new LinkedList<MetadataDto>()
