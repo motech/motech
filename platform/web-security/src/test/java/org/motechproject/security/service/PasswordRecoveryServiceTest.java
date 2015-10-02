@@ -1,6 +1,5 @@
 package org.motechproject.security.service;
 
-import org.apache.velocity.app.VelocityEngine;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -22,6 +21,7 @@ import org.motechproject.security.ex.UserNotFoundException;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.repository.AllPasswordRecoveries;
 import org.motechproject.security.service.impl.PasswordRecoveryServiceImpl;
+import org.motechproject.security.velocity.VelocityTemplateParser;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.MotechSettings;
@@ -76,7 +76,7 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
     private MotechEvent emailEvent;
 
     @Mock
-    private VelocityEngine velocityEngine;
+    private VelocityTemplateParser templateParser;
 
     @InjectMocks
     private EmailSender emailSenderInjected = new EmailSenderImpl();

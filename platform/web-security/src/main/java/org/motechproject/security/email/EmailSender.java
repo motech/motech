@@ -1,5 +1,6 @@
 package org.motechproject.security.email;
 
+import org.joda.time.DateTime;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
 
@@ -29,4 +30,12 @@ public interface EmailSender {
      * @param token for password recovery
      */
     void sendLoginInfo(MotechUser user, String token);
+
+    /**
+     * Sends email that informs the given user about password change.
+     *
+     * @param user  the user to be informed
+     * @param expirationDate  the user password expiration date
+     */
+    void sendPasswordResetReminder(MotechUser user, DateTime expirationDate);
 }

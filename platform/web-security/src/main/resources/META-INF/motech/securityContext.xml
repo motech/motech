@@ -33,6 +33,14 @@
                 <value>classpath:security.properties</value>
             </list>
         </property>
+        <property name="rawConfigFiles">
+            <list>
+                <value>classpath:mail/resetMail.vm</value>
+                <value>classpath:mail/passwordChangeReminder.vm</value>
+                <value>classpath:mail/loginInfo.vm</value>
+                <value>classpath:mail/oneTimeTokenMail.vm</value>
+            </list>
+        </property>
     </bean>
 
 
