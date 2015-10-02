@@ -34,10 +34,11 @@ import static org.motechproject.security.constants.EmailConstants.PASSWORD_CHANG
 import static org.motechproject.security.constants.EmailConstants.PASSWORD_CHANGE_REMINDER_TEMPLATE;
 import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_DAYS_TILL_EXPIRE;
 import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_EXPIRATION_DATE;
+import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_EXTERNAL_ID;
 import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_LAST_PASSWORD_CHANGE;
-import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_LINK;
 import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_LOCALE;
 import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_MESSAGES;
+import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_SERVER_URL;
 import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_USERNAME;
 
 public class EmailSenderImplTest {
@@ -121,7 +122,8 @@ public class EmailSenderImplTest {
         params.put(TEMPLATE_PARAM_EXPIRATION_DATE, expirationDate);
         params.put(TEMPLATE_PARAM_LAST_PASSWORD_CHANGE, user.getLastPasswordChange());
         params.put(TEMPLATE_PARAM_DAYS_TILL_EXPIRE, settingService.getNumberOfDaysForReminder());
-        params.put(TEMPLATE_PARAM_LINK, SERVER_URL);
+        params.put(TEMPLATE_PARAM_EXTERNAL_ID, user.getExternalId());
+        params.put(TEMPLATE_PARAM_SERVER_URL, SERVER_URL);
     }
 
     private void prepareEmailSender() {
