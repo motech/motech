@@ -809,7 +809,6 @@
                     showOn: true,
                     constrainInput: false,
                     onSelect: function (dateTex) {
-                        //parent.selectedTrigger.eventParameters[$(this).data('index')].value = dateTex;
                         parent.task.trigger.startDate = dateTex;
                         parent.$apply();
                     }
@@ -832,7 +831,6 @@
                         showOn: true,
                         constrainInput: false,
                         onSelect: function (dateTex) {
-                            //parent.selectedTrigger.eventParameters[$(this).data('index')].value = dateTex;
                             parent.task.trigger.endDate = dateTex;
                             parent.$apply();
                         }

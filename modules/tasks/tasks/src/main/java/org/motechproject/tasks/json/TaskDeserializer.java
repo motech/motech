@@ -10,6 +10,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
 import org.codehaus.jackson.type.JavaType;
 import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.tasks.domain.SchedulerTaskTriggerInformation;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
@@ -71,6 +73,7 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
 
         if (jsonNode.get("trigger").toString().contains(SCHEDULER_TASK)){
             setProperty("trigger", typeFactory.constructType(SchedulerTaskTriggerInformation.class));
+            parseSchedulerTaskTriggerInformationFields();
         } else {
             setProperty("trigger", typeFactory.constructType(TaskTriggerInformation.class));
         }
@@ -102,4 +105,27 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
             }
         }
     }
+
+    private String removeSpareQuotation(String input) {
+        StringBuilder sb = new StringBuilder(input);
+        sb.deleteCharAt(sb.length() - 1);
+        sb.deleteCharAt(0);
+        return sb.toString();
+    }
+
+    private void parseSchedulerTaskTriggerInformationFields(){
+        if (jsonNode.get("trigger").toString().contains("time")) {
+            ((SchedulerTaskTriggerInformation) task.getTrigger()).setTime(
+                    Time.parseTime(removeSpareQuotation(jsonNode.get("trigger").get("time").toString()), ":"));
+        }
+
+        if (jsonNode.get("trigger").toString().contains("repeatPeriod")) {
+            ((SchedulerTaskTriggerInformation) task.getTrigger()).setRepeatPeriod(
+                    Period.parse(removeSpareQuotation(jsonNode.get("trigger").get("repeatPeriod").toString())));
+        }
+    }
+
+
 }
+
+
