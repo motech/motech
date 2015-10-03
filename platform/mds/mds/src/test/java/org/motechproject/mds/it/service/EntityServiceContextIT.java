@@ -287,6 +287,32 @@ public class EntityServiceContextIT extends BaseIT {
     }
 
     @Test
+    public void shouldFindEntitiesByBundle() {
+        EntityDto lessons = new EntityDto(null, "org.motechproject.mtraining.domain.Lesson", "Lesson", "mtraining", null,
+                SecurityMode.EVERYONE, null);
+        lessons.setBundleSymbolicName("org.motechproject.mtraining");
+        entityService.createEntity(lessons);
+
+        EntityDto chapters = new EntityDto(null, "org.motechproject.mtraining.domain.Chapter", "Chapter", "mtraining", null,
+                SecurityMode.EVERYONE, null);
+        chapters.setBundleSymbolicName("org.motechproject.mtraining");
+        entityService.createEntity(chapters);
+
+        EntityDto wrong = new EntityDto(null, "org.motechproject.mtraining.domain.Wrong", "Chapter", "mtraining", null,
+                SecurityMode.EVERYONE, null);
+        wrong.setBundleSymbolicName("org.motechproject.other");
+        entityService.createEntity(wrong);
+
+        List<EntityDto> entities = entityService.listEntitiesByBundle("org.motechproject.mtraining");
+
+        assertNotNull(entities);
+
+        List<String> result = extract(entities, on(EntityDto.class).getName());
+        Collections.sort(result);
+        assertEquals(asList("Chapter", "Lesson"), result);
+    }
+
+    @Test
     public void testDraftWorkflow() throws IOException {
         EntityDto entityDto = new EntityDto();
         entityDto.setName("DraftTest");
