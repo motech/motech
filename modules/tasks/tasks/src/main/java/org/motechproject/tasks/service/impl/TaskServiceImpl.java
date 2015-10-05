@@ -35,10 +35,10 @@ import org.motechproject.tasks.ex.TriggerNotFoundException;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.TasksDataService;
 import org.motechproject.tasks.service.ChannelService;
-import org.motechproject.tasks.util.SchedulerTaskTriggerUtil;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TriggerHandler;
+import org.motechproject.tasks.util.SchedulerTaskTriggerUtil;
 import org.motechproject.tasks.validation.TaskValidator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import javax.jdo.Query;
@@ -105,12 +106,13 @@ public class TaskServiceImpl implements TaskService {
         );
     }
 
-
+    @Transactional
     public void save(final Task task){
         save(task, true);
     }
 
     @Override
+    @Transactional
     public void save(final Task task, boolean registerHandler) {
         Set<TaskError> errors = TaskValidator.validate(task);
 
@@ -132,7 +134,6 @@ public class TaskServiceImpl implements TaskService {
             task.setValidationErrors(null);
         }
 
-        // todo clean those ifs somehow
         if (task.getTrigger() instanceof SchedulerTaskTriggerInformation) {
             task.getTrigger().setEffectiveListenerSubject(task.getTrigger().getSubject() + task.getName());
             schedulerTaskTriggerUtil.setSchedulerTaskTriggerType(task);

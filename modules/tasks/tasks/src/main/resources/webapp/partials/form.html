@@ -112,7 +112,7 @@
                                         <div ng-if="task.trigger.subject === 'org.motechproject.tasks.scheduler.dayOfWeekJob.'">
                                             <label class="col-md-2 col-sm-3 control-label">{{msg('task.trigger.scheduler.dayOfWeek')}}</label>
                                             <div class="input-group">
-                                                <input id="dayOfWeek" ng-model="task.trigger.days" class="actionField form-control" type="text" data-index="{{$index}}" data-type="LIST" placeholder="{{msg('task.placeholder.dayOfWeek')}}" style="background:white;"/>
+                                                <input type="text" id="dayOfWeek" ng-model="task.trigger.days" droppable class="actionField form-control" data-index="{{$index}}" data-type="TEXT" placeholder="{{msg('task.placeholder.dayOfWeek')}}" style="background:white;"/>
                                             </div>
                                             <label class="col-md-2 col-sm-3 control-label">{{msg('task.trigger.scheduler.time')}}</label>
                                             <div class="input-group">

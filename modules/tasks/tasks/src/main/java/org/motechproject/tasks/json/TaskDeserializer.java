@@ -4,6 +4,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.ObjectCodec;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -50,6 +51,7 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
 
         if (codec instanceof ObjectMapper) {
             mapper = (ObjectMapper) codec;
+            mapper.configure(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         } else {
             mapper = new ObjectMapper();
         }
@@ -71,7 +73,7 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
         setProperty("hasRegisteredChannel", stringType);
         setProperty("taskConfig", typeFactory.constructType(TaskConfig.class));
 
-        if (jsonNode.get("trigger").toString().contains(SCHEDULER_TASK)){
+        if (jsonNode.get("trigger").toString().contains(SCHEDULER_TASK)) {
             setProperty("trigger", typeFactory.constructType(SchedulerTaskTriggerInformation.class));
             parseSchedulerTaskTriggerInformationFields();
         } else {
@@ -98,6 +100,7 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
     private void setProperty(String propertyName, String jsonPropertyName, JavaType javaType) {
         if (jsonNode.has(jsonPropertyName)) {
             try {
+
                 Object value = mapper.readValue(jsonNode.get(jsonPropertyName), javaType);
                 BeanUtils.setProperty(task, propertyName, value);
             } catch (IllegalAccessException | InvocationTargetException | IOException e) {
