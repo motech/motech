@@ -372,6 +372,7 @@ public class InstanceServiceTest {
         EntityDto entityWithRelatedField = mock(EntityDto.class);
         when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityWithRelatedField);
         when(entityWithRelatedField.getClassName()).thenReturn(AnotherSample.class.getName());
+        when(entityWithRelatedField.getId()).thenReturn(ENTITY_ID + 1);
 
         ServiceReference serviceReferenceForClassWithRelatedField = mock(ServiceReference.class);
         MotechDataService serviceForClassWithRelatedField = mock(MotechDataService.class);
@@ -455,6 +456,7 @@ public class InstanceServiceTest {
     public void shouldThrowExceptionWhileSavingInstanceInNonEditableEntity() {
         EntityDto nonEditableEntity = new EntityDto();
         nonEditableEntity.setNonEditable(true);
+        nonEditableEntity.setId(ENTITY_ID + 1);
         EntityRecord entityRecord = new EntityRecord(null, ENTITY_ID + 1, new ArrayList<FieldRecord>());
 
         when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(nonEditableEntity);

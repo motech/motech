@@ -268,6 +268,7 @@ public class InstanceController extends MdsController {
     @ResponseBody
     public long importCsv(@PathVariable long entityId, @RequestParam(required = true)  MultipartFile csvFile) {
         instanceService.verifyEntityAccess(entityId);
+        instanceService.validateNonEditableProperty(entityId);
         try {
             try (InputStream in = csvFile.getInputStream()) {
                 Reader reader = new InputStreamReader(in);
