@@ -1,23 +1,15 @@
 package org.motechproject.server.api;
 
 
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Repository;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.motechproject.server.osgi.util.PlatformConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonatype.aether.graph.Dependency;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
-import org.sonatype.aether.util.artifact.JavaScopes;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
@@ -46,8 +38,7 @@ public class JarInformation {
     private String bundleSymbolicName;
     private String bundleVersion;
     private boolean motechPlatformBundle;
-    private List<Dependency> dependencies;
-    private List<RemoteRepository> repositories;
+    private PomInformation pomInformation;
 
     /**
      * Constructor,
@@ -56,6 +47,7 @@ public class JarInformation {
      * @throws IOException if an I/O error has occurred
      */
     public JarInformation(File file) throws IOException {
+        this.pomInformation = new PomInformation();
         readManifestInformation(file);
     }
 
@@ -118,11 +110,7 @@ public class JarInformation {
 
     private void readPOMFromDirectory(File file) {
         File pomFile = new File(file, "META-INF/maven/" + bundleSymbolicName.replaceAll("\\.", "/") + "/pom.xml");
-        try (FileInputStream fis = new FileInputStream(pomFile)) {
-            parsePOM(fis);
-        } catch (IOException e) {
-            LOGGER.error("Error while opening POM file", e);
-        }
+        pomInformation.parsePom(pomFile);
     }
 
     private void readPOMFromJar(File file) {
@@ -165,12 +153,12 @@ public class JarInformation {
         return motechPlatformBundle;
     }
 
-    public List<Dependency> getDependencies() {
-        return (dependencies == null) ? new LinkedList<Dependency>() : dependencies;
+    public PomInformation getPomInformation() {
+        return pomInformation;
     }
 
-    public List<RemoteRepository> getRepositories() {
-        return (repositories == null) ? new LinkedList<RemoteRepository>() : repositories;
+    public void setPomInformation(PomInformation pomInformation) {
+        this.pomInformation = pomInformation;
     }
 
     private String parseSymbolicName(String symbolicNameAttr) {
@@ -194,43 +182,11 @@ public class JarInformation {
         for (JarEntry jarEntry : entryList) {
             if (jarEntry.getName().contains("pom.xml")) {
                 try (InputStream inputStream = jarFile.getInputStream(jarEntry)) {
-                    parsePOM(inputStream);
+                    pomInformation.parsePom(inputStream);
                 } catch (IOException e) {
                     LOGGER.error("Error while opening POM file", e);
                 }
             }
-        }
-    }
-
-    private void parsePOM(InputStream inputStream) {
-        try {
-            MavenXpp3Reader reader = new MavenXpp3Reader();
-
-            Model model = reader.read(inputStream);
-
-            if (dependencies == null) {
-                dependencies = new LinkedList<>();
-            }
-            if (repositories == null) {
-                repositories = new LinkedList<>();
-            }
-            for (org.apache.maven.model.Dependency dependency : model.getDependencies()) {
-                if (!"test".equalsIgnoreCase(dependency.getScope())) {
-                    dependencies.add(new Dependency(new DefaultArtifact(
-                            (dependency.getGroupId().contains("${")) ? model.getParent().getGroupId() : dependency.getGroupId(),
-                            dependency.getArtifactId(),
-                            dependency.getClassifier(),
-                            "jar",
-                            "[0,)"
-                    ), JavaScopes.RUNTIME));
-                }
-            }
-
-            for (Repository remoteRepository : model.getRepositories()) {
-                repositories.add(new RemoteRepository(remoteRepository.getId(), "default", remoteRepository.getUrl()));
-            }
-        } catch (Exception e) {
-            LOGGER.error("Error while reading POM file", e);
         }
     }
 }
