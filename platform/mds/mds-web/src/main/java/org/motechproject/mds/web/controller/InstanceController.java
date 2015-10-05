@@ -15,13 +15,13 @@ import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.mds.util.Order;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
 import org.motechproject.mds.web.service.InstanceService;
+import org.motechproject.mds.web.util.QueryParamsBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -40,7 +40,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -136,7 +136,7 @@ public class InstanceController extends MdsController {
     @ResponseBody
     public Records<HistoryRecord> getHistory(@PathVariable Long entityId, @PathVariable Long instanceId,
                                              GridSettings settings) {
-        QueryParams queryParams = gridSettingsToQueryParams(settings);
+        QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
         List<HistoryRecord> historyRecordsList = instanceService.getInstanceHistory(entityId, instanceId, queryParams);
 
         long recordCount = instanceService.countHistoryRecords(entityId, instanceId);
@@ -171,9 +171,9 @@ public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/instances/{entityId}/instance/{instanceId}/{fieldName}", method = RequestMethod.GET)
     @ResponseBody
-    public Records<?> getRelatedValues(@PathVariable Long entityId, @PathVariable Long instanceId,
+    public Records<EntityRecord> getRelatedValues(@PathVariable Long entityId, @PathVariable Long instanceId,
                                     @PathVariable String fieldName, GridSettings settings) {
-        QueryParams queryParams = gridSettingsToQueryParams(settings);
+        QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
         return instanceService.getRelatedFieldValue(entityId, instanceId, fieldName, queryParams);
     }
 
@@ -196,7 +196,7 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/entities/{entityId}/trash", method = RequestMethod.GET)
     @ResponseBody
     public Records<EntityRecord> getTrash(@PathVariable Long entityId, GridSettings settings) {
-        QueryParams queryParams = gridSettingsToQueryParams(settings);
+        QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
         List<EntityRecord> trashRecordsList = instanceService.getTrashRecords(entityId, queryParams);
 
         long recordCount = instanceService.countTrashRecords(entityId);
@@ -231,32 +231,35 @@ public class InstanceController extends MdsController {
                 "Content-Disposition",
                 "attachment; filename=" + fileName + "." + outputFormat.toLowerCase());
 
-        Order order = StringUtils.isNotEmpty(settings.getSortColumn()) ? new Order(settings.getSortColumn(), settings.getSortDirection()) : null;
-        QueryParams queryParams = new QueryParams(1, StringUtils.equalsIgnoreCase(exportRecords, "all") ? null : Integer.valueOf(exportRecords), order);
+        final Integer pageSize = StringUtils.equalsIgnoreCase(exportRecords, "all") ? null : Integer.valueOf(exportRecords);
+        final Map<String, Object> fieldMap = getFields(settings);
+
+        QueryParams queryParams = new QueryParams(1, pageSize, QueryParamsBuilder.buildOrderList(settings, fieldMap));
 
         if (Constants.ExportFormat.PDF.equals(outputFormat)) {
             csvImportExportService.exportPdf(entityId, response.getOutputStream(), settings.getLookup(), queryParams,
-                    settings.getSelectedFields(), getFields(settings));
+                    settings.getSelectedFields(), fieldMap);
         } else {
             csvImportExportService.exportCsv(entityId, response.getWriter(), settings.getLookup(), queryParams,
-                    settings.getSelectedFields(), getFields(settings));
+                    settings.getSelectedFields(), fieldMap);
         }
     }
 
     @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
     @ResponseBody
     public Records<?> getInstances(@PathVariable Long entityId, GridSettings settings) throws IOException {
-        QueryParams queryParams = gridSettingsToQueryParams(settings);
-
         String lookup = settings.getLookup();
         String filterStr = settings.getFilter();
+        Map<String, Object> fieldMap = getFields(settings);
+
+        QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings, fieldMap);
 
         List<EntityRecord> entityRecords;
         long recordCount;
 
         if (StringUtils.isNotBlank(lookup)) {
-            entityRecords = instanceService.getEntityRecordsFromLookup(entityId, lookup, getFields(settings), queryParams);
-            recordCount = instanceService.countRecordsByLookup(entityId, lookup, getFields(settings));
+            entityRecords = instanceService.getEntityRecordsFromLookup(entityId, lookup, fieldMap, queryParams);
+            recordCount = instanceService.countRecordsByLookup(entityId, lookup, fieldMap);
         } else if (filterSet(filterStr)) {
             Filters filters = new Filters(objectMapper.readValue(filterStr, Filter[].class));
             filters.setMultiselect(instanceService.getEntityFields(entityId));
@@ -288,24 +291,11 @@ public class InstanceController extends MdsController {
         }
     }
 
-    private QueryParams gridSettingsToQueryParams(GridSettings settings) {
-        Order order = null;
-        if (StringUtils.isNotBlank(settings.getSortColumn())) {
-            order = new Order(settings.getSortColumn(), settings.getSortDirection());
-        }
-
-        if (settings.getPage() == null) {
-            settings.setPage(1);
-            settings.setRows(10);
-        }
-        return new QueryParams(settings.getPage(), settings.getRows(), order);
-    }
-
     private Map<String, Object> getFields(GridSettings gridSettings) throws IOException {
         if (gridSettings.getFields() == null) {
             return null;
         } else {
-            return objectMapper.readValue(gridSettings.getFields(), new TypeReference<HashMap>() {});
+            return objectMapper.readValue(gridSettings.getFields(), new TypeReference<LinkedHashMap>() {});
         }
     }
 

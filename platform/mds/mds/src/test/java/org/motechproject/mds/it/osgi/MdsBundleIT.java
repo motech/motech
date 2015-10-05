@@ -341,28 +341,35 @@ public class MdsBundleIT extends BasePaxIT {
         Object instance4 = loadedClass.newInstance();
         Object instance5 = loadedClass.newInstance();
 
+        // instance 1
         updateInstance(instance, true, "trueNow", "trueNowCp", new ArrayList(asList("1", "2", "3")),
                        NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
                        DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1, toEnum(loadedClass, "one"),
                        JAVA_LD_NOW, JAVA_NOW);
+
+        // instance 2
         updateInstance(instance2, true, "trueInRange", "trueInRangeCp", new ArrayList(asList("2", "4")),
                        NOW.plusHours(1), LD_NOW.plusDays(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
                        DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 2, toEnum(loadedClass, "two"),
                        JAVA_LD_NOW.plusDays(1), JAVA_NOW.plusHours(1));
+
+        // instance 3
         updateInstance(instance3, false, "falseInRange", "falseInRangeCp", null,
                        NOW.plusHours(2), LD_NOW.plusDays(1), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
                        DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 2, toEnum(loadedClass, "three"),
                        JAVA_LD_NOW.plusDays(2), JAVA_NOW.plusHours(2));
+
+        // instance 4
         updateInstance(instance4, true, "trueOutOfRange", "trueOutOfRangeCp", null,
                        NOW.plusHours(3), LD_NOW.plusDays(10), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
                        DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 3, toEnum(loadedClass, "one"),
                        JAVA_LD_NOW.plusDays(3), JAVA_NOW.plusHours(3));
+
+        // instance 5
         updateInstance(instance5, true, "notInSet", "notInSetCp", null,
                        NOW.plusHours(4), LD_NOW, null, TEST_PERIOD, BYTE_ARRAY_VALUE,
                        DATE_NOW, DOUBLE_VALUE_2, MORNING_TIME, 4, toEnum(loadedClass, "two"),
                        JAVA_LD_NOW.plusDays(4), JAVA_NOW.plusHours(4));
-
-        MethodUtils.invokeMethod(instance, "setSomeMap", TEST_MAP);
 
         //Single object return lookup should return 0 if there are no instances
         Long emptyCount = (Long) MethodUtils.invokeMethod(service, "countByUniqueString", "trueNow");
@@ -375,10 +382,7 @@ public class MdsBundleIT extends BasePaxIT {
         Long count = (Long) MethodUtils.invokeMethod(service, "countByUniqueString", "trueNow");
         assertEquals(count, (Long) 1L);
 
-        assertInstance(retrieved, true, "trueNow", "trueNowCp", asList("1", "2", "3"),
-                NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
-                DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1, toEnum(loadedClass, "one"),
-                JAVA_LD_NOW, JAVA_NOW);
+        assertInstanceOne(retrieved, loadedClass);
 
         assertEquals(1, service.retrieveAll().size());
         service.create(instance2);
@@ -386,6 +390,19 @@ public class MdsBundleIT extends BasePaxIT {
         service.create(instance4);
         service.create(instance5);
         assertEquals(INSTANCE_COUNT, service.retrieveAll().size());
+
+        // verify double order
+        QueryParams queryParams = new QueryParams(asList(new Order("someLocalDate", Order.Direction.DESC),
+                new Order("someString", Order.Direction.ASC)));
+        List<Object> result = service.retrieveAll(queryParams);
+
+        assertNotNull(result);
+        assertEquals(5, result.size());
+        assertInstanceFour(result.get(0), loadedClass);
+        assertInstanceThree(result.get(1), loadedClass);
+        assertInstanceTwo(result.get(2), loadedClass);
+        assertInstanceFive(result.get(3), loadedClass);
+        assertInstanceOne(result.get(4), loadedClass);
     }
 
     private void verifyLookups(boolean usingLookupService) throws Exception{
@@ -409,10 +426,7 @@ public class MdsBundleIT extends BasePaxIT {
 
         Class objClass = resultList.get(0).getClass();
 
-        assertInstance(resultList.get(0), true, "trueNow", "trueNowCp", asList("1", "2", "3"),
-                       NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
-                       DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1, toEnum(objClass, "one"),
-                       JAVA_LD_NOW, JAVA_NOW);
+        assertInstanceOne(resultList.get(0), objClass);
 
         // verify lookups
         if (usingLookupService) {
@@ -429,10 +443,7 @@ public class MdsBundleIT extends BasePaxIT {
         resultList = (List) resultObj;
 
         assertEquals(4, resultList.size());
-        assertInstance(resultList.get(0), true, "trueNow", "trueNowCp", asList("1", "2", "3"),
-                       NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
-                       DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1, toEnum(objClass, "one"),
-                       JAVA_LD_NOW, JAVA_NOW);
+        assertInstanceOne(resultList.get(0), objClass);
 
         List<String> list = new ArrayList<>();
         list.add("2");
@@ -456,14 +467,8 @@ public class MdsBundleIT extends BasePaxIT {
         assertTrue(resultObj instanceof List);
         resultList = (List) resultObj;
         assertEquals(2, resultList.size());
-        assertInstance(resultList.get(0), true, "trueInRange", "trueInRangeCp", asList("2", "4"),
-                       NOW.plusHours(1), LD_NOW.plusDays(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
-                       DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 2, toEnum(objClass, "two"),
-                       JAVA_LD_NOW.plusDays(1), JAVA_NOW.plusHours(1));
-        assertInstance(resultList.get(1), true, "trueNow", "trueNowCp", asList("1", "2", "3"),
-                       NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
-                       DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1, toEnum(objClass, "one"),
-                       JAVA_LD_NOW, JAVA_NOW);
+        assertInstanceTwo(resultList.get(0), objClass);
+        assertInstanceOne(resultList.get(1), objClass);
 
         // usage of a custom operator
         if (usingLookupService) {
@@ -479,18 +484,9 @@ public class MdsBundleIT extends BasePaxIT {
         assertTrue(resultObj instanceof List);
         resultList = (List) resultObj;
         assertEquals(3, resultList.size());
-        assertInstance(resultList.get(0), true, "trueNow", "trueNowCp", asList("1", "2", "3"),
-                NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
-                DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1, toEnum(objClass, "one"),
-                JAVA_LD_NOW, JAVA_NOW);
-        assertInstance(resultList.get(1), true, "trueInRange", "trueInRangeCp", asList("2", "4"),
-                NOW.plusHours(1), LD_NOW.plusDays(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
-                DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 2, toEnum(objClass, "two"),
-                JAVA_LD_NOW.plusDays(1), JAVA_NOW.plusHours(1));
-        assertInstance(resultList.get(2), false, "falseInRange", "falseInRangeCp", Collections.emptyList(),
-                NOW.plusHours(2), LD_NOW.plusDays(1), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
-                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 2, toEnum(objClass, "three"),
-                JAVA_LD_NOW.plusDays(2), JAVA_NOW.plusHours(2));
+        assertInstanceOne(resultList.get(0), objClass);
+        assertInstanceTwo(resultList.get(1), objClass);
+        assertInstanceThree(resultList.get(2), objClass);
 
         // usage of matches, case sensitive and case insensitive
         String[] textsToSearch = { "true", "TRUE" };
@@ -514,18 +510,9 @@ public class MdsBundleIT extends BasePaxIT {
             assertTrue(resultObj instanceof List);
             resultList = (List) resultObj;
             assertEquals(3, resultList.size());
-            assertInstance(resultList.get(0), true, "trueNow", "trueNowCp", asList("1", "2", "3"),
-                    NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
-                    DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1, toEnum(objClass, "one"),
-                    JAVA_LD_NOW, JAVA_NOW);
-            assertInstance(resultList.get(1), true, "trueInRange", "trueInRangeCp", asList("2", "4"),
-                    NOW.plusHours(1), LD_NOW.plusDays(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
-                    DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 2, toEnum(objClass, "two"),
-                    JAVA_LD_NOW.plusDays(1), JAVA_NOW.plusHours(1));
-            updateInstance(resultList.get(2), true, "trueOutOfRange", "trueOutOfRangeCp", null,
-                    NOW.plusHours(3), LD_NOW.plusDays(10), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
-                    DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 3, toEnum(objClass, "one"),
-                    JAVA_LD_NOW.plusDays(3), JAVA_NOW.plusHours(3));
+            assertInstanceOne(resultList.get(0), objClass);
+            assertInstanceTwo(resultList.get(1), objClass);
+            assertInstanceFour(resultList.get(2), objClass);
         }
     }
 
@@ -542,6 +529,7 @@ public class MdsBundleIT extends BasePaxIT {
                     Object retrieved = allObjects.get(0);
                     Class objClass = retrieved.getClass();
 
+                    // instance 1.1
                     updateInstance(retrieved, false, "anotherString", "anotherStringCp", new ArrayList(asList("4", "5")),
                         YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
                         DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"),
@@ -556,11 +544,7 @@ public class MdsBundleIT extends BasePaxIT {
 
         Object updated = service.retrieveAll(QueryParams.descOrder("someDateTime")).get(0);
 
-        assertInstance(updated, false, "anotherString", "anotherStringCp", asList("4", "5"),
-                YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
-                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(updated.getClass(), "two"),
-                JAVA_LD_NOW.plusDays(5), JAVA_NOW.plusHours(5));
-
+        assertInstanceOneDotOne(updated, updated.getClass());
     }
 
     private void verifyInstanceCreatingOrUpdating(Class<?> loadedClass) throws Exception {
@@ -670,10 +654,7 @@ public class MdsBundleIT extends BasePaxIT {
         assertEquals(1, result.size());
 
         Class objClass = result.get(0).getClass();
-        assertInstance(result.get(0), false, "anotherString", "anotherStringCp", asList("4", "5"),
-                YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
-                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"),
-                JAVA_LD_NOW.plusDays(5), JAVA_NOW.plusHours(5));
+        assertInstanceOneDotOne(result.get(0), objClass);
 
         List<String> names = (List<String>) service.executeSQLQuery(new SqlQueryExecution<List<String>>() {
             @Override
@@ -1049,12 +1030,54 @@ public class MdsBundleIT extends BasePaxIT {
     private void setCacheType(String type) throws IOException {
         try (FileOutputStream outputStream = new FileOutputStream(configurationFile)) {
             Properties datanucleusProps = coreConfigurationService.loadDatanucleusConfig();
-            if(type != null) {
+            if (type != null) {
                 datanucleusProps.setProperty("datanucleus.cache.level2.type", type);
             } else {
                 datanucleusProps.remove("datanucleus.cache.level2.type");
             }
             datanucleusProps.store(outputStream, null);
         }
+    }
+
+    private void assertInstanceOne(Object instance, Class objClass) throws Exception {
+        assertInstance(instance, true, "trueNow", "trueNowCp", asList("1", "2", "3"),
+                NOW, LD_NOW, TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
+                DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 1, toEnum(objClass, "one"),
+                JAVA_LD_NOW, JAVA_NOW);
+    }
+
+    private void assertInstanceTwo(Object instance, Class objClass) throws Exception {
+        assertInstance(instance, true, "trueInRange", "trueInRangeCp", asList("2", "4"),
+                NOW.plusHours(1), LD_NOW.plusDays(1), TEST_MAP, TEST_PERIOD, BYTE_ARRAY_VALUE,
+                DATE_NOW, DOUBLE_VALUE_1, MORNING_TIME, 2, toEnum(objClass, "two"),
+                JAVA_LD_NOW.plusDays(1), JAVA_NOW.plusHours(1));
+    }
+
+    private void assertInstanceThree(Object instance, Class objClass) throws Exception {
+        assertInstance(instance, false, "falseInRange", "falseInRangeCp", Collections.emptyList(),
+                NOW.plusHours(2), LD_NOW.plusDays(1), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
+                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 2, toEnum(objClass, "three"),
+                JAVA_LD_NOW.plusDays(2), JAVA_NOW.plusHours(2));
+    }
+
+    private void assertInstanceFour(Object instance, Class objClass) throws Exception {
+        assertInstance(instance, true, "trueOutOfRange", "trueOutOfRangeCp", Collections.emptyList(),
+                NOW.plusHours(3), LD_NOW.plusDays(10), null, TEST_PERIOD, BYTE_ARRAY_VALUE,
+                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 3, toEnum(objClass, "one"),
+                JAVA_LD_NOW.plusDays(3), JAVA_NOW.plusHours(3));
+    }
+
+    private void assertInstanceFive(Object instance, Class objClass) throws Exception {
+        assertInstance(instance, true, "notInSet", "notInSetCp", Collections.emptyList(),
+                NOW.plusHours(4), LD_NOW, null, TEST_PERIOD, BYTE_ARRAY_VALUE,
+                DATE_NOW, DOUBLE_VALUE_2, MORNING_TIME, 4, toEnum(objClass, "two"),
+                JAVA_LD_NOW.plusDays(4), JAVA_NOW.plusHours(4));
+    }
+
+    private void assertInstanceOneDotOne(Object instance, Class objClass) throws Exception {
+        assertInstance(instance, false, "anotherString", "anotherStringCp", asList("4", "5"),
+                YEAR_LATER, LD_YEAR_AGO, TEST_MAP2, NEW_PERIOD, BYTE_ARRAY_VALUE,
+                DATE_TOMORROW, DOUBLE_VALUE_2, NIGHT_TIME, 10, toEnum(objClass, "two"),
+                JAVA_LD_NOW.plusDays(5), JAVA_NOW.plusHours(5));
     }
 }

@@ -4,6 +4,7 @@ import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections.comparators.ReverseComparator;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.Order;
+import org.springframework.util.comparator.CompoundComparator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,16 +26,15 @@ public final class InMemoryQueryFilter {
      * @return the filtered, ordered list of objects from the original collection
      */
     public static <T> List<T> filter(Collection<T> objects, QueryParams queryParams) {
-        // create the comparator on a bean property
         // if no ordering in the params the use ID, since we must always order here somehow
         // given that collection does not have any order, paging it would not make sense
-        final String orderProp = queryParams.isOrderSet() ? queryParams.getOrder().getField() :
-                Constants.Util.ID_FIELD_NAME;
-        // ascending is the default direction
-        final Order.Direction direction = queryParams.isOrderSet() ? queryParams.getOrder().getDirection() :
-                Order.Direction.ASC;
+        List<Order> orderList = new ArrayList<>(queryParams.getOrderList());
+        // we always add the order on the ID field as the final one, to keep the results consistent
+        if (!queryParams.containsOrderOnField(Constants.Util.ID_FIELD_NAME)) {
+            orderList.add(new Order(Constants.Util.ID_FIELD_NAME, Order.Direction.ASC));
+        }
 
-        List<T> result = order(objects, orderProp, direction);
+        List<T> result = order(objects, orderList);
 
         // paginate if required
         if (queryParams.isPagingSet()) {
@@ -47,21 +47,31 @@ public final class InMemoryQueryFilter {
     /**
      * Orders the provided collection using the provided ordering information.
      * @param collection the collection to order
-     * @param orderProp the name of the property to order on
-     * @param direction the ordering direction
+     * @param orderList list of orders that should be applied to the collection
      * @param <T> the type of the collection to order
      * @return a new list with ordered objects from the provided collection
      */
-    public static <T> List<T> order(Collection<T> collection, String orderProp, Order.Direction direction) {
-        Comparator<T> comparator = new BeanComparator<>(orderProp);
-        // reverse it if order is descending
-        if (direction == Order.Direction.DESC) {
-            comparator = new ReverseComparator(comparator);
+    private static <T> List<T> order(Collection<T> collection, List<Order> orderList) {
+        List<Comparator<T>> comparatorList = new ArrayList<>();
+
+        for (Order order : orderList) {
+            Comparator<T> comparator = new BeanComparator<>(order.getField());
+
+            // reverse it if order is descending
+            if (order.getDirection() == Order.Direction.DESC) {
+                comparator = new ReverseComparator(comparator);
+            }
+
+            comparatorList.add(comparator);
         }
+
+        // we use a compound comparator to chain comparators for each provided order
+        CompoundComparator<T> compoundComparator = new CompoundComparator<>(comparatorList.toArray(
+                new Comparator[comparatorList.size()]));
 
         // convert to a list and sort it
         List<T> result = new ArrayList<>(collection);
-        Collections.sort(result, comparator);
+        Collections.sort(result, compoundComparator);
 
         return result;
     }
@@ -76,7 +86,7 @@ public final class InMemoryQueryFilter {
      * @param <T> the type of the collection to paginate
      * @return the sub-list of the provided list, representing the desired page
      */
-    public static <T> List<T> paginate(List<T> list, int page, int pageSize) {
+    private static <T> List<T> paginate(List<T> list, int page, int pageSize) {
         final int startIndex = (page - 1) * pageSize;
         final int endIndex = Math.min(startIndex + pageSize, list.size());
 

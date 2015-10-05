@@ -10,9 +10,11 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
@@ -70,6 +72,7 @@ public class InstanceServiceTest {
     private static final long ENTITY_ID = 11;
     private static final long ANOTHER_ENTITY_ID = 12;
     private static final long INSTANCE_ID = 4;
+    private static final long TEST_CLASS_ID = 98;
 
     @InjectMocks
     private InstanceService instanceService = new InstanceServiceImpl();
@@ -144,7 +147,7 @@ public class InstanceServiceTest {
         mockDataService();
         mockSampleFields();
         mockEntity();
-        QueryParams queryParams = new QueryParams(1, 10, null);
+        QueryParams queryParams = new QueryParams(1, 10);
         when(trashService.getInstancesFromTrash(anyString(), eq(queryParams))).thenReturn(sampleCollection());
 
         List<EntityRecord> records = instanceService.getTrashRecords(ENTITY_ID, queryParams);
@@ -616,17 +619,22 @@ public class InstanceServiceTest {
         mockDataService();
         mockAnotherEntity();
         mockEntity();
+        mockSampleFields();
+        mockAnotherEntityFields();
+        mockTestClassEntity();
+        mockTestClassService();
+        mockTestCLassFields();
         when(serviceForAnotherSample.findById(INSTANCE_ID)).thenReturn(sampleForRelationshipTesting());
 
         QueryParams queryParams = new QueryParams(1, 2, new Order(Constants.Util.ID_FIELD_NAME, Order.Direction.ASC));
-        Records<AnotherSample> records = instanceService.getRelatedFieldValue(ANOTHER_ENTITY_ID, INSTANCE_ID,
+        Records<EntityRecord> records = instanceService.getRelatedFieldValue(ANOTHER_ENTITY_ID, INSTANCE_ID,
                 "testClasses", queryParams);
 
         assertNotNull(records);
         assertEquals(Integer.valueOf(1), records.getPage()); // page 1
         assertEquals(Integer.valueOf(2), records.getTotal()); // 2 pages total
         assertEquals(Integer.valueOf(3), records.getRecords()); // 3 records total
-        assertEquals(asList(1L, 2L), extract(records.getRows(), on(TestClass.class).getId()));
+        assertEquals(asList(1L, 2L), extract(records.getRows(), on(EntityRecord.class).getFieldByName("id").getValue()));
     }
 
     private List buildRelatedRecord() {
@@ -679,6 +687,10 @@ public class InstanceServiceTest {
         mockDataService(TestSample.class, motechDataService);
     }
 
+    private void mockTestClassService() {
+        mockDataService(TestClass.class, mock(MotechDataService.class));
+    }
+
     private void mockDataService(Class<?> entityClass, MotechDataService motechDataService) {
         ServiceReference serviceReference = mock(ServiceReference.class);
         when(bundleContext.getServiceReference(ClassName.getInterfaceName(entityClass.getName())))
@@ -701,12 +713,38 @@ public class InstanceServiceTest {
         ));
     }
 
+    private void mockAnotherEntityFields() {
+        FieldDto relatedField = FieldTestHelper.fieldDto(2L, "testClasses", OneToManyRelationship.class.getName(),
+                "Test Classes", null);
+        relatedField.addMetadata(new MetadataDto(Constants.MetadataKeys.RELATED_CLASS,
+                TestClass.class.getName()));
+
+        when(entityService.getEntityFields(ANOTHER_ENTITY_ID)).thenReturn(asList(
+                FieldTestHelper.fieldDto(1L, "id", Long.class.getName(), "Id", null),
+                relatedField
+        ));
+    }
+
+    private void mockTestCLassFields() {
+        when(entityService.getEntityFields(TEST_CLASS_ID)).thenReturn(asList(
+                FieldTestHelper.fieldDto(1L, "id", Long.class.getName(), "Id", null)
+        ));
+    }
+
     private void mockEntity() {
         mockEntity(TestSample.class, ENTITY_ID, entity);
     }
 
+    private void mockTestClassEntity() {
+        EntityDto testClassEntity = mock(EntityDto.class);
+        when(testClassEntity.getClassName()).thenReturn(TestClass.class.getName());
+        when(testClassEntity.getId()).thenReturn(TEST_CLASS_ID);
+        mockEntity(TestClass.class, TEST_CLASS_ID, testClassEntity);
+    }
+
     private void mockEntity(Class<?> entityClass, long entityId, EntityDto entity) {
         when(entityService.getEntity(entityId)).thenReturn(entity);
+        when(entityService.getEntityByClassName(entityClass.getName())).thenReturn(entity);
         when(entity.getClassName()).thenReturn(entityClass.getName());
         when(entity.getId()).thenReturn(entityId);
     }
@@ -962,7 +1000,10 @@ public class InstanceServiceTest {
             assertEquals(strField, LOOKUP_1_EXPECTED_PARAM);
             assertEquals(Integer.valueOf(1), queryParams.getPage());
             assertEquals(Integer.valueOf(5), queryParams.getPageSize());
-            assertEquals("strField descending", queryParams.getOrder().toString());
+
+            assertEquals(1, queryParams.getOrderList().size());
+            assertEquals("strField", queryParams.getOrderList().get(0).getField());
+            assertEquals(Order.Direction.DESC, queryParams.getOrderList().get(0).getDirection());
 
             return new TestSample("strField", 6);
         }

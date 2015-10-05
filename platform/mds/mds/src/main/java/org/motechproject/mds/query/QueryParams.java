@@ -5,6 +5,8 @@ import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.Order;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility class containing parameters which control order and size of query results.
@@ -15,7 +17,7 @@ public class QueryParams implements Serializable {
 
     private final Integer page;
     private final Integer pageSize;
-    private final Order order;
+    private final List<Order> orderList;
 
     /**
      * Constant query parameter, that orders records ascending by ID.
@@ -29,7 +31,7 @@ public class QueryParams implements Serializable {
      * @param pageSize amount of entries to include, per page
      */
     public QueryParams(Integer page, Integer pageSize) {
-        this(page, pageSize, null);
+        this(page, pageSize, new ArrayList<Order>());
     }
 
     /**
@@ -44,6 +46,15 @@ public class QueryParams implements Serializable {
     /**
      * Creates query parameters.
      *
+     * @param orderList the list of order instructions that will be applied to the query
+     */
+    public QueryParams(List<Order> orderList) {
+        this(null, null, orderList);
+    }
+
+    /**
+     * Creates query parameters.
+     *
      * @param page number of page
      * @param pageSize amount of entries to include, per page
      * @param order specifies order of the records
@@ -51,7 +62,23 @@ public class QueryParams implements Serializable {
     public QueryParams(Integer page, Integer pageSize, Order order) {
         this.page = page;
         this.pageSize = pageSize;
-        this.order = order;
+        this.orderList = new ArrayList<>();
+        if (order != null) {
+            orderList.add(order);
+        }
+    }
+
+    /**
+     * Creates query parameters.
+     *
+     * @param page number of page
+     * @param pageSize amount of entries to include, per page
+     * @param orderList the list of order instructions that will be applied to the query
+     */
+    public QueryParams(Integer page, Integer pageSize, List<Order> orderList) {
+        this.page = page;
+        this.pageSize = pageSize;
+        this.orderList = (orderList == null) ? new ArrayList<Order>() : orderList;
     }
 
     public Integer getPage() {
@@ -62,34 +89,47 @@ public class QueryParams implements Serializable {
         return pageSize;
     }
 
-    public Order getOrder() {
-        return order;
+    public List<Order> getOrderList() {
+        return orderList;
     }
 
     public boolean isOrderSet() {
-        return order != null && StringUtils.isNotBlank(order.getField());
+        return !orderList.isEmpty();
     }
 
     public boolean isPagingSet() {
         return page != null && pageSize != null;
     }
 
+    public void addOrder(Order order) {
+        orderList.add(order);
+    }
+
+    public boolean containsOrderOnField(String fieldName) {
+        for (Order order : orderList) {
+            if (StringUtils.equals(fieldName, order.getField())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
-     * Creates query parameter that sorts records ascending, by the given field.
-     *
-     * @param field field to sort records by
-     * @return query parameter, ordering records ascending
-     */
+      * Creates query parameter that sorts records ascending, by the given field.
+      *
+      * @param field field to sort records by
+      * @return query parameter, ordering records ascending
+      */
     public static QueryParams ascOrder(String field) {
         return new QueryParams(new Order(field, Order.Direction.ASC));
     }
 
     /**
-     * Creates query parameter that sorts records descending, by the given field.
-     *
-     * @param field field to sort records by
-     * @return query parameter, ordering records descending
-     */
+      * Creates query parameter that sorts records descending, by the given field.
+      *
+      * @param field field to sort records by
+      * @return query parameter, ordering records descending
+      */
     public static QueryParams descOrder(String field) {
         return new QueryParams(new Order(field, Order.Direction.DESC));
     }
