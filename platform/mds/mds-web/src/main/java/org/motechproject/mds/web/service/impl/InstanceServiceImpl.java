@@ -332,7 +332,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public void revertPreviousVersion(Long entityId, Long instanceId, Long historyId) {
-        validateNonEditableProperty(getEntity(entityId));
+        validateNonEditableProperty(entityId);
         HistoryRecord historyRecord = getHistoryRecord(entityId, instanceId, historyId);
         if (!historyRecord.isRevertable()) {
             EntityDto entity = getEntity(entityId);
@@ -496,6 +496,17 @@ public class InstanceServiceImpl implements InstanceService {
     public void verifyEntityAccess(Long entityId) {
         EntityDto entity = getEntity(entityId);
         validateCredentialsForReading(entity);
+    }
+
+    @Override
+    public void validateNonEditableProperty(Long entityId) {
+        validateNonEditableProperty(getEntity(entityId));
+    }
+
+    private void validateNonEditableProperty(EntityDto entity) {
+        if (entity.isNonEditable()) {
+            throw new EntityInstancesNonEditableException();
+        }
     }
 
     @Override
@@ -1081,14 +1092,7 @@ public class InstanceServiceImpl implements InstanceService {
         return !authorized && !readOnlySecurityMode.isInstanceRestriction() && !securityMode.isInstanceRestriction();
     }
 
-    private void validateNonEditableProperty(EntityDto entity) {
-        if (entity.isNonEditable()) {
-            throw new EntityInstancesNonEditableException();
-        }
-    }
-
     private void validateNonEditableField(FieldRecord fieldRecord, Object instance, Object parsedValue, MetadataDto versionMetadata) throws IllegalAccessException {
-
         Object fieldOldValue = FieldUtils.readField(instance,
                         StringUtils.uncapitalize(fieldRecord.getName()),
                         true);
