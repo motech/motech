@@ -7,6 +7,7 @@ import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.entity.EntityReadOnlyException;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -81,6 +82,13 @@ public class AllEntities extends MotechDataRepository<Entity> {
     }
 
     public List<Entity> retrieveBySymbolicName(String bundleSymbolicName) {
-        return retrieveAll("bundleSymbolicName", bundleSymbolicName);
+        List<Entity> entities = new ArrayList<>();
+        for (Entity entity : retrieveAll("bundleSymbolicName", bundleSymbolicName)) {
+            if (entity.isActualEntity()) {
+                entities.add(entity);
+            }
+        }
+
+        return entities;
     }
 }

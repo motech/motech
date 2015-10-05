@@ -811,9 +811,7 @@ public class EntityServiceImpl implements EntityService {
 
         List<EntityDto> entityDtos = new ArrayList<>();
         for (Entity entity : allEntities.retrieveBySymbolicName(bundleSymbolicName)) {
-            if (entity.isActualEntity()) {
-                entityDtos.add(entity.toDto());
-            }
+            entityDtos.add(entity.toDto());
         }
 
         return entityDtos;
