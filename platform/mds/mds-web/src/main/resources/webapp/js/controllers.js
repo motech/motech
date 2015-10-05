@@ -3408,6 +3408,7 @@
         $scope.showAddInstanceButton = true;
         $scope.showLookupButton = true;
         $scope.showFieldsButton = true;
+        $scope.showImportButton = true;
         $scope.showExportButton = true;
         $scope.showViewTrashButton = true;
         $scope.showFiltersButton = true;
