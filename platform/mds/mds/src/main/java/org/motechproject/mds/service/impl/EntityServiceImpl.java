@@ -31,6 +31,7 @@ import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
+import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.ex.entity.EntityAlreadyExistException;
 import org.motechproject.mds.ex.entity.EntityChangedException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
@@ -796,6 +797,21 @@ public class EntityServiceImpl implements EntityService {
                     entityDtos.add(entity.toDto());
                 }
             }
+        }
+
+        return entityDtos;
+    }
+
+    @Override
+    @Transactional
+    public List<EntityDto> listEntitiesByBundle(String bundleSymbolicName) {
+        if (StringUtils.isBlank(bundleSymbolicName)) {
+            throw new MdsException("Bundle symbolic name cannot be empty or null");
+        }
+
+        List<EntityDto> entityDtos = new ArrayList<>();
+        for (Entity entity : allEntities.retrieveBySymbolicName(bundleSymbolicName)) {
+            entityDtos.add(entity.toDto());
         }
 
         return entityDtos;

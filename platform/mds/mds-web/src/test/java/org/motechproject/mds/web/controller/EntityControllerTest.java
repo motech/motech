@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -388,6 +389,22 @@ public class EntityControllerTest {
         expected.setRestOptions(restOptions);
 
         controller.perform(get("/entities/7/advanced"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(new ObjectMapper().writeValueAsString(expected)));
+    }
+
+    @Test
+    public void shouldGetEntitiesByBundle() throws Exception {
+        EntityDto lessons = new EntityDto(null, "org.motechproject.mtraining.domain.Lesson", "Lesson", "mtraining", null,
+                SecurityMode.EVERYONE, null);
+        EntityDto chapters = new EntityDto(null, "org.motechproject.mtraining.domain.Chapter", "Chapter", "mtraining", null,
+                SecurityMode.EVERYONE, null);
+        List<EntityDto> expected = asList(lessons, chapters);
+
+        when(entityService.listEntitiesByBundle("org.motechproject.mtraining")).thenReturn(expected);
+
+        controller.perform(get("/entities/getEntitiesByBundle")
+                .param("symbolicName", "org.motechproject.mtraining"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(new ObjectMapper().writeValueAsString(expected)));
     }
