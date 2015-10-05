@@ -139,7 +139,7 @@ public class InstanceServiceTest {
         mockDataService();
         mockSampleFields();
         mockEntity();
-        QueryParams queryParams = new QueryParams(1, 10, null);
+        QueryParams queryParams = new QueryParams(1, 10);
         when(trashService.getInstancesFromTrash(anyString(), eq(queryParams))).thenReturn(sampleCollection());
 
         List<EntityRecord> records = instanceService.getTrashRecords(ENTITY_ID, queryParams);
@@ -734,7 +734,10 @@ public class InstanceServiceTest {
             assertEquals(strField, LOOKUP_1_EXPECTED_PARAM);
             assertEquals(Integer.valueOf(1), queryParams.getPage());
             assertEquals(Integer.valueOf(5), queryParams.getPageSize());
-            assertEquals("strField descending", queryParams.getOrder().toString());
+
+            assertEquals(1, queryParams.getOrderList().size());
+            assertEquals("strField", queryParams.getOrderList().get(0).getField());
+            assertEquals(Order.Direction.DESC, queryParams.getOrderList().get(0).getDirection());
 
             return new TestSample("strField", 6);
         }
