@@ -79,4 +79,8 @@ public class AllEntities extends MotechDataRepository<Entity> {
         entity.incrementVersion();
         return super.update(entity);
     }
+
+    public List<Entity> retrieveBySymbolicName(String bundleSymbolicName) {
+        return retrieveAll("bundleSymbolicName", bundleSymbolicName);
+    }
 }
