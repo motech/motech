@@ -2,6 +2,7 @@ package org.motechproject.mds.web.service;
 
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
+import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.web.domain.EntityRecord;
@@ -291,6 +292,7 @@ public interface InstanceService {
      * Checks whether the entity with the given ID is non editable.
      *
      * @param entityId the id of the entity
+     * @throws EntityInstancesNonEditableException if the entity is non editable
      */
     void validateNonEditableProperty(Long entityId);
 }
