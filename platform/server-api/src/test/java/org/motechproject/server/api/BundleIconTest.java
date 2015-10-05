@@ -1,7 +1,6 @@
-package org.motechproject.server.osgi;
+package org.motechproject.server.api;
 
 import org.junit.Test;
-import org.motechproject.server.api.BundleIcon;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
