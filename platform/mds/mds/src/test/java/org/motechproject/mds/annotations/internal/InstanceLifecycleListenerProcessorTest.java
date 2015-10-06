@@ -7,10 +7,11 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.annotations.InstanceLifecycleListenerType;
+import org.motechproject.mds.annotations.internal.samples.Sample;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.listener.MotechLifecycleListener;
 import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.impl.JdoListenerRegistryServiceImpl;
+import org.motechproject.mds.service.impl.jdo.JdoListenerRegistryServiceImpl;
 import org.motechproject.mds.testutil.MockBundle;
 import org.osgi.framework.Bundle;
 

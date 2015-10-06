@@ -79,7 +79,7 @@ public abstract class BasePkgTest {
     public abstract String getChrootDirProp();
 
     /**
-     * Reads the script with the given name from the classpath and installs it into the temp directory.
+     * Reads the script with the given name from the classpath and installs it into the jdo directory.
      * @param name the name of this script on the classpath
      * @throws IOException if there was an error while copying the file
      */
@@ -101,7 +101,7 @@ public abstract class BasePkgTest {
      * @param passPorts whether to pass the test ports as arguments to the script
      * @param attrs the parameters passed to the script, this array will be directly passed to the process builder
      * @return the exit code of the script
-     * @throws IOException if there was an error copying the script into the temp directory
+     * @throws IOException if there was an error copying the script into the jdo directory
      * @throws InterruptedException if we were interrupted while waiting for the script to finish
      */
     protected int runScript(String scriptName, boolean passPorts, String... attrs) throws IOException, InterruptedException {

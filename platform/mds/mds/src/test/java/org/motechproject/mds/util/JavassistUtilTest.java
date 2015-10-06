@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.filter.Filter;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.testutil.records.RecordChild;
 
@@ -38,10 +38,10 @@ public class JavassistUtilTest {
 
     @Test
     public void shouldCreateProperGenericSignatures() {
-        assertEquals("Ljava/util/List<Lorg/motechproject/mds/domain/Field;>;",
-                JavassistUtil.genericSignature(List.class, Field.class));
-        assertEquals("Ljava/util/List<Lorg/motechproject/mds/domain/Field;>;",
-                JavassistUtil.genericSignature(List.class.getName(), Field.class.getName()));
+        assertEquals("Ljava/util/List<Ljava/lang/Integer;>;",
+                JavassistUtil.genericSignature(List.class, Integer.class));
+        assertEquals("Ljava/util/List<Ljava/lang/Integer;>;",
+                JavassistUtil.genericSignature(List.class.getName(), Integer.class.getName()));
     }
 
     @Test

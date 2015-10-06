@@ -30,7 +30,7 @@ import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.SecurityMode;
-import org.motechproject.mds.web.FieldTestHelper;
+import org.motechproject.mds.web.helper.FieldTestHelper;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.Records;

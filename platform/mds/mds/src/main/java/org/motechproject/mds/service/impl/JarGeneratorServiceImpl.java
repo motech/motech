@@ -159,8 +159,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         try {
             FileUtils.copyFile(tmpBundleFile, dest);
         } catch (IOException e) {
-            LOGGER.error("Unable to copy the mds-entities bundle to the bundle directory. Installing from temp directory", e);
-            // install from temp directory
+            LOGGER.error("Unable to copy the mds-entities bundle to the bundle directory. Installing from jdo directory", e);
+            // install from jdo directory
             dest = tmpBundleFile;
         }
 
