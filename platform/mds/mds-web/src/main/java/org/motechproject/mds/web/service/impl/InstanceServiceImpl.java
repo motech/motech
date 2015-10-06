@@ -57,6 +57,7 @@ import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
 import org.motechproject.mds.web.service.InstanceService;
+import org.motechproject.mds.web.util.RelationshipDisplayUtil;
 import org.motechproject.mds.web.util.UIRepresentationUtil;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.Bundle;
@@ -77,7 +78,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -113,6 +113,7 @@ public class InstanceServiceImpl implements InstanceService {
     private HistoryService historyService;
     private TrashService trashService;
     private TypeService typeService;
+    private RelationshipDisplayUtil displayUtil;
 
     @Override
     @Transactional
@@ -332,7 +333,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public void revertPreviousVersion(Long entityId, Long instanceId, Long historyId) {
-        validateNonEditableProperty(getEntity(entityId));
+        validateNonEditableProperty(entityId);
         HistoryRecord historyRecord = getHistoryRecord(entityId, instanceId, historyId);
         if (!historyRecord.isRevertable()) {
             EntityDto entity = getEntity(entityId);
@@ -442,7 +443,7 @@ public class InstanceServiceImpl implements InstanceService {
                 throw new ObjectNotFoundException(service.getClassType().getName(), instanceId);
             }
             fieldRecord = new FieldRecord(field);
-            fieldRecord.setValue(parseValueForDisplay(instance, field.getMetadata(Constants.MetadataKeys.RELATED_FIELD)));
+            fieldRecord.setValue(parseValueForDisplay(instance, field.getMetadata(Constants.MetadataKeys.RELATED_CLASS)));
             fieldRecord.setDisplayValue(instance.toString());
             return fieldRecord;
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -496,6 +497,17 @@ public class InstanceServiceImpl implements InstanceService {
     public void verifyEntityAccess(Long entityId) {
         EntityDto entity = getEntity(entityId);
         validateCredentialsForReading(entity);
+    }
+
+    @Override
+    public void validateNonEditableProperty(Long entityId) {
+        validateNonEditableProperty(getEntity(entityId));
+    }
+
+    private void validateNonEditableProperty(EntityDto entity) {
+        if (entity.isNonEditable()) {
+            throw new EntityInstancesNonEditableException();
+        }
     }
 
     @Override
@@ -637,7 +649,7 @@ public class InstanceServiceImpl implements InstanceService {
                 Object value = getProperty(instance, field, service);
                 Object displayValue = getDisplayValueForField(field, value);
 
-                value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_FIELD));
+                value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_CLASS));
 
                 FieldRecord fieldRecord = new FieldRecord(field);
                 fieldRecord.setValue(value);
@@ -663,7 +675,6 @@ public class InstanceServiceImpl implements InstanceService {
                     toStringResult.substring(0, TO_STRING_MAX_LENGTH + 1) + ELLIPSIS : toStringResult;
         }
     }
-
 
     private Object getDisplayValueForField(FieldDto field, Object value) throws InvocationTargetException, IllegalAccessException {
         Object displayValue = null;
@@ -974,11 +985,13 @@ public class InstanceServiceImpl implements InstanceService {
             LOGGER.debug("Invocation target exception thrown when retrieving field {}. This may indicate a non loaded field",
                     fieldName, e);
             // fallback to the service
-            return service.getDetachedField(instance, fieldName);
+            Long id = (Long) PropertyUtil.safeGetProperty(instance, ID_FIELD_NAME);
+            return service.getDetachedField(id == null ? instance : service.findById(id), fieldName);
         }
     }
 
-    private Object parseValueForDisplay(Object value, MetadataDto relatedFieldMetadata) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    private Object parseValueForDisplay(Object value, MetadataDto relatedClassMetadata)
+            throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Object parsedValue = value;
 
         if (parsedValue instanceof DateTime) {
@@ -995,25 +1008,14 @@ public class InstanceServiceImpl implements InstanceService {
             //Using ZonedDateTime for retrieving timezone
             ZonedDateTime zonedDateTime = ZonedDateTime.of((LocalDateTime) parsedValue, ZoneOffset.systemDefault());
             parsedValue = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm xxxx").format(zonedDateTime);
-        } else if (relatedFieldMetadata != null) {
-            parsedValue = removeCircularRelations(parsedValue, relatedFieldMetadata.getValue());
+        } else if (relatedClassMetadata != null) {
+            // We do not want to return the whole chain of relationships for UI display, but just the first level.
+            // Fetching whole relationship tree may cause trouble when serializing
+            parsedValue = displayUtil.breakDeepRelationChainForDisplay(
+                    parsedValue, getEntityFieldsByClassName(relatedClassMetadata.getValue()));
         }
 
         return parsedValue;
-    }
-
-    private Object removeCircularRelations(Object object, String relatedField) {
-        // we must also handle a field that is a collection
-        // because of this we handle regular fields as single objects collection here
-        Collection objectsCollection = (object instanceof Collection) ? (Collection) object : Arrays.asList(object);
-
-        for (Object item : objectsCollection) {
-            if (item != null) {
-                PropertyUtil.safeSetProperty(item, relatedField, null);
-            }
-        }
-
-        return object;
     }
 
     private Class<?> getEntityClass(EntityDto entity) throws ClassNotFoundException {
@@ -1081,14 +1083,7 @@ public class InstanceServiceImpl implements InstanceService {
         return !authorized && !readOnlySecurityMode.isInstanceRestriction() && !securityMode.isInstanceRestriction();
     }
 
-    private void validateNonEditableProperty(EntityDto entity) {
-        if (entity.isNonEditable()) {
-            throw new EntityInstancesNonEditableException();
-        }
-    }
-
     private void validateNonEditableField(FieldRecord fieldRecord, Object instance, Object parsedValue, MetadataDto versionMetadata) throws IllegalAccessException {
-
         Object fieldOldValue = FieldUtils.readField(instance,
                         StringUtils.uncapitalize(fieldRecord.getName()),
                         true);
@@ -1116,6 +1111,11 @@ public class InstanceServiceImpl implements InstanceService {
         return null;
     }
 
+    private List<FieldDto> getEntityFieldsByClassName(String entityClassName) {
+        Long entityId = entityService.getEntityByClassName(entityClassName).getId();
+        return getEntityFields(entityId);
+    }
+
     @Autowired
     public void setEntityService(EntityService entityService) {
         this.entityService = entityService;
@@ -1139,5 +1139,10 @@ public class InstanceServiceImpl implements InstanceService {
     @Autowired
     public void setTypeService(TypeService typeService) {
         this.typeService = typeService;
+    }
+
+    @Autowired
+    public void setDisplayUtil(RelationshipDisplayUtil displayUtil) {
+        this.displayUtil = displayUtil;
     }
 }

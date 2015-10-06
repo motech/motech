@@ -84,6 +84,12 @@ public class EntityController extends MdsController {
         return byModule;
     }
 
+    @RequestMapping(value = "/entities/getEntitiesByBundle", method = RequestMethod.GET)
+    @ResponseBody
+    public List<EntityDto> getEntityByBundle(@RequestParam(value = "symbolicName", required = true) String bundleSymbolicName) {
+        return entityService.listEntitiesByBundle(bundleSymbolicName);
+    }
+
     @RequestMapping(value = "/entities/wip", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_ANY_MDS_ROLE)
     @ResponseBody
