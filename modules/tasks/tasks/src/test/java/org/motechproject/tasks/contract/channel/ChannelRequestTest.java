@@ -1,4 +1,4 @@
-package org.motechproject.tasks.contract.chennel;
+package org.motechproject.tasks.contract.channel;
 
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;

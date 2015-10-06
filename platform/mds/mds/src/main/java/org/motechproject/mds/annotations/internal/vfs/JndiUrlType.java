@@ -34,7 +34,7 @@ public class JndiUrlType implements Vfs.UrlType {
             BundleContext bundleContext = FrameworkUtil.getBundle(JndiUrlType.class).getBundleContext();
             Object jndiService = OSGiServiceUtils.findService(bundleContext, JNDI_SERVICE);
 
-            // copy to the resource to the jdo file
+            // copy to the resource to the temp file
             MethodUtils.invokeMethod(jndiService, WRITE_TO_FILE_METHOD,
                     new Object[] {url.toString(), tmpFile.getAbsolutePath()});
 

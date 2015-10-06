@@ -180,7 +180,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
         File tempJspFile = null;
 
         if (tempDir != null && tempDir.isDirectory()) {
-            tempJspFile = new File(tempDir, "jdo.jsp");
+            tempJspFile = new File(tempDir, "temp.jsp");
             tempJspFile.createNewFile();
 
             try (FileOutputStream output = new FileOutputStream(tempJspFile)) {

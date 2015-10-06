@@ -70,7 +70,7 @@ public class PdfCsvExporterTest {
         CsvTestHelper.mockRecord2Fields(entity);
     }
 
-    // Uncomment the writePdfToFile() calls to write a jdo file with the pdf content
+    // Uncomment the writePdfToFile() calls to write a temp file with the pdf content
     // TODO: find a better way of verifying PDF content
 
     @Test
