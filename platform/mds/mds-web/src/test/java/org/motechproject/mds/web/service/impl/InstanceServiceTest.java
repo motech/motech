@@ -53,6 +53,7 @@ import java.util.Set;
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -625,7 +626,7 @@ public class InstanceServiceTest {
         mockAnotherEntityFields();
         mockTestClassEntity();
         mockTestClassService();
-        mockTestCLassFields();
+        mockTestClassFields();
         when(serviceForAnotherSample.findById(INSTANCE_ID)).thenReturn(sampleForRelationshipTesting());
 
         QueryParams queryParams = new QueryParams(1, 2, new Order(Constants.Util.ID_FIELD_NAME, Order.Direction.ASC));
@@ -721,14 +722,14 @@ public class InstanceServiceTest {
         relatedField.addMetadata(new MetadataDto(Constants.MetadataKeys.RELATED_CLASS,
                 TestClass.class.getName()));
 
-        when(entityService.getEntityFields(ANOTHER_ENTITY_ID)).thenReturn(asList(
+        when(entityService.getEntityFieldsForUI(ANOTHER_ENTITY_ID)).thenReturn(asList(
                 FieldTestHelper.fieldDto(1L, "id", Long.class.getName(), "Id", null),
                 relatedField
         ));
     }
 
-    private void mockTestCLassFields() {
-        when(entityService.getEntityFields(TEST_CLASS_ID)).thenReturn(asList(
+    private void mockTestClassFields() {
+        when(entityService.getEntityFieldsForUI(TEST_CLASS_ID)).thenReturn(singletonList(
                 FieldTestHelper.fieldDto(1L, "id", Long.class.getName(), "Id", null)
         ));
     }
