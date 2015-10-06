@@ -57,6 +57,7 @@ import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
 import org.motechproject.mds.web.service.InstanceService;
+import org.motechproject.mds.web.util.RelationshipDisplayUtil;
 import org.motechproject.mds.web.util.UIRepresentationUtil;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.Bundle;
@@ -112,6 +113,7 @@ public class InstanceServiceImpl implements InstanceService {
     private HistoryService historyService;
     private TrashService trashService;
     private TypeService typeService;
+    private RelationshipDisplayUtil displayUtil;
 
     @Override
     @Transactional
@@ -663,7 +665,6 @@ public class InstanceServiceImpl implements InstanceService {
         }
     }
 
-
     private Object getDisplayValueForField(FieldDto field, Object value) throws InvocationTargetException, IllegalAccessException {
         Object displayValue = null;
         if (field.getType().isRelationship()) {
@@ -999,29 +1000,11 @@ public class InstanceServiceImpl implements InstanceService {
         } else if (relatedClassMetadata != null) {
             // We do not want to return the whole chain of relationships for UI display, but just the first level.
             // Fetching whole relationship tree may cause trouble when serializing
-            parsedValue = breakDeepRelationChainForDisplay(parsedValue, relatedClassMetadata.getValue());
+            parsedValue = displayUtil.breakDeepRelationChainForDisplay(
+                    parsedValue, getEntityFieldsByClassName(relatedClassMetadata.getValue()));
         }
 
         return parsedValue;
-    }
-
-    private Object breakDeepRelationChainForDisplay(Object value, String relatedClassName) {
-        Long entityId = entityService.getEntityByClassName(relatedClassName).getId();
-        List<FieldDto> fields = getEntityFields(entityId);
-        boolean isCollection = value instanceof Collection;
-
-        // Set any relationship fields to null
-        for (FieldDto fieldDto : fields) {
-            if (fieldDto.getMetadata(Constants.MetadataKeys.RELATED_CLASS) != null && isCollection) {
-                for (Object instance : (Collection) value) {
-                    PropertyUtil.safeSetProperty(instance, fieldDto.getBasic().getName(), null);
-                }
-            } else if (fieldDto.getMetadata(Constants.MetadataKeys.RELATED_CLASS) != null && !isCollection) {
-                PropertyUtil.safeSetProperty(value, fieldDto.getBasic().getName(), null);
-            }
-        }
-
-        return value;
     }
 
     private Class<?> getEntityClass(EntityDto entity) throws ClassNotFoundException {
@@ -1124,6 +1107,11 @@ public class InstanceServiceImpl implements InstanceService {
         return null;
     }
 
+    private List<FieldDto> getEntityFieldsByClassName(String entityClassName) {
+        Long entityId = entityService.getEntityByClassName(entityClassName).getId();
+        return getEntityFields(entityId);
+    }
+
     @Autowired
     public void setEntityService(EntityService entityService) {
         this.entityService = entityService;
@@ -1147,5 +1135,10 @@ public class InstanceServiceImpl implements InstanceService {
     @Autowired
     public void setTypeService(TypeService typeService) {
         this.typeService = typeService;
+    }
+
+    @Autowired
+    public void setDisplayUtil(RelationshipDisplayUtil displayUtil) {
+        this.displayUtil = displayUtil;
     }
 }
