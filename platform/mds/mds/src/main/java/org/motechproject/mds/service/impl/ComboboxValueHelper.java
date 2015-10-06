@@ -11,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +42,6 @@ public class ComboboxValueHelper {
      * @param field the combobox field
      * @return all values for the combobox, as a list of strings
      */
-    @Transactional(propagation = Propagation.MANDATORY)
     public List<String> getAllValuesForCombobox(Entity entity, Field field) {
         if (entity == null || field == null || !field.getType().isCombobox()) {
             throw new IllegalArgumentException("An existing entity and a combobox field are required");
