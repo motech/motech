@@ -27,5 +27,4 @@ public interface TriggerHandler {
      * @throws TriggerNotFoundException if the trigger for the given event wasn't found
      */
     void handle(MotechEvent event) throws TriggerNotFoundException;
-
 }
