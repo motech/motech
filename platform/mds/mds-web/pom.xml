@@ -73,6 +73,9 @@
                         <Resource-Path>mds/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Import-Package>
+                            net.sf.cglib.core,
+                            net.sf.cglib.proxy,
+                            net.sf.cglib.reflect,
                             org.aopalliance.aop,
                             org.eclipse.gemini.blueprint.config,
                             org.motechproject.mds.javassist,
