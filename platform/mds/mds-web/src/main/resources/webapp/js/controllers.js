@@ -3854,6 +3854,7 @@
             // get entity, fields, display fields
             $scope.dataRetrievalError = false;
             $scope.retrieveAndSetEntityData('../mds/entities/getEntity/' + module + '/' + entityName);
+            $scope.showFilters = false;
         };
 
         /**
@@ -3920,6 +3921,7 @@
                               });
                           }
                       }
+                      unblockUI();
                    });
 
                    Entities.getDisplayFields({id: $scope.selectedEntity.id}, function(data) {
@@ -3952,7 +3954,6 @@
                         callback();
                     }
                 });
-                unblockUI();
             });
         };
 
@@ -4235,6 +4236,7 @@
                 east__maxSize: 350
             });
             $scope.selectedEntity = undefined;
+            $scope.showFilters = false;
             $scope.removeIdFromUrl();
         };
 

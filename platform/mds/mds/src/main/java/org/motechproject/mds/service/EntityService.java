@@ -51,6 +51,15 @@ public interface EntityService {
     List<EntityDto> listEntities(boolean withSecurityCheck);
 
     /**
+     * Returns all entities of the bundle with the given name. This will not return Entity drafts and Entity audit.
+     * It will also not perform any security checks on the entities.
+     *
+     * @param bundleSymbolicName the symbolic name of the bundle
+     * @return A list of the bundle entities.
+     */
+    List<EntityDto> listEntitiesByBundle(String bundleSymbolicName);
+
+    /**
      * Returns an entity of the given id. If an entity with given id does not exist, it will return null.
      *
      * @param entityId The id of an entity.

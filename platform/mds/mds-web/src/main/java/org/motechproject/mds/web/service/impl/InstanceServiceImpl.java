@@ -11,7 +11,6 @@ import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.date.model.Time;
-import org.motechproject.mds.web.util.UIRepresentationUtil;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -22,6 +21,7 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.entity.EntitySchemaMismatchException;
+import org.motechproject.mds.ex.field.FieldNotFoundException;
 import org.motechproject.mds.ex.field.FieldReadOnlyException;
 import org.motechproject.mds.ex.lookup.LookupExecutionException;
 import org.motechproject.mds.ex.lookup.LookupNotFoundException;
@@ -34,7 +34,6 @@ import org.motechproject.mds.ex.object.SecurityException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.helper.MdsBundleHelper;
-import org.motechproject.mds.util.StateManagerUtil;
 import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.InMemoryQueryFilter;
 import org.motechproject.mds.query.QueryParams;
@@ -50,6 +49,7 @@ import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.MemberUtil;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.mds.util.StateManagerUtil;
 import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.web.domain.ComboboxHolder;
 import org.motechproject.mds.web.domain.EntityRecord;
@@ -57,6 +57,8 @@ import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
 import org.motechproject.mds.web.service.InstanceService;
+import org.motechproject.mds.web.util.RelationshipDisplayUtil;
+import org.motechproject.mds.web.util.UIRepresentationUtil;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -76,7 +78,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -112,6 +113,7 @@ public class InstanceServiceImpl implements InstanceService {
     private HistoryService historyService;
     private TrashService trashService;
     private TypeService typeService;
+    private RelationshipDisplayUtil displayUtil;
 
     @Override
     @Transactional
@@ -331,7 +333,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public void revertPreviousVersion(Long entityId, Long instanceId, Long historyId) {
-        validateNonEditableProperty(getEntity(entityId));
+        validateNonEditableProperty(entityId);
         HistoryRecord historyRecord = getHistoryRecord(entityId, instanceId, historyId);
         if (!historyRecord.isRevertable()) {
             EntityDto entity = getEntity(entityId);
@@ -441,7 +443,7 @@ public class InstanceServiceImpl implements InstanceService {
                 throw new ObjectNotFoundException(service.getClassType().getName(), instanceId);
             }
             fieldRecord = new FieldRecord(field);
-            fieldRecord.setValue(parseValueForDisplay(instance, field.getMetadata(Constants.MetadataKeys.RELATED_FIELD)));
+            fieldRecord.setValue(parseValueForDisplay(instance, field.getMetadata(Constants.MetadataKeys.RELATED_CLASS)));
             fieldRecord.setDisplayValue(instance.toString());
             return fieldRecord;
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -498,31 +500,71 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
-    public <T> Records<T> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName,
-                                              QueryParams queryParams) {
-        EntityDto entity = getEntity(entityId);
-        validateCredentials(entity);
-        String entityName = entity.getName();
+    public void validateNonEditableProperty(Long entityId) {
+        validateNonEditableProperty(getEntity(entityId));
+    }
 
-        MotechDataService service = getServiceForEntity(entity);
-        Object instance = service.findById(instanceId);
-
-        if (instance == null) {
-            throw new ObjectNotFoundException(entityName, instanceId);
+    private void validateNonEditableProperty(EntityDto entity) {
+        if (entity.isNonEditable()) {
+            throw new EntityInstancesNonEditableException();
         }
+    }
 
+    @Override
+    @Transactional
+    public Records<EntityRecord> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName,
+                                              QueryParams queryParams) {
         try {
-            Collection<T> relatedAsColl = TypeHelper.asCollection(PropertyUtil.getProperty(instance, fieldName));
+            // first get the entity
+            EntityDto entity = getEntity(entityId);
+            validateCredentials(entity);
+            List<FieldDto> fields = getEntityFields(entityId);
 
-            List<T> filtered = InMemoryQueryFilter.filter(relatedAsColl, queryParams);
+            String entityName = entity.getName();
+            MotechDataService service = getServiceForEntity(entity);
 
+            // then the related entity
+            FieldDto relatedField = findFieldByName(fields, fieldName);
+            if (relatedField == null) {
+                throw new FieldNotFoundException(entity.getClassName(), fieldName);
+            }
+
+            String relatedClass = relatedField.getMetadataValue(Constants.MetadataKeys.RELATED_CLASS);
+            if (StringUtils.isBlank(relatedClass)) {
+                throw new IllegalArgumentException("Field " + fieldName + " in entity " + entity.getClassName() +
+                    " is not a related field");
+            }
+
+            // these will be used for building the records
+            EntityDto relatedEntity = getEntity(relatedClass);
+            List<FieldDto> relatedFields = getEntityFields(relatedEntity.getId());
+            MotechDataService relatedDataService = getServiceForEntity(relatedEntity);
+
+            // get the instance of the original entity
+            Object instance = service.findById(instanceId);
+
+            if (instance == null) {
+                throw new ObjectNotFoundException(entityName, instanceId);
+            }
+
+            // the value of the related field
+            Collection relatedAsColl = TypeHelper.asCollection(PropertyUtil.getProperty(instance, fieldName));
+
+            // apply pagination ordering (currently in memory)
+            List filtered = InMemoryQueryFilter.filter(relatedAsColl, queryParams);
+
+            // convert the instance to a grid-friendly form
+            List<EntityRecord> entityRecords = instancesToRecords(filtered, relatedEntity, relatedFields,
+                    relatedDataService, EntityType.STANDARD);
+
+            // counts for the grid
             int recordCount = relatedAsColl.size();
             int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
 
-            return new Records<>(queryParams.getPage(), rowCount, recordCount, filtered);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-           throw new ObjectReadException(entityName, e);
+            // package as records
+            return new Records<>(queryParams.getPage(), rowCount, recordCount, entityRecords);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | IllegalArgumentException e) {
+           throw new ObjectReadException(entityId, e);
         }
     }
 
@@ -547,6 +589,14 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entityDto = entityService.getEntity(entityId);
         if (entityDto == null) {
             throw new EntityNotFoundException(entityId);
+        }
+        return entityDto;
+    }
+
+    private EntityDto getEntity(String entityClassName) {
+        EntityDto entityDto = entityService.getEntityByClassName(entityClassName);
+        if (entityDto == null) {
+            throw new EntityNotFoundException(entityClassName);
         }
         return entityDto;
     }
@@ -599,7 +649,7 @@ public class InstanceServiceImpl implements InstanceService {
                 Object value = getProperty(instance, field, service);
                 Object displayValue = getDisplayValueForField(field, value);
 
-                value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_FIELD));
+                value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_CLASS));
 
                 FieldRecord fieldRecord = new FieldRecord(field);
                 fieldRecord.setValue(value);
@@ -625,7 +675,6 @@ public class InstanceServiceImpl implements InstanceService {
                     toStringResult.substring(0, TO_STRING_MAX_LENGTH + 1) + ELLIPSIS : toStringResult;
         }
     }
-
 
     private Object getDisplayValueForField(FieldDto field, Object value) throws InvocationTargetException, IllegalAccessException {
         Object displayValue = null;
@@ -915,6 +964,11 @@ public class InstanceServiceImpl implements InstanceService {
         String fieldName = StringUtils.uncapitalize(field.getBasic().getName());
 
         PropertyDescriptor propertyDescriptor = PropertyUtil.getPropertyDescriptor(instance, fieldName);
+        if (propertyDescriptor == null) {
+            throw new IllegalStateException("No property with name " + fieldName + " in "
+                    + instance.getClass().getName());
+        }
+
         Method readMethod = propertyDescriptor.getReadMethod();
 
         if (readMethod == null) {
@@ -931,11 +985,13 @@ public class InstanceServiceImpl implements InstanceService {
             LOGGER.debug("Invocation target exception thrown when retrieving field {}. This may indicate a non loaded field",
                     fieldName, e);
             // fallback to the service
-            return service.getDetachedField(instance, fieldName);
+            Long id = (Long) PropertyUtil.safeGetProperty(instance, ID_FIELD_NAME);
+            return service.getDetachedField(id == null ? instance : service.findById(id), fieldName);
         }
     }
 
-    private Object parseValueForDisplay(Object value, MetadataDto relatedFieldMetadata) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    private Object parseValueForDisplay(Object value, MetadataDto relatedClassMetadata)
+            throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Object parsedValue = value;
 
         if (parsedValue instanceof DateTime) {
@@ -952,25 +1008,14 @@ public class InstanceServiceImpl implements InstanceService {
             //Using ZonedDateTime for retrieving timezone
             ZonedDateTime zonedDateTime = ZonedDateTime.of((LocalDateTime) parsedValue, ZoneOffset.systemDefault());
             parsedValue = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm xxxx").format(zonedDateTime);
-        } else if (relatedFieldMetadata != null) {
-            parsedValue = removeCircularRelations(parsedValue, relatedFieldMetadata.getValue());
+        } else if (relatedClassMetadata != null) {
+            // We do not want to return the whole chain of relationships for UI display, but just the first level.
+            // Fetching whole relationship tree may cause trouble when serializing
+            parsedValue = displayUtil.breakDeepRelationChainForDisplay(
+                    parsedValue, getEntityFieldsByClassName(relatedClassMetadata.getValue()));
         }
 
         return parsedValue;
-    }
-
-    private Object removeCircularRelations(Object object, String relatedField) {
-        // we must also handle a field that is a collection
-        // because of this we handle regular fields as single objects collection here
-        Collection objectsCollection = (object instanceof Collection) ? (Collection) object : Arrays.asList(object);
-
-        for (Object item : objectsCollection) {
-            if (item != null) {
-                PropertyUtil.safeSetProperty(item, relatedField, null);
-            }
-        }
-
-        return object;
     }
 
     private Class<?> getEntityClass(EntityDto entity) throws ClassNotFoundException {
@@ -1038,14 +1083,7 @@ public class InstanceServiceImpl implements InstanceService {
         return !authorized && !readOnlySecurityMode.isInstanceRestriction() && !securityMode.isInstanceRestriction();
     }
 
-    private void validateNonEditableProperty(EntityDto entity) {
-        if (entity.isNonEditable()) {
-            throw new EntityInstancesNonEditableException();
-        }
-    }
-
     private void validateNonEditableField(FieldRecord fieldRecord, Object instance, Object parsedValue, MetadataDto versionMetadata) throws IllegalAccessException {
-
         Object fieldOldValue = FieldUtils.readField(instance,
                         StringUtils.uncapitalize(fieldRecord.getName()),
                         true);
@@ -1062,6 +1100,20 @@ public class InstanceServiceImpl implements InstanceService {
             }
             throw new FieldReadOnlyException(instance.getClass().getName(), fieldRecord.getName());
         }
+    }
+
+    private FieldDto findFieldByName(List<FieldDto> fields, String fieldName) {
+        for (FieldDto field : fields) {
+            if (StringUtils.equals(fieldName, field.getBasic().getName())) {
+                return field;
+            }
+        }
+        return null;
+    }
+
+    private List<FieldDto> getEntityFieldsByClassName(String entityClassName) {
+        Long entityId = entityService.getEntityByClassName(entityClassName).getId();
+        return getEntityFields(entityId);
     }
 
     @Autowired
@@ -1087,5 +1139,10 @@ public class InstanceServiceImpl implements InstanceService {
     @Autowired
     public void setTypeService(TypeService typeService) {
         this.typeService = typeService;
+    }
+
+    @Autowired
+    public void setDisplayUtil(RelationshipDisplayUtil displayUtil) {
+        this.displayUtil = displayUtil;
     }
 }

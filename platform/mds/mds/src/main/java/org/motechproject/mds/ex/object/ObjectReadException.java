@@ -23,6 +23,6 @@ public class ObjectReadException extends MdsException {
      * @param cause the cause of the error
      */
     public ObjectReadException(Long entityId, Throwable cause) {
-        super("Unable to read objects of entity with Id" + entityId, cause, "mds.error.objectReadError");
+        super("Unable to read objects of entity with Id " + entityId, cause, "mds.error.objectReadError");
     }
 }
