@@ -309,11 +309,10 @@
                 function validateEqual(confirmPassword, userPassword) {
                     if (confirmPassword === userPassword) {
                         ctrl.$setValidity('equal', true);
-                        return confirmPassword;
                     } else {
                         ctrl.$setValidity('equal', false);
-                        return undefined;
                     }
+                    return confirmPassword;
                 }
 
                 scope.$watch(attrs.confirmPassword, function(userViewPassword) {

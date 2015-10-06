@@ -54,7 +54,7 @@
            "priority": 1,
            "rest": false,
            "origin": "SYSTEM_PLATFORM",
-           "version": "0.26",
+           "version": "0.26.3",
            "methodsRequired": [
                "ANY"
            ],

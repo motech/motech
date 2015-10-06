@@ -140,10 +140,10 @@ public class MotechUserServiceImpl implements MotechUserService {
             motechUser.setUserStatus(UserStatus.ACTIVE);
             allMotechUsers.update(motechUser);
             return new MotechUserProfile(motechUser);
+        } else {
+            //Wrong password
+            incrementFailureLoginCount(motechUser);
         }
-
-        //Wrong password
-        incrementFailureLogin(motechUser);
 
         return null;
     }
@@ -312,7 +312,7 @@ public class MotechUserServiceImpl implements MotechUserService {
         validator.validate(password);
     }
 
-    private void incrementFailureLogin(MotechUser user) {
+    private void incrementFailureLoginCount(MotechUser user) {
         if (user != null && settingService.getFailureLoginLimit() > 0) {
             user.incrementFailureLoginCounter();
             if (user.getFailureLoginCounter() > settingService.getFailureLoginLimit()) {

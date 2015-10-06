@@ -8,7 +8,6 @@ import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.domain.UserStatus;
 import org.motechproject.security.model.UserDto;
-import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.repository.MotechRolesDataService;
 import org.motechproject.security.repository.MotechUsersDataService;
 import org.motechproject.security.service.MotechUserService;
@@ -199,7 +198,7 @@ public class MotechUserServiceBundleIT extends BaseIT {
     }
 
     @Test
-    public void shouldNotActivateUserWhenPasswordAreTheSame() {
+    public void shouldNotActivateUserWhenPasswordsAreTheSame() {
         motechUserService.register("expired", "password", "1234", "", asList("IT_ADMIN"), Locale.ENGLISH, UserStatus.MUST_CHANGE_PASSWORD, "");
         MotechUserProfile profile = motechUserService.changeExpiredPassword("expired", "password", "password");
 
