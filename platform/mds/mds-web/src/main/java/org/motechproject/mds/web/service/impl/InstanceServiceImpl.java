@@ -950,15 +950,6 @@ public class InstanceServiceImpl implements InstanceService {
         }
     }
 
-    private FieldDto findFieldByName(List<FieldDto> fields, String fieldName) {
-        for (FieldDto field : fields) {
-            if (StringUtils.equals(fieldName, field.getBasic().getName())) {
-                return field;
-            }
-        }
-        return null;
-    }
-
     private List<FieldDto> getEntityFieldsByClassName(String entityClassName) {
         Long entityId = entityService.getEntityByClassName(entityClassName).getId();
         return getEntityFields(entityId);
