@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -387,9 +388,23 @@ public final class TypeHelper {
      * @param str String String to parse
      * @return Map, parsed from the given String
      */
+    public static <K, V> Map<K, V> parseStringToMap(Class<K> keyClass, Class<V> valueClass, String str) {
+        return parseStringToMap(keyClass.getName(), valueClass.getName(), str);
+    }
+
+    /**
+     * Parses given {@link java.lang.String} to {@link java.util.Map}. Each new entry should be preceeded
+     * by a comma mark (,). The key and value should be split with a colon mark (:). Types of the parsed values
+     * depend on the given keyClass and valueClass.
+     *
+     * @param keyClass the type of key
+     * @param valueClass the type of value
+     * @param str String String to parse
+     * @return Map, parsed from the given String
+     */
     public static Map parseStringToMap(String keyClass, String valueClass, String str) {
         String[] entries = breakStringForCollection(str);
-        Map map = new HashMap<>();
+        Map map = new LinkedHashMap<>();
 
         if (entries != null) {
             for (String entry : entries) {

@@ -15,6 +15,7 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.UIDisplayFieldComparator;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
@@ -148,7 +149,7 @@ public class CsvImporterExporterTest {
 
         long result = csvImporterExporter.exportCsv(ENTITY_ID, writer, csvExportCustomizer);
 
-        verify(csvExportCustomizer, times(2 * INSTANCE_COUNT)).formatRelationship(anyObject());
+        verify(csvExportCustomizer, times(2 * INSTANCE_COUNT)).formatField(any(FieldDto.class), anyObject());
 
         assertEquals(INSTANCE_COUNT, result);
     }

@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
 
 import java.util.ArrayList;
 
@@ -26,6 +27,9 @@ public class DefaultCsvExportCustomizerTest {
     private EntityDto entityDto;
 
     @Mock
+    private FieldDto field;
+
+    @Mock
     private EntityDto anotherEntityDto;
 
     @Before
@@ -40,9 +44,9 @@ public class DefaultCsvExportCustomizerTest {
         entityDtos.add(entityDto);
         entityDtos.add(anotherEntityDto);
 
-        assertEquals("", exportCustomizer.formatRelationship(null));
-        assertEquals("", exportCustomizer.formatRelationship(new ArrayList<>()));
-        assertEquals(String.valueOf(ENTITY_ID), exportCustomizer.formatRelationship(entityDto));
-        assertEquals(EXPECTED_COLLECTION_RESULT, exportCustomizer.formatRelationship(entityDtos));
+        assertEquals("", exportCustomizer.formatField(field, null));
+        assertEquals("", exportCustomizer.formatField(field, new ArrayList<>()));
+        assertEquals(String.valueOf(ENTITY_ID), exportCustomizer.formatField(field, entityDto));
+        assertEquals(EXPECTED_COLLECTION_RESULT, exportCustomizer.formatField(field, entityDtos));
     }
 }

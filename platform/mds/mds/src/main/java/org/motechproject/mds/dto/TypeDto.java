@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.mds.domain.Relationship;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -217,7 +218,7 @@ public class TypeDto {
 
     @JsonIgnore
     public boolean isRelationship() {
-        return startsWith(displayName, "mds.field.relationship");
+        return startsWith(typeClass, Relationship.class.getPackage().getName());
     }
 
     @JsonIgnore
@@ -233,6 +234,12 @@ public class TypeDto {
     @JsonIgnore
     public boolean isMap() {
         return equalsIgnoreCase(displayName, "mds.field.map");
+    }
+
+
+    @JsonIgnore
+    public boolean isForClass(Class<?> clazz) {
+        return clazz.getName().equals(typeClass);
     }
 
     /**
