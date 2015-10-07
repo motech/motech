@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -41,23 +40,27 @@ public class VelocityTemplateParserTest {
 
     @Test
     public void shouldMergeTemplateIntoString() throws Exception {
-        when(settingsFacade.getRawConfig(CORRECT_TEMPLATE)).thenReturn(loadFile(CORRECT_TEMPLATE));
+        try (FileInputStream template = loadFile(CORRECT_TEMPLATE)) {
 
-        String result = parser.mergeTemplateIntoString(CORRECT_TEMPLATE, params);
+            when(settingsFacade.getRawConfig(CORRECT_TEMPLATE)).thenReturn(template);
 
-        verify(settingsFacade, times(1)).getRawConfig(CORRECT_TEMPLATE);
+            String result = parser.mergeTemplateIntoString(CORRECT_TEMPLATE, params);
 
-        verifyResult(result);
+            verify(settingsFacade).getRawConfig(CORRECT_TEMPLATE);
+            verifyResult(result);
+        }
     }
 
     @Test(expected = VelocityTemplateParsingException.class)
     public void shouldThrowExceptionIfTemplateIsMalformed() throws Exception {
-        when(settingsFacade.getRawConfig(INCORRECT_TEMPLATE)).thenReturn(loadFile(INCORRECT_TEMPLATE));
+        try (FileInputStream template = loadFile(INCORRECT_TEMPLATE)) {
 
-        try {
+            when(settingsFacade.getRawConfig(INCORRECT_TEMPLATE)).thenReturn(template);
+
             parser.mergeTemplateIntoString(INCORRECT_TEMPLATE, params);
+
         } finally {
-            verify(settingsFacade, times(1)).getRawConfig(INCORRECT_TEMPLATE);
+            verify(settingsFacade).getRawConfig(INCORRECT_TEMPLATE);
         }
     }
 

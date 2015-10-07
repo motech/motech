@@ -6,10 +6,10 @@ package org.motechproject.security.constants;
 public final class EmailConstants {
 
     //Templates
-    public static final String RESET_MAIL_TEMPLATE = "resetMail.vm";
-    public static final String ONE_TIME_TOKEN_TEMPLATE = "oneTimeTokenMail.vm";
-    public static final String PASSWORD_CHANGE_REMINDER_TEMPLATE = "passwordChangeReminder.vm";
-    public static final String LOGIN_INFORMATION_TEMPLATE = "loginInfo.vm";
+    public static final String RESET_MAIL_TEMPLATE = "reset_mail.vm";
+    public static final String ONE_TIME_TOKEN_TEMPLATE = "one_time_token_mail.vm";
+    public static final String PASSWORD_CHANGE_REMINDER_TEMPLATE = "password_change_reminder.vm";
+    public static final String LOGIN_INFORMATION_TEMPLATE = "login_info.vm";
     
     //E-mail parameters
     public static final String EMAIL_PARAM_FROM_ADDRESS = "fromAddress";
@@ -28,16 +28,21 @@ public final class EmailConstants {
     public static final String TEMPLATE_PARAM_SERVER_URL = "serverUrl";
     public static final String TEMPLATE_PARAM_EXTERNAL_ID = "externalId";
 
-    //E-mail subjects
-    public static final String RECOVERY_SUBJECT = "Motech Password Recovery";
-    public static final String ONE_TIME_TOKEN_SUBJECT = "Motech One Time Token For Admin User";
-    public static final String LOGIN_INFORMATION_SUBJECT = "Motech Login Information";
-    public static final String PASSWORD_CHANGE_REMINDER_SUBJECT = "Password change reminder";
+    //E-mail message subjects
+    public static final String RECOVERY_MESSAGE_SUBJECT = "Motech Password Recovery";
+    public static final String ONE_TIME_TOKEN_MESSAGE_SUBJECT = "Motech One Time Token For Admin User";
+    public static final String LOGIN_INFORMATION_MESSAGE_SUBJECT = "Motech Login Information";
+    public static final String PASSWORD_CHANGE_REMINDER_MESSAGE_SUBJECT = "Password change reminder";
     
     //Paths
     public static final String RESET_PATH = "reset";
     public static final String ONE_TIME_TOKEN_PATH = "onetimetoken";
-    
+
+    //Event subjects
+    public static final String BASE_EMAIL_SUBJECT = "org.motechproject.security.email.passwordRecovery";
+    public static final String PASSWORD_EXPIRATION_CHECK_EVENT = BASE_EMAIL_SUBJECT + ".CheckPasswordExpiration";
+    public static final String PASSWORD_CHANGE_REMINDER_EVENT = BASE_EMAIL_SUBJECT + ".PasswordChangeReminder";
+
     /**
      * Utility class, should not be initiated.
      */

@@ -1,8 +1,9 @@
 package org.motechproject.security.email;
 
-import org.joda.time.DateTime;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
+
+import java.util.Map;
 
 /**
  * Interface that exposes methods for sending emails
@@ -34,8 +35,7 @@ public interface EmailSender {
     /**
      * Sends email that informs the given user about password change.
      *
-     * @param user  the user to be informed
-     * @param expirationDate  the user password expiration date
+     * @param params  the map of parameters and their values used for sending the password reminder e-mail
      */
-    void sendPasswordResetReminder(MotechUser user, DateTime expirationDate);
+    void sendPasswordResetReminder(Map<String, Object> params);
 }

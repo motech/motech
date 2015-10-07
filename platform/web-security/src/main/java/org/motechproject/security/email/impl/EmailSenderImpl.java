@@ -1,10 +1,8 @@
 package org.motechproject.security.email.impl;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.security.config.SettingService;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
 import org.motechproject.security.email.EmailSender;
@@ -26,20 +24,16 @@ import static org.motechproject.security.constants.EmailConstants.EMAIL_PARAM_FR
 import static org.motechproject.security.constants.EmailConstants.EMAIL_PARAM_MESSAGE;
 import static org.motechproject.security.constants.EmailConstants.EMAIL_PARAM_SUBJECT;
 import static org.motechproject.security.constants.EmailConstants.EMAIL_PARAM_TO_ADDRESS;
-import static org.motechproject.security.constants.EmailConstants.LOGIN_INFORMATION_SUBJECT;
+import static org.motechproject.security.constants.EmailConstants.LOGIN_INFORMATION_MESSAGE_SUBJECT;
 import static org.motechproject.security.constants.EmailConstants.LOGIN_INFORMATION_TEMPLATE;
+import static org.motechproject.security.constants.EmailConstants.ONE_TIME_TOKEN_MESSAGE_SUBJECT;
 import static org.motechproject.security.constants.EmailConstants.ONE_TIME_TOKEN_PATH;
-import static org.motechproject.security.constants.EmailConstants.ONE_TIME_TOKEN_SUBJECT;
 import static org.motechproject.security.constants.EmailConstants.ONE_TIME_TOKEN_TEMPLATE;
-import static org.motechproject.security.constants.EmailConstants.PASSWORD_CHANGE_REMINDER_SUBJECT;
+import static org.motechproject.security.constants.EmailConstants.PASSWORD_CHANGE_REMINDER_MESSAGE_SUBJECT;
 import static org.motechproject.security.constants.EmailConstants.PASSWORD_CHANGE_REMINDER_TEMPLATE;
-import static org.motechproject.security.constants.EmailConstants.RECOVERY_SUBJECT;
+import static org.motechproject.security.constants.EmailConstants.RECOVERY_MESSAGE_SUBJECT;
 import static org.motechproject.security.constants.EmailConstants.RESET_MAIL_TEMPLATE;
 import static org.motechproject.security.constants.EmailConstants.RESET_PATH;
-import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_DAYS_TILL_EXPIRE;
-import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_EXPIRATION_DATE;
-import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_EXTERNAL_ID;
-import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_LAST_PASSWORD_CHANGE;
 import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_LINK;
 import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_LOCALE;
 import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_MESSAGES;
@@ -58,15 +52,15 @@ public class EmailSenderImpl implements EmailSender {
     private EventRelay eventRelay;
     private VelocityTemplateParser templateParser;
     private SettingsFacade settingsFacade;
-    private SettingService settingService;
     private ResourceBundleMessageSource messageSource;
 
     @Override
     public void sendRecoveryEmail(final PasswordRecovery recovery) {
         LOGGER.info("Sending recovery e-mail");
         try {
-            String text = templateParser.mergeTemplateIntoString(RESET_MAIL_TEMPLATE, templateParams(recovery));
-            sendEmail(recovery.getEmail(), text, RECOVERY_SUBJECT);
+            String text = templateParser.mergeTemplateIntoString(RESET_MAIL_TEMPLATE,
+                    passRecoveryTemplateParams(recovery));
+            sendEmail(recovery.getEmail(), text, RECOVERY_MESSAGE_SUBJECT);
         } catch (VelocityTemplateParsingException e) {
             LOGGER.error("Couldn't send recovery e-mail", e);
         }
@@ -76,8 +70,9 @@ public class EmailSenderImpl implements EmailSender {
     public void sendOneTimeToken(final PasswordRecovery recovery) {
         LOGGER.info("Sending one time token");
         try {
-            String text = templateParser.mergeTemplateIntoString(ONE_TIME_TOKEN_TEMPLATE, templateParams(recovery));
-            sendEmail(recovery.getEmail(), text, ONE_TIME_TOKEN_SUBJECT);
+            String text = templateParser.mergeTemplateIntoString(ONE_TIME_TOKEN_TEMPLATE,
+                    passRecoveryTemplateParams(recovery));
+            sendEmail(recovery.getEmail(), text, ONE_TIME_TOKEN_MESSAGE_SUBJECT);
         } catch (VelocityTemplateParsingException e) {
             LOGGER.error("Couldn't send one time token", e);
         }
@@ -88,30 +83,34 @@ public class EmailSenderImpl implements EmailSender {
         LOGGER.info("Sending login information to user: {}", user.getUserName());
         try {
             String text = templateParser.mergeTemplateIntoString(LOGIN_INFORMATION_TEMPLATE,
-                    templateParams(user.getUserName(), user.getLocale(), token));
-            sendEmail(user.getEmail(), text, LOGIN_INFORMATION_SUBJECT);
+                    passLoginInfoTemplateParams(user.getUserName(), user.getLocale(), token));
+            sendEmail(user.getEmail(), text, LOGIN_INFORMATION_MESSAGE_SUBJECT);
         } catch (VelocityTemplateParsingException e) {
             LOGGER.error("Couldn't send login information to user: {}", user.getUserName(), e);
         }
     }
 
     @Override
-    public void sendPasswordResetReminder(MotechUser user, DateTime expirationDate) {
-        LOGGER.info("Sending password change reminder to user: {}", user.getUserName());
+    public void sendPasswordResetReminder(Map<String, Object> params) {
+
+        String username = (String) params.get(TEMPLATE_PARAM_USERNAME);
+
+        LOGGER.info("Sending password change reminder to user: {}", username);
+
         try {
             String text = templateParser.mergeTemplateIntoString(PASSWORD_CHANGE_REMINDER_TEMPLATE,
-                    templateParams(user, expirationDate));
-            sendEmail(user.getEmail(), text, PASSWORD_CHANGE_REMINDER_SUBJECT);
+                    passExpirationTemplateParams(params));
+            sendEmail((String) params.get(EMAIL_PARAM_TO_ADDRESS), text, PASSWORD_CHANGE_REMINDER_MESSAGE_SUBJECT);
         } catch (VelocityTemplateParsingException e) {
-            LOGGER.error("Couldn't send password change reminder to user: {}", user.getUserName(), e);
+            LOGGER.error("Couldn't send password change reminder to user: {}", username, e);
         }
     }
 
-    private Map<String, Object> templateParams(PasswordRecovery passwordRecovery) {
-        return templateParams(passwordRecovery.getUsername(), passwordRecovery.getLocale(), passwordRecovery.getToken());
+    private Map<String, Object> passRecoveryTemplateParams(PasswordRecovery passwordRecovery) {
+        return passLoginInfoTemplateParams(passwordRecovery.getUsername(), passwordRecovery.getLocale(), passwordRecovery.getToken());
     }
 
-    private Map<String, Object> templateParams(String username, Locale locale, String token) {
+    private Map<String, Object> passLoginInfoTemplateParams(String username, Locale locale, String token) {
         Map<String, Object> params = new HashMap<>();
 
         String path = "/module";
@@ -139,21 +138,17 @@ public class EmailSenderImpl implements EmailSender {
         return params;
     }
 
-    private Map<String, Object> templateParams(MotechUser user, DateTime expirationDate) {
+    private Map<String, Object> passExpirationTemplateParams(Map<String, Object> eventParams) {
         Map<String, Object> params = new HashMap<>();
 
         String serverUrl = settingsFacade.getPlatformSettings().getServerUrl();
         if (StringUtils.isEmpty(serverUrl)) {
             throw new ServerUrlIsEmptyException("The server url property has to be set");
         }
-        params.put(TEMPLATE_PARAM_USERNAME, user.getUserName());
+
+        params.putAll(eventParams);
         params.put(TEMPLATE_PARAM_MESSAGES, messageSource);
-        params.put(TEMPLATE_PARAM_LOCALE, user.getLocale());
-        params.put(TEMPLATE_PARAM_EXPIRATION_DATE, expirationDate);
-        params.put(TEMPLATE_PARAM_LAST_PASSWORD_CHANGE, user.getLastPasswordChange());
-        params.put(TEMPLATE_PARAM_DAYS_TILL_EXPIRE, settingService.getNumberOfDaysForReminder());
         params.put(TEMPLATE_PARAM_SERVER_URL, serverUrl);
-        params.put(TEMPLATE_PARAM_EXTERNAL_ID, user.getExternalId());
 
         return params;
     }
@@ -204,11 +199,6 @@ public class EmailSenderImpl implements EmailSender {
     @Autowired
     public void setMessageSource(ResourceBundleMessageSource messageSource) {
         this.messageSource = messageSource;
-    }
-
-    @Autowired
-    public void setSettingService(SettingService settingService) {
-        this.settingService = settingService;
     }
 
     @Autowired

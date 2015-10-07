@@ -12,16 +12,18 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 /**
- * Waits for the scheduler module to start and then schedules password expiration checker job.
+ * Waits for the scheduler module to start and then schedules password expiration checker job. This approach for using
+ * is required because Scheduler module isn't part of the MOTECH platform and therefore it is optional and might not be
+ * used.
  */
 @Component
-public class PasswordExpirationChecker implements ServiceTrackerCustomizer {
+public class PasswordExpirationScheduler implements ServiceTrackerCustomizer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PasswordExpirationChecker.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PasswordExpirationScheduler.class);
 
     private static final String SCHEDULER_SERVICE_CLASS = "org.motechproject.scheduler.service.MotechSchedulerService";
 
-    private PasswordExpirationCheckerInternal internal;
+    private PasswordExpirationSchedulerInternal internal;
 
     @Autowired
     private BundleContext bundleContext;
@@ -37,7 +39,7 @@ public class PasswordExpirationChecker implements ServiceTrackerCustomizer {
         Object service = bundleContext.getService(reference);
 
         LOGGER.info("Scheduler service bound");
-        internal = new PasswordExpirationCheckerInternal(service);
+        internal = new PasswordExpirationSchedulerInternal(service);
         internal.schedulePasswordReminderJob();
 
         return service;

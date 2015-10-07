@@ -35,10 +35,10 @@
         </property>
         <property name="rawConfigFiles">
             <list>
-                <value>classpath:mail/resetMail.vm</value>
-                <value>classpath:mail/passwordChangeReminder.vm</value>
-                <value>classpath:mail/loginInfo.vm</value>
-                <value>classpath:mail/oneTimeTokenMail.vm</value>
+                <value>classpath:mail/reset_mail.vm</value>
+                <value>classpath:mail/password_change_reminder.vm</value>
+                <value>classpath:mail/login_info.vm</value>
+                <value>classpath:mail/one_time_token_mail.vm</value>
             </list>
         </property>
     </bean>

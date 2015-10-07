@@ -25,12 +25,20 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.security.constants.EventSubjects.PASSWORD_EXPIRATION_CHECK;
-import static org.motechproject.security.constants.EventSubjects.PASSWORD_CHANGE_REMINDER;
+import static org.motechproject.security.constants.EmailConstants.EMAIL_PARAM_TO_ADDRESS;
+import static org.motechproject.security.constants.EmailConstants.PASSWORD_CHANGE_REMINDER_EVENT;
+import static org.motechproject.security.constants.EmailConstants.PASSWORD_EXPIRATION_CHECK_EVENT;
+import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_DAYS_TILL_EXPIRE;
+import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_EXPIRATION_DATE;
+import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_EXTERNAL_ID;
+import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_LAST_PASSWORD_CHANGE;
+import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_LOCALE;
+import static org.motechproject.security.constants.EmailConstants.TEMPLATE_PARAM_USERNAME;
 
 public class PasswordExpirationCheckEventHandlerTest {
 
     private static final int DAYS_TO_CHANGE_PASSWORD = 20;
+    private static final int DAYS_FOR_REMINDER = 5;
 
     @Mock
     private SettingService settingService;
@@ -67,11 +75,11 @@ public class PasswordExpirationCheckEventHandlerTest {
 
         List<MotechEvent> expectedEvent = prepareExpectedEvent(users);
 
-        verify(allUsers, times(1)).retrieveAll();
+        verify(allUsers).retrieveAll();
         verify(eventRelay, times(2)).sendEventMessage(eventCaptor.capture());
-        verify(settingService, times(1)).isPasswordResetReminderEnabled();
-        verify(settingService, times(1)).getNumberOfDaysForReminder();
-        verify(settingService, times(1)).getNumberOfDaysToChangePassword();
+        verify(settingService).isPasswordResetReminderEnabled();
+        verify(settingService).getNumberOfDaysForReminder();
+        verify(settingService).getNumberOfDaysToChangePassword();
 
         assertEquals(expectedEvent, eventCaptor.getAllValues());
     }
@@ -85,11 +93,11 @@ public class PasswordExpirationCheckEventHandlerTest {
 
         eventHandler.handleEvent(event);
 
-        verify(allUsers, times(1)).retrieveAll();
+        verify(allUsers).retrieveAll();
         verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
-        verify(settingService, times(1)).isPasswordResetReminderEnabled();
-        verify(settingService, times(1)).getNumberOfDaysForReminder();
-        verify(settingService, times(1)).getNumberOfDaysToChangePassword();
+        verify(settingService).isPasswordResetReminderEnabled();
+        verify(settingService).getNumberOfDaysForReminder();
+        verify(settingService).getNumberOfDaysToChangePassword();
     }
 
     @Test
@@ -103,7 +111,7 @@ public class PasswordExpirationCheckEventHandlerTest {
 
         verify(allUsers, never()).retrieveAll();
         verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
-        verify(settingService, times(1)).isPasswordResetReminderEnabled();
+        verify(settingService).isPasswordResetReminderEnabled();
         verify(settingService, never()).getNumberOfDaysForReminder();
         verify(settingService, never()).getNumberOfDaysToChangePassword();
     }
@@ -112,16 +120,24 @@ public class PasswordExpirationCheckEventHandlerTest {
         List<MotechEvent> events = new ArrayList<>();
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("username", users.get(1).getUserName());
-        parameters.put("email", users.get(1).getEmail());
-        parameters.put("expirationDate", calculateExpirationDate(users.get(1)));
-        events.add(new MotechEvent(PASSWORD_CHANGE_REMINDER, parameters));
+        parameters.put(TEMPLATE_PARAM_USERNAME, users.get(1).getUserName());
+        parameters.put(EMAIL_PARAM_TO_ADDRESS, users.get(1).getEmail());
+        parameters.put(TEMPLATE_PARAM_EXPIRATION_DATE, calculateExpirationDate(users.get(1)));
+        parameters.put(TEMPLATE_PARAM_LOCALE, users.get(1).getLocale());
+        parameters.put(TEMPLATE_PARAM_LAST_PASSWORD_CHANGE, users.get(1).getLastPasswordChange());
+        parameters.put(TEMPLATE_PARAM_EXTERNAL_ID, users.get(1).getExternalId());
+        parameters.put(TEMPLATE_PARAM_DAYS_TILL_EXPIRE, DAYS_FOR_REMINDER);
+        events.add(new MotechEvent(PASSWORD_CHANGE_REMINDER_EVENT, parameters));
 
         parameters = new HashMap<>();
-        parameters.put("username", users.get(2).getUserName());
-        parameters.put("email", users.get(2).getEmail());
-        parameters.put("expirationDate", calculateExpirationDate(users.get(2)));
-        events.add(new MotechEvent(PASSWORD_CHANGE_REMINDER, parameters));
+        parameters.put(TEMPLATE_PARAM_USERNAME, users.get(2).getUserName());
+        parameters.put(EMAIL_PARAM_TO_ADDRESS, users.get(2).getEmail());
+        parameters.put(TEMPLATE_PARAM_EXPIRATION_DATE, calculateExpirationDate(users.get(2)));
+        parameters.put(TEMPLATE_PARAM_LOCALE, users.get(2).getLocale());
+        parameters.put(TEMPLATE_PARAM_LAST_PASSWORD_CHANGE, users.get(2).getLastPasswordChange());
+        parameters.put(TEMPLATE_PARAM_EXTERNAL_ID, users.get(2).getExternalId());
+        parameters.put(TEMPLATE_PARAM_DAYS_TILL_EXPIRE, DAYS_FOR_REMINDER);
+        events.add(new MotechEvent(PASSWORD_CHANGE_REMINDER_EVENT, parameters));
 
         return events;
     }
@@ -131,7 +147,7 @@ public class PasswordExpirationCheckEventHandlerTest {
     }
 
     private void prepareEvent() {
-        event = new MotechEvent(PASSWORD_EXPIRATION_CHECK);
+        event = new MotechEvent(PASSWORD_EXPIRATION_CHECK_EVENT);
     }
 
     private void prepareEventHandler() {
@@ -204,7 +220,7 @@ public class PasswordExpirationCheckEventHandlerTest {
     }
 
     private void prepareSettingService() {
-        when(settingService.getNumberOfDaysForReminder()).thenReturn(5);
-        when(settingService.getNumberOfDaysToChangePassword()).thenReturn(20);
+        when(settingService.getNumberOfDaysForReminder()).thenReturn(DAYS_FOR_REMINDER);
+        when(settingService.getNumberOfDaysToChangePassword()).thenReturn(DAYS_TO_CHANGE_PASSWORD);
     }
 }
