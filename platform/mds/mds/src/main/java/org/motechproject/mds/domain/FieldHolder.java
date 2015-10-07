@@ -102,7 +102,7 @@ public class FieldHolder {
      * @return value of the setting, in form of an array of Strings
      */
     public String[] getSettingAsArray(String name) {
-        String[] values = TypeHelper.breakString(getSetting(name, ""));
+        String[] values = TypeHelper.breakStringForCollection(getSetting(name, ""));
         return Arrays.copyOf(values, values.length);
     }
 
