@@ -26,7 +26,8 @@ public class ComboboxValueRepository extends AbstractRepository {
 
         // we need to execute sql, since jdoql won't allow multi-value fields in the result
         // tableName is safe since it comes from the metadata, no need for params
-        Query query = pm.newQuery(Constants.Util.SQL_QUERY, "SELECT DISTINCT element FROM " + cbTableName);
+        Query query = pm.newQuery(Constants.Util.SQL_QUERY,
+                String.format("SELECT DISTINCT element FROM %s WHERE element IS NOT NULL AND element <> ''", cbTableName));
 
         return (List<String>) query.execute();
     }
@@ -41,8 +42,8 @@ public class ComboboxValueRepository extends AbstractRepository {
         PersistenceManager pm = getPersistenceManager();
 
         // MDS must ensure that these are valid
-        Query query = pm.newQuery(String.format("SELECT DISTINCT %s FROM %s", cbField.getName(),
-                entity.getClassName()));
+        Query query = pm.newQuery(String.format("SELECT DISTINCT %s FROM %s WHERE %s != null && %s.length() > 0",
+                cbField.getName(), entity.getClassName(), cbField.getName(), cbField.getName()));
 
         return (List<String>) query.execute();
     }

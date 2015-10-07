@@ -102,8 +102,11 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
         service.create(objectInstance("four", asList("four", "four", "four")));
         service.create(objectInstance("five", singletonList("five")));
         service.create(objectInstance("one", asList("one", "two", "four", "three")));
+        service.create(objectInstance(null, null));
+        service.create(objectInstance(null, singletonList(null)));
+        service.create(objectInstance("", singletonList("")));
 
-        assertEquals("There were issues creating test data", 5, service.count());
+        assertEquals("There were issues creating test data", 8, service.count());
     }
 
     private Object objectInstance(String singleValue, List<String> multiValues) throws Exception {
@@ -111,7 +114,9 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
 
         Object obj = clazz.newInstance();
         PropertyUtil.setProperty(obj, CB_FIELD_SINGLE_NAME, singleValue);
-        PropertyUtil.setProperty(obj, CB_FIELD_MULTI_NAME, new ArrayList<>(multiValues));
+        if (multiValues != null) {
+            PropertyUtil.setProperty(obj, CB_FIELD_MULTI_NAME, new ArrayList<>(multiValues));
+        }
 
         return obj;
     }
