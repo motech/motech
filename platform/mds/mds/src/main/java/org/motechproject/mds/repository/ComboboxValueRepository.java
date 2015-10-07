@@ -24,10 +24,14 @@ public class ComboboxValueRepository extends AbstractRepository {
     public List<String> getComboboxValuesForCollection(String cbTableName) {
         PersistenceManager pm = getPersistenceManager();
 
+        final String tableNameForDb = usingPsql() ? doubleQuote(cbTableName) : cbTableName;
+        final String elementField = usingPsql() ? "\"ELEMENT\"" : "element";
+
         // we need to execute sql, since jdoql won't allow multi-value fields in the result
         // tableName is safe since it comes from the metadata, no need for params
         Query query = pm.newQuery(Constants.Util.SQL_QUERY,
-                String.format("SELECT DISTINCT element FROM %s WHERE element IS NOT NULL AND element <> ''", cbTableName));
+                String.format("SELECT DISTINCT %s FROM %s WHERE %s IS NOT NULL AND %s <> ''",
+                        elementField, tableNameForDb, elementField, elementField));
 
         return (List<String>) query.execute();
     }

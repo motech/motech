@@ -1,5 +1,6 @@
 package org.motechproject.mds.repository;
 
+import org.motechproject.commons.sql.util.Drivers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -27,5 +28,13 @@ public abstract class AbstractRepository {
         return null != persistenceManagerFactory
                 ? persistenceManagerFactory.getPersistenceManager()
                 : null;
+    }
+
+    public boolean usingPsql() {
+        return Drivers.POSTGRESQL_DRIVER.equals(persistenceManagerFactory.getConnectionDriverName());
+    }
+
+    protected String doubleQuote(String str) {
+        return str == null ? null : '"' + str + '"';
     }
 }
