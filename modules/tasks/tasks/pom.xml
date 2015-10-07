@@ -38,6 +38,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-scheduler</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
         </dependency>
@@ -155,6 +160,7 @@
                             org.springframework.context.config,
                             org.springframework.web.multipart.commons,
                             org.springframework.web.servlet.config,
+                            org.springframework.transaction,
                             *
                         </Import-Package>
                         <Bundle-DocURL>

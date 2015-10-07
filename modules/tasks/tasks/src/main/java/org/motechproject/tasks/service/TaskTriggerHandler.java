@@ -11,12 +11,14 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.TaskHandlerException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
+import org.motechproject.tasks.util.SchedulerTaskTriggerUtil;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +27,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
+import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +55,7 @@ import static org.motechproject.tasks.service.HandlerPredicates.withServiceName;
 public class TaskTriggerHandler implements TriggerHandler {
 
     private static final String TASK_POSSIBLE_ERRORS_KEY = "task.possible.errors";
+    private static final String SCHEDULER_TASK_TRIGGER_WILDCARD = "org.motechproject.tasks.scheduler.";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskTriggerHandler.class);
 
@@ -60,6 +65,8 @@ public class TaskTriggerHandler implements TriggerHandler {
     private EventRelay eventRelay;
     private SettingsFacade settings;
     private Map<String, DataProvider> dataProviders;
+    private MotechSchedulerService schedulerService;
+    private SchedulerTaskTriggerUtil schedulerTaskTriggerUtil;
 
     private TaskActionExecutor executor;
 
@@ -67,14 +74,21 @@ public class TaskTriggerHandler implements TriggerHandler {
     public TaskTriggerHandler(TaskService taskService, TaskActivityService activityService,
                               EventListenerRegistryService registryService, EventRelay eventRelay,
                               TaskActionExecutor taskActionExecutor,
-                              @Qualifier("tasksSettings") SettingsFacade settings) {
+                              @Qualifier("tasksSettings") SettingsFacade settings,
+                              MotechSchedulerService schedulerService,
+                              SchedulerTaskTriggerUtil schedulerTaskTriggerUtil) {
         this.taskService = taskService;
         this.activityService = activityService;
         this.registryService = registryService;
         this.eventRelay = eventRelay;
         this.settings = settings;
         this.executor = taskActionExecutor;
+        this.schedulerService = schedulerService;
+        this.schedulerTaskTriggerUtil = schedulerTaskTriggerUtil;
+    }
 
+    @PostConstruct
+    public void registerHandlerForSavedTasks(){
         for (Task task : taskService.getAllTasks()) {
             registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
         }
@@ -87,7 +101,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         String serviceName = "taskTriggerHandler";
         Method method = ReflectionUtils.findMethod(this.getClass(), "handle", MotechEvent.class);
         Object obj = CollectionUtils.find(
-            registryService.getListeners(subject), withServiceName(serviceName)
+                registryService.getListeners(subject), withServiceName(serviceName)
         );
 
         try {
@@ -103,6 +117,10 @@ public class TaskTriggerHandler implements TriggerHandler {
                     exp
             );
         }
+
+        if (subject.startsWith(SCHEDULER_TASK_TRIGGER_WILDCARD)) {
+            schedulerTaskTriggerUtil.scheduleTriggerJob(subject);
+        }
     }
 
     @Override
@@ -117,11 +135,17 @@ public class TaskTriggerHandler implements TriggerHandler {
             parser = taskService.findCustomParser((String) eventParams.get(TasksEventParser.CUSTOM_PARSER_EVENT_KEY));
         }
 
-        // Use custom event parser, if it exists, to modify event
-        TriggerEvent trigger = taskService.findTrigger(parser == null ? event.getSubject() : parser.parseEventSubject(event.getSubject(), event.getParameters()));
+        List<Task> tasks;
+        if (event.getSubject().startsWith(SCHEDULER_TASK_TRIGGER_WILDCARD)){
+            tasks = Arrays.asList(schedulerTaskTriggerUtil.getSingleTaskBySubject(event.getSubject()));
+        } else {
+            // Use custom event parser, if it exists, to modify event
+            TriggerEvent trigger = taskService.findTrigger(parser == null ? event.getSubject() : parser.parseEventSubject(event.getSubject(), event.getParameters()));
+            tasks = taskService.findActiveTasksForTrigger(trigger);
+        }
+
         Map<String, Object> parameters = parser == null ? event.getParameters() : parser.parseEventParameters(event.getSubject(), event.getParameters());
 
-        List<Task> tasks = taskService.findActiveTasksForTrigger(trigger);
 
         for (Task task : tasks) {
             TaskContext taskContext = new TaskContext(task, parameters, activityService);
@@ -162,7 +186,7 @@ public class TaskTriggerHandler implements TriggerHandler {
             publishTaskDisabledMessage(task.getName());
         }
 
-        taskService.save(task);
+        taskService.save(task, !task.getTrigger().getEffectiveListenerSubject().startsWith(SCHEDULER_TASK_TRIGGER_WILDCARD));
 
         Map<String, Object> errorParam = new HashMap<>();
         errorParam.put(TASK_FAIL_MESSAGE, e.getMessage());
@@ -186,11 +210,12 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         activityService.addSuccess(task);
         task.resetFailuresInRow();
-        taskService.save(task);
+
+        taskService.save(task, !task.getTrigger().getEffectiveListenerSubject().startsWith(SCHEDULER_TASK_TRIGGER_WILDCARD));
 
         eventRelay.sendEventMessage(new MotechEvent(
-            createHandlerSuccessSubject(task.getName()),
-            params
+                createHandlerSuccessSubject(task.getName()),
+                params
         ));
     }
 
@@ -242,5 +267,4 @@ public class TaskTriggerHandler implements TriggerHandler {
     public void setBundleContext(BundleContext bundleContext) {
         this.executor.setBundleContext(bundleContext);
     }
-
 }
