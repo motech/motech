@@ -13,8 +13,6 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -61,14 +59,8 @@ public class NotificationRulesDataServiceBundleIT extends BasePaxIT {
         List<Level> actualLevels = extract(notificationRules, on(NotificationRule.class).getLevel());
         assertThat(actualLevels, hasItems(Level.CRITICAL, Level.INFO));
 
-        dataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                NotificationRule notificationRuletoUpdate = dataService.retrieveAll().get(0);
-                notificationRuletoUpdate.setRecipient("recip3");
-                dataService.update(notificationRuletoUpdate);
-            }
-        });
+        notificationRule.setRecipient("recip3");
+        dataService.update(notificationRule);
 
         notificationRules = dataService.retrieveAll();
 

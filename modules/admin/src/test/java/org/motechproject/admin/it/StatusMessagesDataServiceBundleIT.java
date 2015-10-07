@@ -15,8 +15,6 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -60,15 +58,8 @@ public class StatusMessagesDataServiceBundleIT extends BasePaxIT {
         List<Level> actualLevels = extract(result, on(StatusMessage.class).getLevel());
         assertThat(actualLevels, hasItems(Level.ERROR, Level.INFO));
 
-        dataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                StatusMessage statusMessageToUpdate = dataService.retrieveAll().get(0);
-                statusMessageToUpdate.setText("test_changed");
-                dataService.update(statusMessageToUpdate);
-            }
-        });
-
+        statusMessage1.setText("test_changed");
+        dataService.update(statusMessage1);
         dataService.delete(statusMessage2);
 
         result = dataService.retrieveAll();

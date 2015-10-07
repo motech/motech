@@ -48,9 +48,8 @@ public class ValueGetter {
                            ObjectReferenceRepository objectReferenceRepository) {
         Type fieldType = field.getType();
 
-        Long id = (Long) PropertyUtil.safeGetProperty(instance, Constants.Util.ID_FIELD_NAME);
         Object value = fieldType.isBlob()
-                ? findService(instance.getClass()).getDetachedField(id, field.getName())
+                ? findService(instance.getClass()).getDetachedField(instance, field.getName())
                 : PropertyUtil.safeGetProperty(instance, field.getName());
 
         if (null == value) {

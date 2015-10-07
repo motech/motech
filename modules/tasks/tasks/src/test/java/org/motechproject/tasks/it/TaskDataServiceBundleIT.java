@@ -17,8 +17,6 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -50,23 +48,22 @@ public class TaskDataServiceBundleIT extends BasePaxIT {
     public void shouldAddAndUpdateTask() {
         TaskActionInformation action = new TaskActionInformation("send", "test", "test", "0.15", "SEND", new HashMap<String, String>());
         TaskTriggerInformation trigger = new TaskTriggerInformation("receive", "test", "test", "0.14", "RECEIVE", null);
+        Task expected = new Task("name", trigger, asList(action));
 
-        final Task expected = new Task("name", trigger, asList(action));
         tasksDataService.create(expected);
 
-        Task actual = tasksDataService.doInTransaction(new TransactionCallback<Task>() {
-            @Override
-            public Task doInTransaction(TransactionStatus transactionStatus) {
-                List<Task> tasks = tasksDataService.retrieveAll();
-                assertEquals(asList(expected), tasks);
-
-                Task actual = tasks.get(0);
-                actual.setName("newName");
-                return tasksDataService.update(actual);
-            }
-        });
-
         List<Task> tasks = tasksDataService.retrieveAll();
+
+        assertEquals(asList(expected), tasks);
+
+        Task actual = tasks.get(0);
+
+        actual.setName("newName");
+
+        tasksDataService.update(actual);
+
+        tasks = tasksDataService.retrieveAll();
+
         assertEquals(asList(actual), tasks);
     }
 

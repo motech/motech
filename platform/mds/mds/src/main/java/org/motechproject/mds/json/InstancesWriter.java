@@ -84,7 +84,7 @@ public class InstancesWriter {
     }
 
     private void writeBlobProperty(Field field, Object instance) throws IOException {
-        Object property = dataService.getDetachedField(getInstanceRefId(instance), field.getName());
+        Object property = dataService.getDetachedField(instance, field.getName());
         if (property instanceof byte[]) {
             byte[] blob = (byte[]) property;
             String base64 = new String(Base64.encode(blob));

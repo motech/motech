@@ -143,7 +143,7 @@ public interface MotechDataService<T> {
      * @param object the object to be detached
      * @return the detached copy of the given object
      */
-    T getDetachedObject(T object);
+    T detachedCopy(T object);
 
     /**
      * Makes instance persistent and retrieves field values from that persisted instance.

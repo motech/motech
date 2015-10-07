@@ -15,8 +15,6 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -75,34 +73,30 @@ public class EmailRecordServiceBundleIT extends BasePaxIT {
 
     @Test
     public void shouldAddAndUpdateEmail() {
-        final DeliveryStatus deliveryStatus = DeliveryStatus.SENT;
-        final String fromAddress = "f@adr";
-        final String toAddress = "t@adr";
-        final String subject = "test-subject";
-        final String message = "test-message";
-        final DateTime messageTime = DateUtil.now().toDateTime(DateTimeZone.UTC);
+        DeliveryStatus deliveryStatus = DeliveryStatus.SENT;
+        String fromAddress = "f@adr";
+        String toAddress = "t@adr";
+        String subject = "test-subject";
+        String message = "test-message";
+        DateTime messageTime = DateUtil.now().toDateTime(DateTimeZone.UTC);
 
-        emailRecordService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                EmailRecord expected = new EmailRecord(fromAddress, toAddress, subject, message, messageTime, deliveryStatus);
-                emailRecordService.create(expected);
+        EmailRecord expected = new EmailRecord(fromAddress, toAddress, subject, message, messageTime, deliveryStatus);
+        emailRecordService.create(expected);
 
-                List<EmailRecord> emailRecords = emailRecordService.retrieveAll();
+        List<EmailRecord> emailRecords = emailRecordService.retrieveAll();
 
-                assertEquals(asList(expected), emailRecords);
+        assertEquals(asList(expected), emailRecords);
 
-                EmailRecord actual = emailRecords.get(0);
+        EmailRecord actual = emailRecords.get(0);
 
-                actual.setMessage("test-newmessage");
+        actual.setMessage("test-newmessage");
 
-                emailRecordService.update(actual);
+        emailRecordService.update(actual);
 
-                emailRecords = emailRecordService.retrieveAll();
+        emailRecords = emailRecordService.retrieveAll();
 
-                assertEquals(asList(actual), emailRecords);
-            }
-        });
+        assertEquals(asList(actual), emailRecords);
+
     }
 
     @After

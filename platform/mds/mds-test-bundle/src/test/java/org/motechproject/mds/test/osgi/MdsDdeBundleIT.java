@@ -286,9 +286,9 @@ public class MdsDdeBundleIT extends BasePaxIT {
         goldfishDataService.deleteAll();
         patientDataService.deleteAll();
         clinicDataService.deleteAll();
-        languageDataService.deleteAll();
         stateDataService.deleteAll();
         districtDataService.deleteAll();
+        languageDataService.deleteAll();
         cityDataService.deleteAll();
         countryDataService.deleteAll();
         testSingleReturnLookupService.deleteAll();
@@ -303,49 +303,25 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     private void removeFromListManyToMany() {
         // we must delete relation to avoid sql integrity constraint violation
-        movieDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                for (Movie m : movieDataService.retrieveAll()) {
-                    m.setActors(new ArrayList<Actor>());
-                    movieDataService.update(m);
-                }
-            }
-        });
-
-        actorDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                for (Actor a : actorDataService.retrieveAll()) {
-                    a.setMovies(new ArrayList<Movie>());
-                    actorDataService.update(a);
-                }
-            }
-        });
-
+        for (Movie m : movieDataService.retrieveAll()) {
+            m.setActors(new ArrayList<Actor>());
+            movieDataService.update(m);
+        }
+        for (Actor a : actorDataService.retrieveAll()) {
+            a.setMovies(new ArrayList<Movie>());
+            actorDataService.update(a);
+        }
         movieDataService.deleteAll();
         actorDataService.deleteAll();
 
-        supplierDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                for (Supplier p : supplierDataService.retrieveAll()) {
-                    p.setProducts(new ArrayList<Product>());
-                    supplierDataService.update(p);
-                }
-            }
-        });
-
-        productDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                for (Product c : productDataService.retrieveAll()) {
-                    c.setSuppliers(new ArrayList<Supplier>());
-                    productDataService.update(c);
-                }
-            }
-        });
-
+        for (Supplier p : supplierDataService.retrieveAll()) {
+            p.setProducts(new ArrayList<Product>());
+            supplierDataService.update(p);
+        }
+        for (Product c : productDataService.retrieveAll()) {
+            c.setSuppliers(new ArrayList<Supplier>());
+            productDataService.update(c);
+        }
         productDataService.deleteAll();
         supplierDataService.deleteAll();
     }
@@ -390,7 +366,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
     public void shouldUpdateRelationshipInTransaction() {
         // Create department and add 2 members
         Department department = new Department("Sales Department");
-        final Employee employee1 = new Employee("John D.");
+        Employee employee1 = new Employee("John D.");
         Employee employee2 = new Employee("Chris T.");
 
         Set<Employee> employees = new LinkedHashSet<>();
@@ -400,26 +376,24 @@ public class MdsDdeBundleIT extends BasePaxIT {
         department.setEmployees(employees);
         departmentDataService.create(department);
 
-        // Create and add new employee
-        final Employee employee = employeeDataService.create(new Employee("Elliot R."));
-        employees.add(employee);
+        // Create new employee
+        Employee employee3 = employeeDataService.doInTransaction(new TransactionCallback<Employee>() {
+            @Override
+            public Employee doInTransaction(TransactionStatus status) {
+                Employee newEmployee = employeeDataService.create(new Employee("Elliot R."));
+                return employeeDataService.detachedCopy(newEmployee);
+            }
+        });
+
+        // Create a set of new employee
+        Set<Employee> otherEmployees = new LinkedHashSet<>();
+        otherEmployees.add(employee3);
 
         // Create a new department
         Department anotherDepartment = departmentDataService.create(new Department("Marketing Department"));
-        final Long anotherDeparmentId = anotherDepartment.getId();
 
-        departmentDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                // Create a set of existing and new employee
-                Set<Employee> otherEmployees = new LinkedHashSet<>();
-                otherEmployees.add(employeeDataService.findById(employee1.getId()));
-                otherEmployees.add(employeeDataService.findById(employee.getId()));
-
-                // Update the department with its members in transaction
-                officeService.saveEmployees(anotherDeparmentId, otherEmployees);
-            }
-        });
+        // Update the department with its members in transaction
+        officeService.saveEmployees(anotherDepartment.getId(), otherEmployees);
 
         //Then
         List<Department> departments = departmentDataService.retrieveAll();
@@ -427,10 +401,10 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         // check the employees for the new department
         anotherDepartment = departmentDataService.findById(anotherDepartment.getId());
-        assertEquals(2, anotherDepartment.getEmployees().size());
+        assertEquals(1, anotherDepartment.getEmployees().size());
 
         department = departmentDataService.findById(department.getId());
-        assertEquals(1, department.getEmployees().size());
+        assertEquals(2, department.getEmployees().size());
     }
 
     @Test
@@ -1001,21 +975,16 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(boat.getYearOfProduction(), created.get(0).getYearOfProduction(), 0.1);
         assertEquals(boat.getMaxSpeed(), created.get(0).getMaxSpeed());
 
-        boatDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                Boat toUpdate = boatDataService.retrieveAll().get(0);
-                toUpdate.setMaxSpeed(130);
+        Boat toUpdate = created.get(0);
+        toUpdate.setMaxSpeed(130);
 
-                boatDataService.update(toUpdate);
-            }
-        });
+        boatDataService.update(toUpdate);
 
         List<Boat> updated = boatDataService.retrieveAll();
 
         assertEquals(1, updated.size());
-        assertEquals(1900, updated.get(0).getYearOfProduction(), 0.1);
-        assertEquals(130, updated.get(0).getMaxSpeed());
+        assertEquals(toUpdate.getYearOfProduction(), updated.get(0).getYearOfProduction(), 0.1);
+        assertEquals(toUpdate.getMaxSpeed(), updated.get(0).getMaxSpeed());
 
         boatDataService.delete(updated.get(0));
 
@@ -1035,21 +1004,16 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(motorcycle.getYearOfProduction(), created.get(0).getYearOfProduction(), 0.1);
         assertEquals(motorcycle.getProducer(), created.get(0).getProducer());
 
-        motorcycleDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                Motorcycle toUpdate = motorcycleDataService.retrieveAll().get(0);
-                toUpdate.setProducer("Some other Producer");
+        Motorcycle toUpdate = created.get(0);
+        toUpdate.setProducer("Some other Producer");
 
-                motorcycleDataService.update(toUpdate);
-            }
-        });
+        motorcycleDataService.update(toUpdate);
 
         List<Motorcycle> updated = motorcycleDataService.retrieveAll();
 
         assertEquals(1, updated.size());
-        assertEquals(1900, updated.get(0).getYearOfProduction(), 0.1);
-        assertEquals("Some other Producer", updated.get(0).getProducer());
+        assertEquals(toUpdate.getYearOfProduction(), updated.get(0).getYearOfProduction(), 0.1);
+        assertEquals(toUpdate.getProducer(), updated.get(0).getProducer());
 
         motorcycleDataService.delete(updated.get(0));
 
@@ -1070,22 +1034,17 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(truck.getEngineCapacity(), created.get(0).getEngineCapacity(), 0);
         assertEquals(truck.getVolume(), created.get(0).getVolume(), 0);
 
-        truckDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                Truck toUpdate = truckDataService.retrieveAll().get(0);
-                toUpdate.setVolume(2000);
+        Truck toUpdate = created.get(0);
+        toUpdate.setVolume(2000);
 
-                truckDataService.update(toUpdate);
-            }
-        });
+        truckDataService.update(toUpdate);
 
         List<Truck> updated = truckDataService.retrieveAll();
 
         assertEquals(1, updated.size());
-        assertEquals(1900, updated.get(0).getYearOfProduction(), 0.1);
-        assertEquals(2.0, updated.get(0).getEngineCapacity(), 0);
-        assertEquals(2000, updated.get(0).getVolume(), 0);
+        assertEquals(toUpdate.getYearOfProduction(), updated.get(0).getYearOfProduction(), 0.1);
+        assertEquals(toUpdate.getEngineCapacity(), updated.get(0).getEngineCapacity(), 0);
+        assertEquals(toUpdate.getVolume(), updated.get(0).getVolume(), 0);
 
         truckDataService.delete(updated.get(0));
 
@@ -1104,20 +1063,15 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(1, created.size());
         assertEquals(dog.getHiddenBones(), created.get(0).getHiddenBones());
 
-        dogDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                Dog toUpdate = dogDataService.retrieveAll().get(0);
-                toUpdate.setHiddenBones(5);
+        Dog toUpdate = created.get(0);
+        toUpdate.setHiddenBones(5);
 
-                dogDataService.update(toUpdate);
-            }
-        });
+        dogDataService.update(toUpdate);
 
         List<Dog> updated = dogDataService.retrieveAll();
 
         assertEquals(1, updated.size());
-        assertEquals(5, updated.get(0).getHiddenBones());
+        assertEquals(toUpdate.getHiddenBones(), updated.get(0).getHiddenBones());
 
         dogDataService.delete(updated.get(0));
 
@@ -1136,20 +1090,15 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(1, created.size());
         assertEquals(cat.getLivesLeft(), created.get(0).getLivesLeft());
 
-        catDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                Cat toUpdate = catDataService.retrieveAll().get(0);
-                toUpdate.setLivesLeft(8);
+        Cat toUpdate = created.get(0);
+        toUpdate.setLivesLeft(8);
 
-                catDataService.update(toUpdate);
-            }
-        });
+        catDataService.update(toUpdate);
 
         List<Cat> updated = catDataService.retrieveAll();
 
         assertEquals(1, updated.size());
-        assertEquals(8, updated.get(0).getLivesLeft());
+        assertEquals(toUpdate.getLivesLeft(), updated.get(0).getLivesLeft());
 
         catDataService.delete(updated.get(0));
 
@@ -1169,21 +1118,16 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(goldfish.getLength(), created.get(0).getLength());
         assertEquals(goldfish.getWishesLeft(), created.get(0).getWishesLeft());
 
-        goldfishDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                Goldfish toUpdate = goldfishDataService.retrieveAll().get(0);
-                toUpdate.setWishesLeft(2);
+        Goldfish toUpdate = created.get(0);
+        toUpdate.setWishesLeft(2);
 
-                goldfishDataService.update(toUpdate);
-            }
-        });
+        goldfishDataService.update(toUpdate);
 
         List<Goldfish> updated = goldfishDataService.retrieveAll();
 
         assertEquals(1, updated.size());
-        assertEquals(500, updated.get(0).getLength());
-        assertEquals(2, updated.get(0).getWishesLeft());
+        assertEquals(toUpdate.getLength(), updated.get(0).getLength());
+        assertEquals(toUpdate.getWishesLeft(), updated.get(0).getWishesLeft());
 
         goldfishDataService.delete(updated.get(0));
 
@@ -1209,21 +1153,16 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(person.getAge(), created.get(0).getAge());
         assertVehicleListEquals(person.getVehicles(), created.get(0).getVehicles());
 
-        vehicleOwnerDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                VehicleOwner toUpdate = vehicleOwnerDataService.retrieveAll().get(0);
-                toUpdate.setAge(16);
+        VehicleOwner toUpdate = created.get(0);
+        toUpdate.setAge(16);
 
-                vehicleOwnerDataService.update(toUpdate);
-            }
-        });
+        vehicleOwnerDataService.update(toUpdate);
 
         List<VehicleOwner> updated = vehicleOwnerDataService.retrieveAll();
 
         assertEquals(1, updated.size());
-        assertEquals(16, updated.get(0).getAge());
-        assertVehicleListEquals(person.getVehicles(), updated.get(0).getVehicles());
+        assertEquals(toUpdate.getAge(), updated.get(0).getAge());
+        assertVehicleListEquals(toUpdate.getVehicles(), updated.get(0).getVehicles());
 
         vehicleOwnerDataService.delete(updated.get(0));
 
@@ -1694,119 +1633,89 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     @Test
     public void shouldAutomaticallyIncrementTheVersionInMdsVersionedEntityClass() throws InterruptedException {
-        final TestMdsVersionedEntity record = testMdsVersionedEntityService.create(new TestMdsVersionedEntity("value_1"));
+        TestMdsVersionedEntity record = testMdsVersionedEntityService.create( new TestMdsVersionedEntity("value_1"));
         assertEquals(new Long(1l), record.getInstanceVersion());
 
-        TestMdsVersionedEntity recordFromDatabase = testMdsVersionedEntityService.doInTransaction(new TransactionCallback<TestMdsVersionedEntity>() {
-            @Override
-            public TestMdsVersionedEntity doInTransaction(TransactionStatus status) {
-                TestMdsVersionedEntity recordFromDatabase = testMdsVersionedEntityService.findById(record.getId());
-                recordFromDatabase.setStringField("value_2");
-                return testMdsVersionedEntityService.update(recordFromDatabase);
-            }
-        });
+        record.setStringField("value_2");
+        record = testMdsVersionedEntityService.update(record);
+        assertEquals(new Long(2l), record.getInstanceVersion());
 
-        assertEquals(new Long(2l), recordFromDatabase.getInstanceVersion());
-
-        Thread simpleThread = new SimpleThread(testMdsVersionedEntityService, recordFromDatabase.getId(), "stringField");
-
+        Thread simpleThread = new SimpleThread(testMdsVersionedEntityService, record.getId(), "stringField");
         simpleThread.run();
         simpleThread.join();
 
-        recordFromDatabase = testMdsVersionedEntityService.findById(record.getId());
-        assertEquals(new Long(3l), recordFromDatabase.getInstanceVersion());
+        record = testMdsVersionedEntityService.findById(record.getId());
+        assertEquals(new Long(3l), record.getInstanceVersion());
     }
 
     @Test(expected = JdoOptimisticLockingFailureException.class)
     public void shouldUseInstanceVersioningFromMdsVersionedEntityClass() throws InterruptedException {
-        final TestMdsVersionedEntity record = testMdsVersionedEntityService.create(new TestMdsVersionedEntity("name"));
+        TestMdsVersionedEntity record = testMdsVersionedEntityService.create( new TestMdsVersionedEntity("name"));
+        TestMdsVersionedEntity recordFromDatabase = testMdsVersionedEntityService.findById(record.getId());
+        recordFromDatabase.setStringField("new_name");
 
-        final TestMdsVersionedEntity recordFromDatabase = testMdsVersionedEntityService.doInTransaction(new TransactionCallback<TestMdsVersionedEntity>() {
-            @Override
-            public TestMdsVersionedEntity doInTransaction(TransactionStatus status) {
-                TestMdsVersionedEntity recordFromDatabase = testMdsVersionedEntityService.findById(record.getId());
-                recordFromDatabase.setStringField("new_name");
-
-                try {
-                    recordFromDatabase = testMdsVersionedEntityService.update(recordFromDatabase);
-                    return testMdsVersionedEntityService.getDetachedObject(recordFromDatabase);
-                } catch (Exception e) {
-                    getLogger().error("Cannot update record of {} class", TestMdsEntity.class.getName());
-                    fail();
-                    return null;
-                }
-            }
-        });
+        try {
+            testMdsVersionedEntityService.update(recordFromDatabase);
+        } catch (Exception e) {
+            getLogger().error("Cannot update record of {} class", TestMdsEntity.class.getName());
+            fail();
+        }
 
         Thread simpleThread = new SimpleThread(testMdsVersionedEntityService, recordFromDatabase.getId(), "stringField");
+        recordFromDatabase = testMdsVersionedEntityService.findById(recordFromDatabase.getId());
 
         simpleThread.run();
         simpleThread.join();
 
         assertEquals("new_name", recordFromDatabase.getStringField());
-        assertEquals(new Long(2L), recordFromDatabase.getInstanceVersion());
 
         recordFromDatabase.setStringField("sample_name");
         recordFromDatabase.setCreator("Somebody");
+
         //should throw exception
         testMdsVersionedEntityService.update(recordFromDatabase);
     }
 
     @Test
     public void shouldAutomaticallyIncrementTheVersionInClassWithVersionAnnotation() throws InterruptedException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        final SimpleClassWithVersioning record = simpleClassWithVersioningService.create(new SimpleClassWithVersioning("value_1"));
+        SimpleClassWithVersioning record = simpleClassWithVersioningService.create( new SimpleClassWithVersioning("value_1"));
         assertEquals(new Long(1l), record.getVersion());
 
-        SimpleClassWithVersioning recordFromDatabase = simpleClassWithVersioningService.doInTransaction(new TransactionCallback<SimpleClassWithVersioning>() {
-            @Override
-            public SimpleClassWithVersioning doInTransaction(TransactionStatus status) {
-                SimpleClassWithVersioning recordFromDatabase = simpleClassWithVersioningService.findById(record.getId());
-                recordFromDatabase.setStringField("value_2");
-                return simpleClassWithVersioningService.update(recordFromDatabase);
-            }
-        });
+        record.setStringField("value_2");
+        record = simpleClassWithVersioningService.update(record);
+        assertEquals(new Long(2l), record.getVersion());
 
-        assertEquals(new Long(2l), recordFromDatabase.getVersion());
-
-        Thread simpleThread = new SimpleThread(simpleClassWithVersioningService, recordFromDatabase.getId(), "stringField");
-
+        Thread simpleThread = new SimpleThread(simpleClassWithVersioningService, (Long) PropertyUtils.getProperty(record, "id"), "stringField");
         simpleThread.run();
         simpleThread.join();
 
-        recordFromDatabase = simpleClassWithVersioningService.findById(record.getId());
-        assertEquals(new Long(3l), recordFromDatabase.getVersion());
+        record = simpleClassWithVersioningService.findById((Long) PropertyUtils.getProperty(record, "id"));
+        assertEquals(new Long(3l), record.getVersion());
     }
 
     @Test(expected = JdoOptimisticLockingFailureException.class)
     public void shouldUseInstanceVersioningFromClassWithVersionAnnotation() throws InterruptedException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        final SimpleClassWithVersioning record = simpleClassWithVersioningService.create(new SimpleClassWithVersioning("name"));
+        SimpleClassWithVersioning record = simpleClassWithVersioningService.create( new SimpleClassWithVersioning("name"));
+        SimpleClassWithVersioning recordFromDatabase = simpleClassWithVersioningService.findById((Long) PropertyUtils.getProperty(record, "id"));
+        recordFromDatabase.setStringField("new_name");
 
-        final SimpleClassWithVersioning recordFromDatabase = simpleClassWithVersioningService.doInTransaction(new TransactionCallback<SimpleClassWithVersioning>() {
-            @Override
-            public SimpleClassWithVersioning doInTransaction(TransactionStatus status) {
-                SimpleClassWithVersioning recordFromDatabase = simpleClassWithVersioningService.findById(record.getId());
-                recordFromDatabase.setStringField("new_name");
+        try {
+            simpleClassWithVersioningService.update(recordFromDatabase);
+        } catch (Exception e) {
+            getLogger().error("Cannot update record of {} class", SimpleClassWithVersioning.class.getName());
+            fail();
+        }
 
-                try {
-                    recordFromDatabase = simpleClassWithVersioningService.update(recordFromDatabase);
-                    return simpleClassWithVersioningService.getDetachedObject(recordFromDatabase);
-                } catch (Exception e) {
-                    getLogger().error("Cannot update record of {} class", SimpleClassWithVersioning.class.getName());
-                    fail();
-                    return null;
-                }
-            }
-        });
-
-        Thread simpleThread = new SimpleThread(simpleClassWithVersioningService, recordFromDatabase.getId(), "stringField");
+        Thread simpleThread = new SimpleThread(simpleClassWithVersioningService, (Long) PropertyUtils.getProperty(record, "id"), "stringField");
+        recordFromDatabase = simpleClassWithVersioningService.findById((Long) PropertyUtils.getProperty(record, "id"));
 
         simpleThread.run();
         simpleThread.join();
 
         assertEquals("new_name", recordFromDatabase.getStringField());
-        assertEquals(new Long(2L), recordFromDatabase.getVersion());
 
         recordFromDatabase.setStringField("sample_name");
+
         //should throw exception
         simpleClassWithVersioningService.update(recordFromDatabase);
     }
@@ -1814,30 +1723,23 @@ public class MdsDdeBundleIT extends BasePaxIT {
     //This test is for StateManagerUtil.class
     @Test(expected = JdoOptimisticLockingFailureException.class)
     public void shouldThrowOptimisticExceptionWithTransientObject() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        final SimpleClassWithVersioning instance = simpleClassWithVersioningService.create(new SimpleClassWithVersioning("version_1"));
+        SimpleClassWithVersioning instance = new SimpleClassWithVersioning("version_1");
+        instance = simpleClassWithVersioningService.create(instance);
 
-        SimpleClassWithVersioning recordFromDatabase2 = simpleClassWithVersioningService.findById(instance.getId());
-
-        simpleClassWithVersioningService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                SimpleClassWithVersioning recordFromDatabase1 = simpleClassWithVersioningService.findById(instance.getId());
-                recordFromDatabase1.setStringField("version_2");
-
-                try {
-                    simpleClassWithVersioningService.update(recordFromDatabase1);
-                } catch (Exception e) {
-                    getLogger().error("Cannot update record of {} class", SimpleClassWithVersioning.class.getName());
-                    fail();
-                }
-            }
-        });
+        SimpleClassWithVersioning recordFromDatabase1 = simpleClassWithVersioningService.findById((Long) PropertyUtils.getProperty(instance, "id"));
+        SimpleClassWithVersioning recordFromDatabase2 = simpleClassWithVersioningService.findById((Long) PropertyUtils.getProperty(instance, "id"));
 
         Set<String> fieldsToUpdate = new HashSet<>();
         fieldsToUpdate.add("stringField");
         fieldsToUpdate.add("version");
 
-        assertEquals("version_1", recordFromDatabase2.getStringField());
+        recordFromDatabase1.setStringField("version_2");
+        try {
+            simpleClassWithVersioningService.update(recordFromDatabase1);
+        } catch (Exception e) {
+            getLogger().error("Cannot update record of {} class", SimpleClassWithVersioning.class.getName());
+            fail();
+        }
 
         recordFromDatabase2.setStringField("version_3");
         simpleClassWithVersioningService.updateFromTransient(recordFromDatabase2, fieldsToUpdate);
@@ -1846,40 +1748,23 @@ public class MdsDdeBundleIT extends BasePaxIT {
     //This test is for StateManagerUtil.class
     @Test(expected = JdoOptimisticLockingFailureException.class)
     public void shouldSetProperTransactionVersion() throws Exception {
-        final TestMdsVersionedEntity record1 = testMdsVersionedEntityService.create(new TestMdsVersionedEntity("value_1"));
-
-        testMdsVersionedEntityService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                try {
-                    TestMdsVersionedEntity recordToUpdate = testMdsVersionedEntityService.findById(record1.getId());
-                    recordToUpdate.setStringField("value_2");
-                    testMdsVersionedEntityService.update(recordToUpdate);
-                } catch (Exception e) {
-                    getLogger().error("Cannot update record of {} class", TestMdsVersionedEntity.class.getName());
-                    fail();
-                }
-            }
-        });
-
-        testMdsVersionedEntityService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                try {
-                    TestMdsVersionedEntity recordToUpdate = testMdsVersionedEntityService.findById(record1.getId());
-                    recordToUpdate.setStringField("value_3");
-                    testMdsVersionedEntityService.update(recordToUpdate);
-                } catch (Exception e) {
-                    getLogger().error("Cannot update record of {} class", TestMdsVersionedEntity.class.getName());
-                    fail();
-                }
-            }
-        });
+        TestMdsVersionedEntity record1 = testMdsVersionedEntityService.create(new TestMdsVersionedEntity("value_1"));
+        final Long id = (Long) PropertyUtils.getProperty(record1, "id");
+        try {
+            record1.setStringField("value_2");
+            record1 = testMdsVersionedEntityService.update(record1);
+            record1.setStringField("value_3");
+            testMdsVersionedEntityService.update(record1);
+            TestMdsVersionedEntity record1FromDb = testMdsVersionedEntityService.findById(id);
+        } catch (Exception e) {
+            getLogger().error("Cannot update record of {} class", TestMdsVersionedEntity.class.getName());
+            fail();
+        }
 
         testMdsVersionedEntityService.doInTransaction(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                TestMdsVersionedEntity instance = testMdsVersionedEntityService.findById(record1.getId());
+                TestMdsVersionedEntity instance = testMdsVersionedEntityService.findById(id);
                 instance.setStringField("value_4");
                 // we set older version
                 instance.setInstanceVersion(2l);
@@ -1945,9 +1830,9 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         TestMdsEntity actual = testMdsEntities.get(0);
 
-        assertEquals(actual.getModifiedBy(), "motech");
-        assertEquals(actual.getCreator(), "motech");
-        assertEquals(actual.getOwner(), "motech");
+        assertEquals("motech", actual.getModifiedBy());
+        assertEquals("motech", actual.getCreator());
+        assertEquals("motech", actual.getOwner());
         assertNotNull(actual.getId());
 
         DateTime modificationDate = actual.getModificationDate();
@@ -1965,8 +1850,8 @@ public class MdsDdeBundleIT extends BasePaxIT {
         testMdsEntities = testMdsEntityService.retrieveAll();
         assertEquals(1, testMdsEntities.size());
 
-        assertEquals(testMdsEntities.get(0).getOwner(), "newOwner");
-        assertEquals(testMdsEntities.get(0).getSomeString(), "newName");
+        assertEquals("newOwner", testMdsEntities.get(0).getOwner());
+        assertEquals("newName", testMdsEntities.get(0).getSomeString());
         //Actual modificationDate of instance should be after previous one
         assertTrue(modificationDate.isBefore(testMdsEntities.get(0).getModificationDate()));
     }

@@ -167,7 +167,7 @@ public abstract class MotechDataRepository<T> {
         return QueryExecutor.executeDelete(query, values, restriction);
     }
 
-    public T getDetachedObject(T object) {
+    public T detachedCopy(T object) {
         return getPersistenceManager().detachCopy(object);
     }
 

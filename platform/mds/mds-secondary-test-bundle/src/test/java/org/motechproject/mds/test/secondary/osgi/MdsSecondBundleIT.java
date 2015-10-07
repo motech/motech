@@ -27,8 +27,6 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -112,31 +110,20 @@ public class MdsSecondBundleIT extends BasePaxIT {
 
         entityADataService.create(a);
 
-        final long aId = a.getId();
-        final long bId = b.getId();
-        final long cId = c.getId();
-        a = entityADataService.findById(aId);
-        b = entityBDataService.findById(bId);
-        c = entityCDataService.findById(cId);
+        a = entityADataService.findById(a.getId());
+        b = entityBDataService.findById(b.getId());
+        c = entityCDataService.findById(c.getId());
 
         assertEntitiesFields(a, b, c, A_NAME, B_NAME, Priority.LOW, C_NAME, Animal.CAT);
 
-        entityADataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                EntityA a = entityADataService.findById(aId);
-                EntityB b = entityBDataService.findById(bId);
-                EntityC c = entityCDataService.findById(cId);
-                setEntitiesFields(a, b, c, A_UPDATED_NAME, B_UPDATED_NAME, Priority.HIGH, C_UPDATED_NAME, Animal.DUCK);
+        setEntitiesFields(a, b, c, A_UPDATED_NAME, B_UPDATED_NAME, Priority.HIGH, C_UPDATED_NAME, Animal.DUCK);
 
-                setEntitiesRelations(a, b, c);
-                entityADataService.update(a);
-            }
-        });
+        setEntitiesRelations(a, b, c);
+        entityADataService.update(a);
 
-        a = entityADataService.findById(aId);
-        b = entityBDataService.findById(bId);
-        c = entityCDataService.findById(cId);
+        a = entityADataService.findById(a.getId());
+        b = entityBDataService.findById(b.getId());
+        c = entityCDataService.findById(c.getId());
 
         assertEntitiesFields(a, b, c, A_UPDATED_NAME, B_UPDATED_NAME, Priority.HIGH, C_UPDATED_NAME, Animal.DUCK);
     }

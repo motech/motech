@@ -25,7 +25,6 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.BlobDeserializer;
-import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.PropertyUtil;
 
 import javax.annotation.PostConstruct;
@@ -204,8 +203,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
 
     private void getBlobs(T value) {
         for (String field : blobFields) {
-            Long id = (Long) PropertyUtil.safeGetProperty(value, Constants.Util.ID_FIELD_NAME);
-            PropertyUtil.safeSetProperty(value, field, dataService.getDetachedField(id, field));
+            PropertyUtil.safeSetProperty(value, field, dataService.getDetachedField(value, field));
         }
     }
 

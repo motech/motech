@@ -875,8 +875,7 @@ public class InstanceServiceImpl implements InstanceService {
         Object parsedValue;
         if ((ArrayUtils.EMPTY_BYTE_OBJECT_ARRAY.equals(fieldRecord.getValue()) || ArrayUtils.EMPTY_BYTE_ARRAY.equals(fieldRecord.getValue()))
                 && !fieldRecord.getId().equals(deleteValueFieldId)) {
-            Long id = (Long) PropertyUtil.safeGetProperty(instance, ID_FIELD_NAME);
-            parsedValue = service.getDetachedField(id, fieldName);
+            parsedValue = service.getDetachedField(instance, fieldName);
         } else {
             parsedValue = fieldRecord.getValue();
         }
@@ -973,8 +972,7 @@ public class InstanceServiceImpl implements InstanceService {
             LOGGER.debug("Invocation target exception thrown when retrieving field {}. This may indicate a non loaded field",
                     fieldName, e);
             // fallback to the service
-            Long id = (Long) PropertyUtil.safeGetProperty(instance, ID_FIELD_NAME);
-            return service.getDetachedField(id, fieldName);
+            return service.getDetachedField(instance, fieldName);
         }
     }
 

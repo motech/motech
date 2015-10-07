@@ -3,7 +3,6 @@ package org.motechproject.security.repository;
 import org.motechproject.security.domain.MotechRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -64,7 +63,7 @@ public class AllMotechRoles {
      *
      * @param motechRole to be updated
      */
-    @Transactional(propagation = Propagation.MANDATORY)
+    @Transactional
     public void update(MotechRole motechRole) {
         dataService.update(motechRole);
     }

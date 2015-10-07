@@ -193,7 +193,7 @@ public class InstancesWriterTest {
         Entity entity = EntitySchemaBuilder.eude(ENTITY).field(PROPERTY, "mds.field.blob").done().build();
         byte[] blob = "This is blob!".getBytes();
         EntityWithProperty<byte[]> instance = new EntityWithProperty<>(1L, blob);
-        when(dataService.getDetachedField(eq(1L), eq(PROPERTY))).thenReturn(blob);
+        when(dataService.getDetachedField(eq(instance), eq(PROPERTY))).thenReturn(blob);
 
         assertInstanceWrittenCorrectly(entity, instance, "{\"refId\":1,\"property\":\"VGhpcyBpcyBibG9iIQ==\"}");
     }
@@ -203,7 +203,7 @@ public class InstancesWriterTest {
         Entity entity = EntitySchemaBuilder.eude(ENTITY).field(PROPERTY, "mds.field.blob").done().build();
         byte[] blob = null;
         EntityWithProperty<byte[]> instance = new EntityWithProperty<>(1L, blob);
-        when(dataService.getDetachedField(eq(1L), eq(PROPERTY))).thenReturn(blob);
+        when(dataService.getDetachedField(eq(instance), eq(PROPERTY))).thenReturn(blob);
 
         assertInstanceWrittenCorrectly(entity, instance, NULL_PROPERTY_JSON);
     }

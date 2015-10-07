@@ -140,7 +140,7 @@ public class MdsRestFacadeTest {
         when(dataService.retrieveAll()).thenReturn(asList(recordOne));
         when(dataService.findById(1l)).thenReturn(recordOne);
         when(dataService.create(recordOne)).thenReturn(recordOne);
-        when(dataService.getDetachedField(1L, BLOB_FIELD))
+        when(dataService.getDetachedField(recordOne, BLOB_FIELD))
                 .thenReturn(blobFieldValue);
 
         // do the initialization, normally called by Spring as @PostConstruct

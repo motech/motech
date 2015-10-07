@@ -5,9 +5,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
-import org.motechproject.mds.ex.object.DetachedFieldFromTransientObjectException;
 import org.motechproject.mds.ex.object.SecurityException;
-import org.motechproject.mds.ex.object.UpdateFromTransientException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.QueryExecution;
@@ -180,7 +178,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     public T update(final T object) {
         validateCredentials(object);
         if (JDOHelper.getObjectState(object) == ObjectState.TRANSIENT) {
-            throw new UpdateFromTransientException();
+            return updateFromTransient(object);
         }
 
         updateModificationData(object);
@@ -341,8 +339,8 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     @Override
     @Transactional
-    public T getDetachedObject(T object) {
-        return repository.getDetachedObject(object);
+    public T detachedCopy(T object) {
+        return repository.detachedCopy(object);
     }
 
     @Override
@@ -355,7 +353,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Transactional
     public Object getDetachedField(T instance, String fieldName) {
         if (JDOHelper.getObjectState(instance) == ObjectState.TRANSIENT) {
-            throw new DetachedFieldFromTransientObjectException();
+            return repository.getDetachedField(findById((Long) getId(instance)), fieldName);
         }
         return repository.getDetachedField(instance, fieldName);
     }
