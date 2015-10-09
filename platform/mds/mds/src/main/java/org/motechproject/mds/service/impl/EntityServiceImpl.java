@@ -989,6 +989,16 @@ public class EntityServiceImpl implements EntityService {
         }
     }
 
+    @Override
+    public void updateMaxFetchDepth(Long entityId, Integer maxFetchDepth) {
+        Entity entity = allEntities.retrieveById(entityId);
+        assertEntityExists(entity);
+
+        entity.setMaxFetchDepth(maxFetchDepth);
+
+        allEntities.update(entity);
+    }
+
     private void assertEntityExists(Entity entity) {
         if (entity == null) {
             throw new EntityNotFoundException();

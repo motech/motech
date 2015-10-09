@@ -56,6 +56,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.motechproject.mds.dto.LookupFieldDto.Type.RANGE;
 import static org.motechproject.mds.dto.LookupFieldDto.Type.SET;
@@ -396,6 +397,19 @@ public class EntityServiceContextIT extends BaseIT {
 
         assertEquals(asList("strLookup"), fromDb.getLookupNames());
         assertEquals(asList("boolField", "strField"), fromDb.getFieldNames());
+    }
+
+    @Test
+    public void shouldUpdateFetchDepth() {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setName("FetchDepthTest");
+
+        entityDto = entityService.createEntity(entityDto);
+        assertNull(entityDto.getMaxFetchDepth());
+
+        entityService.updateMaxFetchDepth(entityDto.getId(), 3);
+        entityDto = entityService.getEntity(entityDto.getId());
+        assertEquals(Integer.valueOf(3), entityDto.getMaxFetchDepth());
     }
 
     private void setUpSecurityContext() {
