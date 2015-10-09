@@ -15,8 +15,10 @@ import org.motechproject.mds.repository.ComboboxValueRepository;
 import org.motechproject.mds.service.MetadataService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.TypeHelper;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.wiring.BundleWiring;
 
 import java.util.List;
 
@@ -62,6 +64,12 @@ public class ComboboxValueHelperTest {
     private BundleContext bundleContext;
 
     @Mock
+    private Bundle mdsBundle;
+
+    @Mock
+    private BundleWiring mdsBundleWiring;
+
+    @Mock
     private ServiceReference<MetadataService> ref;
 
     @Before
@@ -75,6 +83,12 @@ public class ComboboxValueHelperTest {
 
         when(bundleContext.getServiceReference(MetadataService.class)).thenReturn(ref);
         when(bundleContext.getService(ref)).thenReturn(metadataService);
+
+        // set it up so that the class loader doesn't get changed
+        when(bundleContext.getBundles()).thenReturn(new Bundle[] { mdsBundle });
+        when(mdsBundle.getSymbolicName()).thenReturn(Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME);
+        when(mdsBundle.adapt(BundleWiring.class)).thenReturn(mdsBundleWiring);
+        when(mdsBundleWiring.getClassLoader()).thenReturn(Thread.currentThread().getContextClassLoader());
     }
 
     @Test
