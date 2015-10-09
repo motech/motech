@@ -1,6 +1,7 @@
 package org.motechproject.tasks.domain;
 
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,7 +10,10 @@ import java.util.Objects;
 public class Lookup implements Serializable {
     private static final long serialVersionUID = -3560581906854128062L;
 
+    @Field
     private String field;
+
+    @Field
     private String value;
 
     public Lookup() {

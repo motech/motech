@@ -1,6 +1,7 @@
 package org.motechproject.tasks.domain;
 
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -11,11 +12,22 @@ import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 public class Filter implements Serializable {
     private static final long serialVersionUID = 7811400954352375064L;
 
+    @Field(required = true)
     private String displayName;
+
+    @Field(required = true)
     private String key;
+
+    @Field(required = true)
     private ParameterType type;
-    private boolean negationOperator;
+
+    @Field(required = true)
     private String operator;
+
+    @Field
+    private boolean negationOperator;
+
+    @Field
     private String expression;
 
     public Filter() {

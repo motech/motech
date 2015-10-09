@@ -14,6 +14,7 @@ import static org.motechproject.commons.date.util.DateUtil.setTimeZoneUTC;
  */
 @Entity
 public class StatusMessage {
+
     @Field(required = true)
     private String text;
 

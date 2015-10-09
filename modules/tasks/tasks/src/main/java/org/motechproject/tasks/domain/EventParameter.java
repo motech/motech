@@ -11,7 +11,7 @@ public class EventParameter extends Parameter {
 
     private static final long serialVersionUID = 2564446352940524099L;
 
-    @Field
+    @Field(required = true)
     private String eventKey;
 
     public EventParameter() {

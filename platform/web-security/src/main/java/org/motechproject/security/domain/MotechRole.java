@@ -1,13 +1,22 @@
 package org.motechproject.security.domain;
 
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
+import javax.jdo.annotations.Unique;
 import java.util.List;
 
 @Entity(recordHistory = true)
 public class MotechRole {
+
+    @Field(required = true)
+    @Unique
     private String roleName;
+
+    @Field
     private List<String> permissionNames;
+
+    @Field
     private boolean deletable;
 
     public MotechRole() {

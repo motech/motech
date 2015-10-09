@@ -17,10 +17,11 @@ import java.util.Objects;
 @Entity
 public class EmailRecord {
 
-    private String fromAddress;
-
     @Field
     private Long id;
+
+    @Field
+    private String fromAddress;
 
     @Field(required = true)
     private String toAddress;

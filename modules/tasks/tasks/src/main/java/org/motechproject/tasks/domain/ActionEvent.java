@@ -20,10 +20,13 @@ public class ActionEvent extends TaskEvent {
     @Field
     @Cascade(delete = true)
     private SortedSet<ActionParameter> actionParameters;
+
     @Field
     private String serviceInterface;
+
     @Field
     private String serviceMethod;
+
     @Field
     private MethodCallManner serviceMethodCallManner;
 

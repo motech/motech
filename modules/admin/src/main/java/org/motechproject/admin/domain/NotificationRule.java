@@ -14,6 +14,8 @@ import org.motechproject.mds.annotations.UIDisplayable;
  */
 @Entity(recordHistory = true)
 public class NotificationRule {
+
+    @Field
     private Long id;
 
     @Field(required = true)

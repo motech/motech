@@ -2,17 +2,31 @@ package org.motechproject.security.domain;
 
 import org.joda.time.DateTime;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
+import javax.jdo.annotations.Unique;
 import java.util.Locale;
 
 import static org.motechproject.commons.date.util.DateUtil.setTimeZoneUTC;
 
 @Entity
 public class PasswordRecovery {
+
+    @Field(required = true)
+    @Unique
     private String token;
+
+    @Field(required = true)
+    @Unique
     private String username;
+
+    @Field
     private String email;
+
+    @Field
     private DateTime expirationDate;
+
+    @Field
     private Locale locale;
 
     public String getToken() {

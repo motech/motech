@@ -21,4 +21,7 @@ public interface MotechUsersDataService extends MotechDataService<MotechUser> {
     @Lookup
     List<MotechUser> findByRole(@LookupField(name = "roles") String role);
 
+    @Lookup
+    List<MotechUser> findByExternalId(@LookupField(name = "externalId") String externalId);
+
 }

@@ -2,19 +2,39 @@ package org.motechproject.security.domain;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
+import javax.jdo.annotations.Unique;
 import java.util.List;
 import java.util.Locale;
 
 @Entity(recordHistory = true)
 public class MotechUser {
+
+    @Field
     private String externalId;
+
+    @Field(required = true)
+    @Unique
     private String userName;
+
+    @Field(required = true)
     private String password;
+
+    @Field
+    @Unique
     private String email;
+
+    @Field
     private List<String> roles;
+
+    @Field
     private boolean active;
+
+    @Field
     private String openId;
+
+    @Field
     private Locale locale;
 
     public MotechUser() {

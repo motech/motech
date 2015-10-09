@@ -1,10 +1,21 @@
 package org.motechproject.security.domain;
 
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
+import javax.jdo.annotations.Unique;
+
+/**
+ * Entity representing permission
+ */
 @Entity
 public class MotechPermission {
+
+    @Field(required = true)
+    @Unique
     private String permissionName;
+
+    @Field
     private String bundleName;
 
     public MotechPermission() {
