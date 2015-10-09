@@ -1,5 +1,6 @@
 package org.motechproject.config.core.filestore;
 
+import org.apache.commons.io.FileUtils;
 import org.hamcrest.core.Is;
 import org.junit.Test;
 
@@ -29,8 +30,7 @@ public class ConfigPropertiesUtilsIT {
     @Test
     public void shouldReturnProperties() throws Exception {
         URL resource = getClass().getClassLoader().getResource("test.properties");
-        String file = resource.getFile();
-        Properties properties = ConfigPropertiesUtils.getPropertiesFromFile(new File(file));
+        Properties properties = ConfigPropertiesUtils.getPropertiesFromFile(FileUtils.toFile(resource));
         assertNotNull(properties);
         assertThat(properties.getProperty("testkey"), Is.is("testvalue"));
     }
