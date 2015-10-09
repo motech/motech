@@ -76,7 +76,7 @@ public class Order implements Serializable {
          * if conversion from {@link java.lang.String} to direction failed.
          *
          * @param str String representation of a direction; one of the following: asc, ascending, desc, descending
-         * @return
+         * @return a direction value for the provided string
          */
         public static Direction fromString(String str) {
             if (StringUtils.isBlank(str)) {

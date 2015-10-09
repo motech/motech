@@ -15,13 +15,13 @@ import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.util.Constants;
-import org.motechproject.mds.util.Order;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
 import org.motechproject.mds.web.service.InstanceService;
+import org.motechproject.mds.web.util.QueryParamsBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -40,8 +40,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -135,7 +134,7 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/history", method = RequestMethod.GET)
     @ResponseBody
     public Records<HistoryRecord> getHistory(@PathVariable Long entityId, @PathVariable Long instanceId, GridSettings settings) {
-        QueryParams queryParams = buildQueryParams(settings);
+        QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
         List<HistoryRecord> historyRecordsList = instanceService.getInstanceHistory(entityId, instanceId, queryParams);
 
         long recordCount = instanceService.countHistoryRecords(entityId, instanceId);
@@ -185,7 +184,7 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/entities/{entityId}/trash", method = RequestMethod.GET)
     @ResponseBody
     public Records<EntityRecord> getTrash(@PathVariable Long entityId, GridSettings settings) {
-        QueryParams queryParams = buildQueryParams(settings);
+        QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
         List<EntityRecord> trashRecordsList = instanceService.getTrashRecords(entityId, queryParams);
 
         long recordCount = instanceService.countTrashRecords(entityId);
@@ -221,31 +220,34 @@ public class InstanceController extends MdsController {
                 "attachment; filename=" + fileName + "." + outputFormat.toLowerCase());
 
         final Integer pageSize = StringUtils.equalsIgnoreCase(exportRecords, "all") ? null : Integer.valueOf(exportRecords);
-        QueryParams queryParams = new QueryParams(1, pageSize, buildOrderList(settings));
+        final Map<String, Object> fieldMap = getFields(settings);
+
+        QueryParams queryParams = new QueryParams(1, pageSize, QueryParamsBuilder.buildOrderList(settings, fieldMap));
 
         if (Constants.ExportFormat.PDF.equals(outputFormat)) {
             csvImportExportService.exportPdf(entityId, response.getOutputStream(), settings.getLookup(), queryParams,
-                    settings.getSelectedFields(), getFields(settings));
+                    settings.getSelectedFields(), fieldMap);
         } else {
             csvImportExportService.exportCsv(entityId, response.getWriter(), settings.getLookup(), queryParams,
-                    settings.getSelectedFields(), getFields(settings));
+                    settings.getSelectedFields(), fieldMap);
         }
     }
 
     @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
     @ResponseBody
     public Records<?> getInstances(@PathVariable Long entityId, GridSettings settings) throws IOException {
-        QueryParams queryParams = buildQueryParams(settings);
-
         String lookup = settings.getLookup();
         String filterStr = settings.getFilter();
+        Map<String, Object> fieldMap = getFields(settings);
+
+        QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings, fieldMap);
 
         List<EntityRecord> entityRecords;
         long recordCount;
 
         if (StringUtils.isNotBlank(lookup)) {
-            entityRecords = instanceService.getEntityRecordsFromLookup(entityId, lookup, getFields(settings), queryParams);
-            recordCount = instanceService.countRecordsByLookup(entityId, lookup, getFields(settings));
+            entityRecords = instanceService.getEntityRecordsFromLookup(entityId, lookup, fieldMap, queryParams);
+            recordCount = instanceService.countRecordsByLookup(entityId, lookup, fieldMap);
         } else if (filterSet(filterStr)) {
             Filters filters = new Filters(objectMapper.readValue(filterStr, Filter[].class));
             filters.setMultiselect(instanceService.getEntityFields(entityId));
@@ -266,6 +268,7 @@ public class InstanceController extends MdsController {
     @ResponseBody
     public long importCsv(@PathVariable long entityId, @RequestParam(required = true)  MultipartFile csvFile) {
         instanceService.verifyEntityAccess(entityId);
+        instanceService.validateNonEditableProperty(entityId);
         try {
             try (InputStream in = csvFile.getInputStream()) {
                 Reader reader = new InputStreamReader(in);
@@ -281,7 +284,7 @@ public class InstanceController extends MdsController {
         if (gridSettings.getFields() == null) {
             return null;
         } else {
-            return objectMapper.readValue(gridSettings.getFields(), new TypeReference<HashMap>() {});
+            return objectMapper.readValue(gridSettings.getFields(), new TypeReference<LinkedHashMap>() {});
         }
     }
 
@@ -312,37 +315,5 @@ public class InstanceController extends MdsController {
         int index = ArrayUtils.indexOf(content, (byte) ',') + 1;
 
         return ArrayUtils.toObject(decoder.decode(ArrayUtils.subarray(content, index, content.length)));
-    }
-
-    private QueryParams buildQueryParams(GridSettings settings) {
-        return buildQueryParams(settings, buildOrderList(settings));
-    }
-
-    private QueryParams buildQueryParams(GridSettings settings, List<Order> orderList) {
-        // just check if the page is set
-        int page = (settings.getPage() == null) ? 1 : settings.getPage();
-        int pageSize = (settings.getRows() == null) ? 10 : settings.getRows();
-
-        return new QueryParams(page, pageSize, orderList);
-    }
-
-    private List<Order> buildOrderList(GridSettings settings) {
-        Order order = null;
-
-        if (settings.getSortColumn() != null && !settings.getSortColumn().isEmpty()) {
-            order = new Order(settings.getSortColumn(), settings.getSortDirection());
-        }
-
-        List<Order> orderList = new ArrayList<>();
-        if (order != null) {
-            orderList.add(order);
-            if (!Constants.Util.ID_FIELD_NAME.equalsIgnoreCase(order.getField())) {
-                // if the ordering is done on a field other than id
-                // we want to add the id ordering as backup, so that results stay consistent
-                orderList.add(new Order(Constants.Util.ID_FIELD_NAME, Order.Direction.ASC));
-            }
-        }
-
-        return orderList;
     }
 }
