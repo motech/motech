@@ -34,6 +34,8 @@ import static org.junit.Assert.assertTrue;
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class TaskDataServiceBundleIT extends BasePaxIT {
 
+    private static final String MDS_ENTITIES_BUNDLE = "org.motechproject.motech-platform-dataservices-entities";
+
     @Inject
     private TasksDataService tasksDataService;
 
@@ -81,9 +83,9 @@ public class TaskDataServiceBundleIT extends BasePaxIT {
 
     @Test
     public void shouldFindTasksByTriggerSubject() {
-        TaskActionInformation action = new TaskActionInformation("send", "test", "test", "0.15", "SEND", new HashMap<String, String>());
+        TaskActionInformation action = new TaskActionInformation("send", "test", MDS_ENTITIES_BUNDLE, "0.15", "SEND", new HashMap<String, String>());
 
-        TaskTriggerInformation trigger1 = new TaskTriggerInformation("receive-1", "test", "test", "0.14", "RECEIVE-1", null);
+        TaskTriggerInformation trigger1 = new TaskTriggerInformation("receive-1", "test", MDS_ENTITIES_BUNDLE, "0.14", "RECEIVE-1", null);
         TaskTriggerInformation trigger2 = new TaskTriggerInformation("receive-2", "test", "test", "0.14", "RECEIVE-2", null);
 
         Task expected1 = new Task("name1", trigger1, asList(action), null, true, true);
