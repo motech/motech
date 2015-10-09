@@ -13,6 +13,7 @@ import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.motechproject.mds.util.Constants.AnnotationFields.HISTORY;
+import static org.motechproject.mds.util.Constants.AnnotationFields.MAX_FETCH_DEPTH;
 import static org.motechproject.mds.util.Constants.AnnotationFields.MODULE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 import static org.motechproject.mds.util.Constants.AnnotationFields.NAMESPACE;
@@ -120,12 +122,14 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                     restOptions = advancedSettings.getRestOptions();
                 }
 
+                // per entity maxFetchDepth that will be passed to the Persistence Manager
+                setMaxFetchDepth(entity, annotation);
+
                 entityProcessorOutput.setEntityProcessingResult(entity);
 
                 fields = findFields(clazz, entity);
-                if (!MdsEntity.class.getName().equalsIgnoreCase(entity.getSuperClass())) {
-                    fields.addAll(EntityDefaultFieldsHelper.defaultFields(typeService));
-                }
+                addDefaultFields(entity, fields);
+
                 entityProcessorOutput.setFieldProcessingResult(fields);
 
                 entityProcessorOutput.setUiFilterableProcessingResult(findFilterableFields(clazz));
@@ -152,6 +156,19 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
             }
         } else {
             LOGGER.debug("Did not find Entity annotation in class: {}", clazz.getName());
+        }
+    }
+
+    private void setMaxFetchDepth(EntityDto entity, Annotation annotation) {
+        int maxFetchDepth = Integer.parseInt(ReflectionsUtil.getAnnotationValue(annotation, MAX_FETCH_DEPTH));
+        if (maxFetchDepth != Constants.FetchDepth.MDS_DEFAULT) {
+            entity.setMaxFetchDepth(maxFetchDepth);
+        }
+    }
+
+    private void addDefaultFields(EntityDto entity, Collection<FieldDto> fields) {
+        if (!MdsEntity.class.getName().equalsIgnoreCase(entity.getSuperClass())) {
+            fields.addAll(EntityDefaultFieldsHelper.defaultFields(typeService));
         }
     }
 
