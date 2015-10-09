@@ -3,6 +3,7 @@ package org.motechproject.mds.service.impl;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.repository.ComboboxValueRepository;
 import org.motechproject.mds.service.MetadataService;
 import org.osgi.framework.BundleContext;
@@ -57,7 +58,12 @@ public class ComboboxValueHelper {
         // if this combobox allows user supplied values, then add all existing values from the database
         // as options
         if (cbHolder.isAllowUserSupplied()) {
+            // we must switch the class loader here, since we need the MDS class loader for some of the queries
+            ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
             try {
+                ClassLoader mdsCl = MdsBundleHelper.getMdsBundleClassLoader(bundleContext);
+                Thread.currentThread().setContextClassLoader(mdsCl);
+
                 List<String> optionsFromDb;
 
                 if (cbHolder.isAllowMultipleSelections()) {
@@ -73,6 +79,8 @@ public class ComboboxValueHelper {
                 // after logging the exception
                 LOGGER.error("Unable to retrieve combobox values from the database for field {} in entity {}",
                         field.getName(), entity.getClassName(), e);
+            } finally {
+                Thread.currentThread().setContextClassLoader(oldCl);
             }
         }
 
