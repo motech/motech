@@ -22,7 +22,7 @@ More information on the Web Console can be found in the `Web Console Documentati
 Installation
 ============
 
-The Web Console can be installed by simply downloading it from the `Felix Downloads Page<http://felix.apache.org/downloads.cgi>`_ into the
+The Web Console can be installed by simply downloading it from the `Felix Downloads Page <http://felix.apache.org/downloads.cgi>`_ into the
 *~/.motech/bundles* directory belonging to the user running MOTECH. The console should become active after starting MOTECH.
 
 Accessing the Console
