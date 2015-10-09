@@ -32,7 +32,6 @@ public class MotechUser {
     private boolean active;
 
     @Field
-    @Unique
     private String openId;
 
     @Field
