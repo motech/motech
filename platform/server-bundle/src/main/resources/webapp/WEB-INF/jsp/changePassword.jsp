@@ -76,9 +76,9 @@
                                             <div class="form-group">
                                                 <label class="control-label col-md-5">{{msg('server.reset.confirmPassword')}}</label>
                                                 <div class="form-inline col-md-6">
-                                                    <input class="form-control input-auto" type="password" required id="passwordConfirmation" name="confirmPassword"
+                                                    <input class="form-control input-auto" type="password" required id="passwordConfirmation" name="confirmPassword" visited-confirm-input
                                                         confirm-password="changePasswordViewData.changePasswordForm.password" ng-model="changePasswordViewData.changePasswordForm.passwordConfirmation" />
-                                                    <span ng-show="changePasswordForm.confirmPassword.$dirty && changePasswordForm.confirmPassword.$error.equal === true && changePasswordForm.newPassword.$error.valid === false && changePasswordForm.newPassword.$error.notEqual === false"
+                                                    <span ng-show="isConfirmPasswordDirty && changePasswordForm.confirmPassword.$dirty && changePasswordForm.confirmPassword.$error.equal === true && changePasswordForm.newPassword.$error.valid === false && changePasswordForm.newPassword.$error.notEqual === false"
                                                         class="form-hint form-hint-bottom">
                                                         {{msg('server.error.invalid.password')}}
                                                     </span>

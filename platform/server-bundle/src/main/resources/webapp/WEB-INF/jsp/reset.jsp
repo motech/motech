@@ -62,9 +62,9 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>{{msg('server.reset.confirmPassword')}}</label>
-                                                <input class="col-md-12 form-control" type="password" confirm-password="resetViewData.resetForm.password" required
+                                                <input class="col-md-12 form-control" type="password" confirm-password="resetViewData.resetForm.password" required visited-confirm-input
                                                     id="passwordConfirmation" name="passwordConfirmation" ng-model="resetViewData.resetForm.passwordConfirmation" />
-                                                <span ng-show="resetPasswordForm.passwordConfirmation.$dirty && resetPasswordForm.passwordConfirmation.$error.equal === true && resetPasswordForm.password.$error.valid === false"
+                                                <span ng-show="isConfirmPasswordDirty && resetPasswordForm.passwordConfirmation.$dirty && resetPasswordForm.passwordConfirmation.$error.equal === true && resetPasswordForm.password.$error.valid === false"
                                                     class="form-hint form-hint-bottom">
                                                     {{msg('server.error.invalid.password')}}
                                                 </span>

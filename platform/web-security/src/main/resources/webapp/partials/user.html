@@ -75,8 +75,9 @@
                 <div ng-show="!user.generatePassword" class="form-group" ng-class="cssPassword()">
                     <label class="col-md-3 col-sm-4 control-label">{{msg('security.confirmPassword')}}</label>
                     <div class="form-inline col-md-9 col-sm-8">
-                        <input class="form-control input-auto" ng-disabled="us.er.generatePassword" type="password" name="confirmPassword" ng-model="confirmPassword" required confirm-password="user.password">
-                        <span ng-show="createUserForm.confirmPassword.$dirty && createUserForm.confirmPassword.$error.equal === true && createUserForm.newPassword.$error.valid === false" class="form-hint">
+                        <input class="form-control input-auto" ng-disabled="user.generatePassword" type="password" name="confirmPassword" ng-model="confirmPassword" visited-confirm-input
+                               required confirm-password="user.password">
+                        <span ng-show="!user.generatePassword && isConfirmPasswordDirty && createUserForm.confirmPassword.$dirty && createUserForm.confirmPassword.$error.equal === true && createUserForm.newPassword.$error.valid === false" class="form-hint">
                             {{msg('security.samePassword')}}
                         </span>
                     </div>
@@ -143,8 +144,9 @@
                 <div class="form-group" ng-class="cssPassword()">
                     <label class="col-md-3 col-sm-4 control-label">{{msg('security.confirmPassword')}}</label>
                     <div class="col-md-9 col-sm-8 form-inline">
-                        <input class="form-control input-auto" type="password" name="confirmPassword" ng-model="confirmPassword" confirm-password="user.password">
-                        <span ng-show="editUserForm.confirmPassword.$dirty && editUserForm.confirmPassword.$error.equal === true && editUserForm.newPassword.$error.valid === false" class="form-hint">
+                        <input class="form-control input-auto" type="password" name="confirmPassword" ng-model="confirmPassword" visited-confirm-input
+                               confirm-password="user.password">
+                        <span ng-show="isConfirmPasswordDirty && editUserForm.confirmPassword.$dirty && editUserForm.confirmPassword.$error.equal === true && editUserForm.newPassword.$error.valid === false" class="form-hint">
                             {{msg('security.samePassword')}}
                         </span>
                     </div>

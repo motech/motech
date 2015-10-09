@@ -300,7 +300,7 @@
         };
     });
 
-    widgetModule.directive('confirmPassword', function(){
+    widgetModule.directive('confirmPassword', function() {
         return {
             restrict: 'A',
             require: 'ngModel',
@@ -330,7 +330,7 @@
         };
     });
 
-    widgetModule.directive('oldPassword', function(){
+    widgetModule.directive('oldPassword', function() {
         return {
             restrict: 'A',
             require: 'ngModel',
@@ -356,6 +356,32 @@
 
                 ctrl.$formatters.unshift(function(modelPassword) {
                     return validateNotEqual(modelPassword, scope.$eval(attrs.oldPassword));
+                });
+            }
+        };
+    });
+
+    widgetModule.directive('visitedConfirmInput', function () {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function (scope, element, attrs, ctrl) {
+                var elm = angular.element(element),
+                typingTimer;
+                elm.on('keyup', function () {
+                    scope.isConfirmPasswordDirty = false;
+                    clearTimeout(typingTimer);
+                    typingTimer = setTimeout( function() {
+                        scope.$apply(function () {
+                            scope.isConfirmPasswordDirty = true;
+                        });
+                    }, 750);
+                });
+
+                elm.on("blur", function() {
+                    scope.$apply(function () {
+                        scope.isConfirmPasswordDirty = true;
+                    });
                 });
             }
         };
