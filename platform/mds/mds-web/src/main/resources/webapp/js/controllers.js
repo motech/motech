@@ -4369,7 +4369,9 @@
 
             if ($scope.checkboxModel.exportWithLookup === true) {
                 url = url + "&lookup=" + (($scope.selectedLookup) ? $scope.selectedLookup.lookupName : "");
-                url = url + "&fields=" + JSON.stringify($scope.lookupBy);
+                // in lookup fields the special characters may appear (for example '+' before timezone),
+                // we have to encode them before passing this url
+                url = url + "&fields=" + encodeURIComponent(JSON.stringify($scope.lookupBy));
             }
 
             $http.get(url)
