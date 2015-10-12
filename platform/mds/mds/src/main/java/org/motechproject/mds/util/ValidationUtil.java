@@ -43,7 +43,7 @@ public final class ValidationUtil {
 
     /**
      * Verifies that given string is a valid java field name. Throws {@link org.motechproject.mds.ex.entity.InvalidJavaFieldNameException}
-     * if given String is not blank and is not invalid java identifier.
+     * if given String is not blank and is not valid java identifier.
      *
      * @param str String to verify
      */
