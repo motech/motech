@@ -37,7 +37,7 @@ Install and Configure Dependencies
 		.. code-block:: bash
 
 			sudo service tomcat7 stop
-			sudo sed -i '2iCATALINA_OPTS="-Xms512m -Xmx512m"' /usr/share/tomcat7/bin/catalina.sh
+			echo 'CATALINA_OPTS="-Xms512m -Xmx512m"' | sudo tee --append /usr/share/tomcat7/bin/setenv.sh
 			sudo chown -R tomcat7:tomcat7 /var/lib/tomcat7/ /usr/share/tomcat7/
 
 
