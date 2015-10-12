@@ -222,4 +222,10 @@ public interface MotechDataService<T> {
      *
      */
     void evictAll();
+
+    /**
+     * Evicts the provided entity from the cache
+     *
+     */
+    void evictOne(T object);
 }
