@@ -58,7 +58,7 @@
         }, {
           "key": "repeatIntervalInMilliSeconds",
           "displayName": "scheduler.repeatIntervalInMilliSeconds",
-          "type": "LONG"
+          "type": "INTEGER"
         }, {
           "key": "ignorePastFiresAtStart",
           "displayName": "scheduler.ignorePastFiresAtStart",
@@ -127,7 +127,7 @@
 {
       "displayName": "scheduler.schedulePeriodRepeatingJob",
       "serviceInterface": "org.motechproject.scheduler.service.MotechSchedulerActionProxyService",
-      "serviceMethod": "schedulePeriodRepeatingJob",
+      "serviceMethod": "scheduleRepeatingPeriodJob",
       "actionParameters": [
         {
           "key": "motechEventSubject",
