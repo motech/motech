@@ -135,6 +135,15 @@ public final class MdsBundleHelper {
         return bundle.adapt(BundleWiring.class).getClassLoader();
     }
 
+    /**
+     * Returns the Bundle ClassLoader of the MDS Entities bundle.
+     * @param bundleContext the bundle context from which the MDS Entities bundle should get retrieved from
+     * @return the MDS bundle ClassLoader
+     */
+    public static ClassLoader getMdsEntitiesBundleClassLoader(BundleContext bundleContext) {
+        Bundle bundle = findMdsEntitiesBundle(bundleContext);
+        return bundle.adapt(BundleWiring.class).getClassLoader();
+    }
 
     private static JDOImplHelper getJDOImplHelper() {
         return (JDOImplHelper) AccessController.doPrivileged(new PrivilegedAction() {

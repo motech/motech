@@ -37,6 +37,7 @@ import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.SqlQueryExecution;
+import org.motechproject.mds.service.ComboboxValueService;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
@@ -670,7 +671,9 @@ public class MdsBundleIT extends BasePaxIT {
                 JAVA_LD_NOW.minusDays(1), JAVA_NOW.minusHours(1));
         service.update(retrieved);
 
-        assertEquals(asList("0", "35", "2", "4"), entityService.getAllComboboxValues(entityId, "someList"));
+        ComboboxValueService cbValueService = ServiceRetriever.getService(bundleContext, ComboboxValueService.class);
+
+        assertEquals(asList("0", "35", "2", "4"), cbValueService.getAllValuesForCombobox(FOO_CLASS, "someList"));
     }
 
     private void verifyCsvImport() throws Exception {

@@ -18,6 +18,8 @@
 
     <osgi:service id="metadataServiceOSGi" ref="metadataService" interface="org.motechproject.mds.service.MetadataService"/>
 
+    <osgi:service id="comboboxValueServiceOSGi" ref="comboboxValueService" interface="org.motechproject.mds.service.ComboboxValueService"/>
+
     <osgi:service id="transactionManagerOSGi" ref="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager"/>
 
     <osgi:reference id="jdoListenerRegistryService" interface="org.motechproject.mds.service.JdoListenerRegistryService" availability="optional"/>

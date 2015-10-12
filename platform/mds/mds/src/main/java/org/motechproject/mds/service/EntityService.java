@@ -485,13 +485,4 @@ public interface EntityService {
      * @return the list of fields for the UI
      */
     List<FieldDto> getEntityFieldsForUI(Long entityId);
-
-    /**
-     * Returns all available combobox values for the given entity field.
-     * For comboxes that support user supplied fields, it will fetch distinct values from the database.
-     * @param entityId the id of the entity
-     * @param fieldName the name of the field
-     * @return the list of all available options
-     */
-    List<String> getAllComboboxValues(Long entityId, String fieldName);
 }

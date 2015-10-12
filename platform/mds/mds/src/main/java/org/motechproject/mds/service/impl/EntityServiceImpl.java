@@ -5,6 +5,7 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.builder.MDSConstructor;
+import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
@@ -52,6 +53,7 @@ import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.AllEntityAudits;
 import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllTypes;
+import org.motechproject.mds.service.ComboboxValueService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
@@ -61,6 +63,7 @@ import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.validation.EntityValidator;
 import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +108,6 @@ public class EntityServiceImpl implements EntityService {
     private AllEntityDrafts allEntityDrafts;
     private AllEntityAudits allEntityAudits;
     private MDSConstructor mdsConstructor;
-    private ComboboxValueHelper cbValueHelper;
 
     private BundleContext bundleContext;
     private EntityValidator entityValidator;
@@ -1266,21 +1268,6 @@ public class EntityServiceImpl implements EntityService {
         allEntities.update(entity);
     }
 
-    @Override
-    @Transactional
-    public List<String> getAllComboboxValues(Long entityId, String fieldName) {
-        Entity entity = allEntities.retrieveById(entityId);
-        assertEntityExists(entity, entityId);
-
-        Field field = entity.getField(fieldName);
-        if (field == null) {
-            throw new FieldNotFoundException(entity.getClassName(), fieldName);
-        }
-
-        return cbValueHelper.getAllValuesForCombobox(entity, field);
-    }
-
-
     private void assertEntityExists(Entity entity, Long entityId) {
         if (entity == null) {
             throw new EntityNotFoundException(entityId);
@@ -1383,7 +1370,7 @@ public class EntityServiceImpl implements EntityService {
             FieldDto fieldDto = field.toDto();
 
             if (fetchComboboxOptions && field.getType().isCombobox()) {
-                List<String> values = cbValueHelper.getAllValuesForCombobox(entity, field);
+                List<String> values = getAllComboboxValues(entity, field);
                 fieldDto.setSetting(Constants.Settings.COMBOBOX_VALUES, values);
             }
 
@@ -1391,6 +1378,19 @@ public class EntityServiceImpl implements EntityService {
         }
 
         return fieldDtos;
+    }
+
+    private List<String> getAllComboboxValues(Entity entity, Field field) {
+        ServiceReference<ComboboxValueService> ref = bundleContext.getServiceReference(ComboboxValueService.class);
+        if (ref == null) {
+            LOGGER.warn("Combobox value service unavailable, ignoring user supplied values");
+
+            ComboboxHolder cbHolder = new ComboboxHolder(field);
+            return Arrays.asList(cbHolder.getValues());
+        } else {
+            ComboboxValueService cbValueService = bundleContext.getService(ref);
+            return cbValueService.getAllValuesForCombobox(entity, field);
+        }
     }
 
     @Autowired
@@ -1431,10 +1431,5 @@ public class EntityServiceImpl implements EntityService {
     @Autowired
     public void setComboboxDataMigrationHelper(ComboboxDataMigrationHelper comboboxDataMigrationHelper) {
         this.comboboxDataMigrationHelper = comboboxDataMigrationHelper;
-    }
-
-    @Autowired
-    public void setCbValueHelper(ComboboxValueHelper cbValueHelper) {
-        this.cbValueHelper = cbValueHelper;
     }
 }

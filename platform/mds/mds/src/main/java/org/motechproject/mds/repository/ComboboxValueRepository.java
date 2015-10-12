@@ -3,7 +3,6 @@ package org.motechproject.mds.repository;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.util.Constants;
-import org.springframework.stereotype.Repository;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -11,8 +10,8 @@ import java.util.List;
 
 /**
  * Responsible for fetching possible values for a combobox from the database.
+ * This repository is only defined in the MDS entities bundle.
  */
-@Repository
 public class ComboboxValueRepository extends AbstractRepository {
 
     /**

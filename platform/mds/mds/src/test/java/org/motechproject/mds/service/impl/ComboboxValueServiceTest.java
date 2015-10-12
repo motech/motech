@@ -15,10 +15,8 @@ import org.motechproject.mds.repository.ComboboxValueRepository;
 import org.motechproject.mds.service.MetadataService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.TypeHelper;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.wiring.BundleWiring;
 
 import java.util.List;
 
@@ -32,7 +30,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ComboboxValueHelperTest {
+public class ComboboxValueServiceTest {
 
     private static final List<String> PREDEFINED_VALUES = asList("one", "two", "three");
     private static final List<String> VALUES_FROM_REPOSITORY = asList("one", "two", "four", "five");
@@ -43,7 +41,7 @@ public class ComboboxValueHelperTest {
     private static final String CB_TABLE_NAME = "cbTableName";
 
     @InjectMocks
-    private ComboboxValueHelper cbValueHelper = new ComboboxValueHelper();
+    private ComboboxValueServiceImpl cbValueHelper = new ComboboxValueServiceImpl();
 
     @Mock
     private ComboboxValueRepository cbValueRepository;
@@ -64,12 +62,6 @@ public class ComboboxValueHelperTest {
     private BundleContext bundleContext;
 
     @Mock
-    private Bundle mdsBundle;
-
-    @Mock
-    private BundleWiring mdsBundleWiring;
-
-    @Mock
     private ServiceReference<MetadataService> ref;
 
     @Before
@@ -83,12 +75,6 @@ public class ComboboxValueHelperTest {
 
         when(bundleContext.getServiceReference(MetadataService.class)).thenReturn(ref);
         when(bundleContext.getService(ref)).thenReturn(metadataService);
-
-        // set it up so that the class loader doesn't get changed
-        when(bundleContext.getBundles()).thenReturn(new Bundle[] { mdsBundle });
-        when(mdsBundle.getSymbolicName()).thenReturn(Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME);
-        when(mdsBundle.adapt(BundleWiring.class)).thenReturn(mdsBundleWiring);
-        when(mdsBundleWiring.getClassLoader()).thenReturn(Thread.currentThread().getContextClassLoader());
     }
 
     @Test
@@ -162,13 +148,13 @@ public class ComboboxValueHelperTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionForNullEntityAndField() {
-        cbValueHelper.getAllValuesForCombobox(null, null);
+        cbValueHelper.getAllValuesForCombobox((Entity) null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionWhenFieldIsNotCb() {
         when(type.isCombobox()).thenReturn(false);
-        cbValueHelper.getAllValuesForCombobox(null, null);
+        cbValueHelper.getAllValuesForCombobox((Entity) null, null);
     }
 
     private void setUpCb(boolean allowMultiSelection, boolean allowUserSupplied) {

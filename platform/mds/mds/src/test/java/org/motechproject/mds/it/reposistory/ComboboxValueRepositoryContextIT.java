@@ -33,7 +33,6 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
     private static final String CB_FIELD_MULTI_NAME = "cbFieldMulti";
     private static final String CB_FIELD_SINGLE_NAME = "cbFieldSingle";
 
-    @Autowired
     private ComboboxValueRepository cbValueRepository;
 
     @Autowired
@@ -67,6 +66,10 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
 
         setUpForInstanceTesting();
         setUpTestData();
+
+        // normally this lives in the entities bundle
+        cbValueRepository = new ComboboxValueRepository();
+        cbValueRepository.setPersistenceManagerFactory(persistenceManagerFactory);
     }
 
     @Test
