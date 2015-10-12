@@ -364,6 +364,11 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
+    public void evictAll() {
+        repository.evictAll();
+    }
+
+    @Override
     @Transactional
     public T findById(Long id) {
         if (id == null) {

@@ -216,4 +216,10 @@ public interface MotechDataService<T> {
      * @return class type
      */
     Class<T> getClassType();
+
+    /**
+     * Evicts all cached entities
+     *
+     */
+    void evictAll();
 }
