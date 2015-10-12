@@ -59,7 +59,7 @@ public class PasswordExpirationCheckEventHandler {
             for (MotechUser user : allUsers.retrieveAll()) {
                 int daysWithoutPasswordChange = daysWithoutPasswordChange(user);
 
-                LOGGER.debug("User {} hasn't changed password in {} days. Notification is being set {} days before" +
+                LOGGER.debug("User {} hasn't changed password in {} days. Notification is being sent {} days before" +
                                 "expiration", user.getUserName(), daysWithoutPasswordChange, daysTillReminder);
 
                 if (daysWithoutPasswordChange == daysTillReminder) {
@@ -86,7 +86,7 @@ public class PasswordExpirationCheckEventHandler {
 
         LOGGER.info("Event notifying user {} about incoming required password change sent. The password should be" +
                         "changed at {}. User e-mail is {}", user.getUserName(),
-                parameters.get("expirationDate").toString(), user.getEmail());
+                parameters.get(TEMPLATE_PARAM_EXPIRATION_DATE).toString(), user.getEmail());
     }
 
     private int daysWithoutPasswordChange(MotechUser user) {

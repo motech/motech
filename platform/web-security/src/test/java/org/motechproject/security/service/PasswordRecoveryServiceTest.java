@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
@@ -26,6 +25,7 @@ import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.testing.utils.BaseUnitTest;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +37,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class PasswordRecoveryServiceTest extends BaseUnitTest {
 
@@ -45,8 +46,8 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
     private static final String PASSWORD = "password";
     private static final String TOKEN = "token";
     private static final String ENCODED_PASSWORD = "p455w012d";
+    private static final String EMAIL_SUBJECT = "Some e-mail subject";
     private static final List<String> ROLES = Arrays.asList("admin");
-
 
     @Mock
     private MotechUser user;
@@ -85,10 +86,13 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
     private PasswordRecoveryService recoveryService = new PasswordRecoveryServiceImpl();
 
     private MotechSettings motechSettings;
+    private ResourceBundleMessageSource messageSource;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        initMocks(this);
+        prepareMessageSource();
+        prepareEmailSender();
     }
 
     @After
@@ -242,4 +246,18 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
         recoveryService.oneTimeTokenOpenId(EMAIL);
     }
 
+    private void prepareMessageSource() {
+        messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("messages/messages");
+        messageSource.setUseCodeAsDefaultMessage(true);
+    }
+
+    private void prepareEmailSender() {
+        EmailSenderImpl emailSender = new EmailSenderImpl();
+        emailSender.setSettingsFacade(settingsFacade);
+        emailSender.setTemplateParser(templateParser);
+        emailSender.setMessageSource(messageSource);
+        emailSender.setEventRelay(eventRelay);
+        emailSenderInjected = emailSender;
+    }
 }

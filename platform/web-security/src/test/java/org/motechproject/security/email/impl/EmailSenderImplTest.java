@@ -15,6 +15,7 @@ import org.motechproject.server.config.domain.MotechSettings;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.mockito.Matchers.any;
@@ -60,7 +61,6 @@ public class EmailSenderImplTest {
     @Mock
     private SettingService settingService;
 
-    @Mock
     private ResourceBundleMessageSource messageSource;
 
     @Mock
@@ -74,6 +74,7 @@ public class EmailSenderImplTest {
     @Before
     public void setUp() {
         initMocks(this);
+        prepareMessageSource();
         prepareEmailSender();
         prepareSettingService();
         prepareSettingsFacade();
@@ -109,6 +110,7 @@ public class EmailSenderImplTest {
         user.setLastPasswordChange(DateUtil.now().minusDays(DAYS_TO_CHANGE_PASSWORD - DAYS_FOR_REMINDER));
         user.setUserName("FooUsername");
         user.setEmail("fooUser@domain.com");
+        user.setLocale(Locale.ENGLISH);
     }
     
     private void prepareParams() {
@@ -148,7 +150,14 @@ public class EmailSenderImplTest {
         params.put(EMAIL_PARAM_FROM_ADDRESS, SENDER_ADDRESS);
         params.put(EMAIL_PARAM_TO_ADDRESS, user.getEmail());
         params.put(EMAIL_PARAM_MESSAGE, EMAIL_MESSAGE);
-        params.put(EMAIL_PARAM_SUBJECT, PASSWORD_CHANGE_REMINDER_MESSAGE_SUBJECT);
+        params.put(EMAIL_PARAM_SUBJECT, messageSource.getMessage(PASSWORD_CHANGE_REMINDER_MESSAGE_SUBJECT, null,
+                Locale.ENGLISH));
         event = new MotechEvent("SendEMail", params);
+    }
+
+    private void prepareMessageSource() {
+        messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("messages/messages");
+        messageSource.setUseCodeAsDefaultMessage(true);
     }
 }

@@ -22,17 +22,18 @@ public final class EmailConstants {
     public static final String TEMPLATE_PARAM_USERNAME = "user";
     public static final String TEMPLATE_PARAM_MESSAGES = "messages";
     public static final String TEMPLATE_PARAM_LOCALE = "locale";
-    public static final String TEMPLATE_PARAM_EXPIRATION_DATE = "expirationDate";
-    public static final String TEMPLATE_PARAM_LAST_PASSWORD_CHANGE = "lastPasswordChange";
-    public static final String TEMPLATE_PARAM_DAYS_TILL_EXPIRE = "daysTillExpire";
-    public static final String TEMPLATE_PARAM_SERVER_URL = "serverUrl";
-    public static final String TEMPLATE_PARAM_EXTERNAL_ID = "externalId";
+    public static final String TEMPLATE_PARAM_EXPIRATION_DATE = "expiration_date";
+    public static final String TEMPLATE_PARAM_LAST_PASSWORD_CHANGE = "last_password_change";
+    public static final String TEMPLATE_PARAM_DAYS_TILL_EXPIRE = "days_till_expire";
+    public static final String TEMPLATE_PARAM_SERVER_URL = "server_url";
+    public static final String TEMPLATE_PARAM_EXTERNAL_ID = "external_id";
 
     //E-mail message subjects
-    public static final String RECOVERY_MESSAGE_SUBJECT = "Motech Password Recovery";
-    public static final String ONE_TIME_TOKEN_MESSAGE_SUBJECT = "Motech One Time Token For Admin User";
-    public static final String LOGIN_INFORMATION_MESSAGE_SUBJECT = "Motech Login Information";
-    public static final String PASSWORD_CHANGE_REMINDER_MESSAGE_SUBJECT = "Password change reminder";
+    private static final String BASE_MSG = "security.email.subjects.";
+    public static final String RECOVERY_MESSAGE_SUBJECT = BASE_MSG + "passwordRecovery";
+    public static final String ONE_TIME_TOKEN_MESSAGE_SUBJECT = BASE_MSG + "oneTimeToken";
+    public static final String LOGIN_INFORMATION_MESSAGE_SUBJECT = BASE_MSG + "loginInformation";
+    public static final String PASSWORD_CHANGE_REMINDER_MESSAGE_SUBJECT = BASE_MSG + "passwordChangeReminder";
     
     //Paths
     public static final String RESET_PATH = "reset";

@@ -56,11 +56,18 @@ public class EmailSenderImpl implements EmailSender {
 
     @Override
     public void sendRecoveryEmail(final PasswordRecovery recovery) {
+
         LOGGER.info("Sending recovery e-mail");
+
         try {
+
             String text = templateParser.mergeTemplateIntoString(RESET_MAIL_TEMPLATE,
                     passRecoveryTemplateParams(recovery));
-            sendEmail(recovery.getEmail(), text, RECOVERY_MESSAGE_SUBJECT);
+
+            String subject = messageSource.getMessage(RECOVERY_MESSAGE_SUBJECT, null, recovery.getLocale());
+
+            sendEmail(recovery.getEmail(), text, subject);
+
         } catch (VelocityTemplateParsingException e) {
             LOGGER.error("Couldn't send recovery e-mail", e);
         }
@@ -68,11 +75,18 @@ public class EmailSenderImpl implements EmailSender {
 
     @Override
     public void sendOneTimeToken(final PasswordRecovery recovery) {
+
         LOGGER.info("Sending one time token");
+
         try {
+
             String text = templateParser.mergeTemplateIntoString(ONE_TIME_TOKEN_TEMPLATE,
                     passRecoveryTemplateParams(recovery));
-            sendEmail(recovery.getEmail(), text, ONE_TIME_TOKEN_MESSAGE_SUBJECT);
+
+            String subject = messageSource.getMessage(ONE_TIME_TOKEN_MESSAGE_SUBJECT, null, recovery.getLocale());
+
+            sendEmail(recovery.getEmail(), text, subject);
+
         } catch (VelocityTemplateParsingException e) {
             LOGGER.error("Couldn't send one time token", e);
         }
@@ -80,11 +94,18 @@ public class EmailSenderImpl implements EmailSender {
 
     @Override
     public void sendLoginInfo(final MotechUser user, String token) {
+
         LOGGER.info("Sending login information to user: {}", user.getUserName());
+
         try {
+
             String text = templateParser.mergeTemplateIntoString(LOGIN_INFORMATION_TEMPLATE,
                     passLoginInfoTemplateParams(user.getUserName(), user.getLocale(), token));
-            sendEmail(user.getEmail(), text, LOGIN_INFORMATION_MESSAGE_SUBJECT);
+
+            String subject = messageSource.getMessage(LOGIN_INFORMATION_MESSAGE_SUBJECT, null, user.getLocale());
+
+            sendEmail(user.getEmail(), text, subject);
+
         } catch (VelocityTemplateParsingException e) {
             LOGGER.error("Couldn't send login information to user: {}", user.getUserName(), e);
         }
@@ -98,9 +119,15 @@ public class EmailSenderImpl implements EmailSender {
         LOGGER.info("Sending password change reminder to user: {}", username);
 
         try {
+
             String text = templateParser.mergeTemplateIntoString(PASSWORD_CHANGE_REMINDER_TEMPLATE,
                     passExpirationTemplateParams(params));
-            sendEmail((String) params.get(EMAIL_PARAM_TO_ADDRESS), text, PASSWORD_CHANGE_REMINDER_MESSAGE_SUBJECT);
+
+            String subject = messageSource.getMessage(PASSWORD_CHANGE_REMINDER_MESSAGE_SUBJECT, null,
+                    (Locale) params.get(TEMPLATE_PARAM_LOCALE));
+
+            sendEmail((String) params.get(EMAIL_PARAM_TO_ADDRESS), text, subject);
+
         } catch (VelocityTemplateParsingException e) {
             LOGGER.error("Couldn't send password change reminder to user: {}", username, e);
         }
