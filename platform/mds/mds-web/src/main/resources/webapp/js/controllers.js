@@ -1539,7 +1539,7 @@
         /**
         * Create new field and add it to an entity schema. If displayName, name or type was not
         * set, error message will be shown and a field will not be created. The additional message
-        * will be shown if a field name is not unique.
+        * will be shown if a field name is not unique or not valid java field name.
         */
         $scope.createField = function () {
             var validate, selector;
@@ -1547,7 +1547,7 @@
             $scope.tryToCreate = true;
             validate = $scope.newField.type
                 && $scope.newField.displayName
-                && $scope.newField.name
+                && $scope.isValidJavaFieldName($scope.newField.name)
                 && $scope.findFieldsByName($scope.newField.name).length === 0;
 
             if (validate) {
@@ -1705,7 +1705,6 @@
             return false;
         };
 
-
         /* VALIDATION FUNCTIONS */
 
         /**
@@ -1797,7 +1796,7 @@
         */
         $scope.validateFieldBasic = function (field) {
             return field.basic.displayName
-                && field.basic.name
+                && $scope.isValidJavaFieldName(field.basic.name)
                 && $scope.uniqueField(field.basic.name)
                 && $scope.getBasicDefaultValueValid(field.basic.name);
         };
@@ -1874,6 +1873,18 @@
             }
 
             return expression;
+        };
+
+        /**
+        * Validate the field name, checking if it is valid field name in java.
+        * Valid java field name starts from letter, $ or _ symbol followed by
+        * letters, numbers, $ or _ symbols.
+        *
+        * @param {fieldName} string representing name of validating field
+        * @return {boolean} true if fieldName is valid java field name, false otherwise
+        */
+        $scope.isValidJavaFieldName = function (fieldName) {
+            return MDSUtils.validateRegexp(fieldName, new RegExp('^[a-zA-Z_$][\\w$]*$'));
         };
 
         /**
