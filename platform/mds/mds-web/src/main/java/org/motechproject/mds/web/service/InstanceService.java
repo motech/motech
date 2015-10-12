@@ -1,5 +1,6 @@
 package org.motechproject.mds.web.service;
 
+import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.filter.Filters;
@@ -82,6 +83,10 @@ public interface InstanceService {
      * @return all fields of the entity
      */
     List<FieldDto> getEntityFields(Long entityId);
+
+    List<FieldDto> getEntityFieldsGivenInstance(EntityDto entity, Object instance);
+
+    List<FieldDto> getEntityFieldsByClassName(String classname);
 
     /**
      * Retrieves and executes a lookup of the given name, from the given entity. Additionally, allows to

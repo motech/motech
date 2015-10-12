@@ -133,6 +133,10 @@ public class TypeDto {
             "mds.field.long", "mds.field.description.long", "long", Long.class.getName()
     );
 
+    public static final TypeDto DISCRIMINATOR = new TypeDto(
+            "mds.field.discriminator", "mds.field.description.discriminator", "discriminator", "org.motechproject.mds.domain.DiscriminatorAsType"
+    );
+
     public static final TypeDto ONE_TO_ONE_RELATIONSHIP = new TypeDto(
             "mds.field.relationship.oneToOne", "mds.field.description.relationship.oneToOne",
             "oneToOneRelationship", "org.motechproject.mds.domain.OneToOneRelationship"

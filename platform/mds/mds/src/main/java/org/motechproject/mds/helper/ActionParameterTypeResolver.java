@@ -24,6 +24,7 @@ public final class ActionParameterTypeResolver {
     private static final String DOUBLE = "DOUBLE";
     private static final String MAP = "MAP";
     private static final String LONG = "LONG";
+    private static final String DISCRIMINATOR = "DISCRIMINATOR";
     private static final String UNKNOWN = "UNKNOWN";
     private static final String LIST = "LIST";
 
@@ -46,6 +47,7 @@ public final class ActionParameterTypeResolver {
         TYPE_MAPPING.put("mds.field.locale", UNICODE); // no more suitable type at the moment
         TYPE_MAPPING.put("mds.field.localDate", DATE);
         TYPE_MAPPING.put("mds.field.long", LONG);
+        TYPE_MAPPING.put("mds.field.discriminator", DISCRIMINATOR);
         TYPE_MAPPING.put("mds.field.relationship", UNKNOWN); // it is not supposed to occur
         TYPE_MAPPING.put("mds.field.relationship.oneToMany", LIST);
         TYPE_MAPPING.put("mds.field.relationship.oneToOne", LONG);

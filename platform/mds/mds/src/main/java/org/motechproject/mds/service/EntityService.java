@@ -109,6 +109,8 @@ public interface EntityService {
      */
     List<EntityDto> findEntitiesByPackage(String packageName);
 
+    List<EntityDto> findEntitiesBySuperclass(String classnameSuper);
+
     /**
      * Adds or updates lookups for the given entity.
      *
@@ -158,6 +160,8 @@ public interface EntityService {
      * @return a list of fields for an entity
      */
     List<FieldDto> getFields(Long entityId);
+
+    List<FieldDto> getPossibleFields(Long entityId);
 
     /**
      * Retrieves a list of all fields for the given entity. This will not include any draft fields.

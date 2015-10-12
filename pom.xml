@@ -1100,6 +1100,7 @@
         <module>platform/mds/mds-secondary-test-bundle</module>
         <module>platform/mds/mds-performance-tests</module>
         <module>platform/server-war-test</module>
+	<module>modules/testJdoDiscriminator</module>
 
         <!-- Archetypes modules -->
         <module>utils/archetypes/minimal-bundle-archetype</module>

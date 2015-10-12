@@ -3,8 +3,11 @@ package org.motechproject.mds.web.domain;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldValidationDto;
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
@@ -37,6 +40,9 @@ public class FieldRecord {
     private boolean required;
     private boolean nonEditable;
     private boolean nonDisplayable;
+    private Long entityId;
+    private FieldBasicDto basic;
+    private List<EntityDto> entitiesDerived;
 
     public FieldRecord() {
         this(null, null, null, null);
@@ -63,6 +69,8 @@ public class FieldRecord {
         setSettings(fieldDto.getSettings());
         setType(fieldDto.getType());
         setValue(fieldDto.getBasic().getDefaultValue());
+        this.entityId = -1L;
+        this.basic = fieldDto.getBasic();
     }
 
     public String getDisplayName() {
@@ -277,5 +285,29 @@ public class FieldRecord {
 
     public void setNonDisplayable(boolean nonDisplayable) {
         this.nonDisplayable = nonDisplayable;
+    }
+
+    public Long getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
+    }
+
+    public FieldBasicDto getBasic() {
+        return basic;
+    }
+
+    public void setBasic(FieldBasicDto basic) {
+        this.basic = basic;
+    }
+
+    public List<EntityDto> getEntitiesDerived() {
+        return entitiesDerived;
+    }
+
+    public void setEntitiesDerived(List<EntityDto> entitiesDerived) {
+        this.entitiesDerived = entitiesDerived;
     }
 }

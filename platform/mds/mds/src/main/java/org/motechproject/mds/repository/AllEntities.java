@@ -35,6 +35,7 @@ public class AllEntities extends MotechDataRepository<Entity> {
         entity.setReadOnlySecurityMembers(dto.getReadOnlySecurityMembers());
         entity.setSuperClass(dto.getSuperClass());
         entity.setAbstractClass(dto.isAbstractClass());
+        entity.setIsDiscriminated(dto.isDiscriminated());
         Tracking tracking = new Tracking();
         tracking.setEntity(entity);
         tracking.setRecordHistory(dto.isRecordHistory());

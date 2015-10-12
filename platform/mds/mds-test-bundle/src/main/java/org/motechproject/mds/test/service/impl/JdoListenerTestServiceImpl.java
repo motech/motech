@@ -10,7 +10,7 @@ public class JdoListenerTestServiceImpl implements JdoListenerTestService {
 
     @Override
     public void changeName(TestMdsEntity testMdsEntity) {
-        if (testMdsEntity.getSomeString().equals("TestChangeName")) {
+        if ("TestChangeName".equals(testMdsEntity.getSomeString())) {
             testMdsEntity.setSomeString("NameWasChanged");
         }
     }

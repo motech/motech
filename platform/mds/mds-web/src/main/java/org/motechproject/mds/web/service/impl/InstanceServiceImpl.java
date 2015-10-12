@@ -123,17 +123,24 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     @Transactional
     public Object saveInstance(EntityRecord entityRecord, Long deleteValueFieldId) {
-        EntityDto entity = getEntity(entityRecord.getEntitySchemaId());
-        validateCredentials(entity);
-        validateNonEditableProperty(entity);
+        EntityDto[] entityTarget = new EntityDto[]{null};
+        List<FieldDto> entityFields = new LinkedList<FieldDto>();
+        List<FieldRecord> fieldrecords = new LinkedList<FieldRecord>();
 
-        List<FieldDto> entityFields = getEntityFields(entityRecord.getEntitySchemaId());
+        DecodePseudofields(entityRecord, entityFields, fieldrecords, entityTarget, deleteValueFieldId);
 
+        entityTarget[0].setId(entityRecord.getId()); // TODO: is this redundant?
+
+        return SaveInstanceI(entityTarget[0], deleteValueFieldId, entityFields, fieldrecords);
+    }
+
+    private Object SaveInstanceI(EntityDto entity, Long deleteValueFieldId,
+                                 List<FieldDto> entityFields, List<FieldRecord> fieldrecords) {
         try {
             MotechDataService service = getServiceForEntity(entity);
             Class<?> entityClass = getEntityClass(entity);
 
-            boolean newObject = entityRecord.getId() == null;
+            boolean newObject = entity.getId() == null;
 
             Object instance;
             if (newObject) {
@@ -146,13 +153,13 @@ public class InstanceServiceImpl implements InstanceService {
                 }
 
             } else {
-                instance = service.retrieve(ID_FIELD_NAME, entityRecord.getId());
+                instance = service.retrieve(ID_FIELD_NAME, entity.getId());
                 if (instance == null) {
-                    throw new ObjectNotFoundException(entity.getName(), entityRecord.getId());
+                    throw new ObjectNotFoundException(entity.getName(), entity.getId());
                 }
             }
 
-            updateFields(instance, entityRecord.getFields(), service, deleteValueFieldId, !newObject);
+            updateFields(instance, fieldrecords, service, deleteValueFieldId, !newObject);
 
             if (newObject) {
                 return service.create(instance);
@@ -160,12 +167,91 @@ public class InstanceServiceImpl implements InstanceService {
                 return service.update(instance);
             }
         } catch (Exception e) {
-            if (entityRecord.getId() == null) {
+            if (entity.getId() == null) {
                 throw new ObjectCreateException(entity.getName(), e);
             } else {
-                throw new ObjectUpdateException(entity.getName(), entityRecord.getId(), e);
+                throw new ObjectUpdateException(entity.getName(), entity.getId(), e);
             }
         }
+    }
+
+    /***
+     * Translates an entity from the UI with display-only fields into a savable entity.
+     * The translation allows us to reuse UI widgets and wire protocol for editing
+     * entities with @Discriminated.
+     *
+     * One pseudofield represents the discriminator.
+     * Once a discriminator is selected, the UI will expand the field list using fieldsAdded.
+     *
+     * Encoding of pseudofields is performed by:
+     *      org.motechproject.mds.service.impl.EntityServiceImpl.EncodePseudofields()
+     */
+    private void DecodePseudofields(EntityRecord entityRecord, List<FieldDto> entityFields, List<FieldRecord> fieldrecords, EntityDto[] entityTarget, Long deleteValueFieldId)
+    {
+        EntityDto entity1 = getEntity(entityRecord.getEntitySchemaId());
+        EntityDto entity2 = DecodeEntityFromPfds(entityRecord, entity1, deleteValueFieldId);
+        boolean isDiscriminated = entity2 != null;
+        if(isDiscriminated) {
+            validateCredentials(entity2);
+            validateNonEditableProperty(entity2);
+        } else {
+            validateCredentials(entity1);
+            validateNonEditableProperty(entity1);
+
+        }
+        entityTarget[0] = isDiscriminated ? entity2 : entity1;
+        if(isDiscriminated) {
+            entityFields.addAll(getEntityFieldsByClassName(entityTarget[0].getClassName()));
+            fieldrecords.addAll(DecodeFieldlistFromPfds(entityFields, entityRecord, entityTarget[0]));
+            for(FieldDto fd : entityTarget[0].getFieldsAdded()) {
+                entityFields.add(fd);
+            }
+        } else {
+            entityFields.addAll(getEntityFields(entityRecord.getEntitySchemaId()));
+            fieldrecords.addAll(entityRecord.getFields());
+        }
+    }
+
+    private EntityDto DecodeEntityFromPfds(EntityRecord entityRecord, EntityDto entity, Long deleteValueFieldId)
+    {
+        List<FieldRecord> entityFields = entityRecord.getFields();
+
+        FieldRecord fdSubclass = null;
+        for(FieldRecord fd : entityFields) {
+            if("subclass".equals(fd.getName()))
+                fdSubclass = fd;
+        }
+        String classnameSimple2 = fdSubclass==null ? null : fdSubclass.getValue().toString();
+          // TODO: remove .toString()
+        if(classnameSimple2 == null) return null;
+
+        String classname2 = null;
+        for(EntityDto entityChild : fdSubclass.getEntitiesDerived()) {
+            if(classnameSimple2.equals(entityChild.getName()))
+                classname2 = entityChild.getClassName();
+        }
+        return getEntity(classname2);
+    }
+
+
+    private List<FieldRecord> DecodeFieldlistFromPfds(List<FieldDto> entityFields, EntityRecord entityRecord, EntityDto entity) {
+        // *** Note that this method mutates entityFields ***
+
+        List<FieldRecord> fieldrecords;
+        fieldrecords = new LinkedList<FieldRecord>();
+        for(FieldDto fd : entityFields) {
+            fieldrecords.add(new FieldRecord(fd));
+        }
+        for(FieldDto fd : entity.getFieldsAdded()) {
+            fieldrecords.add(new FieldRecord(fd));
+        }
+        // entityRecord has the data, and fieldrecords has the metadata
+        for(FieldRecord fdr : fieldrecords) {
+            FieldRecord fdrSrc = entityRecord.getFieldByName(fdr.getName());
+            if(fdrSrc != null)
+                fdr.setValue(fdrSrc.getValue());
+        }
+        return fieldrecords;
     }
 
     private void setInstanceFieldMap(Object instance, FieldDto entityField) {
@@ -207,6 +293,23 @@ public class InstanceServiceImpl implements InstanceService {
     public List<FieldDto> getEntityFields(Long entityId) {
         validateCredentialsForReading(getEntity(entityId));
         return entityService.getEntityFields(entityId);
+    }
+
+    @Override
+    public List<FieldDto> getEntityFieldsGivenInstance(EntityDto entity, Object instance) {
+        validateCredentialsForReading(entity);
+
+        if(entity.isDiscriminated()) {
+            return entityService.getEntityFieldsByClassName(instance.getClass().getCanonicalName());
+        } else {
+            return entityService.getEntityFields(entity.getId());
+        }
+    }
+
+    @Override
+    public List<FieldDto> getEntityFieldsByClassName(String classname) {
+        validateCredentialsForReading(getEntity(classname));
+        return entityService.getEntityFieldsByClassName(classname);
     }
 
     @Override
@@ -401,7 +504,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public EntityRecord newInstance(Long entityId) {
         validateCredentials(getEntity(entityId));
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getPossibleFields(entityId);
         List<FieldRecord> fieldRecords = new ArrayList<>();
 
         for (FieldDto field : fields) {
@@ -424,7 +527,7 @@ public class InstanceServiceImpl implements InstanceService {
             throw new ObjectNotFoundException(entity.getName(), instanceId);
         }
 
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = this.getEntityFieldsGivenInstance(entity, instance);
 
         return instanceToRecord(instance, entity, fields, service, EntityType.STANDARD);
     }
@@ -634,7 +737,12 @@ public class InstanceServiceImpl implements InstanceService {
                     continue;
                 }
 
-                Object value = getProperty(instance, field, service);
+                Object value;
+                if(field.getBasic().getName() != "subclass")
+                    value = getProperty(instance, field, service);
+                else {
+                    value = instance.getClass().getSimpleName();
+                }
                 Object displayValue = getDisplayValueForField(field, value);
 
                 value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_FIELD));

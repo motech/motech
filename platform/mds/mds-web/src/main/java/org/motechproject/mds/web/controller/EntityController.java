@@ -70,7 +70,7 @@ public class EntityController extends MdsController {
                     byModule.put(entity.getModule(), new ArrayList<EntityDto>());
                 }
 
-                if (!entity.isAbstractClass()) {
+                if (!entity.isAbstractClass() || entity.isDiscriminated()) {
                     EntityDto entityDto = new EntityDto();
                     entityDto.setNonEditable(entity.isNonEditable());
                     entityDto.setReadOnlyAccess(entity.isReadOnlyAccess());
@@ -210,14 +210,14 @@ public class EntityController extends MdsController {
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
     public List<FieldDto> getFields(@PathVariable Long entityId) {
-        return entityService.getFields(entityId);
+        return entityService.getPossibleFields(entityId);
     }
 
     @RequestMapping(value = "/entities/{entityId}/entityFields", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
     public List<FieldDto> getEntityFields(@PathVariable Long entityId) {
-        return entityService.getEntityFields(entityId);
+        return entityService.getPossibleFields(entityId);
     }
 
     @RequestMapping(value = "/entities/entityFieldsByClassName", method = RequestMethod.GET)

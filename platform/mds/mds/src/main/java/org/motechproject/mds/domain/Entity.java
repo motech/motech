@@ -103,6 +103,9 @@ public class Entity {
     @Element(dependent = TRUE)
     private List<EntityDraft> drafts;
 
+    @Persistent
+    private boolean isDiscriminated;
+
     private Long entityVersion = 1L;
 
     @Persistent(mappedBy = ENTITY, dependent = TRUE)
@@ -146,7 +149,7 @@ public class Entity {
 
     public EntityDto toDto() {
         EntityDto dto = new EntityDto(id, className, getName(), module, namespace, tableName, getTracking() != null ? getTracking().isRecordHistory() : false,
-                securityMode, securityMembers, readOnlySecurityMode, readOnlySecurityMembers, superClass, abstractClass, securityOptionsModified, bundleSymbolicName);
+                securityMode, securityMembers, readOnlySecurityMode, readOnlySecurityMembers, superClass, abstractClass, isDiscriminated, securityOptionsModified, bundleSymbolicName);
 
         dto.setMaxFetchDepth(maxFetchDepth);
         dto.setNonEditable(getTracking() != null ? getTracking().isNonEditable() : false);
@@ -338,6 +341,14 @@ public class Entity {
 
     public void setAbstractClass(boolean abstractClass) {
         this.abstractClass = abstractClass;
+    }
+
+    public boolean isDiscriminated() {
+        return isDiscriminated;
+    }
+
+    public void setIsDiscriminated(boolean isDiscriminated) {
+        this.isDiscriminated = isDiscriminated;
     }
 
     public boolean isSecurityOptionsModified() {
