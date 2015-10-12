@@ -138,20 +138,35 @@
 .tasks .actionField.map-input {
     height: auto;
     min-height: 36px;
-    width: 30%;
-    padding: 6px 12px;
     border: 2px dotted #AAAAAA;
     background-color: #FFFFFF;
     border-radius: 4px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
     transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
-    float:left;
 }
 
-.tasks .actionField.map-input:focus {
+.tasks .actionField.in-map-input{
+    float: left;
+    padding: 6px 12px;
+    width: 90%;
+    height: auto;
+}
+
+.tasks .actionField.in-map-input:focus {
     border-color: rgba(82, 168, 236, 0.8);
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 11px rgba(82, 168, 236, 1)
     outline: 0 none;
+}
+
+.tasks .word-wrap {
+    word-wrap: break-word;
+    padding: 6px 12px;
+}
+
+.tasks .map-field {
+    width: 30%;
+    float: left;
+    margin: 0px 5px 5px 0;
 }
 
 .tasks editable-content .actionField.input-block-level:focus {
@@ -836,6 +851,15 @@
 .tasks .btn-in-heading {
     margin: 0;
     padding: 4px 12px;
+}
+
+.tasks .btn-in-input-map {
+    margin: -5px -5px;
+}
+
+.tasks .btn-to-right {
+    float: right;
+    padding: 6px;
 }
 
 .tasks .form-group.error .control-label.tip .popover,

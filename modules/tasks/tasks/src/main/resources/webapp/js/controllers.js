@@ -1485,7 +1485,7 @@
     });
 
     controllers.controller('MapsCtrl', function ($scope) {
-        var exp, values, dragAndDrop = $scope.BrowserDetect.browser === 'Chrome' || $scope.BrowserDetect.browser === 'Explorer' || $scope.BrowserDetect.browser === 'Firefox';
+        var exp, values, keyValue, dragAndDrop = $scope.BrowserDetect.browser === 'Chrome' || $scope.BrowserDetect.browser === 'Explorer' || $scope.BrowserDetect.browser === 'Firefox';
 
         if (dragAndDrop) {
             exp = /((?::)((?!<span|<br>|>)[\w\W\s])+(?=$|<span|<\/span>|<br>))|((?:<br>)((?!<span|<br>)[\w\W\s])*(?=:))|(<span((?!<span)[\w\W\s])*<\/span>)/g;
@@ -1503,21 +1503,25 @@
             return scope.data.value;
 
         }, function () {
-            var i,key,value;
+            var i,j,key,value;
             if ($scope.pairs.length === 0 && $scope.data.value !== "" && $scope.data.value !== null && !$scope.dataTransformed) {
-                values = $scope.data.value.match(exp);
+                values = $scope.data.value.split("<br>");
 
-                for (i = 0; i < values.length; i += 2) {
-                    key = values[i].replace("<br>", "");
-                    value =  values[i + 1].replace("<br>", "");
+                for (i = 0; i < values.length; i += 1) {
+                    keyValue = values[i].split(":");
 
-                    if (key.startsWith(":")) {
-                        key = key.substr(1);
+                    exp = new RegExp("( relative;.*?\">.*<\/span>)");
+                    for (j = 1; j < keyValue.length; j += 1) {
+                        if (exp.test(keyValue[j])) {
+                            keyValue[j-1] += ":" + keyValue[j];
+                            keyValue.splice(j, 1);
+                            j -= 1;
+                        }
                     }
 
-                    if (value.startsWith(":")) {
-                        value = value.substr(1);
-                    }
+                    key = keyValue[0];
+                    value =  keyValue[1];
+
                     $scope.pairs.push({key:key, value:value});
                 }
 
@@ -1542,16 +1546,18 @@
        * Checks if the keys are unique.
        */
        $scope.uniquePairKey = function (mapKey) {
-           var keysList = function () {
+           var exp, keysList;
+           exp = new RegExp('(<span.*?>)','g');
+           keysList = function () {
                var resultKeysList = [];
                angular.forEach($scope.pairs, function (pair) {
                    if (pair !== null && pair.key !== undefined && pair.key.toString() !== '') {
-                       resultKeysList.push(pair.key.toString());
+                       resultKeysList.push(pair.key.toString().replace(exp, ""));
                    }
                }, resultKeysList);
                return resultKeysList;
            };
-           return $.inArray(mapKey, keysList()) !== -1;
+           return $.inArray(mapKey.replace(exp, ""), keysList()) !== -1;
        };
 
        /**
@@ -1570,9 +1576,29 @@
              });
         };
 
+        $scope.clearKey = function () {
+            $scope.pair.key="";
+        };
+
+        $scope.clearValue = function () {
+            $scope.pair.value="";
+        };
+
         $scope.reset = function () {
-            $scope.pairs = [];
-            $scope.data.value = "";
+            var resetMap = function () {
+                $scope.pairs = [];
+                $scope.data.value = "";
+
+                if (!$scope.$$phase) {
+                    $scope.$apply($scope.task);
+                }
+            };
+
+            motechConfirm('task.confirm.reset.map', "task.header.confirm", function (val) {
+                if (val) {
+                    resetMap();
+                }
+            });
         };
 
         $scope.addToDataValue = function (pair, index) {
