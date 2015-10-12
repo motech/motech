@@ -30,7 +30,7 @@ public class FieldDto {
     private FieldValidationDto validation;
     private List<SettingDto> settings;
     private List<LookupDto> lookups;
-    private List<EntityDto> entitiesDerived;  // TODO: move to a better place
+    private List<EntityDto> entitiesDerived;
 
     public FieldDto() {
         this(null, null, null, null, false, false, true, null, null, null, null);

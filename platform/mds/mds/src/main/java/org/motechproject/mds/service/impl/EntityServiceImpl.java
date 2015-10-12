@@ -1038,11 +1038,8 @@ public class EntityServiceImpl implements EntityService {
             int c=0;
             List<EntityDto> deriveds = this.findEntitiesBySuperclass(entity.getClassName());
             if(deriveds != null) {
-                LOGGER.warn("found "+deriveds.size()+" derived classes for "+entity.getClassName()); // TODO: remove noise
                 for (EntityDto derived : deriveds) {
-                    LOGGER.warn("For entity " + entity.getName() + ", found derived class: " + derived); // TODO: remove noise
                     values.add(derived.getName());
-                    // presuming we don't get cached EntityDto from the DB?
                     entitiesDerived.add(derived);
                     c++;
                 }
@@ -1309,17 +1306,13 @@ public class EntityServiceImpl implements EntityService {
         return (lookup == null) ? null : lookup.toDto();
     }
 
-    /*
-    public List<FieldDto> getDisplayFieldsPossible(Long entityId) { // make this the main one?
-        return getDisplayFieldsI(entityId, true);
-    }*/
-
     @Override
     @Transactional
     public List<FieldDto> getDisplayFields(Long entityId) {
         return getDisplayFieldsI(entityId, true);
     }
 
+    // TODO: inline
     private List<FieldDto> getDisplayFieldsI(Long entityId, boolean andPossible) {
         Entity entity = allEntities.retrieveById(entityId);
         assertEntityExists(entity, entityId);

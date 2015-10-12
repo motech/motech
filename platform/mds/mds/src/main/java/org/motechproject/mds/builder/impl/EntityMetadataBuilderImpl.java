@@ -152,8 +152,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
     private void fixDiscriminator(Class<?> definition, ClassMetadata cmd, int i) {
-        // TODO: try library:
-        // boolean persist = parseBoolean(getAnnotationValue(cascade, PERSIST, Boolean.TRUE.toString()));
         InheritanceMetadata imd = cmd.newInheritanceMetadata();
 
         Discriminated discriminated = null;
