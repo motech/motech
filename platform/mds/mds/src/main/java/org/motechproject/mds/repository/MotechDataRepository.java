@@ -76,6 +76,12 @@ public abstract class MotechDataRepository<T> {
         }
     }
 
+    public void evictOne(T object) {
+        if (persistenceManagerFactory != null) {
+            persistenceManagerFactory.getDataStoreCache().evict(object);
+        }
+    }
+
     public T retrieve(Object key) {
         return getPersistenceManager().getObjectById(classType, key);
     }
