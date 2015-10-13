@@ -7,12 +7,9 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,8 +26,8 @@ import java.util.Map;
  * @param <T> the type of class
  */
 @Repository
-public abstract class MotechDataRepository<T> {
-    private PersistenceManagerFactory persistenceManagerFactory;
+public abstract class MotechDataRepository<T> extends AbstractRepository {
+
     private Class<T> classType;
     private Integer fetchDepth;
     private Map<String, String> fieldTypeMap;
@@ -52,16 +49,9 @@ public abstract class MotechDataRepository<T> {
         this.fieldTypeMap = fieldTypeMap;
     }
 
-    @Autowired
-    @Qualifier("persistenceManagerFactory")
-    public void setPersistenceManagerFactory(PersistenceManagerFactory persistenceManagerFactory) {
-        this.persistenceManagerFactory = persistenceManagerFactory;
-    }
-
+    @Override
     public PersistenceManager getPersistenceManager() {
-        PersistenceManager pm = null != persistenceManagerFactory
-                ? persistenceManagerFactory.getPersistenceManager()
-                : null;
+        PersistenceManager pm = super.getPersistenceManager();
 
         if (fetchDepth != null && pm != null) {
             pm.getFetchPlan().setMaxFetchDepth(fetchDepth);

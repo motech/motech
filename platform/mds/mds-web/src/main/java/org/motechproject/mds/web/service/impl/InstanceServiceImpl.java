@@ -190,7 +190,7 @@ public class InstanceServiceImpl implements InstanceService {
     public List<EntityRecord> getEntityRecords(Long entityId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
         validateCredentialsForReading(entity);
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
 
         MotechDataService service = getServiceForEntity(entity);
         List instances = service.retrieveAll(queryParams);
@@ -201,7 +201,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public List<FieldDto> getEntityFields(Long entityId) {
         validateCredentialsForReading(getEntity(entityId));
-        return entityService.getEntityFields(entityId);
+        return entityService.getEntityFieldsForUI(entityId);
     }
 
     @Override
@@ -210,7 +210,7 @@ public class InstanceServiceImpl implements InstanceService {
         validateCredentialsForReading(entity);
 
         MotechDataService service = getServiceForEntity(entity);
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
         Collection collection = trashService.getInstancesFromTrash(entity.getClassName(), queryParams);
 
         return instancesToRecords(collection, entity, fields, service, EntityType.TRASH);
@@ -230,7 +230,7 @@ public class InstanceServiceImpl implements InstanceService {
         validateCredentialsForReading(entity);
 
         MotechDataService service = getServiceForEntity(entity);
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
         Object instance = trashService.findTrashById(instanceId, entityId);
 
         return instanceToRecord(instance, entity, fields, service, EntityType.TRASH);
@@ -254,7 +254,7 @@ public class InstanceServiceImpl implements InstanceService {
         validateCredentialsForReading(entity);
 
         LookupDto lookup = getLookupByName(entityId, lookupName);
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
         Map<String, FieldDto> fieldMap = entityService.getLookupFieldsMapping(entityId, lookupName);
 
         MotechDataService service = getServiceForEntity(entity);
@@ -266,7 +266,7 @@ public class InstanceServiceImpl implements InstanceService {
 
             if (lookup.isSingleObjectReturn()) {
                 EntityRecord record = instanceToRecord(result, entity, fields, service, EntityType.STANDARD);
-                return (record == null) ? new ArrayList<EntityRecord>() : Collections.singletonList(record);
+                return (record == null) ? new ArrayList<>() : Collections.singletonList(record);
             } else {
                 List instances = (List) result;
                 return instancesToRecords(instances, entity, fields, service, EntityType.STANDARD);
@@ -281,7 +281,7 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entity = getEntity(entityId);
         validateCredentialsForReading(entity);
 
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
         MotechDataService service = getServiceForEntity(entity);
 
         List instances = service.filter(filters, queryParams);
@@ -342,7 +342,7 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entity = entityService.getEntity(entityId);
         validateCredentialsForReading(entity);
 
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
 
         List<FieldInstanceDto> result = new ArrayList<>();
         for (FieldDto field : fields) {
@@ -396,7 +396,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public EntityRecord newInstance(Long entityId) {
         validateCredentials(getEntity(entityId));
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
         List<FieldRecord> fieldRecords = new ArrayList<>();
 
         for (FieldDto field : fields) {
@@ -419,7 +419,7 @@ public class InstanceServiceImpl implements InstanceService {
             throw new ObjectNotFoundException(entity.getName(), instanceId);
         }
 
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
 
         return instanceToRecord(instance, entity, fields, service, EntityType.STANDARD);
     }
@@ -466,7 +466,7 @@ public class InstanceServiceImpl implements InstanceService {
         List<FieldRecord> fieldRecords = new LinkedList<>();
 
         try {
-            for (FieldDto field : entityService.getEntityFields(entity.getId())) {
+            for (FieldDto field : entityService.getEntityFieldsForUI(entity.getId())) {
                 if (ID_FIELD_NAME.equalsIgnoreCase(field.getBasic().getDisplayName()) || field.isVersionField()) {
                     continue;
                 }
@@ -662,7 +662,7 @@ public class InstanceServiceImpl implements InstanceService {
                                                  MotechDataService service) {
         Long entityId = entity.getId();
 
-        EntityRecord entityRecord = instanceToRecord(object, entity, entityService.getEntityFields(entityId), service, EntityType.HISTORY);
+        EntityRecord entityRecord = instanceToRecord(object, entity, entityService.getEntityFieldsForUI(entityId), service, EntityType.HISTORY);
         Long historyInstanceSchemaVersion = (Long) PropertyUtil.safeGetProperty(object,
                 HistoryTrashClassHelper.schemaVersion(object.getClass()));
         Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());

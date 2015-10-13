@@ -274,6 +274,16 @@ public class FieldDto {
         getSettings().add(setting);
     }
 
+    public void setSetting(String name, Object value) {
+        SettingDto existing = getSetting(name);
+
+        if (existing != null) {
+            existing.setValue(value);
+        } else {
+            addSetting(new SettingDto(name, value));
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
