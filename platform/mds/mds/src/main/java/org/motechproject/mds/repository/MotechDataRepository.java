@@ -60,6 +60,25 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
         return pm;
     }
 
+
+    public void evictAll() {
+        if (getPersistenceManagerFactory() != null) {
+            getPersistenceManagerFactory().getDataStoreCache().evictAll();
+        }
+    }
+
+    public void evictEntity(boolean withSubclasses) {
+        if (getPersistenceManagerFactory() != null) {
+            getPersistenceManagerFactory().getDataStoreCache().evictAll(withSubclasses, classType);
+        }
+    }
+
+    public void evictOne(T object) {
+        if (getPersistenceManagerFactory() != null) {
+            getPersistenceManagerFactory().getDataStoreCache().evict(object);
+        }
+    }
+
     public T retrieve(Object key) {
         return getPersistenceManager().getObjectById(classType, key);
     }
