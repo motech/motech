@@ -85,6 +85,12 @@ public class SettingsServiceImpl implements SettingsService {
             securityOptions.add(minPasswordLengthOption);
             SettingsOption passwordValidatorOption = ParamParser.parseParam(ConfigurationConstants.PASSWORD_VALIDATOR, motechSettings.getPasswordValidator());
             securityOptions.add(passwordValidatorOption);
+            SettingsOption passwordResetOption = ParamParser.parseParam(ConfigurationConstants.PASSWORD_RESET_DAYS, motechSettings.getNumberOfDaysToChangePassword());
+            securityOptions.add(passwordResetOption);
+            SettingsOption passwordReminderOption = ParamParser.parseParam(ConfigurationConstants.PASSWORD_REMINDER, motechSettings.isPasswordResetReminderEnabled());
+            securityOptions.add(passwordReminderOption);
+            SettingsOption passwordRemindDaysOption = ParamParser.parseParam(ConfigurationConstants.PASSWORD_REMINDER_DAYS, motechSettings.getNumberOfDaysForReminder());
+            securityOptions.add(passwordRemindDaysOption);
 
             SettingsOption jmxUrlOption = ParamParser.parseParam(ConfigurationConstants.JMX_HOST, motechSettings.getJmxHost());
             jmxOptions.add(jmxUrlOption);
