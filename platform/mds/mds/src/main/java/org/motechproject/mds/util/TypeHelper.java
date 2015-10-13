@@ -318,7 +318,7 @@ public final class TypeHelper {
                 collection.add(Enum.valueOf(enumClass, string));
             }
         } else if (null != generic) {
-            String[] stringArray = breakString(str);
+            String[] stringArray = breakStringForCollection(str);
             for (String strItem : stringArray) {
                 collection.add(parse(strItem, generic));
             }
