@@ -12,7 +12,8 @@
         }, {
           "key": "motechEventParameters",
           "displayName": "scheduler.motechEventParameters",
-          "type": "MAP"
+          "type": "MAP",
+          "required": false
         }, {
           "key": "cronExpression",
           "displayName": "scheduler.cronExpression"
@@ -23,7 +24,8 @@
         }, {
           "key": "endTime",
           "displayName": "scheduler.endDate",
-          "type": "DATE"
+          "type": "DATE",
+          "required": false
         }, {
           "key": "ignorePastFiresAtStart",
           "displayName": "scheduler.ignorePastFiresAtStart",
@@ -42,7 +44,8 @@
         }, {
           "key": "motechEventParameters",
           "displayName": "scheduler.motechEventParameters",
-          "type": "MAP"
+          "type": "MAP",
+          "required": false
         }, {
           "key": "startDate",
           "displayName": "scheduler.startDate",
@@ -50,7 +53,8 @@
         }, {
           "key": "endTime",
           "displayName": "scheduler.endDate",
-          "type": "DATE"
+          "type": "DATE",
+          "required": false
         }, {
           "key": "repeatCount",
           "displayName": "scheduler.repeatCount",
@@ -81,7 +85,8 @@
         }, {
           "key": "motechEventParameters",
           "displayName": "scheduler.motechEventParameters",
-          "type": "MAP"
+          "type": "MAP",
+          "required": false
         }, {
           "key": "startDate",
           "displayName": "scheduler.startDate",
@@ -100,7 +105,8 @@
         }, {
           "key": "motechEventParameters",
           "displayName": "scheduler.motechEventParameters",
-          "type": "MAP"
+          "type": "MAP",
+          "required": false
         }, {
           "key": "startDate",
           "displayName": "scheduler.startDate",
@@ -108,7 +114,8 @@
         }, {
           "key": "endTime",
           "displayName": "scheduler.endDate",
-          "type": "DATE"
+          "type": "DATE",
+          "required": false
         }, {
           "key": "days",
           "displayName": "scheduler.days",
@@ -135,7 +142,8 @@
         }, {
           "key": "motechEventParameters",
           "displayName": "scheduler.motechEventParameters",
-          "type": "MAP"
+          "type": "MAP",
+          "required": false
         }, {
           "key": "startDate",
           "displayName": "scheduler.startDate",
@@ -143,7 +151,8 @@
         }, {
           "key": "endTime",
           "displayName": "scheduler.endDate",
-          "type": "DATE"
+          "type": "DATE",
+          "required": false
         }, {
           "key": "repeatPeriod",
           "displayName": "scheduler.repeatPeriod",
