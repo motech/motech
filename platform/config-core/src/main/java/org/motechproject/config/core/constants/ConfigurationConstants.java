@@ -52,6 +52,9 @@ public final class ConfigurationConstants {
     public static final String PASSWORD_VALIDATOR = "security.password.validator";
     public static final String MIN_PASSWORD_LENGTH = "security.password.minlength";
     public static final String FAILURE_LOGIN_LIMIT = "security.failure.login.limit";
+    public static final String PASSWORD_RESET_DAYS = "security.password.reset.days";
+    public static final String PASSWORD_REMINDER = "security.password.reminder.sendReminder";
+    public static final String PASSWORD_REMINDER_DAYS = "security.password.reminder.daysBeforeExpiration";
 
     public static final String DATANUCLEUS_SETTINGS_FILE_NAME = "datanucleus.properties";
 

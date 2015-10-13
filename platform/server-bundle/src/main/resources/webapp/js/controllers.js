@@ -399,6 +399,7 @@
             });
         };
 
+        //Used when user has forgotten the password
         $scope.getResetViewData = function() {
             var parametr = window.location.search;
 
@@ -407,6 +408,7 @@
             });
         };
 
+        //Used when user has forgotten the password
         $scope.submitResetPasswordForm = function() {
             blockUI();
 
@@ -425,7 +427,51 @@
             })
             .error(function(data) {
                 unblockUI();
-                motechAlert('server.reset.error');
+                motechAlert('server.reset.error', 'server.error');
+                $scope.resetViewData.errors = ['server.reset.error'];
+            });
+        };
+
+        //Used when user must change the password
+        $scope.initChangePasswordViewData = function() {
+            $scope.changePasswordViewData = {
+                changePasswordForm: {
+                        username: '',
+                        oldPassword: '',
+                        password: '',
+                        passwordConfirmation: ''
+                    },
+                errors: [],
+                changeSucceded: false,
+                userBlocked: false
+            };
+        };
+
+        //Used when user must change the password
+        $scope.submitChangePasswordForm = function() {
+            blockUI();
+
+            $http({
+                method: 'POST',
+                url: '../server/changepassword',
+                data: $scope.changePasswordViewData.changePasswordForm
+            }).success(function(data) {
+                unblockUI();
+
+                if (data.userBlocked) {
+                    window.location = "./login?blocked=true";
+                    return;
+                }
+
+                if (data.errors === undefined || data.errors.length === 0) {
+                    data.errors = null;
+                }
+
+                $scope.changePasswordViewData.errors = data.errors;
+                $scope.changePasswordViewData.changeSucceded = data.changeSucceded;
+            }).error(function(data) {
+                unblockUI();
+                motechAlert('server.reset.error', 'server.error');
                 $scope.resetViewData.errors = ['server.reset.error'];
             });
         };
