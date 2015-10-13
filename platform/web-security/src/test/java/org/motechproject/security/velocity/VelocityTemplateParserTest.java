@@ -23,7 +23,7 @@ public class VelocityTemplateParserTest {
 
     private static final String CORRECT_TEMPLATE = "correctTemplate.vm";
     private static final String INCORRECT_TEMPLATE = "incorrectTemplate.vm";
-    private static final String EXPECTED = "expected";
+    private static final String EXPECTED = "expected.txt";
 
     @Mock
     private SettingsFacade settingsFacade;

@@ -25,7 +25,7 @@ public class PasswordExpirationSchedulerInternal {
      * Schedules password reminder job that will be run everyday at midnight.
      */
     public void schedulePasswordReminderJob() {
-        CronSchedulableJob job = new CronSchedulableJob(new MotechEvent(PASSWORD_EXPIRATION_CHECK_EVENT), "0 * * * * ? *");
+        CronSchedulableJob job = new CronSchedulableJob(new MotechEvent(PASSWORD_EXPIRATION_CHECK_EVENT), "0 0 0 * * ? *");
         schedulerService.safeScheduleJob(job);
     }
 }
