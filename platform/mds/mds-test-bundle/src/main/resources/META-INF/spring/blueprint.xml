@@ -47,6 +47,13 @@
     <osgi:reference id="simpleClassWithVersioningService" interface="org.motechproject.mds.test.service.optimisticlocking.SimpleClassWithVersioningService" />
 
     <osgi:service ref="jdoListenerTestService" interface="org.motechproject.mds.test.service.instancelifecyclelistener.JdoListenerTestService" auto-export="interfaces"/>
+    <osgi:reference id="discrCaseADataService" interface="org.motechproject.mds.test.service.DiscrCaseADataService" />
+    <osgi:reference id="discrCaseBDataService" interface="org.motechproject.mds.test.service.DiscrCaseBDataService" />
+    <osgi:reference id="discrOneToOneDataService" interface="org.motechproject.mds.test.service.DiscrOneToOneDataService" />
+    <osgi:reference id="discrMultipleService" interface="org.motechproject.mds.test.service.DiscrMultipleDataService" />
+    <osgi:reference id="discrStart2DataService" interface="org.motechproject.mds.test.service.DiscrStartDataService" />
+    <osgi:reference id="discrDataService" interface="org.motechproject.mds.test.service.DiscrDataService" />
+
     <osgi:service ref="transactionTestService" interface="org.motechproject.mds.test.service.TransactionTestService" auto-export="interfaces"/>
     <osgi:service ref="officeService" interface="org.motechproject.mds.test.service.transactions.OfficeService" auto-export="interfaces" />
 

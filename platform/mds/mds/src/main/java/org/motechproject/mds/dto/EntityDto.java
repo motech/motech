@@ -10,6 +10,8 @@ import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.SecurityMode;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
@@ -40,9 +42,11 @@ public class EntityDto {
     private Set<String> readOnlySecurityMembers;
     private String superClass;
     private boolean abstractClass;
+    private boolean isDiscriminated;
     private boolean securityOptionsModified;
     private Integer maxFetchDepth;
     private boolean readOnlyAccess;
+    private List<FieldDto> fieldsAdded;
 
     public EntityDto() {
         this(null, null, null, null, null, null, null, null);
@@ -82,10 +86,10 @@ public class EntityDto {
     }
 
     public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, String superClass) {
-        this(id, className, name, module, namespace, null, false, securityMode, securityMembers, null, null, superClass, false, false, null);
+        this(id, className, name, module, namespace, null, false, securityMode, securityMembers, null, null, superClass, false, false, false, null);
     }
 
-    public EntityDto(Long id, String className, String name, String module, String namespace, String tableName, boolean recordHistory, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers, String superClass, boolean abstractClass, boolean securityOptionsModified, String bundleSymbolicName) {
+    public EntityDto(Long id, String className, String name, String module, String namespace, String tableName, boolean recordHistory, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers, String superClass, boolean abstractClass, boolean isDiscriminated, boolean securityOptionsModified, String bundleSymbolicName) {
         this.id = id;
         this.className = className;
         this.name = name;
@@ -100,8 +104,10 @@ public class EntityDto {
         this.readOnly = isNotBlank(module) || isNotBlank(namespace);
         this.superClass = superClass;
         this.abstractClass = abstractClass;
+        this.isDiscriminated = isDiscriminated;
         this.securityOptionsModified = securityOptionsModified;
         this.bundleSymbolicName = bundleSymbolicName;
+        this.fieldsAdded = new LinkedList<FieldDto>();
     }
 
     public Long getId() {
@@ -236,6 +242,10 @@ public class EntityDto {
         return abstractClass;
     }
 
+    public boolean isDiscriminated() {
+        return isDiscriminated;
+    }
+
     public void setAbstractClass(boolean abstractClass) {
         this.abstractClass = abstractClass;
     }
@@ -328,5 +338,13 @@ public class EntityDto {
             authorized = true;
         }
         return authorized;
+    }
+
+    public List<FieldDto> getFieldsAdded() {
+        return fieldsAdded;
+    }
+
+    public void setFieldsAdded(List<FieldDto> fieldsAdded) {
+        this.fieldsAdded = fieldsAdded;
     }
 }

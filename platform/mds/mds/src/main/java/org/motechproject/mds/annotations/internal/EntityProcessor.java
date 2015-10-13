@@ -2,6 +2,7 @@ package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.annotations.Access;
+import org.motechproject.mds.annotations.Discriminated;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.ReadAccess;
 import org.motechproject.mds.domain.MdsEntity;
@@ -111,6 +112,12 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
 
             boolean recordHistory = Boolean.parseBoolean(ReflectionsUtil.getAnnotationValue(annotation, HISTORY));
             boolean nonEditable = Boolean.parseBoolean(ReflectionsUtil.getAnnotationValue(annotation, NON_EDITABLE));
+            boolean isChild =
+                    clazz.getSuperclass() != null &&
+                    clazz.getSuperclass() != java.lang.Object.class;
+            boolean isDiscriminated = !isChild &&
+                AnnotationUtils.findAnnotation(clazz, Discriminated.class) != null;
+                // For now, we only count base classes as "discriminated"
 
             EntityDto entity = entityService.getEntityByClassName(className);
             RestOptionsDto restOptions = new RestOptionsDto();
@@ -123,7 +130,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                 entity = new EntityDto(
                         null, className, name, module, namespace, tableName, recordHistory,
                         SecurityMode.EVERYONE, null, null, null, clazz.getSuperclass().getName(),
-                        Modifier.isAbstract(clazz.getModifiers()), false, bundleSymbolicName
+                        Modifier.isAbstract(clazz.getModifiers()), isDiscriminated, false, bundleSymbolicName
                 );
             } else {
                 LOGGER.debug("DDE for {} already exists, updating if necessary", className);

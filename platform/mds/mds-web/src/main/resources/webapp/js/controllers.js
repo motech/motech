@@ -3747,6 +3747,10 @@
             }
         };
 
+        $scope.deriveIsDiscriminated = function (e) {
+            return !!(e.fields.filter(fd => fd.name === 'subclass')[0]);
+        };
+
         /**
         *
         * Saves the entity instance after the user clicks save
@@ -3754,13 +3758,34 @@
         */
         $scope.addEntityInstance = function () {
             blockUI();
-
-            var values = $scope.currentRecord.fields;
+            $scope.addEntityInstanceBase($scope.currentRecord);
+        };
+        $scope.addEntityInstanceBase = function (inst)
+        {
+            var values = inst.fields;
             angular.forEach (values, function(value, key) {
                 value.value = value.value === 'null' ? null : value.value;
             });
+            for(var i in inst.fields) {
+                var fd = inst.fields[i];
 
-            $scope.currentRecord.$save(function() {
+                // {readonly, uiFilterable, . . .} = fields(FieldDto) - fields(FieldRecord)
+                delete fd["readOnly"];
+                delete fd["uiFilterable"];
+                delete fd["uiChanged"];
+                delete fd["lookups"];
+
+                // TODO: where is "discriminated" coming from?  Not isDiscriminated?
+                var entitiesDerived = fd.entitiesDerived;
+                if(entitiesDerived) {
+                    for (var j in entitiesDerived) {
+                        var e = entitiesDerived[j];
+                        delete e["discriminated"];
+                    }
+                }
+            }
+
+            inst.$save(function() {
                 $scope.unselectInstance();
                 unblockUI();
             }, angularHandler('mds.error', 'mds.error.cannotAddInstance'));
@@ -3877,13 +3902,35 @@
                 callback);
         };
 
-        $scope.setAvailableFieldsForDisplay = function() {
+        $scope.subclassCurrent = null;
+
+        $scope.setAvailableFieldsForDisplay = function(scope) {
             var i;
-            $scope.availableFieldsForDisplay = [];
-            for (i = 0; i < $scope.allEntityFields.length; i += 1) {
-                if (!$scope.allEntityFields[i].nonDisplayable) {
-                    $scope.availableFieldsForDisplay.push($scope.allEntityFields[i]);
+            var availableFieldsForDisplay = [];
+            for (i = 0; i < scope.allEntityFields.length; i += 1) {
+                if (!scope.allEntityFields[i].nonDisplayable) {
+                    availableFieldsForDisplay.push(scope.allEntityFields[i]);
                 }
+            }
+            var subclassnameCurrent = scope.$parent.$parent.$parent.subclassCurrent;
+            if(subclassnameCurrent) {
+                var entitiesT = scope.$parent.$parent.$parent.entitiesDerived;
+                var entitySelected = !entitiesT ? null : entitiesT.filter(function(e) {return e.name === subclassnameCurrent;})[0];
+                var fieldsAdded1 = !entitySelected? null : entitySelected.fieldsAdded;
+                var fieldsAdded = fieldsAdded1.slice(6);  // TODO: remove hack
+                if(fieldsAdded && fieldsAdded.length>0) {
+                    availableFieldsForDisplay = $scope.allEntityFields.concat(fieldsAdded);
+                    var fdSubclass = availableFieldsForDisplay.filter(fd => fd.basic.name == "subclass")[0];
+                    fdSubclass.value = subclassnameCurrent;
+                    availableFieldsForDisplay.map(function(fd) {fd.name = fd.basic.name ? fd.basic.name : ""});
+                    availableFieldsForDisplay.map(function(fd) {fd.displayName = fd.basic.displayName ? fd.basic.displayName : ""});
+                    scope.$parent.$parent.$parent.availableFieldsForDisplay = availableFieldsForDisplay;
+                    scope.$parent.$parent.$parent.fields = availableFieldsForDisplay;
+                    // TODO fix hack:
+                    scope.$parent.$parent.$parent.currentRecord.fields = availableFieldsForDisplay;
+                }
+            } else {
+                console.log("could not find subclassidCurrent");
             }
         };
 
@@ -3902,7 +3949,7 @@
 
               $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
                    $scope.allEntityFields = data;
-                   $scope.setAvailableFieldsForDisplay();
+                   $scope.setAvailableFieldsForDisplay($scope);
 
                    if ($routeParams.entityId === undefined) {
                       var hash = window.location.hash.substring(2, window.location.hash.length) + "/" + $scope.selectedEntity.id;
@@ -3940,14 +3987,22 @@
                             dbUserPreferences = $scope.getDataBrowserUserPreferencesCookie($scope.selectedEntity);
 
                         $scope.selectedFields = [];
+                       $scope.entitiesDerived = [];
+                       $scope.fieldsBase = [];
+                       var entitiesT = [];
 
                         // filter data from db
                         for (i = 0; i < data.length; i += 1) {
                             field = data[i];
+                            $scope.fieldsBase.push(field);
                             if ($.inArray(field.basic.name, dbUserPreferences.unselected) === -1) {
                                 $scope.selectedFields.push(field);
                             }
+                            if(field.entitiesDerived) {
+                                entitiesT = entitiesT.concat(field.entitiesDerived);
+                            }
                         }
+                       $scope.entitiesDerived = entitiesT;
 
                         // additional selections
                         for (i = 0; i < dbUserPreferences.selected.length; i += 1) {
@@ -3958,6 +4013,7 @@
                             }
                         }
 
+                       $scope.setAvailableFieldsForDisplay($scope);
                         $scope.updateInstanceGridFields();
                     });
 

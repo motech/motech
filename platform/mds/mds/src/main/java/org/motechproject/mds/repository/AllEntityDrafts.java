@@ -72,6 +72,7 @@ public class AllEntityDrafts extends MotechDataRepository<EntityDraft> {
         draft.setClassName(entity.getClassName());
         draft.setNamespace(entity.getNamespace());
         draft.setModule(entity.getModule());
+        draft.setIsDiscriminated(entity.isDiscriminated());
         draft.setSecurityMode(entity.getSecurityMode());
         draft.setSecurityMembers(new HashSet<>(entity.getSecurityMembers()));
         draft.setReadOnlySecurityMode(entity.getReadOnlySecurityMode());

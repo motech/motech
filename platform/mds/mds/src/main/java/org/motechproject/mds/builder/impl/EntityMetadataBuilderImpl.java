@@ -6,6 +6,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.mds.annotations.Discriminated;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
@@ -31,12 +32,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.annotations.Column;
+import javax.jdo.annotations.DiscriminatorStrategy;
 import javax.jdo.annotations.Element;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.ForeignKeyAction;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.Inheritance;
+import javax.jdo.annotations.InheritanceStrategy;
 import javax.jdo.annotations.Join;
 import javax.jdo.annotations.NullValue;
 import javax.jdo.annotations.PersistenceModifier;
@@ -57,6 +60,8 @@ import javax.jdo.metadata.MapMetadata;
 import javax.jdo.metadata.MemberMetadata;
 import javax.jdo.metadata.PackageMetadata;
 import javax.jdo.metadata.ValueMetadata;
+import javax.jdo.metadata.DiscriminatorMetadata;
+import java.lang.annotation.Annotation;
 import javax.jdo.metadata.VersionMetadata;
 import java.util.Map;
 
@@ -134,14 +139,53 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         cmd.setIdentityType(IdentityType.APPLICATION);
         cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
 
-        InheritanceMetadata imd = cmd.newInheritanceMetadata();
-        imd.setCustomStrategy("complete-table");
+        if(entityType == EntityType.STANDARD)
+            fixDiscriminator(definition, cmd, 1);
+        // TODO: entityType == EntityType.STANDARD: did trash, and history need inheritanceMetadata?
+        // TODO: do trash and history need discriminatorMetadata?
 
         addIdField(cmd, classData.getClassName());
 
         if (entity != null) {
             addMetadataForFields(cmd, classData, entity, entityType, definition);
         }
+    }
+
+    private void fixDiscriminator(Class<?> definition, ClassMetadata cmd, int i) {
+        InheritanceMetadata imd = cmd.newInheritanceMetadata();
+
+        Discriminated discriminated = null;
+        Annotation[] annotations = definition.getAnnotations();
+        for(Annotation annotation : annotations)
+            if(annotation instanceof Discriminated)
+                discriminated = (Discriminated) annotation;
+
+        if(discriminated != null) {
+            DiscriminatorMetadata dmd = imd.getDiscriminatorMetadata();
+            if(dmd == null) dmd = imd.newDiscriminatorMetadata();
+            imd.setStrategy(InheritanceStrategy.NEW_TABLE);
+            dmd.setValue(definition.getName());
+            dmd.setStrategy(DiscriminatorStrategy.VALUE_MAP);
+            dmd.setColumn("DISCRIMINATOR");
+            LOGGER.info("fixDiscriminator: base: {}, {}", i, cmd.getName());
+        }
+        Discriminated discriminatedCh = null;
+        for(Annotation annotation : definition.getSuperclass().getAnnotations())
+            if(annotation instanceof Discriminated)
+                discriminatedCh = (Discriminated) annotation;
+        if(discriminatedCh != null) {
+            DiscriminatorMetadata dmd = imd.getDiscriminatorMetadata();
+            if(dmd == null) dmd = imd.newDiscriminatorMetadata();
+            imd.setStrategy(InheritanceStrategy.SUPERCLASS_TABLE);
+            dmd.setValue(definition.getName());
+            dmd.setStrategy(DiscriminatorStrategy.VALUE_MAP);
+            LOGGER.info("fixDiscriminator: derived: {}, {}", i, cmd.getName());
+        }
+        if(discriminated == null && discriminatedCh == null) {
+            LOGGER.info("fixDiscriminator: inheritance only: {}, {}", i, cmd.getName());
+            imd.setCustomStrategy("complete-table");
+        } else
+            LOGGER.info("fixDiscriminator: no DiscriminatorMetadata: {}, {}", i, cmd.getName());
     }
 
     @Override
@@ -245,8 +289,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         Inheritance annotation = AnnotationUtils.findAnnotation(definition, ann);
 
         if (annotation == null) {
-            InheritanceMetadata imd = cmd.newInheritanceMetadata();
-            imd.setCustomStrategy("complete-table");
+            fixDiscriminator(definition, cmd, 2);
         }
     }
 

@@ -2189,6 +2189,47 @@
         };
     });
 
+    directives.directive('entityInstanceFields2', function (Entities) {
+        return {
+            restrict: 'AE',
+            transclude: true,
+            scope: true,
+            controller: ['$scope', function ($scope) {
+                $scope.subclassCurrent = $scope.$parent.$parent.$parent.subclassCurrent;
+                console.log("rendering subclassCurrent: ",$scope.subclassCurrent);
+            }],
+            templateUrl: '../mds/resources/partials/widgets/entityInstanceFields.html'
+        };
+    });
+
+    directives.directive('entityInstanceField', function (Entities) {
+        return {
+            restrict: 'AE',
+            scope: true,
+            controller: ['$scope', '$timeout', function ($scope, $timeout) {
+                if($scope.field.name === 'subclass') {
+                    $scope.$watch(
+                        function() {return $scope.field.value;},
+                        function(valueNew, valueOld) {
+                        if(valueNew) {
+                            $timeout(function() {
+                                // TODO: six parents is poor coupling with the template layouts.
+                                // I need to carefully review the recently written docs for reuse
+                                // of the data browser https://github.com/motech/motech/pull/100
+                                // and see if I can do something stylistically compatible, while not
+                                // giving up my plan to make the data browser be able to recurseively
+                                // display related instances.
+                                $scope.$parent.$parent.$parent.$parent.$parent.$parent.subclassCurrent = valueNew;
+                                $scope.setAvailableFieldsForDisplay($scope.$parent.$parent.$parent);
+                            }, 0);
+                        }
+                    });
+                }
+            }],
+            templateUrl: '../mds/resources/partials/widgets/entityInstanceField.html'
+        };
+    });
+
     directives.directive('securityList', function () {
         return {
             restrict: 'A',

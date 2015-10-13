@@ -1,5 +1,6 @@
 package org.motechproject.mds.repository;
 
+import org.datanucleus.store.rdbms.query.ForwardQueryResult;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.QueryExecutor;
@@ -138,6 +139,12 @@ public abstract class MotechDataRepository<T> {
         return (T) QueryExecutor.executeWithArray(query, values, restriction);
     }
 
+    public ForwardQueryResult retrieveSet(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
+        // avoids .setUnique
+        Query query = createQuery(properties, values, null);
+        return (ForwardQueryResult)QueryExecutor.executeWithArray(query, values, null);
+    }
+
     public boolean exists(String property, Object value) {
         return exists(new String[]{property}, new Object[]{value});
     }
@@ -177,9 +184,9 @@ public abstract class MotechDataRepository<T> {
     }
 
     public long count(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
-        Query query = createQuery(properties, values, restriction);
-        QueryUtil.setCountResult(query);
-        return (long) QueryExecutor.executeWithArray(query, values, restriction);
+        // This method is a workaround for avoiding .setUnique in .retrieve
+        ForwardQueryResult data = retrieveSet(properties, values, restriction);
+        return (long)data.size();
     }
 
     public List<T> filter(Filters filters, QueryParams queryParams, InstanceSecurityRestriction restriction) {

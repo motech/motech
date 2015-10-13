@@ -1,0 +1,26 @@
+<div class="form-group">
+    <label class="col-md-2 col-sm-3 control-label">
+        {{field.displayName}}
+        <span ng-show="{{field.required}}" class="text-danger">*</span>
+            <span ng-show="field.tooltip.length &gt; 0" bs-popover="{{field.tooltip}}" data-placement="right" data-trigger="hover"
+                  class="glyphicon glyphicon-info-sign">
+            </span>
+    </label>
+    <div class="col-md-10 col-sm-9 form-inline">
+        <ng-form name="{{field.name}}">
+            <div ng-include="loadEditValueForm(field)"></div>
+            <span class="form-hint form-hint-bottom" ng-if="getTypeSingleClassName(field.type) !== 'map'" ng-show="{{field.name}}.$error.required && !{{field.name}}.$pristine">{{msg('mds.error.requiredField')}}</span>
+            <div class="clearfix"></div>
+        </ng-form>
+        <div class="margin-before" ng-if="getTypeSingleClassName(field.type) === 'combobox' && field.settings[1].value" ng-hide="shouldHideEdition(field)">
+            <ng-form name="entityOptionNewValue{{field.id}}">
+                <a class="btn btn-default btn-sm" show-add-option-input><span class="fa fa-fw fa-plus"></span>&nbsp;{{msg('mds.form.label.addOption')}}</a>
+                    <span id="showAddOptionInput{{field.id}}" class="hidden combobox" ng-class="{ 'has-error' : entityOptionNewValue{{field.id}}.$invalid }">
+                       <input id="entityOptionNewValue{{field.id}}" add-option-combobox class="form-control input-auto input-sm no-error" ng-model="newOptionValue">
+                       <a id="saveoption{{field.id}}" ng-readonly="entityOptionNewValue{{field.id}}.$error.uniqueValue || entityOptionNewValue{{field.id}}.$pristine" class="btn btn-default btn-sm" ng-click="field">{{msg('mds.btn.save')}}</a>
+                       <span class="form-hint" ng-show="entityOptionNewValue{{field.id}}.$error.uniqueValue && !entityOptionNewValue{{field.id}}.$pristine">{{msg('mds.error.noUniqueValue')}}</span>
+                    </span>
+            </ng-form>
+        </div>
+    </div>
+</div>

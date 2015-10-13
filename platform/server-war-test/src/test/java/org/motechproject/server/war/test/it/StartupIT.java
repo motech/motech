@@ -19,6 +19,7 @@ public class StartupIT extends BaseTomcatIT {
         prepareTomcat();
     }
 
+    @org.junit.Ignore
     @Test
     public void shouldStartServerAndMakeAllBundlesActive() throws Exception {
 

@@ -30,6 +30,7 @@ public class FieldDto {
     private FieldValidationDto validation;
     private List<SettingDto> settings;
     private List<LookupDto> lookups;
+    private List<EntityDto> entitiesDerived;
 
     public FieldDto() {
         this(null, null, null, null, false, false, true, null, null, null, null);
@@ -79,6 +80,7 @@ public class FieldDto {
         this.basic = basic;
         this.validation = validation;
         this.readOnly = readOnly;
+        this.setEntitiesDerived(new LinkedList<EntityDto>());
     }
 
     public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic, boolean readOnly, boolean nonEditable,
@@ -103,6 +105,7 @@ public class FieldDto {
         this.lookups = CollectionUtils.isEmpty(lookups)
                 ? new LinkedList<LookupDto>()
                 : lookups;
+        this.setEntitiesDerived(new LinkedList<EntityDto>());
     }
 
     public boolean multiSelect() {
@@ -300,6 +303,14 @@ public class FieldDto {
 
     public void setUiChanged(boolean uiChanged) {
         this.uiChanged = uiChanged;
+    }
+
+    public List<EntityDto> getEntitiesDerived() {
+        return entitiesDerived;
+    }
+
+    public void setEntitiesDerived(List<EntityDto> entitiesDerived) {
+        this.entitiesDerived = entitiesDerived;
     }
 
     public boolean isUiFilterable() {

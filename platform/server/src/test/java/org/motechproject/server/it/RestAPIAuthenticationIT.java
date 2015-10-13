@@ -27,6 +27,7 @@ public class RestAPIAuthenticationIT extends BaseTomcatIT {
         logout();
     }
 
+    @org.junit.Ignore
     @Test
     public void testThatItShouldAllowRestApiAccessAfterFormAuthentication() throws IOException, JSONException,
             InterruptedException {

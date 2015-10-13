@@ -18,6 +18,7 @@ import org.motechproject.mds.test.secondary.service.EntityADataService;
 import org.motechproject.mds.test.secondary.service.MessageRecordDataService;
 import org.motechproject.mds.test.service.differentbundles.EntityBDataService;
 import org.motechproject.mds.test.service.differentbundles.EntityCDataService;
+import org.motechproject.mds.test.secondary.osgi.MdsSecondBundleIT;
 import org.motechproject.mds.test.service.instancelifecyclelistener.JdoListenerTestService;
 import org.motechproject.mds.test.service.mapdeserialisation.EntityWithStringObjectMapDataService;
 import org.motechproject.mds.util.Constants;

@@ -23,6 +23,12 @@ import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.test.domain.Actor;
+import org.motechproject.mds.test.domain.Discr1;
+import org.motechproject.mds.test.domain.Discr1CaseA;
+import org.motechproject.mds.test.domain.Discr1CaseB;
+import org.motechproject.mds.test.domain.Discr1Multiple;
+import org.motechproject.mds.test.domain.Discr1OneToOne;
+import org.motechproject.mds.test.domain.Discr1Start;
 import org.motechproject.mds.test.domain.Movie;
 import org.motechproject.mds.test.domain.TestLookup;
 import org.motechproject.mds.test.domain.TestMdsEntity;
@@ -62,6 +68,12 @@ import org.motechproject.mds.test.domain.setofenumandstring.Message;
 import org.motechproject.mds.test.domain.transactions.Department;
 import org.motechproject.mds.test.domain.transactions.Employee;
 import org.motechproject.mds.test.service.ActorDataService;
+import org.motechproject.mds.test.service.DiscrCaseADataService;
+import org.motechproject.mds.test.service.DiscrCaseBDataService;
+import org.motechproject.mds.test.service.DiscrDataService;
+import org.motechproject.mds.test.service.DiscrMultipleDataService;
+import org.motechproject.mds.test.service.DiscrOneToOneDataService;
+import org.motechproject.mds.test.service.DiscrStartDataService;
 import org.motechproject.mds.test.service.MovieDataService;
 import org.motechproject.mds.test.service.TestLookupService;
 import org.motechproject.mds.test.service.TestMdsEntityService;
@@ -132,6 +144,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.motechproject.mds.event.CrudEventBuilder.createSubject;
 import static org.motechproject.mds.util.ClassName.simplifiedModuleName;
@@ -250,6 +263,24 @@ public class MdsDdeBundleIT extends BasePaxIT {
     private ActorDataService actorDataService;
 
     @Inject
+    private DiscrStartDataService discrStartDataService;
+
+    @Inject
+    private DiscrMultipleDataService discrMultipleDataService;
+
+    @Inject
+    private DiscrOneToOneDataService discrOneToOneDataService;
+
+    @Inject
+    private DiscrDataService discrDataService;
+
+    @Inject
+    private DiscrCaseADataService discrCaseADataService;
+
+    @Inject
+    private DiscrCaseBDataService discrCaseBDataService;
+
+    @Inject
     private ProductDataService productDataService;
 
     @Inject
@@ -317,6 +348,8 @@ public class MdsDdeBundleIT extends BasePaxIT {
             actorDataService.update(a);
         }
         movieDataService.deleteAll();
+        entryDataService.deleteAll();
+        messageDataService.deleteAll();
         actorDataService.deleteAll();
 
         for (Supplier p : supplierDataService.retrieveAll()) {
@@ -777,6 +810,130 @@ public class MdsDdeBundleIT extends BasePaxIT {
         products = extract(supplier.getProducts(), on(Product.class).getName());
         assertEquals(asList("product4", "product5", "product6", "product7"), products);
     }
+
+    @Test
+    public void testDiscriminatorCanAssociate1() {
+        getLogger().info("Test DiscriminatorCanAssociate1");
+
+        saveAndLoadDiscrs(1, 0);
+    }
+
+    @Test
+    public void testDiscriminatorCanAssociate2() {
+        getLogger().info("Test DiscriminatorCanAssociate2");
+
+        saveAndLoadDiscrs(1, 2);
+    }
+
+    public Discr1CaseA createCaseA(Discr1CaseA caseA) {
+        discrDataService.create(caseA);
+        discrCaseADataService.create(caseA);
+        return caseA;
+    }
+
+    public Discr1CaseB createCaseB(Discr1CaseB caseB) {
+        discrDataService.create(caseB);
+        discrCaseBDataService.create(caseB);
+        return caseB;
+    }
+
+    private void saveAndLoadDiscrs(int cCaseA,int cCaseB) {
+        Discr1Multiple start1 = discrMultipleDataService.create(new Discr1Multiple());
+
+        for(int i=0; i<cCaseA; i++)
+        {
+            Discr1CaseA caseA = createCaseA(new Discr1CaseA(1 + i));
+            start1.getDs().add(caseA);
+            discrMultipleDataService.update(start1);
+        }
+
+        for(int i=0; i<cCaseB; i++)
+        {
+            Discr1CaseB caseB = createCaseB(new Discr1CaseB(-1-i));
+            start1.getDs().add(caseB);
+            discrMultipleDataService.update(start1);
+        }
+
+        int cCaseAActual = 0;
+        int cCaseBActual = 0;
+        HashSet<Integer> setUsed = new HashSet<Integer>();
+        for(Discr1 d : start1.getDs()) {
+            if(d instanceof Discr1CaseA) {
+                int j = ((Discr1CaseA)d).getKilograms();
+                assertTrue(j > 0);
+                assertFalse(setUsed.contains(j));
+                setUsed.add(j);
+                cCaseAActual++;
+            }
+            else if(d instanceof Discr1CaseB) {
+                int j = ((Discr1CaseB)d).getCentimeters();
+                assertTrue(j < 0);
+                assertFalse(setUsed.contains(j));
+                setUsed.add(j);
+                cCaseBActual++;
+            }
+        }
+//        getLogger().info(String.format("Test Discriminator %d,%d",cCaseAActual, cCaseBActual));
+
+        /* TODO: for some reason, even if no discriminator column is missing, these asserts
+         * running on the current usages can pass.  The code above is lax to use a Discr1Multiple
+         * without starting retrieval from a DiscrStart, but even if it does, these tests can still
+         * pass.  Possible root causes include:
+         *
+         * 1) The discrMultipleDataService has acquired invalid state by failing to write part of
+         * its data to disk, while caching the full data set in memory.  This could be observed e.g.
+         * by finding a way to tell JDO to dump all cache inside the course of the test.
+         *
+         * 2) JDO has some kind of fallback logic to note that instances populating a certain field
+         * must not belong to a class that doesn't have the field.  In our case, the populated fields
+         * would correctly determine the subclass in all cases.  This could be discovered by making
+         * two subclasses of Discr1 with identical fields, and then seeing what would happen.
+         */
+        assertEquals(cCaseAActual, cCaseA);
+        assertEquals(cCaseBActual, cCaseB);
+    }
+
+    @Test
+    public void canStoreDiscrAsOnetoone() {
+        Discr1Start start = discrStartDataService.create(new Discr1Start());
+
+        Discr1CaseA caseA = createCaseA(new Discr1CaseA(142));
+        AddAsOnetoone(start, caseA);
+    }
+
+    @Test
+    public void canStoreDiscrAsMultiple() {
+        Discr1Start start = discrStartDataService.create(new Discr1Start());
+
+        Discr1CaseA caseA2 = createCaseA(new Discr1CaseA(243));
+        AddAsMultiple(start, caseA2);
+    }
+
+    @Test
+    public void canStoreDiscrAsBoth() {
+        Discr1Start start = discrStartDataService.create(new Discr1Start());
+
+        Discr1CaseA caseA = createCaseA(new Discr1CaseA(342));
+        AddAsOnetoone(start, caseA);
+
+        Discr1CaseA caseA2 = createCaseA(new Discr1CaseA(343));
+        AddAsMultiple(start, caseA2);
+    }
+
+    private void AddAsMultiple(Discr1Start start, Discr1CaseA caseA2) {
+        Discr1Multiple multiple = discrMultipleDataService.create(new Discr1Multiple());
+        multiple.getDs().add(caseA2);
+        discrMultipleDataService.update(multiple);
+        start.getMultiples().add(multiple);
+        discrStartDataService.update(start);
+    }
+
+    private void AddAsOnetoone(Discr1Start start, Discr1CaseA caseA) {
+        Discr1OneToOne onetoone = discrOneToOneDataService.create(new Discr1OneToOne(caseA));
+        start.getOnetoones().add(onetoone);
+        discrStartDataService.update(start);
+    }
+
 
     @Test
     public void testManyToManyRelationship() {
