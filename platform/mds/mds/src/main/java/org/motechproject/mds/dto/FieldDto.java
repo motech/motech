@@ -270,6 +270,20 @@ public class FieldDto {
         this.nonDisplayable = nonDisplayable;
     }
 
+    public void addSetting(SettingDto setting) {
+        getSettings().add(setting);
+    }
+
+    public void setSetting(String name, Object value) {
+        SettingDto existing = getSetting(name);
+
+        if (existing != null) {
+            existing.setValue(value);
+        } else {
+            addSetting(new SettingDto(name, value));
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
