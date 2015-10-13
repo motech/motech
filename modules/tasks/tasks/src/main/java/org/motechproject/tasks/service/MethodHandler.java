@@ -83,6 +83,8 @@ class MethodHandler {
                     classes[idx] = List.class;
                 } else if (obj != null) {
                     classes[idx] = obj.getClass();
+                } else if (actionParameter.getType() != null) {
+                    classes[idx] = actionParameter.getType().getUnderlyingClass();
                 } else {
                     classes[idx] = Object.class;
                 }
