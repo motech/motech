@@ -100,6 +100,9 @@
                 <span class="form-hint form-hint-bottom" ng-class="{hide: !tryToCreate || findFieldsByName(newField.name).length == 0}">
                     {{msg('mds.error.duplicateNames')}}
                 </span>
+                <span class="form-hint form-hint-bottom" ng-class="{hide: !tryToCreate || isValidJavaFieldName(newField.name) || newField.name == 0}">
+                    {{msg('mds.error.notValidJavaFieldName')}}
+                </span>
             </div>
             <div class="col-sm-4 form-group" id="new-field-type" ng-class="{'has-error': tryToCreate && !newField.type}">
                 <input class="col-sm-11 select-field-type" type="hidden" ui-select2="SELECT_FIELD_TYPE_CONFIG" ng-model="newField.type" id="newField">

@@ -251,6 +251,7 @@ public class Field {
 
     public final void setName(String name) {
         ValidationUtil.validateNoJavaKeyword(name);
+        ValidationUtil.validateValidJavaFieldName(name);
         this.name = name;
     }
 

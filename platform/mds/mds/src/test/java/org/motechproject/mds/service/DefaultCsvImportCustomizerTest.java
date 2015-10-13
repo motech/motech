@@ -24,7 +24,7 @@ public class DefaultCsvImportCustomizerTest {
         field1 = new Field(null, "name", "Display Name");
         field2 = new Field(null, "name2", "Display Name 2");
         field3 = new Field(null, "name3", "Display Name 3");
-        field4 = new Field(null, "Display Name", "Display Name 4");
+        field4 = new Field(null, "DisplayName", "Display Name 4");
 
         fields.add(field1);
         fields.add(field2);
