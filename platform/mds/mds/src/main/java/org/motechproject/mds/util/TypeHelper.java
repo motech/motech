@@ -350,8 +350,8 @@ public final class TypeHelper {
         return breakString(
                 str,
                 new String[]{"[", "]", "{", "}", "\""},
-                new String[]{"=", "\n", "\r\n"},
-                new String[]{":", ",", ","},
+                new String[]{"=", "\n", "\r\n", ", "},
+                new String[]{":", ",", ",", ","},
                 ","
         );
     }
