@@ -618,12 +618,12 @@ public final class TypeHelper {
      * is a {@link java.util.List} a character put between next values can be specified.
      *
      * @param obj value to retrieve {@link java.lang.String} representation for
-     * @param listJoinChar character to put between next elements of a list; applicable if given object is a list
+     * @param collJoinChar character to put between next elements of a collection; applicable if given object is a collection
      * @return {@link java.lang.String} representation of an object
      */
-    public static String format(Object obj, char listJoinChar) {
-        if (obj instanceof List) {
-            return StringUtils.join((List) obj, listJoinChar);
+    public static String format(Object obj, char collJoinChar) {
+        if (obj instanceof Collection) {
+            return StringUtils.join((Collection) obj, collJoinChar);
         } else if (obj instanceof Map) {
             StringBuilder result = new StringBuilder();
 

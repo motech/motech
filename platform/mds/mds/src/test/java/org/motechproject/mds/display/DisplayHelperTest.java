@@ -3,17 +3,21 @@ package org.motechproject.mds.display;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.mds.annotations.UIRepresentation;
+import org.motechproject.mds.domain.ManyToManyRelationship;
 import org.motechproject.mds.domain.ManyToOneRelationship;
 import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.domain.Relationship;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.testutil.FieldTestHelper;
+import org.motechproject.mds.testutil.records.display.DisplayTestEnum;
+import org.motechproject.mds.testutil.records.display.ToStringTestClass;
+import org.motechproject.mds.testutil.records.display.UIRepresentationTestClass;
 
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -48,7 +52,57 @@ public class DisplayHelperTest {
 
     @Test
     public void shouldDisplayManyToManyRelationship() {
-        testMultiObjectRelationshipDisplay(ManyToOneRelationship.class);
+        testMultiObjectRelationshipDisplay(ManyToManyRelationship.class);
+    }
+
+    @Test
+    public void shouldDisplayCbSingleSelectNoUserSupplied() {
+        FieldDto field = FieldTestHelper.comboboxFieldDto(1L, "cb", "cb", false, false, DisplayTestEnum.valuesMap());
+        assertEquals("Monday", DisplayHelper.getDisplayValueForField(field, DisplayTestEnum.MONDAY));
+
+        field = FieldTestHelper.comboboxFieldDto(1L, "cb", "cb", false, false, DisplayTestEnum.valuesMap());
+        assertNull(DisplayHelper.getDisplayValueForField(field, null));
+
+        field = FieldTestHelper.comboboxFieldDto(1L, "cb", "cb", false, false, null);
+        assertEquals(DisplayTestEnum.MONDAY, DisplayHelper.getDisplayValueForField(field, DisplayTestEnum.MONDAY));
+    }
+
+    @Test
+    public void shouldDisplayCbSingleSelectUserSupplied() {
+        FieldDto field = FieldTestHelper.comboboxFieldDto(1L, "cb", "cb", false, true, null);
+        assertEquals("Something", DisplayHelper.getDisplayValueForField(field, "Something"));
+
+        field = FieldTestHelper.comboboxFieldDto(1L, "cb", "cb", false, true, null);
+        assertEquals(null, DisplayHelper.getDisplayValueForField(field, null));
+    }
+
+    @Test
+    public void shouldDisplayCbMultiSelectNoUserSupplied() {
+        FieldDto field = FieldTestHelper.comboboxFieldDto(1L, "cb", "cb", true, false, null);
+        assertEquals(asList(DisplayTestEnum.MONDAY, DisplayTestEnum.TUESDAY),
+                DisplayHelper.getDisplayValueForField(field, asList(DisplayTestEnum.MONDAY, DisplayTestEnum.TUESDAY)));
+
+        field = FieldTestHelper.comboboxFieldDto(1L, "cb", "cb", true, false, DisplayTestEnum.valuesMap());
+        assertEquals(asList("Monday", "Tuesday"),
+                DisplayHelper.getDisplayValueForField(field, asList(DisplayTestEnum.MONDAY, DisplayTestEnum.TUESDAY)));
+
+        field = FieldTestHelper.comboboxFieldDto(1L, "cb", "cb", true, false, DisplayTestEnum.valuesMap());
+        assertNull(DisplayHelper.getDisplayValueForField(field, null));
+
+        field = FieldTestHelper.comboboxFieldDto(1L, "cb", "cb", true, false, DisplayTestEnum.valuesMap());
+        assertEquals(emptyList(), DisplayHelper.getDisplayValueForField(field, emptyList()));
+    }
+
+    @Test
+    public void shouldDisplayCbMultiSelectUserSupplied() {
+        FieldDto field = FieldTestHelper.comboboxFieldDto(1L, "cb", "cb", true, true, null);
+        assertEquals(asList("one", "two"), DisplayHelper.getDisplayValueForField(field, asList("one", "two")));
+
+        field = FieldTestHelper.comboboxFieldDto(1L, "cb", "cb", true, true, null);
+        assertNull(DisplayHelper.getDisplayValueForField(field, null));
+
+        field = FieldTestHelper.comboboxFieldDto(1L, "cb", "cb", true, true, null);
+        assertEquals(emptyList(), DisplayHelper.getDisplayValueForField(field, emptyList()));
     }
 
     private void testSingleObjectRelationshipDisplay(Class<? extends Relationship> relClass) {
@@ -76,49 +130,6 @@ public class DisplayHelperTest {
     private void assertDisplayMap(Map<Long, String> map, String... values) {
         for (int i = 0; i < values.length; i++) {
             assertEquals("Wrong entry for key: " + (i + 1), values[i], map.get(i + 1L));
-        }
-    }
-
-    public static class ToStringTestClass {
-        private final long id;
-        private final String val;
-
-        public ToStringTestClass(long id, String val) {
-            this.id = id;
-            this.val = val;
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        @Override
-        public String toString() {
-            return val;
-        }
-    }
-
-    public static class UIRepresentationTestClass {
-        private final long id;
-        private final String val;
-
-        public UIRepresentationTestClass(long id, String val) {
-            this.id = id;
-            this.val = val;
-        }
-
-        public long getId() {
-            return id;
-        }
-
-        @UIRepresentation
-        public String uiRep() {
-            return val;
-        }
-
-        @Override
-        public String toString() {
-            return "Should never get used";
         }
     }
 }

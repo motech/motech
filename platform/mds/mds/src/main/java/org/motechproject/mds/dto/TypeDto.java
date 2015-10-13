@@ -1,5 +1,6 @@
 package org.motechproject.mds.dto;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -9,7 +10,6 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.motechproject.commons.date.model.Time;
-import org.motechproject.mds.domain.Relationship;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
-import static org.apache.commons.lang.StringUtils.startsWith;
 
 /**
  * The <code>TypeDto</code> class contains information about an available field in an entity.
@@ -213,12 +212,15 @@ public class TypeDto {
 
     @JsonIgnore
     public boolean isCombobox() {
-        return equalsIgnoreCase(displayName, "mds.field.combobox");
+        return Collection.class.getName().equals(typeClass);
     }
 
     @JsonIgnore
     public boolean isRelationship() {
-        return startsWith(typeClass, Relationship.class.getPackage().getName());
+        return StringUtils.equals(typeClass, "org.motechproject.mds.domain.ManyToOneRelationship") ||
+                StringUtils.equals(typeClass, "org.motechproject.mds.domain.OneToOneRelationship") ||
+                StringUtils.equals(typeClass, "org.motechproject.mds.domain.OneToManyRelationship") ||
+                StringUtils.equals(typeClass, "org.motechproject.mds.domain.ManyToManyRelationship");
     }
 
     @JsonIgnore

@@ -149,7 +149,7 @@ public class CsvImporterExporterTest {
 
         long result = csvImporterExporter.exportCsv(ENTITY_ID, writer, csvExportCustomizer);
 
-        verify(csvExportCustomizer, times(2 * INSTANCE_COUNT)).formatField(any(FieldDto.class), anyObject());
+        verify(csvExportCustomizer, times(13 * INSTANCE_COUNT)).formatField(any(FieldDto.class), anyObject());
 
         assertEquals(INSTANCE_COUNT, result);
     }

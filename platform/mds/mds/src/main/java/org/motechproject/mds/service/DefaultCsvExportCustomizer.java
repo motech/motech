@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class DefaultCsvExportCustomizer implements CsvExportCustomizer {
 
-    private static final char LIST_JOIN_CHAR = ',';
+    private static final char COLL_JOIN_CHAR = ',';
 
     @Override
     public String formatField(FieldDto field, Object object) {
@@ -25,12 +25,12 @@ public class DefaultCsvExportCustomizer implements CsvExportCustomizer {
             displayValue = object;
         } else if (displayValue instanceof Map) {
             // in case of map of displays, where keys are ids or enum values, we are only concerned with
-            // 
+            // the values
             Map asMap = (Map) displayValue;
             displayValue = asMap.values();
         }
 
-        return TypeHelper.format(displayValue, LIST_JOIN_CHAR);
+        return TypeHelper.format(displayValue, COLL_JOIN_CHAR);
     }
 
     @Override

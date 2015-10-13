@@ -33,8 +33,6 @@ import java.util.TreeSet;
  */
 public abstract class AbstractMdsExporter {
 
-    private static final char LIST_JOIN_CHAR = ',';
-
     @Autowired
     private BundleContext bundleContext;
 

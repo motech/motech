@@ -100,6 +100,7 @@ import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 public class InstanceServiceImpl implements InstanceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstanceServiceImpl.class);
+    private static final int MAX_LENGTH = 80;
 
     private EntityService entityService;
     private BundleContext bundleContext;
@@ -640,7 +641,7 @@ public class InstanceServiceImpl implements InstanceService {
                 }
 
                 Object value = getProperty(instance, field, service);
-                Object displayValue = DisplayHelper.getDisplayValueForField(field, value);
+                Object displayValue = DisplayHelper.getDisplayValueForField(field, value, MAX_LENGTH);
 
                 value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_CLASS));
 
