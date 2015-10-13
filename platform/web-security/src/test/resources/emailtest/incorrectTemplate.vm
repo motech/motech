@@ -1,0 +1,12 @@
+#macro( msg $value )
+Some macro, passed value - $value
+#ed
+#foreach( $value in $param3 )
+#msg( $value )
+#end
+
+$param1
+
+$param2.toString()
+
+$param5

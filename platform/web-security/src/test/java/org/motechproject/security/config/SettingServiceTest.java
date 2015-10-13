@@ -95,4 +95,25 @@ public class SettingServiceTest {
         when(motechSettings.getMinPasswordLength()).thenReturn(null);
         assertEquals(0, settingService.getMinPasswordLength());
     }
+
+    @Test
+    public void shouldReturnPasswordResetSettings() {
+        when(motechSettings.getNumberOfDaysToChangePassword()).thenReturn(30);
+        assertEquals(30, settingService.getNumberOfDaysToChangePassword());
+
+        when(motechSettings.getNumberOfDaysToChangePassword()).thenReturn(null);
+        assertEquals(0, settingService.getNumberOfDaysToChangePassword());
+
+        when(motechSettings.getNumberOfDaysForReminder()).thenReturn(5);
+        assertEquals(5, settingService.getNumberOfDaysForReminder());
+
+        when(motechSettings.getNumberOfDaysForReminder()).thenReturn(null);
+        assertEquals(0, settingService.getNumberOfDaysForReminder());
+
+        when(motechSettings.isPasswordResetReminderEnabled()).thenReturn(true);
+        assertTrue(settingService.isPasswordResetReminderEnabled());
+
+        when(motechSettings.isPasswordResetReminderEnabled()).thenReturn(false);
+        assertFalse(settingService.isPasswordResetReminderEnabled());
+    }
 }
