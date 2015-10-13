@@ -48,7 +48,7 @@
                                                 {{msg(error)}}
                                             </div>
                                         </div>
-                                        <form method="post" class="reset-password-form" ng-submit="submitResetPasswordForm()">
+                                        <form method="post" class="reset-password-form" ng-submit="submitResetPasswordForm()" name="resetPasswordForm">
                                             <input type="hidden" id="token" name="token" value="{{resetViewData.resetForm.token}}" />
 
                                             <div class="form-group">
@@ -56,16 +56,23 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>{{msg('server.reset.password')}}</label>
-                                                <input class="col-md-12 form-control" type="password"
+                                                <input class="col-md-12 form-control" type="password" required validate-password
                                                     id="password" name="password" ng-model="resetViewData.resetForm.password" />
+                                                <span ng-show="resetPasswordForm.password.$error.valid === true" class="form-hint form-hint-bottom">
+                                                    {{validatorMessage}}
+                                                </span>
                                             </div>
                                             <div class="form-group">
                                                 <label>{{msg('server.reset.confirmPassword')}}</label>
-                                                <input class="col-md-12 form-control" type="password"
+                                                <input class="col-md-12 form-control" type="password" confirm-password="resetViewData.resetForm.password" required visited-confirm-input
                                                     id="passwordConfirmation" name="passwordConfirmation" ng-model="resetViewData.resetForm.passwordConfirmation" />
+                                                <span ng-show="isConfirmPasswordDirty && resetPasswordForm.passwordConfirmation.$dirty && resetPasswordForm.passwordConfirmation.$error.equal === true && resetPasswordForm.password.$error.valid === false"
+                                                    class="form-hint form-hint-bottom">
+                                                    {{msg('server.error.invalid.password')}}
+                                                </span>
                                             </div>
-                                            <div class="form-group">
-                                                <input class="btn btn-primary" type="submit" value="{{msg('server.reset.changePassword')}}" />
+                                            <div class="form-group margin-before ">
+                                                <input ng-disabled="resetPasswordForm.$invalid" class="btn btn-primary margin-before" type="submit" value="{{msg('server.reset.changePassword')}}" />
                                             </div>
                                         </form>
                                     </div>

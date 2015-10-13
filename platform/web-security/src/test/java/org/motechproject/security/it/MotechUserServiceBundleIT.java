@@ -5,7 +5,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
+import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.domain.UserStatus;
+import org.motechproject.security.model.UserDto;
 import org.motechproject.security.repository.MotechRolesDataService;
 import org.motechproject.security.repository.MotechUsersDataService;
 import org.motechproject.security.service.MotechUserService;
@@ -181,5 +183,28 @@ public class MotechUserServiceBundleIT extends BaseIT {
         List<String> roles = motechUserService.getRoles("non-existent");
         assertNotNull(roles);
         assertTrue(roles.isEmpty());
+    }
+
+    @Test
+    public void shouldChangeExpiredPassword() {
+        motechUserService.register("expired", "password", "1234", "", asList("IT_ADMIN"), Locale.ENGLISH, UserStatus.MUST_CHANGE_PASSWORD, "");
+        MotechUserProfile profile = motechUserService.changeExpiredPassword("expired", "password", "newPassword");
+
+        assertNotNull(profile);
+        assertEquals(UserStatus.ACTIVE, profile.getUserStatus());
+
+        UserDto userDto = motechUserService.getUser("expired");
+        assertEquals(UserStatus.ACTIVE, userDto.getUserStatus());
+    }
+
+    @Test
+    public void shouldNotActivateUserWhenPasswordsAreTheSame() {
+        motechUserService.register("expired", "password", "1234", "", asList("IT_ADMIN"), Locale.ENGLISH, UserStatus.MUST_CHANGE_PASSWORD, "");
+        MotechUserProfile profile = motechUserService.changeExpiredPassword("expired", "password", "password");
+
+        assertNull(profile);
+
+        UserDto userDto = motechUserService.getUser("expired");
+        assertEquals(UserStatus.MUST_CHANGE_PASSWORD, userDto.getUserStatus());
     }
 }
