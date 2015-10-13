@@ -166,6 +166,13 @@ public class MotechUser {
     }
 
     @Ignore
+    public void incrementFailureLoginCounter() {
+        Integer counter = getFailureLoginCounter();
+        counter++;
+        setFailureLoginCounter(counter);
+    }
+
+    @Ignore
     public boolean isActive() {
         if (UserStatus.BLOCKED.equals(this.userStatus)) {
             return false;

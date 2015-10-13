@@ -17,15 +17,6 @@
 
     <bean class="org.motechproject.security.Initialize"/>
 
-    <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
-        <property name="velocityProperties">
-            <value>
-                resource.loader=class
-                class.resource.loader.class=org.motechproject.security.email.BundleResourceLoader
-            </value>
-        </property>
-    </bean>
-
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.security"/>
 

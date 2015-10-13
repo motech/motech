@@ -299,4 +299,91 @@
             }
         };
     });
+
+    widgetModule.directive('confirmPassword', function() {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function(scope, elm, attrs, ctrl) {
+
+                function validateEqual(confirmPassword, userPassword) {
+                    if (confirmPassword === userPassword) {
+                        ctrl.$setValidity('equal', true);
+                    } else {
+                        ctrl.$setValidity('equal', false);
+                    }
+                    return confirmPassword;
+                }
+
+                scope.$watch(attrs.confirmPassword, function(userViewPassword) {
+                    validateEqual(ctrl.$viewValue, userViewPassword);
+                });
+
+                ctrl.$parsers.unshift(function(viewValue) {
+                    return validateEqual(viewValue, scope.$eval(attrs.confirmPassword));
+                });
+
+                ctrl.$formatters.unshift(function(modelPassword) {
+                    return validateEqual(modelPassword, scope.$eval(attrs.confirmPassword));
+                });
+            }
+        };
+    });
+
+    widgetModule.directive('oldPassword', function() {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function(scope, elm, attrs, ctrl) {
+
+                function validateNotEqual(userNewPassword, userOldPassword) {
+                    if (userNewPassword !== userOldPassword) {
+                        ctrl.$setValidity('notEqual', true);
+                        return userNewPassword;
+                    } else {
+                        ctrl.$setValidity('notEqual', false);
+                        return undefined;
+                    }
+                }
+
+                scope.$watch(attrs.oldPassword, function(userViewPassword) {
+                    validateNotEqual(ctrl.$viewValue, userViewPassword);
+                });
+
+                ctrl.$parsers.unshift(function(viewValue) {
+                    return validateNotEqual(viewValue, scope.$eval(attrs.oldPassword));
+                });
+
+                ctrl.$formatters.unshift(function(modelPassword) {
+                    return validateNotEqual(modelPassword, scope.$eval(attrs.oldPassword));
+                });
+            }
+        };
+    });
+
+    widgetModule.directive('visitedConfirmInput', function () {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function (scope, element, attrs, ctrl) {
+                var elm = angular.element(element),
+                typingTimer;
+                elm.on('keyup', function () {
+                    scope.isConfirmPasswordDirty = false;
+                    clearTimeout(typingTimer);
+                    typingTimer = setTimeout( function() {
+                        scope.$apply(function () {
+                            scope.isConfirmPasswordDirty = true;
+                        });
+                    }, 750);
+                });
+
+                elm.on("blur", function() {
+                    scope.$apply(function () {
+                        scope.isConfirmPasswordDirty = true;
+                    });
+                });
+            }
+        };
+    });
 }());
