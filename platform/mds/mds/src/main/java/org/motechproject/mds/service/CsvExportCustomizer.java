@@ -1,6 +1,7 @@
 package org.motechproject.mds.service;
 
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.dto.FieldDto;
 
 import java.util.Comparator;
 
@@ -11,13 +12,14 @@ import java.util.Comparator;
 public interface CsvExportCustomizer {
 
     /**
-     * Formats related instance into a csv value
+     * Formats the field value for CSV display.
      *
-     * @param object the related instance (or collection of instances)
+     * @param object the object to format
+     * @param field the field to format
      *
-     * @return formatted string
+     * @return the formatted string that will represent the value in CSV data
      */
-    String formatRelationship(Object object);
+    String formatField(FieldDto field, Object object);
 
     /**
      * Allows the customizer to change the ordering of columns in the exporter file.

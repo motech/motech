@@ -50,8 +50,11 @@ public class FieldSetting implements Pair<String, String> {
 
     public SettingDto toDto() {
         List<SettingOptions> options = new ArrayList<>();
-        for (TypeSettingOption option : details.getTypeSettingOptions()) {
-            options.add(SettingOptions.valueOf(option.getName()));
+
+        if (details.getTypeSettingOptions() != null) {
+            for (TypeSettingOption option : details.getTypeSettingOptions()) {
+                options.add(SettingOptions.valueOf(option.getName()));
+            }
         }
 
         Type valueType = details.getValueType();

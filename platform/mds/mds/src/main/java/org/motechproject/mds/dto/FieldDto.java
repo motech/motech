@@ -253,6 +253,10 @@ public class FieldDto {
         this.nonDisplayable = nonDisplayable;
     }
 
+    public void addSetting(SettingDto setting) {
+        getSettings().add(setting);
+    }
+
     /**
      * {@inheritDoc}
      */
