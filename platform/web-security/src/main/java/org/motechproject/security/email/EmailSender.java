@@ -3,6 +3,8 @@ package org.motechproject.security.email;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
 
+import java.util.Map;
+
 /**
  * Interface that exposes methods for sending emails
  */
@@ -29,4 +31,11 @@ public interface EmailSender {
      * @param token for password recovery
      */
     void sendLoginInfo(MotechUser user, String token);
+
+    /**
+     * Sends email that informs the given user about password change.
+     *
+     * @param params  the map of parameters and their values used for sending the password reminder e-mail
+     */
+    void sendPasswordResetReminder(Map<String, Object> params);
 }

@@ -220,16 +220,16 @@ public class TypeHelperTest {
 
     @Test
     public void shouldParseCollections() {
-        final List<String> list = Arrays.asList("one", "two", "three");
-        final Set<String> stringSet = new HashSet<>(Arrays.asList("one", "two", "three"));
+        final List<String> list = Arrays.asList("one", "two", "three", "four and five");
+        final Set<String> stringSet = new HashSet<>(Arrays.asList("one", "two", "three", "four and five"));
         final Set<TestEnum> enumSet = new HashSet<>(Arrays.asList(TestEnum.ONE, TestEnum.TWO, TestEnum.THREE));
 
         String listAsString = TypeHelper.buildStringFromList(list);
         assertEquals(list, TypeHelper.parse(listAsString, List.class.getName(), String.class.getName()));
-        assertEquals(stringSet, TypeHelper.parse("one, two, three", Set.class));
+        assertEquals(stringSet, TypeHelper.parse("one, two, three, four and five", Set.class));
         assertEquals(enumSet, TypeHelper.parse("ONE, TWO, THREE", Set.class.getName(), TestEnum.class.getName()));
         assertEquals(enumSet, TypeHelper.parse(enumSet, Set.class.getName(), TestEnum.class.getName()));
-        assertEquals("[one, two, three]", TypeHelper.parse("one\ntwo\nthree\n", Collection.class).toString());
+        assertEquals("[one, two, three, four and five]", TypeHelper.parse("one\ntwo\nthree\nfour and five\n", Collection.class).toString());
     }
 
     @Test

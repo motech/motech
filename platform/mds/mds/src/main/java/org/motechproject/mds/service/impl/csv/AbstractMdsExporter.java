@@ -14,7 +14,6 @@ import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.impl.csv.writer.TableWriter;
 import org.motechproject.mds.util.PropertyUtil;
-import org.motechproject.mds.util.TypeHelper;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,8 +32,6 @@ import java.util.TreeSet;
  * Using the {@link TableWriter} class, implementing classes can provide their own ouput format.
  */
 public abstract class AbstractMdsExporter {
-
-    private static final char LIST_JOIN_CHAR = ',';
 
     @Autowired
     private BundleContext bundleContext;
@@ -138,13 +135,8 @@ public abstract class AbstractMdsExporter {
             Field field = fieldMap.get(fieldName);
 
             Object value = PropertyUtil.safeGetProperty(instance, field.getName());
-            String csvValue;
+            String csvValue = exportCustomizer.formatField(field.toDto(), value);
 
-            if (field.getType().isRelationship()) {
-                csvValue = exportCustomizer.formatRelationship(value);
-            } else {
-                csvValue = TypeHelper.format(value, LIST_JOIN_CHAR);
-            }
             row.put(fieldName, csvValue);
         }
     }

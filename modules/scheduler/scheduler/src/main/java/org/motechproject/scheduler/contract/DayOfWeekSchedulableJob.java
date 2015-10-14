@@ -36,7 +36,7 @@ public final class DayOfWeekSchedulableJob implements SchedulableJob, Serializab
      * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not
      */
     public DayOfWeekSchedulableJob(MotechEvent motechEvent, LocalDate start, LocalDate end, List<DayOfWeek> days, Time time, boolean ignorePastFiresAtStart) {
-        if (motechEvent == null || hasNoDates(start, end) || isEmpty(days)) {
+        if (motechEvent == null || start == null || isEmpty(days)) {
             throw new IllegalArgumentException("null/empty arguments");
         }
         this.motechEvent = motechEvent;
@@ -58,10 +58,6 @@ public final class DayOfWeekSchedulableJob implements SchedulableJob, Serializab
      */
     public DayOfWeekSchedulableJob(MotechEvent motechEvent, LocalDate start, LocalDate end, List<DayOfWeek> days, Time time) {
         this(motechEvent, start, end, days, time, false);
-    }
-
-    private boolean hasNoDates(LocalDate start, LocalDate end) {
-        return start == null || end == null;
     }
 
     public MotechEvent getMotechEvent() {

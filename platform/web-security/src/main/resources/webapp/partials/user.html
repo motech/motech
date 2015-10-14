@@ -25,6 +25,7 @@
                 <td><span ng-repeat="role in user.roles track by $index">{{role}}<span ng-hide="$index == (user.roles.length-1)">, </span></span></td>
                 <td ng-show="user.userStatus === 'ACTIVE' || user.userStatus === undefined"><a>{{msg('security.user.active')}}</a></td>
                 <td ng-show="user.userStatus === 'BLOCKED'"><a>{{msg('security.user.blocked')}}</a></td>
+                <td ng-show="user.userStatus === 'MUST_CHANGE_PASSWORD'"><a>{{msg('security.user.mustChangePassword')}}</a></td>
             </tr>
             </tbody>
         </table>
@@ -50,7 +51,7 @@
                     <div class="form-inline col-md-9 col-sm-8">
                         <input class="form-control input-auto" type="text" id="userName" name="userName" ng-model="user.userName" placeholder="{{msg('security.userName')}}" user-name-validate required>
                         <span ng-hide="pwdNameValidate" class="form-hint">{{msg('security.userExist')}}</span>
-                        <span ng-hide="hasValue('userName')" class="form-hint">{{msg('security.userNameRequired')}}</span>
+                        <span ng-hide="createUserForm.userName.$dirty && hasValue('userName')" class="form-hint">{{msg('security.userNameRequired')}}</span>
                     </div>
                 </div>
                 <div class="form-group" ng-class="cssClass('email')">
@@ -74,8 +75,9 @@
                 <div ng-show="!user.generatePassword" class="form-group" ng-class="cssPassword()">
                     <label class="col-md-3 col-sm-4 control-label">{{msg('security.confirmPassword')}}</label>
                     <div class="form-inline col-md-9 col-sm-8">
-                        <input class="form-control input-auto" ng-disabled="user.generatePassword" type="password" name="confirmPassword" ng-model="confirmPassword" required confirm-password="user.password">
-                        <span ng-show="createUserForm.confirmPassword.$error.equal === true && createUserForm.newPassword.$error.valid === false" class="form-hint">
+                        <input class="form-control input-auto" ng-disabled="user.generatePassword" type="password" name="confirmPassword" ng-model="confirmPassword" visited-confirm-input
+                               required confirm-password="user.password">
+                        <span ng-show="!user.generatePassword && isConfirmPasswordDirty && createUserForm.confirmPassword.$dirty && createUserForm.confirmPassword.$error.equal === true && createUserForm.newPassword.$error.valid === false" class="form-hint">
                             {{msg('security.samePassword')}}
                         </span>
                     </div>
@@ -142,8 +144,9 @@
                 <div class="form-group" ng-class="cssPassword()">
                     <label class="col-md-3 col-sm-4 control-label">{{msg('security.confirmPassword')}}</label>
                     <div class="col-md-9 col-sm-8 form-inline">
-                        <input class="form-control input-auto" type="password" name="confirmPassword" ng-model="confirmPassword" confirm-password="user.password">
-                        <span ng-show="editUserForm.confirmPassword.$error.equal === true && editUserForm.newPassword.$error.valid === false" class="form-hint">
+                        <input class="form-control input-auto" type="password" name="confirmPassword" ng-model="confirmPassword" visited-confirm-input
+                               confirm-password="user.password">
+                        <span ng-show="isConfirmPasswordDirty && editUserForm.confirmPassword.$dirty && editUserForm.confirmPassword.$error.equal === true && editUserForm.newPassword.$error.valid === false" class="form-hint">
                             {{msg('security.samePassword')}}
                         </span>
                     </div>
@@ -172,6 +175,7 @@
                         <select ng-model="user.userStatus" class="form-control form-control-select">
                             <option value="ACTIVE">{{msg('security.user.active')}}</option>
                             <option value="BLOCKED">{{msg('security.user.blocked')}}</option>
+                            <option value="MUST_CHANGE_PASSWORD">{{msg('security.user.mustChangePassword')}}</option>
                         </select>
                     </div>
                 </div>

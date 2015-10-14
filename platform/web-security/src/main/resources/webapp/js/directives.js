@@ -75,37 +75,6 @@
         };
     });
 
-    directives.directive('confirmPassword', function(){
-        return {
-            restrict: 'A',
-            require: 'ngModel',
-            link: function(scope, elm, attrs, ctrl) {
-
-                function validateEqual(confirmPassword, userPassword) {
-                    if (confirmPassword === userPassword) {
-                        ctrl.$setValidity('equal', true);
-                        return confirmPassword;
-                    } else {
-                        ctrl.$setValidity('equal', false);
-                        return undefined;
-                    }
-                }
-
-                scope.$watch(attrs.confirmPassword, function(userViewPassword) {
-                    validateEqual(ctrl.$viewValue, userViewPassword);
-                });
-
-                ctrl.$parsers.unshift(function(viewValue) {
-                    return validateEqual(viewValue, scope.$eval(attrs.confirmPassword));
-                });
-
-                ctrl.$formatters.unshift(function(modelPassword) {
-                    return validateEqual(modelPassword, scope.$eval(attrs.confirmPassword));
-                });
-            }
-        };
-    });
-
     directives.directive('websecurityExpandAccordion', function () {
         return {
             restrict: 'A',
