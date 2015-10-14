@@ -28,11 +28,16 @@ Install and Configure Dependencies
 
 			MySQL is going to ask you for a root password. You have to input it twice. Remember it because we'll use this later.
 
-	#. Change the ownership of the tomcat7 directories
+	#. Change memory allocation for catalina when it starts and the ownership of the tomcat7 directories
+
+		..note::
+
+		#Note, you can change the memory allocation to anything, but we recommend at least 512m.
 
 		.. code-block:: bash
 
 			sudo service tomcat7 stop
+			echo 'CATALINA_OPTS="-Xms512m -Xmx512m"' | sudo tee --append /usr/share/tomcat7/bin/setenv.sh
 			sudo chown -R tomcat7:tomcat7 /var/lib/tomcat7/ /usr/share/tomcat7/
 
 
