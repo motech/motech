@@ -2,15 +2,14 @@ package org.motechproject.mds.web.service.impl;
 
 import javassist.CannotCompileException;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.mds.display.DisplayHelper;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
@@ -71,7 +70,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -92,9 +90,8 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 public class InstanceServiceImpl implements InstanceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstanceServiceImpl.class);
-    private static final DateTimeFormatter DTF = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z");
     private static final String ID = "id";
-    private static final Integer TO_STRING_MAX_LENGTH = 80;
+    private static final int MAX_LENGTH = 80;
 
     private EntityService entityService;
     private BundleContext bundleContext;
@@ -538,7 +535,7 @@ public class InstanceServiceImpl implements InstanceService {
 
             for (FieldDto field : fields) {
                 Object value = getProperty(instance, field, service);
-                Object displayValue = getDisplayValueForField(field, value);
+                Object displayValue = DisplayHelper.getDisplayValueForField(field, value, MAX_LENGTH);
 
                 value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_CLASS));
 
@@ -553,61 +550,6 @@ public class InstanceServiceImpl implements InstanceService {
         } catch (Exception e) {
             throw new ObjectReadException(entityDto.getName(), e);
         }
-    }
-
-    private Object getDisplayValueForField(FieldDto field, Object value) throws InvocationTargetException, IllegalAccessException {
-        Object displayValue = null;
-        if (field.getType().isRelationship()) {
-            if (field.getType().equals(TypeDto.ONE_TO_MANY_RELATIONSHIP) || field.getType().equals(TypeDto.MANY_TO_MANY_RELATIONSHIP)) {
-                displayValue = buildDisplayValuesMap((Collection) value);
-            } else {
-                if (value != null) {
-                    String toStringResult = value.toString();
-                    displayValue = toStringResult.length() > TO_STRING_MAX_LENGTH ?
-                            toStringResult.substring(0, TO_STRING_MAX_LENGTH + 1) + "..." : toStringResult;
-                }
-            }
-        } else if (field.getType().isCombobox()) {
-            displayValue = getDisplayValueForCombobox(field, value);
-        }
-
-        return displayValue;
-    }
-
-    private Object getDisplayValueForCombobox(FieldDto field, Object value) {
-        Object displayValue;
-        if (Constants.Util.FALSE.equalsIgnoreCase(field.getSettingsValueAsString(Constants.Settings.ALLOW_USER_SUPPLIED))) {
-            String mapString = field.getSettingsValueAsString(Constants.Settings.COMBOBOX_VALUES);
-            Map<String, String> comboboxValues = TypeHelper.parseStringToMap(mapString);
-            if (value instanceof Collection) {
-                Collection valuesToDisplay = new ArrayList();
-                Collection enumList = (Collection) value;
-                for (Object enumValue : enumList) {
-                    String valueFromMap = comboboxValues.get(ObjectUtils.toString(enumValue));
-                    valuesToDisplay.add(StringUtils.isNotEmpty(valueFromMap) ? valueFromMap : enumValue);
-                }
-                displayValue = valuesToDisplay;
-            } else {
-                String valueFromMap = comboboxValues.get(ObjectUtils.toString(value));
-                displayValue = StringUtils.isNotEmpty(valueFromMap) ? valueFromMap : value;
-            }
-        } else {
-            displayValue = value;
-        }
-
-        return displayValue;
-    }
-
-    private Map<Long, String> buildDisplayValuesMap(Collection values) throws InvocationTargetException, IllegalAccessException {
-        Map<Long, String> displayValues = new HashMap<>();
-        for (Object obj : values) {
-            Method method = MethodUtils.getAccessibleMethod(obj.getClass(), "getId", (Class[]) null);
-            Long key = (Long) method.invoke(obj);
-            String toStringResult = obj.toString();
-            displayValues.put(key, toStringResult.length() > TO_STRING_MAX_LENGTH ?
-                        toStringResult.substring(0 , TO_STRING_MAX_LENGTH + 1) + "..." : toStringResult);
-        }
-        return displayValues;
     }
 
     private HistoryRecord convertToHistoryRecord(Object object, EntityDto entity, Long instanceId,
@@ -857,9 +799,9 @@ public class InstanceServiceImpl implements InstanceService {
         Object parsedValue = value;
 
         if (parsedValue instanceof DateTime) {
-            parsedValue = DTF.print((DateTime) parsedValue);
+            parsedValue = DisplayHelper.DTF.print((DateTime) parsedValue);
         } else if (parsedValue instanceof Date) {
-            parsedValue = DTF.print(((Date) parsedValue).getTime());
+            parsedValue = DisplayHelper.DTF.print(((Date) parsedValue).getTime());
         } else if (parsedValue instanceof Time) {
             parsedValue = ((Time) parsedValue).timeStr();
         } else if (parsedValue instanceof LocalDate) {
