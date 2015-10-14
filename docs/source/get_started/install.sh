@@ -10,6 +10,7 @@ sudo apt-get update
 sudo apt-get install -y tomcat7
 sudo service tomcat7 stop
 sudo apt-get install -y activemq mysql-server
+echo 'CATALINA_OPTS="-Xms512m -Xmx512m"' | sudo tee --append /usr/share/tomcat7/bin/setenv.sh
 sudo chown -R tomcat7:tomcat7 /var/lib/tomcat7/ /usr/share/tomcat7/
 sudo ln -s /etc/activemq/instances-available/main /etc/activemq/instances-enabled/main
 sudo sed -e 's/<broker /<broker schedulerSupport="true" /' -i /etc/activemq/instances-enabled/main/activemq.xml

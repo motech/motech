@@ -2,7 +2,6 @@ package org.motechproject.tasks.contract;
 
 import org.hamcrest.core.Is;
 import org.junit.Test;
-import org.motechproject.tasks.domain.ParameterType;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -10,9 +9,11 @@ import static org.junit.Assert.assertThat;
 
 public class ActionParameterRequestTest {
 
+    private static final String UNICODE = "UNICODE";
+
     @Test
     public void shouldSetDefaultParameterType() {
-        assertThat(new ActionParameterRequestBuilder().setKey("key").setDisplayName("displayName").setOrder(1).createActionParameterRequest().getType(), Is.is(ParameterType.UNICODE.getValue()));
+        assertThat(new ActionParameterRequestBuilder().setKey("key").setDisplayName("displayName").setOrder(1).createActionParameterRequest().getType(), Is.is(UNICODE));
     }
 
     @Test

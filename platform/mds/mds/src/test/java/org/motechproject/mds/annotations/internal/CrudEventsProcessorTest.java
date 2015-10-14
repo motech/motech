@@ -7,6 +7,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.mds.annotations.internal.samples.AnotherSample;
+import org.motechproject.mds.annotations.internal.samples.RelatedSample;
+import org.motechproject.mds.annotations.internal.samples.Sample;
 import org.motechproject.mds.dto.TrackingDto;
 
 import static org.mockito.Mockito.atLeastOnce;
