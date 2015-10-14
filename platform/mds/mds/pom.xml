@@ -292,6 +292,7 @@
                             org.motechproject.mds.annotations;version=${project.version},
                             org.motechproject.mds.builder;version=${project.version},
                             org.motechproject.mds.config;version=${project.version},
+                            org.motechproject.mds.display;version=${project.version},
                             org.motechproject.mds.domain;version=${project.version},
                             org.motechproject.mds.dto;version=${project.version},
                             org.motechproject.mds.enhancer;version=${project.version},

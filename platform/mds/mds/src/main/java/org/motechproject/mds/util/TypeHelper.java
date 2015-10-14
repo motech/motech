@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -315,7 +316,7 @@ public final class TypeHelper {
                 collection.add(Enum.valueOf(enumClass, string));
             }
         } else if (null != generic) {
-            String[] stringArray = breakString(str);
+            String[] stringArray = breakStringForCollection(str);
             for (String strItem : stringArray) {
                 collection.add(parse(strItem, generic));
             }
@@ -347,8 +348,8 @@ public final class TypeHelper {
         return breakString(
                 str,
                 new String[]{"[", "]", "{", "}", "\""},
-                new String[]{"=", "\n", "\r\n"},
-                new String[]{":", ",", ","},
+                new String[]{"=", "\n", "\r\n", ", "},
+                new String[]{":", ",", ",", ","},
                 ","
         );
     }
@@ -385,9 +386,23 @@ public final class TypeHelper {
      * @param str String String to parse
      * @return Map, parsed from the given String
      */
+    public static <K, V> Map<K, V> parseStringToMap(Class<K> keyClass, Class<V> valueClass, String str) {
+        return parseStringToMap(keyClass.getName(), valueClass.getName(), str);
+    }
+
+    /**
+     * Parses given {@link java.lang.String} to {@link java.util.Map}. Each new entry should be preceeded
+     * by a comma mark (,). The key and value should be split with a colon mark (:). Types of the parsed values
+     * depend on the given keyClass and valueClass.
+     *
+     * @param keyClass the type of key
+     * @param valueClass the type of value
+     * @param str String String to parse
+     * @return Map, parsed from the given String
+     */
     public static Map parseStringToMap(String keyClass, String valueClass, String str) {
         String[] entries = breakStringForCollection(str);
-        Map map = new HashMap<>();
+        Map map = new LinkedHashMap<>();
 
         if (entries != null) {
             for (String entry : entries) {
@@ -572,12 +587,12 @@ public final class TypeHelper {
      * is a {@link java.util.List} a character put between next values can be specified.
      *
      * @param obj value to retrieve {@link java.lang.String} representation for
-     * @param listJoinChar character to put between next elements of a list; applicable if given object is a list
+     * @param collJoinChar character to put between next elements of a collection; applicable if given object is a collection
      * @return {@link java.lang.String} representation of an object
      */
-    public static String format(Object obj, char listJoinChar) {
-        if (obj instanceof List) {
-            return StringUtils.join((List) obj, listJoinChar);
+    public static String format(Object obj, char collJoinChar) {
+        if (obj instanceof Collection) {
+            return StringUtils.join((Collection) obj, collJoinChar);
         } else if (obj instanceof Map) {
             StringBuilder result = new StringBuilder();
 

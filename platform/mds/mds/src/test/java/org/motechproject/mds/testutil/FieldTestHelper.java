@@ -12,11 +12,13 @@ import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.LookupFieldType;
+import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.TypeHelper;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -219,6 +221,22 @@ public final class FieldTestHelper {
             }
         }
         return null;
+    }
+
+    public static FieldDto comboboxFieldDto(String name, boolean allowMultiSelect, boolean allowUserSupplied,
+                                            String values) {
+        return comboboxFieldDto(1L, name, name + " Disp", allowMultiSelect, allowUserSupplied, values);
+    }
+
+    public static FieldDto comboboxFieldDto(Long id, String name, String dispName, boolean allowMultiSelect,
+                                            boolean allowUserSupplied, String values) {
+        FieldDto field = fieldDto(id, name, Collection.class.getName(), dispName, null);
+
+        field.addSetting(new SettingDto(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS, allowMultiSelect, TypeDto.BOOLEAN));
+        field.addSetting(new SettingDto(Constants.Settings.ALLOW_USER_SUPPLIED, allowUserSupplied, TypeDto.BOOLEAN));
+        field.addSetting(new SettingDto(Constants.Settings.COMBOBOX_VALUES, values));
+
+        return field;
     }
 
     private FieldTestHelper() {
