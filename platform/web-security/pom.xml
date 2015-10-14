@@ -30,6 +30,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>motech-scheduler</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-event</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -149,8 +154,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.4</version>
-                <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Bundle-Activator>
@@ -192,6 +195,8 @@
                             net.sf.cglib.proxy,
                             net.sf.cglib.reflect,
                             net.sf.cglib.core,
+                            org.motechproject.scheduler.contract;resolution:=optional,
+                            org.motechproject.scheduler.service;resolution:=optional,
                             *
                         </Import-Package>
                         <Bundle-DocURL>

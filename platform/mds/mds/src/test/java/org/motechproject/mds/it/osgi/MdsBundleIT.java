@@ -37,10 +37,12 @@ import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.SqlQueryExecution;
+import org.motechproject.mds.service.ComboboxValueService;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MDSLookupService;
+import org.motechproject.mds.service.MetadataService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.RestDocumentationService;
 import org.motechproject.mds.testutil.DraftBuilder;
@@ -216,6 +218,7 @@ public class MdsBundleIT extends BasePaxIT {
 
         clearInstances();
 
+        verifyMetadataRetrieval();
         verifyInstanceCreatingAndRetrieving(objectClass);
         verifyInstanceCreatingOrUpdating(objectClass);
         verifyLookups(false); // regular lookups
@@ -668,11 +671,9 @@ public class MdsBundleIT extends BasePaxIT {
                 JAVA_LD_NOW.minusDays(1), JAVA_NOW.minusHours(1));
         service.update(retrieved);
 
-        FieldDto comboboxField = entityService.findEntityFieldByName(entityId, "someList");
+        ComboboxValueService cbValueService = ServiceRetriever.getService(bundleContext, ComboboxValueService.class);
 
-        // If this test fails be sure to check if any unexpected values were added to comboboxField earlier.
-        // At the moment all values remain in comboboxField, even after the object instances that added them were deleted.
-        assertEquals("[1, 2, 3, 4, 0, 35]", comboboxField.getSetting(Constants.Settings.COMBOBOX_VALUES).getValue().toString());
+        assertEquals(asList("0", "35", "2", "4"), cbValueService.getAllValuesForCombobox(FOO_CLASS, "someList"));
     }
 
     private void verifyCsvImport() throws Exception {
@@ -738,6 +739,11 @@ public class MdsBundleIT extends BasePaxIT {
 
         assertNotNull(docs);
         assertNotSame("", docs);
+    }
+
+    private void verifyMetadataRetrieval() {
+        MetadataService metadataService = ServiceRetriever.getService(bundleContext, MetadataService.class);
+        assertEquals("MDS_FOO_SOMELIST", metadataService.getComboboxTableName(FOO_CLASS, "someList"));
     }
 
     private void prepareTestEntities() throws IOException {

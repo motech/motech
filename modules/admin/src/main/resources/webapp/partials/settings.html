@@ -67,7 +67,7 @@
                 <h4 class="settings-section">{{msg('admin.settings.section.'+ pSettings.section)}}</h4>
                 <form id="platformSettingsForm" class="inside form-horizontal">
                     <fieldset>
-                        <div ng-repeat="option in pSettings.settings | orderBy:'key'" class="form-group">
+                        <div ng-repeat="option in pSettings.settings" class="form-group">
                             <label class="col-md-4 col-lg-4 control-label" for="{{option.key}}">
                                 {{msg('admin.settings.' + option.key)}}
                                 <span class="glyphicon glyphicon-info-sign" data-trigger="hover" data-placement="left" bs-popover="{{msg('admin.settings.tooltip.' + option.key)}}" data-original-title="" />

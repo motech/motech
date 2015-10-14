@@ -1,7 +1,10 @@
 package org.motechproject.security.service.authentication;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.Days;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
+import org.motechproject.security.config.SettingService;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.domain.UserStatus;
@@ -30,18 +33,19 @@ public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticat
     private AllMotechUsers allMotechUsers;
     private MotechPasswordEncoder passwordEncoder;
     private AuthoritiesService authoritiesService;
+    private SettingService settingService;
 
     @Autowired
     public MotechAuthenticationProvider(AllMotechUsers allMotechUsers, MotechPasswordEncoder motechPasswordEncoder,
-                                        AuthoritiesService authoritiesService) {
+                                        AuthoritiesService authoritiesService, SettingService settingService) {
         this.allMotechUsers = allMotechUsers;
         this.passwordEncoder = motechPasswordEncoder;
         this.authoritiesService = authoritiesService;
+        this.settingService = settingService;
     }
 
     /**
-     * Checks if entered password isn't empty and if it's
-     * valid for given user
+     * Checks if entered password isn't empty and if it's valid for given user.
      *
      * @param userDetails details of user that should be used to validate password
      * @param authentication data used for authentication
@@ -58,12 +62,12 @@ public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticat
     }
 
     /**
-     * If user with given username exists and is active then
-     * authenticates and returns him
+     * If user with given username exists and is active then authenticates and returns him. Updates the status of the
+     * user when password has been expired.
      *
      * @param username username of user
      * @param authentication data used for authentication
-     * @return authenticated user
+     * @return the user information
      */
     @Override
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) {
@@ -73,8 +77,13 @@ public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticat
         } else if (!user.isActive()) {
             throw new LockedException(USER_BLOCKED);
         } else {
+            if (settingService.getNumberOfDaysToChangePassword() > 0 &&
+                    Days.daysBetween(user.getLastPasswordChange(), DateUtil.now()).getDays() >= settingService.getNumberOfDaysToChangePassword()) {
+                user.setUserStatus(UserStatus.MUST_CHANGE_PASSWORD);
+                allMotechUsers.update(user);
+            }
             authentication.setDetails(new MotechUserProfile(user));
-            return new User(user.getUserName(), user.getPassword(), user.isActive(), true, true,
+            return new User(user.getUserName(), user.getPassword(), user.isActive(), true, !UserStatus.MUST_CHANGE_PASSWORD.equals(user.getUserStatus()),
                     !UserStatus.BLOCKED.equals(user.getUserStatus()), authoritiesService.authoritiesFor(user));
         }
     }

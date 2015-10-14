@@ -22,6 +22,7 @@ import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -127,6 +128,31 @@ public class MotechUserServiceImpl implements MotechUserService {
         UserDto currentUser = getCurrentUser();
         currentUser.setEmail(email);
         updateUserDetailsWithoutPassword(currentUser);
+    }
+
+    @Override
+    @Transactional
+    public MotechUserProfile changeExpiredPassword(String userName, String oldPassword, String newPassword) {
+        MotechUser motechUser = allMotechUsers.findByUserName(userName);
+
+        validatePassword(newPassword);
+
+        if (motechUser != null && UserStatus.MUST_CHANGE_PASSWORD.equals(motechUser.getUserStatus()) &&
+                passwordEncoder.isPasswordValid(motechUser.getPassword(), oldPassword)) {
+            //The new password and the old password cannot be the same
+            if (passwordEncoder.isPasswordValid(motechUser.getPassword(), newPassword)) {
+                return null;
+            }
+            motechUser.setPassword(passwordEncoder.encodePassword(newPassword));
+            motechUser.setUserStatus(UserStatus.ACTIVE);
+            allMotechUsers.update(motechUser);
+            return new MotechUserProfile(motechUser);
+        } else {
+            //Wrong password
+            incrementFailureLoginCount(motechUser);
+        }
+
+        return null;
     }
 
     @Override
@@ -307,6 +333,19 @@ public class MotechUserServiceImpl implements MotechUserService {
     public void validatePassword(String password) {
         PasswordValidator validator = settingService.getPasswordValidator();
         validator.validate(password);
+    }
+
+    private void incrementFailureLoginCount(MotechUser user) {
+        if (user != null && settingService.getFailureLoginLimit() > 0) {
+            user.incrementFailureLoginCounter();
+            if (user.getFailureLoginCounter() > settingService.getFailureLoginLimit()) {
+                user.setUserStatus(UserStatus.BLOCKED);
+            }
+            allMotechUsers.update(user);
+            if (UserStatus.BLOCKED.equals(user.getUserStatus())) {
+                throw new LockedException("User has been blocked");
+            }
+        }
     }
 
     @Autowired

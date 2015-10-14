@@ -542,9 +542,11 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         LocalDate end = dayOfWeekSchedulableJob.getEndDate();
         Time time = dayOfWeekSchedulableJob.getTime();
 
-        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.atHourAndMinuteOnGivenDaysOfWeek(time.getHour(), time.getMinute(), dayOfWeekSchedulableJob.getCronDays().toArray(new Integer[0]));
+        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.atHourAndMinuteOnGivenDaysOfWeek(time.getHour(),
+                time.getMinute(), dayOfWeekSchedulableJob.getCronDays().toArray(new Integer[0]));
         CronTriggerImpl cronTrigger = (CronTriggerImpl) cronScheduleBuilder.build();
-        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, cronTrigger.getCronExpression(), start.toDate(), end.toDate(), dayOfWeekSchedulableJob.isIgnorePastFiresAtStart());
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, cronTrigger.getCronExpression(),
+                start.toDate(), end != null ? end.toDate() : null, dayOfWeekSchedulableJob.isIgnorePastFiresAtStart());
 
         scheduleJob(cronSchedulableJob);
     }

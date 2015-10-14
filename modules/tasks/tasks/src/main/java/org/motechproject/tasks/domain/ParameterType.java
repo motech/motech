@@ -11,6 +11,7 @@ import org.joda.time.format.DateTimeParser;
 import org.motechproject.commons.api.MotechException;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -24,6 +25,11 @@ public enum ParameterType {
         @Override
         public Object parse(String value) {
             return value;
+        }
+
+        @Override
+        public Class getUnderlyingClass() {
+            return String.class;
         }
     },
 
@@ -39,6 +45,11 @@ public enum ParameterType {
         public Object parse(String value) {
             return value;
         }
+
+        @Override
+        public Class getUnderlyingClass() {
+            return String.class;
+        }
     },
 
     INTEGER("INTEGER") {
@@ -49,6 +60,11 @@ public enum ParameterType {
             } catch (RuntimeException e) {
                 throw new MotechException("task.error.convertToInteger", e);
             }
+        }
+
+        @Override
+        public Class getUnderlyingClass() {
+            return Integer.class;
         }
     },
 
@@ -61,6 +77,11 @@ public enum ParameterType {
                 throw new MotechException("task.error.convertToLong", e);
             }
         }
+
+        @Override
+        public Class getUnderlyingClass() {
+            return Long.class;
+        }
     },
 
     DOUBLE("DOUBLE") {
@@ -71,6 +92,11 @@ public enum ParameterType {
             } catch (RuntimeException e) {
                 throw new MotechException("task.error.convertToDouble", e);
             }
+        }
+
+        @Override
+        public Class getUnderlyingClass() {
+            return Double.class;
         }
     },
 
@@ -91,6 +117,11 @@ public enum ParameterType {
                 throw new MotechException("task.error.convertToDate", e);
             }
         }
+
+        @Override
+        public Class getUnderlyingClass() {
+            return DateTime.class;
+        }
     },
 
     TIME("TIME") {
@@ -108,6 +139,11 @@ public enum ParameterType {
                 throw new MotechException("task.error.convertToTime", e);
             }
         }
+
+        @Override
+        public Class getUnderlyingClass() {
+            return DateTime.class;
+        }
     },
 
     PERIOD("PERIOD") {
@@ -119,6 +155,11 @@ public enum ParameterType {
                 throw new MotechException("task.error.convertToPeriod", e);
             }
         }
+
+        @Override
+        public Class getUnderlyingClass() {
+            return Period.class;
+        }
     },
 
     BOOLEAN("BOOLEAN") {
@@ -129,12 +170,22 @@ public enum ParameterType {
             }
             return Boolean.valueOf(value);
         }
+
+        @Override
+        public Class getUnderlyingClass() {
+            return Boolean.class;
+        }
     },
 
     LIST("LIST") {
         @Override
         public Object parse(String value) {
             return Arrays.asList(value.split("(\\r)?\\n"));
+        }
+
+        @Override
+        public Class getUnderlyingClass() {
+            return List.class;
         }
     },
 
@@ -155,6 +206,10 @@ public enum ParameterType {
     private final String value;
 
     public abstract Object parse(String value);
+
+    public Class getUnderlyingClass() {
+        return Object.class;
+    }
 
     public static ParameterType getType(Class clazz) {
         ParameterType type = getNumericalType(clazz);

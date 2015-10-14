@@ -9,6 +9,7 @@ import org.motechproject.scheduler.contract.EventInfo;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
 import org.motechproject.scheduler.contract.RepeatingJobId;
+import org.motechproject.scheduler.contract.RepeatingPeriodJobId;
 import org.motechproject.scheduler.contract.RunOnceJobId;
 import org.motechproject.scheduler.exception.MotechSchedulerJobRetrievalException;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
@@ -412,7 +413,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
             return JobBasicInfo.JOBTYPE_RUNONCE;
         } else if (jobKey.getName().endsWith(RepeatingJobId.SUFFIX_REPEATJOBID)) {
             return JobBasicInfo.JOBTYPE_REPEATING;
-        } else if (jobKey.getName().endsWith(RepeatingJobId.SUFFIX_REPEATJOBID)) {
+        } else if (jobKey.getName().endsWith(RepeatingPeriodJobId.SUFFIX_REPEATPERIODJOBID)) {
             return JobBasicInfo.JOBTYPE_PERIOD;
         } else {
             return JobBasicInfo.JOBTYPE_CRON;

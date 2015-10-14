@@ -49,7 +49,7 @@ public class MotechOpenIdUserDetailsService implements AuthenticationUserDetails
             allMotechUsers.addOpenIdUser(user);
         }
 
-        return new User(user.getUserName(), user.getPassword(), user.isActive(), true, true,
+        return new User(user.getUserName(), user.getPassword(), user.isActive(), true, !UserStatus.MUST_CHANGE_PASSWORD.equals(user.getUserStatus()),
                 !UserStatus.BLOCKED.equals(user.getUserStatus()), authoritiesService.authoritiesFor(user));
     }
 

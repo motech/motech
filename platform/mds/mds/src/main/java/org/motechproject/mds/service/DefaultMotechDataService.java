@@ -36,8 +36,6 @@ import javax.annotation.PostConstruct;
 import javax.jdo.JDOHelper;
 import javax.jdo.ObjectState;
 import javax.jdo.Query;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,12 +72,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private HistoryService historyService;
     private TrashService trashService;
     private AllEntities allEntities;
-    private EntityService entityService;
     private OsgiEventProxy osgiEventProxy;
     private SecurityMode securityMode;
     private Long schemaVersion;
-    private Long entityId;
-    private List<Field> comboboxStringFields;
     private JdoTransactionManager transactionManager;
     private boolean recordHistory;
     private boolean allowCreateEvent;
@@ -102,7 +97,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
         securityMode = entity.getSecurityMode();
         schemaVersion = entity.getEntityVersion();
-        entityId = entity.getId();
         recordHistory = entity.isRecordHistory();
         allowCreateEvent = entity.isAllowCreateEvent();
         allowUpdateEvent = entity.isAllowUpdateEvent();
@@ -129,10 +123,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         validateCredentials();
 
         final T createdInstance = repository.create(object);
-
-        if (!getComboboxStringFields().isEmpty()) {
-            updateComboList(object);
-        }
 
         if (recordHistory) {
             historyService.record(createdInstance);
@@ -183,10 +173,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
         updateModificationData(object);
         final T updatedInstance = repository.update(object);
-
-        if (!getComboboxStringFields().isEmpty()) {
-            updateComboList(object);
-        }
 
         if (recordHistory) {
             historyService.record(updatedInstance);
@@ -239,10 +225,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         }
 
         updateModificationData(fromDbInstance);
-
-        if (!getComboboxStringFields().isEmpty()) {
-            updateComboList(fromDbInstance);
-        }
 
         if (recordHistory) {
             historyService.record(fromDbInstance);
@@ -401,6 +383,21 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
+    public void evictAllCache() {
+        repository.evictAll();
+    }
+
+    @Override
+    public void evictCacheForInstance(T instance) {
+        repository.evictOne(instance);
+    }
+
+    @Override
+    public void evictEntityCache(boolean withSubclasses) {
+        repository.evictEntity(withSubclasses);
+    }
+
+    @Override
     @Transactional
     public T findById(Long id) {
         if (id == null) {
@@ -476,32 +473,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return restriction;
     }
 
-    private void updateComboList(T instance) {
-        Entity entity = allEntities.retrieveById(entityId);
-        Map<String, Collection> fieldUpdateMap = new HashMap<>();
-
-        for (Field listField : entity.getStringComboboxFields()) {
-            Object value = PropertyUtil.safeGetProperty(instance, listField.getName());
-
-            if (value != null) {
-                Collection valAsColl = (value instanceof Collection) ? (Collection) value : Arrays.asList(value);
-                fieldUpdateMap.put(listField.getName(), valAsColl);
-            }
-        }
-
-        if (!fieldUpdateMap.isEmpty()) {
-            entityService.updateComboboxValues(entityId, fieldUpdateMap);
-        }
-    }
-
-    private List<Field> getComboboxStringFields() {
-        if (comboboxStringFields == null) {
-            comboboxStringFields = allEntities.retrieveById(entityId).getStringComboboxFields();
-        }
-
-        return comboboxStringFields;
-    }
-
     private void sendEvent(Long id, CrudEventType action) {
         String subject = createSubject(module, namespace, entityName, action);
         Map<String, Object> params = buildEventParams(module, namespace, entityName, getClassType().getName(), id);
@@ -538,11 +509,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Autowired
     public void setTrashService(TrashService trashService) {
         this.trashService = trashService;
-    }
-
-    @Autowired
-    public void setEntityService(EntityService entityService) {
-        this.entityService = entityService;
     }
 
     @Autowired
