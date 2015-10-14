@@ -76,6 +76,12 @@ public abstract class MotechDataRepository<T> {
         }
     }
 
+    public void evictEntity(boolean withSubclasses) {
+        if (persistenceManagerFactory != null) {
+            persistenceManagerFactory.getDataStoreCache().evictAll(withSubclasses, classType);
+        }
+    }
+
     public void evictOne(T object) {
         if (persistenceManagerFactory != null) {
             persistenceManagerFactory.getDataStoreCache().evict(object);

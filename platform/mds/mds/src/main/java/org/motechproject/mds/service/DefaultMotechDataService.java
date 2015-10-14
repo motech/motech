@@ -364,14 +364,20 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
-    public void evictAll() {
+    public void evictAllCache() {
         repository.evictAll();
     }
 
     @Override
-    public void evictOne(T object) {
-        repository.evictOne(object);
+    public void evictCacheForInstance(T instance) {
+        repository.evictOne(instance);
     }
+
+    @Override
+    public void evictEntityCache(boolean withSubclasses) {
+        repository.evictEntity(withSubclasses);
+    }
+
 
     @Override
     @Transactional
