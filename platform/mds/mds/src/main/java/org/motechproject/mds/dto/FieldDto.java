@@ -192,7 +192,7 @@ public class FieldDto {
 
     public void setMetadata(List<MetadataDto> metadata) {
         this.metadata = CollectionUtils.isEmpty(metadata)
-                ? new LinkedList<MetadataDto>()
+                ? new LinkedList<>()
                 : metadata;
     }
 
