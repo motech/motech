@@ -1,11 +1,11 @@
-package org.motechproject.mds.web.util;
+package org.motechproject.mds.display;
 
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
-import static org.motechproject.mds.web.util.UIRepresentationUtil.uiRepresentationString;
+import static org.motechproject.mds.display.UIRepresentationUtil.uiRepresentationString;
 
 public class UIRepresentationUtilTest {
 

@@ -192,7 +192,7 @@ public class FieldDto {
 
     public void setMetadata(List<MetadataDto> metadata) {
         this.metadata = CollectionUtils.isEmpty(metadata)
-                ? new LinkedList<MetadataDto>()
+                ? new LinkedList<>()
                 : metadata;
     }
 
@@ -268,6 +268,20 @@ public class FieldDto {
 
     public void setNonDisplayable(boolean nonDisplayable) {
         this.nonDisplayable = nonDisplayable;
+    }
+
+    public void addSetting(SettingDto setting) {
+        getSettings().add(setting);
+    }
+
+    public void setSetting(String name, Object value) {
+        SettingDto existing = getSetting(name);
+
+        if (existing != null) {
+            existing.setValue(value);
+        } else {
+            addSetting(new SettingDto(name, value));
+        }
     }
 
     /**

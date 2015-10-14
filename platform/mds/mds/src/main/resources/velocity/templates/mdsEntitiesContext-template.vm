@@ -15,6 +15,8 @@
 
     <bean id="allEntities" class="org.motechproject.mds.repository.AllEntities" />
 
+    <bean id="comboboxValueRepository" class="org.motechproject.mds.repository.ComboboxValueRepository" />
+
     <bean id="historyService" class="org.motechproject.mds.service.impl.history.HistoryServiceImpl" />
 
     <bean id="trashService" class="org.motechproject.mds.service.impl.history.TrashServiceImpl" />
@@ -77,5 +79,9 @@
         <property name="persistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
         <property name="jdoDialect" ref="mdsJdoDialect"/>
     </bean>
+
+    <bean id="metadataService" class="org.motechproject.mds.service.impl.MetadataServiceImpl" />
+
+    <bean id="comboboxValueService" class="org.motechproject.mds.service.impl.ComboboxValueServiceImpl" />
 
 </beans>

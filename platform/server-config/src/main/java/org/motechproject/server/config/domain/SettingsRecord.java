@@ -335,15 +335,48 @@ public class SettingsRecord implements MotechSettings {
 
     @Ignore
     @Override
-    public int getFailureLoginLimit() {
-        String value = platformSettings.get(ConfigurationConstants.FAILURE_LOGIN_LIMIT);
-        return value == null ? 0 : Integer.parseInt(value);
+    public Integer getFailureLoginLimit() {
+        return getInteger(ConfigurationConstants.FAILURE_LOGIN_LIMIT);
     }
 
     @Override
     public void setFailureLoginLimit(int limit) {
         savePlatformSetting(ConfigurationConstants.FAILURE_LOGIN_LIMIT,
                 String.valueOf(limit));
+    }
+
+    @Ignore
+    @Override
+    public Integer getNumberOfDaysToChangePassword() {
+        return getInteger(ConfigurationConstants.PASSWORD_RESET_DAYS);
+    }
+
+    @Override
+    public void setNumberOfDaysToChangePassword(Integer days) {
+        savePlatformSetting(ConfigurationConstants.PASSWORD_RESET_DAYS, intToStr(days));
+    }
+
+    @Ignore
+    @Override
+    public boolean isPasswordResetReminderEnabled() {
+        return Boolean.parseBoolean(platformSettings.get(ConfigurationConstants.PASSWORD_REMINDER));
+    }
+
+    @Override
+    public void setPasswordResetReminder(String remind) {
+        savePlatformSetting(ConfigurationConstants.PASSWORD_REMINDER,
+                remind);
+    }
+
+    @Ignore
+    @Override
+    public Integer getNumberOfDaysForReminder() {
+        return getInteger(ConfigurationConstants.PASSWORD_REMINDER_DAYS);
+    }
+
+    @Override
+    public void setNumberOfDaysForReminder(Integer days) {
+        savePlatformSetting(ConfigurationConstants.PASSWORD_REMINDER_DAYS, intToStr(days));
     }
 
     private Integer getInteger(String key) {

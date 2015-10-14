@@ -1,4 +1,4 @@
-package org.motechproject.mds.web.util;
+package org.motechproject.mds.display;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.UIRepresentation;

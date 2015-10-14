@@ -1,5 +1,6 @@
 package org.motechproject.mds.dto;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -16,7 +17,6 @@ import java.util.Date;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
-import static org.apache.commons.lang.StringUtils.startsWith;
 
 /**
  * The <code>TypeDto</code> class contains information about an available field in an entity.
@@ -212,12 +212,15 @@ public class TypeDto {
 
     @JsonIgnore
     public boolean isCombobox() {
-        return equalsIgnoreCase(displayName, "mds.field.combobox");
+        return Collection.class.getName().equals(typeClass);
     }
 
     @JsonIgnore
     public boolean isRelationship() {
-        return startsWith(displayName, "mds.field.relationship");
+        return StringUtils.equals(typeClass, "org.motechproject.mds.domain.ManyToOneRelationship") ||
+                StringUtils.equals(typeClass, "org.motechproject.mds.domain.OneToOneRelationship") ||
+                StringUtils.equals(typeClass, "org.motechproject.mds.domain.OneToManyRelationship") ||
+                StringUtils.equals(typeClass, "org.motechproject.mds.domain.ManyToManyRelationship");
     }
 
     @JsonIgnore
@@ -233,6 +236,12 @@ public class TypeDto {
     @JsonIgnore
     public boolean isMap() {
         return equalsIgnoreCase(displayName, "mds.field.map");
+    }
+
+
+    @JsonIgnore
+    public boolean isForClass(Class<?> clazz) {
+        return clazz.getName().equals(typeClass);
     }
 
     /**

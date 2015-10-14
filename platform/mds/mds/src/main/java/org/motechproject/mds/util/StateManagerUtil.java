@@ -60,10 +60,6 @@ public final class StateManagerUtil {
             clazz = clazz.getSuperclass();
         } while (clazz.getSuperclass() != null || dnStateManagerField == null);
 
-        if (dnStateManagerField == null) {
-            throw new MdsException("Cannot find state manager for " + instance.getClass().getName());
-        }
-
         dnStateManagerField.setAccessible(true);
         StateManagerImpl stateManager = (StateManagerImpl) dnStateManagerField.get(instance);
         dnStateManagerField.setAccessible(false);

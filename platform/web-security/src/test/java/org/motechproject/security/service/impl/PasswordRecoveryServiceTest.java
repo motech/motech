@@ -1,6 +1,5 @@
 package org.motechproject.security.service.impl;
 
-import org.apache.velocity.app.VelocityEngine;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -8,7 +7,6 @@ import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
@@ -23,9 +21,11 @@ import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.repository.AllPasswordRecoveries;
 import org.motechproject.security.service.PasswordRecoveryService;
 import org.motechproject.security.service.impl.PasswordRecoveryServiceImpl;
+import org.motechproject.security.velocity.VelocityTemplateParser;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.MotechSettings;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -40,6 +40,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.motechproject.testing.utils.TimeFaker.fakeNow;
 import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class PasswordRecoveryServiceTest {
 
@@ -50,7 +51,6 @@ public class PasswordRecoveryServiceTest {
     private static final String TOKEN = "token";
     private static final String ENCODED_PASSWORD = "p455w012d";
     private static final List<String> ROLES = Arrays.asList("admin");
-
 
     @Mock
     private MotechUser user;
@@ -80,7 +80,7 @@ public class PasswordRecoveryServiceTest {
     private MotechEvent emailEvent;
 
     @Mock
-    private VelocityEngine velocityEngine;
+    private VelocityTemplateParser templateParser;
 
     @InjectMocks
     private EmailSender emailSenderInjected = new EmailSenderImpl();
@@ -89,10 +89,13 @@ public class PasswordRecoveryServiceTest {
     private PasswordRecoveryService recoveryService = new PasswordRecoveryServiceImpl();
 
     private MotechSettings motechSettings;
+    private ResourceBundleMessageSource messageSource;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        initMocks(this);
+        prepareMessageSource();
+        prepareEmailSender();
     }
 
     @After
@@ -342,4 +345,18 @@ public class PasswordRecoveryServiceTest {
         recoveryService.oneTimeTokenOpenId(EMAIL);
     }
 
+    private void prepareMessageSource() {
+        messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("messages/messages");
+        messageSource.setUseCodeAsDefaultMessage(true);
+    }
+
+    private void prepareEmailSender() {
+        EmailSenderImpl emailSender = new EmailSenderImpl();
+        emailSender.setSettingsFacade(settingsFacade);
+        emailSender.setTemplateParser(templateParser);
+        emailSender.setMessageSource(messageSource);
+        emailSender.setEventRelay(eventRelay);
+        emailSenderInjected = emailSender;
+    }
 }

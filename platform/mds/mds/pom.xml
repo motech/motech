@@ -283,8 +283,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.4</version>
-                <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
@@ -292,6 +290,7 @@
                             org.motechproject.mds.annotations;version=${project.version},
                             org.motechproject.mds.builder;version=${project.version},
                             org.motechproject.mds.config;version=${project.version},
+                            org.motechproject.mds.display;version=${project.version},
                             org.motechproject.mds.domain;version=${project.version},
                             org.motechproject.mds.dto;version=${project.version},
                             org.motechproject.mds.enhancer;version=${project.version},
