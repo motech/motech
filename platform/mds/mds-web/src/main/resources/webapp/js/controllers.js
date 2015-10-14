@@ -2864,15 +2864,17 @@
 
         $scope.selectedEntityChanged = function() {
             if ($scope.selectedEntity && $scope.selectedEntity.id) {
-                blockUI();
-                workInProgress.setActualEntity(Entities, $scope.selectedEntity.id);
+                if (workInProgress.actualEntity !== $scope.selectedEntity.id) {
+                    blockUI();
+                    workInProgress.setActualEntity(Entities, $scope.selectedEntity.id);
 
-                $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
-                    setSecuritySettings();
-                    setAdvancedSettings();
-                    $scope.draft({});
-                });
-                unblockUI();
+                    $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
+                        setSecuritySettings();
+                        setAdvancedSettings();
+                        $scope.draft({});
+                    });
+                    unblockUI();
+                }
             } else {
                 workInProgress.setActualEntity(Entities, undefined);
 
