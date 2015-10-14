@@ -98,6 +98,37 @@
         }
     }
 
+    /*
+    * This function calculates height parameters
+    * for fit jqGrid on the screen.
+    */
+    function resizeGridHeight(gridId) {
+        var intervalHeightResize, gap, tableHeight;
+        clearInterval(intervalHeightResize);
+        intervalHeightResize = setInterval( function () {
+            if ($('.overrideJqgridTable').offset() !== undefined) {
+                gap = 1 + $('.overrideJqgridTable').offset().top - $('.inner-center .ui-layout-content').offset().top;
+                tableHeight = Math.floor($('.inner-center .ui-layout-content').height() - gap - $('.ui-jqgrid-pager').outerHeight() - $('.ui-jqgrid-hdiv').outerHeight());
+                $('#' + gridId).jqGrid("setGridHeight", tableHeight);
+            }
+            clearInterval(intervalHeightResize);
+       }, 250);
+    }
+
+    /*
+    * This function calculates width parameters
+    * for fit jqGrid on the screen.
+    */
+    function resizeGridWidth(gridId) {
+        var intervalWidthResize, tableWidth;
+        clearInterval(intervalWidthResize);
+        intervalWidthResize = setInterval( function () {
+            tableWidth = $('.overrideJqgridTable').width();
+            $('#' + gridId).jqGrid("setGridWidth", tableWidth);
+            clearInterval(intervalWidthResize);
+        }, 250);
+    }
+
     function buildGridColModel(colModel, fields, scope, removeVersionField) {
         var i, j, cmd, field, skip = false;
 
@@ -1198,11 +1229,12 @@
     /**
     * Displays entity instances data using jqGrid
     */
-    directives.directive('entityInstancesGrid', function ($rootScope, $route) {
+    directives.directive('entityInstancesGrid', function ($rootScope, $route, $timeout) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                var elem = angular.element(element), tableWidth, gridId = attrs.id;
+                var elem = angular.element(element), tableWidth, eventResize, eventChange,
+                gridId = attrs.id;
 
                 $.ajax({
                     type: "GET",
@@ -1247,8 +1279,7 @@
                                     $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
                                 }
                                 tableWidth = $('#entityInstancesTable').width();
-                                $('#gview_' + gridId + ' .ui-jqgrid-htable').width(tableWidth);
-                                $('#gview_' + gridId + ' .ui-jqgrid-btable').width(tableWidth);
+                                $('#' + gridId).jqGrid("setGridWidth", tableWidth);
                             },
                             loadonce: false,
                             headertitles: true,
@@ -1282,12 +1313,7 @@
                                         $('#pageInstancesTable_center').hide();
                                         $('#entityInstancesTable .ui-jqgrid-status-label').removeClass('hidden');
                                     }
-                                    tableWidth = $('#entityInstancesTable').width();
-                                    $('#entityInstancesTable .ui-jqgrid-htable').addClass("table-lightblue");
-                                    $('#entityInstancesTable .ui-jqgrid-btable').addClass("table-lightblue");
-                                    $('#entityInstancesTable .ui-jqgrid-htable').width(tableWidth);
-                                    $('#entityInstancesTable .ui-jqgrid-btable').width(tableWidth);
-                                    $('#entityInstancesTable .ui-jqgrid-hdiv').width('100%').show();
+                                    $('#entityInstancesTable .ui-jqgrid-hdiv').show();
                                 } else {
                                     noSelectedFields = true;
                                     angular.forEach($("select.multiselect")[0], function(field) {
@@ -1296,19 +1322,24 @@
                                             noSelectedFields = false;
                                         }
                                     });
-                                    $('#entityInstancesTable .ui-jqgrid-htable').addClass("table-lightblue");
-                                    $('#entityInstancesTable .ui-jqgrid-btable').addClass("table-lightblue");
                                     if (noSelectedFields && $rootScope.selectedField) {
                                         $('#entityInstancesTable .ui-jqgrid-status-label').removeClass('hidden');
                                         $('#pageInstancesTable_center').hide();
                                         $('#entityInstancesTable .ui-jqgrid-hdiv').hide();
                                     }
                                 }
+                                $('#entityInstancesTable .ui-jqgrid-hdiv').addClass("table-lightblue");
+                                $('#entityInstancesTable .ui-jqgrid-btable').addClass("table-lightblue");
+                                $timeout(function() {
+                                    resizeGridHeight(gridId);
+                                    resizeGridWidth(gridId);
+                                }, 550);
                             },
                             loadError: function() {
                                 scope.setDataRetrievalError(true);
                             }
                         });
+
                         scope.$watch("lookupRefresh", function () {
                             $('#' + attrs.id).jqGrid('setGridParam', {
                                 page: 1,
@@ -1319,9 +1350,27 @@
                                 }
                             }).trigger('reloadGrid');
                         });
+
                         elem.on('jqGridSortCol', function (e, fieldName) {
                             // For correct sorting in jqgrid we need to convert back to the original name
                             e.target.p.sortname = backToReservedFieldName(fieldName);
+                        });
+
+                        $(window).on('resize', function() {
+                            clearTimeout(eventResize);
+                            eventResize = $timeout(function() {
+                                $(".ui-layout-content").scrollTop(0);
+                                resizeGridWidth(gridId);
+                                resizeGridHeight(gridId);
+                            }, 200);
+                        }).trigger('resize');
+
+                        $('#inner-center').on('change', function() {
+                            clearTimeout(eventChange);
+                            eventChange = $timeout(function() {
+                                resizeGridHeight(gridId);
+                                resizeGridWidth(gridId);
+                            }, 200);
                         });
                     }
                 });
@@ -1332,7 +1381,7 @@
     /**
     * Displays related instances data using jqGrid
     */
-    directives.directive('entityInstancesBrowserGrid', function ($rootScope, $route) {
+    directives.directive('entityInstancesBrowserGrid', function ($rootScope, $route, $timeout) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -1488,15 +1537,6 @@
                                     }
                                 }
                             });
-                            $('.ui-jqgrid.ui-widget.ui-widget-content').width('100%');
-                            $('.ui-jqgrid-htable').width('100%');
-                            $('.ui-jqgrid-btable').width('100%');
-                            $('.ui-jqgrid-bdiv').width('100%');
-                            $('.ui-jqgrid-hdiv').width('100%');
-                            $('.ui-jqgrid-view').width('100%');
-                            $('.ui-jqgrid-pager').width('100%');
-                            $('.ui-jqgrid-hbox').css({'padding-right':'0'});
-                            $('.ui-jqgrid-hbox').width('100%');
 
                             if (noSelectedFields) {
                                 $('.page_' + target + '_center').hide();
@@ -1505,6 +1545,9 @@
                                 $('.page_' + target + '_center').show();
                                 $('.ui-jqgrid-status-label').addClass('hidden');
                             }
+                        },
+                        onDropdownHide: function(event) {
+                            $("#" + target).trigger("resize");
                         }
                    });
 
@@ -1524,11 +1567,12 @@
     /**
     * Displays instance history data using jqGrid
     */
-    directives.directive('instanceHistoryGrid', function($compile, $http, $templateCache) {
+    directives.directive('instanceHistoryGrid', function($compile, $http, $templateCache, $timeout) {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
-                var elem = angular.element(element), tableWidth, gridId = attrs.id;
+                var elem = angular.element(element), tableWidth, eventResize, eventChange,
+                gridId = attrs.id;
 
                 $.ajax({
                     type: "GET",
@@ -1577,8 +1621,7 @@
                                     $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
                                 }
                                 tableWidth = $('#instanceHistoryTable').width();
-                                $('#gview_' + gridId + ' .ui-jqgrid-htable').width(tableWidth);
-                                $('#gview_' + gridId + ' .ui-jqgrid-btable').width(tableWidth);
+                                $('#' + gridId).jqGrid("setGridWidth", tableWidth);
                             },
                             headertitles: true,
                             colModel: colModel,
@@ -1610,12 +1653,7 @@
                                         $('#pageInstanceHistoryTable_center').hide();
                                         $('#instanceHistoryTable .ui-jqgrid-status-label').removeClass('hidden');
                                     }
-                                    tableWidth = $('#instanceHistoryTable').width();
-                                    $('#instanceHistoryTable .ui-jqgrid-htable').addClass('table-lightblue');
-                                    $('#instanceHistoryTable .ui-jqgrid-btable').addClass("table-lightblue");
-                                    $('#instanceHistoryTable .ui-jqgrid-htable').width(tableWidth);
-                                    $('#instanceHistoryTable .ui-jqgrid-btable').width(tableWidth);
-                                    $('#instanceHistoryTable .ui-jqgrid-hdiv').width('100%').show();
+                                    $('#instanceHistoryTable .ui-jqgrid-hdiv').show();
                                 } else {
                                     noSelectedFields = true;
                                     angular.forEach($("select.multiselect")[0], function(field) {
@@ -1624,19 +1662,42 @@
                                             noSelectedFields = false;
                                         }
                                     });
-                                    $('#instanceHistoryTable .ui-jqgrid-htable').addClass("table-lightblue");
-                                    $('#instanceHistoryTable .ui-jqgrid-btable').addClass("table-lightblue");
                                     if (noSelectedFields) {
                                         $('#instanceHistoryTable .ui-jqgrid-status-label').removeClass('hidden');
                                         $('#pageInstanceHistoryTable_center').hide();
                                         $('#instanceHistoryTable .ui-jqgrid-hdiv').hide();
                                     }
                                 }
-                                elem.on('jqGridSortCol', function (e, fieldName) {
-                                    e.target.p.sortname = backToReservedFieldName(fieldName);
-                                });
+                                $('#instanceHistoryTable .ui-jqgrid-hdiv').addClass('table-lightblue');
+                                $('#instanceHistoryTable .ui-jqgrid-btable').addClass("table-lightblue");
+                                $timeout(function() {
+                                    resizeGridHeight(gridId);
+                                    resizeGridWidth(gridId);
+                                }, 550);
                             }
                         });
+
+                        elem.on('jqGridSortCol', function (e, fieldName) {
+                            e.target.p.sortname = backToReservedFieldName(fieldName);
+                        });
+
+                        $(window).on('resize', function() {
+                            clearTimeout(eventResize);
+                            eventResize = $timeout(function() {
+                                $(".ui-layout-content").scrollTop(0);
+                                resizeGridWidth(gridId);
+                                resizeGridHeight(gridId);
+                            }, 200);
+                        }).trigger('resize');
+
+                        $('#inner-center').on('change', function() {
+                            clearTimeout(eventChange);
+                            eventChange = $timeout(function() {
+                                resizeGridHeight(gridId);
+                                resizeGridWidth(gridId);
+                            }, 200);
+                        });
+
                     }
                 });
             }
@@ -1646,11 +1707,12 @@
     /**
     * Displays entity instance trash data using jqGrid
     */
-    directives.directive('instanceTrashGrid', function () {
+    directives.directive('instanceTrashGrid', function ($timeout) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                var elem = angular.element(element), tableWidth, gridId = attrs.id;
+                var elem = angular.element(element), tableWidth, eventResize, eventChange,
+                gridId = attrs.id;
 
                 $.ajax({
                     type: "GET",
@@ -1691,8 +1753,7 @@
                                     $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
                                 }
                                 tableWidth = $('#instanceTrashTable').width();
-                                $('#gview_' + gridId + ' .ui-jqgrid-htable').width(tableWidth);
-                                $('#gview_' + gridId + ' .ui-jqgrid-btable').width(tableWidth);
+                                $('#' + gridId).jqGrid("setGridWidth", tableWidth);
                             },
                             loadonce: false,
                             headertitles: true,
@@ -1725,12 +1786,7 @@
                                         $('#pageInstanceTrashTable_center').hide();
                                         $('#instanceTrashTable .ui-jqgrid-status-label').removeClass('hidden');
                                     }
-                                    tableWidth = $('#instanceTrashTable').width();
-                                    $('#instanceTrashTable .ui-jqgrid-htable').addClass('table-lightblue');
-                                    $('#instanceTrashTable .ui-jqgrid-btable').addClass("table-lightblue");
-                                    $('#instanceTrashTable .ui-jqgrid-htable').width(tableWidth);
-                                    $('#instanceTrashTable .ui-jqgrid-btable').width(tableWidth);
-                                    $('#instanceTrashTable .ui-jqgrid-hdiv').width('100%').show();
+                                    $('#instanceTrashTable .ui-jqgrid-hdiv').show();
                                 } else {
                                     noSelectedFields = true;
                                     angular.forEach($("select.multiselect")[0], function(field) {
@@ -1742,31 +1798,44 @@
                                             $("#trashTable").jqGrid('hideCol', name);
                                         }
                                     });
-                                    $('#instanceTrashTable .ui-jqgrid-htable').addClass("table-lightblue");
-                                    $('#instanceTrashTable .ui-jqgrid-btable').addClass("table-lightblue");
                                     if (noSelectedFields) {
                                         $('#instanceTrashTable .ui-jqgrid-status-label').removeClass('hidden');
                                         $('#pageInstanceTrashTable_center').hide();
                                         $('#instanceTrashTable .ui-jqgrid-hdiv').hide();
                                     } else {
-                                        tableWidth = $('#instanceTrashTable').width();
                                         $('#pageInstanceTrashTable_center').show();
-                                        $('#instanceTrashTable').children().width('100%');
-                                        $('#instanceTrashTable .ui-jqgrid-htable').addClass('table-lightblue');
-                                        $('#instanceTrashTable .ui-jqgrid-btable').addClass("table-lightblue");
-                                        $('#instanceTrashTable .ui-jqgrid-htable').width(tableWidth);
-                                        $('#instanceTrashTable .ui-jqgrid-btable').width(tableWidth);
-                                        $('#instanceTrashTable .ui-jqgrid-bdiv').width('100%');
-                                        $('#instanceTrashTable .ui-jqgrid-hdiv').width('100%').show();
-                                        $('#instanceTrashTable .ui-jqgrid-view').width('100%');
-                                        $('#instanceTrashTable .ui-jqgrid-pager').width('100%');
+                                        $('#instanceTrashTable .ui-jqgrid-hdiv').show();
                                     }
                                 }
-                                elem.on('jqGridSortCol', function (e, fieldName) {
-                                    // For correct sorting in jqgrid we need to convert back to the original name
-                                    e.target.p.sortname = backToReservedFieldName(fieldName);
-                                });
+                                $('#instanceTrashTable .ui-jqgrid-hdiv').addClass("table-lightblue");
+                                $('#instanceTrashTable .ui-jqgrid-btable').addClass("table-lightblue");
+                                $timeout(function() {
+                                    resizeGridHeight(gridId);
+                                    resizeGridWidth(gridId);
+                                }, 550);
                             }
+                        });
+
+                        elem.on('jqGridSortCol', function (e, fieldName) {
+                            // For correct sorting in jqgrid we need to convert back to the original name
+                            e.target.p.sortname = backToReservedFieldName(fieldName);
+                        });
+
+                        $(window).on('resize', function() {
+                            clearTimeout(eventResize);
+                            eventResize = $timeout(function() {
+                                $(".ui-layout-content").scrollTop(0);
+                                resizeGridWidth(gridId);
+                                resizeGridHeight(gridId);
+                            }, 200);
+                        }).trigger('resize');
+
+                        $('#inner-center').on('change', function() {
+                            clearTimeout(eventChange);
+                            eventChange = $timeout(function() {
+                                resizeGridHeight(gridId);
+                                resizeGridWidth(gridId);
+                            }, 200);
                         });
                     }
                 });

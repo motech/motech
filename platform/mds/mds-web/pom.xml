@@ -225,7 +225,7 @@
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
                                 _, $, angular, angularHandler, isBlank, handleResponse, blockUI, FileReader,
-                                motechAlert, unblockUI, motechConfirm, cloneArray, arraysEqual,
+                                motechAlert, unblockUI, motechConfirm, cloneArray, arraysEqual, resizeLayout,
                                 cloneObj, alertHandler, window, defaultLayout, innerLayout, moment, FormData
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
