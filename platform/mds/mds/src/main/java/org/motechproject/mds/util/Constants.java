@@ -604,6 +604,8 @@ public final class Constants {
         public static final String MIGRATION_DIRECTORY = "/.motech/migration";
 
         public static final String FILESYSTEM_PREFIX = "filesystem:";
+
+        public static final String PRE_SCHEMA_CREATION_DIRECTORY = "preSchemaGeneration";
     }
 
     /**

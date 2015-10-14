@@ -58,9 +58,10 @@ public class SchemaGenerator implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() {
+    public void afterPropertiesSet() throws IOException {
+        runMigrations(new File(mdsConfig.getFlywayMigrationDirectory(), Constants.EntitiesMigration.PRE_SCHEMA_CREATION_DIRECTORY));
         generateSchema();
-        runMigrations();
+        runMigrations(mdsConfig.getFlywayMigrationDirectory());
     }
 
     public void generateSchema() {
@@ -76,8 +77,8 @@ public class SchemaGenerator implements InitializingBean {
         }
     }
 
-    public void runMigrations() {
-        File migrationDirectory = mdsConfig.getFlywayMigrationDirectory();
+    public void runMigrations(File migrationDirectory) {
+        LOGGER.debug("Starting the flyway modules migrations.");
         //No migration directory
         if (!migrationDirectory.exists()) {
             return;
