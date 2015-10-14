@@ -216,4 +216,22 @@ public interface MotechDataService<T> {
      * @return class type
      */
     Class<T> getClassType();
+
+    /**
+     * Evicts all cached entities. This affects all entities.
+     */
+    void evictAllCache();
+
+    /**
+     * Evicts cache for a single entity instance.
+     *
+     * @param instance the instance to clear the cache for
+     */
+    void evictCacheForInstance(T instance);
+
+    /**
+     * Evicts cache for the entity class of this data service.
+     * @param withSubclasses if true, the cache for subclasses of the entity will be also cleared
+     */
+    void evictEntityCache(boolean withSubclasses);
 }

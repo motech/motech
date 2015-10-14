@@ -24,12 +24,14 @@ import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
 import org.motechproject.server.api.JarInformation;
+import org.motechproject.server.api.PomInformation;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonatype.aether.RepositoryException;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.collection.CollectRequest;
@@ -38,6 +40,8 @@ import org.sonatype.aether.connector.wagon.WagonRepositoryConnectorFactory;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.repository.LocalRepository;
 import org.sonatype.aether.repository.RemoteRepository;
+import org.sonatype.aether.resolution.ArtifactRequest;
+import org.sonatype.aether.resolution.ArtifactResolutionException;
 import org.sonatype.aether.resolution.ArtifactResult;
 import org.sonatype.aether.resolution.DependencyRequest;
 import org.sonatype.aether.resolution.DependencyResolutionException;
@@ -57,8 +61,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.motechproject.config.core.constants.ConfigurationConstants.FILE_CHANGED_EVENT_SUBJECT;
@@ -199,7 +208,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     public BundleInformation installBundleFromRepository(String moduleId, boolean startBundle) {
         try {
             return installFromRepository(new Dependency(new DefaultArtifact(moduleId), JavaScopes.RUNTIME), startBundle);
-        } catch (DependencyResolutionException | IOException | BundleException e) {
+        } catch (RepositoryException | IOException | BundleException e) {
             throw new MotechException("Unable to install module from repository " + moduleId, e);
         }
     }
@@ -229,7 +238,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         return bundleInfo;
     }
 
-    private List<ArtifactResult> resolveDependencies(Dependency dependency, List<RemoteRepository> remoteRepositories) throws DependencyResolutionException {
+    private List<ArtifactResult> resolveDependencies(Dependency dependency, PomInformation pomInformation) throws RepositoryException {
         LOGGER.info("Resolving dependencies for {}", dependency);
 
         org.apache.maven.repository.internal.DefaultServiceLocator locator = new org.apache.maven.repository.internal.DefaultServiceLocator();
@@ -244,14 +253,27 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         RemoteRepository remoteRepository = new RemoteRepository("central", "default", "http://nexus.motechproject.org/content/repositories/public");
 
         CollectRequest collectRequest = new CollectRequest();
-        collectRequest.setRoot(dependency);
-        collectRequest.addRepository(remoteRepository);
 
-        if (remoteRepositories != null) {
-            for (RemoteRepository repository : remoteRepositories) {
-                collectRequest.addRepository(repository);
+        if (pomInformation != null) {
+            String version = parseDependencyVersion(dependency, mvnRepository, system, remoteRepository, pomInformation);
+            String groupId = parseDependencyGroupId(dependency, mvnRepository, system, remoteRepository, pomInformation);
+
+            Artifact artifact = dependency.getArtifact();
+            Artifact updatedArtifact = new DefaultArtifact(groupId, artifact.getArtifactId(), artifact.getClassifier(),
+                    artifact.getExtension(), version);
+
+            // The method setArtifact instead of updating dependency object, creates new dependency object with the given artifact
+            dependency = dependency.setArtifact(updatedArtifact); //NO CHECKSTYLE ParameterAssignmentCheck
+
+            if (pomInformation.getRepositories() != null) {
+                for (RemoteRepository repository : pomInformation.getRepositories()) {
+                    collectRequest.addRepository(repository);
+                }
             }
         }
+
+        collectRequest.setRoot(dependency);
+        collectRequest.addRepository(remoteRepository);
 
         DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, DependencyFilterUtils.classpathFilter(JavaScopes.RUNTIME));
         try {
@@ -260,6 +282,116 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         } catch (RuntimeException e) {
             LOGGER.error("Unable to resolve dependencies for {}", dependency.toString(), e);
             return Collections.emptyList();
+        }
+    }
+
+    private String parseDependencyVersion(Dependency dependency, MavenRepositorySystemSession mvnRepository, RepositorySystem system,
+                                          RemoteRepository remoteRepository, PomInformation pomInformation) throws ArtifactResolutionException {
+        String parsedVersion;
+        String version = dependency.getArtifact().getVersion();
+
+        if (StringUtils.isEmpty(version)) {
+            parsedVersion = "[0,)";
+        } else {
+            Set<String> properties = getPropertiesFromString(version);
+
+            for (String propertyName : properties) {
+                String parsedProperty = getPropertyFromPom(parsePropertyName(propertyName), mvnRepository, system,
+                        remoteRepository, pomInformation);
+
+                if (parsedProperty == null) {
+                    LOGGER.error("The property: {} used in dependency: {} cannot be found in pom " +
+                                    "and its parents. For this dependency the latest version will be used",
+                            propertyName, dependency.getArtifact().getArtifactId());
+                    version = "[0,)";
+                    break;
+                }
+
+                version = StringUtils.replace(version, propertyName, parsedProperty);
+            }
+
+            parsedVersion = version;
+        }
+
+        return parsedVersion;
+    }
+
+    private String parseDependencyGroupId(Dependency dependency, MavenRepositorySystemSession mvnRepository, RepositorySystem system,
+                                          RemoteRepository remoteRepository, PomInformation pomInformation) throws ArtifactResolutionException {
+        String parsedGroupId;
+        String groupId = dependency.getArtifact().getGroupId();
+
+        Set<String> properties = getPropertiesFromString(groupId);
+
+        for (String propertyName : properties) {
+            String parsedProperty = getPropertyFromPom(parsePropertyName(propertyName), mvnRepository, system,
+                    remoteRepository, pomInformation);
+
+            if (parsedProperty == null) {
+                throw new MotechException(String.format("The property: %s used for groupId in dependency: %s cannot be found in pom and its parents.",
+                        propertyName, dependency.getArtifact().getArtifactId()));
+            }
+
+            groupId = StringUtils.replace(groupId, propertyName, parsedProperty);
+        }
+
+        parsedGroupId = groupId;
+
+        return parsedGroupId;
+    }
+
+    private Set<String> getPropertiesFromString(String input) {
+        Set<String> properties = new HashSet<>();
+
+        // Seeking properties like '${something}' in the input
+        Pattern p = Pattern.compile("\\$\\{\\S+?\\}");
+        Matcher matcher = p.matcher(input);
+        while (matcher.find()) {
+            properties.add(matcher.group());
+        }
+
+        return properties;
+    }
+
+    private String parsePropertyName(String property) {
+        String parsedPropertyName = StringUtils.remove(property, "${");
+        return StringUtils.remove(parsedPropertyName, "}");
+    }
+
+    private String getPropertyFromPom(String propertyName, MavenRepositorySystemSession mvnRepository, RepositorySystem system,
+                                      RemoteRepository remoteRepository, PomInformation pomInformation) throws ArtifactResolutionException {
+        Properties properties = pomInformation.getProperties();
+        String property = properties.getProperty(propertyName);
+
+        if (property == null) {
+            if (pomInformation.getParentPomInformation() == null) {
+                if (pomInformation.getParent() != null) {
+                    Artifact artifact = new DefaultArtifact(pomInformation.getParent().getGroupId(),
+                            pomInformation.getParent().getArtifactId(), "pom", pomInformation.getParent().getVersion());
+
+                    ArtifactRequest artifactRequest = new ArtifactRequest();
+                    artifactRequest.setArtifact(artifact);
+
+                    if (pomInformation.getRepositories() != null) {
+                        for (RemoteRepository repository : pomInformation.getRepositories()) {
+                            artifactRequest.addRepository(repository);
+                        }
+                    }
+                    artifactRequest.addRepository(remoteRepository);
+
+                    ArtifactResult artifactResult = system.resolveArtifact(mvnRepository, artifactRequest);
+                    File parentPOM = artifactResult.getArtifact().getFile();
+                    pomInformation.parseParentPom(parentPOM);
+
+                    return getPropertyFromPom(propertyName, mvnRepository, system, remoteRepository, pomInformation.getParentPomInformation());
+                } else {
+                    return null;
+                }
+            } else {
+                return getPropertyFromPom(propertyName, mvnRepository, system, remoteRepository, pomInformation.getParentPomInformation());
+            }
+        } else {
+            return property;
         }
     }
 
@@ -276,8 +408,8 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
             List<ArtifactResult> artifactResults = new LinkedList<>();
             bundleWatcherSuspensionService.suspendBundleProcessing();
 
-            for (Dependency dependency : jarInformation.getDependencies()) {
-                artifactResults.addAll(resolveDependencies(dependency, jarInformation.getRepositories()));
+            for (Dependency dependency : jarInformation.getPomInformation().getDependencies()) {
+                artifactResults.addAll(resolveDependencies(dependency, jarInformation.getPomInformation()));
             }
 
             artifactResults = removeDuplicatedArtifacts(artifactResults);
@@ -294,7 +426,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
             } else {
                 bundleInformation = new BundleInformation(null);
             }
-        } catch (BundleException | DependencyResolutionException e) {
+        } catch (BundleException | RepositoryException e) {
             throw new MotechException("Error while installing bundle and dependencies.", e);
         } finally {
             bundleWatcherSuspensionService.restoreBundleProcessing();
@@ -451,7 +583,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     }
 
     private BundleInformation installFromRepository(Dependency dependency, boolean start)
-            throws DependencyResolutionException, IOException, BundleException {
+            throws RepositoryException, IOException, BundleException {
         LOGGER.info("Installing {} from repository", dependency);
 
         final String featureStrNoVersion = buildFeatureStrNoVersion(dependency);

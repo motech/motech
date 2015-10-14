@@ -33,6 +33,14 @@
                 <value>classpath:security.properties</value>
             </list>
         </property>
+        <property name="rawConfigFiles">
+            <list>
+                <value>classpath:mail/reset_mail.vm</value>
+                <value>classpath:mail/password_change_reminder.vm</value>
+                <value>classpath:mail/login_info.vm</value>
+                <value>classpath:mail/one_time_token_mail.vm</value>
+            </list>
+        </property>
     </bean>
 
 
@@ -138,8 +146,9 @@
     </bean>
 
     <bean id="loginMappingFailureHandler" class="org.motechproject.security.authentication.MotechLoginErrorHandler">
-        <property name="defaultFailureUrl" value="/module/server/login?error=true"/>
-        <property name="userBlockedUrl" value="/module/server/login?blocked=true"/>
+        <constructor-arg value="/module/server/login?error=true"/>
+        <constructor-arg value="/module/server/login?blocked=true"/>
+        <constructor-arg value="/module/server/changepassword"/>
     </bean>
 
 </beans>
