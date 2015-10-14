@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
-import org.motechproject.mds.annotations.internal.Sample;
+import org.motechproject.mds.annotations.internal.samples.Sample;
 import org.motechproject.mds.builder.SampleWithLookups;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.testutil.MockBundle;
@@ -41,7 +41,7 @@ public class MDSInterfaceResolverTest extends MockBundle {
 
         verifyStatic();
         //TestMDService defines Sample as its entity class and it should be properly resolved
-        MotechClassPool.registerServiceInterface("org.motechproject.mds.annotations.internal.Sample",
+        MotechClassPool.registerServiceInterface("org.motechproject.mds.annotations.internal.samples.Sample",
                 "org.motechproject.mds.reflections.test.TestMDService");
 
         verifyStatic();

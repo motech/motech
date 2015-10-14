@@ -1,7 +1,5 @@
 package org.motechproject.tasks.contract;
 
-import org.motechproject.tasks.domain.MethodCallManner;
-
 import java.util.SortedSet;
 
 /**
@@ -14,6 +12,7 @@ import java.util.SortedSet;
 public class TestActionEventRequestBuilder extends ActionEventRequestBuilder {
 
     private static final String EMPTY = "";
+    private static final String NAMED_PARAMETERS = "NAMED_PARAMETERS";
 
     public TestActionEventRequestBuilder() {
         setDisplayName("displayName");
@@ -21,7 +20,7 @@ public class TestActionEventRequestBuilder extends ActionEventRequestBuilder {
         setDescription("description");
         setServiceInterface("service.interface");
         setServiceMethod("service.method");
-        setServiceMethodCallManner(MethodCallManner.NAMED_PARAMETERS.toString());
+        setServiceMethodCallManner(NAMED_PARAMETERS);
     }
 
     public TestActionEventRequestBuilder setEmptySubject() {
