@@ -30,3 +30,4 @@ Contents
    mailing_lists
    packages
    acknowledgements
+   faq
