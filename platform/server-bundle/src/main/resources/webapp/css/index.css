@@ -112,7 +112,7 @@ a:active, a:hover, a:focus {
     margin: 32px 0 0 6%;
     background: #fff;
     color:#224477;
-    text-weight:400;
+    font-weight:400;
     font-size: 18px;
     line-height: 27px;
     vertical-align:bottom;
@@ -150,7 +150,7 @@ a:active, a:hover, a:focus {
 
 .navbar-inner {
     filter:none;
-    border-radius:none;
+    border-radius: 0;
     box-shadow:none;
     border:none;
 }
@@ -279,7 +279,7 @@ form.inside {
 }
 
 .nav.nav-stacked > li > a {
-    border-radius:0px;
+    border-radius: 0;
     border:1px solid #d4e1f9;
     border-right: none;
     background:#e4f1f9;
@@ -299,7 +299,7 @@ form.inside {
 }
 
 .nav-tabs > .active > a,
-.nav-tabs > .active > a:focus
+.nav-tabs > .active > a:focus,
 .nav-tabs > li > a:hover,
 .nav-tabs > li.active > a,
 .nav-tabs > li.active > a:hover,
@@ -470,7 +470,6 @@ select {
     line-height: 20px;
     font-size: 15px;
     color: #224477;
-    background: #D3E9FE;
     cursor: pointer;
     background: #D9EDF7;
     background: -moz-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
@@ -890,8 +889,7 @@ input.form-control.form-control {
   line-height: 20px;
   vertical-align: middle;
   margin-left:0;
-  background-position: 0 0;
-  background-repeat: no-repeat;
+  background: no-repeat 0;
 }
 .flag-en {
     background-image: url("../img/en.png");
@@ -1133,7 +1131,7 @@ a, li a {
     background-color: #E4F1F9;
     border-color: #D4E1F9;
     border-bottom: 1px solid #E4F1F9;
-    padding-top: 0px;
+    padding-top: 0;
 }
 .nav-tabs > li > a {
     border-radius: 0;
@@ -1226,7 +1224,7 @@ a, li a {
 
 .fileupload .uneditable-input {
     display: inline-block;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     vertical-align: middle;
     cursor: text;
     float: left;
@@ -1487,7 +1485,7 @@ label.checkbox {
 }
 .hidden {
     display: none;
-    visibility: none;
+    visibility: hidden;
 }
 
 .container {
@@ -1546,7 +1544,6 @@ a, li a {
     cursor: pointer;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
-    -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
@@ -1903,7 +1900,6 @@ body.custom,
 
 .custom .header-toolbar {
     height: auto;
-    height: auto;
     width: auto;
     margin: 0;
     padding: 8px;
@@ -1940,7 +1936,7 @@ body.custom,
 }
 
 .fa-caret-up.button, .fa-caret-down.button {
-    padding: 0px 10px 3px;
+    padding: 0 10px 3px;
     vertical-align: top;
     line-height: 6px;
 }
