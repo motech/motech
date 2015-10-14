@@ -79,7 +79,7 @@ public class SettingDto implements Pair<String, Object> {
 
     public void setOptions(List<SettingOptions> options) {
         this.options = CollectionUtils.isEmpty(options)
-                ? new LinkedList<SettingOptions>()
+                ? new LinkedList<>()
                 : options;
     }
 
