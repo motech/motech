@@ -19,7 +19,6 @@ import org.motechproject.config.service.BundlePropertiesService;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
-import org.motechproject.server.config.domain.SettingsRecordDto;
 import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.SettingService;
 import org.slf4j.Logger;
@@ -136,7 +135,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
         SettingsRecord settings = getSettings();
         settings.mergeWithDefaults(defaultConfig);
-        return settings.toDto();
+        return settings;
     }
 
     @Override
@@ -631,19 +630,19 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     @Transactional
-    public SettingsRecordDto loadDefaultConfig() {
+    public SettingsRecord loadDefaultConfig() {
         SettingsRecord settingsRecord = null;
         org.springframework.core.io.Resource defaultSettings = resourceLoader.getResource("classpath:motech-settings.properties");
         if (defaultSettings != null) {
             settingsRecord = loadSettingsFromStream(defaultSettings);
         }
 
-        return settingsRecord != null ? settingsRecord.toDto() : null;
+        return settingsRecord;
     }
 
     @Override
     @Transactional
-    public SettingsRecordDto loadConfig() {
+    public SettingsRecord loadConfig() {
         return configLoader.loadMotechSettings();
     }
 

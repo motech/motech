@@ -346,18 +346,6 @@ public class SettingsRecord implements MotechSettings {
                 String.valueOf(limit));
     }
 
-    @Ignore
-    public SettingsRecordDto toDto() {
-        SettingsRecordDto settingsRecordDto = new SettingsRecordDto();
-        settingsRecordDto.setPlatformInitialized(this.platformInitialized);
-        settingsRecordDto.setPlatformSettings(this.platformSettings);
-        settingsRecordDto.setLastRun(this.lastRun);
-        settingsRecordDto.setFilePath(this.filePath);
-        settingsRecordDto.setConfigFileChecksum(this.configFileChecksum);
-
-        return settingsRecordDto;
-    }
-
     private Integer getInteger(String key) {
         String value = platformSettings.get(key);
         return StringUtils.isBlank(value) ? null : Integer.valueOf(value);

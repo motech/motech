@@ -3,7 +3,6 @@ package org.motechproject.security.service.impl;
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.repository.AllMotechRoles;
-import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.service.AuthoritiesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,18 +21,10 @@ import java.util.List;
 @Service
 public class AuthoritiesServiceImpl implements AuthoritiesService {
     private AllMotechRoles allMotechRoles;
-    private AllMotechUsers allMotechUsers;
 
     @Autowired
-    public AuthoritiesServiceImpl(AllMotechRoles allMotechRoles, AllMotechUsers allMotechUsers) {
+    public AuthoritiesServiceImpl(AllMotechRoles allMotechRoles) {
         this.allMotechRoles = allMotechRoles;
-        this.allMotechUsers = allMotechUsers;
-    }
-
-    @Override
-    @Transactional
-    public List<GrantedAuthority> authoritiesFor(String userName) {
-        return authoritiesFor(allMotechUsers.findByUserName(userName));
     }
 
     @Override

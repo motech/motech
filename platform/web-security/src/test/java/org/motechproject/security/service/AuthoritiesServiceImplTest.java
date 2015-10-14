@@ -28,7 +28,7 @@ public class AuthoritiesServiceImplTest {
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
-        authoritiesService = new AuthoritiesServiceImpl(allMotechRoles, null);
+        authoritiesService = new AuthoritiesServiceImpl(allMotechRoles);
     }
 
     @Test

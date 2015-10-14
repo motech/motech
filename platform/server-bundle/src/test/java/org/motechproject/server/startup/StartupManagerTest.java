@@ -8,7 +8,6 @@ import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.SettingsRecord;
-import org.motechproject.server.config.domain.SettingsRecordDto;
 import org.motechproject.server.config.service.ConfigLoader;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
@@ -34,7 +33,7 @@ public class StartupManagerTest {
     private EventAdmin eventAdmin;
 
     @Mock
-    SettingsRecordDto settingsRecordDto;
+    SettingsRecord settingsRecord;
 
     @InjectMocks
     StartupManager startupManager = new StartupManager();
@@ -48,8 +47,8 @@ public class StartupManagerTest {
     public void testNoSettings() {
         when(configLoader.loadMotechSettings()).thenReturn(null);
         when(configurationService.getPlatformSettings()).thenReturn(new SettingsRecord());
-        when(configLoader.loadMotechSettings()).thenReturn(settingsRecordDto);
-        when(settingsRecordDto.getLoginMode()).thenReturn(LoginMode.REPOSITORY);
+        when(configLoader.loadMotechSettings()).thenReturn(settingsRecord);
+        when(settingsRecord.getLoginMode()).thenReturn(LoginMode.REPOSITORY);
 
         startupManager.startup();
 

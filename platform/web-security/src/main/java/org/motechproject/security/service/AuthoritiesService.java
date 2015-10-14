@@ -12,15 +12,6 @@ public interface AuthoritiesService {
 
     /**
      * Gets list of {@link org.springframework.security.core.GrantedAuthority}
-     * for given userName
-     *
-     * @param userName name of user for whom we want to get list
-     * @return list that contains {@link org.springframework.security.core.GrantedAuthority}
-     */
-    List<GrantedAuthority> authoritiesFor(String userName);
-
-    /**
-     * Gets list of {@link org.springframework.security.core.GrantedAuthority}
      * for given user
      *
      * @param user for whom we want to get list

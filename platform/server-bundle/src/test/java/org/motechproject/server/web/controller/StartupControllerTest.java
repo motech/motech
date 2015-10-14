@@ -13,7 +13,7 @@ import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.MotechSettings;
-import org.motechproject.server.config.domain.SettingsRecordDto;
+import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.web.dto.StartupViewData;
 import org.motechproject.server.web.form.StartupForm;
@@ -63,7 +63,7 @@ public class StartupControllerTest {
     private HttpServletRequest httpServletRequest;
 
     @Mock
-    private SettingsRecordDto motechSettings;
+    private SettingsRecord motechSettings;
 
     @Mock
     private MotechUserService userService;
