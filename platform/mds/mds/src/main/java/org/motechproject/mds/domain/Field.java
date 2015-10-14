@@ -14,6 +14,7 @@ import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.util.ValidationUtil;
 
+import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -87,6 +88,7 @@ public class Field {
     private boolean nonDisplayable;
 
     @Persistent
+    @Column(defaultValue = "false")
     private boolean uiChanged;
 
     @Persistent(mappedBy = "field")
