@@ -48,7 +48,8 @@
     border: 1px solid #D4E1F9;
 }
 
-.overrideJqgridTable .ui-jqgrid .ui-jqgrid-htable.table-lightblue th {
+.overrideJqgridTable .ui-jqgrid .ui-state-default.ui-jqgrid-hdiv.table-lightblue,
+.overrideJqgridTable .ui-jqgrid .ui-state-default.table-lightblue .ui-jqgrid-htable th {
     border-color: #c5dbec;
     color: #224477;
     background: #D9EDF7;
@@ -76,7 +77,7 @@
 }
 
 .overrideJqgridTable .ui-jqgrid.ui-widget-content {
-    background: #E4F1F9;
+    background: #FFFFFF;
 }
 
 .overrideJqgridTable .ui-jqgrid .ui-jqgrid-titlebar {
@@ -142,6 +143,10 @@
     position: absolute;
 }
 
+.overrideJqgridTable .ui-jqgrid .ui-jqgrid-resize {
+    height: 30px !important;
+}
+
 table.ui-pg-table {
     border-collapse:separate;
 }
@@ -155,6 +160,3 @@ table.ui-pg-table {
     border: 1px solid rgba(104, 164, 191, 1);
 }
 
-.overrideJqgridTable {
-    padding-right: 5px;
-}

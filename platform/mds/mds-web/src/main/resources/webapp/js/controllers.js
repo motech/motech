@@ -3390,6 +3390,7 @@
                     show: false
                 });
             }
+            resizeLayout();
         };
 
         /**
@@ -3397,13 +3398,14 @@
         */
         $scope.setHiddenFilters = function () {
             $scope.showFilters = false;
-                innerLayout({
-                    spacing_closed: 30,
-                    east__minSize: 200,
-                    east__maxSize: 350
-                }, {
-                show: false
+            innerLayout({
+                spacing_closed: 30,
+                east__minSize: 200,
+                east__maxSize: 350
+            }, {
+            show: false
             });
+            resizeLayout();
         };
 
         $scope.showBackToEntityListButton = true;
@@ -3451,19 +3453,20 @@
             $scope.setModuleEntity(module, entityName);
             $scope.addedEntity = Entities.getEntity({
                 param:  module,
-                params: entityName},
-                function () {
-                    Instances.newInstance({id: $scope.addedEntity.id}, function(data) {
-                        $scope.currentRecord = data;
-                        $scope.fields = data.fields;
-                        angular.forEach($scope.fields, function(field) {
-                            if ( field.type.typeClass === "java.util.List" && field.value !== null && field.value.length === 0 ) {
-                                field.value = null;
-                            }
-                        });
-                        unblockUI();
+                params: entityName
+            },
+            function () {
+                Instances.newInstance({id: $scope.addedEntity.id}, function(data) {
+                    $scope.currentRecord = data;
+                    $scope.fields = data.fields;
+                    angular.forEach($scope.fields, function(field) {
+                        if ( field.type.typeClass === "java.util.List" && field.value !== null && field.value.length === 0 ) {
+                            field.value = null;
+                        }
                     });
+                    unblockUI();
                 });
+            });
         };
 
         /**
@@ -3731,6 +3734,7 @@
                 });
                 $scope.removeIdFromUrl();
             }
+            resizeLayout();
         };
 
         /**
@@ -4233,6 +4237,7 @@
             });
             $scope.selectedEntity = undefined;
             $scope.removeIdFromUrl();
+            resizeLayout();
         };
 
         $scope.backToEntityList = $scope.unselectEntity;

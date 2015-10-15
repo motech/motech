@@ -38,7 +38,7 @@
 
 .mds .panel-default > .panel-heading.top-header {
     background-color: #F6FBFF;
-    border-color: #none;
+    border-color: unset;
     color: #224477;
     font-weight: bold;
 }
@@ -203,7 +203,6 @@
 }
 
 #data-browser-entity .entity-entry:hover, #data-browser-entity > div.entity-entry:nth-child(2n+1):hover {
-    background-color: #e9e9e9;
     background: #EDF5F9;
     color: #224477;
 }
@@ -281,7 +280,6 @@
 
 [draggable] {
     -moz-user-select: none;
-    -khtml-user-select: none;
     -webkit-user-select: none;
     user-select: none;
     cursor: move;

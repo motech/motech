@@ -27,9 +27,17 @@ function blockUI() {
     });
 }
 
+function resizeLayout() {
+    'use strict';
+    setTimeout(function () {
+        $('#outer-center').layout().resizeAll();
+    }, 200);
+}
+
 function unblockUI() {
     'use strict';
     $.unblockUI();
+    resizeLayout();
 }
 
 var jFormErrorHandler = function(response) {
