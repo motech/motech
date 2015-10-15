@@ -973,6 +973,8 @@
         */
         $scope.fields = undefined;
 
+        $scope.waitForResponse = false;
+
         /**
         * The $scope.newField contains information about new field which will be added to an
         * entity schema. By default no field is created.
@@ -2864,14 +2866,15 @@
 
         $scope.selectedEntityChanged = function() {
             if ($scope.selectedEntity && $scope.selectedEntity.id) {
-                if (workInProgress.actualEntity !== $scope.selectedEntity.id) {
+                if (!$scope.waitForResponse) {
                     blockUI();
                     workInProgress.setActualEntity(Entities, $scope.selectedEntity.id);
-
+                    $scope.waitForResponse = true;
                     $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
                         setSecuritySettings();
                         setAdvancedSettings();
                         $scope.draft({});
+                        $scope.waitForResponse = false;
                     });
                     unblockUI();
                 }
@@ -2880,6 +2883,7 @@
 
                 delete $scope.fields;
                 delete $scope.advancedSettings;
+                delete $scope.waitForResponse;
             }
         };
 
