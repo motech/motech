@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>motech</artifactId>
-        <version>0.27-SNAPSHOT</version>
+        <version>0.27</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
     <artifactId>motech-tomcat-it</artifactId>
     <name>Motech Tomcat IT</name>
     <description>Base for Integration tests using Tomcat</description>
-    <version>0.27-SNAPSHOT</version>
+    <version>0.27</version>
 
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>

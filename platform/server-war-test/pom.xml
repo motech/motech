@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>motech</artifactId>
-        <version>0.27-SNAPSHOT</version>
+        <version>0.27</version>
         <relativePath>../../</relativePath>
     </parent>
 
     <artifactId>motech-platform-server-war-test</artifactId>
     <name>MOTECH Platform Server WAR Test</name>
-    <version>0.27-SNAPSHOT</version>
+    <version>0.27</version>
 
     <properties>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
@@ -68,7 +67,7 @@
                         <configuration>
                             <tasks>
                                 <move toDir="${user.home}/.motech/bundles_back">
-                                    <fileset dir="${user.home}/.motech/bundles" includes="**/*"/>
+                                    <fileset dir="${user.home}/.motech/bundles" includes="**/*" />
                                 </move>
                             </tasks>
                         </configuration>
@@ -83,9 +82,9 @@
                         <configuration>
                             <tasks>
                                 <move toDir="${user.home}/.motech/bundles">
-                                    <fileset dir="${user.home}/.motech/bundles_back" includes="**/*"/>
+                                    <fileset dir="${user.home}/.motech/bundles_back" includes="**/*" />
                                 </move>
-                                <delete dir="${user.home}/.motech/bundles_back"/>
+                                <delete dir="${user.home}/.motech/bundles_back" />
                             </tasks>
                         </configuration>
                     </execution>
