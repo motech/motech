@@ -64,7 +64,7 @@ public abstract class BaseInstanceIT extends BaseIT {
     protected abstract List<FieldDto> getEntityFields();
 
     protected String getEntityClassName() {
-        return ClassName.getEntityName(getEntityName());
+        return ClassName.getEntityClassName(getEntityName());
     }
 
     protected String getHistoryClassName() {
@@ -105,6 +105,10 @@ public abstract class BaseInstanceIT extends BaseIT {
 
     protected EntityDto getEntity() {
         return entity;
+    }
+
+    protected AllEntities getAllEntities() {
+        return allEntities;
     }
 
     /**

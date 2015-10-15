@@ -1,5 +1,8 @@
 package org.motechproject.mds.dto;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -23,7 +26,7 @@ public class DraftData {
     private boolean create;
     private boolean edit;
     private boolean remove;
-    private Map<String, Object> values;
+    private Map<String, Object> values = new HashMap<>();
 
     public boolean isCreate() {
         return create;
@@ -61,18 +64,22 @@ public class DraftData {
         this.values = values;
     }
 
+    @JsonIgnore
     public boolean isForField() {
         return getValue(FIELD_ID) != null;
     }
 
+    @JsonIgnore
     public boolean isForAdvanced() {
         return getValue(ADVANCED) != null;
     }
 
+    @JsonIgnore
     public boolean isForSecurity() {
         return getValue(SECURITY) != null;
     }
 
+    @JsonIgnore
     public String getPath() {
         Object path = getValue(PATH);
         return (path == null) ? null : path.toString();

@@ -18,11 +18,11 @@
         </button>
         <span ng-show="showFieldsButton">
             <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in availableFieldsForDisplay"
-                    multiple="multiple" multiselect-dropdown>
+                    multiple="multiple" multiselect-dropdown target-table="instancesTable">
             </select>
         </span>
         <div class="btn-group">
-            <button ng-click="importEntityInstances()" type="button" class="btn btn-default" ng-show="showImportButton">
+            <button ng-click="importEntityInstances()" type="button" class="btn btn-default" ng-show="showImportButton && !shouldHideButton()">
                 <span class="glyphicon glyphicon-import"></span>
                 {{msg('mds.btn.importCsv')}}
             </button>

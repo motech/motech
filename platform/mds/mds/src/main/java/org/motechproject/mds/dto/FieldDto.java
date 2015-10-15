@@ -185,9 +185,14 @@ public class FieldDto {
         return null;
     }
 
+    public String getMetadataValue(String key) {
+        MetadataDto md = getMetadata(key);
+        return md == null ? null : md.getValue();
+    }
+
     public void setMetadata(List<MetadataDto> metadata) {
         this.metadata = CollectionUtils.isEmpty(metadata)
-                ? new LinkedList<MetadataDto>()
+                ? new LinkedList<>()
                 : metadata;
     }
 
@@ -219,6 +224,7 @@ public class FieldDto {
         return setting == null ? null : setting.getValueAsString();
     }
 
+    @JsonIgnore
     public boolean isVersionField() {
         MetadataDto md = getMetadata(Constants.MetadataKeys.VERSION_FIELD);
         String metadataValue = md == null ? null : md.getValue();
@@ -262,6 +268,20 @@ public class FieldDto {
 
     public void setNonDisplayable(boolean nonDisplayable) {
         this.nonDisplayable = nonDisplayable;
+    }
+
+    public void addSetting(SettingDto setting) {
+        getSettings().add(setting);
+    }
+
+    public void setSetting(String name, Object value) {
+        SettingDto existing = getSetting(name);
+
+        if (existing != null) {
+            existing.setValue(value);
+        } else {
+            addSetting(new SettingDto(name, value));
+        }
     }
 
     /**

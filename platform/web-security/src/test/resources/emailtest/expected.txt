@@ -1,0 +1,7 @@
+Some macro, passed value - param3val1
+Some macro, passed value - param3val2
+Some macro, passed value - param3val3
+
+param1val
+
+param2val

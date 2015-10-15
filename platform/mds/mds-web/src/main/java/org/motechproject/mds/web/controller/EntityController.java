@@ -84,6 +84,12 @@ public class EntityController extends MdsController {
         return byModule;
     }
 
+    @RequestMapping(value = "/entities/getEntitiesByBundle", method = RequestMethod.GET)
+    @ResponseBody
+    public List<EntityDto> getEntityByBundle(@RequestParam(value = "symbolicName", required = true) String bundleSymbolicName) {
+        return entityService.listEntitiesByBundle(bundleSymbolicName);
+    }
+
     @RequestMapping(value = "/entities/wip", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_ANY_MDS_ROLE)
     @ResponseBody
@@ -217,14 +223,14 @@ public class EntityController extends MdsController {
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
     public List<FieldDto> getEntityFields(@PathVariable Long entityId) {
-        return entityService.getEntityFields(entityId);
-    }
+        return entityService.getEntityFieldsForUI(entityId);
+}
 
     @RequestMapping(value = "/entities/entityFieldsByClassName", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
     public List<FieldDto> getEntityFieldsByClassName(@RequestParam(value = "entityClassName", required = true) String entityClassName) {
-        return entityService.getEntityFieldsByClassName(entityClassName);
+        return entityService.getEntityFieldsByClassNameForUI(entityClassName);
     }
 
     @RequestMapping(value = "/entities/{entityId}/displayFields", method = RequestMethod.GET)

@@ -8,12 +8,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvImportExportService;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.Order;
+import org.motechproject.mds.web.domain.EntityRecord;
+import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.domain.Records;
-import org.motechproject.mds.web.rest.TestRecord;
 import org.motechproject.mds.web.service.InstanceService;
 import org.motechproject.testing.utils.rest.RestTestUtil;
 import org.springframework.test.web.server.MockMvc;
@@ -22,10 +25,10 @@ import org.springframework.test.web.server.setup.MockMvcBuilders;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -81,7 +84,10 @@ public class InstanceControllerTest {
                 "attachment; filename=Entity_1_instances.csv");
 
         assertNull(captor.getValue().getPageSize());
-        assertNull(captor.getValue().getOrder());
+        assertTrue(captor.getValue().isOrderSet());
+        assertEquals(1, captor.getValue().getOrderList().size());
+        assertEquals(Constants.Util.ID_FIELD_NAME, captor.getValue().getOrderList().get(0).getField());
+        assertEquals(Order.Direction.ASC, captor.getValue().getOrderList().get(0).getDirection());
     }
 
     @Test
@@ -94,7 +100,7 @@ public class InstanceControllerTest {
         GridSettings gridSettings = new GridSettings();
         gridSettings.setSortColumn("sortColumn");
         gridSettings.setSortDirection("asc");
-        gridSettings.setSelectedFields(Arrays.asList("id", "date"));
+        gridSettings.setSelectedFields(asList("id", "date"));
         gridSettings.setLookup("lookup");
 
         instanceController.exportEntityInstances(1L, gridSettings, "50", "csv", response);
@@ -106,8 +112,8 @@ public class InstanceControllerTest {
                 "attachment; filename=Entity_1_instances.csv");
 
         QueryParams captorValue = queryParamsCaptor.getValue();
-        assertEquals(Order.Direction.ASC, captorValue.getOrder().getDirection());
-        assertEquals("sortColumn", captorValue.getOrder().getField());
+        assertEquals(Order.Direction.ASC, captorValue.getOrderList().get(0).getDirection());
+        assertEquals("sortColumn", captorValue.getOrderList().get(0).getField());
         assertEquals(Integer.valueOf(1), captorValue.getPage());
         assertEquals(Integer.valueOf(50), captorValue.getPageSize());
 
@@ -118,9 +124,9 @@ public class InstanceControllerTest {
 
     @Test
     public void shouldRetrieveRelatedFieldValues() throws Exception {
-        Records<TestRecord> records = new Records<>(2, 5, 7, recordsList());
+        Records<EntityRecord> records = new Records<>(2, 5, 7, recordsList());
 
-        when(instanceService.<TestRecord>getRelatedFieldValue(eq(1L), eq(6L), eq("relField"), any(QueryParams.class)))
+        when(instanceService.getRelatedFieldValue(eq(1L), eq(6L), eq("relField"), any(QueryParams.class)))
                 .thenReturn(records);
 
         controller.perform(get("/instances/1/instance/6/relField?rows=5&page=2&sortColumn=age&sortDirection=desc"))
@@ -135,17 +141,27 @@ public class InstanceControllerTest {
         assertNotNull(queryParams);
         assertEquals(Integer.valueOf(5), queryParams.getPageSize());
         assertEquals(Integer.valueOf(2), queryParams.getPage());
-        assertNotNull(queryParams.getOrder());
-        assertEquals("age", queryParams.getOrder().getField());
-        assertEquals(Order.Direction.DESC, queryParams.getOrder().getDirection());
+        assertNotNull(queryParams.getOrderList());
+        assertEquals(2, queryParams.getOrderList().size());
+        assertEquals("age", queryParams.getOrderList().get(0).getField());
+        assertEquals(Order.Direction.DESC, queryParams.getOrderList().get(0).getDirection());
+        assertEquals(Constants.Util.ID_FIELD_NAME, queryParams.getOrderList().get(1).getField());
+        assertEquals(Order.Direction.ASC, queryParams.getOrderList().get(1).getDirection());
     }
 
-    private List<TestRecord> recordsList() {
-        List<TestRecord> records = new ArrayList<>();
+    private List<EntityRecord> recordsList() {
+        List<EntityRecord> records = new ArrayList<>();
 
-        records.add(new TestRecord("n1", 22));
-        records.add(new TestRecord("test", 7));
+        records.add(testRecordAsEntityRecord("n1", 22, 1));
+        records.add(testRecordAsEntityRecord("test", 7, 2));
 
         return records;
+    }
+
+    private EntityRecord testRecordAsEntityRecord(String name, int val, long id) {
+        FieldRecord nameField = new FieldRecord("name", "Name", name, TypeDto.STRING);
+        FieldRecord valField = new FieldRecord("val", "Val", val, TypeDto.INTEGER);
+
+        return new EntityRecord(id, 1L, asList(nameField, valField));
     }
 }

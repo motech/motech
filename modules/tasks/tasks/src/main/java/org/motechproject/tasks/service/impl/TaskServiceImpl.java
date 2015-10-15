@@ -189,6 +189,7 @@ public class TaskServiceImpl implements TaskService {
 
                     query.setFilter(filter);
                     query.declareParameters("java.lang.String param");
+                    query.setOrdering("id asc");
 
                     return (List) QueryExecutor.execute(query, subject, restriction);
                 }

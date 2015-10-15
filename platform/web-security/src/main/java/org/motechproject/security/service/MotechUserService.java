@@ -94,6 +94,19 @@ public interface MotechUserService {
     void changeEmail(String email);
 
     /**
+     * Changes password of user with given username when user status is 'MUST_CHANGE_PASSWORD' and return
+     * his {@link org.motechproject.security.domain.MotechUserProfile}. The new password and the old password
+     * cannot be the same. Blocks user after crossing the failure login counter.
+     *
+     * @param userName of user
+     * @param oldPassword password that was used before
+     * @param newPassword new password for user
+     * @return user profile after password change
+     * @throws org.springframework.security.authentication.LockedException when user has been blocked
+     */
+    MotechUserProfile changeExpiredPassword(String userName, String oldPassword, String newPassword);
+
+    /**
      * Changes password of user with given username and return
      * his {@link org.motechproject.security.domain.MotechUserProfile}
      *

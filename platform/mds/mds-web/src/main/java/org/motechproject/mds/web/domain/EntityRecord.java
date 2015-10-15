@@ -1,5 +1,8 @@
 package org.motechproject.mds.web.domain;
 
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +46,16 @@ public class EntityRecord {
 
     public void setFields(List<FieldRecord> fields) {
         this.fields = fields;
+    }
+
+    @JsonIgnore
+    public FieldRecord getFieldByName(String name) {
+        for (FieldRecord field : fields) {
+            if (StringUtils.equals(name, field.getName())) {
+                return field;
+            }
+        }
+        return null;
     }
 
     @Override

@@ -8,10 +8,8 @@ import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.date.model.Time;
-import org.motechproject.mds.web.util.UIRepresentationUtil;
+import org.motechproject.mds.display.DisplayHelper;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -22,6 +20,7 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.entity.EntitySchemaMismatchException;
+import org.motechproject.mds.ex.field.FieldNotFoundException;
 import org.motechproject.mds.ex.field.FieldReadOnlyException;
 import org.motechproject.mds.ex.lookup.LookupExecutionException;
 import org.motechproject.mds.ex.lookup.LookupNotFoundException;
@@ -34,7 +33,6 @@ import org.motechproject.mds.ex.object.SecurityException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.helper.MdsBundleHelper;
-import org.motechproject.mds.util.StateManagerUtil;
 import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.InMemoryQueryFilter;
 import org.motechproject.mds.query.QueryParams;
@@ -50,6 +48,7 @@ import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.MemberUtil;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.mds.util.StateManagerUtil;
 import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.web.domain.ComboboxHolder;
 import org.motechproject.mds.web.domain.EntityRecord;
@@ -57,6 +56,7 @@ import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
 import org.motechproject.mds.web.service.InstanceService;
+import org.motechproject.mds.web.util.RelationshipDisplayUtil;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -76,11 +76,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -102,16 +100,14 @@ import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 public class InstanceServiceImpl implements InstanceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstanceServiceImpl.class);
-    private static final DateTimeFormatter DTF = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z");
-    private static final String ELLIPSIS = "...";
-    private static final Integer TO_STRING_MAX_LENGTH = 80;
-    private static final Integer UI_REPRESENTATION_MAX_LENGTH = 80;
+    private static final int MAX_LENGTH = 80;
 
     private EntityService entityService;
     private BundleContext bundleContext;
     private HistoryService historyService;
     private TrashService trashService;
     private TypeService typeService;
+    private RelationshipDisplayUtil relationshipDisplayUtil;
 
     @Override
     @Transactional
@@ -194,7 +190,7 @@ public class InstanceServiceImpl implements InstanceService {
     public List<EntityRecord> getEntityRecords(Long entityId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
         validateCredentialsForReading(entity);
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
 
         MotechDataService service = getServiceForEntity(entity);
         List instances = service.retrieveAll(queryParams);
@@ -205,7 +201,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public List<FieldDto> getEntityFields(Long entityId) {
         validateCredentialsForReading(getEntity(entityId));
-        return entityService.getEntityFields(entityId);
+        return entityService.getEntityFieldsForUI(entityId);
     }
 
     @Override
@@ -214,7 +210,7 @@ public class InstanceServiceImpl implements InstanceService {
         validateCredentialsForReading(entity);
 
         MotechDataService service = getServiceForEntity(entity);
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
         Collection collection = trashService.getInstancesFromTrash(entity.getClassName(), queryParams);
 
         return instancesToRecords(collection, entity, fields, service, EntityType.TRASH);
@@ -234,7 +230,7 @@ public class InstanceServiceImpl implements InstanceService {
         validateCredentialsForReading(entity);
 
         MotechDataService service = getServiceForEntity(entity);
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
         Object instance = trashService.findTrashById(instanceId, entityId);
 
         return instanceToRecord(instance, entity, fields, service, EntityType.TRASH);
@@ -258,7 +254,7 @@ public class InstanceServiceImpl implements InstanceService {
         validateCredentialsForReading(entity);
 
         LookupDto lookup = getLookupByName(entityId, lookupName);
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
         Map<String, FieldDto> fieldMap = entityService.getLookupFieldsMapping(entityId, lookupName);
 
         MotechDataService service = getServiceForEntity(entity);
@@ -270,7 +266,7 @@ public class InstanceServiceImpl implements InstanceService {
 
             if (lookup.isSingleObjectReturn()) {
                 EntityRecord record = instanceToRecord(result, entity, fields, service, EntityType.STANDARD);
-                return (record == null) ? new ArrayList<EntityRecord>() : Collections.singletonList(record);
+                return (record == null) ? new ArrayList<>() : Collections.singletonList(record);
             } else {
                 List instances = (List) result;
                 return instancesToRecords(instances, entity, fields, service, EntityType.STANDARD);
@@ -285,7 +281,7 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entity = getEntity(entityId);
         validateCredentialsForReading(entity);
 
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
         MotechDataService service = getServiceForEntity(entity);
 
         List instances = service.filter(filters, queryParams);
@@ -331,7 +327,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public void revertPreviousVersion(Long entityId, Long instanceId, Long historyId) {
-        validateNonEditableProperty(getEntity(entityId));
+        validateNonEditableProperty(entityId);
         HistoryRecord historyRecord = getHistoryRecord(entityId, instanceId, historyId);
         if (!historyRecord.isRevertable()) {
             EntityDto entity = getEntity(entityId);
@@ -346,7 +342,7 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entity = entityService.getEntity(entityId);
         validateCredentialsForReading(entity);
 
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
 
         List<FieldInstanceDto> result = new ArrayList<>();
         for (FieldDto field : fields) {
@@ -400,7 +396,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public EntityRecord newInstance(Long entityId) {
         validateCredentials(getEntity(entityId));
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
         List<FieldRecord> fieldRecords = new ArrayList<>();
 
         for (FieldDto field : fields) {
@@ -423,7 +419,7 @@ public class InstanceServiceImpl implements InstanceService {
             throw new ObjectNotFoundException(entity.getName(), instanceId);
         }
 
-        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
 
         return instanceToRecord(instance, entity, fields, service, EntityType.STANDARD);
     }
@@ -441,7 +437,7 @@ public class InstanceServiceImpl implements InstanceService {
                 throw new ObjectNotFoundException(service.getClassType().getName(), instanceId);
             }
             fieldRecord = new FieldRecord(field);
-            fieldRecord.setValue(parseValueForDisplay(instance, field.getMetadata(Constants.MetadataKeys.RELATED_FIELD)));
+            fieldRecord.setValue(parseValueForDisplay(instance, field.getMetadata(Constants.MetadataKeys.RELATED_CLASS)));
             fieldRecord.setDisplayValue(instance.toString());
             return fieldRecord;
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -470,7 +466,7 @@ public class InstanceServiceImpl implements InstanceService {
         List<FieldRecord> fieldRecords = new LinkedList<>();
 
         try {
-            for (FieldDto field : entityService.getEntityFields(entity.getId())) {
+            for (FieldDto field : entityService.getEntityFieldsForUI(entity.getId())) {
                 if (ID_FIELD_NAME.equalsIgnoreCase(field.getBasic().getDisplayName()) || field.isVersionField()) {
                     continue;
                 }
@@ -498,31 +494,71 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
-    public <T> Records<T> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName,
-                                              QueryParams queryParams) {
-        EntityDto entity = getEntity(entityId);
-        validateCredentials(entity);
-        String entityName = entity.getName();
+    public void validateNonEditableProperty(Long entityId) {
+        validateNonEditableProperty(getEntity(entityId));
+    }
 
-        MotechDataService service = getServiceForEntity(entity);
-        Object instance = service.findById(instanceId);
-
-        if (instance == null) {
-            throw new ObjectNotFoundException(entityName, instanceId);
+    private void validateNonEditableProperty(EntityDto entity) {
+        if (entity.isNonEditable()) {
+            throw new EntityInstancesNonEditableException();
         }
+    }
 
+    @Override
+    @Transactional
+    public Records<EntityRecord> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName,
+                                              QueryParams queryParams) {
         try {
-            Collection<T> relatedAsColl = TypeHelper.asCollection(PropertyUtil.getProperty(instance, fieldName));
+            // first get the entity
+            EntityDto entity = getEntity(entityId);
+            validateCredentials(entity);
+            List<FieldDto> fields = getEntityFields(entityId);
 
-            List<T> filtered = InMemoryQueryFilter.filter(relatedAsColl, queryParams);
+            String entityName = entity.getName();
+            MotechDataService service = getServiceForEntity(entity);
 
+            // then the related entity
+            FieldDto relatedField = findFieldByName(fields, fieldName);
+            if (relatedField == null) {
+                throw new FieldNotFoundException(entity.getClassName(), fieldName);
+            }
+
+            String relatedClass = relatedField.getMetadataValue(Constants.MetadataKeys.RELATED_CLASS);
+            if (StringUtils.isBlank(relatedClass)) {
+                throw new IllegalArgumentException("Field " + fieldName + " in entity " + entity.getClassName() +
+                    " is not a related field");
+            }
+
+            // these will be used for building the records
+            EntityDto relatedEntity = getEntity(relatedClass);
+            List<FieldDto> relatedFields = getEntityFields(relatedEntity.getId());
+            MotechDataService relatedDataService = getServiceForEntity(relatedEntity);
+
+            // get the instance of the original entity
+            Object instance = service.findById(instanceId);
+
+            if (instance == null) {
+                throw new ObjectNotFoundException(entityName, instanceId);
+            }
+
+            // the value of the related field
+            Collection relatedAsColl = TypeHelper.asCollection(PropertyUtil.getProperty(instance, fieldName));
+
+            // apply pagination ordering (currently in memory)
+            List filtered = InMemoryQueryFilter.filter(relatedAsColl, queryParams);
+
+            // convert the instance to a grid-friendly form
+            List<EntityRecord> entityRecords = instancesToRecords(filtered, relatedEntity, relatedFields,
+                    relatedDataService, EntityType.STANDARD);
+
+            // counts for the grid
             int recordCount = relatedAsColl.size();
             int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
 
-            return new Records<>(queryParams.getPage(), rowCount, recordCount, filtered);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-           throw new ObjectReadException(entityName, e);
+            // package as records
+            return new Records<>(queryParams.getPage(), rowCount, recordCount, entityRecords);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | IllegalArgumentException e) {
+           throw new ObjectReadException(entityId, e);
         }
     }
 
@@ -547,6 +583,14 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entityDto = entityService.getEntity(entityId);
         if (entityDto == null) {
             throw new EntityNotFoundException(entityId);
+        }
+        return entityDto;
+    }
+
+    private EntityDto getEntity(String entityClassName) {
+        EntityDto entityDto = entityService.getEntityByClassName(entityClassName);
+        if (entityDto == null) {
+            throw new EntityNotFoundException(entityClassName);
         }
         return entityDto;
     }
@@ -597,9 +641,9 @@ public class InstanceServiceImpl implements InstanceService {
                 }
 
                 Object value = getProperty(instance, field, service);
-                Object displayValue = getDisplayValueForField(field, value);
+                Object displayValue = DisplayHelper.getDisplayValueForField(field, value, MAX_LENGTH);
 
-                value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_FIELD));
+                value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_CLASS));
 
                 FieldRecord fieldRecord = new FieldRecord(field);
                 fieldRecord.setValue(value);
@@ -614,83 +658,11 @@ public class InstanceServiceImpl implements InstanceService {
         }
     }
 
-    private String buildDisplayValue(Object value) {
-        String uiRepresentation = UIRepresentationUtil.uiRepresentationString(value);
-        if (uiRepresentation != null) {
-            return uiRepresentation.length() > UI_REPRESENTATION_MAX_LENGTH ?
-                    uiRepresentation.substring(0, UI_REPRESENTATION_MAX_LENGTH + 1) + ELLIPSIS : uiRepresentation;
-        } else {
-            String toStringResult = value.toString();
-            return toStringResult.length() > TO_STRING_MAX_LENGTH ?
-                    toStringResult.substring(0, TO_STRING_MAX_LENGTH + 1) + ELLIPSIS : toStringResult;
-        }
-    }
-
-
-    private Object getDisplayValueForField(FieldDto field, Object value) throws InvocationTargetException, IllegalAccessException {
-        Object displayValue = null;
-        if (field.getType().isRelationship()) {
-            if (field.getType().equals(TypeDto.ONE_TO_MANY_RELATIONSHIP) || field.getType().equals(TypeDto.MANY_TO_MANY_RELATIONSHIP)) {
-                displayValue = buildDisplayValuesMap((Collection) value);
-            } else {
-                if (value != null) {
-                    displayValue = buildDisplayValue(value);
-                }
-            }
-        } else if (field.getType().isCombobox()) {
-            displayValue = getDisplayValueForCombobox(field, value);
-        }
-
-        return displayValue;
-    }
-
-    private Object getDisplayValueForCombobox(FieldDto field, Object value) {
-        Object displayValue;
-        if (Constants.Util.FALSE.equalsIgnoreCase(field.getSettingsValueAsString(Constants.Settings.ALLOW_USER_SUPPLIED))) {
-            String mapString = field.getSettingsValueAsString(Constants.Settings.COMBOBOX_VALUES);
-            Map<String, String> comboboxValues = TypeHelper.parseStringToMap(mapString);
-            if (value instanceof Collection) {
-                Collection valuesToDisplay = new ArrayList();
-                Collection enumList = (Collection) value;
-                for (Object enumValue : enumList) {
-                    String valueFromMap = comboboxValues.get(ObjectUtils.toString(enumValue));
-                    valuesToDisplay.add(StringUtils.isNotEmpty(valueFromMap) ? valueFromMap : enumValue);
-                }
-                displayValue = valuesToDisplay;
-            } else {
-                String valueFromMap = comboboxValues.get(ObjectUtils.toString(value));
-                displayValue = StringUtils.isNotEmpty(valueFromMap) ? valueFromMap : value;
-            }
-        } else {
-            displayValue = value;
-        }
-
-        return displayValue;
-    }
-
-    private Map<Long, String> buildDisplayValuesMap(Collection values) throws InvocationTargetException, IllegalAccessException {
-        Map<Long, String> displayValues = new HashMap<>();
-        for (Object obj : values) {
-            Method method = MethodUtils.getAccessibleMethod(obj.getClass(), "getId", (Class[]) null);
-            Long key = (Long) method.invoke(obj);
-            String uiRepresentation = UIRepresentationUtil.uiRepresentationString(obj);
-            if(uiRepresentation != null) {
-                displayValues.put(key, uiRepresentation.length() > UI_REPRESENTATION_MAX_LENGTH ?
-                        uiRepresentation.substring(0, UI_REPRESENTATION_MAX_LENGTH + 1) + ELLIPSIS : uiRepresentation);
-            } else {
-                String toStringResult = obj.toString();
-                displayValues.put(key, toStringResult.length() > TO_STRING_MAX_LENGTH ?
-                        toStringResult.substring(0, TO_STRING_MAX_LENGTH + 1) + ELLIPSIS : toStringResult);
-            }
-        }
-        return displayValues;
-    }
-
     private HistoryRecord convertToHistoryRecord(Object object, EntityDto entity, Long instanceId,
                                                  MotechDataService service) {
         Long entityId = entity.getId();
 
-        EntityRecord entityRecord = instanceToRecord(object, entity, entityService.getEntityFields(entityId), service, EntityType.HISTORY);
+        EntityRecord entityRecord = instanceToRecord(object, entity, entityService.getEntityFieldsForUI(entityId), service, EntityType.HISTORY);
         Long historyInstanceSchemaVersion = (Long) PropertyUtil.safeGetProperty(object,
                 HistoryTrashClassHelper.schemaVersion(object.getClass()));
         Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
@@ -915,6 +887,11 @@ public class InstanceServiceImpl implements InstanceService {
         String fieldName = StringUtils.uncapitalize(field.getBasic().getName());
 
         PropertyDescriptor propertyDescriptor = PropertyUtil.getPropertyDescriptor(instance, fieldName);
+        if (propertyDescriptor == null) {
+            throw new IllegalStateException("No property with name " + fieldName + " in "
+                    + instance.getClass().getName());
+        }
+
         Method readMethod = propertyDescriptor.getReadMethod();
 
         if (readMethod == null) {
@@ -931,17 +908,19 @@ public class InstanceServiceImpl implements InstanceService {
             LOGGER.debug("Invocation target exception thrown when retrieving field {}. This may indicate a non loaded field",
                     fieldName, e);
             // fallback to the service
-            return service.getDetachedField(instance, fieldName);
+            Long id = (Long) PropertyUtil.safeGetProperty(instance, ID_FIELD_NAME);
+            return service.getDetachedField(id == null ? instance : service.findById(id), fieldName);
         }
     }
 
-    private Object parseValueForDisplay(Object value, MetadataDto relatedFieldMetadata) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    private Object parseValueForDisplay(Object value, MetadataDto relatedClassMetadata)
+            throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Object parsedValue = value;
 
         if (parsedValue instanceof DateTime) {
-            parsedValue = DTF.print((DateTime) parsedValue);
+            parsedValue = DisplayHelper.DTF.print((DateTime) parsedValue);
         } else if (parsedValue instanceof Date) {
-            parsedValue = DTF.print(((Date) parsedValue).getTime());
+            parsedValue = DisplayHelper.DTF.print(((Date) parsedValue).getTime());
         } else if (parsedValue instanceof Time) {
             parsedValue = ((Time) parsedValue).timeStr();
         } else if (parsedValue instanceof LocalDate) {
@@ -952,25 +931,14 @@ public class InstanceServiceImpl implements InstanceService {
             //Using ZonedDateTime for retrieving timezone
             ZonedDateTime zonedDateTime = ZonedDateTime.of((LocalDateTime) parsedValue, ZoneOffset.systemDefault());
             parsedValue = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm xxxx").format(zonedDateTime);
-        } else if (relatedFieldMetadata != null) {
-            parsedValue = removeCircularRelations(parsedValue, relatedFieldMetadata.getValue());
+        } else if (relatedClassMetadata != null) {
+            // We do not want to return the whole chain of relationships for UI display, but just the first level.
+            // Fetching whole relationship tree may cause trouble when serializing
+            parsedValue = relationshipDisplayUtil.breakDeepRelationChainForDisplay(
+                    parsedValue, getEntityFieldsByClassName(relatedClassMetadata.getValue()));
         }
 
         return parsedValue;
-    }
-
-    private Object removeCircularRelations(Object object, String relatedField) {
-        // we must also handle a field that is a collection
-        // because of this we handle regular fields as single objects collection here
-        Collection objectsCollection = (object instanceof Collection) ? (Collection) object : Arrays.asList(object);
-
-        for (Object item : objectsCollection) {
-            if (item != null) {
-                PropertyUtil.safeSetProperty(item, relatedField, null);
-            }
-        }
-
-        return object;
     }
 
     private Class<?> getEntityClass(EntityDto entity) throws ClassNotFoundException {
@@ -1038,14 +1006,7 @@ public class InstanceServiceImpl implements InstanceService {
         return !authorized && !readOnlySecurityMode.isInstanceRestriction() && !securityMode.isInstanceRestriction();
     }
 
-    private void validateNonEditableProperty(EntityDto entity) {
-        if (entity.isNonEditable()) {
-            throw new EntityInstancesNonEditableException();
-        }
-    }
-
     private void validateNonEditableField(FieldRecord fieldRecord, Object instance, Object parsedValue, MetadataDto versionMetadata) throws IllegalAccessException {
-
         Object fieldOldValue = FieldUtils.readField(instance,
                         StringUtils.uncapitalize(fieldRecord.getName()),
                         true);
@@ -1062,6 +1023,20 @@ public class InstanceServiceImpl implements InstanceService {
             }
             throw new FieldReadOnlyException(instance.getClass().getName(), fieldRecord.getName());
         }
+    }
+
+    private FieldDto findFieldByName(List<FieldDto> fields, String fieldName) {
+        for (FieldDto field : fields) {
+            if (StringUtils.equals(fieldName, field.getBasic().getName())) {
+                return field;
+            }
+        }
+        return null;
+    }
+
+    private List<FieldDto> getEntityFieldsByClassName(String entityClassName) {
+        Long entityId = entityService.getEntityByClassName(entityClassName).getId();
+        return getEntityFields(entityId);
     }
 
     @Autowired
@@ -1087,5 +1062,10 @@ public class InstanceServiceImpl implements InstanceService {
     @Autowired
     public void setTypeService(TypeService typeService) {
         this.typeService = typeService;
+    }
+
+    @Autowired
+    public void setRelationshipDisplayUtil(RelationshipDisplayUtil relationshipDisplayUtil) {
+        this.relationshipDisplayUtil = relationshipDisplayUtil;
     }
 }

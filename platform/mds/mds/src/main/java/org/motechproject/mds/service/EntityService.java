@@ -51,6 +51,15 @@ public interface EntityService {
     List<EntityDto> listEntities(boolean withSecurityCheck);
 
     /**
+     * Returns all entities of the bundle with the given name. This will not return Entity drafts and Entity audit.
+     * It will also not perform any security checks on the entities.
+     *
+     * @param bundleSymbolicName the symbolic name of the bundle
+     * @return A list of the bundle entities.
+     */
+    List<EntityDto> listEntitiesByBundle(String bundleSymbolicName);
+
+    /**
      * Returns an entity of the given id. If an entity with given id does not exist, it will return null.
      *
      * @param entityId The id of an entity.
@@ -171,9 +180,19 @@ public interface EntityService {
      * Retrieves a list of all fields for the given entity class name. This will not include any draft fields.
      *
      * @param className the entity class name
-     * @return a list of fields for an entity
+     * @return a list of fields for the entity
      */
     List<FieldDto> getEntityFieldsByClassName(String className);
+
+    /**
+     * Retrieves a list of all fields for the given entity class name. This will not include any draft fields.
+     * Since this for the UI, additional display options such as all combobox values will be added to the resultant
+     * fields.
+     *
+     * @param className the entity class name
+     * @return a list of fields for the entity
+     */
+    List<FieldDto> getEntityFieldsByClassNameForUI(String className);
 
     /**
      * Retrieves a field by name. This will be able to find any draft fields,
@@ -452,22 +471,18 @@ public interface EntityService {
     Long getCurrentSchemaVersion(String entityClassName);
 
     /**
-     * Updates available combobox choices. Allows users to extend available values, for comboboxes that
-     * allow user-supplied values.
-     *
-     * @param entityId id of an entity
-     * @param fieldValuesToUpdate a map of the field names and values to add to these fields
-     * @throws org.motechproject.mds.ex.entity.EntityNotFoundException when entity of the given id does not exist
-     * @throws org.motechproject.mds.ex.field.FieldNotFoundException when field of the passed name does not exist
-     * @throws java.lang.IllegalArgumentException when field passed to the method is not of the combobox type
-     */
-    void updateComboboxValues(Long entityId, Map<String, Collection> fieldValuesToUpdate);
-
-    /**
      * Increments the version of the entity.
      *
      * @param entityId id of an entity
      * @throws org.motechproject.mds.ex.entity.EntityNotFoundException when entity of the given id does not exist
      */
     void incrementVersion(Long entityId);
+
+    /**
+     * Returns the list of fields for the entity, ready to use for the UI. Combobox fields will contain all
+     * available options.
+     * @param entityId the id of the entity
+     * @return the list of fields for the UI
+     */
+    List<FieldDto> getEntityFieldsForUI(Long entityId);
 }
