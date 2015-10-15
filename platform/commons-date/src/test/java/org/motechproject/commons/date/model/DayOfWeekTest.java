@@ -1,12 +1,14 @@
 package org.motechproject.commons.date.model;
 
+import org.joda.time.LocalDate;
 import org.junit.Test;
-import org.motechproject.commons.date.util.DateUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static org.motechproject.commons.date.model.DayOfWeek.getDayOfWeek;
 
 public class DayOfWeekTest {
 
@@ -34,7 +36,7 @@ public class DayOfWeekTest {
 
     @Test
     public void shouldReturnDayOfWeekForTheSpecifiedDate() {
-        DayOfWeek dayOfWeek = DayOfWeek.getDayOfWeek(DateUtil.newDate(2011, 10, 5));
+        DayOfWeek dayOfWeek = DayOfWeek.getDayOfWeek(new LocalDate(2011, 10, 5));
         assertEquals(DayOfWeek.Wednesday, dayOfWeek);
     }
 
@@ -45,7 +47,7 @@ public class DayOfWeekTest {
 
     @Test
     public void shouldReturnDaysOfWeekStartingToday() {
-        List<DayOfWeek> days = DateUtil.daysStarting(DayOfWeek.Saturday, 2);
+        List<DayOfWeek> days = daysStarting(DayOfWeek.Saturday, 2);
         assertEquals(3, days.size());
         assertTrue(days.contains(DayOfWeek.Saturday));
         assertTrue(days.contains(DayOfWeek.Sunday));
@@ -54,7 +56,7 @@ public class DayOfWeekTest {
 
     @Test
     public void shouldReturnDaysOfWeek_IfOnlyToday() {
-        List<DayOfWeek> days = DateUtil.daysStarting(DayOfWeek.Saturday, 0);
+        List<DayOfWeek> days = daysStarting(DayOfWeek.Saturday, 0);
         assertEquals(1, days.size());
         assertTrue(days.contains(DayOfWeek.Saturday));
     }
@@ -75,5 +77,13 @@ public class DayOfWeekTest {
         assertEquals(5, DayOfWeek.Thursday.getCronValue());
         assertEquals(6, DayOfWeek.Friday.getCronValue());
         assertEquals(7, DayOfWeek.Saturday.getCronValue());
+    }
+
+    private static List<DayOfWeek> daysStarting(DayOfWeek day, int numberOfDays) {
+        List<DayOfWeek> days = new ArrayList<>();
+        for (int i = 0; i <= numberOfDays; i++) {
+            days.add(getDayOfWeek(new LocalDate().withDayOfWeek(day.getValue()).plusDays(i)));
+        }
+        return days;
     }
 }
