@@ -88,7 +88,7 @@ public class Field {
     private boolean nonDisplayable;
 
     @Persistent
-    @Column(defaultValue = "false")
+    @Column(allowsNull = "true")
     private boolean uiChanged;
 
     @Persistent(mappedBy = "field")
