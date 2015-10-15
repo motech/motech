@@ -1,13 +1,13 @@
 package org.motechproject.email.service.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.motechproject.email.contract.Mail;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
-import org.motechproject.email.contract.Mail;
 import org.motechproject.email.service.EmailRecordService;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.server.config.SettingsFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.MailException;
@@ -43,7 +43,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailSenderServiceImpl.class);
 
     @Override
-    @Transactional
+    @Transactional(noRollbackFor = MailException.class)
     public void send(final Mail mail) {
         LOGGER.info(String.format("Sending message [%s] from [%s] to [%s] with subject [%s].",
                 mail.getMessage(), mail.getFromAddress(), mail.getToAddress(), mail.getSubject()));
