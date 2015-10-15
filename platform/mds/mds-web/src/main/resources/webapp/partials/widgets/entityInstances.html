@@ -18,7 +18,7 @@
         </button>
         <span ng-show="showFieldsButton">
             <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in availableFieldsForDisplay"
-                    multiple="multiple" multiselect-dropdown>
+                    multiple="multiple" multiselect-dropdown target-table="instancesTable">
             </select>
         </span>
         <div class="btn-group">
