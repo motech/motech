@@ -734,16 +734,21 @@
         workInProgress.setList(Entities);
 
         if (loadEntity) {
+            blockUI();
             $.ajax("../mds/entities/" + loadEntity).done(function (data) {
                 $scope.selectedEntity = data;
                 loadEntity = undefined;
+                unblockUI();
             });
         }
 
         if ($scope.$parent.selectedEntity) {
+            blockUI();
             $.ajax("../mds/entities/getEntity/" + $scope.$parent.selectedEntity.module + "/" + $scope.$parent.selectedEntity.name).done(function (data) {
                 $scope.selectedEntity = data;
                 $scope.$parent.selectedEntity = undefined;
+                $scope.selectedEntityChanged();
+                unblockUI();
             });
         }
 
@@ -967,6 +972,8 @@
         * The $scope.fields contains entity fields. By default there are no fields.
         */
         $scope.fields = undefined;
+
+        $scope.waitForResponse = false;
 
         /**
         * The $scope.newField contains information about new field which will be added to an
@@ -2865,26 +2872,31 @@
         * the entity in situation in which the entity was selected from the entity list.
         */
         $scope.$watch('selectedEntity', function () {
-            blockUI();
+            $scope.selectedEntityChanged();
+        });
 
+        $scope.selectedEntityChanged = function() {
             if ($scope.selectedEntity && $scope.selectedEntity.id) {
-                workInProgress.setActualEntity(Entities, $scope.selectedEntity.id);
-
-                $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
-                    setSecuritySettings();
-                    setAdvancedSettings();
-                    $scope.draft({});
-                });
-
-                unblockUI();
+                if (!$scope.waitForResponse) {
+                    blockUI();
+                    workInProgress.setActualEntity(Entities, $scope.selectedEntity.id);
+                    $scope.waitForResponse = true;
+                    $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
+                        setSecuritySettings();
+                        setAdvancedSettings();
+                        $scope.draft({});
+                        $scope.waitForResponse = false;
+                    });
+                    unblockUI();
+                }
             } else {
                 workInProgress.setActualEntity(Entities, undefined);
 
                 delete $scope.fields;
                 delete $scope.advancedSettings;
-                unblockUI();
+                delete $scope.waitForResponse;
             }
-        });
+        };
 
         /**
         * Set an additional watcher for $scope.newField.type. Its role is to set name for created
