@@ -215,7 +215,11 @@ public class PollingHttpClient {
 
         int statusCode = response.getStatusLine().getStatusCode();
 
-        return statusCode >= HttpStatus.SC_BAD_REQUEST && statusCode != expectedErrorCode;
+        if (expectedErrorCode == ERROR_NOT_EXPECTED) {
+            return statusCode >= HttpStatus.SC_BAD_REQUEST;
+        } else {
+            return statusCode != expectedErrorCode;
+        }
     }
 
     private class DefaultResponseHandler implements ResponseHandler<HttpResponse> {
