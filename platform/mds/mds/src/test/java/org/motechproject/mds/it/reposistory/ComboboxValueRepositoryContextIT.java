@@ -83,7 +83,7 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
         List<String> values = cbValueRepository.getComboboxValuesForCollection(cbTableName);
 
         assertNotNull(values);
-        assertEquals(asList("one", "two", "four", "five", "three"), values);
+        assertEquals(asList("five", "four", "one", "three", "two"), values);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
         List<String> values = cbValueRepository.getComboboxValuesForStringField(entity, cbField);
 
         assertNotNull(values);
-        assertEquals(asList("one", "two", "four", "five"), values);
+        assertEquals(asList("five", "four", "one", "two"), values);
     }
 
     private void setUpTestData() throws Exception {
