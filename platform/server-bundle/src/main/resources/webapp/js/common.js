@@ -30,7 +30,10 @@ function blockUI() {
 function resizeLayout() {
     'use strict';
     setTimeout(function () {
-        $('#outer-center').layout().resizeAll();
+        var outerCenterElement = $('#outer-center');
+        if (outerCenterElement.length !== undefined && outerCenterElement.length > 0) {
+            outerCenterElement.layout().resizeAll();
+        }
     }, 200);
 }
 
