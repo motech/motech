@@ -9,13 +9,16 @@ function verifyDbConnection() {
     var warnings = $('#verify-alert');
     var infoSql = $('#verifySql-info');
     var errors = $('#verify-error');
+    var bootstrapErrors = $('#bootstrapErrors');
 
     errors.html("");
     warnings.html("");
+    bootstrapErrors.html("")
 
     warnings.hide();
     errors.hide();
     infoSql.hide();
+    bootstrapErrors.hide();
 
     $.ajax({
         type: 'POST',
@@ -59,6 +62,69 @@ function verifyDbConnection() {
         }
     });
 }
+
+
+function verifyAmqConnection() {
+    var loader = $('#loader');
+    loader.show();
+
+    var warnings = $('#verify-alert');
+    var infoAmq = $('#verifyAmq-info');
+    var errors = $('#verify-error');
+    var bootstrapErrors = $('#bootstrapErrors');
+
+    errors.html("");
+    warnings.html("");
+    bootstrapErrors.html("")
+
+    warnings.hide();
+    errors.hide();
+    infoAmq.hide();
+    bootstrapErrors.hide();
+
+    $.ajax({
+        type: 'POST',
+        url: 'verifyAmq',
+        timeout: 8000,
+        data: $('form.bootstrap-config-form').serialize(),
+        success: function(data) {
+            if (data.success !== undefined && data.success === true) {
+                infoAmq.show();
+                $(window).scrollTop(infoAmq.offset().top);
+            } else {
+                if(data.errors !== undefined) {
+                    data.errors.forEach(function(item) {
+                        errors.append(item + '<br/>');
+                    });
+
+                    errors.show();
+                }
+
+                if(data.warnings !== undefined) {
+                    data.warnings.forEach(function(item) {
+                        warnings.append(item + '<br/>');
+                    });
+
+                    warnings.show();
+                    $(window).scrollTop(warnings.offset().top);
+                }
+            }
+            loader.hide();
+        },
+        error: function() {
+            if(data.warnings !== undefined) {
+                data.warnings.forEach(function(item) {
+                    warnings.append(item + '<br/>');
+                });
+
+                warnings.show();
+                $(window).scrollTop(warnings.offset().top);
+            }
+            loader.hide();
+        }
+    });
+}
+
 
 const TIMEOUT = 5000;
 
