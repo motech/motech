@@ -18,6 +18,9 @@ You need to do two things:
   the "bundle symbolic name" but after replacing all special characters and spaces with underscore; this variable
   should contain a path to the module resources directory
 
+If you add a new javascript file, you need to deploy the bundle with the new file at least once to register it.
+Otherwise the script will not be registered on the UI.
+
 .. note::
 
     By default, the bundle symbolic name is constructed, based on the groupId and artifactId, in the following

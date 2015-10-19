@@ -27,9 +27,20 @@ function blockUI() {
     });
 }
 
+function resizeLayout() {
+    'use strict';
+    setTimeout(function () {
+        var outerCenterElement = $('#outer-center');
+        if (outerCenterElement.length !== undefined && outerCenterElement.length > 0) {
+            outerCenterElement.layout().resizeAll();
+        }
+    }, 200);
+}
+
 function unblockUI() {
     'use strict';
     $.unblockUI();
+    resizeLayout();
 }
 
 var jFormErrorHandler = function(response) {

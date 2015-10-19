@@ -673,7 +673,7 @@ public class MdsBundleIT extends BasePaxIT {
 
         ComboboxValueService cbValueService = ServiceRetriever.getService(bundleContext, ComboboxValueService.class);
 
-        assertEquals(asList("0", "35", "2", "4"), cbValueService.getAllValuesForCombobox(FOO_CLASS, "someList"));
+        assertEquals(asList("0", "2", "35", "4"), cbValueService.getAllValuesForCombobox(FOO_CLASS, "someList"));
     }
 
     private void verifyCsvImport() throws Exception {
