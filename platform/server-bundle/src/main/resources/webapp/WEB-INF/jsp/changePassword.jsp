@@ -13,7 +13,7 @@
             <div class="header">
                 <div class="container">
                     <div class="dashboard-logo">
-                        <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.gif">
+                        <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="./../../static/img/motech-logo.gif">
                     </div>
                     <div class="hidden-xs hidden-sm">
                         <div class="header-title">{{msg('server.motechTitle')}}</div>
