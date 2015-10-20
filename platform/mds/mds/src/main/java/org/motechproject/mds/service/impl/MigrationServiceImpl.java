@@ -40,13 +40,42 @@ public class MigrationServiceImpl implements MigrationService {
     public void processBundle(Bundle bundle) throws IOException {
         LOGGER.debug("Starting to process {} bundle", bundle.getSymbolicName());
         String flywayLocation = mdsConfig.getFlywayLocations()[0];
+        String preSchemaCreationLocation = flywayLocation + '/' + Constants.EntitiesMigration.PRE_SCHEMA_CREATION_DIRECTORY;
 
-        if (bundle.getEntryPaths(flywayLocation) == null) {
-            return;
+        if (bundle.getEntryPaths(flywayLocation) != null) {
+            Collection<String> migrationFiles = getMigrationFiles(bundle, flywayLocation);
+
+            if (CollectionUtils.isNotEmpty(migrationFiles)) {
+                copyMigrationFiles(bundle, migrationFiles, mdsConfig.getFlywayMigrationDirectory());
+            }
         }
 
-        Collection<String> migrationFiles = Collections2.filter(
-                Collections.list(bundle.getEntryPaths(flywayLocation)),
+        if (bundle.getEntryPaths(preSchemaCreationLocation) != null) {
+            Collection<String> preSchemaCreationMigrationFiles = getMigrationFiles(bundle, preSchemaCreationLocation);
+
+            if (CollectionUtils.isNotEmpty(preSchemaCreationMigrationFiles)) {
+                copyMigrationFiles(bundle, preSchemaCreationMigrationFiles, new File(mdsConfig.getFlywayMigrationDirectory(), Constants.EntitiesMigration.PRE_SCHEMA_CREATION_DIRECTORY));
+            }
+        }
+    }
+
+    private String generateFlywayMigrationFileName(MigrationMapping migrationMapping, String originalFileName) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(Constants.EntitiesMigration.ENTITY_MIGRATIONS_PREFIX).append(migrationMapping.getFlywayMigrationVersion()
+                + Constants.EntitiesMigration.MIGRATION_VERSION_OFFSET);
+        stringBuilder.append("__");
+        stringBuilder.append(originalFileName.substring(originalFileName.indexOf('_') + 2));
+        return stringBuilder.toString();
+    }
+
+    private Integer getMigrationsVersion(String resourcePath) {
+        String fileName = resourcePath.substring(resourcePath.lastIndexOf('/') + 1);
+        return Integer.valueOf(fileName.substring(1, fileName.indexOf('_')));
+    }
+
+    private Collection<String> getMigrationFiles(Bundle bundle, String path) {
+        return Collections2.filter(
+                Collections.list(bundle.getEntryPaths(path)),
                 new Predicate<String>() {
                     @Override
                     public boolean apply(String o) {
@@ -54,45 +83,30 @@ public class MigrationServiceImpl implements MigrationService {
                     }
                 }
         );
+    }
 
-        if (CollectionUtils.isNotEmpty(migrationFiles)) {
-            LOGGER.debug("Bundle {} contains {} migrations files", bundle.getSymbolicName(), migrationFiles.size());
-            File migrationDirectory = mdsConfig.getFlywayMigrationDirectory();
+    private void copyMigrationFiles(Bundle bundle, Collection<String> files, File migrationDirectory) throws IOException {
+        LOGGER.debug("Found {} migration files in bundle {}", files.size(), bundle.getSymbolicName());
 
-            for (String resourcePath : migrationFiles) {
-                Integer migrationVersion = getMigrationsVersion(resourcePath);
-                MigrationMapping migrationInfo = allMigrationMappings.retrieveByModuleAndMigrationVersion(bundle.getSymbolicName(),
-                        migrationVersion);
+        for (String resourcePath : files) {
+            Integer migrationVersion = getMigrationsVersion(resourcePath);
+            MigrationMapping migrationInfo = allMigrationMappings.retrieveByModuleAndMigrationVersion(bundle.getSymbolicName(),
+                    migrationVersion);
 
-                //we must copy migration file
-                if (migrationInfo == null) {
-                    migrationInfo = new MigrationMapping(bundle.getSymbolicName(), migrationVersion);
-                    migrationInfo = allMigrationMappings.create(migrationInfo);
-                    String orginalFileName = resourcePath.substring(resourcePath.lastIndexOf('/') + 1);
-                    String newFileName = generateFlywayMigrationFileName(migrationInfo, orginalFileName);
+            //we must copy migration file
+            if (migrationInfo == null) {
+                migrationInfo = new MigrationMapping(bundle.getSymbolicName(), migrationVersion);
+                migrationInfo = allMigrationMappings.create(migrationInfo);
+                String orginalFileName = resourcePath.substring(resourcePath.lastIndexOf('/') + 1);
+                String newFileName = generateFlywayMigrationFileName(migrationInfo, orginalFileName);
 
-                    try (InputStream inputStream = bundle.getResource(resourcePath).openStream()) {
-                        LOGGER.debug("Creating new migration file with name {}, for {} bundle", newFileName, bundle.getSymbolicName());
-                        File migrationFile = new File(migrationDirectory.getAbsolutePath(), newFileName);
-                        FileUtils.copyInputStreamToFile(inputStream, migrationFile);
-                    }
+                try (InputStream inputStream = bundle.getResource(resourcePath).openStream()) {
+                    LOGGER.debug("Creating new migration file with name {}, for {} bundle", newFileName, bundle.getSymbolicName());
+                    File migrationFile = new File(migrationDirectory.getAbsolutePath(), newFileName);
+                    FileUtils.copyInputStreamToFile(inputStream, migrationFile);
                 }
             }
         }
-    }
-
-    private String generateFlywayMigrationFileName(MigrationMapping migrationMapping, String orginalFileName) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(Constants.EntitiesMigration.ENTITY_MIGRATIONS_PREFIX).append(migrationMapping.getFlywayMigrationVersion()
-                + Constants.EntitiesMigration.MIGRATION_VERSION_OFFSET);
-        stringBuilder.append("__");
-        stringBuilder.append(orginalFileName.substring(orginalFileName.indexOf('_') + 2));
-        return stringBuilder.toString();
-    }
-
-    private Integer getMigrationsVersion(String resourcePath) {
-        String fileName = resourcePath.substring(resourcePath.lastIndexOf('/') + 1);
-        return Integer.valueOf(fileName.substring(1, fileName.indexOf('_')));
     }
 
 }
