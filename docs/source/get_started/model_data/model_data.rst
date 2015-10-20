@@ -684,6 +684,7 @@ both uni-directional and bi-directional. The way to define relationships for DDE
         ...
     }
 
+.. _indexed_manyToMany:
 
 Second type is **M-N Indexed Lists** relation which is modelled as 2 1-N unidirectional relations using join tables. Very important
 is to use the @IndexedManyToMany annotation at both ends of the relation instead of the @Persistent(mappedBy = "fieldName"). If you need more
@@ -768,6 +769,8 @@ The code below shows an example how to properly use many-to-many indexed list re
 
         ...
     }
+
+.. _lazy_eager_loading:
 
 - **Eager/lazy loading**
   By default loading an entity with relationship will load its related entities, but that behaviour can be configured
@@ -868,6 +871,81 @@ The code below shows an example how to properly use many-to-many indexed list re
   if we remove :code:`Subscriptions` field from the default fetch group (by adding :code:`@Persistent(defaultFetchGroup = "false")
   annotation to the :code:`Subscriptions` field. This query requires one table scan less and won't be sent to the
   database unless explicitly ordered to.
+
+
+Common problems with relationships and their solutions
+######################################################
+
+**Problem: Accessing related fields throws javax.jdo.JDODetachedFieldAccessException or returns null**
+
+**Explanation:** By default, the metadata generated for the entities by MDS specifies that all fields are loaded eagerly. This
+means that the object retrieved from MDS data service will have all its fields and relationship set. This behaviour can be
+adjusted, by switching the strategy to lazy loading for certain fields. This is commonly done to improve the performance,
+since the objects will not be fetched from the database until they are accessed. You can read more about :std:ref:`the eager and lazy
+loading strategies in MDS <lazy_eager_loading>`. Datanucleus will only be able to fetch lazy loaded fields if they are
+accessed within the same transaction. Accessing fields marked as lazy loaded, outside of the transaction will result
+in either javax.jdo.JDODetachedFieldAccessException, if the instance is in detached state or will return null, if the
+instance is in transient state.
+
+Another possible reason of getting the aforementioned exception is accessing objects deep in the relationship chain. Depending
+on the properties that have been set, Datanucleus will fetch the whole relationship tree together with an object, or only
+relationships up to some certain level. This can be controlled using the maxFetchDepth property of the @Entity annotation
+and datanucleus properties. A value of -1 means that the whole relationship tree should be fetched.
+
+**Problem: Many-to-many relationship with lists does not work properly**
+
+**Explanation:** Since many-to-many relationship with lists is treated differently - as two one-to-many relationships, and due
+to several internal MDS issues, many-to-many relationship with lists must be modeled using our own @IndexedManyToMany. Please
+see usage instructions in the :std:ref:`M:N relationships documentation <indexed_manyToMany>`.
+
+**Problem: While starting the server or module an InvalidRelationshipException is thrown**
+
+**Explanation:** The Motech Data Services module takes care, that all relationships are defined properly. In case it
+finds any problems with the relationship definitions, it will throw this exception, with an instruction on how to
+model the relationship properly. A general rule for bi-directional relationships is to place the @javax.jdo.annotations.Persistent
+annotation at exactly one side of a relationship. In case of many-to-many relationships, use our own @IndexedManyToMany annotation.
+
+.. _hashCode_equals:
+
+**Problem: Creating/updating instance throws StackOverflowError**
+
+**Explanation:** A common mistake while modeling bi-directional relationships is including the relationship field in the
+hashCode and equals methods. Assume a bi-directional relationship between entities A and B and instances of those
+entities that point to each other. When Datanucleus attempts to calculate the hashCode or invoke equals method to
+compare the objects, it will fall into infinite loop, reading instance of entity A and B consecutively, until it
+runs out of space and throws StackOverflowError. Therefore, it is highly recommended that relationship fields
+are not used in the hashCode and equals methods. It is recommended that the hashCode and equals methods respect
+the `Java guidelines <http://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode-->`_ for overriding these methods.
+Required and unique fields are the best candidates to use in these methods. Moreover, Datanucleus recommends that the
+ID field is not used in the hashCode method, as it may cause issue while detaching/attaching persistable object.
+
+In rare conditions the StackOverflowError may originate from the Datanucleus L2 Cache and it is most likely a bug
+in Datanucleus. If such problem arises, please first make sure that all of the above conditions have been resolved.
+If it doesn't help, the Motech Data Service exposes the evictAll method, that cleats the entire Datanucleus cache.
+Moreover, it is possible to adjust the `Datanucleus L2 cache settings <http://www.datanucleus.org/products/accessplatform/persistence_properties.html#cache>`_
+or even turn it off completely. Please keep in mind that these steps may affect MDS performance.
+
+**Problem: CRUD operations on instances throw javax.jdo.JDOUserException: Cannot read fields from a deleted object**
+
+**Explanation:** The exception with the above message is thrown when Datanucleus attempts to perform operations on objects, that
+have been elsewhere deleted. This might include a scenario with several threads working on the same instance or caching a
+retrieved instance in a local variable and then accessing its related fields that have been deleted. Simple solutions
+to this problem include synchronizing the code or retrieving fresh instance of an object, before introducing any changes.
+
+**Problem: CRUD operations on instances with many-to-many relationship do not work properly**
+
+**Explanation:** There are several rules that must be followed while working with many-to-many relationships. As per Datanucleus
+contract, it is expected that the user takes care of the following things:
+ - the hashCode and equals methods must be set in all entities as mentioned in the :std:ref:`hashCode / equals guidelines <hashCode_equals>`
+ - while adding an object to many-to-many relationship, it must be set on the both ends of the relation; otherwise, Datanucleus
+   won't know which side of the relationship is correct
+ - while deleting an object with many-to-many relationship, it must first be removed from the other side of the relationship,
+   to avoid errors about an object being linked to other objects
+ - moreover, please see the `Datanucleus documentation about many-to-many relationships <http://www.datanucleus.org/products/accessplatform/jdo/orm/many_to_many.html>`_
+
+In case of other problems or explanations not being helpful enough, please contact us via `mailing list <https://groups.google.com/forum/?fromgroups#!forum/motech-dev>`_,
+so we can investigate your case. You will get a faster response if you provide a piece of code that reproduces the issue.
+
 
 Using DataNucleus annotations
 #############################
