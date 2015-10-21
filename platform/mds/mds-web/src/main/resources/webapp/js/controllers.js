@@ -4322,6 +4322,7 @@
         };
 
         $scope.exportEntityInstances = function () {
+            $scope.checkboxModel.exportWithLookup = true;
             $('#exportInstanceModal').modal('show');
         };
 
