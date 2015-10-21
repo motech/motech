@@ -3195,7 +3195,7 @@
         $scope.actualExportColumns = 'selected';
         $scope.exportFormat = 'csv';
         $scope.checkboxModel = {
-            exportWithLookup : false,
+            exportWithLookup : true,
             exportWithOrder : false
         };
 
@@ -4324,6 +4324,7 @@
         };
 
         $scope.exportEntityInstances = function () {
+            $scope.checkboxModel.exportWithLookup = true;
             $('#exportInstanceModal').modal('show');
         };
 
@@ -4374,7 +4375,7 @@
                 url = url + "&sortDirection=" + sortDirection;
             }
 
-            if ($scope.checkboxModel.exportWithLookup === true) {
+            if ($scope.checkboxModel.exportWithLookup === true && $scope.selectedLookup !== undefined) {
                 url = url + "&lookup=" + (($scope.selectedLookup) ? $scope.selectedLookup.lookupName : "");
                 // in lookup fields the special characters may appear (for example '+' before timezone),
                 // we have to encode them before passing this url
