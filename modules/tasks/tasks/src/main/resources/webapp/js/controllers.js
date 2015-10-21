@@ -1530,9 +1530,9 @@
         });
 
         $scope.addPair = function (pair) {
-            if ($scope.uniquePairKey(pair.key)) {
+            if ($scope.uniquePairKey(pair.key, -1)) {
                 $scope.mapError = $scope.msg('task.error.duplicateMapKeys');
-            } else if ($scope.emptyMap(pair.key, pair.value)) {
+            } else if ($scope.emptyMap(pair)) {
                 $scope.mapError = $scope.msg('task.error.emptyMapPair');
             } else {
                 $scope.addToDataValue(pair, $scope.pairs.length);
@@ -1545,14 +1545,17 @@
        /**
        * Checks if the keys are unique.
        */
-       $scope.uniquePairKey = function (mapKey) {
+       $scope.uniquePairKey = function (mapKey, elementIndex) {
            var exp, keysList;
+           elementIndex = parseInt(elementIndex, 10);
            exp = new RegExp('(<span.*?>)','g');
            keysList = function () {
                var resultKeysList = [];
-               angular.forEach($scope.pairs, function (pair) {
+               angular.forEach($scope.pairs, function (pair, index) {
                    if (pair !== null && pair.key !== undefined && pair.key.toString() !== '') {
-                       resultKeysList.push(pair.key.toString().replace(exp, ""));
+                        if (index !== elementIndex) {
+                            resultKeysList.push(pair.key.toString().replace(exp, ""));
+                        }
                    }
                }, resultKeysList);
                return resultKeysList;
@@ -1563,8 +1566,8 @@
        /**
        * Checks if the pair is empty.
        */
-       $scope.emptyMap = function (pairKey, pairValue) {
-           return !(pairKey.toString().length > 0 && pairValue.toString().length > 0);
+       $scope.emptyMap = function (pair) {
+           return !(pair.key.toString().length > 0 && pair.value.toString().length > 0);
        };
 
         $scope.remove = function (index) {
@@ -1574,6 +1577,16 @@
             $scope.pairs.forEach(function(element, index, array) {
                  $scope.addToDataValue(element, index);
              });
+        };
+
+        $scope.updateMap = function (pair, index) {
+            if (!$scope.uniquePairKey(pair.key, index) && !$scope.emptyMap(pair)) {
+                $scope.data.value = "";
+
+                $scope.pairs.forEach(function(element, index, array) {
+                     $scope.addToDataValue(element, index);
+                });
+            }
         };
 
         $scope.clearKey = function () {

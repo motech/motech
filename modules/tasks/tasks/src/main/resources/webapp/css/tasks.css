@@ -150,6 +150,7 @@
     padding: 6px 12px;
     width: 90%;
     height: auto;
+    min-height: 36px;
 }
 
 .tasks .actionField.in-map-input:focus {
