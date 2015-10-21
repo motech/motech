@@ -26,6 +26,7 @@ public class LookupDto {
     private String methodName;
     private boolean referenced;
     private List<String> fieldsOrder;
+    private boolean indexRequired;
 
     public LookupDto() {
         this(null, false, false);
@@ -33,6 +34,11 @@ public class LookupDto {
 
     public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest) {
         this(lookupName, singleObjectReturn, exposedViaRest, null, false);
+    }
+
+    public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, boolean indexRequired) {
+        this(lookupName, singleObjectReturn, exposedViaRest, null, false);
+        this.indexRequired = indexRequired;
     }
 
     public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
@@ -57,11 +63,24 @@ public class LookupDto {
         this.fieldsOrder = fieldsOrder;
     }
 
+    public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<LookupFieldDto> lookupFields,
+                     boolean readOnly, String methodName, List<String> fieldsOrder, boolean indexRequired) {
+        this(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly, methodName, fieldsOrder);
+        this.indexRequired = indexRequired;
+    }
+
     public LookupDto(Long id, String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
                      List<LookupFieldDto> lookupFields, boolean readOnly, String methodName, List<String> fieldsOrder) {
         this(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly,
                 methodName, fieldsOrder);
         this.id = id;
+    }
+
+    public LookupDto(Long id, String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
+                     List<LookupFieldDto> lookupFields, boolean readOnly, String methodName, List<String> fieldsOrder, boolean indexRequired) {
+        this(id, lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly,
+                methodName, fieldsOrder);
+        this.indexRequired = indexRequired;
     }
 
     public String getLookupName() {
@@ -203,6 +222,14 @@ public class LookupDto {
         this.fieldsOrder = fieldsOrder;
     }
 
+    public boolean isIndexRequired() {
+        return indexRequired;
+    }
+
+    public void setIndexRequired(boolean indexRequired) {
+        this.indexRequired = indexRequired;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -228,7 +255,8 @@ public class LookupDto {
 
         return singleObjectReturn == other.singleObjectReturn && Objects.equals(lookupFields, other.lookupFields) &&
                 Objects.equals(lookupName, other.lookupName) && exposedViaRest == other.exposedViaRest &&
-                Objects.equals(methodName, other.methodName) && referenced == other.referenced;
+                Objects.equals(methodName, other.methodName) && referenced == other.referenced &&
+                indexRequired == other.indexRequired;
     }
 
     /**

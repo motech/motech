@@ -44,7 +44,7 @@ public class AdvancedSettingsDto {
     }
 
     public void addNewIndex(String lookupName) {
-        this.indexes.add(new LookupDto(lookupName, true, false));
+        this.indexes.add(new LookupDto(lookupName, true, false, true));
     }
 
     public void removeIndex(Integer idx) {
