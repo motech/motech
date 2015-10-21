@@ -252,8 +252,8 @@ OSGi Services
         //Params below are very basic information about a SMS.
         //Those params means that SMS module will send a SMS with message "Hello!" to number 000000000.
         Map<String, Object> params = new HashMap();
-        params.add("message", "Hello!");
-        params.add("recipient", 000000000);
+        params.put("message", "Hello!");
+        params.put("recipient", 000000000);
 
         return new MotechEvent("send_SMS_now", params);
     }
@@ -261,10 +261,10 @@ OSGi Services
     public void scheduleSendSMSJob() {
 
         //First, we need a MotechEvent.
-        MotechEvent = prepareMessage();
+        MotechEvent motechEvent = prepareMessage();
 
         //We'll also need a cron expression
-        String cronExpression = "0 0 8 1/1 * ? *"
+        String cronExpression = "0 0 8 1/1 * ? *";
 
         //and a start date.
         Calendar calendar = Calendar.getInstance();
@@ -283,7 +283,7 @@ OSGi Services
     //Now same scenario, but we only want to send that SMS once, and we want to do it tomorow.
     public void scheduleSendSMSNowJob() {
 
-        MotechEvent = prepareMessage();
+        MotechEvent motechEvent = prepareMessage();
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, 1);

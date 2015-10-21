@@ -17,7 +17,17 @@ import java.util.List;
 public interface TaskService {
 
     /**
-     * Saves the given task in the database.
+     * Saves the given task in the database giving choice whether
+     * register its handler or not.
+     *
+     * @param task  the task to be saved, not null
+     * @param registerHandler   if true the tasks handler will be registered
+     *                          if false it will not
+     */
+    void save(final Task task, boolean registerHandler);
+
+    /**
+     * Saves the given task in the database and registers its handler.
      *
      * @param task  the task to be saved, not null
      */
