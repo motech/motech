@@ -8,8 +8,7 @@ import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.ColumnText;
-import com.itextpdf.text.pdf.PdfAction;
-import com.itextpdf.text.pdf.PdfDestination;
+import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -20,6 +19,8 @@ import org.motechproject.mds.ex.csv.DataExportException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,51 +29,54 @@ import java.util.Map;
  */
 public class PdfTableWriter implements TableWriter {
 
+    private static final String ROW_NUMBER_HEADER = "No";
     private static final float MARGIN = 36f;
-    private static final float MAX_COLUMN_WIDTH = 1500;
+    private static final float PAGE_HEIGHT = PageSize.A4.getWidth() - 2 * MARGIN;
+    private static final float PAGE_WIDTH = PageSize.A4.getHeight() - 2 * MARGIN;
 
     private final PdfWriter pdfWriter;
     private final Document pdfDocument;
+    private final PdfContentByte pdfCanvas;
     private PdfPTable dataTable;
     private Map<String, Float> columnsWidths;
+    private int rows = 0;
+    private float tableContentX;
 
     public PdfTableWriter(OutputStream outputStream) {
-        pdfDocument = new Document(PageSize.A0);
+        pdfDocument = new Document(new Rectangle(PageSize.A4.getHeight(), PageSize.A4.getWidth()));
         try {
             pdfWriter = PdfWriter.getInstance(pdfDocument, outputStream);
         } catch (DocumentException e) {
             throw new DataExportException("Unable to create a PDF writer instance", e);
         }
         pdfDocument.open();
+        pdfCanvas = pdfWriter.getDirectContent();
     }
 
     @Override
     public void writeRow(Map<String, String> row, String[] headers) throws IOException {
+
         if (dataTable == null) {
             writeHeader(headers);
         }
 
+        writeCell(ROW_NUMBER_HEADER, Integer.toString(rows++));
+
         for (String header : headers) {
-            String value = row.get(header);
-            // we want blank cells to display, even if they are the only ones
-            Chunk chunk = StringUtils.isBlank(value) ? Chunk.NEWLINE : new Chunk(value);
-            // add as a cell to the table
-            PdfPCell cell = new PdfPCell(new Phrase(chunk));
-            dataTable.addCell(cell);
-            updateWidthIfNeeded(header, cell);
+            writeCell(header, row.get(header));
         }
     }
 
     @Override
     public void writeHeader(String[] headers) throws IOException {
-        dataTable = new PdfPTable(headers.length);
+
+        dataTable = new PdfPTable(headers.length + 1);
         columnsWidths = new LinkedHashMap<>();
 
+        writeHeaderCell(ROW_NUMBER_HEADER);
+
         for (String header : headers) {
-            PdfPCell cell = new PdfPCell(new Phrase(header));
-            cell.setBackgroundColor(BaseColor.GRAY);
-            dataTable.addCell(cell);
-            columnsWidths.put(header, calculateCellWidth(cell));
+            writeHeaderCell(header);
         }
     }
 
@@ -80,23 +84,105 @@ public class PdfTableWriter implements TableWriter {
     public void close() {
         try {
             float[] relativeWidths = getRelativeWidths();
-            float tableWidth = calculateTotalTableWidth(relativeWidths);
+
+            List<Integer> lastColumnsForPages = calculateLastColumnsForPages(relativeWidths);
+            resizeColumns(relativeWidths, lastColumnsForPages);
+            setTableContentX(relativeWidths[0]);
 
             dataTable.setWidths(relativeWidths);
             dataTable.setLockedWidth(true);
-            dataTable.setTotalWidth(tableWidth);
+            dataTable.setTotalWidth(calculateTotalTableWidth(relativeWidths));
 
-            changeDocumentSize(tableWidth, dataTable.getTotalHeight());
+            writeTable(lastColumnsForPages);
 
-            pdfWriter.setOpenAction(PdfAction.gotoLocalPage(1, new PdfDestination(PdfDestination.XYZ, 0, 1, 1f),
-                    pdfWriter));
-
-            pdfDocument.add(dataTable);
             pdfDocument.close();
         } catch (DocumentException e) {
             throw new DataExportException("Unable to add a table to the PDF file", e);
         } finally {
             pdfWriter.close();
+        }
+    }
+
+    private void writeTable(List<Integer> lastColumnsForPages) {
+
+        //1 is the index of first non-header row
+        int currentRow = 1;
+
+        do {
+            currentRow = writePages(lastColumnsForPages, currentRow);
+        } while (tableHasMoreRows(currentRow));
+    }
+
+    private int writePages(List<Integer> lastColumnsForPages, int firstRow) {
+
+        int lastRow = writePageCellByCell(lastColumnsForPages.get(0), lastColumnsForPages.get(1), firstRow);
+
+        for (int i = 2; i < lastColumnsForPages.size(); i++) {
+            writePage(lastColumnsForPages.get(i - 1), lastColumnsForPages.get(i), firstRow, lastRow);
+        }
+
+        return lastRow;
+    }
+
+    private int writePageCellByCell(int firstColumn, int lastColumn, int firstRow) {
+        float y = writeHeaders(firstColumn, lastColumn);
+        int currentRow = firstRow;
+        do {
+            if (!tableHasMoreRows(currentRow)) {
+                break;
+            }
+            writeIndexCells(currentRow, currentRow + 1, y);
+            y = dataTable.writeSelectedRows(firstColumn, lastColumn, currentRow, currentRow + 1, tableContentX, y, pdfCanvas);
+            currentRow++;
+        } while (nextRowFitsOnCurrentPage(y, currentRow));
+        pdfDocument.newPage();
+        return currentRow;
+    }
+
+    private void writePage(int firstColumn, int lastColumn, int firstRow, int lastRow) {
+        float y = writeHeaders(firstColumn, lastColumn);
+        writeIndexCells(firstRow, lastRow, y);
+        dataTable.writeSelectedRows(firstColumn, lastColumn, firstRow, lastRow, tableContentX, y, pdfCanvas);
+        pdfDocument.newPage();
+    }
+
+    private Float writeHeaders(Integer from, Integer to) {
+        dataTable.writeSelectedRows(0, 1, 0, 1, MARGIN, PAGE_HEIGHT + MARGIN, pdfCanvas);
+        return dataTable.writeSelectedRows(from, to, 0, 1, tableContentX, PAGE_HEIGHT + MARGIN, pdfCanvas);
+    }
+
+    private void writeIndexCells(int firstRow, int lastRow, float y) {
+        dataTable.writeSelectedRows(0, 1, firstRow, lastRow, MARGIN, y, pdfCanvas);
+    }
+
+    private void writeCell(String column, String value) {
+        // we want blank cells to display, even if they are the only ones
+        Chunk chunk = StringUtils.isBlank(value) ? Chunk.NEWLINE : new Chunk(value);
+        // add as a cell to the table
+        PdfPCell cell = new PdfPCell(new Phrase(chunk));
+        dataTable.addCell(cell);
+        updateWidthIfNeeded(column, cell);
+    }
+
+    private void writeHeaderCell(String column) {
+        PdfPCell cell = new PdfPCell(new Phrase(column));
+        cell.setBackgroundColor(BaseColor.GRAY);
+        dataTable.addCell(cell);
+        columnsWidths.put(column, calculateTotalCellWidth(cell));
+    }
+
+    private void resizeColumns(float[] relativeWidths, List<Integer> lastColumnsForPages) {
+        for (int page = 1; page < lastColumnsForPages.size(); page++) {
+            scaleColumnsToPageSize(relativeWidths, lastColumnsForPages.get(page - 1), lastColumnsForPages.get(page));
+        }
+    }
+
+    private void scaleColumnsToPageSize(float[] relativeWidths, int firstColumn, int lastColumn) {
+
+        float totalColumnsWidth = calculateTotalColumnsWidth(relativeWidths, firstColumn, lastColumn);
+
+        for (int i = firstColumn; i < lastColumn; i++) {
+            relativeWidths[i] = (PAGE_WIDTH - relativeWidths[0]) * (relativeWidths[i] / totalColumnsWidth);
         }
     }
 
@@ -108,15 +194,35 @@ public class PdfTableWriter implements TableWriter {
         return totalWidth;
     }
 
-    private void updateWidthIfNeeded(String header, PdfPCell cell) {
-        Float width = calculateCellWidth(cell);
+    private float calculateTotalColumnsWidth(float[] relativeWidths, int firstColumn, int lastColumn) {
+        float totalColumnsSize = 0;
 
-        if (columnsWidths.get(header) < width) {
-            columnsWidths.put(header, width > MAX_COLUMN_WIDTH ? MAX_COLUMN_WIDTH : width);
+        for (int column = firstColumn; column < lastColumn; column++) {
+            totalColumnsSize += relativeWidths[column];
         }
+
+        return totalColumnsSize;
     }
 
-    private Float calculateCellWidth(PdfPCell cell) {
+    private List<Integer> calculateLastColumnsForPages(float[] relativeWidths) {
+        List<Integer> lastColumnsForPages = new LinkedList<>();
+        lastColumnsForPages.add(1);
+
+        float totalColumnsWidth = 0;
+
+        for (int i = 1; i < relativeWidths.length; i++) {
+            if (totalColumnsWidth + relativeWidths[i] > PAGE_WIDTH - relativeWidths[0]) {
+                lastColumnsForPages.add(i);
+                totalColumnsWidth = 0;
+            }
+            totalColumnsWidth += relativeWidths[i];
+        }
+
+        lastColumnsForPages.add(-1);
+        return lastColumnsForPages;
+    }
+
+    private Float calculateTotalCellWidth(PdfPCell cell) {
         return cell.getBorderWidthLeft()
                 + cell.getEffectivePaddingLeft()
                 + ColumnText.getWidth(cell.getPhrase())
@@ -124,16 +230,27 @@ public class PdfTableWriter implements TableWriter {
                 + cell.getBorderWidthRight();
     }
 
-    private float[] getRelativeWidths() {
-        return ArrayUtils.toPrimitive(columnsWidths.values().toArray(new Float[0]));
+    private void updateWidthIfNeeded(String header, PdfPCell cell) {
+        Float width = calculateTotalCellWidth(cell);
+
+        if (columnsWidths.get(header) < width) {
+            columnsWidths.put(header, width > PAGE_WIDTH ? PAGE_WIDTH : width);
+        }
     }
 
-    //workaround for changing the size of the first page after document has been initiated
-    private void changeDocumentSize(float tableWidth, float tableHeight) {
-        float documentWidth = 2 * MARGIN + tableWidth;
-        float documentHeight = 2 * MARGIN + tableHeight;
-        pdfDocument.setPageSize(new Rectangle(documentWidth, documentHeight));
-        pdfDocument.setMargins(MARGIN, MARGIN, MARGIN, MARGIN);
-        pdfDocument.newPage();
+    private boolean tableHasMoreRows(int rowNumber) {
+        return rowNumber < dataTable.getRows().size();
+    }
+
+    private boolean nextRowFitsOnCurrentPage(float y, int currentRow) {
+        return y - dataTable.getRowHeight(currentRow + 1) > MARGIN;
+    }
+
+    private void setTableContentX(float width) {
+        tableContentX = MARGIN + width;
+    }
+
+    private float[] getRelativeWidths() {
+        return ArrayUtils.toPrimitive(columnsWidths.values().toArray(new Float[0]));
     }
 }
