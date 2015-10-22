@@ -76,9 +76,9 @@ public class PasswordExpirationCheckEventHandler {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(TEMPLATE_PARAM_USERNAME, user.getUserName());
         parameters.put(EMAIL_PARAM_TO_ADDRESS, user.getEmail());
-        parameters.put(TEMPLATE_PARAM_EXPIRATION_DATE, user.getLastPasswordChange().plusDays(daysTillPasswordChange));
+        parameters.put(TEMPLATE_PARAM_EXPIRATION_DATE, user.getSafeLastPasswordChange().plusDays(daysTillPasswordChange));
         parameters.put(TEMPLATE_PARAM_LOCALE, user.getLocale());
-        parameters.put(TEMPLATE_PARAM_LAST_PASSWORD_CHANGE, user.getLastPasswordChange());
+        parameters.put(TEMPLATE_PARAM_LAST_PASSWORD_CHANGE, user.getSafeLastPasswordChange());
         parameters.put(TEMPLATE_PARAM_EXTERNAL_ID, user.getExternalId());
         parameters.put(TEMPLATE_PARAM_DAYS_TILL_EXPIRE, daysTillExpire);
 
@@ -90,7 +90,7 @@ public class PasswordExpirationCheckEventHandler {
     }
 
     private int daysWithoutPasswordChange(MotechUser user) {
-        return Days.daysBetween(user.getLastPasswordChange(), DateUtil.now()).getDays();
+        return Days.daysBetween(user.getSafeLastPasswordChange(), DateUtil.now()).getDays();
     }
 
     @Autowired

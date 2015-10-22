@@ -45,15 +45,15 @@ public class MotechUserTest {
 
             MotechUser user = new MotechUser(null, "p@ssw0rd", "", "", null, "", Locale.ENGLISH);
 
-            DateTime lastPasswordChange = user.getLastPasswordChange();
+            DateTime lastPasswordChange = user.getSafeLastPasswordChange();
             assertEquals(fakeOne, lastPasswordChange);
 
             DateTime fakeTwo = newDateTime(2015, 8, 13, 10, 0, 0);
             fakeNow(fakeTwo);
 
             user.setPassword("0th3rP@ss");
-            assertFalse(lastPasswordChange.equals(user.getLastPasswordChange()));
-            assertEquals(fakeTwo, user.getLastPasswordChange());
+            assertFalse(lastPasswordChange.equals(user.getSafeLastPasswordChange()));
+            assertEquals(fakeTwo, user.getSafeLastPasswordChange());
         } finally {
             stopFakingTime();
         }
