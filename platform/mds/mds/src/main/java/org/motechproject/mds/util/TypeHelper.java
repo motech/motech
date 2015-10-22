@@ -535,7 +535,7 @@ public final class TypeHelper {
         return collClass == null ? ArrayList.class : collClass; // NOPMD - bug in PMD, objects to ArrayList.class here
     }
 
-    public static Collection suggesAndCreatetCollectionImplementation(Class<? extends  Collection> collectionClass) {
+    public static Collection suggestAndCreateCollectionImplementation(Class<? extends Collection> collectionClass) {
         Class<? extends Collection> suggestedClass = suggestCollectionImplementation(collectionClass);
         try {
             return suggestedClass.newInstance();

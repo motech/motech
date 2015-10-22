@@ -73,7 +73,7 @@ public abstract class BasePersistenceService {
     }
 
     protected Collection<Long> convertToIdsCollection(Collection collection) {
-        Collection<Long> idColl = TypeHelper.suggesAndCreatetCollectionImplementation(collection.getClass());
+        Collection<Long> idColl = TypeHelper.suggestAndCreateCollectionImplementation(collection.getClass());
 
         for (Object obj : collection) {
             idColl.add((Long) PropertyUtil.safeGetProperty(obj, Constants.Util.ID_FIELD_NAME));
@@ -135,7 +135,7 @@ public abstract class BasePersistenceService {
                 } else {
                     // collection of enum or regular objects
                     // copy to a new collection object
-                    Collection collCopy = TypeHelper.suggesAndCreatetCollectionImplementation(coll.getClass());
+                    Collection collCopy = TypeHelper.suggestAndCreateCollectionImplementation(coll.getClass());
                     collCopy.addAll(coll);
                     return collCopy;
                 }

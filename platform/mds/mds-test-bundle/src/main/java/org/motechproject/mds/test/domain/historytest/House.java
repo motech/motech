@@ -8,7 +8,7 @@ import org.motechproject.mds.domain.MdsEntity;
 import javax.jdo.annotations.Persistent;
 
 /**
- * House and address are 1:!
+ * House and address are 1:1
  */
 @Entity(recordHistory = true, maxFetchDepth = 2)
 public class House extends MdsEntity {

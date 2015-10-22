@@ -1,13 +1,11 @@
 package org.motechproject.mds.service.impl.history;
 
-import org.joda.time.DateTime;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
-import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.PropertyUtil;
 import org.slf4j.Logger;
@@ -169,19 +167,12 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         return query.execute(instanceId);
     }
 
-    private Query initQuery(Class<?> historyClass) {
-        return initQuery(historyClass, null);
-    }
 
-    private Query initQuery(Class<?> historyClass, DateTime modificationDateTime) {
+    private Query initQuery(Class<?> historyClass) {
         List<Property> properties = new ArrayList<>(3);
 
         // we need only a correct type (not value) that's why we pass dummy values, instead of actual ones
         properties.add(PropertyBuilder.create(HistoryTrashClassHelper.currentVersion(historyClass), 1L, Long.class));
-        if (modificationDateTime != null) {
-            properties.add(PropertyBuilder.create(Constants.Util.MODIFICATION_DATE_FIELD_NAME, modificationDateTime,
-                    DateTime.class));
-        }
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
