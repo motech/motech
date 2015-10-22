@@ -168,6 +168,7 @@
                 if (scope.isRelationshipField(field)) {
                     // append a formatter for relationships
                     cmd.formatter = relationshipFormatter;
+                    cmd.sortable = false;
                 }
 
                 if (scope.isTextArea(field.settings)) {
