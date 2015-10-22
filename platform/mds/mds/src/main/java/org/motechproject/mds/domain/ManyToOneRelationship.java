@@ -8,7 +8,11 @@ public class ManyToOneRelationship extends Relationship {
 
     @Override
     public String getFieldType(Field field, EntityType type) {
-        return getRelatedClassName(field, type);
+        if (type == EntityType.STANDARD) {
+            return getRelatedClassName(field, type);
+        } else {
+            return Long.class.getName();
+        }
     }
 
     @Override

@@ -56,7 +56,7 @@ public final class ClassName {
         return String.format("%s.%sService", Constants.PackagesGenerated.SERVICE, getSimpleName(className));
     }
 
-    public static String getServiceName(String className) {
+    public static String getServiceClassName(String className) {
         String packageName = getPackage(className);
         if (StringUtils.isBlank(packageName) || Constants.PackagesGenerated.ENTITY.equals(packageName)) {
             packageName = Constants.PackagesGenerated.SERVICE_IMPL;
@@ -64,6 +64,10 @@ public final class ClassName {
             packageName += ".mdsserviceimpl";
         }
         return String.format("%s.%sServiceImpl", packageName, getSimpleName(className));
+    }
+
+    public static String getServiceName(String className) {
+        return className + "DataService";
     }
 
     public static String trimTrashHistorySuffix(String name) {

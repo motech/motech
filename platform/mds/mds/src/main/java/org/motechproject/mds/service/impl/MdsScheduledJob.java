@@ -1,6 +1,8 @@
 package org.motechproject.mds.service.impl;
 
 import org.motechproject.bundle.extender.MotechOsgiConfigurableApplicationContext;
+import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.TrashService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -12,6 +14,8 @@ import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+
+import java.util.List;
 
 /**
  *  Job responsible for emptying MDS trash.
@@ -41,7 +45,13 @@ public class MdsScheduledJob implements Job {
 
             if (reference != null) {
                 TrashService trashService = (TrashService) bundleContext.getService(reference);
-                trashService.emptyTrash();
+
+                AllEntities allEntities = applicationContext.getBean(AllEntities.class);
+                List<Entity> entities = allEntities.getActualEntities();
+
+                trashService.emptyTrash(entities);
+            } else {
+                log.warn("TrashService is unavailable, unable to empty trash");
             }
         } catch (Exception e) {
             log.error("Job execution failed.", e);

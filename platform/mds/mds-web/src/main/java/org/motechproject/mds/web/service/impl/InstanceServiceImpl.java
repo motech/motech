@@ -159,7 +159,7 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entity = getEntity(entityId);
         MotechDataService service = getServiceForEntity(entity);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
-        Object instance = trashService.findTrashById(instanceId, entityId);
+        Object instance = trashService.findTrashById(instanceId, entity.getClassName());
 
         return instanceToRecord(instance, entity, fields, service);
     }
@@ -357,7 +357,7 @@ public class InstanceServiceImpl implements InstanceService {
     public void revertInstanceFromTrash(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
         MotechDataService service = getServiceForEntity(entity);
-        Object trash = service.findTrashInstanceById(instanceId, entityId);
+        Object trash = service.findTrashInstanceById(instanceId);
         List<FieldRecord> fieldRecords = new LinkedList<>();
         Class<?> entityClass;
         Object newInstance = null;

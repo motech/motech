@@ -4,12 +4,20 @@
 
     var directives = angular.module('mds.directives', []),
         relationshipFormatter = function(cellValue, options, rowObject) {
-           var i, objects, val = cellValue;
+           var i, objects, obj, id, val = cellValue;
            if (cellValue) {
                objects = [].concat(cellValue);
                val = '';
                for (i = 0; i < objects.length; i += 1) {
-                   val += '#' + objects[i].id;
+                   obj = objects[i];
+
+                   if (obj.id) {
+                       id = obj.id;
+                   } else {
+                       id  = obj;
+                   }
+
+                   val += '#' + id;
                    if (i < objects.length - 1) {
                        val += ' ';
                    }

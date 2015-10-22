@@ -37,7 +37,7 @@ public interface MotechDataService<T> {
 
     void delete(String primaryKeyName, Object value);
 
-    T findTrashInstanceById(Object instanceId, Object entityId);
+    T findTrashInstanceById(Object instanceId);
 
     void revertFromTrash(Object newInstance, Object trash);
 
@@ -62,4 +62,16 @@ public interface MotechDataService<T> {
     <R> R executeSQLQuery(SqlQueryExecution<R> queryExecution);
 
     Class<T> getClassType();
+
+    /**
+     * Returns the schema version for this service's entity.
+     * @return the schema version
+     */
+    Long getSchemaVersion();
+
+    /**
+     * Checks whether the entity for this service has history recording enabled.
+     * @return true if the entity has history recording enabled, false otherwise
+     */
+    boolean recordHistory();
 }

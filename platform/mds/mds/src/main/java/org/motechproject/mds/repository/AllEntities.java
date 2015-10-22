@@ -1,5 +1,7 @@
 package org.motechproject.mds.repository;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Tracking;
 import org.motechproject.mds.dto.EntityDto;
@@ -7,6 +9,7 @@ import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,4 +75,17 @@ public class AllEntities extends MotechDataRepository<Entity> {
         return null;
     }
 
+    public List<Entity> getActualEntities() {
+        List<Entity> entities = new ArrayList<>(retrieveAll());
+
+        CollectionUtils.filter(entities, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                Entity entity = (Entity) object;
+                return entity.isActualEntity();
+            }
+        });
+
+        return entities;
+    }
 }

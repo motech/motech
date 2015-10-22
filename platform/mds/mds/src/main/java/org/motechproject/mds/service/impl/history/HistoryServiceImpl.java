@@ -6,18 +6,18 @@ import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
-import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.PropertyUtil;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
@@ -28,66 +28,34 @@ import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 public class HistoryServiceImpl extends BasePersistenceService implements HistoryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(HistoryServiceImpl.class);
 
+    private ThreadLocal<RecordRepository> recordRepositoryTL = new ThreadLocal<>();
+    private ThreadLocal<Boolean> txSyncRegisteredTL = new ThreadLocal<>();
+
     @Override
     @Transactional
     public void record(Object instance) {
+        // the history service will want to be notified once the TX completes
+        // it will then clear its record repository cache
+        registerPreCommitTxSync();
+
         Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
 
         if (null != historyClass) {
-            LOGGER.debug("Recording history for: {}", instance.getClass().getName());
+            LOGGER.debug("Recording history for: {}", instance);
 
-            create(historyClass, instance, EntityType.HISTORY);
+            if (shouldRecordHistory(historyClass, instance)) {
+                Long instanceId = getInstanceId(instance);
+                // we can use an existing record if it was stored in this TX
+                Object existingRecord = getRecordRepository().get(historyClass.getName(), instanceId);
 
-            LOGGER.debug("Recorded history for: {}", instance.getClass().getName());
-        }
-    }
+                Object historyRecord = createRecord(historyClass, instance, existingRecord);
 
-    @Override
-    @Transactional
-    public void remove(Object instance) {
+                getRecordRepository().store(instanceId, historyRecord);
 
-        Class<?> historyClass = HistoryTrashClassHelper.getClass(ClassName.trimTrashHistorySuffix(
-                HistoryTrashClassHelper.getInstanceClassName(instance)), EntityType.HISTORY, getBundleContext());
-
-        if (null != historyClass) {
-            Long objId = getInstanceId(instance);
-
-            Query query = initQuery(historyClass);
-            query.deletePersistentAll(objId, false);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void setTrashFlag(Object instance, Object trash, boolean flag) {
-        Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
-
-        if (null != historyClass) {
-            PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
-            Long objId = getInstanceId(instance);
-            Long trashId = getInstanceId(trash);
-
-            Query query = initQuery(historyClass, true);
-
-            // we have to find entries with the correct instance id and trash flag that is reverse
-            // to trash param.
-            Collection collection = flag
-                    ? (Collection) query.execute(objId, false)
-                    : (Collection) query.execute(trashId, true);
-
-            for (Object data : collection) {
-                // depends on the flag param if instance object is moved to trash the history
-                // entries should be connected with trash object by current version field (the same
-                // is true in the opposite direction) ...
-                PropertyUtil.safeSetProperty(data, HistoryTrashClassHelper.currentVersion(historyClass),
-                        flag ? trashId : objId);
-
-                // .. and the trash flag should be set (or unset).
-                PropertyUtil.safeSetProperty(data, HistoryTrashClassHelper.trashFlag(historyClass), flag);
+                LOGGER.debug("Recorded history for: {}", instance);
+            } else {
+                LOGGER.debug("No changes for: {}, skipping", instance);
             }
-
-            // in the end all entries should be saved in database.
-            manager.makePersistentAll(collection);
         }
     }
 
@@ -100,7 +68,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         if (null != historyClass) {
             Long objId = getInstanceId(instance);
 
-            Query query = initQuery(historyClass, false);
+            Query query = initQuery(historyClass);
             QueryUtil.setQueryParams(query, queryParams);
 
             list = new ArrayList((List) query.execute(objId));
@@ -116,8 +84,8 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         Class<?> historyClass = HistoryTrashClassHelper.getClass(instance, EntityType.HISTORY, getBundleContext());
         Long objId = getInstanceId(instance);
 
-        Query query = initQuery(historyClass, false);
-        query.setResult("count(this)");
+        Query query = initQuery(historyClass);
+        QueryUtil.setCountResult(query);
 
         return (long) query.execute(objId) - 1;
     }
@@ -128,7 +96,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         Object obj = null;
 
         if (null != historyClass) {
-            Query query = initQuery(historyClass, false);
+            Query query = initQuery(historyClass);
 
             List<Property> properties = new ArrayList<>();
             properties.add(PropertyBuilder.create("id", historyId, Long.class));
@@ -142,9 +110,32 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         return obj;
     }
 
-    private <T> Object create(Class<T> historyClass, Object instance, EntityType type) {
-        ValueGetter valueGetter = new HistoryValueGetter(this, getBundleContext());
-        Object currentHistoryInstance = create(historyClass, instance, type, valueGetter);
+    private boolean shouldRecordHistory(Class<?> historyClass, Object instance) {
+        // we don't want duplicate history instances
+        // this checks will prevent double history being recorder from cascade events etc.
+        Long instanceId = getInstanceId(instance);
+        if (JDOHelper.isNew(instance)) {
+            // always record for new instances, no need for db query
+            return true;
+        } else if (getRecordRepository().contains(historyClass.getName(), instanceId)) {
+            // if it was already recorded in this tx, then we want to update it
+            return true;
+        } else {
+            // check if there are any changes, this will prevent double history in case of cascading etc.
+            Object latestHistoryRev = getLatestRevision(historyClass, instanceId);
+            if (latestHistoryRev == null) {
+                // no history, record data (possible in case of changing the record history setting for an entity)
+                return true;
+            } else {
+                // check if any fields changed
+                List<String> changedFields = PropertyUtil.findChangedFields(instance, latestHistoryRev, getRelConverter());
+                return !changedFields.isEmpty();
+            }
+        }
+    }
+
+    private <T> Object createRecord(Class<T> historyClass, Object instance, Object existingRecord) {
+        Object currentHistoryInstance = create(historyClass, instance, existingRecord);
 
         setHistoryProperties(currentHistoryInstance, instance);
 
@@ -163,32 +154,25 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
                 HistoryTrashClassHelper.currentVersion(newHistoryObj.getClass()), id);
 
         // add current entity schema version
-        Long schemaVersion = getEntitySchemaVersion(realCurrentObj);
+        Long schemaVersion = getCurrentSchemaVersion(realCurrentObj.getClass().getName());
         PropertyUtil.safeSetProperty(newHistoryObj,
                 HistoryTrashClassHelper.schemaVersion(newHistoryObj.getClass()), schemaVersion);
     }
 
     private Object getLatestRevision(Class<?> historyClass, Long instanceId) {
-        Query query = initQuery(historyClass, false);
+        Query query = initQuery(historyClass);
         QueryUtil.setQueryParams(query,
                 new QueryParams(1, 1, new Order(ID_FIELD_NAME, Order.Direction.DESC)));
         query.setUnique(true);
         return query.execute(instanceId);
     }
 
-    private Query initQuery(Class<?> historyClass) {
-        return initQuery(historyClass, true);
-    }
 
-    private Query initQuery(Class<?> historyClass, boolean withTrashFlag) {
+    private Query initQuery(Class<?> historyClass) {
         List<Property> properties = new ArrayList<>(3);
 
         // we need only a correct type (not value) that's why we pass dummy values, instead of actual ones
         properties.add(PropertyBuilder.create(HistoryTrashClassHelper.currentVersion(historyClass), 1L, Long.class));
-
-        if (withTrashFlag) {
-            properties.add(PropertyBuilder.create(HistoryTrashClassHelper.trashFlag(historyClass), false, Boolean.class));
-        }
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
@@ -198,21 +182,32 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         return query;
     }
 
-    /**
-     * We override the default behaviour because the history service needs to set additional information.
-     * For relationship fields, we must set the ids tying them to real object. We must also properly handle
-     * references in relationships. For updates on the N in 1:N relationships, we only create a new record of
-     * the updated object, not the entire list. For that, we need the previous history object.
-     */
-    private class HistoryValueGetter extends ValueGetter {
-
-        public HistoryValueGetter(BasePersistenceService persistenceService, BundleContext bundleContext) {
-            super(persistenceService, bundleContext);
+    private RecordRepository getRecordRepository() {
+        RecordRepository repository = recordRepositoryTL.get();
+        if (repository == null) {
+            repository = new RecordRepository();
+            recordRepositoryTL.set(repository);
         }
+        return repository;
+    }
 
+    private void registerPreCommitTxSync() {
+        Boolean txSyncRegistered = txSyncRegisteredTL.get();
+        if (txSyncRegistered == null || !txSyncRegistered) {
+            TransactionSynchronizationManager.registerSynchronization(new HistoryPersistSynchronization());
+            txSyncRegisteredTL.set(true);
+        }
+    }
+
+    /**
+     * This TX sync does history related cleanup once a TX completes.
+     * It clears the repository of the records we have stored in this TX.
+     */
+    private class HistoryPersistSynchronization extends TransactionSynchronizationAdapter {
         @Override
-        protected void updateRecordFields(Object newHistoryRecord, Object realCurrentObj) {
-            setHistoryProperties(newHistoryRecord, realCurrentObj);
+        public void afterCompletion(int status) {
+            getRecordRepository().clear();
+            txSyncRegisteredTL.set(false);
         }
     }
 }
