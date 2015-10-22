@@ -90,7 +90,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
             T instance = OBJECT_MAPPER.readValue(instanceBody, entityClass);
 
             T filteredInstance = entityClass.newInstance();
-            PropertyUtil.copyProperties(filteredInstance, instance, new HashSet<>(restFields));
+            PropertyUtil.copyProperties(filteredInstance, instance, null, new HashSet<>(restFields));
 
             return RestProjection.createProjection(dataService.create(filteredInstance), restFields);
         } catch (IOException e) {

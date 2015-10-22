@@ -9,6 +9,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.mds.event.CrudEventType;
+import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.test.domain.Author;
 import org.motechproject.mds.test.domain.Book;
@@ -19,6 +20,12 @@ import org.motechproject.mds.test.domain.Patient;
 import org.motechproject.mds.test.domain.State;
 import org.motechproject.mds.test.domain.TestLookup;
 import org.motechproject.mds.test.domain.TestMdsEntity;
+import org.motechproject.mds.test.domain.historytest.Address;
+import org.motechproject.mds.test.domain.historytest.Company;
+import org.motechproject.mds.test.domain.historytest.Computer;
+import org.motechproject.mds.test.domain.historytest.Consultant;
+import org.motechproject.mds.test.domain.historytest.House;
+import org.motechproject.mds.test.domain.historytest.Network;
 import org.motechproject.mds.test.service.AuthorDataService;
 import org.motechproject.mds.test.service.BookDataService;
 import org.motechproject.mds.test.service.ClinicDataService;
@@ -29,8 +36,12 @@ import org.motechproject.mds.test.service.StateDataService;
 import org.motechproject.mds.test.service.TestLookupService;
 import org.motechproject.mds.test.service.TestMdsEntityService;
 import org.motechproject.mds.test.service.TransactionTestService;
+import org.motechproject.mds.test.service.historytest.AddressDataService;
+import org.motechproject.mds.test.service.historytest.CompanyDataService;
+import org.motechproject.mds.test.service.historytest.ConsultantDataService;
+import org.motechproject.mds.test.service.historytest.HouseDataService;
+import org.motechproject.mds.test.service.historytest.NetworkDataService;
 import org.motechproject.mds.util.MDSClassLoader;
-import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.ops4j.pax.exam.ExamFactory;
@@ -52,14 +63,18 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -68,11 +83,15 @@ import static org.motechproject.mds.util.ClassName.simplifiedModuleName;
 import static org.motechproject.mds.util.Constants.MDSEvents.ENTITY_CLASS;
 import static org.motechproject.mds.util.Constants.MDSEvents.ENTITY_NAME;
 import static org.motechproject.mds.util.Constants.MDSEvents.MODULE_NAME;
+import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
+import static org.motechproject.mds.util.PropertyUtil.safeGetProperty;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class MdsDdeBundleIT extends BasePaxIT {
+
+    private static final QueryParams ASC_ID = QueryParams.ascOrder(ID_FIELD_NAME);
 
     @Inject
     private TestMdsEntityService testMdsEntityService;
@@ -109,6 +128,21 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     @Inject
     private TransactionTestService transactionTestService;
+
+    @Inject
+    private NetworkDataService networkDataService;
+
+    @Inject
+    private HouseDataService houseDataService;
+
+    @Inject
+    private AddressDataService addressDataService;
+
+    @Inject
+    private CompanyDataService companyDataService;
+
+    @Inject
+    private ConsultantDataService consultantDataService;
 
     private final Object waitLock = new Object();
 
@@ -225,17 +259,12 @@ public class MdsDdeBundleIT extends BasePaxIT {
         // Latest version should not be included in the history audit
         audit = historyService.getHistoryForInstance(district, null);
         assertNotNull(audit);
-        assertEquals(2, audit.size());
+        assertEquals(1, audit.size());
 
         Object firstRevision = audit.get(0); //Initial revision - no relations
-        assertEquals("district1", PropertyUtil.safeGetProperty(firstRevision, "name"));
-        assertNull(PropertyUtil.safeGetProperty(firstRevision, "state"));
-        assertNull(PropertyUtil.safeGetProperty(firstRevision, "language"));
-
-        Object lastRevision = audit.get(1); //First update - state added relation with this district
-        assertEquals("district1", PropertyUtil.safeGetProperty(lastRevision, "name"));
-        assertNotNull(PropertyUtil.safeGetProperty(lastRevision, "state"));
-        assertNull(PropertyUtil.safeGetProperty(lastRevision, "language"));
+        assertEquals("district1", safeGetProperty(firstRevision, "name"));
+        assertNull(safeGetProperty(firstRevision, "state"));
+        assertNull(safeGetProperty(firstRevision, "language"));
 
         final State retrievedState2 = stateDataService.findByName(state.getName());
 
@@ -259,9 +288,9 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertNotNull(audit);
         assertEquals(4, audit.size());
 
-        lastRevision = audit.get(3);
-        assertNotNull(PropertyUtil.safeGetProperty(lastRevision, "defaultDistrict"));
-        assertNotNull(PropertyUtil.safeGetProperty(lastRevision, "districts"));
+        Object lastRevision = audit.get(3);
+        assertNotNull(safeGetProperty(lastRevision, "defaultDistrict"));
+        assertNotNull(safeGetProperty(lastRevision, "districts"));
     }
 
     @Test
@@ -446,6 +475,218 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertTrue(allBooks.isEmpty());
     }
 
+    @Test
+    public void shouldCreateHistoryForOneToOneRelationships() {
+        Address address = new Address();
+        address.setStreet("Broadway");
+
+        House house = new House();
+        house.setName("A house");
+        house.setAddress(address);
+
+        house = houseDataService.create(house);
+
+        final long firstAddressId = house.getAddress().getId();
+
+        // no history at first
+        List historyList = historyService.getHistoryForInstance(house, ASC_ID);
+        assertNotNull(historyList);
+        assertTrue(historyList.isEmpty());
+
+        // change the name of the house
+        house.setName("Second house");
+        house = houseDataService.update(house);
+
+        // then change the address
+        Address secondAddress = new Address();
+        secondAddress.setStreet("Abbey Road");
+        house.setAddress(secondAddress);
+        house = houseDataService.update(house);
+
+        secondAddress = house.getAddress();
+        final long secondAddressId = secondAddress.getId();
+        assertNotSame(firstAddressId, secondAddressId);
+
+        // update the second address, should not affect house history
+        secondAddress.setStreet("The Abbey Road");
+        addressDataService.update(secondAddress);
+
+        // there were 2 changes
+        historyList = historyService.getHistoryForInstance(house, ASC_ID);
+        assertNotNull(historyList);
+        assertEquals(2, historyList.size());
+
+        // the first version - "A house" with first (Broadway) address
+        Object firstVersion = historyList.get(0);
+        assertNotNull(firstVersion);
+        assertEquals("A house", safeGetProperty(firstVersion, "name"));
+        assertEquals(firstAddressId, safeGetProperty(firstVersion, "address"));
+
+        // the second version - "Second house", with the first address
+        Object secondVersion = historyList.get(1);
+        assertNotNull(secondVersion);
+        assertEquals("Second house", safeGetProperty(secondVersion, "name"));
+        assertEquals(firstAddressId, safeGetProperty(secondVersion, "address"));
+
+        // no history entries for the first address
+        historyList = historyService.getHistoryForInstance(address, ASC_ID);
+        assertNotNull(historyList);
+        assertEquals(0, historyList.size());
+
+        // one history entry for the second address
+        historyList = historyService.getHistoryForInstance(secondAddress, ASC_ID);
+        assertNotNull(historyList);
+        assertEquals(1, historyList.size());
+        assertEquals("Abbey Road", safeGetProperty(historyList.get(0), "street"));
+    }
+
+    @Test
+    public void shouldCreateHistoryForOneToManyRelationship() {
+        // a network with two computers
+        Computer deepBlue = new Computer("Deep Blue");
+        Computer watson = new Computer("Watson");
+
+        Network ibmNetwork = new Network("192.168.1.0/24", new ArrayList<>(asList(deepBlue, watson)));
+
+        ibmNetwork = networkDataService.create(ibmNetwork);
+        final DateTime mdDt1 = ibmNetwork.getModificationDate();
+
+        final long deepBlueId = ibmNetwork.getComputers().get(0).getId();
+        final long watsonId = ibmNetwork.getComputers().get(1).getId();
+
+        // remove one computer from the network
+        ibmNetwork.removeComputer("Watson");
+
+        ibmNetwork = networkDataService.update(ibmNetwork);
+        final DateTime mdDt2 = ibmNetwork.getModificationDate();
+
+        // add two new computers
+        Computer deepThought = new Computer("Deep Thought");
+        ibmNetwork.getComputers().add(deepThought);
+        Computer deepFritz = new Computer("Deep Fritz");
+        ibmNetwork.getComputers().add(deepFritz);
+
+        ibmNetwork = networkDataService.update(ibmNetwork);
+        final DateTime mdDt3 = ibmNetwork.getModificationDate();
+
+        final long deepFritzId = ibmNetwork.getComputerByName("Deep Fritz").getId();
+
+        // change the name of the new computer
+        deepThought = ibmNetwork.getComputerByName("Deep Thought");
+        final long deepThoughtId = deepThought.getId();
+        deepThought.setName("Deep Thought 2");
+        ibmNetwork = networkDataService.update(ibmNetwork);
+
+        // the network should have three history entries
+        List historyList = historyService.getHistoryForInstance(ibmNetwork, QueryParams.ascOrder(ID_FIELD_NAME));
+        assertNotNull(historyList);
+        assertEquals(3, historyList.size());
+
+        // first version with two computers
+        verifyNetworkHistoryRecord(historyList.get(0), "192.168.1.0/24", asList(deepBlueId, watsonId), mdDt1);
+
+        // second version with just one computer
+        verifyNetworkHistoryRecord(historyList.get(1), "192.168.1.0/24", singletonList(deepBlueId), mdDt2);
+
+
+        verifyNetworkHistoryRecord(historyList.get(2), "192.168.1.0/24", asList(deepBlueId, deepThoughtId, deepFritzId),
+                mdDt3);
+
+        // deep blue has no history
+        historyList = historyService.getHistoryForInstance(ibmNetwork.getComputerByName("Deep Blue"), ASC_ID);
+        assertNotNull(historyList);
+        assertTrue(historyList.isEmpty());
+
+        // deep thought has one change
+        historyList = historyService.getHistoryForInstance(ibmNetwork.getComputerByName("Deep Thought 2"), ASC_ID);
+        assertNotNull(historyList);
+        assertEquals(1, historyList.size());
+        Object firstVersion = historyList.get(0);
+        assertEquals("Deep Thought", safeGetProperty(firstVersion, "name"));
+    }
+
+    @Test
+    public void shouldCreateHistoryForManyToMany() {
+        Company google = new Company("Google");
+        Company microsoft = new Company("Microsoft");
+        Company atari = new Company("Atari");
+
+        Consultant jack = consultantDataService.create(new Consultant("Jack"));
+        Consultant tom = consultantDataService.create(new Consultant("Tom"));
+        Consultant mike = consultantDataService.create(new Consultant("Mike"));
+
+        final DateTime jackDt1 = jack.getModificationDate();
+
+        // Jack is a consultant for Microsoft and Google
+        // Tom is a consultant for Google and Atari
+        // Mike is a consultant for Atari and Microsoft
+        jack.addCompany(microsoft);
+        jack.addCompany(google);
+        microsoft.addConsultant(jack);
+        google.addConsultant(jack);
+
+        tom.addCompany(google);
+        tom.addCompany(atari);
+        google.addConsultant(tom);
+        atari.addConsultant(tom);
+
+        mike.addCompany(atari);
+        mike.addCompany(microsoft);
+        atari.addConsultant(mike);
+        microsoft.addConsultant(mike);
+
+        companyDataService.create(atari);
+        companyDataService.create(microsoft);
+        companyDataService.create(google);
+
+        final DateTime jackDt2 = jack.getModificationDate();
+        final DateTime googleDt1 = google.getModificationDate();
+
+        final long jackId = jack.getId();
+        final long tomId = tom.getId();
+        final long googleId = google.getId();
+        final long microsoftId = microsoft.getId();
+
+        // Jack leaves Google
+        jack.removeCompany("Google");
+        google.removeConsultant("Jack");
+
+        google = companyDataService.update(google);
+
+        // Google has 1 historical revision - while Jack was still there
+        List historyList = historyService.getHistoryForInstance(google, ASC_ID);
+        assertEquals(1, historyList.size());
+
+        Object firstVersion = historyList.get(0);
+        assertNotNull(firstVersion);
+        assertEquals("Google", safeGetProperty(firstVersion, "name"));
+        assertEquals(asSet(jackId, tomId), safeGetProperty(firstVersion, "consultants"));
+        assertEquals(googleDt1, safeGetProperty(firstVersion, "modificationDate"));
+
+        // Jack ahs two entries - he was first created, then joined Google and Microsoft
+        historyList = historyService.getHistoryForInstance(jack, ASC_ID);
+        assertEquals(2, historyList.size());
+
+        firstVersion = historyList.get(0);
+        assertNotNull(firstVersion);
+        assertEquals("Jack", safeGetProperty(firstVersion, "name"));
+        assertEquals(Collections.emptySet(), safeGetProperty(firstVersion, "companies"));
+        assertEquals(jackDt1, safeGetProperty(firstVersion, "modificationDate"));
+
+        Object secondVersion = historyList.get(1);
+        assertNotNull(secondVersion);
+        assertEquals("Jack", safeGetProperty(secondVersion, "name"));
+        assertEquals(asSet(googleId, microsoftId), safeGetProperty(secondVersion, "companies"));
+        assertEquals(jackDt2, safeGetProperty(secondVersion, "modificationDate"));
+
+        // no history for Microsoft or Atari
+        historyList = historyService.getHistoryForInstance(microsoft, ASC_ID);
+        assertEquals(0, historyList.size());
+
+        historyList = historyService.getHistoryForInstance(atari, ASC_ID);
+        assertEquals(0, historyList.size());
+    }
+
     private void assertDefaultConstructorPresent() throws ClassNotFoundException {
         Class<?> clazz = MDSClassLoader.getInstance().loadClass(TestMdsEntity.class.getName());
         Constructor[] constructors = clazz.getConstructors();
@@ -521,6 +762,19 @@ public class MdsDdeBundleIT extends BasePaxIT {
         securityContext.setAuthentication(authentication);
 
         SecurityContextHolder.setContext(securityContext);
+    }
+
+    private void verifyNetworkHistoryRecord(Object historyRevision, String mask, List<Long> computerIds,
+                                            DateTime modficationDate) {
+        assertNotNull(historyRevision);
+        assertEquals(mask, safeGetProperty(historyRevision, "mask"));
+        assertEquals(computerIds, safeGetProperty(historyRevision, "computers"));
+        assertEquals(modficationDate, safeGetProperty(historyRevision, "modificationDate"));
+    }
+
+    @SafeVarargs
+    private final <T> Set<T> asSet(T... args) {
+        return new HashSet<>(asList(args));
     }
 
     private void wait2s() throws InterruptedException {

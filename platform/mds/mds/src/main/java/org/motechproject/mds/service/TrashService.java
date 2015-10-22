@@ -1,8 +1,10 @@
 package org.motechproject.mds.service;
 
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.query.QueryParams;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * The <code>TrashService</code> provides methods related with the module trash mode (by default
@@ -26,17 +28,17 @@ public interface TrashService {
      *
      * @param instance an instance created from the given entity definition.
      * @see #isTrashMode()
-     * @param recordHistory true if entity has active history recording ; otherwise false
+     * @param schemaVersion the current version of the schema for the entity
      */
-    void moveToTrash(Object instance, Long schemaVersion, boolean recordHistory);
+    void moveToTrash(Object instance, Long schemaVersion);
 
     /**
      * Return instance with given id from trash.
      *
      * @param instanceId id of instance
-     * @param entityId id of instance entity
+     * @param entityClassName the className of the entity
      */
-    Object findTrashById(Object instanceId, Object entityId);
+    Object findTrashById(Object instanceId, String entityClassName);
 
     /**
      * Sets history for given trashed instance to match the new one
@@ -63,8 +65,9 @@ public interface TrashService {
      * <p/>
      * This method should only be executed by the job created in the
      * {@link #scheduleEmptyTrashJob()} method.
+     * @param entities the entities for which the trash should get cleared
      */
-    void emptyTrash();
+    void emptyTrash(List<Entity> entities);
 
     /**
      * Returns the collection of instances from trash of a certain entity.

@@ -113,7 +113,7 @@ public final class MotechClassPool {
     }
 
     public static String getServiceImplName(String className) {
-        return ClassName.getServiceName(className);
+        return ClassName.getServiceClassName(className);
     }
 
     public static void registerHistoryClassData(ClassData cData) {

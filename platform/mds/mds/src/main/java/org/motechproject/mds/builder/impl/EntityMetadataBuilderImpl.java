@@ -55,6 +55,7 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
 import static org.motechproject.mds.util.Constants.Util.CREATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.DATANUCLEUS;
+import static org.motechproject.mds.util.Constants.Util.FALSE;
 import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
@@ -76,6 +77,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             CREATOR_FIELD_NAME, OWNER_FIELD_NAME, CREATION_DATE_FIELD_NAME,
             MODIFIED_BY_FIELD_NAME, MODIFICATION_DATE_FIELD_NAME
     };
+
+    private static final String ID_SUFFIX = "_ID";
 
     private AllEntities allEntities;
 
@@ -172,12 +175,14 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
     private void fixRelationMetadata(MemberMetadata mmd, CollectionMetadata collMd, Field field, EntityType entityType) {
-        RelationshipHolder holder = new RelationshipHolder(field);
+        if (entityType == EntityType.STANDARD) {
+            RelationshipHolder holder = new RelationshipHolder(field);
 
-        if ((holder.isOneToMany() || holder.isManyToMany()) && null != collMd) {
-            collMd.setDependentElement(holder.isCascadeDelete() || entityType == EntityType.TRASH);
-        } else if (holder.isOneToOne()) {
-            mmd.setDependent(holder.isCascadeDelete());
+            if ((holder.isOneToMany() || holder.isManyToMany()) && null != collMd) {
+                collMd.setDependentElement(holder.isCascadeDelete());
+            } else if (holder.isOneToOne()) {
+                mmd.setDependent(holder.isCascadeDelete());
+            }
         }
     }
 
@@ -324,53 +329,67 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private FieldMetadata setRelationshipMetadata(ClassMetadata cmd, ClassData classData, Field field,
                                          EntityType entityType, Class<?> definition) {
+
         RelationshipHolder holder = new RelationshipHolder(classData, field);
-
         FieldMetadata fmd = cmd.newFieldMetadata(field.getName());
-
         addDefaultFetchGroupMetadata(fmd, definition);
 
-        //For standard classes, we always set persist and update cascades to true
-        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-persist",
-                entityType != EntityType.STANDARD ? Boolean.toString(holder.isCascadePersist()) : TRUE);
-        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-update",
-                entityType != EntityType.STANDARD ? Boolean.toString(holder.isCascadeUpdate()) : TRUE);
-
-        processRelationship(fmd, holder, field, definition, entityType);
+        if (entityType == EntityType.STANDARD) {
+            processRelationship(fmd, holder, field, definition);
+        } else {
+            processHistoryTrashRelationship(cmd, fmd, holder);
+        }
 
         return fmd;
     }
 
-    private void processRelationship(FieldMetadata fmd, RelationshipHolder holder, Field field, Class<?> definition, EntityType entityType) {
+    private void processRelationship(FieldMetadata fmd, RelationshipHolder holder, Field field, Class<?> definition) {
         String relatedClass = holder.getRelatedClass();
+
+        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-persist", holder.isCascadePersist() ? TRUE : FALSE);
+        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-update", holder.isCascadeUpdate() ? TRUE : FALSE);
 
         if (holder.isOneToMany() || holder.isManyToMany()) {
             CollectionMetadata colMd = getOrCreateCollectionMetadata(fmd);
             colMd.setElementType(relatedClass);
             colMd.setEmbeddedElement(false);
             colMd.setSerializedElement(false);
-            colMd.setDependentElement(holder.isCascadeDelete() || entityType == EntityType.TRASH);
+            colMd.setDependentElement(holder.isCascadeDelete());
         } else if (holder.isOneToOne()) {
             fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
-            fmd.setDependent(holder.isCascadeDelete() || entityType == EntityType.TRASH);
+            fmd.setDependent(holder.isCascadeDelete());
         }
 
         if (holder.isManyToMany()) {
-            addManyToManyMetadata(fmd, holder, field, definition, entityType);
-        }
-
-        if (entityType == EntityType.TRASH || entityType == EntityType.HISTORY) {
-            addMappedByToHistoryTrashMetadata(fmd, field, definition);
+            addManyToManyMetadata(fmd, holder, field, definition);
         }
     }
 
-    private void addManyToManyMetadata(FieldMetadata fmd, RelationshipHolder holder, Field field, Class<?> definition, EntityType entityType) {
+    private void processHistoryTrashRelationship(ClassMetadata cmd, FieldMetadata fmd, RelationshipHolder holder) {
+        if (holder.isOneToOne() || holder.isManyToOne()) {
+            fmd.setColumn(holder.getFieldName() + ID_SUFFIX);
+        } else {
+            fmd.setTable(cmd.getTable() + '_' + holder.getFieldName());
+
+            CollectionMetadata collMd = fmd.newCollectionMetadata();
+            collMd.setElementType(Long.class.getName());
+
+            JoinMetadata joinMd = fmd.newJoinMetadata();
+            ColumnMetadata joinColumnMd = joinMd.newColumnMetadata();
+            joinColumnMd.setName(cmd.getName() + ID_SUFFIX);
+
+            ElementMetadata elementMd = fmd.newElementMetadata();
+            elementMd.setColumn(holder.getFieldName() + ID_SUFFIX);
+        }
+    }
+
+    private void addManyToManyMetadata(FieldMetadata fmd, RelationshipHolder holder, Field field, Class<?> definition) {
         java.lang.reflect.Field fieldDefinition = FieldUtils.getDeclaredField(definition, field.getName(), true);
         Join join = fieldDefinition.getAnnotation(Join.class);
 
         JoinMetadata jmd = null;
         // Join metadata must be present at both sides of the M:N relation in Datanucleus 3.2
-        if (join == null || entityType != EntityType.STANDARD) {
+        if (join == null) {
             jmd = fmd.newJoinMetadata();
             jmd.setOuter(false);
         }
@@ -380,14 +399,12 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             Persistent persistent = fieldDefinition.getAnnotation(Persistent.class);
             Element element = fieldDefinition.getAnnotation(Element.class);
 
-            setTableNameMetadata(fmd, persistent, field, holder, entityType);
-            setElementMetadata(fmd, element, holder, entityType);
+            setTableNameMetadata(fmd, persistent, field, holder, EntityType.STANDARD);
+            setElementMetadata(fmd, element, holder, EntityType.STANDARD);
 
-            if (join != null && StringUtils.isNotEmpty(join.column()) && entityType != EntityType.STANDARD) {
-                setJoinMetadata(jmd, fmd, join.column());
-            } else if (join == null || StringUtils.isEmpty(join.column())) {
-                setJoinMetadata(jmd, fmd, ClassName.getSimpleName(field.getEntity().getClassName()) + "_ID".toUpperCase());
-            }
+           if (join == null || StringUtils.isEmpty(join.column())) {
+                setJoinMetadata(jmd, fmd, ClassName.getSimpleName(field.getEntity().getClassName()).toUpperCase() + ID_SUFFIX);
+           }
         }
     }
 
@@ -397,7 +414,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             emd.setColumn(element.column());
         } else if (element == null || StringUtils.isEmpty(element.column())) {
             ElementMetadata emd = fmd.newElementMetadata();
-            emd.setColumn(ClassName.getSimpleName(ClassName.trimTrashHistorySuffix(holder.getRelatedClass()) + "_ID").toUpperCase());
+            emd.setColumn(ClassName.getSimpleName(ClassName.trimTrashHistorySuffix(holder.getRelatedClass()) + ID_SUFFIX).toUpperCase());
         }
     }
 
@@ -418,17 +435,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             fmd.setTable(entityType.getTableName(persistent.table()));
         } else if (persistent == null || StringUtils.isEmpty(persistent.table())) {
             fmd.setTable(getJoinTableName(field.getEntity().getModule(), field.getEntity().getNamespace(), field.getName(), holder.getRelatedField()));
-        }
-    }
-
-    private void addMappedByToHistoryTrashMetadata(FieldMetadata fmd, Field field, Class<?> definition) {
-        Persistent annotation = FieldUtils.getDeclaredField(definition, field.getName(), true).getAnnotation(Persistent.class);
-        if (annotation != null) {
-            String mappedBy = annotation.mappedBy();
-
-            if (StringUtils.isNotEmpty(mappedBy)) {
-                fmd.setMappedBy(mappedBy);
-            }
         }
     }
 

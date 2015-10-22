@@ -74,10 +74,6 @@ public final class HistoryTrashClassHelper {
         return uncapitalize(historyClass.getSimpleName() + "SchemaVersion");
     }
 
-    public static String trashFlag(Class<?> historyClass) {
-        return uncapitalize(historyClass.getSimpleName() + "FromTrash");
-    }
-
     private HistoryTrashClassHelper() {
     }
 }

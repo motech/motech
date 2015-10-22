@@ -63,7 +63,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private static final String ID = "id";
 
     private MotechDataRepository<T> repository;
-    private HistoryService historyService;
     private TrashService trashService;
     private AllEntities allEntities;
     private EntityService entityService;
@@ -126,10 +125,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
                     updateComboList(object);
                 }
 
-                if (recordHistory) {
-                    historyService.record(created);
-                }
-
                 return created;
             }
         });
@@ -178,10 +173,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
                     updateComboList(object);
                 }
 
-                if (recordHistory) {
-                    historyService.record(updated);
-                }
-
                 return updated;
             }
         });
@@ -209,17 +200,13 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
                 if (fromDb == null) {
                     fromDb = create(transientObject);
                 } else {
-                    PropertyUtil.copyProperties(fromDb, transientObject, fieldsToUpdate);
+                    PropertyUtil.copyProperties(fromDb, transientObject, null, fieldsToUpdate);
                 }
 
                 updateModificationData(fromDb);
 
                 if (!getComboboxStringFields().isEmpty()) {
                     updateComboList(fromDb);
-                }
-
-                if (recordHistory) {
-                    historyService.record(fromDb);
                 }
 
                 return fromDb;
@@ -245,15 +232,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         Long deletedInstanceId = doInTransaction(new TransactionCallback<Long>() {
             @Override
             public Long doInTransaction(TransactionStatus status) {
-                boolean trashMode = trashService.isTrashMode();
-                if (trashMode) {
-                    // move object to trash if trash mode is active
-                    trashService.moveToTrash(object, schemaVersion, recordHistory);
-                } else if (recordHistory) {
-                    // remove all historical data if history recording is active
-                    historyService.remove(object);
-                }
-
                 // independent of trash mode remove object. If trash mode is active then the same object
                 // exists in the trash so this one is unnecessary.
                 // We retrieve the object using the current pm
@@ -277,8 +255,8 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     @Override
     @Transactional
-    public T findTrashInstanceById(Object instanceId, Object entityId) {
-        return (T) trashService.findTrashById(instanceId, entityId);
+    public T findTrashInstanceById(Object instanceId) {
+        return (T) trashService.findTrashById(instanceId, getClassType().getName());
     }
 
     @Override
@@ -361,6 +339,16 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         Query query = repository.getPersistenceManager().
                 newQuery(Constants.Util.SQL_QUERY, queryExecution.getSqlQuery());
         return queryExecution.execute(query);
+    }
+
+    @Override
+    public Long getSchemaVersion() {
+        return schemaVersion;
+    }
+
+    @Override
+    public boolean recordHistory() {
+        return recordHistory;
     }
 
     protected List<T> retrieveAll(List<Property> properties) {
@@ -488,11 +476,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Autowired
     public void setAllEntities(AllEntities allEntities) {
         this.allEntities = allEntities;
-    }
-
-    @Autowired
-    public void setHistoryService(HistoryService historyService) {
-        this.historyService = historyService;
     }
 
     @Autowired

@@ -3727,6 +3727,13 @@
             $('#importInstanceModal').modal('hide');
         };
 
+        $scope.relatedId = function (obj) {
+            if (obj.id) {
+                return obj.id;
+            } else {
+                return obj;
+            }
+        };
     });
 
     /**

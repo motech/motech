@@ -268,16 +268,6 @@ public class InstanceServiceTest {
     }
 
     @Test
-    public void shouldRevertInstanceFromTrash() {
-        mockSampleFields();
-        mockEntity();
-        mockLookups();
-        mockLookupService();
-
-        instanceService.revertInstanceFromTrash(ENTITY_ID, INSTANCE_ID);
-    }
-
-    @Test
     public void shouldCountForLookup() {
         mockSampleFields();
         mockEntity();

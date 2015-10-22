@@ -99,7 +99,7 @@ public abstract class BaseInstanceIT extends BaseIT {
     }
 
     protected String getServiceClass() {
-        return ClassName.getServiceName(getEntityName());
+        return ClassName.getServiceClassName(getEntityName());
     }
 
     protected EntityDto getEntity() {

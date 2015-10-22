@@ -19,6 +19,7 @@ public class EntityInfo {
     private String namespace;
     private String repository;
     private String interfaceName;
+    private String serviceClass;
     private String serviceName;
     private boolean createEventFired;
     private boolean updateEventFired;
@@ -53,6 +54,14 @@ public class EntityInfo {
         this.interfaceName = interfaceName;
     }
 
+    public String getServiceClass() {
+        return serviceClass;
+    }
+
+    public void setServiceClass(String serviceClass) {
+        this.serviceClass = serviceClass;
+    }
+
     public String getServiceName() {
         return serviceName;
     }
@@ -62,7 +71,7 @@ public class EntityInfo {
     }
 
     public String[] getInfrastructure() {
-        return new String[]{repository, interfaceName, serviceName};
+        return new String[]{repository, interfaceName, serviceClass};
     }
 
     public String getNamespace() {

@@ -1,1 +1,1 @@
-<a ng-disabled="field.nonEditable" ng-click="editInstanceOfEntity(field.value.id, getMetadata(field, 'related.class'))">#{{field.value.id}}</a>
+<a ng-disabled="field.nonEditable" ng-click="editInstanceOfEntity(relatedId(field.value), getMetadata(field, 'related.class'))">#{{relatedId(field.value)}}</a>

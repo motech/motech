@@ -53,7 +53,9 @@
                         <Bundle-SymbolicName>motech-platform-dataservices-test-bundle</Bundle-SymbolicName>
                         <Export-Package>
                             org.motechproject.mds.test.domain;version=${project.version},
+                            org.motechproject.mds.test.domain.historytest;version=${project.version},
                             org.motechproject.mds.test.service;version=${project.version},
+                            org.motechproject.mds.test.service.historytest;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,
