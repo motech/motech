@@ -61,9 +61,9 @@ public class PasswordReminderEventHandlerTest {
         Map<String, Object> params = new HashMap<>();
         params.put(TEMPLATE_PARAM_USERNAME, user.getUserName());
         params.put(EMAIL_PARAM_TO_ADDRESS, user.getEmail());
-        params.put(TEMPLATE_PARAM_EXPIRATION_DATE, user.getLastPasswordChange().plusDays(DAYS_TO_CHANGE_PASSWORD));
+        params.put(TEMPLATE_PARAM_EXPIRATION_DATE, user.getSafeLastPasswordChange().plusDays(DAYS_TO_CHANGE_PASSWORD));
         params.put(TEMPLATE_PARAM_LOCALE, user.getLocale());
-        params.put(TEMPLATE_PARAM_LAST_PASSWORD_CHANGE, user.getLastPasswordChange());
+        params.put(TEMPLATE_PARAM_LAST_PASSWORD_CHANGE, user.getSafeLastPasswordChange());
         params.put(TEMPLATE_PARAM_EXTERNAL_ID, user.getExternalId());
         params.put(TEMPLATE_PARAM_DAYS_TILL_EXPIRE, DAYS_FOR_REMINDER);
         event = new MotechEvent(PASSWORD_CHANGE_REMINDER_EVENT, params);
