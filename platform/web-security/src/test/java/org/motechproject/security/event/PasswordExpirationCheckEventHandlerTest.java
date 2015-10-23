@@ -124,7 +124,7 @@ public class PasswordExpirationCheckEventHandlerTest {
         parameters.put(EMAIL_PARAM_TO_ADDRESS, users.get(1).getEmail());
         parameters.put(TEMPLATE_PARAM_EXPIRATION_DATE, calculateExpirationDate(users.get(1)));
         parameters.put(TEMPLATE_PARAM_LOCALE, users.get(1).getLocale());
-        parameters.put(TEMPLATE_PARAM_LAST_PASSWORD_CHANGE, users.get(1).getLastPasswordChange());
+        parameters.put(TEMPLATE_PARAM_LAST_PASSWORD_CHANGE, users.get(1).getSafeLastPasswordChange());
         parameters.put(TEMPLATE_PARAM_EXTERNAL_ID, users.get(1).getExternalId());
         parameters.put(TEMPLATE_PARAM_DAYS_TILL_EXPIRE, DAYS_FOR_REMINDER);
         events.add(new MotechEvent(PASSWORD_CHANGE_REMINDER_EVENT, parameters));
@@ -134,7 +134,7 @@ public class PasswordExpirationCheckEventHandlerTest {
         parameters.put(EMAIL_PARAM_TO_ADDRESS, users.get(2).getEmail());
         parameters.put(TEMPLATE_PARAM_EXPIRATION_DATE, calculateExpirationDate(users.get(2)));
         parameters.put(TEMPLATE_PARAM_LOCALE, users.get(2).getLocale());
-        parameters.put(TEMPLATE_PARAM_LAST_PASSWORD_CHANGE, users.get(2).getLastPasswordChange());
+        parameters.put(TEMPLATE_PARAM_LAST_PASSWORD_CHANGE, users.get(2).getSafeLastPasswordChange());
         parameters.put(TEMPLATE_PARAM_EXTERNAL_ID, users.get(2).getExternalId());
         parameters.put(TEMPLATE_PARAM_DAYS_TILL_EXPIRE, DAYS_FOR_REMINDER);
         events.add(new MotechEvent(PASSWORD_CHANGE_REMINDER_EVENT, parameters));
@@ -143,7 +143,7 @@ public class PasswordExpirationCheckEventHandlerTest {
     }
 
     private DateTime calculateExpirationDate(MotechUser user) {
-        return user.getLastPasswordChange().plusDays(DAYS_TO_CHANGE_PASSWORD);
+        return user.getSafeLastPasswordChange().plusDays(DAYS_TO_CHANGE_PASSWORD);
     }
 
     private void prepareEvent() {

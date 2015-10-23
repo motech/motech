@@ -57,6 +57,9 @@ public class MotechUser {
     @Field(defaultValue = "0")
     private Integer failureLoginCounter;
 
+    @Field
+    private DateTime modificationDate;
+
     public MotechUser() {
         this(null, null, null, null, null, null, null);
     }
@@ -163,6 +166,22 @@ public class MotechUser {
 
     public void setLastPasswordChange(DateTime lastPasswordChange) {
         this.lastPasswordChange = lastPasswordChange;
+    }
+
+    public DateTime getModificationDate() {
+        return modificationDate;
+    }
+
+    public void setModificationDate(DateTime modificationDate) {
+        this.modificationDate = modificationDate;
+    }
+
+    @Ignore
+    public DateTime getSafeLastPasswordChange() {
+        if (lastPasswordChange == null) {
+            return modificationDate;
+        }
+        return lastPasswordChange;
     }
 
     @Ignore
