@@ -6,12 +6,12 @@
         {{msg('mds.dataBrowsing.addRelatedInstance')}}
     </button>
     <br/>
-    <div class="related-instances-block" ng-if="field.value.id !== undefined && field.value !== null">
+    <div class="related-instances-block" ng-if="field.value">
         <div class="related-instance-display">
             {{field.displayValue}}
         </div>
         <div class="pull-right" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance && !field.nonEditable">
-            <a class="btn btn-sm btn-primary" ng-disabled="field.nonEditable" ng-click="editInstanceOfEntity(field.value.id, getMetadata(field, 'related.class'))"
+            <a class="btn btn-sm btn-primary" ng-disabled="field.nonEditable" ng-click="editInstanceOfEntity(relatedId(field.value), getMetadata(field, 'related.class'))"
                data-toggle="tooltip" data-placement="top" data-trigger="hover" bs-popover="{{msg('mds.dataBrowsing.editRelatedInstance')}}">
                 <i class="fa fa-lg fa-cogs"></i>
                 {{msg('mds.dataBrowsing.edit')}}

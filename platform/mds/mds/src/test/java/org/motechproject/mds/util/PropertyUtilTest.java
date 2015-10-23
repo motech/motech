@@ -36,7 +36,7 @@ public class PropertyUtilTest {
         TestClass fromDb = new TestClass(7, "fromDb", "accessible", 5L);
         TestClass transientObj = new TestClass(8, "transient", "changed", 6L);
 
-        PropertyUtil.copyProperties(fromDb, transientObj, new HashSet<>(asList("publicInt")));
+        PropertyUtil.copyProperties(fromDb, transientObj, null, new HashSet<>(asList("publicInt")));
 
         assertEquals(8, fromDb.publicInt);
         // no change since its not in the set

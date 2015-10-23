@@ -112,7 +112,7 @@ public final class ClassName {
      * @param className entity class name
      * @return fully qualified MDS service implementation name
      */
-    public static String getServiceName(String className) {
+    public static String getServiceClassName(String className) {
         String packageName = getPackage(className);
         if (StringUtils.isBlank(packageName) || Constants.PackagesGenerated.ENTITY.equals(packageName)) {
             packageName = Constants.PackagesGenerated.SERVICE_IMPL;
@@ -120,6 +120,15 @@ public final class ClassName {
             packageName += ".mdsserviceimpl";
         }
         return String.format("%s.%sServiceImpl", packageName, getSimpleName(className));
+    }
+
+    /**
+     * Returns the Spring bean name for the service class.
+     * @param className the name of the service class
+     * @return the bean name for the service
+     */
+    public static String getServiceName(String className) {
+        return className + "DataService";
     }
 
     /**

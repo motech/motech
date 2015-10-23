@@ -14,6 +14,7 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
 public class RelationshipHolder extends FieldHolder {
     private Type fieldType;
     private EntityType entityType;
+    private String fieldName;
 
     public RelationshipHolder(Field field) {
         this(null, field);
@@ -23,6 +24,7 @@ public class RelationshipHolder extends FieldHolder {
         super(field);
         this.fieldType = field.getType();
         this.entityType = null == data ? EntityType.STANDARD : data.getType();
+        this.fieldName = field.getName();
     }
 
     /**
@@ -81,5 +83,13 @@ public class RelationshipHolder extends FieldHolder {
 
     public String getCollectionClassName() {
         return getMetadata(Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE);
+    }
+
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
     }
 }

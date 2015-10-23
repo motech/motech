@@ -53,9 +53,6 @@ public class TrashServiceTest extends BaseUnitTest {
     private SettingsService settingsService;
 
     @Mock
-    private HistoryService historyService;
-
-    @Mock
     private AllEntities allEntities;
 
     @Mock
@@ -92,8 +89,6 @@ public class TrashServiceTest extends BaseUnitTest {
         MockitoAnnotations.initMocks(this);
 
         trashService = new TrashServiceImpl();
-        ((TrashServiceImpl) trashService).setAllEntities(allEntities);
-        ((TrashServiceImpl) trashService).setHistoryService(historyService);
         ((TrashServiceImpl) trashService).setSettingsService(settingsService);
         ((TrashServiceImpl) trashService).setMdsSchedulerService(schedulerService);
         ((TrashServiceImpl) trashService).setPersistenceManagerFactory(factory);
@@ -104,8 +99,6 @@ public class TrashServiceTest extends BaseUnitTest {
         doReturn(bundle).when(bundleContext).getBundle();
         doReturn(bundleWiring).when(bundle).adapt(BundleWiring.class);
         doReturn(classLoader).when(bundleWiring).getClassLoader();
-
-        ((TrashServiceImpl) trashService).init();
     }
 
     @Test
@@ -135,7 +128,7 @@ public class TrashServiceTest extends BaseUnitTest {
         doReturn(entity).when(allEntities).retrieveByClassName(anyString());
 
         Record instance = new Record();
-        trashService.moveToTrash(instance, 1L, true);
+        trashService.moveToTrash(instance, 1L);
 
         verify(manager).makePersistent(trashCaptor.capture());
 
@@ -163,7 +156,7 @@ public class TrashServiceTest extends BaseUnitTest {
         doReturn(entity).when(allEntities).retrieveById(1L);
         doReturn(new Record__Trash()).when(query).execute(anyLong());
 
-        Object trash = trashService.findTrashById(1L, 1L);
+        Object trash = trashService.findTrashById(1L, "org.test.TestEntity");
 
         assertNotNull(trash);
     }
