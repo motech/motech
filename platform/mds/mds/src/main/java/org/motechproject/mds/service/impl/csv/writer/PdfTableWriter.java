@@ -18,8 +18,8 @@ import org.motechproject.mds.ex.csv.DataExportException;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +40,7 @@ public class PdfTableWriter implements TableWriter {
     private PdfPTable dataTable;
     private Map<String, Float> columnsWidths;
     private int rows = 0;
-    private float tableContentX;
+    private float tableContentOffset;
 
     public PdfTableWriter(OutputStream outputStream) {
         pdfDocument = new Document(new Rectangle(PageSize.A4.getHeight(), PageSize.A4.getWidth()));
@@ -87,7 +87,7 @@ public class PdfTableWriter implements TableWriter {
 
             List<Integer> lastColumnsForPages = calculateLastColumnsForPages(relativeWidths);
             resizeColumns(relativeWidths, lastColumnsForPages);
-            setTableContentX(relativeWidths[0]);
+            setTableContentOffset(relativeWidths[0]);
 
             dataTable.setWidths(relativeWidths);
             dataTable.setLockedWidth(true);
@@ -132,7 +132,7 @@ public class PdfTableWriter implements TableWriter {
                 break;
             }
             writeIndexCells(currentRow, currentRow + 1, y);
-            y = dataTable.writeSelectedRows(firstColumn, lastColumn, currentRow, currentRow + 1, tableContentX, y, pdfCanvas);
+            y = dataTable.writeSelectedRows(firstColumn, lastColumn, currentRow, currentRow + 1, tableContentOffset, y, pdfCanvas);
             currentRow++;
         } while (nextRowFitsOnCurrentPage(y, currentRow));
         pdfDocument.newPage();
@@ -142,13 +142,13 @@ public class PdfTableWriter implements TableWriter {
     private void writePage(int firstColumn, int lastColumn, int firstRow, int lastRow) {
         float y = writeHeaders(firstColumn, lastColumn);
         writeIndexCells(firstRow, lastRow, y);
-        dataTable.writeSelectedRows(firstColumn, lastColumn, firstRow, lastRow, tableContentX, y, pdfCanvas);
+        dataTable.writeSelectedRows(firstColumn, lastColumn, firstRow, lastRow, tableContentOffset, y, pdfCanvas);
         pdfDocument.newPage();
     }
 
     private Float writeHeaders(Integer from, Integer to) {
         dataTable.writeSelectedRows(0, 1, 0, 1, MARGIN, PAGE_HEIGHT + MARGIN, pdfCanvas);
-        return dataTable.writeSelectedRows(from, to, 0, 1, tableContentX, PAGE_HEIGHT + MARGIN, pdfCanvas);
+        return dataTable.writeSelectedRows(from, to, 0, 1, tableContentOffset, PAGE_HEIGHT + MARGIN, pdfCanvas);
     }
 
     private void writeIndexCells(int firstRow, int lastRow, float y) {
@@ -181,8 +181,8 @@ public class PdfTableWriter implements TableWriter {
 
         float totalColumnsWidth = calculateTotalColumnsWidth(relativeWidths, firstColumn, lastColumn);
 
-        for (int i = firstColumn; i < lastColumn; i++) {
-            relativeWidths[i] = (PAGE_WIDTH - relativeWidths[0]) * (relativeWidths[i] / totalColumnsWidth);
+        for (int columnId = firstColumn; columnId < lastColumn; columnId++) {
+            relativeWidths[columnId] = (PAGE_WIDTH - relativeWidths[0]) * (relativeWidths[columnId] / totalColumnsWidth);
         }
     }
 
@@ -205,7 +205,7 @@ public class PdfTableWriter implements TableWriter {
     }
 
     private List<Integer> calculateLastColumnsForPages(float[] relativeWidths) {
-        List<Integer> lastColumnsForPages = new LinkedList<>();
+        List<Integer> lastColumnsForPages = new ArrayList<>();
         lastColumnsForPages.add(1);
 
         float totalColumnsWidth = 0;
@@ -246,8 +246,8 @@ public class PdfTableWriter implements TableWriter {
         return y - dataTable.getRowHeight(currentRow + 1) > MARGIN;
     }
 
-    private void setTableContentX(float width) {
-        tableContentX = MARGIN + width;
+    private void setTableContentOffset(float width) {
+        tableContentOffset = MARGIN + width;
     }
 
     private float[] getRelativeWidths() {
