@@ -186,12 +186,13 @@
                                 <label class="col-sm-3 control-label"><img id="loader" alt="loading" src="static/img/load.gif" style="display:none"/></label>
                                 <div class="col-sm-9">
                                     <input class="btn btn-primary" type="button" name="VERIFYSQL" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required" value="<spring:message code="server.bootstrap.verifySql"/>" onclick="verifyDbConnection()"/>
+                                    <input class="btn btn-primary" type="button" name="VERIFYACTIVEMQ" ng-disabled="bcform.queueUrl.$error.required" value="<spring:message code="server.bootstrap.verify.amq"/>" onclick="verifyAmqConnection()"/>
                                     <input class="btn btn-success" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required || bcform.OsgiFrameworkStorage.$error.required || bcform.queueUrl.$error.required" value="<spring:message code="server.bootstrap.submit"/>"/>
                                 </div>
                             </div>
                             <div class="alerts-container">
                                 <c:if test="${not empty errors}">
-                                    <div class="alert alert-danger">
+                                    <div class="alert alert-danger" id="bootstrapErrors">
                                         <c:forEach var="error" items="${errors}">
                                             <spring:message text="${error}"/>   <br/>
                                         </c:forEach>
@@ -200,6 +201,9 @@
                                 <div class="alert alert-success" id="verifySql-info" style="display:none">
                                     <spring:message code="server.bootstrap.verifySql.success"/>
                                 </div>
+                                 <div class="alert alert-success" id="verifyAmq-info" style="display:none">
+                                    <spring:message code="server.bootstrap.verify.amq.success"/>
+                                 </div>
                                 <div class="alert alert-danger" id="verify-alert" style="display:none"></div>
                                 <div class="alert alert-danger" id="verify-error" style="display:none"></div>
                             </div>
