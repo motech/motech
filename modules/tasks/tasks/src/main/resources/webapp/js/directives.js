@@ -227,6 +227,9 @@
     directives.directive('droppable', function (ManageTaskUtils, $compile) {
         return {
             restrict: 'A',
+            scope: {
+              ngModel : '='
+            },
             link: function (scope, element, attrs) {
                 element.droppable({
                     drop: function (event, ui) {
@@ -288,6 +291,10 @@
                             case 'TIME': emText = 'task.placeholder.timeOnly'; break;
                             case 'BOOLEAN': emText = 'task.placeholder.booleanOnly'; break;
                             default:
+                            }
+
+                            if (element.data('type') === 'MAP') {
+                                scope.ngModel = eventKey;
                             }
 
                             if (!(dragElement.data('popover') === 'no' && element.data('type') !== 'format')){
