@@ -9,7 +9,7 @@ This page contains frequently asked questions about MOTECH with short answers to
 
 Can MOTECH run on Windows?
 --------------------------
-MOTECH is available and can be deployed on Windows, but it is not actively supported.
+MOTECH is available and can be deployed on Windows, but Windows is not actively supported as a platform.
 
 Is MDS using any caching? How does that affect a cluster deployment?
 --------------------------------------------------------------------
@@ -28,7 +28,8 @@ How to use SSL for database connections in MOTECH?
 --------------------------------------------------
 First generate and install your SSL certificates. After this is done you will need to configure your database to use SSL.
 For MySQL you can follow instructions_ from official MySQL page.
-Next step is to point JVM variables to your SSL certificates. Look here_ for more information about these variables.
+Next step is to point JVM variables to your SSL certificates. Look at the Oracle documentation_ for more information about
+these variables.
 
 In order to establish a secure SSL connection the JDBC URL needs to be updated with the JDBC driver property ``'useSSL'=true'``
 eg. if you are using mySQL at localhost the JDBC URL should be ``jdbc:mysql://localhost:3306/?useSSL=true``. As the URL
@@ -41,23 +42,22 @@ source is FILE, then you have to edit the file in scheduler directory in ``~/.mo
 have to change the quartz configuration through the manage modules section in the Admin UI.
 
 .. _instructions: http://dev.mysql.com/doc/refman/5.6/en/using-ssl-connections.html
-.. _here: https://docs.oracle.com/cd/E29585_01/PlatformServices.61x/security/src/csec_ssl_jsp_start_server.html
+.. _documentation: https://docs.oracle.com/cd/E29585_01/PlatformServices.61x/security/src/csec_ssl_jsp_start_server.html
 
 MOTECH is not working as expected, how can I check what's wrong?
 ----------------------------------------------------------------
 All the problems that MOTECH encounters are logged. The logs can be checked in two ways. If MOTECH is working you can
-access logs by choosing ``Server Log`` from ``Admin`` panel on the UI. There you can also specify logging level for
-specific packages - this is done by selecting wanted log level in ``Server Log -> Log options`` panel.
+access logs by choosing ``Server Log`` from the ``Admin`` panel on the UI. There you can also specify logging levels for
+specific packages - this is done by selecting the desired log level in ``Server Log -> Log options`` panel.
 
-If access to UI is not possible, for standard MOTECH installations on Tomcat logs can be also found in ``catalina.out``
+If access to UI is not possible, for standard MOTECH installations on Tomcat, logs can be also found in ``catalina.out``
 file located in the logs folder in the Tomcat installation. For example for MOTECH deployed on Tomcat 7.0.62 the ``catalina.out``
-is located in ``~/apache-tomcat-7.0.62/logs`` folder. The content of the log file can be displayed by any text editor
-or in unix system terminal by for example ``less catalina.out`` command.
+is located in ``~/apache-tomcat-7.0.62/logs`` folder. The content of the log file can be displayed by any text editor.
 
 I am getting blueprint timeout error - what does it mean?
 ---------------------------------------------------------
 Blueprint timeout errors are encountered when one of the modules has a reference to a service from another module defined in
-``blueprint.xml`` file and that service has not been made available. By default blueprint extender waits 5 minutes for required service,
+``blueprint.xml`` file and that service has not been made available. By default blueprint extender waits 5 minutes for a required service,
 if in this time service won't be delivered the timeout error will be thrown. First step in resolving blueprint timeout
 errors should be checking if the problematic service is correctly registered as an OSGi service. Below you can see an example
 of a properly defined OSGi service:
@@ -81,7 +81,7 @@ error will very often be printed in the logs above the timeout error.
 
 I am getting IllegalArgumentException (object is not an instance of declaring class) - what does it mean?
 ---------------------------------------------------------------------------------------------------------
-The cause is that you have different versions of bundles running at the same time. To solve this issue clean up your
+The cause is probably that you have different versions of bundles running at the same time. To solve this issue clean up your
 bundles directory and WAR file. For standard MOTECH installations on Tomcat the bundles directory is ``~/.motech/bundles``
 and deployed WAR file can be found in ``~/apache-tomcat-<version>/webapps``.
 
