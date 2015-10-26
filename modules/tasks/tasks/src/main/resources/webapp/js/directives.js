@@ -18,7 +18,7 @@
                     return;
                 }
 
-                var elem = angular.element(element), k, rows, activity, message, date, stackTraceElement;
+                var elem = angular.element(element), k, rows, activity, message, date, stackTraceElement, fields, messageToShow;
 
                 elem.jqGrid({
                     url: '../tasks/api/activity/' + scope.taskId,
@@ -49,7 +49,12 @@
                        index: 'stackTraceElement',
                        sortable: false,
                        hidden: true
-                   }],
+                    }, {
+                       name: 'fields',
+                       index: 'fields',
+                       sortable: false,
+                       hidden: true
+                    }],
                     pager: '#' + attrs.taskHistoryGrid,
                     viewrecords: true,
                     gridComplete: function () {
@@ -86,9 +91,11 @@
                             }
 
                             stackTraceElement = $("#taskHistoryTable").getCell(rows[k],"stackTraceElement");
+                            fields = $("#taskHistoryTable").getCell(rows[k], "fields").split(",");
+                            messageToShow = [message].concat(fields);
                             if (message !== undefined && activity === 'error' && stackTraceElement !== undefined && stackTraceElement !== null) {
                                 $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',
-                                    '<p class="wrap-paragraph">' + scope.msg(message) +
+                                    '<p class="wrap-paragraph">' + scope.msg(messageToShow) +
                                     '&nbsp;&nbsp;<span class="label label-danger pointer" data-toggle="collapse" data-target="#stackTraceElement' + k + '">' +
                                     scope.msg('task.button.showStackTrace') + '</span></p>' +
                                     '<pre id="stackTraceElement' + k + '" class="collapse">' + stackTraceElement + '</pre>'
@@ -220,6 +227,9 @@
     directives.directive('droppable', function (ManageTaskUtils, $compile) {
         return {
             restrict: 'A',
+            scope: {
+              ngModel : '='
+            },
             link: function (scope, element, attrs) {
                 element.droppable({
                     drop: function (event, ui) {
@@ -281,6 +291,10 @@
                             case 'TIME': emText = 'task.placeholder.timeOnly'; break;
                             case 'BOOLEAN': emText = 'task.placeholder.booleanOnly'; break;
                             default:
+                            }
+
+                            if (element.data('type') === 'MAP') {
+                                scope.ngModel = eventKey;
                             }
 
                             if (!(dragElement.data('popover') === 'no' && element.data('type') !== 'format')){

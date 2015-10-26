@@ -19,6 +19,7 @@ As the platform matures, most of the features below will be usable by implemente
     using_tasks/using_tasks
     configure_pill_reminders
     configure_hipaa
+    custom_ui
     ui
     dynamic_urls_security_rules
     rest_documentation
