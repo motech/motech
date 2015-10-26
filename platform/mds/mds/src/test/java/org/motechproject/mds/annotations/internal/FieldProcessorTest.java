@@ -15,6 +15,8 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.NotInSet;
+import org.motechproject.mds.annotations.internal.samples.RelatedSample;
+import org.motechproject.mds.annotations.internal.samples.Sample;
 import org.motechproject.mds.domain.ManyToOneRelationship;
 import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
@@ -378,7 +380,7 @@ public class FieldProcessorTest {
         FieldDto field= findFieldWithName(fields, "enumSet");
         assertEquals(2, field.getMetadata().size());
         assertEquals(Set.class.getName(), field.getMetadata(Constants.MetadataKeys.ENUM_COLLECTION_TYPE).getValue());
-        assertEquals("org.motechproject.mds.annotations.internal.Sample$TestEnum", field.getMetadata(Constants.MetadataKeys.ENUM_CLASS_NAME).getValue());
+        assertEquals("org.motechproject.mds.annotations.internal.samples.Sample$TestEnum", field.getMetadata(Constants.MetadataKeys.ENUM_CLASS_NAME).getValue());
 
         assertEquals(3, field.getSettings().size());
         assertTrue(Boolean.parseBoolean(field.getSettingsValueAsString(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS)));
@@ -404,7 +406,7 @@ public class FieldProcessorTest {
 
         FieldDto field= findFieldWithName(fields, "singleEnum");
         assertEquals(1, field.getMetadata().size());
-        assertEquals("org.motechproject.mds.annotations.internal.Sample$TestEnum", field.getMetadata(Constants.MetadataKeys.ENUM_CLASS_NAME).getValue());
+        assertEquals("org.motechproject.mds.annotations.internal.samples.Sample$TestEnum", field.getMetadata(Constants.MetadataKeys.ENUM_CLASS_NAME).getValue());
 
         assertEquals(3, field.getSettings().size());
         assertFalse(Boolean.parseBoolean(field.getSettingsValueAsString(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS)));

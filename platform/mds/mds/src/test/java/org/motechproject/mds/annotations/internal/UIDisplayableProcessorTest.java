@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.annotations.UIDisplayable;
+import org.motechproject.mds.annotations.internal.samples.Sample;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;

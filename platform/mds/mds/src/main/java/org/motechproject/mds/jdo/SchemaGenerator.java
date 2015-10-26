@@ -59,8 +59,9 @@ public class SchemaGenerator implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws IOException {
+        runMigrations(new File(mdsConfig.getFlywayMigrationDirectory(), Constants.EntitiesMigration.PRE_SCHEMA_CREATION_DIRECTORY));
         generateSchema();
-        runMigrations();
+        runMigrations(mdsConfig.getFlywayMigrationDirectory());
     }
 
     public void generateSchema() throws IOException {
@@ -75,9 +76,8 @@ public class SchemaGenerator implements InitializingBean {
         LOGGER.info("Entity schema generation completed.");
     }
 
-    public void runMigrations() {
+    public void runMigrations(File migrationDirectory) {
         LOGGER.debug("Starting the flyway modules migrations.");
-        File migrationDirectory = mdsConfig.getFlywayMigrationDirectory();
         //No migration directory
         if (!migrationDirectory.exists()) {
             LOGGER.debug("The migration directory doesn't exist. Skipping migration.");

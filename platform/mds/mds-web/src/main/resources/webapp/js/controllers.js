@@ -734,16 +734,21 @@
         workInProgress.setList(Entities);
 
         if (loadEntity) {
+            blockUI();
             $.ajax("../mds/entities/" + loadEntity).done(function (data) {
                 $scope.selectedEntity = data;
                 loadEntity = undefined;
+                unblockUI();
             });
         }
 
         if ($scope.$parent.selectedEntity) {
+            blockUI();
             $.ajax("../mds/entities/getEntity/" + $scope.$parent.selectedEntity.module + "/" + $scope.$parent.selectedEntity.name).done(function (data) {
                 $scope.selectedEntity = data;
                 $scope.$parent.selectedEntity = undefined;
+                $scope.selectedEntityChanged();
+                unblockUI();
             });
         }
 
@@ -967,6 +972,8 @@
         * The $scope.fields contains entity fields. By default there are no fields.
         */
         $scope.fields = undefined;
+
+        $scope.waitForResponse = false;
 
         /**
         * The $scope.newField contains information about new field which will be added to an
@@ -2865,26 +2872,31 @@
         * the entity in situation in which the entity was selected from the entity list.
         */
         $scope.$watch('selectedEntity', function () {
-            blockUI();
+            $scope.selectedEntityChanged();
+        });
 
+        $scope.selectedEntityChanged = function() {
             if ($scope.selectedEntity && $scope.selectedEntity.id) {
-                workInProgress.setActualEntity(Entities, $scope.selectedEntity.id);
-
-                $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
-                    setSecuritySettings();
-                    setAdvancedSettings();
-                    $scope.draft({});
-                });
-
-                unblockUI();
+                if (!$scope.waitForResponse) {
+                    blockUI();
+                    workInProgress.setActualEntity(Entities, $scope.selectedEntity.id);
+                    $scope.waitForResponse = true;
+                    $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
+                        setSecuritySettings();
+                        setAdvancedSettings();
+                        $scope.draft({});
+                        $scope.waitForResponse = false;
+                    });
+                    unblockUI();
+                }
             } else {
                 workInProgress.setActualEntity(Entities, undefined);
 
                 delete $scope.fields;
                 delete $scope.advancedSettings;
-                unblockUI();
+                delete $scope.waitForResponse;
             }
-        });
+        };
 
         /**
         * Set an additional watcher for $scope.newField.type. Its role is to set name for created
@@ -3207,7 +3219,7 @@
         $scope.actualExportColumns = 'selected';
         $scope.exportFormat = 'csv';
         $scope.checkboxModel = {
-            exportWithLookup : false,
+            exportWithLookup : true,
             exportWithOrder : false
         };
 
@@ -3402,6 +3414,7 @@
                     show: false
                 });
             }
+            resizeLayout();
         };
 
         /**
@@ -3409,13 +3422,14 @@
         */
         $scope.setHiddenFilters = function () {
             $scope.showFilters = false;
-                innerLayout({
-                    spacing_closed: 30,
-                    east__minSize: 200,
-                    east__maxSize: 350
-                }, {
-                show: false
+            innerLayout({
+                spacing_closed: 30,
+                east__minSize: 200,
+                east__maxSize: 350
+            }, {
+            show: false
             });
+            resizeLayout();
         };
 
         $scope.showBackToEntityListButton = true;
@@ -3463,19 +3477,20 @@
             $scope.setModuleEntity(module, entityName);
             $scope.addedEntity = Entities.getEntity({
                 param:  module,
-                params: entityName},
-                function () {
-                    Instances.newInstance({id: $scope.addedEntity.id}, function(data) {
-                        $scope.currentRecord = data;
-                        $scope.fields = data.fields;
-                        angular.forEach($scope.fields, function(field) {
-                            if ( field.type.typeClass === "java.util.List" && field.value !== null && field.value.length === 0 ) {
-                                field.value = null;
-                            }
-                        });
-                        unblockUI();
+                params: entityName
+            },
+            function () {
+                Instances.newInstance({id: $scope.addedEntity.id}, function(data) {
+                    $scope.currentRecord = data;
+                    $scope.fields = data.fields;
+                    angular.forEach($scope.fields, function(field) {
+                        if ( field.type.typeClass === "java.util.List" && field.value !== null && field.value.length === 0 ) {
+                            field.value = null;
+                        }
                     });
+                    unblockUI();
                 });
+            });
         };
 
         /**
@@ -3745,6 +3760,7 @@
                 });
                 $scope.removeIdFromUrl();
             }
+            resizeLayout();
         };
 
         /**
@@ -4249,6 +4265,7 @@
             $scope.selectedEntity = undefined;
             $scope.showFilters = false;
             $scope.removeIdFromUrl();
+            resizeLayout();
         };
 
         $scope.backToEntityList = $scope.unselectEntity;
@@ -4335,6 +4352,7 @@
         };
 
         $scope.exportEntityInstances = function () {
+            $scope.checkboxModel.exportWithLookup = true;
             $('#exportInstanceModal').modal('show');
         };
 
@@ -4385,7 +4403,7 @@
                 url = url + "&sortDirection=" + sortDirection;
             }
 
-            if ($scope.checkboxModel.exportWithLookup === true) {
+            if ($scope.checkboxModel.exportWithLookup === true && $scope.selectedLookup !== undefined) {
                 url = url + "&lookup=" + (($scope.selectedLookup) ? $scope.selectedLookup.lookupName : "");
                 // in lookup fields the special characters may appear (for example '+' before timezone),
                 // we have to encode them before passing this url
