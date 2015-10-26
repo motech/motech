@@ -548,7 +548,7 @@ public final class TypeHelper {
 
     private static LocalDateTime parseJavaLocalDateTimeUI(String str) {
         //First parse to Joda DateTime for timezone calculation
-        DateTime dateTime = DTF.parseDateTime(str);
+        org.joda.time.LocalDateTime dateTime = DTF.parseLocalDateTime(str);
         //Then create LocalDateTime from Joda DateTime and return it
         return LocalDateTime.of(
                 dateTime.getYear(),
