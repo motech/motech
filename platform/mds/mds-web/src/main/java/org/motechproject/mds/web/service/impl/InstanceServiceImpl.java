@@ -505,7 +505,6 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    @Transactional
     public Records<EntityRecord> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName,
                                               QueryParams queryParams) {
         try {
