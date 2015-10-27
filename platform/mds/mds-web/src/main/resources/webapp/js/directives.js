@@ -178,10 +178,14 @@
 
                 if (scope.isMapField(field)) {
                     cmd.formatter = mapFormatter;
+                    cmd.sortable = false;
                 }
 
                 if (scope.isComboboxField(field)) {
                     cmd.jsonmap = "fields." + i + ".displayValue";
+                    if (scope.isMultiSelectCombobox(field)) {
+                        cmd.sortable = false;
+                    }
                 }
 
                 colModel.push(cmd);
