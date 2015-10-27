@@ -3,6 +3,12 @@ package org.motechproject.server.web.controller;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.osgi.web.ModuleRegistrationData;
+import org.motechproject.osgi.web.UIFrameworkService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,97 +18,91 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.web.server.MockMvc;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import static java.util.Arrays.asList;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AvailabilityControllerTest {
 
-    public static final String MANAGE_IVR_PERMISSION = "manageIVR";
-    public static final String MANAGE_SMS_PERMISSION = "manageSMS";
-    private static final String MANAGE_MTRAINING_PERMISSION = "manageMTraining";
+    public static final String MANAGE_PERMISSION = "managePermission";
+    public static final String VIEW_LOGS_PERMISSION = "viewLogsPermission";
+    public LinkedHashMap<String, List<String>> tabAccessMap;
 
-    public static final String VIEW_IVR_LOGS_PERMISSION = "viewIVRLogs";
-    public static final String VIEW_SMS_LOGS_PERMISSION = "viewSMSLogs";
-    private static final String VIEW_MTRAINING_LOGS_PERMISSION = "viewMTrainingLogs";
+    @Mock
+    private ModuleRegistrationData moduleRegistrationData;
 
+    @Mock
+    private UIFrameworkService uiFrameworkService;
+
+    @InjectMocks
     private AvailabilityController availabilityController = new AvailabilityController();
 
     private MockMvc controller;
 
     @Before
     public void setUp() {
+
+        tabAccessMap = new LinkedHashMap<>();
+        tabAccessMap.put(MANAGE_PERMISSION, Arrays.asList("managerPanel", "settingsPanel", "logsPanel"));
+        tabAccessMap.put(VIEW_LOGS_PERMISSION, Arrays.asList("logsPanel"));
+
+        when(uiFrameworkService.getModuleData(any(String.class))).thenReturn(moduleRegistrationData);
+        when(moduleRegistrationData.getTabAccessMap()).thenReturn(tabAccessMap);
         controller = MockMvcBuilders.standaloneSetup(availabilityController).build();
     }
 
     @Test
     public void shouldReturnProperTabsForManagePermissions() throws Exception {
 
-        setUpSecurityContextWithManagePermissions();
+        setUpSecurityContext(asList(new SimpleGrantedAuthority(MANAGE_PERMISSION)));
 
-        controller.perform(get("/available/ivr"))
+        controller.perform(get("/available/someModule"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(
-                        new ObjectMapper().writeValueAsString(asList("templates", "settings"))
-                ));
-
-        controller.perform(get("/available/sms"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(
-                        new ObjectMapper().writeValueAsString(asList("send", "settings"))
-                ));
-
-        controller.perform(get("/available/mTraining"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(
-                        new ObjectMapper().writeValueAsString(asList("treeView", "courses", "chapters", "quizzes", "lessons"))
+                        new ObjectMapper().writeValueAsString(asList("managerPanel", "settingsPanel", "logsPanel"))
                 ));
     }
 
     @Test
     public void shouldReturnProperTabsForViewLogsPermissions() throws Exception {
 
-        setUpSecurityContextWithViewLogsPermissions();
+        setUpSecurityContext(asList(new SimpleGrantedAuthority(VIEW_LOGS_PERMISSION)));
 
-        controller.perform(get("/available/ivr"))
+        Map<String, List<String>> tabAccessMap2 = moduleRegistrationData.getTabAccessMap();
+
+        controller.perform(get("/available/someModule"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(
-                        new ObjectMapper().writeValueAsString(asList("log"))
-                ));
-
-        controller.perform(get("/available/sms"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(
-                        new ObjectMapper().writeValueAsString(asList("log"))
-                ));
-
-        controller.perform(get("/available/mTraining"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(
-                        new ObjectMapper().writeValueAsString(asList("activityRecords", "bookmarks"))
+                        new ObjectMapper().writeValueAsString(asList("logsPanel"))
                 ));
     }
 
-    private void setUpSecurityContextWithManagePermissions() {
+    @Test
+    public void shouldReturnProperTabsForMultiplePermissions() throws Exception {
 
-        SecurityContext securityContext = new SecurityContextImpl();
-        Authentication authentication = new UsernamePasswordAuthenticationToken("testuser", "testpassword",
-                asList(new SimpleGrantedAuthority(MANAGE_IVR_PERMISSION),
-                       new SimpleGrantedAuthority(MANAGE_SMS_PERMISSION),
-                       new SimpleGrantedAuthority(MANAGE_MTRAINING_PERMISSION)));
-        securityContext.setAuthentication(authentication);
-        authentication.setAuthenticated(false);
-        SecurityContextHolder.setContext(securityContext);
+        setUpSecurityContext(asList(new SimpleGrantedAuthority(MANAGE_PERMISSION),
+                new SimpleGrantedAuthority(VIEW_LOGS_PERMISSION)));
+
+        controller.perform(get("/available/someModule"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(
+                        new ObjectMapper().writeValueAsString(asList("managerPanel", "settingsPanel", "logsPanel"))
+                ));
     }
 
-    private void setUpSecurityContextWithViewLogsPermissions() {
+    private void setUpSecurityContext(List<SimpleGrantedAuthority> authorities) {
 
         SecurityContext securityContext = new SecurityContextImpl();
-        Authentication authentication = new UsernamePasswordAuthenticationToken("testuser", "testpassword",
-                asList(new SimpleGrantedAuthority(VIEW_IVR_LOGS_PERMISSION),
-                       new SimpleGrantedAuthority(VIEW_SMS_LOGS_PERMISSION),
-                       new SimpleGrantedAuthority(VIEW_MTRAINING_LOGS_PERMISSION)));
+        Authentication authentication = new UsernamePasswordAuthenticationToken("testuser", "testpassword", authorities);
         securityContext.setAuthentication(authentication);
         authentication.setAuthenticated(false);
         SecurityContextHolder.setContext(securityContext);

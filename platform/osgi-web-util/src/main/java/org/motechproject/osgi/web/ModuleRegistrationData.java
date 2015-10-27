@@ -433,7 +433,7 @@ public class ModuleRegistrationData {
 
         for (String permForModule : tabAccessMap.keySet()) {
             if (auth.getAuthorities().contains(new SimpleGrantedAuthority(permForModule))) {
-                return tabAccessMap.get(permForModule).get(0);
+                return "/" + angularModules.get(0) + "/" + tabAccessMap.get(permForModule).get(0);
             }
         }
 
