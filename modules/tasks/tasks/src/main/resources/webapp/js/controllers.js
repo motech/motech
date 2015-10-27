@@ -1484,4 +1484,153 @@
 
     });
 
+    controllers.controller('MapsCtrl', function ($scope) {
+        var exp, values, keyValue, dragAndDrop = $scope.BrowserDetect.browser === 'Chrome' || $scope.BrowserDetect.browser === 'Explorer' || $scope.BrowserDetect.browser === 'Firefox';
+
+        if (dragAndDrop) {
+            exp = /((?::)((?!<span|<br>|>)[\w\W\s])+(?=$|<span|<\/span>|<br>))|((?:<br>)((?!<span|<br>)[\w\W\s])*(?=:))|(<span((?!<span)[\w\W\s])*<\/span>)/g;
+        } else {
+            exp = /((?:^|\n|\r)[\w{}\.#\s]*(?=:)|(:[\w{}\.#\s]*)(?=\n|$))/g;
+        }
+
+        $scope.data = $scope.$parent.$parent.$parent.i;
+        $scope.pairs = [];
+        $scope.pair = {key:"", value:""};
+        $scope.dataTransformed = false;
+        $scope.mapError = "";
+
+        $scope.$watch(function (scope) {
+            return scope.data.value;
+
+        }, function () {
+            var i,j,key,value;
+            if ($scope.pairs.length === 0 && $scope.data.value !== "" && $scope.data.value !== null && !$scope.dataTransformed) {
+                values = $scope.data.value.split("<br>");
+
+                for (i = 0; i < values.length; i += 1) {
+                    keyValue = values[i].split(":");
+
+                    exp = new RegExp("( relative;.*?\">.*<\/span>)");
+                    for (j = 1; j < keyValue.length; j += 1) {
+                        if (exp.test(keyValue[j])) {
+                            keyValue[j-1] += ":" + keyValue[j];
+                            keyValue.splice(j, 1);
+                            j -= 1;
+                        }
+                    }
+
+                    key = keyValue[0];
+                    value =  keyValue[1];
+
+                    $scope.pairs.push({key:key, value:value});
+                }
+
+                $scope.dataTransformed = true;
+            }
+        });
+
+        $scope.addPair = function (pair) {
+            if ($scope.uniquePairKey(pair.key, -1)) {
+                $scope.mapError = $scope.msg('task.error.duplicateMapKeys');
+            } else if ($scope.emptyMap(pair)) {
+                $scope.mapError = $scope.msg('task.error.emptyMapPair');
+            } else {
+                $scope.addToDataValue(pair, $scope.pairs.length);
+                $scope.pairs.push({key: pair.key , value : pair.value});
+                $scope.pair = {key:"", value:""};
+                $scope.mapError = "";
+            }
+        };
+
+       /**
+       * Checks if the keys are unique.
+       */
+       $scope.uniquePairKey = function (mapKey, elementIndex) {
+           var exp, keysList;
+           elementIndex = parseInt(elementIndex, 10);
+           exp = new RegExp('(<span.*?>)','g');
+           keysList = function () {
+               var resultKeysList = [];
+               angular.forEach($scope.pairs, function (pair, index) {
+                   if (pair !== null && pair.key !== undefined && pair.key.toString() !== '') {
+                        if (index !== elementIndex) {
+                            resultKeysList.push(pair.key.toString().replace(exp, ""));
+                        }
+                   }
+               }, resultKeysList);
+               return resultKeysList;
+           };
+           return $.inArray(mapKey.replace(exp, ""), keysList()) !== -1;
+       };
+
+       /**
+       * Checks if the pair is empty.
+       */
+       $scope.emptyMap = function (pair) {
+           return !(pair.key.toString().length > 0 && pair.value.toString().length > 0);
+       };
+
+        $scope.remove = function (index) {
+            $scope.pairs.splice(index,1);
+            $scope.data.value = "";
+
+            $scope.pairs.forEach(function(element, index, array) {
+                 $scope.addToDataValue(element, index);
+             });
+        };
+
+        $scope.updateMap = function (pair, index) {
+            if (!$scope.uniquePairKey(pair.key, index) && !$scope.emptyMap(pair)) {
+                $scope.data.value = "";
+
+                $scope.pairs.forEach(function(element, index, array) {
+                     $scope.addToDataValue(element, index);
+                });
+            }
+        };
+
+        $scope.clearKey = function () {
+            $scope.pair.key="";
+        };
+
+        $scope.clearValue = function () {
+            $scope.pair.value="";
+        };
+
+        $scope.reset = function () {
+            var resetMap = function () {
+                $scope.pairs = [];
+                $scope.data.value = "";
+
+                if (!$scope.$$phase) {
+                    $scope.$apply($scope.task);
+                }
+            };
+
+            motechConfirm('task.confirm.reset.map', "task.header.confirm", function (val) {
+                if (val) {
+                    resetMap();
+                }
+            });
+        };
+
+        $scope.addToDataValue = function (pair, index) {
+            var paired;
+            if (index > 0 && dragAndDrop) {
+                paired = "<div>" + pair.key + ":" + pair.value + "</div>";
+            } else {
+                paired = pair.key + ":" + pair.value;
+            }
+
+            if(!dragAndDrop) {
+                paired = paired.concat("\n");
+            }
+
+            if ($scope.data.value === null) {
+                $scope.data.value = "";
+            }
+
+            $scope.data.value = $scope.data.value.concat(paired);
+        };
+    });
 }());
