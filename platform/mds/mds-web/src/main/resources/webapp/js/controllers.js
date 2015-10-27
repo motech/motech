@@ -3586,12 +3586,17 @@
            field.displayValue[obj.id] = undefined;
         };
 
-        $scope.setRelatedEntity = function(field) {
-            $('#instanceBrowserModal').on('hide.bs.modal', function () {
-                $scope.relatedEntity = undefined;
-                $scope.filterBy = [];
-            });
+        $scope.removedOneToManyRelatedDataTmp = [];
 
+        $scope.removeManyRelatedData = function(field, relatedInstance) {
+            if (field && relatedInstance !== undefined && relatedInstance.id !== undefined) {
+               $scope.removedOneToManyRelatedDataTmp.push({fieldId: field.id, relatedInstanceId: relatedInstance.id});
+               field.displayValue[relatedInstance.id] = undefined;
+               field.value.removeObject(relatedInstance);
+            }
+        };
+
+        $scope.getRelatedClass = function(field) {
             var i, relatedClass;
             if (field.metadata !== undefined && field.metadata !== null && field.metadata.isArray === true) {
                 for (i = 0 ; i < field.metadata.length ; i += 1) {
@@ -3601,6 +3606,17 @@
                     }
                 }
             }
+            return relatedClass;
+        };
+
+        $scope.setRelatedEntity = function(field) {
+            var relatedClass;
+            $('#instanceBrowserModal').on('hide.bs.modal', function () {
+                $scope.relatedEntity = undefined;
+                $scope.filterBy = [];
+            });
+
+            relatedClass = $scope.getRelatedClass(field);
             if (relatedClass !== undefined) {
                 blockUI();
                 $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
