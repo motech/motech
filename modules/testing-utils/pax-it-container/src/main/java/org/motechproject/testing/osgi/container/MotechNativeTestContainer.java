@@ -81,6 +81,10 @@ public class MotechNativeTestContainer
 
             probeId = bundle.getBundleId();
 
+            if (bundleHasWebContext(bundle)) {
+                expectedContexts++;
+            }
+
             return probeId;
         } catch (BundleException e) {
             LOGGER.error("Unable to install Test Probe", e);
@@ -118,10 +122,6 @@ public class MotechNativeTestContainer
                 LOGGER.error("Expected tested bundle {} is not installed", symbolicName);
             } else {
                 int retries = 0;
-
-                if (bundleHasWebContext(bundle)) {
-                    expectedContexts++;
-                }
 
                 try {
                     while (!isReady(bundle)) {
