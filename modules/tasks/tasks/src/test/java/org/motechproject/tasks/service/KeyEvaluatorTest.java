@@ -16,7 +16,9 @@ public class KeyEvaluatorTest {
         String toString = now.toString();
         String toStringWithPattern = now.toString("yyyy-MM-dd");
         KeyEvaluator keyEvaluator = new KeyEvaluator(null);
-        String timeZone = now.toString("Z");
+
+        String pastDate = "2015-05-15";
+        String timeZone = new DateTime(pastDate).toString("Z"); //Figure out the correct time zone for the given date and locale
 
         assertEquals("lower_case", keyEvaluator.manipulate("tolower", "LOWER_CASE"));
         assertEquals("UPPER_CASE", keyEvaluator.manipulate("toupper", "upper_case"));
@@ -28,7 +30,7 @@ public class KeyEvaluatorTest {
         assertEquals(string, keyEvaluator.manipulate("join(-)", "ala has a cat"));
         assertEquals("ala", keyEvaluator.manipulate("split(-,0)", string));
         assertEquals("cat", keyEvaluator.manipulate("split(-,3)", string));
-        assertEquals("2015-05-15 11:32 " + timeZone, keyEvaluator.manipulate("parseDate(yyyy/dd/MM hh:mm)", "2015/15/05 11:32"));
+        assertEquals(pastDate + " 11:32 " + timeZone, keyEvaluator.manipulate("parseDate(yyyy/dd/MM hh:mm)", "2015/15/05 11:32"));
         assertEquals(toStringWithPattern, keyEvaluator.manipulate("datetime(yyyy-MM-dd)", toString));
         assertEquals(now.plusDays(1).toString(), keyEvaluator.manipulate("plusDays(1)", toString));
     }
