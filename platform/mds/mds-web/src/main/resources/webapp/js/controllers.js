@@ -4022,6 +4022,16 @@
              return field.type.typeClass === "java.util.Collection";
         };
 
+        $scope.isMultiSelectCombobox = function(field) {
+            var result;
+            angular.forEach(field.settings, function(setting) {
+                if (setting.name === "mds.form.label.allowMultipleSelections") {
+                    result = setting.value;
+                }
+            });
+            return result;
+        };
+
         $scope.dataBrowserPreferencesCookieName = function(entity) {
             var username = $rootScope.username || '';
             return username + '_org.motechproject.mds.databrowser.fields.' + entity.className + '#' + entity.id;
