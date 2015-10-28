@@ -30,6 +30,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,7 +61,7 @@ public class MotechNativeTestContainer
     private long probeId;
     private ExamSystem examSystem;
     private boolean startupEventSent;
-    private int expectedContexts = 0;
+    private int expectedContexts = 1;
 
     public MotechNativeTestContainer(ExamSystem system, FrameworkFactory frameworkFactory) throws IOException {
         super(system, frameworkFactory);
@@ -160,11 +161,8 @@ public class MotechNativeTestContainer
     }
 
     private boolean areContextsReady(ServiceReference[] refs) {
-        if (refs != null && refs.length > expectedContexts) {
-            LOGGER.info("Tested bundles contexts:");
-            for (ServiceReference ref : refs) {
-                LOGGER.info(ref.toString());
-            }
+        if (refs != null && refs.length >= expectedContexts) {
+            LOGGER.info("Tested bundle contexts: {}", Arrays.toString(refs));
             return true;
         }
         return false;
