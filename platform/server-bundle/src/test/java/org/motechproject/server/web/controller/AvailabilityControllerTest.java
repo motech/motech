@@ -35,6 +35,12 @@ public class AvailabilityControllerTest {
 
     public static final String MANAGE_PERMISSION = "managePermission";
     public static final String VIEW_LOGS_PERMISSION = "viewLogsPermission";
+
+    public static final String MANAGER_PANEL = "managerPanel";
+    public static final String SETTINGS_PANEL = "settingsPanel";
+    public static final String LOGS_PANEL = "logsPanel";
+    public static final String NO_PERM_PANEL = "noPermissionsPanel";
+
     public LinkedHashMap<String, List<String>> tabAccessMap;
 
     @Mock
@@ -52,8 +58,10 @@ public class AvailabilityControllerTest {
     public void setUp() {
 
         tabAccessMap = new LinkedHashMap<>();
-        tabAccessMap.put(MANAGE_PERMISSION, Arrays.asList("managerPanel", "settingsPanel", "logsPanel"));
-        tabAccessMap.put(VIEW_LOGS_PERMISSION, Arrays.asList("logsPanel"));
+        tabAccessMap.put(MANAGER_PANEL, Arrays.asList(MANAGE_PERMISSION));
+        tabAccessMap.put(SETTINGS_PANEL, Arrays.asList(MANAGE_PERMISSION));
+        tabAccessMap.put(LOGS_PANEL, Arrays.asList(MANAGE_PERMISSION, VIEW_LOGS_PERMISSION));
+        tabAccessMap.put(NO_PERM_PANEL, Arrays.asList());
 
         when(uiFrameworkService.getModuleData(any(String.class))).thenReturn(moduleRegistrationData);
         when(moduleRegistrationData.getTabAccessMap()).thenReturn(tabAccessMap);
@@ -68,7 +76,7 @@ public class AvailabilityControllerTest {
         controller.perform(get("/available/someModule"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(
-                        new ObjectMapper().writeValueAsString(asList("managerPanel", "settingsPanel", "logsPanel"))
+                        new ObjectMapper().writeValueAsString(asList("managerPanel", "settingsPanel", "logsPanel", "noPermissionsPanel"))
                 ));
     }
 
@@ -82,7 +90,7 @@ public class AvailabilityControllerTest {
         controller.perform(get("/available/someModule"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(
-                        new ObjectMapper().writeValueAsString(asList("logsPanel"))
+                        new ObjectMapper().writeValueAsString(asList("logsPanel", "noPermissionsPanel"))
                 ));
     }
 
@@ -95,7 +103,7 @@ public class AvailabilityControllerTest {
         controller.perform(get("/available/someModule"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(
-                        new ObjectMapper().writeValueAsString(asList("managerPanel", "settingsPanel", "logsPanel"))
+                        new ObjectMapper().writeValueAsString(asList("managerPanel", "settingsPanel", "logsPanel", "noPermissionsPanel"))
                 ));
     }
 

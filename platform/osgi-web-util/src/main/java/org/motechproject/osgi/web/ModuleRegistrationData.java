@@ -1,12 +1,8 @@
 package org.motechproject.osgi.web;
 
-import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.server.api.BundleInformation;
 import org.osgi.framework.Bundle;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -214,14 +210,14 @@ public class ModuleRegistrationData {
 
     /**
      * Returns the map of available tabs for specified permissions for this module.
-     * @return a map, where the keys are permissions names and values are lists of accessible tabs for that permission
+     * @return a map, where the keys are tabs names and values are lists of permissions for which the tab is available
      */
     @JsonIgnore
     public Map<String, List<String>> getTabAccessMap() { return tabAccessMap; }
 
     /**
      * Sets the map available tabs for specified permissions for this module.
-     * @param tabAccessMap a map, where the keys are permissions names and values are lists of accessible tabs for that permission
+     * @param tabAccessMap a map, where the keys are tabs names and values are lists of permissions for which the tab is available
      */
     @JsonIgnore
     public void setTabAccessMap(Map<String, List<String>> tabAccessMap) { this.tabAccessMap = tabAccessMap; }
@@ -414,30 +410,6 @@ public class ModuleRegistrationData {
     public String getDocumentationUrl() {
         String documentationUrl = getBundle().getHeaders().get(BundleInformation.DOC_URL);
         return DEFAULT_DOCS_URL.equals(documentationUrl) ? null : documentationUrl;
-    }
-
-    /**
-     * Determines which tab of module should be default and loaded as first based on
-     * user permissions.
-     *
-     * @return the name of the default tab
-     */
-    @JsonIgnore
-    public String determineDefaultTab() {
-
-        if(StringUtils.isNotBlank(defaultURL)) {
-            return defaultURL;
-        }
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        for (String permForModule : tabAccessMap.keySet()) {
-            if (auth.getAuthorities().contains(new SimpleGrantedAuthority(permForModule))) {
-                return "/" + angularModules.get(0) + "/" + tabAccessMap.get(permForModule).get(0);
-            }
-        }
-
-        return null;
     }
 
     @Override

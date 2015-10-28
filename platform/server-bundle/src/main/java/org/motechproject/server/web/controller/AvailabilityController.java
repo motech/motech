@@ -33,9 +33,13 @@ public class AvailabilityController {
         Map<String, List<String>> tabAccessMap = uiFrameworkService.getModuleData(moduleName).getTabAccessMap();
 
         ArrayList<String> availableTabs = new ArrayList<String>();
-        for (String permForModule : tabAccessMap.keySet()) {
-            if (auth.getAuthorities().contains(new SimpleGrantedAuthority(permForModule))) {
-                for (String tab : tabAccessMap.get(permForModule)) {
+        for (String tab : tabAccessMap.keySet()) {
+            //If no permissions were specified tab is available for everyone
+            if(tabAccessMap.get(tab).size() == 0) {
+                availableTabs.add(tab);
+            }
+            for (String permission : tabAccessMap.get(tab)) {
+                if (auth.getAuthorities().contains(new SimpleGrantedAuthority(permission))) {
                     if (!availableTabs.contains(tab)) {
                         availableTabs.add(tab);
                     }
