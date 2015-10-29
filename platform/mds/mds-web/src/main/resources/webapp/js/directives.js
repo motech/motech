@@ -99,6 +99,20 @@
     }
 
     /*
+    * This function calculates width parameters
+    * for fit jqGrid on the screen.
+    */
+    function resizeGridWidth(gridId) {
+        var intervalWidthResize, tableWidth;
+        clearInterval(intervalWidthResize);
+        intervalWidthResize = setInterval( function () {
+            tableWidth = $('.overrideJqgridTable').width();
+            $('#' + gridId).jqGrid("setGridWidth", tableWidth);
+            clearInterval(intervalWidthResize);
+        }, 200);
+    }
+
+    /*
     * This function calculates height parameters
     * for fit jqGrid on the screen.
     */
@@ -110,26 +124,49 @@
                 gap = 1 + $('.overrideJqgridTable').offset().top - $('.inner-center .ui-layout-content').offset().top;
                 tableHeight = Math.floor($('.inner-center .ui-layout-content').height() - gap - $('.ui-jqgrid-pager').outerHeight() - $('.ui-jqgrid-hdiv').outerHeight());
                 $('#' + gridId).jqGrid("setGridHeight", tableHeight);
+                resizeGridWidth(gridId);
             }
             clearInterval(intervalHeightResize);
         }, 250);
      }
 
     /*
-    * This function calculates width parameters
-    * for fit jqGrid on the screen.
+    * This function checks grid width
+    * and increase this width if possible.
     */
-    function resizeGridWidth(gridId) {
-        var intervalWidthResize, tableWidth;
-        clearInterval(intervalWidthResize);
-        intervalWidthResize = setInterval( function () {
-            tableWidth = $('.overrideJqgridTable').width();
-            $('#' + gridId).jqGrid("setGridWidth", tableWidth);
-            clearInterval(intervalWidthResize);
-        }, 250);
+    function resizeIfNarrow(gridId) {
+        var intervalIfNarrowResize;
+        setTimeout(function() {
+            clearInterval(intervalIfNarrowResize);
+        }, 950);
+        intervalIfNarrowResize = setInterval( function () {
+            if (($('#' + gridId).jqGrid('getGridParam', 'width') - 20) > $('#gbox_' + gridId + ' .ui-jqgrid-btable').width()) {
+                $('#' + gridId).jqGrid('setGridWidth', ($('#' + gridId).jqGrid('getGridParam', 'width') - 4), true);
+                $('#' + gridId).jqGrid('setGridWidth', $('#inner-center.inner-center').width() - 2, false);
+            }
+        }, 550);
     }
 
-    function buildGridColModel(colModel, fields, scope) {
+    /*
+    * This function checks the name of field
+    * whether is selected for display in the jqGrid
+    */
+    function isSelectedField(name, selectedFields) {
+        var result = true;
+        if (selectedFields !== undefined && $.isArray(selectedFields)) {
+            $.each(selectedFields, function (i, sField) {
+                if(name === sField.basic.name) {
+                    result = true;
+                } else {
+                    result = false;
+                }
+                return (!result);
+            });
+        }
+        return result;
+    }
+
+    function buildGridColModel(colModel, fields, scope, ignoreHideFields) {
         var i, cmd, field;
 
         for (i = 0; i < fields.length; i += 1) {
@@ -144,7 +181,8 @@
                    name: field.basic.name,
                    index: field.basic.name,
                    jsonmap: "fields." + i + ".value",
-                   width: 220
+                   width: 220,
+                   hidden: ignoreHideFields? false : !isSelectedField(field.basic.name, scope.selectedFields)
                 };
 
                 cmd.formatter = stringEscapeFormatter;
@@ -489,6 +527,12 @@
                         onSelect: function (dateTex) {
                             scope.safeApply(function () {
                                 ngModel.$setViewValue(dateTex);
+                            });
+                        },
+                        onClose: function (year, month, inst) {
+                            var viewValue = $(this).val();
+                            scope.safeApply(function () {
+                                ngModel.$setViewValue(viewValue);
                             });
                         },
                         onChangeMonthYear: function (year, month, inst) {
@@ -1223,17 +1267,18 @@
             restrict: 'A',
             link: function (scope, element, attrs) {
                 var elem = angular.element(element), tableWidth, eventResize, eventChange,
-                gridId = attrs.id;
+                gridId = attrs.id,
+                firstLoad = true;
 
                 $.ajax({
                     type: "GET",
                     url: "../mds/entities/" + scope.selectedEntity.id + "/entityFields",
                     dataType: "json",
                     success: function (result) {
-                        var colMd, colModel = [], i, noSelectedFields = true, spanText,
+                        var colModel = [], i, noSelectedFields = true, spanText,
                         noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
-                        buildGridColModel(colModel, result, scope);
+                        buildGridColModel(colModel, result, scope, false);
 
                         elem.jqGrid({
                             url: "../mds/entities/" + scope.selectedEntity.id + "/instances",
@@ -1254,18 +1299,21 @@
                                order: 'sortDirection'
                             },
                             onSelectRow: function (id) {
+                                firstLoad = true;
                                 scope.editInstance(id, scope.selectedEntity.module, scope.selectedEntity.name);
                             },
                             resizeStop: function (width, index) {
                                 var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
                                 if (colModel.length - 1 === index + 1 || (colModel[index + 1] !== undefined && isLastNextColumn(colModel, index))) {
                                     widthOrg = colModel[index].widthOrg;
-                                    widthNew = colModel[index + 1].width + Math.abs(widthOrg - width);
-                                    colModel[index + 1].width = widthNew;
-                                    colModel[index].width = width;
+                                    if (Math.floor(width) > Math.floor(widthOrg)) {
+                                        widthNew = colModel[index + 1].width + Math.floor(width - widthOrg);
+                                        colModel[index + 1].width = widthNew;
 
-                                    $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
-                                    $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
+                                        $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
+                                        $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
+                                    }
+                                    colModel[index].widthOrg = width;
                                 }
                                 tableWidth = $('#entityInstancesTable').width();
                                 $('#' + gridId).jqGrid("setGridWidth", tableWidth);
@@ -1284,35 +1332,18 @@
                                 $('#entityInstancesTable .ui-paging-info').append(spanText);
                                 $('.ui-jqgrid-status-label').addClass('hidden');
                                 $('#pageInstancesTable_center').addClass('page_instancesTable_center');
-                                if ($('#instancesTable').getGridParam('records') !== 0) {
-                                    noSelectedFields = true;
-                                    $('#pageInstancesTable_center').show();
-                                    angular.forEach($("select.multiselect")[0], function(field) {
-                                        var name = scope.getFieldName(field.label);
-                                        if (name) {
-                                            if (field.selected || $rootScope.fieldSelected){
-                                                $("#instancesTable").jqGrid('showCol', name);
-                                                noSelectedFields = false;
-                                            } else {
-                                                $("#instancesTable").jqGrid('hideCol', name);
-                                            }
-                                        }
-                                    });
-                                    if (noSelectedFields && $rootScope.selectedField) {
-                                        $('#pageInstancesTable_center').hide();
-                                        $('#entityInstancesTable .ui-jqgrid-status-label').removeClass('hidden');
-                                    }
-                                    $('#entityInstancesTable .ui-jqgrid-hdiv').show();
+                                if (scope.selectedFields !== undefined && scope.selectedFields.length > 0) {
+                                    noSelectedFields = false;
                                 } else {
                                     noSelectedFields = true;
-                                    angular.forEach($("select.multiselect")[0], function(field) {
-                                        var name = scope.getFieldName(field.label);
-                                        if (name && field.selected){
-                                            noSelectedFields = false;
-                                        }
-                                    });
-                                    if (noSelectedFields && $rootScope.selectedField) {
-                                        $('#entityInstancesTable .ui-jqgrid-status-label').removeClass('hidden');
+                                    $('#pageInstancesTable_center').hide();
+                                    $('#entityInstancesTable .ui-jqgrid-status-label').removeClass('hidden');
+                                }
+                                if ($('#instancesTable').getGridParam('records') > 0) {
+                                    $('#pageInstancesTable_center').show();
+                                    $('#entityInstancesTable .ui-jqgrid-hdiv').show();
+                                } else {
+                                    if (noSelectedFields) {
                                         $('#pageInstancesTable_center').hide();
                                         $('#entityInstancesTable .ui-jqgrid-hdiv').hide();
                                     }
@@ -1323,6 +1354,10 @@
                                     resizeGridHeight(gridId);
                                     resizeGridWidth(gridId);
                                 }, 550);
+                                if (firstLoad) {
+                                    resizeIfNarrow(gridId);
+                                    firstLoad = false;
+                                }
                             },
                             loadError: function() {
                                 scope.setDataRetrievalError(true);
@@ -1384,7 +1419,7 @@
                         success: function (result) {
                             var colMd, colModel = [], i, spanText;
 
-                            buildGridColModel(colModel, result, scope);
+                            buildGridColModel(colModel, result, scope, true);
 
                             elem.jqGrid({
                                 url: "../mds/entities/" + scope.relatedEntity.id + "/instances",
@@ -1412,12 +1447,14 @@
                                     var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
                                     if (colModel.length - 1 === index + 1 || (colModel[index + 1] !== undefined && isLastNextColumn(colModel, index))) {
                                         widthOrg = colModel[index].widthOrg;
-                                        widthNew = colModel[index + 1].width + Math.abs(widthOrg - width);
-                                        colModel[index + 1].width = widthNew;
-                                        colModel[index].width = width;
+                                        if (Math.floor(width) > Math.floor(widthOrg)) {
+                                            widthNew = colModel[index + 1].width + Math.floor(width - widthOrg);
+                                            colModel[index + 1].width = widthNew;
 
-                                        $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
-                                        $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
+                                            $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
+                                            $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
+                                        }
+                                        colModel[index].widthOrg = width;
                                     }
                                     tableWidth = $('#instanceBrowserTable').width();
                                     $('#gview_' + gridId + ' .ui-jqgrid-htable').width(tableWidth);
@@ -1561,7 +1598,8 @@
             restrict: 'A',
             link: function(scope, element, attrs) {
                 var elem = angular.element(element), tableWidth, eventResize, eventChange,
-                gridId = attrs.id;
+                gridId = attrs.id,
+                firstLoad = true;
 
                 $.ajax({
                     type: "GET",
@@ -1581,7 +1619,7 @@
                             sortable: false
                         });
 
-                        buildGridColModel(colModel, result, scope);
+                        buildGridColModel(colModel, result, scope, false);
 
                         elem.jqGrid({
                             url: "../mds/instances/" + scope.selectedEntity.id + "/" + scope.instanceId + "/history",
@@ -1602,12 +1640,14 @@
                                 var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
                                 if (colModel.length - 1 === index + 1 || (colModel[index + 1] !== undefined && isLastNextColumn(colModel, index))) {
                                     widthOrg = colModel[index].widthOrg;
-                                    widthNew = colModel[index + 1].width + Math.abs(widthOrg - width);
-                                    colModel[index + 1].width = widthNew;
-                                    colModel[index].width = width;
+                                    if (Math.floor(width) > Math.floor(widthOrg)) {
+                                        widthNew = colModel[index + 1].width + Math.floor(width - widthOrg);
+                                        colModel[index + 1].width = widthNew;
 
-                                    $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
-                                    $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
+                                        $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
+                                        $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
+                                    }
+                                    colModel[index].widthOrg = width;
                                 }
                                 tableWidth = $('#instanceHistoryTable').width();
                                 $('#' + gridId).jqGrid("setGridWidth", tableWidth);
@@ -1624,35 +1664,18 @@
                                 $('#instanceHistoryTable .ui-paging-info').append(spanText);
                                 $('.ui-jqgrid-status-label').addClass('hidden');
                                 $('#pageInstanceHistoryTable_center').addClass('page_historyTable_center');
-                                if ($('#historyTable').getGridParam('records') !== 0) {
-                                    noSelectedFields = true;
-                                    $('#pageInstanceHistoryTable_center').show();
-                                    angular.forEach($("select.multiselect")[0], function(field) {
-                                        var name = scope.getFieldName(field.label);
-                                        if (name) {
-                                            if (field.selected){
-                                                $("#historyTable").jqGrid('showCol', name);
-                                                noSelectedFields = false;
-                                            } else {
-                                                $("#historyTable").jqGrid('hideCol', name);
-                                            }
-                                        }
-                                    });
-                                    if (noSelectedFields) {
-                                        $('#pageInstanceHistoryTable_center').hide();
-                                        $('#instanceHistoryTable .ui-jqgrid-status-label').removeClass('hidden');
-                                    }
-                                    $('#instanceHistoryTable .ui-jqgrid-hdiv').show();
+                                if (scope.selectedFields !== undefined && scope.selectedFields.length > 0) {
+                                    noSelectedFields = false;
                                 } else {
                                     noSelectedFields = true;
-                                    angular.forEach($("select.multiselect")[0], function(field) {
-                                        var name = scope.getFieldName(field.label);
-                                        if (name && field.selected){
-                                            noSelectedFields = false;
-                                        }
-                                    });
+                                    $('#pageInstanceHistoryTable_center').hide();
+                                    $('#instanceHistoryTable .ui-jqgrid-status-label').removeClass('hidden');
+                                }
+                                if ($('#historyTable').getGridParam('records') > 0) {
+                                    $('#pageInstanceHistoryTable_center').show();
+                                    $('#instanceHistoryTable .ui-jqgrid-hdiv').show();
+                                } else {
                                     if (noSelectedFields) {
-                                        $('#instanceHistoryTable .ui-jqgrid-status-label').removeClass('hidden');
                                         $('#pageInstanceHistoryTable_center').hide();
                                         $('#instanceHistoryTable .ui-jqgrid-hdiv').hide();
                                     }
@@ -1663,6 +1686,10 @@
                                     resizeGridHeight(gridId);
                                     resizeGridWidth(gridId);
                                 }, 550);
+                                if (firstLoad) {
+                                    resizeIfNarrow(gridId);
+                                    firstLoad = false;
+                                }
                             }
                         });
 
@@ -1701,7 +1728,8 @@
             restrict: 'A',
             link: function (scope, element, attrs) {
                 var elem = angular.element(element), tableWidth, eventResize, eventChange,
-                gridId = attrs.id;
+                gridId = attrs.id,
+                firstLoad = true;
 
                 $.ajax({
                     type: "GET",
@@ -1711,7 +1739,7 @@
                         var colModel = [], i, noSelectedFields = true, spanText,
                         noSelectedFieldsText = scope.msg('mds.dataBrowsing.noSelectedFieldsInfo');
 
-                        buildGridColModel(colModel, result, scope);
+                        buildGridColModel(colModel, result, scope, false);
 
                         elem.jqGrid({
                             url: "../mds/entities/" + scope.selectedEntity.id + "/trash",
@@ -1728,18 +1756,21 @@
                                 repeatitems: false
                             },
                             onSelectRow: function (id) {
+                                firstLoad = true;
                                 scope.trashInstance(id);
                             },
                             resizeStop: function (width, index) {
                                 var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
                                 if (colModel.length - 1 === index + 1 || (colModel[index + 1] !== undefined && isLastNextColumn(colModel, index))) {
                                     widthOrg = colModel[index].widthOrg;
-                                    widthNew = colModel[index + 1].width + Math.abs(widthOrg - width);
-                                    colModel[index + 1].width = widthNew;
-                                    colModel[index].width = width;
+                                    if (Math.floor(width) > Math.floor(widthOrg)) {
+                                        widthNew = colModel[index + 1].width + Math.floor(width - widthOrg);
+                                        colModel[index + 1].width = widthNew;
 
-                                    $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
-                                    $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
+                                        $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
+                                        $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
+                                    }
+                                    colModel[index].widthOrg = width;
                                 }
                                 tableWidth = $('#instanceTrashTable').width();
                                 $('#' + gridId).jqGrid("setGridWidth", tableWidth);
@@ -1757,43 +1788,20 @@
                                 $('#instanceTrashTable .ui-paging-info').append(spanText);
                                 $('.ui-jqgrid-status-label').addClass('hidden');
                                 $('#pageInstanceTrashTable_center').addClass('page_trashTable_center');
-                                if ($('#trashTable').getGridParam('records') !== 0) {
-                                    noSelectedFields = true;
-                                    $('#pageInstanceTrashTable_center').show();
-                                    angular.forEach($("select.multiselect")[0], function(field) {
-                                        var name = scope.getFieldName(field.label);
-                                        if (name) {
-                                            if (field.selected){
-                                                $("#trashTable").jqGrid('showCol', name);
-                                                noSelectedFields = false;
-                                            } else {
-                                                $("#trashTable").jqGrid('hideCol', name);
-                                            }
-                                        }
-                                    });
-                                    if (noSelectedFields) {
-                                        $('#pageInstanceTrashTable_center').hide();
-                                        $('#instanceTrashTable .ui-jqgrid-status-label').removeClass('hidden');
-                                    }
-                                    $('#instanceTrashTable .ui-jqgrid-hdiv').show();
+                                if (scope.selectedFields !== undefined && scope.selectedFields.length > 0) {
+                                    noSelectedFields = false;
                                 } else {
                                     noSelectedFields = true;
-                                    angular.forEach($("select.multiselect")[0], function(field) {
-                                        var name = scope.getFieldName(field.label);
-                                        if (name && field.selected) {
-                                            $("#trashTable").jqGrid('showCol', name);
-                                            noSelectedFields = false;
-                                        } else if (name) {
-                                            $("#trashTable").jqGrid('hideCol', name);
-                                        }
-                                    });
+                                    $('#pageInstanceTrashTable_center').hide();
+                                    $('#instanceTrashTable .ui-jqgrid-status-label').removeClass('hidden');
+                                }
+                                if ($('#trashTable').getGridParam('records') > 0) {
+                                    $('#pageInstanceTrashTable_center').show();
+                                    $('#instanceTrashTable .ui-jqgrid-hdiv').show();
+                                } else {
                                     if (noSelectedFields) {
-                                        $('#instanceTrashTable .ui-jqgrid-status-label').removeClass('hidden');
                                         $('#pageInstanceTrashTable_center').hide();
                                         $('#instanceTrashTable .ui-jqgrid-hdiv').hide();
-                                    } else {
-                                        $('#pageInstanceTrashTable_center').show();
-                                        $('#instanceTrashTable .ui-jqgrid-hdiv').show();
                                     }
                                 }
                                 $('#instanceTrashTable .ui-jqgrid-hdiv').addClass("table-lightblue");
@@ -1802,6 +1810,10 @@
                                     resizeGridHeight(gridId);
                                     resizeGridWidth(gridId);
                                 }, 550);
+                                if (firstLoad) {
+                                    resizeIfNarrow(gridId);
+                                    firstLoad = false;
+                                }
                             }
                         });
 
