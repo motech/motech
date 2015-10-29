@@ -79,7 +79,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -744,13 +743,8 @@ public class InstanceServiceImpl implements InstanceService {
         Object parsedValue = null;
 
        if (Collection.class.isAssignableFrom(parameterType)) {
-           if (Set.class.isAssignableFrom(parameterType)) {
-               parsedValue = new HashSet();
-           } else if (List.class.isAssignableFrom(parameterType)) {
-               parsedValue = new ArrayList();
-           } else {
-               parsedValue = new ArrayList();
-           }
+           Class<?> collectionImplementation = TypeHelper.suggestCollectionImplementation(parameterType);
+           parsedValue = collectionImplementation == null ? new ArrayList() : collectionImplementation.newInstance();
 
            for (Object object : (Collection) fieldValue) {
                if (isFromUI(object)) {
