@@ -3581,11 +3581,6 @@
            field.value = undefined;
         };
 
-        $scope.removeManyRelatedData = function(field, obj) {
-           field.value.removeObject(obj);
-           field.displayValue[obj.id] = undefined;
-        };
-
         $scope.removedOneToManyRelatedDataTmp = [];
 
         $scope.removeManyRelatedData = function(field, relatedInstance) {

@@ -1489,6 +1489,7 @@
             restrict: 'A',
             link: function (scope, element, attrs) {
                 var tableWidth, isHiddenGrid, eventResize, eventChange, relatedClass,
+                    filter = {removedIds: []},
                     elem = angular.element(element),
                     gridId = attrs.id,
                     gridRecords = 0,
@@ -1536,36 +1537,29 @@
                                     },
                                     datatype: 'json',
                                     mtype: "GET",
+                                    postData: {
+                                        filters: (filter.removedIds !== null) ? JSON.stringify(filter) : ""
+                                    },
                                     jsonReader: {
                                         repeatitems: false
                                     },
                                     onSelectRow: function (id, status, e) {
                                         if (!scope.field.nonEditable &&  e.target.getAttribute('class') !== null && (e.target.getAttribute('class').indexOf('removeRelatedInstance') >= 0
                                             || (e.target.tagName ==='I' && e.target.parentElement.getAttribute('class').indexOf('removeRelatedInstance') >= 0))) {
-                                            var postdata, postdataFilters, i, f,
-                                            fieldVal = MDSUtils.find(scope.field.value, [{field: 'id', value: id}], true),
-                                            objVal = scope.field.value.filter(function(item) {return item.id === parseInt(id, 10);})[0];
 
-                                            f = { groupOp:"AND", rules:[]};
-                                            postdata = $('#' + gridId).jqGrid('getGridParam','postData');
-                                            if(postdata.filters !== undefined && postdata.filters !== '') {
-                                                postdataFilters = JSON.parse(postdata.filters);
-                                                if (postdataFilters.rules !== null && postdataFilters.rules.length > 0) {
-                                                    for (i = 0; postdataFilters.rules.length > i; i += 1) {
-                                                        f.rules.push( postdataFilters.rules[i] );
-                                                    }
-                                                }
-                                            }
-                                            f.rules.push( { field: "id", op: "ne", data: id } );
-                                            $.extend($('#' + gridId)[0].p.postData, { filters: JSON.stringify(f) });
+                                            var fieldVal = MDSUtils.find(scope.field.value, [{field: 'id', value: id}], true),
+                                                objVal = scope.field.value.filter(function(item) {return item.id === parseInt(id, 10);})[0],
+                                                postdata = $('#' + gridId).jqGrid('getGridParam','postData');
+
+                                            filter.removedIds.push(id);
+                                            $.extend($('#' + gridId)[0].p.postData, { filters: JSON.stringify(filter) });
                                             $('#' + gridId).jqGrid('setGridParam', { search: true, postData: postdata });
-                                                //$('#' + attrs.id).jqGrid().trigger("reloadGrid");
-                                                $('#' + attrs.id).jqGrid().trigger("reloadGrid",[{page:1}]);
-                                                scope.removeManyRelatedData(scope.field, objVal);
+                                            $('#' + attrs.id).jqGrid().trigger("reloadGrid");
+
+                                            scope.removeManyRelatedData(scope.field, objVal);
                                         } else if (!scope.field.nonEditable && !(e.target.children[0] !== undefined && e.target.children[0].getAttribute('class').indexOf('removeRelatedInstance') >= 0)) {
                                             scope.editInstanceOfEntity(id, scope.getMetadata(scope.field, 'related.class'));
                                         }
-                                        //scope.editInstance(id, scope.selectedEntity.module, scope.selectedEntity.name);
                                     },
                                     resizeStop: function (width, index) {
                                         var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
@@ -1581,7 +1575,7 @@
                                         tableWidth = $('#instance_' + gridId).width();
                                         $('#' + gridId).jqGrid("setGridWidth", tableWidth);
                                     },
-                                    loadonce: true,
+                                    loadonce: false,
                                     headertitles: true,
                                     colModel: colModel,
                                     pager: '#' + attrs.entityRelationsGrid,
