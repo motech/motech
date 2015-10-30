@@ -1581,6 +1581,7 @@
                                     pager: '#' + attrs.entityRelationsGrid,
                                     viewrecords: true,
                                     autowidth: true,
+                                    loadui: 'block',
                                     shrinkToFit: false,
                                     gridComplete: function () {
                                         $('#' + gridId).jqGrid('setFrozenColumns');
