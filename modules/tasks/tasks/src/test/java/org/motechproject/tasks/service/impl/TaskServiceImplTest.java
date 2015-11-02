@@ -76,6 +76,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.tasks.domain.ParameterType.UNICODE;
@@ -195,12 +196,17 @@ public class TaskServiceImplTest {
 
     @Test(expected = TaskNameAlreadyExistsException.class)
     public void shouldNotSaveTaskWithDuplicateName() {
-
         when(tasksDataService.findTasksByName("name")).thenReturn(
                 asList(new Task("name", trigger, asList(action))));
 
         Task t = new Task("name", trigger, asList(action), null, false, false);
-        taskService.save(t);
+
+        try {
+            taskService.save(t);
+        } finally {
+            verify(tasksDataService, times(1)).findTasksByName(t.getName());
+            verifyNoMoreInteractions(tasksDataService);
+        }
     }
 
     @Test

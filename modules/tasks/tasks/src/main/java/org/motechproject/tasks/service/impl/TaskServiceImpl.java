@@ -584,14 +584,12 @@ public class TaskServiceImpl implements TaskService {
     private void validateName(Task task) {
 
         Long taskId = task.getId();
-        int tasksWithName = tasksDataService.findTasksByName(task.getName()).size();
+        List<Task> tasksWithName = tasksDataService.findTasksByName(task.getName());
 
-        if(taskId == null && tasksWithName > 0) {
-            LOGGER.warn("Task with name: {} already exists", task.getName());
+        if(taskId == null && tasksWithName.size() > 0) {
             throw new TaskNameAlreadyExistsException(task.getName());
-        } else if (taskId != null && tasksWithName > 0) {
-            if(!(tasksDataService.findTasksByName(task.getName()).get(0).getId().equals(taskId))) {
-                LOGGER.warn("Task with name: {} already exists", task.getName());
+        } else if (taskId != null && tasksWithName.size() > 0) {
+            if(!(tasksWithName.get(0).getId().equals(taskId))) {
                 throw new TaskNameAlreadyExistsException(task.getName());
             }
         }
