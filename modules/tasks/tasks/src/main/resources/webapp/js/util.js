@@ -235,7 +235,7 @@
                 return $('<div/>').append(span).html();
             },
             createDraggableSpan: function (data) {
-                var span = $('<span/>');
+                var removeButton, span = $('<span/>');
 
                 span.attr('unselectable', 'on');
                 span.attr('contenteditable', 'false');
@@ -309,6 +309,19 @@
                 default:
                     span.text(data.param.displayName);
                 }
+
+                if (span.attr('manipulationpopover') === undefined) {
+                    span.attr('manipulationpopover', 'NONE');
+                }
+                span.append(" &nbsp;");
+                span.append(" &nbsp;");
+                removeButton = $('<button/>', {
+                        text: 'x',
+                        type: 'button'
+                });
+                removeButton.addClass('close');
+                removeButton.addClass('badge-close');
+                span.append(removeButton);
 
                 return $('<div/>').append(span).html();
             },

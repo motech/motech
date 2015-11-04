@@ -853,6 +853,11 @@
                 }
             }
 
+            // we must add last manipulation to the array
+            if (builtManipulation !== "") {
+                extractedManipulations.push(builtManipulation);
+            }
+
             return extractedManipulations;
         };
 
