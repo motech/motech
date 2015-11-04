@@ -588,10 +588,8 @@ public class TaskServiceImpl implements TaskService {
 
         if(taskId == null && tasksWithName.size() > 0) {
             throw new TaskNameAlreadyExistsException(task.getName());
-        } else if (taskId != null && tasksWithName.size() > 0) {
-            if(!(tasksWithName.get(0).getId().equals(taskId))) {
-                throw new TaskNameAlreadyExistsException(task.getName());
-            }
+        } else if (taskId != null && tasksWithName.size() > 0 && !(tasksWithName.get(0).getId().equals(taskId))) {
+            throw new TaskNameAlreadyExistsException(task.getName());
         }
     }
 
