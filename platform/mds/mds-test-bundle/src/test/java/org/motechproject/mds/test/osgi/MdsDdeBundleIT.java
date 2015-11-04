@@ -1,11 +1,6 @@
 package org.motechproject.mds.test.osgi;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.module.SimpleModule;
-import org.datanucleus.exceptions.NucleusOptimisticException;
-import org.datanucleus.state.StateManagerImpl;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -48,9 +43,9 @@ import org.motechproject.mds.test.domain.lookupcomboboxrelation.LogStatus;
 import org.motechproject.mds.test.domain.lookupcomboboxrelation.MessageLog;
 import org.motechproject.mds.test.domain.manytomany.Author;
 import org.motechproject.mds.test.domain.manytomany.Book;
-import org.motechproject.mds.test.domain.manytomany.Product;
 import org.motechproject.mds.test.domain.manytomany.Clinic;
 import org.motechproject.mds.test.domain.manytomany.Patient;
+import org.motechproject.mds.test.domain.manytomany.Product;
 import org.motechproject.mds.test.domain.manytomany.Supplier;
 import org.motechproject.mds.test.domain.optimisticlocking.SimpleClassWithVersioning;
 import org.motechproject.mds.test.domain.optimisticlocking.TestMdsVersionedEntity;
@@ -83,9 +78,9 @@ import org.motechproject.mds.test.service.instancelifecyclelistener.SubclassBDat
 import org.motechproject.mds.test.service.lookupcomboboxrelation.MessageLogDataService;
 import org.motechproject.mds.test.service.manytomany.AuthorDataService;
 import org.motechproject.mds.test.service.manytomany.BookDataService;
-import org.motechproject.mds.test.service.manytomany.ProductDataService;
 import org.motechproject.mds.test.service.manytomany.ClinicDataService;
 import org.motechproject.mds.test.service.manytomany.PatientDataService;
+import org.motechproject.mds.test.service.manytomany.ProductDataService;
 import org.motechproject.mds.test.service.manytomany.SupplierDataService;
 import org.motechproject.mds.test.service.optimisticlocking.SimpleClassWithVersioningService;
 import org.motechproject.mds.test.service.optimisticlocking.TestMdsVersionedEntityService;
@@ -96,7 +91,6 @@ import org.motechproject.mds.test.service.setofenumandstring.MessageDataService;
 import org.motechproject.mds.test.service.transactions.DepartmentDataService;
 import org.motechproject.mds.test.service.transactions.EmployeeDataService;
 import org.motechproject.mds.test.service.transactions.OfficeService;
-import org.motechproject.mds.util.BlobDeserializer;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.StateManagerUtil;
@@ -303,6 +297,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
         messageDataService.deleteAll();
         testMdsVersionedEntityService.deleteAll();
         simpleClassWithVersioningService.deleteAll();
+        entryDataService.deleteAll();
         removeFromListManyToMany();
     }
 
