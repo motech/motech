@@ -226,12 +226,13 @@ public class MenuBuilder {
     private boolean isTabAvailable(String tab, Map<String, List<String>> tabAccessMap, Authentication auth) {
 
         //If no permissions were specified tab is available for everyone
-        if (tabAccessMap.get(tab).size() == 0) {
+        if (tabAccessMap.get(tab) == null || tabAccessMap.get(tab).size() == 0) {
             return true;
-        }
-        for (String permission : tabAccessMap.get(tab)) {
-            if(auth.getAuthorities().contains(new SimpleGrantedAuthority(permission))) {
-                return true;
+        } else {
+            for (String permission : tabAccessMap.get(tab)) {
+                if(auth.getAuthorities().contains(new SimpleGrantedAuthority(permission))) {
+                    return true;
+                }
             }
         }
         return false;

@@ -35,13 +35,14 @@ public class AvailabilityController {
         ArrayList<String> availableTabs = new ArrayList<String>();
         for (String tab : tabAccessMap.keySet()) {
             //If no permissions were specified tab is available for everyone
-            if(tabAccessMap.get(tab).size() == 0) {
+            if(tabAccessMap.get(tab) == null || tabAccessMap.get(tab).size() == 0) {
                 availableTabs.add(tab);
-            }
-            for (String permission : tabAccessMap.get(tab)) {
-                if (auth.getAuthorities().contains(new SimpleGrantedAuthority(permission))) {
-                    if (!availableTabs.contains(tab)) {
-                        availableTabs.add(tab);
+            } else {
+                for (String permission : tabAccessMap.get(tab)) {
+                    if (auth.getAuthorities().contains(new SimpleGrantedAuthority(permission))) {
+                        if (!availableTabs.contains(tab)) {
+                            availableTabs.add(tab);
+                        }
                     }
                 }
             }
