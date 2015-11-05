@@ -6,8 +6,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.repository.MotechDataRepository;
-import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.util.ClassName;
 
 import java.util.ArrayList;
@@ -113,7 +113,7 @@ public final class MotechClassPool {
     }
 
     public static String getServiceImplName(String className) {
-        return ClassName.getServiceName(className);
+        return ClassName.getServiceClassName(className);
     }
 
     public static void registerHistoryClassData(ClassData cData) {

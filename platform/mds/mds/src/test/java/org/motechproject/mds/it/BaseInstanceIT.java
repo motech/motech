@@ -10,11 +10,11 @@ import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
-import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
+import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
@@ -100,7 +100,7 @@ public abstract class BaseInstanceIT extends BaseIT {
     }
 
     protected String getServiceClass() {
-        return ClassName.getServiceName(getEntityName());
+        return ClassName.getServiceClassName(getEntityName());
     }
 
     protected EntityDto getEntity() {

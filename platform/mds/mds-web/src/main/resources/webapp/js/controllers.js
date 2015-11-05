@@ -4804,6 +4804,13 @@
 
         $rootScope.unselectEntity = $scope.unselectEntity();
 
+        $scope.relatedId = function (obj) {
+            if (obj.id) {
+                return obj.id;
+            } else {
+                return obj;
+            }
+        };
     });
 
     /**
