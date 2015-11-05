@@ -6,6 +6,7 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.SqlQueryExecution;
 import org.springframework.transaction.support.TransactionCallback;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -205,6 +206,15 @@ public interface MotechDataService<T> {
      * @return instance with the given id
      */
     T findById(Long id);
+
+    /**
+     * Retrieves multiple instances of type {@value T} and given ids from MDS. It will fail,
+     * if at least one instance of the id taken from the collection does not exist.
+     *
+     * @param ids a collection of ids to find
+     * @return a collection of instances with the given ids
+     */
+    Collection<T> findByIds(Collection<Long> ids);
 
     /**
      * Allows to wrap several instructions into a single transaction. Developers should implement

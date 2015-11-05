@@ -30,6 +30,7 @@ import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.mds.web.domain.RelatedInstancesFilter;
 import org.motechproject.mds.web.helper.FieldTestHelper;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
@@ -86,6 +87,9 @@ public class InstanceServiceTest {
 
     @Mock
     private MotechDataService motechDataService;
+
+    @Mock
+    private MotechDataService testClassMotechDataService;
 
     @Mock
     private BundleContext bundleContext;
@@ -631,13 +635,28 @@ public class InstanceServiceTest {
 
         QueryParams queryParams = new QueryParams(1, 2, new Order(Constants.Util.ID_FIELD_NAME, Order.Direction.ASC));
         Records<EntityRecord> records = instanceService.getRelatedFieldValue(ANOTHER_ENTITY_ID, INSTANCE_ID,
-                "testClasses", queryParams);
+                "testClasses", new RelatedInstancesFilter(), queryParams);
 
         assertNotNull(records);
         assertEquals(Integer.valueOf(1), records.getPage()); // page 1
         assertEquals(Integer.valueOf(2), records.getTotal()); // 2 pages total
         assertEquals(Integer.valueOf(3), records.getRecords()); // 3 records total
         assertEquals(asList(1L, 2L), extract(records.getRows(), on(EntityRecord.class).getFieldByName("id").getValue()));
+
+        RelatedInstancesFilter filter = new RelatedInstancesFilter();
+        filter.setRemovedIds(Arrays.asList(1L, 2L));
+        filter.setAddedIds(Arrays.asList(50L));
+
+        when(testClassMotechDataService.findByIds(filter.getAddedIds())).thenReturn(Arrays.asList(new TestClass(50)));
+        records = instanceService.getRelatedFieldValue(ANOTHER_ENTITY_ID, INSTANCE_ID,
+                "testClasses", filter, queryParams);
+
+        assertNotNull(records);
+        assertEquals(Integer.valueOf(1), records.getPage()); // page 1
+        assertEquals(Integer.valueOf(1), records.getTotal()); // 1 page total
+        assertEquals(Integer.valueOf(2), records.getRecords()); // 2 records total
+        // 1L and 2L removed, 50L added
+        assertEquals(asList(3L, 50L), extract(records.getRows(), on(EntityRecord.class).getFieldByName("id").getValue()));
     }
 
     private List buildRelatedRecord() {
@@ -691,7 +710,7 @@ public class InstanceServiceTest {
     }
 
     private void mockTestClassService() {
-        mockDataService(TestClass.class, mock(MotechDataService.class));
+        mockDataService(TestClass.class, testClassMotechDataService);
     }
 
     private void mockDataService(Class<?> entityClass, MotechDataService motechDataService) {

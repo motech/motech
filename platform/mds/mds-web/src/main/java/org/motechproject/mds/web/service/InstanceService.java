@@ -9,6 +9,7 @@ import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
+import org.motechproject.mds.web.domain.RelatedInstancesFilter;
 
 import java.util.List;
 import java.util.Map;
@@ -302,8 +303,9 @@ public interface InstanceService {
      * @param entityId the id of entity (the entity with the related field)
      * @param instanceId the id of the instance we want to retrieve the field for
      * @param fieldName the name of the related field
+     * @param filter contains related fields that have been removed or added on the UI
      * @param queryParams the query params which will be used for retrieval
      * @return the records object containing the values for the related field
      */
-    Records<EntityRecord> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName, QueryParams queryParams);
+    Records<EntityRecord> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName, RelatedInstancesFilter filter, QueryParams queryParams);
 }

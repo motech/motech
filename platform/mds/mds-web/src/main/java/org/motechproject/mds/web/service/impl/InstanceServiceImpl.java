@@ -55,6 +55,7 @@ import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
+import org.motechproject.mds.web.domain.RelatedInstancesFilter;
 import org.motechproject.mds.web.service.InstanceService;
 import org.motechproject.mds.web.util.RelationshipDisplayUtil;
 import org.motechproject.osgi.web.util.WebBundleUtil;
@@ -86,6 +87,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
@@ -131,26 +133,14 @@ public class InstanceServiceImpl implements InstanceService {
 
             Object instance;
             if (newObject) {
-                instance = entityClass.newInstance();
-
-                for (FieldDto entityField : entityFields) {
-                    if (entityField.getType().isMap() && entityField.getBasic().getDefaultValue() != null) {
-                        setInstanceFieldMap(instance, entityField);
-                    }
-                }
-
+                instance = newInstanceFromEntityRecord(entityClass, entityFields, entityRecord.getFields(), service);
+                return service.create(instance);
             } else {
                 instance = service.retrieve(ID_FIELD_NAME, entityRecord.getId());
                 if (instance == null) {
                     throw new ObjectNotFoundException(entity.getName(), entityRecord.getId());
                 }
-            }
-
-            updateFields(instance, entityRecord.getFields(), service, deleteValueFieldId, !newObject);
-
-            if (newObject) {
-                return service.create(instance);
-            } else {
+                updateFields(instance, entityRecord.getFields(), service, deleteValueFieldId, true);
                 return service.update(instance);
             }
         } catch (Exception e) {
@@ -160,24 +150,6 @@ public class InstanceServiceImpl implements InstanceService {
                 throw new ObjectUpdateException(entity.getName(), entityRecord.getId(), e);
             }
         }
-    }
-
-    private void setInstanceFieldMap(Object instance, FieldDto entityField) {
-
-        String strMap = entityField.getBasic().getDefaultValue().toString();
-
-        String keyMetadata;
-        String valueMetadata;
-
-        if (entityField.getMetadata(MAP_KEY_TYPE) == null || entityField.getMetadata(MAP_VALUE_TYPE) == null) {
-            keyMetadata = String.class.getName();
-            valueMetadata = String.class.getName();
-        } else {
-            keyMetadata = entityField.getMetadata(MAP_KEY_TYPE).getValue();
-            valueMetadata = entityField.getMetadata(MAP_VALUE_TYPE).getValue();
-        }
-
-        PropertyUtil.safeSetProperty(instance, entityField.getBasic().getName(), TypeHelper.parseStringToMap(keyMetadata, valueMetadata, strMap));
     }
 
     @Override
@@ -505,7 +477,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public Records<EntityRecord> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName,
-                                              QueryParams queryParams) {
+                                              RelatedInstancesFilter filter, QueryParams queryParams) {
         try {
             // first get the entity
             EntityDto entity = getEntity(entityId);
@@ -541,6 +513,17 @@ public class InstanceServiceImpl implements InstanceService {
 
             // the value of the related field
             Collection relatedAsColl = TypeHelper.asCollection(PropertyUtil.getProperty(instance, fieldName));
+            relatedAsColl.addAll(relatedDataService.findByIds(filter.getAddedIds()));
+            relatedAsColl.removeIf(new Predicate() {
+                @Override
+                public boolean test(Object o) {
+                    return filter.getRemovedIds().contains(PropertyUtil.safeGetProperty(o, Constants.Util.ID_FIELD_NAME));
+                }
+            });
+
+            for (EntityRecord record : filter.getAddedRecords()) {
+                relatedAsColl.add(newInstanceFromEntityRecord(getEntityClass(entity), relatedFields, record.getFields(), relatedDataService));
+            }
 
             // apply pagination ordering (currently in memory)
             List filtered = InMemoryQueryFilter.filter(relatedAsColl, queryParams);
@@ -555,9 +538,42 @@ public class InstanceServiceImpl implements InstanceService {
 
             // package as records
             return new Records<>(queryParams.getPage(), rowCount, recordCount, entityRecords);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | IllegalArgumentException e) {
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | IllegalArgumentException |
+                ClassNotFoundException | CannotCompileException | InstantiationException | NoSuchFieldException e) {
            throw new ObjectReadException(entityId, e);
         }
+    }
+
+    private Object newInstanceFromEntityRecord(Class<?> entityClass, List<FieldDto> entityFields, List<FieldRecord> fields, MotechDataService service)
+            throws IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException, CannotCompileException, NoSuchFieldException {
+        Object instance = entityClass.newInstance();
+
+        for (FieldDto entityField : entityFields) {
+            if (entityField.getType().isMap() && entityField.getBasic().getDefaultValue() != null) {
+                setInstanceFieldMap(instance, entityField);
+            }
+        }
+
+        updateFields(instance, fields, service, null, false);
+        return instance;
+    }
+
+    private void setInstanceFieldMap(Object instance, FieldDto entityField) {
+
+        String strMap = entityField.getBasic().getDefaultValue().toString();
+
+        String keyMetadata;
+        String valueMetadata;
+
+        if (entityField.getMetadata(MAP_KEY_TYPE) == null || entityField.getMetadata(MAP_VALUE_TYPE) == null) {
+            keyMetadata = String.class.getName();
+            valueMetadata = String.class.getName();
+        } else {
+            keyMetadata = entityField.getMetadata(MAP_KEY_TYPE).getValue();
+            valueMetadata = entityField.getMetadata(MAP_VALUE_TYPE).getValue();
+        }
+
+        PropertyUtil.safeSetProperty(instance, entityField.getBasic().getName(), TypeHelper.parseStringToMap(keyMetadata, valueMetadata, strMap));
     }
 
     private void populateDefaultFields(List<FieldRecord> fieldRecords) {
