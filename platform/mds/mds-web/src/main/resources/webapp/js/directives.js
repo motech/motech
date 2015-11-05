@@ -168,6 +168,7 @@
                 if (scope.isRelationshipField(field)) {
                     // append a formatter for relationships
                     cmd.formatter = relationshipFormatter;
+                    cmd.sortable = false;
                 }
 
                 if (scope.isTextArea(field.settings)) {
@@ -177,10 +178,14 @@
 
                 if (scope.isMapField(field)) {
                     cmd.formatter = mapFormatter;
+                    cmd.sortable = false;
                 }
 
                 if (scope.isComboboxField(field)) {
                     cmd.jsonmap = "fields." + i + ".displayValue";
+                    if (scope.isMultiSelectCombobox(field)) {
+                        cmd.sortable = false;
+                    }
                 }
 
                 colModel.push(cmd);
