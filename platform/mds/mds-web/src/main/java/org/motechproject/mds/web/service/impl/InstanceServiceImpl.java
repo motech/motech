@@ -710,7 +710,7 @@ public class InstanceServiceImpl implements InstanceService {
         Object parsedValue = null;
 
        if (Collection.class.isAssignableFrom(parameterType)) {
-           Class<?> collectionImplementation = TypeHelper.suggestCollectionImplementation(parameterType);
+           Class<?> collectionImplementation = TypeHelper.suggestCollectionImplementation((Class<? extends Collection>) parameterType);
            parsedValue = collectionImplementation == null ? new ArrayList() : collectionImplementation.newInstance();
 
            for (Object object : (Collection) fieldValue) {
