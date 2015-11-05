@@ -3,7 +3,7 @@
             data-toggle="modal" data-backdrop="static"  ng-disabled="field.nonEditable" ng-click="setRelatedEntity(field)" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance"
             ui-validate="{relationshipValidation: 'validateRelationshipPresence(field)'}" ng-model="field.value">
         <i class="fa fa-lg fa-plus"></i>
-        {{msg('mds.dataBrowsing.addRelatedInstance')}}
+        {{msg('mds.btn.addExisting')}} {{field.displayName}}
     </button>
     <br/>
     <div class="related-instances-block" ng-if="field.value.id !== undefined && field.value !== null">

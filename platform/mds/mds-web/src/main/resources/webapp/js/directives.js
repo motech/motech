@@ -1327,6 +1327,7 @@
                                         $('#pageInstancesTable_center').hide();
                                         $('#entityInstancesTable .ui-jqgrid-hdiv').hide();
                                     }
+                                    $('#instancesTable').jqGrid("setGridWidth", $('#entityInstancesTable').width(), true);
                                 }
                                 $('#entityInstancesTable .ui-jqgrid-hdiv').addClass("table-lightblue");
                                 $('#entityInstancesTable .ui-jqgrid-btable').addClass("table-lightblue");
@@ -1484,12 +1485,12 @@
     /**
     * Displays related instances data using jqGrid
     */
-    directives.directive('entityRelationsGrid', function ($rootScope, $route, $compile, $timeout, $http, MDSUtils) {
+    directives.directive('entityRelationsGrid', function ($timeout, $http, MDSUtils) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
                 var tableWidth, isHiddenGrid, eventResize, eventChange, relatedClass,
-                    filter = {removedIds: []},
+                    filter = {removedIds: [], addedIds: [], addedNewRecords: []},
                     elem = angular.element(element),
                     gridId = attrs.id,
                     gridRecords = 0,
@@ -1551,7 +1552,7 @@
                                                 objVal = scope.field.value.filter(function(item) {return item.id === parseInt(id, 10);})[0],
                                                 postdata = $('#' + gridId).jqGrid('getGridParam','postData');
 
-                                            filter.removedIds.push(id);
+                                            filter.removedIds.push(parseInt(id, 10));
                                             $.extend($('#' + gridId)[0].p.postData, { filters: JSON.stringify(filter) });
                                             $('#' + gridId).jqGrid('setGridParam', { search: true, postData: postdata });
                                             $('#' + attrs.id).jqGrid().trigger("reloadGrid");
@@ -1613,6 +1614,21 @@
                     // For correct sorting in jqgrid we need to convert back to the original name
                     e.target.p.sortname = backToReservedFieldName(fieldName);
                 });
+
+                scope.$watch('addedExistingRelatedDataTmp', function () {
+                    var postdataFilters,
+                        postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+                    if (postdata !== undefined) {
+                        postdataFilters = JSON.parse(postdata.filters);
+                        filter = postdataFilters;
+                        filter.addedIds = scope.getAddedExistingRelatedDataTmp(scope.field.id);
+                        $('#' + attrs.id).jqGrid('setGridParam', { postData: {filters: ''}});
+                        postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+                        $.extend(postdata, { filters: JSON.stringify(filter) });
+                        $('#' + attrs.id).jqGrid('setGridParam', { search: true, postData: postdata });
+                        $('#' + attrs.id).jqGrid().trigger("reloadGrid");
+                    }
+                }, true);
 
                 $(window).on('resize', function() {
                     clearTimeout(eventResize);

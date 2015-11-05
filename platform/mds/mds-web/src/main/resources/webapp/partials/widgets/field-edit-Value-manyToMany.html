@@ -3,7 +3,7 @@
             data-backdrop="static" ng-disabled="field.nonEditable" ng-click="setRelatedEntity(field)" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance"
             ui-validate="{relationshipValidation: 'validateRelationshipPresence(field)'}" ui-validate-watch="'field.value.length'" ng-model="field.value">
         <i class="fa fa-fw fa-plus"></i>
-        {{msg('mds.dataBrowsing.addRelatedInstance')}}
+        {{msg('mds.btn.addExisting')}} {{field.displayName}}
     </button>
     <br/>
     <div ng-repeat="obj in [].concat(field.value)">

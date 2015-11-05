@@ -3555,6 +3555,7 @@
                     if ($scope.editedField.displayValue[id] === undefined) {
                         $scope.editedField.value.push(data.value);
                         $scope.editedField.displayValue[id] = data.displayValue;
+                        $scope.addExistingRelatedData(field.id, data.value.id);
                         closeModal = true;
                     } else {
                         motechAlert('mds.info.instanceAlreadyRelated', 'mds.info');
@@ -3581,14 +3582,43 @@
            field.value = undefined;
         };
 
-        $scope.removedOneToManyRelatedDataTmp = [];
+        $scope.extractIdByFieldId = function (fieldId, relatedData, name) {
+            var result = [];
+            angular.forEach(relatedData, function (item) {
+                if (item.fieldId === parseInt(fieldId, 10)) {
+                    result.push(item[name]);
+                }
+            });
+            return result;
+        };
+
+        $scope.addedExistingRelatedDataTmp = [];
+
+        $scope.addExistingRelatedData = function (fieldid, relatedDataId) {
+            $scope.addedExistingRelatedDataTmp.push({fieldId: fieldid, addedIds: relatedDataId});
+        };
+
+        $scope.getAddedExistingRelatedDataTmp = function (fieldId) {
+           return $scope.extractIdByFieldId(fieldId, $scope.addedExistingRelatedDataTmp, 'addedIds');
+        };
+
+        $scope.removedRelatedDataTmp = [];
 
         $scope.removeManyRelatedData = function(field, relatedInstance) {
             if (field && relatedInstance !== undefined && relatedInstance.id !== undefined) {
-               $scope.removedOneToManyRelatedDataTmp.push({fieldId: field.id, relatedInstanceId: relatedInstance.id});
+               $scope.removedRelatedDataTmp.push({fieldId: field.id, removedIds: relatedInstance.id});
                field.displayValue[relatedInstance.id] = undefined;
                field.value.removeObject(relatedInstance);
             }
+        };
+
+        $scope.getRemovedRelatedDataTmp = function (fieldId) {
+            return $scope.extractIdByFieldId(fieldId, $scope.removedRelatedDataTmp, 'removedIds');
+        };
+
+        $scope.resetRelatedData = function () {
+            $scope.removedRelatedDataTmp = [];
+            $scope.addedExistingRelatedDataTmp = [];
         };
 
         $scope.getRelatedClass = function(field) {
@@ -3748,8 +3778,17 @@
         * Unselects adding or editing instance to allow user to return to entities list by modules
         */
         $scope.unselectInstance = function() {
-            if ($scope.previouslyEdited) {
-                var prev = $scope.previouslyEdited;
+            var prev;
+            if ($scope.baseExtended) {
+                prev = $scope.baseExtended;
+                $scope.selectEntityByClassName(prev.entityClassName, function() {
+                    $scope.editInstance(prev.instanceId);
+                    $scope.entityClassName = prev.entityClassName;
+                    $scope.baseExtended = null;
+                });
+                $scope.removeIdFromUrl();
+            } else if ($scope.previouslyEdited) {
+                prev = $scope.previouslyEdited;
                 $scope.selectEntityByClassName(prev.entityClassName, function() {
                     $scope.editInstance(prev.instanceId);
                     $scope.entityClassName = prev.entityClassName;
@@ -3771,6 +3810,7 @@
                 });
                 $scope.removeIdFromUrl();
             }
+            $scope.resetRelatedData();
             resizeLayout();
         };
 
