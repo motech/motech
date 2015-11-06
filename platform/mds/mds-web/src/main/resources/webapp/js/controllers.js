@@ -3494,6 +3494,36 @@
             });
         };
 
+        $scope.addNewRelatedInstance = function (field) {
+            var relatedClass = $scope.getRelatedClass(field);
+
+            motechConfirm('mds.confirm.disabledInstanceAddNew', 'mds.confirm', function (val) {
+                if (val) {
+                    $scope.baseExtended = {
+                        instanceId: $scope.selectedInstance,
+                        entityClassName: $scope.selectedEntity.className
+                    };
+
+                    $scope.instanceEditMode = false;
+
+                    $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
+                        Instances.newInstance({id: data.id}, function(data) {
+                            $scope.currentRecord = data;
+                            $scope.fields = data.fields;
+                            angular.forEach($scope.fields, function(field) {
+                                if ( field.type.typeClass === "java.util.List" && field.value !== null && field.value.length === 0 ) {
+                                    field.value = null;
+                                }
+                            });
+                            unblockUI();
+                        });
+                    }).error(function(response) {
+                        handleResponse('mds.error', 'mds.dataBrowsing.error.instancesList', response);
+                    });
+                }
+            });
+        };
+
         /**
         * Sets selected entity by module and entity name
         */
@@ -3779,9 +3809,18 @@
         * Unselects adding or editing instance to allow user to return to entities list by modules
         */
         $scope.unselectInstance = function() {
+            var prev;
             $scope.setVisibleIfExistFilters();
-            if ($scope.previouslyEdited) {
-                var prev = $scope.previouslyEdited;
+            if ($scope.baseExtended) {
+                prev = $scope.baseExtended;
+                $scope.selectEntityByClassName(prev.entityClassName, function() {
+                    $scope.editInstance(prev.instanceId);
+                    $scope.entityClassName = prev.entityClassName;
+                    $scope.baseExtended = null;
+                });
+                $scope.removeIdFromUrl();
+            } else if ($scope.previouslyEdited) {
+                prev = $scope.previouslyEdited;
                 $scope.selectEntityByClassName(prev.entityClassName, function() {
                     $scope.editInstance(prev.instanceId);
                     $scope.entityClassName = prev.entityClassName;

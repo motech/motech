@@ -1579,7 +1579,7 @@
                                         'Content-Type': 'application/x-www-form-urlencoded'
                                     },
                                     datatype: 'json',
-                                    mtype: "GET",
+                                    mtype: "POST",
                                     postData: {
                                         filters: (filter.removedIds !== null) ? JSON.stringify(filter) : ""
                                     },

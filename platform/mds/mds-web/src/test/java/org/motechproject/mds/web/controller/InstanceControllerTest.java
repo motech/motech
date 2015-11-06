@@ -37,7 +37,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.server.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
 
@@ -129,7 +129,7 @@ public class InstanceControllerTest {
         when(instanceService.getRelatedFieldValue(eq(1L), eq(6L), eq("relField"), any(QueryParams.class)))
                 .thenReturn(records);
 
-        controller.perform(get("/instances/1/instance/6/relField?rows=5&page=2&sortColumn=age&sortDirection=desc"))
+        controller.perform(post("/instances/1/instance/6/relField?rows=5&page=2&sortColumn=age&sortDirection=desc"))
             .andExpect(status().isOk()).andExpect(content().type(RestTestUtil.JSON_UTF8))
             .andExpect(content().string(new ObjectMapper().writeValueAsString(records)));
 

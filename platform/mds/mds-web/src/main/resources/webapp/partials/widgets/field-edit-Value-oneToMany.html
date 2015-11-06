@@ -8,12 +8,19 @@
                 {{msg('mds.btn.showHide')}}
             </button>
         </div>
-        <button class="btn btn-sm btn-default" target="_self" href="#instanceBrowserModal"  data-toggle="modal"
-                data-backdrop="static" ng-click="setRelatedEntity(field)" ng-disabled="field.nonEditable"  ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance"
-                ui-validate="{relationshipValidation: 'validateRelationshipPresence(field)'}" ui-validate-watch="'field.value.length'" ng-model="field.value">
-            <i class="fa fa-lg fa-plus"></i>
-            {{msg('mds.btn.addExisting')}} {{field.displayName}}
-        </button>
+        <div class="btn-group">
+            <button ng-click="addNewRelatedInstance(field)" type="button" class="btn btn-sm btn-default" ng-disabled="field.nonEditable"  ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
+                <i class="fa fa-lg fa-plus"></i> {{msg('mds.btn.addNew')}} {{field.displayName}}
+            </button>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-sm btn-default" target="_self" href="#instanceBrowserModal" data-toggle="modal"
+                    data-backdrop="static" ng-click="setRelatedEntity(field)" ng-disabled="field.nonEditable"  ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance"
+                    ui-validate="{relationshipValidation: 'validateRelationshipPresence(field)'}" ui-validate-watch="'field.value.length'" ng-model="field.value">
+                <i class="fa fa-lg fa-plus"></i>
+                {{msg('mds.btn.addExisting')}} {{field.displayName}}
+            </button>
+        </div>
     </div>
     <div id="instance_relationsTable_{{field.id}}" class="overrideJqgridTable margin-before">
         <table id="relationsTable_{{field.id}}" field-id="{{field.id}}" relations-field-grid="{{field}}" entity-relations-grid="pageRelationsTable_{{field.id}}"></table>
