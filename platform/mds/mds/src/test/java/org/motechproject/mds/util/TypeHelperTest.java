@@ -10,12 +10,16 @@ import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -211,6 +215,21 @@ public class TypeHelperTest {
         assertEquals(enumSet, TypeHelper.parse("ONE, TWO, THREE", Set.class.getName(), TestEnum.class.getName()));
         assertEquals(enumSet, TypeHelper.parse(enumSet, Set.class.getName(), TestEnum.class.getName()));
         assertEquals("[one, two, three, four and five]", TypeHelper.parse("one\ntwo\nthree\nfour and five\n", Collection.class).toString());
+    }
+
+    @Test
+    public void shouldSuggestCollectionImplementations() {
+        // interfaces
+        assertEquals(ArrayList.class, TypeHelper.suggestCollectionImplementation(List.class));
+        assertEquals(HashSet.class, TypeHelper.suggestCollectionImplementation(Set.class));
+        assertEquals(TreeSet.class, TypeHelper.suggestCollectionImplementation(SortedSet.class));
+        // classes
+        assertEquals(ArrayList.class, TypeHelper.suggestCollectionImplementation(ArrayList.class));
+        assertEquals(ArrayDeque.class, TypeHelper.suggestCollectionImplementation(ArrayDeque.class));
+        // Datanucleus classes
+        assertEquals(ArrayList.class, TypeHelper.suggestCollectionImplementation(org.datanucleus.store.types.backed.List.class));
+        assertEquals(ArrayList.class, TypeHelper.suggestCollectionImplementation(org.datanucleus.store.types.simple.List.class));
+        assertEquals(HashSet.class, TypeHelper.suggestCollectionImplementation(org.datanucleus.store.types.backed.Set.class));
     }
 
     private Map<String, String> mapFromUI(String value) {

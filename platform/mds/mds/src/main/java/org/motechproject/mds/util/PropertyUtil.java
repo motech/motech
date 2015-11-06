@@ -1,15 +1,14 @@
 package org.motechproject.mds.util;
 
-import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.ex.object.PropertyCopyException;
+import org.motechproject.mds.ex.object.PropertyReadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
-import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -18,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -28,37 +28,9 @@ import java.util.Set;
 public final class PropertyUtil extends PropertyUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(PropertyUtil.class);
 
+    private static final NoOpConverter NO_OP_CONVERTER = new NoOpConverter();
+
     private PropertyUtil() {
-    }
-
-    public static PropertyDescriptor[] getPropertyDescriptors(Object bean) {
-        PropertyDescriptor[] descriptors = PropertyUtils.getPropertyDescriptors(bean);
-
-        for (PropertyDescriptor descriptor : descriptors) {
-            boolean isBoolean = Boolean.class.isAssignableFrom(descriptor.getPropertyType());
-            boolean isPrimitiveBoolean = boolean.class.isAssignableFrom(descriptor.getPropertyType());
-            boolean hasReadMethod = null != descriptor.getReadMethod();
-
-            if ((isBoolean || isPrimitiveBoolean) && !hasReadMethod) {
-                String propName = StringUtils.capitalize(descriptor.getName());
-                Class<?> beanClass = bean.getClass();
-
-                Method get = MethodUtils.getMatchingAccessibleMethod(beanClass, "get" + propName, new Class[0]);
-                Method is = MethodUtils.getMatchingAccessibleMethod(beanClass, "is" + propName, new Class[0]);
-
-                try {
-                    if (null != get) {
-                        descriptor.setReadMethod(get);
-                    } else if (null != is) {
-                        descriptor.setReadMethod(is);
-                    }
-                } catch (IntrospectionException e) {
-                    LOGGER.error("Can't set read method for property: {}", propName, e);
-                }
-            }
-        }
-
-        return descriptors;
     }
 
     public static void safeSetCollectionProperty(Object bean, String name, Collection values) {
@@ -137,23 +109,29 @@ public final class PropertyUtil extends PropertyUtils {
     }
 
     public static void copyProperties(Object target, Object object) {
-        copyProperties(target, object, null);
+        copyProperties(target, object, null, null);
     }
 
-    public static void copyProperties(Object target, Object object,
-                                      Set<String> fieldsToUpdate) {
-        Class objectClass = target.getClass();
+    public static void copyProperties(Object target, Object object, ValueConverter converter) {
+        copyProperties(target, object, converter, null);
+    }
 
-        for (PropertyDescriptor descriptor :
-                PropertyUtils.getPropertyDescriptors(objectClass)) {
+    public static void copyProperties(Object target, Object object, ValueConverter converter,
+                                      Set<String> fieldsToUpdate) {
+        ValueConverter converterToUse = converter == null ? NO_OP_CONVERTER : converter;
+
+        Class objectClass = object.getClass();
+
+        for (PropertyDescriptor descriptor : PropertyUtils.getPropertyDescriptors(objectClass)) {
 
             if (fieldsToUpdate != null && !fieldsToUpdate.contains(descriptor.getName())) {
-                // if we have a list of fields to udpate, then skip if this field is not on it
+                // if we have a list of fields to update, then skip if this field is not on it
                 continue;
             }
 
-            if (ArrayUtils.contains(Constants.Util.GENERATED_FIELD_NAMES, descriptor.getName())) {
-                // we skip generated fields
+            if (fieldsToUpdate == null && ArrayUtils.contains(Constants.Util.GENERATED_FIELD_NAMES,
+                    descriptor.getName())) {
+                // we skip generated fields unless we have fields explicitly provided
                 continue;
             }
 
@@ -162,12 +140,60 @@ public final class PropertyUtil extends PropertyUtils {
             }
 
             try {
-                Object val = readValue(object, descriptor);
-                writeValue(target, val, descriptor);
-            } catch (InvocationTargetException | IllegalAccessException e) {
+                // target and value can have different classes - for example when copying to history
+                PropertyDescriptor targetDescriptor = PropertyUtils.getPropertyDescriptor(target, descriptor.getName());
+                if (targetDescriptor == null) {
+                    // skip if this field is not present in the target
+                    continue;
+                }
+
+                Object val = readValue(object, descriptor, converterToUse);
+                writeValue(target, val, targetDescriptor);
+            } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
                 throw new PropertyCopyException("Unable to copy properties for " + objectClass.getName(), e);
             }
         }
+    }
+
+    public static List<String> findChangedFields(Object newInstance, Object oldInstance) {
+        return findChangedFields(newInstance, oldInstance, null);
+    }
+
+    public static List<String> findChangedFields(Object newInstance, Object oldInstance, ValueConverter valueConverter) {
+        ValueConverter converterToUse = valueConverter == null ? NO_OP_CONVERTER : valueConverter;
+
+        Class objectClass = newInstance.getClass();
+
+        List<String> changedProperties = new ArrayList<>();
+
+        for (PropertyDescriptor newValueDescriptor : PropertyUtils.getPropertyDescriptors(objectClass)) {
+            String fieldName = newValueDescriptor.getName();
+
+            // skip the id field
+            if (Constants.Util.ID_FIELD_NAME.equals(fieldName)) {
+                continue;
+            }
+
+            if (readWriteAccessible(objectClass, newValueDescriptor)) {
+                try {
+                    // target and value can have different classes - for example when copying to history
+                    PropertyDescriptor oldValueDescription = PropertyUtils.getPropertyDescriptor(oldInstance, fieldName);
+                    // check only if two descriptors are available
+                    if (oldValueDescription != null) {
+                        Object newValue = readValue(newInstance, newValueDescriptor, converterToUse);
+                        Object oldValue = readValue(oldInstance, oldValueDescription, converterToUse);
+
+                        if (!Objects.equals(newValue, oldValue)) {
+                            changedProperties.add(fieldName);
+                        }
+                    }
+                } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                    throw new PropertyReadException("Unable to compare properties for " + objectClass.getName(), e);
+                }
+            }
+        }
+
+        return changedProperties;
     }
 
     private static boolean readWriteAccessible(Class objectClass, PropertyDescriptor descriptor) {
@@ -190,17 +216,21 @@ public final class PropertyUtil extends PropertyUtils {
         return true;
     }
 
-    private static Object readValue(Object obj, PropertyDescriptor descriptor)
+    private static Object readValue(Object obj, PropertyDescriptor descriptor, ValueConverter converter)
             throws InvocationTargetException, IllegalAccessException {
         Method readMethod = descriptor.getReadMethod();
+
+        Object val;
 
         if (readMethod == null) {
             // if no getter we get value through the field
             Field field = ReflectionUtils.findField(obj.getClass(), descriptor.getName());
-            return field.get(obj);
+            val = field.get(obj);
         } else {
-            return readMethod.invoke(obj);
+            val = readMethod.invoke(obj);
         }
+
+        return converter.convert(val, descriptor);
     }
 
     private static void writeValue(Object target, Object val, PropertyDescriptor descriptor)
@@ -220,5 +250,16 @@ public final class PropertyUtil extends PropertyUtils {
 
     private static boolean fieldNotAccessible(Field field) {
         return field == null || !field.isAccessible();
+    }
+
+    public interface ValueConverter {
+        Object convert(Object value, PropertyDescriptor descriptor);
+    }
+
+    public static class NoOpConverter implements ValueConverter {
+        @Override
+        public Object convert(Object value, PropertyDescriptor descriptor) {
+            return value;
+        }
     }
 }

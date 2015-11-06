@@ -21,22 +21,6 @@ public interface HistoryService {
     void record(Object instance);
 
     /**
-     * Removes all historical data with information what changes were made on the given instance
-     * of entity.
-     *
-     * @param instance an instance created from the given entity definition.
-     */
-    void remove(Object instance);
-
-    /**
-     * Sets the trash flag for historical data related with the given instance object.
-     *
-     * @param instance an instance created from the given entity definition.
-     * @param flag     true if instance was moved to trash; otherwise false.
-     */
-    void setTrashFlag(Object instance, Object trash, boolean flag);
-
-    /**
      * Returns the historical data for the given instance. This method return historical data only
      * for objects that are not in the MDS trash. For trash instances the return value will be
      * incorrect.
