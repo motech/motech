@@ -36,8 +36,8 @@
             <bean id="$entry.repository" class="$entry.repository" />
         #end
 
-        #if ( $StringUtils.isNotBlank( $entry.serviceName ) )
-            <bean id="$entry.serviceName" class="$entry.serviceName">
+        #if ( $StringUtils.isNotBlank( $entry.serviceClass ) )
+            <bean id="$entry.serviceName" class="$entry.serviceClass">
                 #if ( $StringUtils.isNotBlank( $entry.repository ) )
                 <property name="repository" ref="$entry.repository"/>
                 #end
@@ -59,7 +59,7 @@
   <!-- Override the properties, adding listener entries -->
   <bean id="mdsSqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
       <constructor-arg>
-        <bean factory-bean="jdoListenerRegister" factory-method="addJdoListener">
+        <bean factory-bean="jdoListenerRegister" factory-method="addJdoListeners">
             <constructor-arg>
                 <bean factory-bean="mdsConfig" factory-method="getDataNucleusProperties" />
             </constructor-arg>

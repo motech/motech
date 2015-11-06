@@ -64,6 +64,7 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
 import static org.motechproject.mds.util.Constants.Util.CREATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.CREATOR_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.DATANUCLEUS;
+import static org.motechproject.mds.util.Constants.Util.FALSE;
 import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
@@ -85,6 +86,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             CREATOR_FIELD_NAME, OWNER_FIELD_NAME, CREATION_DATE_FIELD_NAME,
             MODIFIED_BY_FIELD_NAME, MODIFICATION_DATE_FIELD_NAME
     };
+
+    private static final String ID_SUFFIX = "_ID";
 
     private AllEntities allEntities;
 
@@ -143,21 +146,24 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         for (PackageMetadata pmd : jdoMetadata.getPackages()) {
             for (ClassMetadata cmd : pmd.getClasses()) {
                 String className = String.format("%s.%s", pmd.getName(), cmd.getName());
-                String trimmedClassName = ClassName.trimTrashHistorySuffix(className);
-                Entity entity = allEntities.retrieveByClassName(trimmedClassName);
                 EntityType entityType = EntityType.forClassName(className);
 
-                if (null != entity) {
-                    for (MemberMetadata mmd : cmd.getMembers()) {
-                        CollectionMetadata collMd = mmd.getCollectionMetadata();
-                        Field field = entity.getField(mmd.getName());
+                if (entityType == EntityType.STANDARD) {
 
-                        if (null != field && field.getType().isRelationship()) {
-                            fixRelationMetadata(pmd, field, entityType);
-                        }
+                    Entity entity = allEntities.retrieveByClassName(className);
 
-                        if (null != collMd) {
-                            fixCollectionMetadata(collMd);
+                    if (null != entity) {
+                        for (MemberMetadata mmd : cmd.getMembers()) {
+                            CollectionMetadata collMd = mmd.getCollectionMetadata();
+                            Field field = entity.getField(mmd.getName());
+
+                            if (null != field && field.getType().isRelationship()) {
+                                fixRelationMetadata(pmd, field);
+                            }
+
+                            if (null != collMd) {
+                                fixCollectionMetadata(collMd);
+                            }
                         }
                     }
                 }
@@ -172,22 +178,20 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private void fixCollectionMetadata(CollectionMetadata collMd) {
         String elementType = collMd.getElementType();
-        String trimmedElementType = ClassName.trimTrashHistorySuffix(elementType);
 
-        if (null != MotechClassPool.getEnhancedClassData(trimmedElementType)) {
+        if (null != MotechClassPool.getEnhancedClassData(elementType)) {
             collMd.setEmbeddedElement(false);
         }
     }
 
-    private void fixRelationMetadata(PackageMetadata pmd, Field field, EntityType entityType) {
-
+    private void fixRelationMetadata(PackageMetadata pmd, Field field) {
         RelationshipHolder holder = new RelationshipHolder(field);
 
         //for bidirectional 1:1 and 1:N relationship we're letting RDBMS take care of cascade deletion
         //this must be set here cause we can't get related class metadata before metadata enhancement
-        if (shouldSetCascadeDelete(holder, entityType)) {
+        if (shouldSetCascadeDelete(holder, EntityType.STANDARD)) {
 
-            String relatedClass = ClassName.getSimpleName(entityType.getName(holder.getRelatedClass()));
+            String relatedClass = ClassName.getSimpleName(holder.getRelatedClass());
             MemberMetadata rfmd = getFieldMetadata(getClassMetadata(pmd, relatedClass), holder.getRelatedField());
 
             ForeignKeyMetadata rfkmd = rfmd.newForeignKeyMetadata();
@@ -400,53 +404,68 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private FieldMetadata setRelationshipMetadata(ClassMetadata cmd, ClassData classData, Field field,
                                          EntityType entityType, Class<?> definition) {
-        RelationshipHolder holder = new RelationshipHolder(classData, field);
 
+        RelationshipHolder holder = new RelationshipHolder(classData, field);
         FieldMetadata fmd = cmd.newFieldMetadata(getNameForMetadata(field));
 
         addDefaultFetchGroupMetadata(fmd, definition);
 
-        //For standard classes, we always set persist and update cascades to true
-        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-persist",
-                entityType != EntityType.STANDARD ? Boolean.toString(holder.isCascadePersist()) : TRUE);
-        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-update",
-                entityType != EntityType.STANDARD ? Boolean.toString(holder.isCascadeUpdate()) : TRUE);
-
-        processRelationship(fmd, holder, field, definition, entityType);
+        if (entityType == EntityType.STANDARD) {
+            processRelationship(fmd, holder, field, definition);
+        } else {
+            processHistoryTrashRelationship(cmd, fmd, holder);
+        }
 
         return fmd;
     }
 
-    private void processRelationship(FieldMetadata fmd, RelationshipHolder holder, Field field, Class<?> definition, EntityType entityType) {
+    private void processRelationship(FieldMetadata fmd, RelationshipHolder holder, Field field, Class<?> definition) {
         String relatedClass = holder.getRelatedClass();
 
+        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-persist", holder.isCascadePersist() ? TRUE : FALSE);
+        fmd.newExtensionMetadata(DATANUCLEUS, "cascade-update", holder.isCascadeUpdate() ? TRUE : FALSE);
+
         if (holder.isOneToMany() || holder.isManyToMany()) {
-            setUpCollectionMetadata(fmd, relatedClass, holder, entityType);
+            setUpCollectionMetadata(fmd, relatedClass, holder, EntityType.STANDARD);
         } else if (holder.isOneToOne()) {
             fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
 
             //for bidirectional 1:1 we're setting foreign key with cascade deletion after metadata enhancement
             if (holder.getRelatedField() == null) {
-                fmd.setDependent(holder.isCascadeDelete() || entityType == EntityType.TRASH);
+                fmd.setDependent(holder.isCascadeDelete());
             }
         }
 
         if (holder.isManyToMany()) {
-            addManyToManyMetadata(fmd, holder, field, definition, entityType);
-        }
-
-        if (entityType == EntityType.TRASH || entityType == EntityType.HISTORY) {
-            addMappedByToHistoryTrashMetadata(fmd, field, definition);
+            addManyToManyMetadata(fmd, holder, field, definition);
         }
     }
 
-    private void addManyToManyMetadata(FieldMetadata fmd, RelationshipHolder holder, Field field, Class<?> definition, EntityType entityType) {
+    private void processHistoryTrashRelationship(ClassMetadata cmd, FieldMetadata fmd, RelationshipHolder holder) {
+        if (holder.isOneToOne() || holder.isManyToOne()) {
+            fmd.setColumn(holder.getFieldName() + ID_SUFFIX);
+        } else {
+            fmd.setTable(cmd.getTable() + '_' + holder.getFieldName());
+
+            CollectionMetadata collMd = fmd.newCollectionMetadata();
+            collMd.setElementType(Long.class.getName());
+
+            JoinMetadata joinMd = fmd.newJoinMetadata();
+            ColumnMetadata joinColumnMd = joinMd.newColumnMetadata();
+            joinColumnMd.setName(cmd.getName() + ID_SUFFIX);
+
+            ElementMetadata elementMd = fmd.newElementMetadata();
+            elementMd.setColumn(holder.getFieldName() + ID_SUFFIX);
+        }
+    }
+
+    private void addManyToManyMetadata(FieldMetadata fmd, RelationshipHolder holder, Field field, Class<?> definition) {
         java.lang.reflect.Field fieldDefinition = FieldUtils.getDeclaredField(definition, field.getName(), true);
         Join join = fieldDefinition.getAnnotation(Join.class);
 
         JoinMetadata jmd = null;
         // Join metadata must be present at both sides of the M:N relation in Datanucleus 3.2
-        if (join == null || entityType != EntityType.STANDARD) {
+        if (join == null) {
             jmd = fmd.newJoinMetadata();
             jmd.setOuter(false);
         }
@@ -456,14 +475,12 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             Persistent persistent = fieldDefinition.getAnnotation(Persistent.class);
             Element element = fieldDefinition.getAnnotation(Element.class);
 
-            setTableNameMetadata(fmd, persistent, field, holder, entityType);
-            setElementMetadata(fmd, element, holder, entityType);
+            setTableNameMetadata(fmd, persistent, field, holder, EntityType.STANDARD);
+            setElementMetadata(fmd, element, holder, EntityType.STANDARD);
 
-            if (join != null && StringUtils.isNotEmpty(join.column()) && entityType != EntityType.STANDARD) {
-                setJoinMetadata(jmd, fmd, join.column());
-            } else if (join == null || StringUtils.isEmpty(join.column())) {
-                setJoinMetadata(jmd, fmd, ClassName.getSimpleName(field.getEntity().getClassName()) + "_ID".toUpperCase());
-            }
+            if (join == null || StringUtils.isEmpty(join.column())) {
+                setJoinMetadata(jmd, fmd, ClassName.getSimpleName(field.getEntity().getClassName()).toUpperCase() + ID_SUFFIX);
+           }
         }
     }
 
@@ -473,7 +490,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             emd.setColumn(element.column());
         } else if (element == null || StringUtils.isEmpty(element.column())) {
             ElementMetadata emd = fmd.newElementMetadata();
-            emd.setColumn(ClassName.getSimpleName(ClassName.trimTrashHistorySuffix(holder.getRelatedClass()) + "_ID").toUpperCase());
+            emd.setColumn((ClassName.getSimpleName(holder.getRelatedClass()) + ID_SUFFIX).toUpperCase());
         }
     }
 
@@ -494,17 +511,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             fmd.setTable(entityType.getTableName(persistent.table()));
         } else if (persistent == null || StringUtils.isEmpty(persistent.table())) {
             fmd.setTable(getJoinTableName(field.getEntity().getModule(), field.getEntity().getNamespace(), field.getName(), holder.getRelatedField()));
-        }
-    }
-
-    private void addMappedByToHistoryTrashMetadata(FieldMetadata fmd, Field field, Class<?> definition) {
-        Persistent annotation = FieldUtils.getDeclaredField(definition, field.getName(), true).getAnnotation(Persistent.class);
-        if (annotation != null) {
-            String mappedBy = annotation.mappedBy();
-
-            if (StringUtils.isNotEmpty(mappedBy)) {
-                fmd.setMappedBy(mappedBy);
-            }
         }
     }
 
@@ -628,7 +634,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
 
         builder.append("Join_").
-                append(ClassName.trimTrashHistorySuffix(inversedSideNameWithSuffix)).append("_").
+                append(inversedSideNameWithSuffix).append("_").
                 append(owningSideName).
                 append(ClassName.getEntityTypeSuffix(inversedSideNameWithSuffix));
 

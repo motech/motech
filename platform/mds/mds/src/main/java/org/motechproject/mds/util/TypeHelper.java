@@ -1,9 +1,11 @@
 package org.motechproject.mds.util;
 
+import org.apache.commons.beanutils.ConstructorUtils;
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.collections.bidimap.UnmodifiableBidiMap;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
@@ -48,8 +50,8 @@ public final class TypeHelper {
     private static final DateTimeFormatter DTF;
     private static final BidiMap PRIMITIVE_TYPE_MAP;
     private static final Map<String, Class<?>> PRIMITIVE_WRAPPER_NAME_MAP;
-    private static final Map<String, Class> COLLECTION_IMPLEMENTATIONS;
     private static final Map<String, Set<String>> MAP_SUPPORTED_TYPES;
+    private static final Map<String, Class<? extends Collection>> COLLECTION_IMPLEMENTATIONS;
 
     static {
         DateTimeParser[] parsers = {
@@ -805,7 +807,8 @@ public final class TypeHelper {
         }
 
         try {
-            return suggestCollectionImplementation(TypeHelper.class.getClassLoader().loadClass(collectionClass));
+            return suggestCollectionImplementation((Class<? extends Collection>)
+                    TypeHelper.class.getClassLoader().loadClass(collectionClass));
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException("Unable to load collection class", e);
         }
@@ -818,11 +821,36 @@ public final class TypeHelper {
      * @param collectionClass collection class to find implementation for
      * @return concrete class
      */
-    public static Class suggestCollectionImplementation(Class collectionClass) {
+    public static Class<? extends Collection> suggestCollectionImplementation(Class<? extends Collection> collectionClass) {
+        Class<? extends Collection> collClass = null;
+
         if (collectionClass != null && (collectionClass.isInterface() || Modifier.isAbstract(collectionClass.getModifiers()))) {
-            return COLLECTION_IMPLEMENTATIONS.get(collectionClass.getName());
+            // for interface such as List (or abstract classes), go to the implementation map
+            collClass = COLLECTION_IMPLEMENTATIONS.get(collectionClass.getName());
+        } else if (collectionClass != null &&
+                ConstructorUtils.getAccessibleConstructor(collectionClass, new Class[0]) == null) {
+            // this is an implementation class, but no default constructor, datanucleus collection for example
+            // go through interfaces and try to find an interface we have in the collection map
+            for (Object intClassObj : ClassUtils.getAllInterfaces(collectionClass)) {
+                Class intClass = (Class) intClassObj;
+                collClass = COLLECTION_IMPLEMENTATIONS.get(intClass.getName());
+                if (collClass != null) {
+                    break;
+                }
+            }
         } else {
-            return collectionClass;
+            // this is an implementation that can be instantiated, return it
+            collClass = collectionClass;
+        }
+        return collClass == null ? ArrayList.class : collClass; // NOPMD - bug in PMD, objects to ArrayList.class here
+    }
+
+    public static Collection suggestAndCreateCollectionImplementation(Class<? extends Collection> collectionClass) {
+        Class<? extends Collection> suggestedClass = suggestCollectionImplementation(collectionClass);
+        try {
+            return suggestedClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new IllegalStateException("Unable to instantiate collection fo class " + suggestedClass.getName(), e);
         }
     }
 
