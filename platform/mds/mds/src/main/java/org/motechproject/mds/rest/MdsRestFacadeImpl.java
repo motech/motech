@@ -25,12 +25,14 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.BlobDeserializer;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.PropertyUtil;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -135,7 +137,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
             T instance = OBJECT_MAPPER.readValue(instanceBody, entityClass);
 
             T filteredInstance = entityClass.newInstance();
-            PropertyUtil.copyProperties(filteredInstance, instance, new HashSet<>(restFields));
+            PropertyUtil.copyProperties(filteredInstance, instance, null, new HashSet<>(restFields));
 
             return RestProjection.createProjection(dataService.create(filteredInstance), restFields, blobFields);
         } catch (IOException e) {
@@ -154,7 +156,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
         try {
             T instance = OBJECT_MAPPER.readValue(instanceBody, entityClass);
 
-            T result = dataService.updateFromTransient(instance, new HashSet<>(restFields));
+            T result = dataService.updateFromTransient(instance, fieldsToUpdate());
 
             return RestProjection.createProjection(result, restFields, blobFields);
         } catch (IOException e) {
@@ -284,5 +286,12 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
                 blobFields.add(field.getBasic().getName());
             }
         }
+    }
+
+    private Set<String> fieldsToUpdate() {
+        // we don't want to be updating auto generated fields
+        Set<String> fields = new HashSet<>(restFields);
+        fields.removeAll(Arrays.asList(Constants.Util.GENERATED_FIELD_NAMES));
+        return fields;
     }
 }

@@ -1,5 +1,7 @@
 package org.motechproject.mds.repository;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Tracking;
 import org.motechproject.mds.dto.EntityDto;
@@ -83,11 +85,26 @@ public class AllEntities extends MotechDataRepository<Entity> {
 
     public List<Entity> retrieveBySymbolicName(String bundleSymbolicName) {
         List<Entity> entities = new ArrayList<>();
+
         for (Entity entity : retrieveAll("bundleSymbolicName", bundleSymbolicName)) {
             if (entity.isActualEntity()) {
                 entities.add(entity);
             }
         }
+
+        return entities;
+    }
+
+    public List<Entity> getActualEntities() {
+        List<Entity> entities = new ArrayList<>(retrieveAll());
+
+        CollectionUtils.filter(entities, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                Entity entity = (Entity) object;
+                return entity.isActualEntity();
+            }
+        });
 
         return entities;
     }

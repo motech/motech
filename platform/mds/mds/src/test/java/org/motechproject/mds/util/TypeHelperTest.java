@@ -13,12 +13,16 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -237,6 +241,21 @@ public class TypeHelperTest {
         assertEquals(asList("one", "two", "three"), TypeHelper.asCollection(asList("one", "two", "three")));
         assertEquals(singletonList("one"), TypeHelper.asCollection("one"));
         assertEquals(Collections.emptyList(), TypeHelper.asCollection(null));
+    }
+
+    @Test
+    public void shouldSuggestCollectionImplementations() {
+        // interfaces
+        assertEquals(ArrayList.class, TypeHelper.suggestCollectionImplementation(List.class));
+        assertEquals(HashSet.class, TypeHelper.suggestCollectionImplementation(Set.class));
+        assertEquals(TreeSet.class, TypeHelper.suggestCollectionImplementation(SortedSet.class));
+        // classes
+        assertEquals(ArrayList.class, TypeHelper.suggestCollectionImplementation(ArrayList.class));
+        assertEquals(ArrayDeque.class, TypeHelper.suggestCollectionImplementation(ArrayDeque.class));
+        // Datanucleus classes
+        assertEquals(ArrayList.class, TypeHelper.suggestCollectionImplementation(org.datanucleus.store.types.wrappers.List.class));
+        assertEquals(ArrayList.class, TypeHelper.suggestCollectionImplementation(org.datanucleus.store.types.wrappers.backed.List.class));
+        assertEquals(HashSet.class, TypeHelper.suggestCollectionImplementation(org.datanucleus.store.types.wrappers.backed.Set.class));
     }
 
     private Map<String, String> mapFromUI(String value) {

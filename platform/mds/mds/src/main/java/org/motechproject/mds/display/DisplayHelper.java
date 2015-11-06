@@ -80,7 +80,10 @@ public final class DisplayHelper {
     private static Map<Long, String> buildDisplayValuesMapForRelationship(Collection values, Integer maxLength) {
         Map<Long, String> displayValues = new LinkedHashMap<>();
         for (Object obj : values) {
-            Long key = (Long) PropertyUtil.safeGetProperty(obj, Constants.Util.ID_FIELD_NAME);
+            Long key = (obj instanceof Long) ?
+                    (Long) obj :
+                    (Long) PropertyUtil.safeGetProperty(obj, Constants.Util.ID_FIELD_NAME);
+
             String value = buildDisplayValueForRelationship(obj, maxLength);
 
             displayValues.put(key, value);
@@ -89,7 +92,12 @@ public final class DisplayHelper {
     }
 
     private static String buildDisplayValueForRelationship(Object value, Integer maxLength) {
+        if (value instanceof Long) {
+            return "#" + value;
+        }
+
         String uiRepresentation = UIRepresentationUtil.uiRepresentationString(value);
+
         if (uiRepresentation != null) {
             return applyMaxLength(uiRepresentation, maxLength);
         } else if (hasCustomToString(value)) {

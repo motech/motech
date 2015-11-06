@@ -112,23 +112,29 @@ public interface MotechDataService<T> {
     void delete(String primaryKeyName, Object value);
 
     /**
-     * Retrieves an instance, that has been moved to trash, by its id. These instances are
-     * not retrieved with other retrieve methods.
-     *
-     * @param instanceId id of the instance, that has been moved to trash
-     * @param entityId id of the entity
-     * @return instance of the given id, from trash
+     * Finds a trash instance for the entity by ID.
+     * @param trashId the id of the trash instance
+     * @return the instance from trash
      */
-    T findTrashInstanceById(Object instanceId, Object entityId);
+    Object findTrashInstanceById(Long trashId);
 
     /**
-     * Brings back instance from trash. This will be in fact a new instance, that has got
-     * exactly the same values as previous instance, except of its id.
-     *
-     * @param newInstance new instance representation
-     * @param trash instance from the trash
+     * Brings an instance back from trash.
+     * @param trashId the id of the trash instance
+     * @return the brought back instance
+     * @throws org.motechproject.mds.ex.TrashInstanceNotFoundException if the trash instance with the given id was not found
      */
-    void revertFromTrash(Object newInstance, Object trash);
+    T revertFromTrash(Long trashId);
+
+    /**
+     * Reverts data from a historical revision of the given instance.
+     * @param instanceId the id of the instance which will be reverted
+     * @param historicalId the id of the historical revision that we are reverting to
+     * @return the reverted instance
+     * @throws org.motechproject.mds.ex.HistoryInstanceNotFoundException if the historical instance with historicalId was not found
+     * @throws org.motechproject.mds.ex.object.ObjectNotFoundException if entity with instanceId was not found
+     */
+    T revertToHistoricalRevision(Long instanceId, Long historicalId);
 
     /**
      * Gets the total number of instances.
@@ -236,9 +242,22 @@ public interface MotechDataService<T> {
     Class<T> getClassType();
 
     /**
-     * Returns the name of the version field. The version field is not required so this method can return null value.
+     * Returns the name of the version field for this entity.
      *
      * @return the name of the version field
      */
     String getVersionFieldName();
+
+
+    /**
+     * Returns the schema version for this service's entity.
+     * @return the schema version
+     */
+    Long getSchemaVersion();
+
+    /**
+     * Checks whether the entity for this service has history recording enabled.
+     * @return true if the entity has history recording enabled, false otherwise
+     */
+    boolean recordHistory();
 }

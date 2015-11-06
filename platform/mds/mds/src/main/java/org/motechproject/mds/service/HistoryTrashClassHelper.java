@@ -1,8 +1,6 @@
-package org.motechproject.mds.service.impl.history;
+package org.motechproject.mds.service;
 
-import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.EntityType;
-import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.util.ClassName;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleWiring;
@@ -44,28 +42,12 @@ public final class HistoryTrashClassHelper {
         return null == instance ? "" : instance.getClass().getName();
     }
 
-    public static String getMethodParameterType(Type type, ComboboxHolder holder) {
-        String methodParameterType;
-
-        if (type.isCombobox() && null != holder) {
-            methodParameterType = holder.getTypeClassName();
-        } else {
-            methodParameterType = type.getTypeClassName();
-        }
-
-        return methodParameterType;
-    }
-
     public static String currentVersion(Class<?> historyClass) {
         return uncapitalize(historyClass.getSimpleName() + "CurrentVersion");
     }
 
     public static String schemaVersion(Class<?> historyClass) {
         return uncapitalize(historyClass.getSimpleName() + "SchemaVersion");
-    }
-
-    public static String trashFlag(Class<?> historyClass) {
-        return uncapitalize(historyClass.getSimpleName() + "FromTrash");
     }
 
     private HistoryTrashClassHelper() {
