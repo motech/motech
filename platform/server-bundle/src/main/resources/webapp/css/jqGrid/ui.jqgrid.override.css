@@ -75,6 +75,7 @@
     border-bottom-style: none;
     border-radius: 4px 4px 0 0;
     overflow: hidden;
+    box-sizing: border-box;
 }
 
 .overrideJqgridTable#instanceBrowserTable .ui-jqgrid.ui-widget-content {
@@ -166,3 +167,29 @@ table.ui-pg-table {
     border: 1px solid rgba(104, 164, 191, 1);
 }
 
+.overrideJqgridTable .ui-jqgrid .ui-paging-info {
+    margin-left: 4px;
+    display: inline;
+}
+
+.ui-jqgrid table {
+    border-collapse: separate;
+    border-style: none;
+}
+
+div.ui-jqgrid-view table.ui-jqgrid-btable td {
+    border-left-style: none
+}
+
+div.ui-jqgrid-view table.ui-jqgrid-btable th {
+    border-left-style: none
+}
+
+.ui-jqgrid .ui-pg-table {
+    padding-bottom: 0;
+}
+
+.ui-jqgrid .ui-jqgrid-hdiv {
+    height: auto;
+    overflow-y: hidden;
+}

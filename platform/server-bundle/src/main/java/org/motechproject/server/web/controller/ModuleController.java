@@ -4,9 +4,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
-import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.server.web.dto.ModuleConfig;
 import org.motechproject.server.web.dto.ModuleMenu;
 import org.motechproject.server.web.form.UserInfo;
@@ -134,7 +134,7 @@ public class ModuleController {
         return uiFrameworkService.getRestDocLinks().get(moduleName);
     }
 
-
+    
     public UserInfo getUser(HttpServletRequest request) {
         String lang = localeService.getUserLocale(request).getLanguage();
         boolean securityLaunch = request.getUserPrincipal() != null;

@@ -3457,6 +3457,7 @@
         */
         $scope.addInstance = function(module, entityName) {
             blockUI();
+            $scope.setHiddenFilters();
 
             // load the entity if coming from the 'Add' link in the main DataBrowser page
             if (!$scope.selectedEntity) {
@@ -3778,17 +3779,9 @@
         * Unselects adding or editing instance to allow user to return to entities list by modules
         */
         $scope.unselectInstance = function() {
-            var prev;
-            if ($scope.baseExtended) {
-                prev = $scope.baseExtended;
-                $scope.selectEntityByClassName(prev.entityClassName, function() {
-                    $scope.editInstance(prev.instanceId);
-                    $scope.entityClassName = prev.entityClassName;
-                    $scope.baseExtended = null;
-                });
-                $scope.removeIdFromUrl();
-            } else if ($scope.previouslyEdited) {
-                prev = $scope.previouslyEdited;
+            $scope.setVisibleIfExistFilters();
+            if ($scope.previouslyEdited) {
+                var prev = $scope.previouslyEdited;
                 $scope.selectEntityByClassName(prev.entityClassName, function() {
                     $scope.editInstance(prev.instanceId);
                     $scope.entityClassName = prev.entityClassName;
@@ -3803,11 +3796,6 @@
                 $scope.addedEntity = undefined;
                 $scope.selectedInstance = undefined;
                 $scope.loadedFields = undefined;
-                innerLayout({
-                    spacing_closed: 30,
-                    east__minSize: 200,
-                    east__maxSize: 350
-                });
                 $scope.removeIdFromUrl();
             }
             $scope.resetRelatedData();
