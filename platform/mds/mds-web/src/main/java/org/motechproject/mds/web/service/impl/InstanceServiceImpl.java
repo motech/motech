@@ -521,7 +521,7 @@ public class InstanceServiceImpl implements InstanceService {
                 }
             });
 
-            for (EntityRecord record : filter.getAddedRecords()) {
+            for (EntityRecord record : filter.getAddedNewRecords()) {
                 relatedAsColl.add(newInstanceFromEntityRecord(getEntityClass(entity), relatedFields, record.getFields(), relatedDataService));
             }
 

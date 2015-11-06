@@ -10,12 +10,12 @@ public class RelatedInstancesFilter {
 
     private List<Long> removedIds;
     private List<Long> addedIds;
-    private List<EntityRecord> addedRecords;
+    private List<EntityRecord> addedNewRecords;
 
     public RelatedInstancesFilter() {
         this.removedIds = new ArrayList<>();
         this.addedIds = new ArrayList<>();
-        this.addedRecords = new ArrayList<>();
+        this.addedNewRecords = new ArrayList<>();
     }
 
     public List<Long> getRemovedIds() {
@@ -34,11 +34,11 @@ public class RelatedInstancesFilter {
         this.addedIds = addedIds;
     }
 
-    public List<EntityRecord> getAddedRecords() {
-        return addedRecords;
+    public List<EntityRecord> getAddedNewRecords() {
+        return addedNewRecords;
     }
 
-    public void setAddedRecords(List<EntityRecord> addedRecords) {
-        this.addedRecords = addedRecords;
+    public void setAddedNewRecords(List<EntityRecord> addedNewRecords) {
+        this.addedNewRecords = addedNewRecords;
     }
 }
