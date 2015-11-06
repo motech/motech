@@ -48,7 +48,6 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
      * - Environment Variables:
      * MOTECH_SQL_URL, MOTECH_SQL_USERNAME, MOTECH_SQL_PASSWORD, MOTECH_SQL_DRIVER - Database config is loaded from these
      * environment variables.
-     * MOTECH_TENANT_ID - Tenant ID to be used. If not specified, “DEFAULT” will be used as the tenant id.
      * MOTECH_CONFIG_SOURCE - Configuration source to be used.
      * - Default config location - bootstrap props in bootstrap.properties file from the default location.
      * Default location of bootstrap.properties file is specified in config-locations.properties.

@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.commons.sql.service.SqlDBManager;
-import org.motechproject.commons.sql.service.impl.SqlDBManagerImpl;
 import org.motechproject.commons.sql.util.Drivers;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
@@ -30,7 +29,7 @@ public class SqlDBManagerTest {
 
     @Test
     public void shouldProperlySetSqlProperties() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", "root", "pass"), "tenant", ConfigSource.FILE, "./felix", "tcp://localhost:61616");
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", "root", "pass"), ConfigSource.FILE, "./felix", "tcp://localhost:61616");
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
 
         Properties propertiesToUpdate = new Properties();

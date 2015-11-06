@@ -125,6 +125,9 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private synchronized void regenerateMdsDataBundle(boolean startBundle, String... moduleNames) {
         LOGGER.info("Regenerating the mds entities bundle");
 
+        ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+
         clearModulesCache(moduleNames);
         cleanEntitiesBundleCachedClasses();
 
@@ -186,6 +189,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
         // Give framework some time before returning to the caller
         ThreadSuspender.sleep(2000);
+        Thread.currentThread().setContextClassLoader(currentClassLoader);
     }
 
     private void stopModulesForCoreBundleRefresh(String[] moduleNames) {

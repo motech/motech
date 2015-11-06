@@ -30,7 +30,7 @@ public class ConfigurationServiceBundleIT extends BasePaxIT {
     @Test
     public void shouldSaveBootstrapConfigToDefaultLocationAndLoadFromTheSameLocation() {
         BootstrapConfig existingBootstrapConfig = configurationService.loadBootstrapConfig();
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(existingBootstrapConfig.getSqlConfig(), "tenant-abc", existingBootstrapConfig.getConfigSource(), "./felix", existingBootstrapConfig.getQueueUrl(), existingBootstrapConfig.getActiveMqProperties());
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(existingBootstrapConfig.getSqlConfig(), existingBootstrapConfig.getConfigSource(), "./felix", existingBootstrapConfig.getQueueUrl(), existingBootstrapConfig.getActiveMqProperties());
 
         configurationService.save(bootstrapConfig);
 

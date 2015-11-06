@@ -7,7 +7,7 @@ import java.util.Properties;
 /**
  * Classes implementing this interface are responsible for loading and saving the bootstrap configuration.
  * This configuration contains all the information necessary for starting a MOTECH server, such as database
- * configuration, configuration source, tenant ID and ActiveMQ configuration.
+ * configuration, configuration source and ActiveMQ configuration.
  */
 public interface BootstrapManager {
 
