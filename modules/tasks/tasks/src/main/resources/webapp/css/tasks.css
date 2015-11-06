@@ -182,7 +182,7 @@
 
 .tasks .badge-close {
     float: none; !important;
-    font-size: 12px !important;
+    font-size: 12px; !important;
 }
 
 .tasks editable-content > div[contenteditable] {

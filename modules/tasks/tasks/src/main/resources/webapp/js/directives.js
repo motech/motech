@@ -559,7 +559,7 @@
 
                 el.on('click', function (event) {
                     var man = $("[ismanipulate=true]").text();
-                    if (event.target !== undefined && event.target.className === 'close badge-close' && event.target.parentElement) {
+                    if (event.target && event.target.className === 'close badge-close' && event.target.parentElement) {
                         event.target.parentElement.remove();
                         return;
                     }
@@ -718,7 +718,7 @@
                         trigger: 'manual'
                     }).click(function (event) {
                         event.stopPropagation();
-                        if (!$(this).hasClass('hasPopoverShow') && (event.target === undefined || event.target.className !== 'close badge-close')) {
+                        if (!$(this).hasClass('hasPopoverShow') && (event.target || event.target.className !== 'close badge-close')) {
                             var otherPopoverElem = $('.hasPopoverShow');
 
                             window.getSelection().removeAllRanges();
@@ -728,14 +728,14 @@
                                 otherPopoverElem.removeClass('hasPopoverShow');
                                 otherPopoverElem.removeAttr('ismanipulate');
                             }
-                            if (filter !== undefined && filter.key) {
+                            if (filter && filter.key) {
                                 $(this).attr('manipulate', filter.key.split("?").slice(1).join(" "));
                             }
 
                             $(this).addClass('hasPopoverShow');
                             $(this).attr('ismanipulate', 'true');
                             $(this).popover('show');
-                        } else if (event.target === undefined || event.target.className !== 'close badge-close') {
+                        } else if (event.target || event.target.className !== 'close badge-close') {
                             $(this).popover('hide');
                             $(this).removeClass('hasPopoverShow');
                             $(this).removeAttr('ismanipulate');
@@ -769,7 +769,7 @@
                     });
 
                     el.on("manipulateChanged", function () {
-                        if (filter !== undefined && filter.key) {
+                        if (filter && filter.key) {
                             var manipulateAttributes = el.attr('manipulate'),
                                 key = filter.key.split("?")[0], array, i;
 
