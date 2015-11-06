@@ -123,12 +123,6 @@ public class EntityBuilderImpl implements EntityBuilder {
                             null
                     );
 
-                    // this field is a flag that inform whether the instance with id (field above)
-                    // is in trash or not.
-                    addProperty(
-                            declaring, Boolean.class.getName(), simpleName + "FromTrash", "false"
-                    );
-
                     // this field contains information about the schema version of an entity
                     addProperty(
                             declaring, Long.class.getName(), simpleName + "SchemaVersion", null

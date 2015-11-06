@@ -1,7 +1,11 @@
 package org.motechproject.mds.util;
 
+import com.google.common.collect.ImmutableSet;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Set;
 
 /**
  * The <code>Constants</code> contains constant values used in MDS module. They are grouped by
@@ -446,6 +450,12 @@ public final class Constants {
                 CREATOR_FIELD_NAME, OWNER_FIELD_NAME, CREATION_DATE_FIELD_NAME,
                 MODIFIED_BY_FIELD_NAME, MODIFICATION_DATE_FIELD_NAME, ID_FIELD_NAME
         };
+
+        public static final Set<String> RECORD_FIELDS_TO_COPY = ImmutableSet.copyOf(Arrays.asList(
+                Constants.Util.MODIFICATION_DATE_FIELD_NAME, Constants.Util.CREATION_DATE_FIELD_NAME,
+                Constants.Util.MODIFIED_BY_FIELD_NAME, Constants.Util.CREATOR_FIELD_NAME,
+                Constants.Util.OWNER_FIELD_NAME
+        ));
 
         private Util() {
         }
