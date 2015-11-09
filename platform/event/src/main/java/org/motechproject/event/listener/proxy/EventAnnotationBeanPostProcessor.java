@@ -142,7 +142,7 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
         }
     }
 
-    //TODO:keeping required false for now, should be removed.
+    // @TODO:keeping required false for now, should be removed.
     @Autowired(required = false)
     public void setEventListenerRegistry(EventListenerRegistryService eventListenerRegistry) {
         this.eventListenerRegistry = eventListenerRegistry;

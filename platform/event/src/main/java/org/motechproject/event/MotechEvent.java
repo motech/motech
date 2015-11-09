@@ -3,6 +3,7 @@ package org.motechproject.event;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -15,14 +16,16 @@ import java.util.UUID;
  */
 public class MotechEvent implements Serializable {
     public static final String EVENT_TYPE_KEY_NAME = "eventType";
-    public static final String PARAM_REDELIVERY_COUNT = "motechEventRedeliveryCount";
-    public static final String PARAM_INVALID_MOTECH_EVENT = "invalidMotechEvent";
-    public static final String PARAM_DISCARDED_MOTECH_EVENT = "discardedMotechEvent";
 
     private static final long serialVersionUID = -6710829948064847678L;
 
     private UUID id;
+    private boolean invalid;
+    private boolean discarded;
+    private boolean broadcast;
+    private int redeliveryCount;
     private String subject;
+    private String messageDestination;
     private Map<String, Object> parameters;
 
     public MotechEvent() {
@@ -70,12 +73,84 @@ public class MotechEvent implements Serializable {
     }
 
     /**
+     * Returns whether event is invalid
+     *
+     * @return event invalid
+     */
+    public boolean isInvalid() {
+        return invalid;
+    }
+
+    /**
+     * Sets event as a invalid
+     *
+     * @param value
+     */
+    public void setInvalid(boolean value) {
+        invalid = value;
+    }
+
+    /**
+     * Returns whether event is discarded
+     *
+     * @return event discarded
+     */
+    public boolean isDiscarded() {
+        return discarded;
+    }
+
+    /**
+     * Sets event as discarded
+     *
+     * @param value
+     */
+    public void setDiscarded(boolean value) {
+        discarded = value;
+    }
+
+    /**
+     * Returns whether event is broadcast
+     *
+     * @return broadcast
+     */
+    public boolean isBroadcast() {
+        return broadcast;
+    }
+
+    /**
+     * Sets event as broadcast
+     *
+     * @param value
+     */
+    public void setBroadcast(boolean value) {
+        broadcast = value;
+    }
+
+    /**
      * Returns the name of the subject.
      *
      * @return the subject
      */
     public String getSubject() {
         return subject;
+    }
+
+    /**
+     * Returns destination of the message
+     *
+     * @return message destination
+     */
+    public String getMessageDestination() {
+        return messageDestination;
+    }
+
+    /**
+     * Sets message destination
+     *
+     * @param value
+     */
+    public void setMessageDestination(String value) {
+        messageDestination = value;
     }
 
     /**
@@ -102,21 +177,24 @@ public class MotechEvent implements Serializable {
 
         MotechEvent that = (MotechEvent) o;
 
-        if (!subject.equals(that.subject)) {
-            return false;
-        }
-        if (parameters != null ? !parameters.equals(that.parameters) : that.parameters != null) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(invalid, that.invalid) &&
+                Objects.equals(discarded, that.discarded) &&
+                Objects.equals(broadcast, that.broadcast) &&
+                Objects.equals(redeliveryCount, that.redeliveryCount) &&
+                Objects.equals(subject, that.subject) &&
+                Objects.equals(messageDestination, that.messageDestination) &&
+                Objects.equals(parameters, that.parameters);
     }
 
     @Override
     public int hashCode() {
-        int result = 31 * subject.hashCode();
-        result = 31 * result + (parameters != null ? parameters.hashCode() : 0);
-        return result;
+        return Objects.hash(invalid,
+                discarded,
+                broadcast,
+                redeliveryCount,
+                subject,
+                messageDestination,
+                parameters);
     }
 
     @Override
@@ -125,36 +203,37 @@ public class MotechEvent implements Serializable {
         sb.append("MotechEvent");
         sb.append("{id=").append(id);
         sb.append(", subject='").append(subject).append('\'');
+        sb.append(", redelivery-count=").append(redeliveryCount);
+        sb.append(", invalid=").append(invalid);
+        sb.append(", discarded=").append(discarded);
+        sb.append(", broadcast=").append(broadcast);
+        sb.append(", destination='").append(messageDestination).append('\'');
         sb.append(", parameters=").append(parameters);
         sb.append('}');
         return sb.toString();
     }
 
     /**
-     * Returns the <code>motechEventRedeliveryCount</code> from the parameters.
+     * Returns the <code>redeliveryCount</code>.
      * This is incremented by the event system if the delivery fails, so it is equal to the number of failed deliveries.
      * Any exception from the handler is counted as failure in this context. It cannot be larger than {@link org.motechproject.event.messaging.MotechEventConfig#messageMaxRedeliveryCount}
      *
      * @return the number of message redeliveries
      */
     public int getMessageRedeliveryCount() {
-        Object redeliverCount = this.getParameters().get(MotechEvent.PARAM_REDELIVERY_COUNT);
-        if (redeliverCount instanceof Integer) {
-            return ((Integer) redeliverCount).intValue();
-        }
-        return 0;
+        return redeliveryCount;
+    }
+
+    public void setMessageRedeliveryCount(int value) {
+        redeliveryCount = value;
     }
 
     /**
-     * Increments the <code>motechEventRedeliveryCount</code> from the parameters.
+     * Increments the <code>redeliveryCount</code>.
      * It is invoked by the event system if the delivery fails. If it is null, sets the value to 0.
      */
     public void incrementMessageRedeliveryCount() {
-        Object redeliverCount = this.getParameters().get(MotechEvent.PARAM_REDELIVERY_COUNT);
-        if (redeliverCount == null) {
-            redeliverCount = 0;
-        }
-        this.getParameters().put(MotechEvent.PARAM_REDELIVERY_COUNT, ((Integer) redeliverCount).intValue() + 1);
+        redeliveryCount++;
     }
 
     private void validateSubject(String subject) {
