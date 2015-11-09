@@ -46,6 +46,8 @@
         $scope.activeLink = undefined;
         $scope.documentationUrl = undefined;
         $scope.activeMenu = "servermodules";
+        $scope.selectedTabState = {};
+        $scope.selectedTabState.selectedTab = "";
 
         $scope.loginViewData = {};
         $scope.resetViewData = {};
@@ -174,6 +176,7 @@
 
         $scope.loadModule = function (moduleName, url) {
             var refresh, resultScope, reloadModule;
+            $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
             $scope.activeLink = {moduleName: moduleName, url: url};
             if (moduleName) {
                 blockUI();
@@ -300,12 +303,6 @@
 
         $scope.getCurrentAnchor = function () {
             return parseUri(window.location.href).anchor;
-        };
-
-        $scope.active = function(url) {
-            if (window.location.href.indexOf(url) !== -1) {
-                return "active";
-            }
         };
 
         $scope.safeApply = function (fun) {
