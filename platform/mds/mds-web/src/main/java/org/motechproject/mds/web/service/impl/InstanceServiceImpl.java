@@ -503,23 +503,27 @@ public class InstanceServiceImpl implements InstanceService {
             EntityDto relatedEntity = getEntity(relatedClass);
             List<FieldDto> relatedFields = getEntityFields(relatedEntity.getId());
             MotechDataService relatedDataService = getServiceForEntity(relatedEntity);
+            Collection relatedAsColl = new ArrayList<>();
 
-            // get the instance of the original entity
-            Object instance = service.findById(instanceId);
+            // Fetch/Remove related instances only if this is an existing instance
+            if (instanceId != null) {
+                // get the instance of the original entity
+                Object instance = service.findById(instanceId);
 
-            if (instance == null) {
-                throw new ObjectNotFoundException(entityName, instanceId);
-            }
-
-            // the value of the related field
-            Collection relatedAsColl = TypeHelper.asCollection(PropertyUtil.getProperty(instance, fieldName));
-            relatedAsColl.addAll(relatedDataService.findByIds(filter.getAddedIds()));
-            relatedAsColl.removeIf(new Predicate() {
-                @Override
-                public boolean test(Object o) {
-                    return filter.getRemovedIds().contains(PropertyUtil.safeGetProperty(o, Constants.Util.ID_FIELD_NAME));
+                if (instance == null) {
+                    throw new ObjectNotFoundException(entityName, instanceId);
                 }
-            });
+
+                // the value of the related field
+                relatedAsColl = TypeHelper.asCollection(PropertyUtil.getProperty(instance, fieldName));
+                relatedAsColl.addAll(relatedDataService.findByIds(filter.getAddedIds()));
+                relatedAsColl.removeIf(new Predicate() {
+                    @Override
+                    public boolean test(Object o) {
+                        return filter.getRemovedIds().contains(PropertyUtil.safeGetProperty(o, Constants.Util.ID_FIELD_NAME));
+                    }
+                });
+            }
 
             for (EntityRecord record : filter.getAddedNewRecords()) {
                 relatedAsColl.add(newInstanceFromEntityRecord(getEntityClass(entity), relatedFields, record.getFields(), relatedDataService));
