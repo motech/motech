@@ -30,7 +30,6 @@ public class EnvironmentImpl implements Environment {
         bootstrapProperties.put(BootstrapConfig.SQL_URL, getValue(MOTECH_SQL_URL));
         bootstrapProperties.put(BootstrapConfig.SQL_USER, getValue(MOTECH_SQL_USERNAME));
         bootstrapProperties.put(BootstrapConfig.SQL_PASSWORD, getValue(MOTECH_SQL_PASSWORD));
-        bootstrapProperties.put(BootstrapConfig.TENANT_ID, getValue(MOTECH_TENANT_ID));
         bootstrapProperties.put(BootstrapConfig.CONFIG_SOURCE, getValue(MOTECH_CONFIG_SOURCE));
         bootstrapProperties.put(BootstrapConfig.SQL_DRIVER, getValue(MOTECH_SQL_DRIVER));
         bootstrapProperties.put(BootstrapConfig.OSGI_FRAMEWORK_STORAGE, getValue(MOTECH_OSGI_FRAMEWORK_STORAGE));

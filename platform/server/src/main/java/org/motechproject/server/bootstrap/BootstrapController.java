@@ -46,7 +46,6 @@ public class BootstrapController {
     private static final String POSTGRES_URL_SUGGESTION = "jdbc:postgresql://localhost:5432/";
     private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
     private static final String POSTGRES_DRIVER = "org.postgresql.Driver";
-    private static final String TENANT_ID_DEFAULT = "DEFAULT";
     private static final String FELIX_PATH_DEFAULT = new File(System.getProperty("user.home"), ".motech"+File.separator+"felix-cache").getAbsolutePath();
     private static final String ERRORS = "errors";
     private static final String WARNINGS = "warnings";
@@ -105,10 +104,10 @@ public class BootstrapController {
         BootstrapConfig bootstrapConfig;
         if (form.getOsgiFrameworkStorage() != null) {
              bootstrapConfig = new BootstrapConfig(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
-                     null, ConfigSource.valueOf(form.getConfigSource()), form.getOsgiFrameworkStorage(), form.getQueueUrl());
+                     ConfigSource.valueOf(form.getConfigSource()), form.getOsgiFrameworkStorage(), form.getQueueUrl());
         } else {
              bootstrapConfig = new BootstrapConfig(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
-                     null, ConfigSource.valueOf(form.getConfigSource()), null, form.getQueueUrl());
+                     ConfigSource.valueOf(form.getConfigSource()), null, form.getQueueUrl());
         }
 
         try {
@@ -189,7 +188,6 @@ public class BootstrapController {
         bootstrapView.addObject("username", System.getProperty("user.name"));
         bootstrapView.addObject("mysqlUrlSuggestion", MYSQL_URL_SUGGESTION);
         bootstrapView.addObject("postgresUrlSuggestion", POSTGRES_URL_SUGGESTION);
-        bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
         bootstrapView.addObject("mysqlDriverSuggestion", MYSQL_DRIVER);
         bootstrapView.addObject("postgresDriverSuggestion", POSTGRES_DRIVER);
         bootstrapView.addObject("felixPath", FELIX_PATH_DEFAULT);
