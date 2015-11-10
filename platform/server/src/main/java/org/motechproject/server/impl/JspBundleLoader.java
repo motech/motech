@@ -20,10 +20,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -204,7 +201,19 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
         Class cl = loader.getClass();
 
         if ("org.apache.catalina.loader.WebappClassLoader".equals(cl.getName())) {
-            clearMap(cl, loader, "resourceEntries");
+            List<Field> fields = new ArrayList<Field>(Arrays.asList(cl.getDeclaredFields()));
+            boolean found = false;
+            for(Field field : fields){
+                if(field.getName().equals(("resourceEntries"))){
+                    found = true;
+                }
+            }
+            if(found)
+                clearMap(cl, loader, "resourceEntries");
+            else {
+                Object obj = loader.getClass().getSuperclass().cast(loader);
+                clearMap(cl.getSuperclass(), obj, "resourceEntries");
+            }
         } else {
             LOGGER.debug("class loader " + cl.getName() + " is not tomcat loader.");
         }
