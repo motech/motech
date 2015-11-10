@@ -31,8 +31,6 @@
         </property>
     </bean>
 
-    <bean id="currentTenant" class="org.motechproject.commons.api.Tenant" factory-method="current"/>
-
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg name="url" value="../admin/index.html"/>
         <constructor-arg name="moduleName" value="admin.module"/>

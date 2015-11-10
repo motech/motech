@@ -36,7 +36,6 @@ public interface ConfigurationService {
      *                 sql.driver (Mandatory)
      *                 sql.username (If required)
      *                 sql.password (If required)
-     *                 tenant.id (Optional. Defaults to 'DEFAULT')
      *                 config.source (Optional. Defaults to 'UI')
      *             </pre>
      * An example <code>bootstrap.properties</code> is given below:
@@ -45,7 +44,6 @@ public interface ConfigurationService {
      *                 sql.driver=com.mysql.jdbc.Driver
      *                 sql.username=motech
      *                 sql.password=motech
-     *                 tenant.id=MotherChildCare
      *                 config.source=FILE
      *             </pre>
      * </li>
@@ -57,7 +55,6 @@ public interface ConfigurationService {
      *                  MOTECH_SQL_DRIVER (Mandatory)
      *                  MOTECH_SQL_USERNAME (If required)
      *                  MOTECH_SQL_PASSWORD (If required)
-     *                  MOTECH_TENANT_ID (Optional. Defaults to 'DEFAULT')
      *                  MOTECH_CONFIG_SOURCE (Optional. Defaults to 'UI')
      *             </pre>
      * </li>

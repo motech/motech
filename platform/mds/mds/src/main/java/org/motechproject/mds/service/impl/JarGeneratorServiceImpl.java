@@ -125,67 +125,74 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private synchronized void regenerateMdsDataBundle(boolean startBundle, String... moduleNames) {
         LOGGER.info("Regenerating the mds entities bundle");
 
-        clearModulesCache(moduleNames);
-        cleanEntitiesBundleCachedClasses();
-
-        boolean constructed = mdsConstructor.constructEntities();
-
-        if (!constructed) {
-            return;
-        }
-
-        LOGGER.info("Updating mds data provider");
-        mdsDataProvider.updateDataProvider();
-
-        File dest = new File(monitor.bundleLocation());
-        if (dest.exists()) {
-            // proceed when the bundles context is ready, we want the context processors to finish
-            LOGGER.info("Waiting for entities context");
-            monitor.waitForEntitiesContext();
-        }
-
-        File tmpBundleFile;
-
+        ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         try {
-            LOGGER.info("Generating bundle jar");
-            tmpBundleFile = generate();
-            LOGGER.info("Generated bundle jar");
-        } catch (IOException e) {
-            throw new MdsException("Unable to generate entities bundle", e);
-        }
+            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
 
-        FileUtils.deleteQuietly(dest);
+            clearModulesCache(moduleNames);
+            cleanEntitiesBundleCachedClasses();
 
-        try {
-            FileUtils.copyFile(tmpBundleFile, dest);
-        } catch (IOException e) {
-            LOGGER.error("Unable to copy the mds-entities bundle to the bundle directory. Installing from temp directory", e);
-            // install from temp directory
-            dest = tmpBundleFile;
-        }
+            boolean constructed = mdsConstructor.constructEntities();
 
-        monitor.stopEntitiesBundle();
+            if (!constructed) {
+                return;
+            }
 
-        // In case of some core bundles, we must first stop some modules in order to avoid problems during refresh
-        stopModulesForCoreBundleRefresh(moduleNames);
+            LOGGER.info("Updating mds data provider");
+            mdsDataProvider.updateDataProvider();
 
-        try {
-            monitor.start(dest, false);
+            File dest = new File(monitor.bundleLocation());
+            if (dest.exists()) {
+                // proceed when the bundles context is ready, we want the context processors to finish
+                LOGGER.info("Waiting for entities context");
+                monitor.waitForEntitiesContext();
+            }
+
+            File tmpBundleFile;
+
+            try {
+                LOGGER.info("Generating bundle jar");
+                tmpBundleFile = generate();
+                LOGGER.info("Generated bundle jar");
+            } catch (IOException e) {
+                throw new MdsException("Unable to generate entities bundle", e);
+            }
+
+            FileUtils.deleteQuietly(dest);
+
+            try {
+                FileUtils.copyFile(tmpBundleFile, dest);
+            } catch (IOException e) {
+                LOGGER.error("Unable to copy the mds-entities bundle to the bundle directory. Installing from temp directory", e);
+                // install from temp directory
+                dest = tmpBundleFile;
+            }
+
+            monitor.stopEntitiesBundle();
+
+            // In case of some core bundles, we must first stop some modules in order to avoid problems during refresh
+            stopModulesForCoreBundleRefresh(moduleNames);
+
+            try {
+                monitor.start(dest, false);
+            } finally {
+                FileUtils.deleteQuietly(tmpBundleFile);
+            }
+
+            refreshModules(moduleNames);
+
+            if (startBundle) {
+                monitor.start();
+            }
+
+            // Start bundles again if we stopped them manually
+            startModulesForCoreBundleRefresh(moduleNames);
+
+            // Give framework some time before returning to the caller
+            ThreadSuspender.sleep(2000);
         } finally {
-            FileUtils.deleteQuietly(tmpBundleFile);
+            Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
-
-        refreshModules(moduleNames);
-
-        if (startBundle) {
-            monitor.start();
-        }
-
-        // Start bundles again if we stopped them manually
-        startModulesForCoreBundleRefresh(moduleNames);
-
-        // Give framework some time before returning to the caller
-        ThreadSuspender.sleep(2000);
     }
 
     private void stopModulesForCoreBundleRefresh(String[] moduleNames) {
@@ -314,9 +321,10 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                     }
 
                     // insert service implementation
-                    String serviceName = MotechClassPool.getServiceImplName(className);
-                    if (addClass(output, serviceName)) {
-                        info.setServiceName(serviceName);
+                    String serviceClass = MotechClassPool.getServiceImplName(className);
+                    if (addClass(output, serviceClass)) {
+                        info.setServiceClass(serviceClass);
+                        info.setServiceName(ClassName.getServiceName(className));
                     }
 
                     // insert the interface

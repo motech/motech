@@ -216,7 +216,7 @@ public class Time implements Comparable<Time>, Serializable {
      * @return true if this time is after other, false otherwise
      */
     public boolean isAfter(Time other) {
-        return compareTo(other) > 1;
+        return compareTo(other) > 0;
     }
 
     /**

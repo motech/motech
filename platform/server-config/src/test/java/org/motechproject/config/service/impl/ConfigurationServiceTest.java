@@ -78,7 +78,7 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldLoadBootstrapDBConfiguration() {
-        BootstrapConfig expectedConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), null, null, null, "tcp://localhost:61616");
+        BootstrapConfig expectedConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), null, null, "tcp://localhost:61616");
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(expectedConfig);
 
         BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
@@ -89,7 +89,7 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldSaveBootstrapConfig() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), "tenentId", ConfigSource.FILE, null, "tcp://localhost:61616");
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), ConfigSource.FILE, null, "tcp://localhost:61616");
 
         configurationService.save(bootstrapConfig);
 
@@ -216,7 +216,7 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldIndicateThatConfigFilesAreNotRequiredWhenConfigSourceIsUI() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), "motech", ConfigSource.UI, null, "tcp://localhost:61616");
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), ConfigSource.UI, null, "tcp://localhost:61616");
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
 
         assertFalse(configurationService.requiresConfigurationFiles());
@@ -225,7 +225,7 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldIndicateThatConfigFilesAreNotRequiredWhenPlatformConfigurationFileIsPresent() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), "motech", ConfigSource.FILE, null, "tcp://localhost:61616");
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), ConfigSource.FILE, null, "tcp://localhost:61616");
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
 
         ConfigLocation configLocation = mock(ConfigLocation.class);
@@ -238,7 +238,7 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldIndicateThatConfigFilesAreRequiredWhenPlatformConfigurationFileIsMissing() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), "motech", ConfigSource.FILE, null, "tcp://localhost:61616");
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", null, null), ConfigSource.FILE, null, "tcp://localhost:61616");
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
 
         ConfigLocation configLocation = mock(ConfigLocation.class);

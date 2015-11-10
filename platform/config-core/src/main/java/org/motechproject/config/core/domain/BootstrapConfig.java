@@ -16,7 +16,6 @@ import java.util.Properties;
  * <p>Represents the bootstrap configuration object. It is composed of:
  * <ol>
  * <li>DBConfig - represents the database related bootstrap object.</li>
- * <li>Tenant ID - represents the identifier of the tenant.</li>
  * <li>Configuration source - represents the source of configuration (FILE / UI).</li>
  * <li>ActiveMq Config - represents the properties of ActiveMq.</li>
  * </ol>
@@ -28,15 +27,12 @@ public class BootstrapConfig {
     public static final String SQL_URL = "sql.url";
     public static final String SQL_USER = "sql.user";
     public static final String SQL_PASSWORD = "sql.password";
-    public static final String TENANT_ID = "tenant.id";
     public static final String CONFIG_SOURCE = "config.source";
     public static final String SQL_DRIVER = "sql.driver";
     public static final String OSGI_FRAMEWORK_STORAGE = "org.osgi.framework.storage";
     public static final String QUEUE_URL = "jms.broker.url";
 
-    public static final String DEFAULT_TENANT_ID = "DEFAULT";
     public static final String DEFAULT_OSGI_FRAMEWORK_STORAGE = new File(System.getProperty("user.home"), ".motech"+File.separator+"felix-cache").getAbsolutePath();
-    private String tenantId;
     private SQLDBConfig sqlConfig;
     private String osgiFrameworkStorage;
     private String queueUrl;
@@ -48,32 +44,29 @@ public class BootstrapConfig {
      * Constructor.
      *
      * @param sqlConfig  the configuration of a SQL database
-     * @param tenantId  the ID of a tenant
      * @param configSource  the source from which MOTECH configuration should be read
      * @param osgiFrameworkStorage  the directory used as the bundle cache
      * @param queueUrl  the URL of the JMS broker
      */
-    public BootstrapConfig(SQLDBConfig sqlConfig, String tenantId, ConfigSource configSource, String osgiFrameworkStorage, String queueUrl) {
-        this(sqlConfig, tenantId, configSource, osgiFrameworkStorage, queueUrl, null);
+    public BootstrapConfig(SQLDBConfig sqlConfig, ConfigSource configSource, String osgiFrameworkStorage, String queueUrl) {
+        this(sqlConfig, configSource, osgiFrameworkStorage, queueUrl, null);
     }
 
     /**
      * Constructor.
      *
      * @param sqlConfig  the configuration of a SQL database
-     * @param tenantId  the ID of a tenant
      * @param configSource  the source from which MOTECH configuration should be read
      * @param osgiFrameworkStorage  the directory used as the bundle cache
      * @param queueUrl  the URL of the JMS broker
      * @param activeMqProperties  the ActiveMQ properties
      * @throws org.motechproject.config.core.MotechConfigurationException if sqlConfig is null.
      */
-    public BootstrapConfig(SQLDBConfig sqlConfig, String tenantId, ConfigSource configSource, String osgiFrameworkStorage, String queueUrl, Properties activeMqProperties) {
+    public BootstrapConfig(SQLDBConfig sqlConfig, ConfigSource configSource, String osgiFrameworkStorage, String queueUrl, Properties activeMqProperties) {
         if (sqlConfig == null) {
             throw new MotechConfigurationException("DB configuration cannot be null.");
         }
         this.sqlConfig = sqlConfig;
-        this.tenantId = (StringUtils.isNotBlank(tenantId)) ? tenantId : DEFAULT_TENANT_ID;
         this.configSource = (configSource != null) ? configSource : ConfigSource.UI;
         this.osgiFrameworkStorage = (StringUtils.isNotBlank(osgiFrameworkStorage)) ? osgiFrameworkStorage : DEFAULT_OSGI_FRAMEWORK_STORAGE;
         this.activeMqProperties = setActiveMqProperties(activeMqProperties, queueUrl);
@@ -98,10 +91,6 @@ public class BootstrapConfig {
             return false;
         }
 
-        if (!tenantId.equals(that.tenantId)) {
-            return false;
-        }
-
         if (!queueUrl.equals(that.queueUrl)) {
             return false;
         }
@@ -116,7 +105,6 @@ public class BootstrapConfig {
     @Override
     public int hashCode() {
         int result = sqlConfig.hashCode();
-        result = 31 * result + tenantId.hashCode();
         result = 31 * result + configSource.hashCode();
         result = 31 * result + osgiFrameworkStorage.hashCode();
         result = 31 * result + queueUrl.hashCode();
@@ -128,17 +116,12 @@ public class BootstrapConfig {
     public String toString() {
         final StringBuilder sb = new StringBuilder("BootstrapConfig{");
         sb.append(", sqlConfig=").append(sqlConfig);
-        sb.append(", tenantId='").append(tenantId).append('\'');
         sb.append(", configSource=").append(configSource);
         sb.append(", osgiFrameworkStorage=").append(osgiFrameworkStorage);
         sb.append(", queueUrl=").append(queueUrl);
         sb.append(", activeMqProperties=").append(activeMqProperties);
         sb.append('}');
         return sb.toString();
-    }
-
-    public String getTenantId() {
-        return tenantId;
     }
 
     public ConfigSource getConfigSource() {

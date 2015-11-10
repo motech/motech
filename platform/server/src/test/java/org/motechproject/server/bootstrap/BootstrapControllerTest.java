@@ -88,13 +88,12 @@ public class BootstrapControllerTest {
                 .param("sqlDriver", "com.mysql.jdbc.Driver")
                 .param("sqlUsername", "some_username")
                 .param("sqlPassword", "some_password")
-                .param("tenantId", "")
                 .param("configSource", "UI")
                 .param("queueUrl","tcp://localhost:61616"))
                 .andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("bootstrapconfig"))
                 .andExpect(MockMvcResultMatchers.model().attribute("redirect", true));
 
-        BootstrapConfig expectedConfigToSave = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://www.someurl.com:3306/", "com.mysql.jdbc.Driver", "some_username", "some_password"), "", ConfigSource.valueOf("UI"), "./felix", "tcp://localhost:61616");
+        BootstrapConfig expectedConfigToSave = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://www.someurl.com:3306/", "com.mysql.jdbc.Driver", "some_username", "some_password"), ConfigSource.valueOf("UI"), "./felix", "tcp://localhost:61616");
 
         PowerMockito.verifyStatic(times(1));
         OsgiListener.saveBootstrapConfig(expectedConfigToSave);

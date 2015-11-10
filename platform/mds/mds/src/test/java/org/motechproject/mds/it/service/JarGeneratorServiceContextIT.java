@@ -199,7 +199,7 @@ public class JarGeneratorServiceContextIT extends BaseIT {
 
         classes.add(createClassPath(className));
         classes.add(createClassPath(ClassName.getInterfaceName(className)));
-        classes.add(createClassPath(ClassName.getServiceName(className)));
+        classes.add(createClassPath(ClassName.getServiceClassName(className)));
         classes.add(createClassPath(ClassName.getRepositoryName(className)));
 
         return classes;

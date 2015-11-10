@@ -1,10 +1,17 @@
 package org.motechproject.mds.service;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.event.CrudEventType;
+import org.motechproject.mds.ex.HistoryInstanceNotFoundException;
+import org.motechproject.mds.ex.SchemaVersionException;
+import org.motechproject.mds.ex.TrashInstanceNotFoundException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
+import org.motechproject.mds.ex.object.ObjectNotFoundException;
+import org.motechproject.mds.ex.object.ObjectUpdateException;
 import org.motechproject.mds.ex.object.SecurityException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.Property;
@@ -23,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.orm.jdo.JdoTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -41,7 +49,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
-import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.mds.event.CrudEventBuilder.buildEventParams;
 import static org.motechproject.mds.event.CrudEventBuilder.createSubject;
 import static org.motechproject.mds.event.CrudEventType.CREATE;
@@ -68,8 +75,8 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private MotechDataRepository<T> repository;
-    private HistoryService historyService;
     private TrashService trashService;
+    private HistoryService historyService;
     private AllEntities allEntities;
     private OsgiEventProxy osgiEventProxy;
     private SecurityMode securityMode;
@@ -83,6 +90,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private String entityName;
     private String namespace;
     private Field versionField;
+    private ApplicationContext applicationContext;
 
     @PostConstruct
     public void initializeSecurityState() {
@@ -122,10 +130,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         validateCredentials();
 
         final T createdInstance = repository.create(object);
-
-        if (recordHistory) {
-            historyService.record(createdInstance);
-        }
 
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
             @Override
@@ -170,10 +174,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         updateModificationData(object);
         final T updatedInstance = repository.update(object);
 
-        if (recordHistory) {
-            historyService.record(updatedInstance);
-        }
-
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
             @Override
             public void afterCommit() {
@@ -210,37 +210,37 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     public T updateFromTransient(final T transientObject, final Set<String> fieldsToUpdate) {
         validateCredentials(transientObject);
 
-        T fromDbInstance = findById((Long) getId(transientObject));
+        final T fromDbInstance = findById((Long) getId(transientObject));
+        final T result;
+
         if (fromDbInstance == null) {
-            fromDbInstance = create(transientObject);
+            // create will send the CRUD event
+            result = create(transientObject);
         } else {
-            PropertyUtil.copyProperties(fromDbInstance, transientObject, fieldsToUpdate);
+            PropertyUtil.copyProperties(fromDbInstance, transientObject, null, fieldsToUpdate);
+
             if (versionField != null) {
                 StateManagerUtil.setTransactionVersion(fromDbInstance, versionField.getName());
             }
-        }
 
-        updateModificationData(fromDbInstance);
+            updateModificationData(fromDbInstance);
 
-        if (recordHistory) {
-            historyService.record(fromDbInstance);
-        }
-
-        final T finalFromDbInstance = fromDbInstance;
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-            @Override
-            public void afterCommit() {
-                if (allowUpdateEvent) {
-                    sendEvent((Long) getId(finalFromDbInstance), UPDATE);
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                @Override
+                public void afterCommit() {
+                    if (allowUpdateEvent) {
+                        sendEvent((Long) getId(fromDbInstance), UPDATE);
+                    }
                 }
-            }
-        });
+            });
+            result = fromDbInstance;
+        }
 
-        return fromDbInstance;
+        return result;
     }
 
     private void updateModificationData(Object obj) {
-        safeSetProperty(obj, MODIFICATION_DATE_FIELD_NAME, now());
+        safeSetProperty(obj, MODIFICATION_DATE_FIELD_NAME, DateUtil.now());
         safeSetProperty(obj, MODIFIED_BY_FIELD_NAME, defaultIfBlank(getUsername(), ""));
     }
 
@@ -255,15 +255,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         Long deletedInstanceId = doInTransaction(new TransactionCallback<Long>() {
             @Override
             public Long doInTransaction(TransactionStatus status) {
-                boolean trashMode = trashService.isTrashMode();
-                if (trashMode) {
-                    // move object to trash if trash mode is active
-                    trashService.moveToTrash(object, schemaVersion, recordHistory);
-                } else if (recordHistory) {
-                    // remove all historical data if history recording is active
-                    historyService.remove(object);
-                }
-
                 // independent of trash mode remove object. If trash mode is active then the same object
                 // exists in the trash so this one is unnecessary.
                 // We retrieve the object using the current pm
@@ -297,15 +288,51 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     @Override
     @Transactional
-    public T findTrashInstanceById(Object instanceId, Object entityId) {
-        return (T) trashService.findTrashById(instanceId, entityId);
+    public Object findTrashInstanceById(Long trashId) {
+        return trashService.findTrashById(trashId, getClassType().getName());
     }
 
     @Override
     @Transactional
-    public void revertFromTrash(Object newInstance, Object trash) {
+    public T revertFromTrash(Long trashId) {
         validateCredentials();
-        trashService.moveFromTrash(repository.create((T) newInstance), trash, recordHistory);
+
+        Object trashRecord = trashService.findTrashById(trashId, getClassType().getName());
+        if (trashRecord == null) {
+            throw new TrashInstanceNotFoundException(getClassType().getName(), trashId);
+        }
+        verifySchemaVersion(trashRecord, trashId);
+
+        try {
+            T newInstance = getClassType().newInstance();
+
+            copyValuesFromRecord(newInstance, trashRecord);
+
+            return create(newInstance);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new ObjectUpdateException(trashRecord.getClass().getName(), trashId, e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public T revertToHistoricalRevision(Long instanceId, Long historicalId) {
+        validateCredentials();
+
+        T instance = findById(instanceId);
+        if (instance == null) {
+            throw new ObjectNotFoundException(EntityType.HISTORY.getName(getClassType().getName()), historicalId);
+        }
+
+        Object historyRecord = historyService.getSingleHistoryInstance(instance, historicalId);
+        if (historyRecord == null) {
+            throw new HistoryInstanceNotFoundException(getClassType().getName(), instanceId, historicalId);
+        }
+        verifySchemaVersion(historyRecord, historicalId);
+
+        copyValuesFromRecord(instance, historyRecord);
+
+        return update(instance);
     }
 
     @Override
@@ -409,6 +436,24 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return queryExecution.execute(query);
     }
 
+    @Override
+    public Long getSchemaVersion() {
+        return schemaVersion;
+    }
+
+    @Override
+    public boolean recordHistory() {
+        return recordHistory;
+    }
+
+    protected void copyValuesFromRecord(T target, Object record) {
+        Entity entity = allEntities.retrieveByClassName(getClassType().getName());
+        RevertConverter revertConverter = new RevertConverter(entity, applicationContext);
+
+        PropertyUtil.copyProperties(target, record, revertConverter);
+        PropertyUtil.copyProperties(target, record, revertConverter, Constants.Util.RECORD_FIELDS_TO_COPY);
+    }
+
     protected List<T> retrieveAll(List<Property> properties) {
         InstanceSecurityRestriction securityRestriction = validateCredentials();
         return repository.retrieveAll(properties, securityRestriction);
@@ -438,6 +483,14 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         }
 
         return restriction;
+    }
+
+    protected void verifySchemaVersion(Object record, Long recordId) {
+        String schemaField = HistoryTrashClassHelper.schemaVersion(record.getClass());
+        Long recordSchemaVersion = (Long) PropertyUtil.safeGetProperty(record, schemaField);
+        if (!schemaVersion.equals(recordSchemaVersion)) {
+            throw new SchemaVersionException(schemaVersion, recordSchemaVersion, recordId, record.getClass().getName());
+        }
     }
 
     private InstanceSecurityRestriction checkInstanceAccess(T instance, InstanceSecurityRestriction restriction) {
@@ -492,11 +545,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Autowired
-    public void setHistoryService(HistoryService historyService) {
-        this.historyService = historyService;
-    }
-
-    @Autowired
     public void setTrashService(TrashService trashService) {
         this.trashService = trashService;
     }
@@ -510,5 +558,15 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Qualifier("transactionManager")
     public void setTransactionManager(JdoTransactionManager transactionManager) {
         this.transactionManager = transactionManager;
+    }
+
+    @Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    @Autowired
+    public void setHistoryService(HistoryService historyService) {
+        this.historyService = historyService;
     }
 }

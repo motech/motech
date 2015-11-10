@@ -38,28 +38,23 @@ public class MBeanService {
     private MotechMBeanServer mBeanServer;
 
     /**
-     * Returns topic statistics for the given tenant's JMS topics. To be counted as a tenant's topic,
-     * its name must start with the tenants id.
+     * Returns topic statistics for the JMS topics.
      *
-     * @param tenantId the Id of the tenant. Statistics will be retrieved for the topics belonging to this tenant.
-     * @return {@link List} of {@link TopicMBean}. One for each topic belonging to the given tenant.
+     * @return {@link List} of {@link TopicMBean}. One for each topic.
      */
     @PreAuthorize(SecurityConstants.MANAGE_ACTIVEMQ)
-    public List<TopicMBean> getTopicStatistics(String tenantId) {
+    public List<TopicMBean> getTopicStatistics() {
         try {
             List<TopicMBean> topics = new ArrayList<>();
             for (ObjectName name : mBeanServer.getTopics()) {
                 String destination = name.getKeyProperty(DESTINATION);
-                if (destination.startsWith(tenantId)) {
-                    TopicViewMBean topicView = mBeanServer.getTopicViewMBean(name);
-
-                    TopicMBean topic = new TopicMBean(destination);
-                    topic.setEnqueueCount(topicView.getEnqueueCount());
-                    topic.setDequeueCount(topicView.getDequeueCount());
-                    topic.setExpiredCount(topicView.getExpiredCount());
-                    topic.setConsumerCount(topicView.getConsumerCount());
-                    topics.add(topic);
-                }
+                TopicViewMBean topicView = mBeanServer.getTopicViewMBean(name);
+                TopicMBean topic = new TopicMBean(destination);
+                topic.setEnqueueCount(topicView.getEnqueueCount());
+                topic.setDequeueCount(topicView.getDequeueCount());
+                topic.setExpiredCount(topicView.getExpiredCount());
+                topic.setConsumerCount(topicView.getConsumerCount());
+                topics.add(topic);
             }
             return topics;
         } catch (IOException ex) {
@@ -68,29 +63,24 @@ public class MBeanService {
     }
 
     /**
-     * Returns queue statistics for the given tenant's JMS queues. To be counted as a tenant's queue,
-     * its name must start with the tenants id.
+     * Returns queue statistics for the JMS queues.
      *
-     * @param tenantId the Id of the tenant. Statistics will be retrieved for the queues belonging to this tenant.
-     * @return {@link List} of {@link QueueMBean}. One for each queue belonging to the given tenant.
+     * @return {@link List} of {@link QueueMBean}. One for each queue belonging.
      */
     @PreAuthorize(SecurityConstants.MANAGE_ACTIVEMQ)
-    public List<QueueMBean> getQueueStatistics(String tenantId) {
+    public List<QueueMBean> getQueueStatistics() {
         try {
             List<QueueMBean> queues = new ArrayList<>();
             for (ObjectName name : mBeanServer.getQueues()) {
                 String destination = name.getKeyProperty(DESTINATION);
-                if (destination.startsWith(tenantId)) {
-                    QueueViewMBean queueView = mBeanServer.getQueueViewMBean(name);
-
-                    QueueMBean queue = new QueueMBean(destination);
-                    queue.setEnqueueCount(queueView.getEnqueueCount());
-                    queue.setDequeueCount(queueView.getDequeueCount());
-                    queue.setExpiredCount(queueView.getExpiredCount());
-                    queue.setConsumerCount(queueView.getConsumerCount());
-                    queue.setQueueSize(queueView.getQueueSize());
-                    queues.add(queue);
-                }
+                QueueViewMBean queueView = mBeanServer.getQueueViewMBean(name);
+                QueueMBean queue = new QueueMBean(destination);
+                queue.setEnqueueCount(queueView.getEnqueueCount());
+                queue.setDequeueCount(queueView.getDequeueCount());
+                queue.setExpiredCount(queueView.getExpiredCount());
+                queue.setConsumerCount(queueView.getConsumerCount());
+                queue.setQueueSize(queueView.getQueueSize());
+                queues.add(queue);
             }
             return queues;
         } catch (IOException ex) {

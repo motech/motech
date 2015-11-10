@@ -1,7 +1,6 @@
 package org.motechproject.config.core.bootstrap.impl;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.commons.api.Tenant;
 import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.bootstrap.BootstrapManager;
 import org.motechproject.config.core.domain.BootstrapConfig;
@@ -84,28 +83,22 @@ public class BootstrapManagerImpl implements BootstrapManager {
     }
 
     private void replaceQueueNames(Properties activeMqConfig) {
-        String activeMQPrefix = getActiveMQPrefix();
 
         String queueForEvents = activeMqConfig.getProperty(QUEUE_FOR_EVENTS);
         if (StringUtils.isNotBlank(queueForEvents)) {
-            activeMqConfig.setProperty(QUEUE_FOR_EVENTS, activeMQPrefix + queueForEvents);
+            activeMqConfig.setProperty(QUEUE_FOR_EVENTS, queueForEvents);
         }
 
         String queueForScheduler = activeMqConfig.getProperty(QUEUE_FOR_SCHEDULER);
         if (StringUtils.isNotBlank(queueForScheduler)) {
-            activeMqConfig.setProperty(QUEUE_FOR_SCHEDULER, activeMQPrefix + queueForScheduler);
+            activeMqConfig.setProperty(QUEUE_FOR_SCHEDULER, queueForScheduler);
         }
 
         String topicForEvents = activeMqConfig.getProperty(TOPIC_FOR_EVENTS);
         if (StringUtils.isNotBlank(topicForEvents)) {
-            activeMqConfig.setProperty(TOPIC_FOR_EVENTS, activeMQPrefix + topicForEvents);
+            activeMqConfig.setProperty(TOPIC_FOR_EVENTS, topicForEvents);
         }
     }
-
-    private String getActiveMQPrefix() {
-        return Tenant.current().getSuffixedId();
-    }
-
 
     private BootstrapConfig readBootstrapConfigFromDefaultLocation() {
         File bootstrapFile = ConfigPropertiesUtils.getDefaultPropertiesFile(ConfigLocation.FileAccessType.READABLE,
@@ -122,14 +115,13 @@ public class BootstrapManagerImpl implements BootstrapManager {
         String sqlUrl = bootstrapProperties.getProperty(BootstrapConfig.SQL_URL);
         String sqlUsername = bootstrapProperties.getProperty(BootstrapConfig.SQL_USER);
         String sqlPassword = bootstrapProperties.getProperty(BootstrapConfig.SQL_PASSWORD);
-        String tenantId = bootstrapProperties.getProperty(BootstrapConfig.TENANT_ID);
         String configSource = bootstrapProperties.getProperty(BootstrapConfig.CONFIG_SOURCE);
         String sqlDriver = bootstrapProperties.getProperty(BootstrapConfig.SQL_DRIVER);
         String osgiStorage = bootstrapProperties.getProperty(BootstrapConfig.OSGI_FRAMEWORK_STORAGE);
         String queueURL = bootstrapProperties.getProperty(BootstrapConfig.QUEUE_URL);
 
         Properties activeMqProperties = environment.getActiveMqProperties();
-        return new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, ConfigSource.valueOf(configSource), osgiStorage, queueURL, activeMqProperties);
+        return new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), ConfigSource.valueOf(configSource), osgiStorage, queueURL, activeMqProperties);
     }
 
     private BootstrapConfig readBootstrapConfigFromFile(File configFile, String errorMessage) {

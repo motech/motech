@@ -16,35 +16,23 @@ public class BootstrapConfigTest {
 
     @Test(expected = MotechConfigurationException.class)
     public void shouldThrowExceptionIfDbConfigIsNull() {
-        new BootstrapConfig(null, "tenantId", ConfigSource.FILE, null, null);
+        new BootstrapConfig(null, ConfigSource.FILE, null, null);
     }
 
     @Test(expected = MotechConfigurationException.class)
     public void shouldThrowExceptionIfQueueUrlIsInvalid() {
-        new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), null, ConfigSource.FILE, null, "invalid.url");
-    }
-
-    @Test
-    public void shouldUseDefaultIfTenantIdIsNull() {
-        BootstrapConfig config = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), null, ConfigSource.FILE, null, queueUrl);
-        assertThat(config.getTenantId(), IsEqual.equalTo("DEFAULT"));
-    }
-
-    @Test
-    public void shouldUseDefaultIfTenantIdIsBlank() {
-        BootstrapConfig config = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), " ", ConfigSource.FILE, null, queueUrl);
-        assertThat(config.getTenantId(), IsEqual.equalTo("DEFAULT"));
+        new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), ConfigSource.FILE, null, "invalid.url");
     }
 
     @Test
     public void shouldUseDefaultIfConfigSourceIsNull() {
-        BootstrapConfig config = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), "tenantId", null, null, queueUrl);
+        BootstrapConfig config = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), null, null, queueUrl);
         assertThat(config.getConfigSource(), IsEqual.equalTo(ConfigSource.UI));
     }
 
     @Test
     public void shouldUseDefaultIfOsgiFrameworkStorageIsNull() {
-        BootstrapConfig config = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), "", null, null, queueUrl);
+        BootstrapConfig config = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), null, null, queueUrl);
         assertThat(config.getOsgiFrameworkStorage(), IsEqual.equalTo(new File(System.getProperty("user.home"), ".motech"+File.separator+"felix-cache").getAbsolutePath()));
     }
 

@@ -32,21 +32,18 @@ public class MBeanServiceTest {
     }
 
     @Test
-    public void shouldReturnQueuesForGivenTenant() throws IOException {
+    public void shouldReturnQueues() throws IOException {
 
         ObjectName fooQueue = mock(ObjectName.class);
-        ObjectName barQueue = mock(ObjectName.class);
-        ObjectName[] queues = {fooQueue, barQueue};
+        ObjectName[] queues = {fooQueue};
 
         QueueViewMBean queueViewMBean = mock(QueueViewMBean.class);
         given(mBeanServer.getQueueViewMBean(any(ObjectName.class))).willReturn(queueViewMBean);
 
         given(mBeanServer.getQueues()).willReturn(queues);
         given(fooQueue.getKeyProperty(MotechMBeanServer.DESTINATION)).willReturn("foo_queue");
-        given(barQueue.getKeyProperty(MotechMBeanServer.DESTINATION)).willReturn("bar_queue");
 
-        String tenantId = "foo";
-        List<QueueMBean> queueStatistics = mBeanService.getQueueStatistics(tenantId);
+        List<QueueMBean> queueStatistics = mBeanService.getQueueStatistics();
         assertThat(queueStatistics.size(), Is.is(1));
         assertThat(queueStatistics.get(0).getDestination(), Is.is("foo_queue"));
     }

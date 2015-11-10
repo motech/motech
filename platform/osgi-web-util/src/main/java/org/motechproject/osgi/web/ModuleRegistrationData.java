@@ -6,6 +6,7 @@ import org.osgi.framework.Bundle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,6 +38,7 @@ public class ModuleRegistrationData {
     private List<String> angularModules = new ArrayList<>();
     private Map<String, SubmenuInfo> subMenu = new TreeMap<>();
     private Map<String, String> i18n = new HashMap<>();
+    private Map<String, List<String>> tabAccessMap = new LinkedHashMap<>();
 
     public ModuleRegistrationData() {
         this(null, null, null, null);
@@ -205,6 +207,20 @@ public class ModuleRegistrationData {
     public Map<String, String> getI18n() {
         return i18n;
     }
+
+    /**
+     * Returns the map of available tabs for specified permissions for this module.
+     * @return a map, where the keys are tabs names and values are lists of permissions for which the tab is available
+     */
+    @JsonIgnore
+    public Map<String, List<String>> getTabAccessMap() { return tabAccessMap; }
+
+    /**
+     * Sets the map available tabs for specified permissions for this module.
+     * @param tabAccessMap a map, where the keys are tabs names and values are lists of permissions for which the tab is available
+     */
+    @JsonIgnore
+    public void setTabAccessMap(Map<String, List<String>> tabAccessMap) { this.tabAccessMap = tabAccessMap; }
 
     /**
      * Checks whether this module needs attention - meaning it requires a UI notification pointing to it.

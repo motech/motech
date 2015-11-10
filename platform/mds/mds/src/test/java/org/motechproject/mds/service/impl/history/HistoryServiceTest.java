@@ -5,41 +5,36 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.Tracking;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.HistoryService;
-import org.motechproject.mds.service.impl.history.BasePersistenceService;
-import org.motechproject.mds.service.impl.history.HistoryServiceImpl;
+import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.records.Record;
 import org.motechproject.mds.testutil.records.history.Record__History;
-import org.motechproject.mds.testutil.records.history.Record__Trash;
-import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.wiring.BundleWiring;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.context.ApplicationContext;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
-import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -48,7 +43,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(MDSClassLoader.class)
+@PrepareForTest({MDSClassLoader.class, TransactionSynchronizationManager.class})
 public class HistoryServiceTest {
 
     @Mock
@@ -78,22 +73,24 @@ public class HistoryServiceTest {
     @Mock
     private Query query;
 
+    @Mock
+    private ApplicationContext applicationContext;
+
+    @Mock
+    private MotechDataService dataService;
+
     @Captor
     private ArgumentCaptor<Record__History> recordHistoryCaptor;
 
     @Captor
     private ArgumentCaptor<String> stringCaptor;
 
-    private HistoryService historyService;
+    @InjectMocks
+    private HistoryService historyService = new HistoryServiceImpl();
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-
-        historyService = new HistoryServiceImpl();
-        ((HistoryServiceImpl) historyService).setPersistenceManagerFactory(factory);
-        ((HistoryServiceImpl) historyService).setBundleContext(bundleContext);
-        ((BasePersistenceService) historyService).setAllEntities(allEntities);
 
         doReturn(Record__History.class).when(classLoader).loadClass(Record__History.class.getName());
         doReturn(reference).when(bundleContext).getServiceReference(anyString());
@@ -103,6 +100,8 @@ public class HistoryServiceTest {
         doReturn(bundle).when(bundleContext).getBundle();
         doReturn(bundleWiring).when(bundle).adapt(BundleWiring.class);
         doReturn(classLoader).when(bundleWiring).getClassLoader();
+
+        PowerMockito.mockStatic(TransactionSynchronizationManager.class);
     }
 
     @Test
@@ -149,7 +148,11 @@ public class HistoryServiceTest {
         doReturn(Arrays.asList(idField, valueField, dateField)).when(entity).getFields();
 
         doReturn(null).when(query).execute(anyLong());
-        doReturn(entity).when(allEntities).retrieveByClassName(anyString());
+
+        final String serviceName = ClassName.getServiceName(Record.class.getName());
+        doReturn(true).when(applicationContext).containsBean(serviceName);
+        doReturn(dataService).when(applicationContext).getBean(serviceName);
+        doReturn(4L).when(dataService).getSchemaVersion();
 
         Record instance = new Record();
         historyService.record(instance);
@@ -159,64 +162,8 @@ public class HistoryServiceTest {
         Record__History history = recordHistoryCaptor.getValue();
 
         assertEquals(instance.getId(), history.getRecord__HistoryCurrentVersion());
+        assertEquals(Long.valueOf(4), history.getRecord__HistorySchemaVersion());
         assertEquals(instance.getValue(), history.getValue());
         assertEquals(instance.getDate(), history.getDate());
     }
-
-    @Test
-    public void shouldNotRemoveIfClassNotFound() throws Exception {
-        doReturn(null).when(classLoader).loadClass(anyString());
-
-        historyService.remove(null);
-        verifyZeroInteractions(manager);
-
-        historyService.remove(new Object());
-        verifyZeroInteractions(manager);
-    }
-
-    @Test
-    public void shouldRemoveAllHistoryRecordsRelatedWithGivenInstance() throws Exception {
-        historyService.remove(new Record());
-
-        verify(factory).getPersistenceManager();
-        verify(manager).newQuery(Record__History.class);
-        verify(query).setFilter(stringCaptor.capture());
-        verify(query).declareParameters(stringCaptor.capture());
-        verify(query).deletePersistentAll(1L, false);
-
-        List<String> values = stringCaptor.getAllValues();
-
-        assertThat(values, hasItem("record__HistoryCurrentVersion == param0 && record__HistoryFromTrash == param1"));
-        assertThat(values, hasItem("java.lang.Long param0, java.lang.Boolean param1"));
-    }
-
-    @Test
-    public void shouldNotSetTrashFlagIfClassNotFound() throws Exception {
-        doReturn(null).when(classLoader).loadClass(anyString());
-
-        historyService.setTrashFlag(null, null, true);
-        verifyZeroInteractions(manager);
-
-        historyService.setTrashFlag(new Object(), null, true);
-        verifyZeroInteractions(manager);
-    }
-
-    @Test
-    public void shouldSetTrashFlag() throws Exception {
-        Record__History value = new Record__History(1L, "value");
-        assertFalse(value.getRecord__HistoryFromTrash());
-
-        List<Record__History> collection = new ArrayList<>();
-        collection.add(value);
-
-        doReturn(collection).when(query).execute(1L, false);
-
-        Record__Trash trash = new Record__Trash();
-        historyService.setTrashFlag(new Record(), trash, true);
-
-        assertTrue(value.getRecord__HistoryFromTrash());
-        assertEquals(trash.getId(), value.getRecord__HistoryCurrentVersion());
-        verify(manager).makePersistentAll(collection);
-    }
-
 }

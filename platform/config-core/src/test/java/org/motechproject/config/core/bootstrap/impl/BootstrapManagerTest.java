@@ -33,7 +33,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 import static org.motechproject.config.core.domain.BootstrapConfig.SQL_URL;
-import static org.motechproject.config.core.domain.BootstrapConfig.TENANT_ID;
 import static org.motechproject.config.core.domain.ConfigLocation.FileAccessType.READABLE;
 
 @RunWith(PowerMockRunner.class)
@@ -44,7 +43,6 @@ public class BootstrapManagerTest {
     private final String sqlUrl = "jdbc:mysql://localhost:3306/";
     private final String sqlUsername = "root";
     private final String sqlPassword = "password";
-    private final String tenantId = "test_tenant_id";
     private final String felixPath = "./felix";
     private static final String sqlDriver = "com.mysql.jdbc.Driver";
     private final String configSource = ConfigSource.FILE.getName();
@@ -74,7 +72,7 @@ public class BootstrapManagerTest {
 
         when(ConfigPropertiesUtils.getPropertiesFromFile(new File(bootstrapFile))).thenReturn(properties);
 
-        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, ConfigSource.FILE, null, queueUrl);
+        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), ConfigSource.FILE, null, queueUrl);
 
         assertThat(bootstrapManager.loadBootstrapConfig(), equalTo(expectedBootstrapConfig));
     }
@@ -96,25 +94,9 @@ public class BootstrapManagerTest {
         when(environment.getConfigDir()).thenReturn(null);
         when(environment.getBootstrapPropperties()).thenReturn(createProperties());
 
-        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, ConfigSource.FILE, null, queueUrl);
+        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), ConfigSource.FILE, null, queueUrl);
 
         assertThat(bootstrapManager.loadBootstrapConfig(), equalTo(expectedBootstrapConfig));
-    }
-
-    @PrepareForTest(ConfigPropertiesUtils.class)
-    @Test
-    public void shouldReturnDefaultValueIfTenantIdIsNotSpecified() {
-        PowerMockito.mockStatic(ConfigPropertiesUtils.class);
-        Properties properties = createProperties();
-        properties.put(BootstrapConfig.TENANT_ID, "DEFAULT");
-        properties.put(BootstrapConfig.CONFIG_SOURCE, "FILE");
-        when(environment.getBootstrapPropperties()).thenReturn(properties);
-
-        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), "DEFAULT", ConfigSource.FILE, null, queueUrl);
-
-        BootstrapConfig actualBootStrapConfig = bootstrapManager.loadBootstrapConfig();
-
-        assertThat(actualBootStrapConfig, equalTo(expectedBootstrapConfig));
     }
 
     @PrepareForTest(ConfigPropertiesUtils.class)
@@ -122,11 +104,10 @@ public class BootstrapManagerTest {
     public void shouldReturnDefaultValueIfConfigSourceIsNotSpecified() {
         PowerMockito.mockStatic(ConfigPropertiesUtils.class);
         Properties properties = createProperties();
-        properties.put(BootstrapConfig.TENANT_ID, "DEFAULT");
         properties.put(BootstrapConfig.CONFIG_SOURCE, "");
         when(environment.getBootstrapPropperties()).thenReturn(properties);
 
-        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), "DEFAULT", ConfigSource.UI, null, queueUrl);
+        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), ConfigSource.UI, null, queueUrl);
 
         BootstrapConfig actualBootStrapConfig = bootstrapManager.loadBootstrapConfig();
 
@@ -153,7 +134,7 @@ public class BootstrapManagerTest {
         when(ConfigPropertiesUtils.getPropertiesFromFile(bootstrapConfigFile)).thenReturn(properties);
 
 
-        assertThat(bootstrapManager.loadBootstrapConfig(), equalTo(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), "DEFAULT", ConfigSource.UI, null, queueUrl)));
+        assertThat(bootstrapManager.loadBootstrapConfig(), equalTo(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), ConfigSource.UI, null, queueUrl)));
     }
 
     private File mockDefaultBootstrapFile() throws IOException {
@@ -211,7 +192,7 @@ public class BootstrapManagerTest {
 
     @Test
     public void shouldSaveBootstrapConfigToPropertiesFileInDefaultLocation() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, "some_username", "some_password"), "tenantId", ConfigSource.FILE, felixPath, queueUrl);
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, "some_username", "some_password"), ConfigSource.FILE, felixPath, queueUrl);
 
         String tempDir = new File(System.getProperty("java.io.tmpdir"), "config").getAbsolutePath();
         List<ConfigLocation> configLocationList = new ArrayList<>();
@@ -226,7 +207,6 @@ public class BootstrapManagerTest {
         savedBootstrapProperties.load(new FileInputStream(new File(tempDir, "bootstrap.properties")));
         assertNotNull(savedBootstrapProperties);
         assertThat(savedBootstrapProperties.getProperty(SQL_URL), equalTo(sqlUrl));
-        assertThat(savedBootstrapProperties.getProperty(TENANT_ID), equalTo("tenantId"));
     }
 
     private Properties createProperties() {
@@ -234,7 +214,6 @@ public class BootstrapManagerTest {
         properties.put(BootstrapConfig.SQL_URL, sqlUrl);
         properties.put(BootstrapConfig.SQL_USER, sqlUsername);
         properties.put(BootstrapConfig.SQL_PASSWORD, sqlPassword);
-        properties.put(BootstrapConfig.TENANT_ID, tenantId);
         properties.put(BootstrapConfig.CONFIG_SOURCE, configSource);
         properties.put(BootstrapConfig.SQL_DRIVER, sqlDriver);
         properties.put(BootstrapConfig.QUEUE_URL, queueUrl);
