@@ -4,6 +4,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.StopWatch;
+import org.motechproject.commons.api.StopWatchHelper;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
@@ -30,6 +32,7 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.RestOptionsDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.dto.TypeDto;
@@ -890,6 +893,66 @@ public class EntityServiceImpl implements EntityService {
     @Transactional
     public List<FieldDto> getEntityFieldsForUI(Long entityId) {
         return getFields(entityId, false, true);
+    }
+
+    @Override
+    @Transactional
+    public SchemaHolder getSchema() {
+        StopWatch stopWatch = new StopWatch();
+
+        SchemaHolder entitiesHolder = new SchemaHolder();
+
+        LOGGER.debug("Retrieving entities for processing");
+
+        stopWatch.start();
+        List<Entity> entities = allEntities.retrieveAll();
+        stopWatch.stop();
+
+        LOGGER.debug("{} entities retrieved in {} ms", entities.size(), stopWatch.getTime());
+
+        StopWatchHelper.restart(stopWatch);
+        for (Entity entity : entities) {
+            LOGGER.debug("Preparing entity: {}", entity.getClassName());
+
+            StopWatchHelper.restart(stopWatch);
+            EntityDto entityDto = entity.toDto();
+            stopWatch.stop();
+            LOGGER.debug("Entity dto created in {} ms", stopWatch.getTime());
+
+            StopWatchHelper.restart(stopWatch);
+            AdvancedSettingsDto advSettingsDto = entity.advancedSettingsDto();
+            stopWatch.stop();
+            LOGGER.debug("Advanced settings dto created in {} ms", stopWatch.getTime());
+
+            StopWatchHelper.restart(stopWatch);
+            List<FieldDto> fieldDtos = entity.getFieldDtos();
+            stopWatch.stop();
+            LOGGER.debug("Field dtos created in {} ms", stopWatch.getTime());
+
+            StopWatchHelper.restart(stopWatch);
+            List<LookupDto> lookupDtos = entity.getLookupDtos();
+            stopWatch.stop();
+            LOGGER.debug("Lookup dtos created in {} ms", stopWatch.getTime());
+
+            StopWatchHelper.restart(stopWatch);
+            entitiesHolder.addEntity(entityDto, advSettingsDto, fieldDtos, lookupDtos);
+            stopWatch.stop();
+            LOGGER.debug("Result stored in {} ms", stopWatch.getTime());
+        }
+
+        LOGGER.debug("Retrieving types for processing");
+
+        List<Type> types = allTypes.retrieveAll();
+        for (Type type : types) {
+            TypeDto typeDto = type.toDto();
+
+            entitiesHolder.addType(typeDto);
+            entitiesHolder.addTypeValidation(typeDto, type.getTypeValidationDtos());
+        }
+
+        LOGGER.debug("Entities holder ready");
+
+        return entitiesHolder;
     }
 
     @Override

@@ -4,44 +4,32 @@ import org.apache.velocity.app.VelocityEngine;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
-import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.impl.EntityServiceImpl;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.testutil.FieldTestHelper;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MdsDataProviderBuilderImplTest {
 
     private MDSDataProviderBuilderImpl mdsDataProviderBuilder = new MDSDataProviderBuilderImpl();
 
-    private List<EntityDto> entityList = new LinkedList<>();
     private List<LookupDto> lookupList = new LinkedList<>();
     private List<FieldDto> fieldList = new LinkedList<>();
-
-    @Mock
-    private EntityService entityService = new EntityServiceImpl();
 
     private VelocityEngine velocityEngine = new VelocityEngine();
 
     @Before
     public void setUp() {
-        when(entityService.listEntities()).thenReturn(entityList);
-        when(entityService.getEntityLookups(Long.valueOf("1"))).thenReturn(lookupList);
-        when(entityService.getEntityFields(Long.valueOf("1"))).thenReturn(fieldList);
-        mdsDataProviderBuilder.setEntityService(entityService);
-
         velocityEngine.addProperty("resource.loader", "classpath");
         velocityEngine.addProperty("classpath.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
         mdsDataProviderBuilder.setVelocityEngine(velocityEngine);
@@ -49,7 +37,7 @@ public class MdsDataProviderBuilderImplTest {
 
     @Test
     public void shouldGenerateEmptyJson() {
-        String generatedJson = mdsDataProviderBuilder.generateDataProvider();
+        String generatedJson = mdsDataProviderBuilder.generateDataProvider(new SchemaHolder());
         assertEquals("", generatedJson);
     }
 
@@ -97,9 +85,11 @@ public class MdsDataProviderBuilderImplTest {
         lookupFields.add(FieldTestHelper.lookupFieldDto("TestFieldName"));
         lookup.setLookupFields(lookupFields);
         lookupList.add(lookup);
-        entityList.add(entity);
 
-        String generatedJson = mdsDataProviderBuilder.generateDataProvider();
+        SchemaHolder schema = new SchemaHolder();
+        schema.addEntity(entity, null, fieldList, lookupList);
+
+        String generatedJson = mdsDataProviderBuilder.generateDataProvider(schema);
 
         assertEquals(json, generatedJson.replace("\r\n", "\n"));
     }

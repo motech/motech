@@ -8,6 +8,7 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.util.SecurityMode;
 
@@ -485,4 +486,6 @@ public interface EntityService {
      * @return the list of fields for the UI
      */
     List<FieldDto> getEntityFieldsForUI(Long entityId);
+
+    SchemaHolder getSchema();
 }

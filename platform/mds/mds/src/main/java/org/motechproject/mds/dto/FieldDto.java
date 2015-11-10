@@ -229,7 +229,7 @@ public class FieldDto {
         MetadataDto md = getMetadata(Constants.MetadataKeys.VERSION_FIELD);
         String metadataValue = md == null ? null : md.getValue();
         if (StringUtils.isNotBlank(metadataValue)) {
-            return new Boolean(metadataValue);
+            return Boolean.valueOf(metadataValue);
         }
 
         return false;

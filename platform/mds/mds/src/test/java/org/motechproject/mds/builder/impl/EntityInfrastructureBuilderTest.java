@@ -11,14 +11,15 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.builder.EntityInfrastructureBuilder;
 import org.motechproject.mds.builder.Sample;
 import org.motechproject.mds.builder.SampleWithLookups;
-import org.motechproject.mds.builder.impl.EntityInfrastructureBuilderImpl;
 import org.motechproject.mds.domain.ClassData;
-import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.LookupFieldType;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.repository.MotechDataRepository;
-import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.powermock.api.mockito.PowerMockito;
@@ -30,10 +31,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertArrayEquals;
@@ -44,6 +46,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
+import static org.motechproject.mds.testutil.FieldTestHelper.fieldDto;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(MDSClassLoader.class)
@@ -59,6 +62,9 @@ public class EntityInfrastructureBuilderTest {
     @Mock
     private MDSClassLoader classLoader;
 
+    @Mock
+    private SchemaHolder schemaHolder;
+
     private EntityInfrastructureBuilder entityInfrastructureBuilder = new EntityInfrastructureBuilderImpl();
 
     @Before
@@ -71,8 +77,8 @@ public class EntityInfrastructureBuilderTest {
     public void shouldCreateCodeIfClassNotExistsInClassPath() throws Exception {
         doReturn(null).when(classLoader).loadClass(SAMPLE_SERVICE);
 
-        Entity entity = new Entity(Sample.class.getName());
-        List<ClassData> data = entityInfrastructureBuilder.buildInfrastructure(entity);
+        EntityDto entity = new EntityDto(Sample.class.getName());
+        List<ClassData> data = entityInfrastructureBuilder.buildInfrastructure(entity, schemaHolder);
 
         assertNotNull(data);
         assertFalse(data.isEmpty());
@@ -86,32 +92,35 @@ public class EntityInfrastructureBuilderTest {
     public void shouldCreateCodeForClassWithLookups() throws Exception {
         MDSClassLoader mdsClassLoaderImpl = MDSClassLoader.getStandaloneInstance(getClass().getClassLoader());
 
-        Entity entity = new Entity(SampleWithLookups.class.getName());
+        EntityDto entity = new EntityDto(SampleWithLookups.class.getName());
         entity.setMaxFetchDepth(-1);
 
-        Lookup lookup = new Lookup();
+        LookupDto lookup = new LookupDto();
         lookup.setLookupName("testLookup");
-        lookup.setLookupName("testLookupMethod");
+        lookup.setMethodName("testLookupMethod");
 
-        Field testField = FieldTestHelper.field("TestField", "testDispName", String.class);
-        Field testField2 = FieldTestHelper.field("TestField2", "DisplayName with space", String.class);
-        Field dateField = FieldTestHelper.field("dateField", "Display names should not affect methods", DateTime.class);
-        Field timeField = FieldTestHelper.field("timeField", Time.class);
+        FieldDto testField = fieldDto("TestField", "testDispName", String.class);
+        FieldDto testField2 = fieldDto("TestField2", "DisplayName with space", String.class);
+        FieldDto dateField = fieldDto("dateField", "Display names should not affect methods", DateTime.class);
+        FieldDto timeField = fieldDto("timeField", Time.class);
 
-        List<Field> fields = new ArrayList<>();
+        List<FieldDto> fields = new ArrayList<>();
         fields.add(testField);
         fields.add(testField2);
         fields.add(dateField);
         fields.add(timeField);
-        lookup.setFields(fields);
+        lookup.setFieldsOrder(asList("TestField", "TestField2", "dateField", "timeField"));
         lookup.setSingleObjectReturn(true);
-        lookup.setRangeLookupFields(Arrays.asList("dateField"));
-        lookup.setSetLookupFields(Arrays.asList("timeField"));
-        lookup.setFieldsOrder(Arrays.asList(testField.getName(), testField2.getName(), dateField.getName(), timeField.getName()));
+        when(schemaHolder.getLookups(entity)).thenReturn(singletonList(lookup));
 
-        entity.addLookup(lookup);
+        List<LookupFieldDto> lookupFields = new ArrayList<>();
+        lookupFields.add(new LookupFieldDto("TestField", LookupFieldType.VALUE));
+        lookupFields.add(new LookupFieldDto("TestField2", LookupFieldType.VALUE));
+        lookupFields.add(new LookupFieldDto("dateField", LookupFieldType.RANGE));
+        lookupFields.add(new LookupFieldDto("timeField", LookupFieldType.SET));
+        lookup.setLookupFields(lookupFields);
 
-        List<ClassData> data = entityInfrastructureBuilder.buildInfrastructure(entity);
+        List<ClassData> data = entityInfrastructureBuilder.buildInfrastructure(entity, schemaHolder);
 
         for (ClassData classData : data) {
             mdsClassLoaderImpl.safeDefineClass(classData.getClassName(), classData.getBytecode());
@@ -126,7 +135,7 @@ public class EntityInfrastructureBuilderTest {
         lookup.setSingleObjectReturn(false);
         mdsClassLoaderImpl = MDSClassLoader.getStandaloneInstance(getClass().getClassLoader());
 
-        data = entityInfrastructureBuilder.buildInfrastructure(entity);
+        data = entityInfrastructureBuilder.buildInfrastructure(entity, schemaHolder);
 
         for (ClassData classData : data) {
             mdsClassLoaderImpl.safeDefineClass(classData.getClassName(), classData.getBytecode());

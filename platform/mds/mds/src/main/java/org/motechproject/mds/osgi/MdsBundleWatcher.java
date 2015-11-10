@@ -299,7 +299,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
 
         // we generate the entities bundle but not start it to avoid exceptions when the framework
         // will refresh bundles
-        jarGeneratorService.regenerateMdsDataBundle(false);
+        jarGeneratorService.regenerateMdsDataBundle(entityService.getSchema(), false);
 
         FrameworkWiring framework = bundleContext.getBundle(0).adapt(FrameworkWiring.class);
         framework.refreshBundles(bundles);

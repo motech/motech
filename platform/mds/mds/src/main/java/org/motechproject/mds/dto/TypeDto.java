@@ -244,6 +244,15 @@ public class TypeDto {
         return clazz.getName().equals(typeClass);
     }
 
+    @JsonIgnore
+    public Class<?> getClassObjectForType() {
+        try {
+            return getClass().getClassLoader().loadClass(typeClass);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("Unable to load class for type " + typeClass + ". Illegal type.", e);
+        }
+    }
+
     /**
      * {@inheritDoc}
      */

@@ -16,8 +16,10 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
-import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.dto.SchemaHolder;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.entity.EntityCreationException;
 import org.motechproject.mds.helper.ClassTableName;
@@ -65,8 +67,11 @@ public class MDSConstructorImpl implements MDSConstructor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MDSConstructorImpl.class);
 
-    private MdsConfig mdsConfig;
+    // TODO: stays or goes?
+    @Autowired
     private AllEntities allEntities;
+
+    private MdsConfig mdsConfig;
     private EntityBuilder entityBuilder;
     private EntityInfrastructureBuilder infrastructureBuilder;
     private EntityMetadataBuilder metadataBuilder;
@@ -77,7 +82,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     private SqlDBManager sqlDBManager;
 
     @Override
-    public synchronized boolean constructEntities() {
+    public synchronized boolean constructEntities(SchemaHolder schemaHolder) {
         // To be able to register updated class, we need to reload class loader
         // and therefore add all the classes again
         MotechClassPool.clearEnhancedData();
@@ -90,17 +95,17 @@ public class MDSConstructorImpl implements MDSConstructor {
         JavassistLoader loader = new JavassistLoader(tmpClassLoader);
 
         // process only entities that are not drafts
-        List<Entity> entities = allEntities.retrieveAll();
+        List<EntityDto> entities = schemaHolder.getAllEntities();
         filterEntities(entities);
-        sortEntities(entities);
+        sortEntities(entities, schemaHolder);
 
         // create enum for appropriate combobox fields
-        for (Entity entity : entities) {
-            buildEnum(loader, enhancer, entity);
+        for (EntityDto entity : entities) {
+            buildEnum(loader, enhancer, entity, schemaHolder);
         }
 
         // load entities interfaces
-        for (Entity entity : entities) {
+        for (EntityDto entity : entities) {
             buildInterfaces(loader, enhancer, entity);
         }
 
@@ -110,7 +115,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         // First we build empty history and trash classes
         // (We don't have to generate it for main class,
         // since we just fetch fields from existing definition
-        for (Entity entity : entities) {
+        for (EntityDto entity : entities) {
             if (entity.isRecordHistory()) {
                 entityBuilder.prepareHistoryClass(entity);
             }
@@ -118,12 +123,12 @@ public class MDSConstructorImpl implements MDSConstructor {
         }
 
         // Build classes
-        Map<String, ClassData> classDataMap = buildClasses(entities);
+        Map<String, ClassData> classDataMap = buildClasses(entities, schemaHolder);
         List<Class> classes = new ArrayList<>();
 
         // We add the java classes to both
         // the temporary ClassLoader and enhancer
-        for (Entity entity : entities) {
+        for (EntityDto entity : entities) {
             String className = entity.getClassName();
 
             Class<?> definition = addClassData(loader, enhancer, classDataMap.get(className));
@@ -142,7 +147,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         }
 
         // Prepare metadata
-        buildMetadata(entities, jdoMetadata, classDataMap, classes);
+        buildMetadata(entities, jdoMetadata, classDataMap, classes, schemaHolder);
 
         // after the classes are defined, we register their metadata
         enhancer.registerMetadata(jdoMetadata);
@@ -152,15 +157,15 @@ public class MDSConstructorImpl implements MDSConstructor {
 
         // we register the enhanced class bytes
         // and build the infrastructure classes
-        registerEnhancedClassBytes(entities, enhancer);
+        registerEnhancedClassBytes(entities, enhancer, schemaHolder);
 
-        metadataBuilder.fixEnhancerIssuesInMetadata(jdoMetadata);
+        metadataBuilder.fixEnhancerIssuesInMetadata(jdoMetadata, schemaHolder);
 
         return CollectionUtils.isNotEmpty(entities);
     }
 
-    private void registerEnhancedClassBytes(List<Entity> entities, MdsJDOEnhancer enhancer) {
-        for (Entity entity : entities) {
+    private void registerEnhancedClassBytes(List<EntityDto> entities, MdsJDOEnhancer enhancer, SchemaHolder schemaHolder) {
+        for (EntityDto entity : entities) {
             // register
             String className = entity.getClassName();
             LOGGER.debug("Registering {}", className);
@@ -172,13 +177,13 @@ public class MDSConstructorImpl implements MDSConstructor {
             registerTrashClass(enhancer, className);
 
             LOGGER.debug("Building infrastructure for {}", className);
-            buildInfrastructure(entity);
+            buildInfrastructure(entity, schemaHolder);
         }
     }
 
-    private void sortEntities(List<Entity> entities) {
-        List<Entity> byInheritance = EntitySorter.sortByInheritance(entities);
-        List<Entity> byHasARelation = EntitySorter.sortByHasARelation(byInheritance);
+    private void sortEntities(List<EntityDto> entities, SchemaHolder schemaHolder) {
+        List<EntityDto> byInheritance = EntitySorter.sortByInheritance(entities);
+        List<EntityDto> byHasARelation = EntitySorter.sortByHasARelation(byInheritance, schemaHolder);
 
         // for safe we clear entities list
         entities.clear();
@@ -186,17 +191,21 @@ public class MDSConstructorImpl implements MDSConstructor {
         entities.addAll(byHasARelation);
     }
 
-    private Map<String, ClassData> buildClasses(List<Entity> entities) {
+    private Map<String, ClassData> buildClasses(List<EntityDto> entities, SchemaHolder schemaHolder) {
         Map<String, ClassData> classDataMap = new LinkedHashMap<>();
 
         //We build classes for all entities
-        for (Entity entity : entities) {
-            ClassData classData = buildClass(entity);
+        for (EntityDto entity : entities) {
+            List<FieldDto> fields = schemaHolder.getFields(entity);
+
+            ClassData classData = buildClass(entity, fields);
+
             ClassData historyClassData = null;
+
             if (entity.isRecordHistory()) {
-                historyClassData = entityBuilder.buildHistory(entity);
+                historyClassData = entityBuilder.buildHistory(entity, fields);
             }
-            ClassData trashClassData = entityBuilder.buildTrash(entity);
+            ClassData trashClassData = entityBuilder.buildTrash(entity, fields);
 
             String className = entity.getClassName();
 
@@ -210,9 +219,9 @@ public class MDSConstructorImpl implements MDSConstructor {
         return classDataMap;
     }
 
-    private void buildMetadata(List<Entity> entities, JDOMetadata jdoMetadata, Map<String, ClassData> classDataMap,
-                               List<Class> classes) {
-        for (Entity entity : entities) {
+    private void buildMetadata(List<EntityDto> entities, JDOMetadata jdoMetadata, Map<String, ClassData> classDataMap,
+                               List<Class> classes, SchemaHolder schemaHolder) {
+        for (EntityDto entity : entities) {
             String className = entity.getClassName();
             Class definition = null;
 
@@ -223,19 +232,22 @@ public class MDSConstructorImpl implements MDSConstructor {
                 }
             }
 
-            metadataBuilder.addEntityMetadata(jdoMetadata, entity, definition);
+            metadataBuilder.addEntityMetadata(jdoMetadata, entity, definition, schemaHolder);
+
             if (entity.isRecordHistory()) {
                 metadataBuilder.addHelperClassMetadata(jdoMetadata, classDataMap.get(ClassName.getHistoryClassName(className)),
-                        entity, EntityType.HISTORY, definition);
+                        entity, EntityType.HISTORY, definition, schemaHolder);
             }
+
             metadataBuilder.addHelperClassMetadata(jdoMetadata, classDataMap.get(ClassName.getTrashClassName(className)),
-                    entity, EntityType.TRASH, definition);
+                    entity, EntityType.TRASH, definition, schemaHolder);
         }
     }
 
-    private void buildEnum(JavassistLoader loader, MdsJDOEnhancer enhancer, Entity entity) {
-        for (Field field : entity.getFields()) {
-            Type type = field.getType();
+    private void buildEnum(JavassistLoader loader, MdsJDOEnhancer enhancer, EntityDto entity,
+                           SchemaHolder schemaHolder) {
+        for (FieldDto field : schemaHolder.getFields(entity.getClassName())) {
+            TypeDto type = field.getType();
 
             if (!type.isCombobox()) {
                 continue;
@@ -328,7 +340,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         MotechClassPool.registerTrashClassData(classData);
     }
 
-    private void registerClass(MdsJDOEnhancer enhancer, Entity entity) {
+    private void registerClass(MdsJDOEnhancer enhancer, EntityDto entity) {
         byte[] enhancedBytes = enhancer.getEnhancedBytes(entity.getClassName());
         ClassData classData = new ClassData(entity, enhancedBytes);
 
@@ -344,7 +356,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         return definition;
     }
 
-    private ClassData buildClass(Entity entity) {
+    private ClassData buildClass(EntityDto entity, List<FieldDto> fields) {
         ClassData classData;
 
         if (entity.isDDE()) {
@@ -355,15 +367,15 @@ public class MDSConstructorImpl implements MDSConstructor {
                 throw new EntityCreationException("Declaring bundle unavailable for entity " + entity.getClassName());
             }
 
-            classData = entityBuilder.buildDDE(entity, declaringBundle);
+            classData = entityBuilder.buildDDE(entity, fields, declaringBundle);
         } else {
-            classData = entityBuilder.build(entity);
+            classData = entityBuilder.build(entity, fields);
         }
 
         return classData;
     }
 
-    private void buildInterfaces(JavassistLoader loader, MdsJDOEnhancer enhancer, Entity entity) {
+    private void buildInterfaces(JavassistLoader loader, MdsJDOEnhancer enhancer, EntityDto entity) {
         List<ClassData> interfaces = new LinkedList<>();
 
         if (entity.isDDE()) {
@@ -404,10 +416,10 @@ public class MDSConstructorImpl implements MDSConstructor {
         }
     }
 
-    private void buildInfrastructure(Entity entity) {
+    private void buildInfrastructure(EntityDto entity, SchemaHolder schemaHolder) {
         String className = entity.getClassName();
 
-        List<ClassData> infrastructure = infrastructureBuilder.buildInfrastructure(entity);
+        List<ClassData> infrastructure = infrastructureBuilder.buildInfrastructure(entity, schemaHolder);
 
         for (ClassData classData : infrastructure) {
             // if we have a DDE service registered, we register the enhanced bytecode
@@ -419,12 +431,12 @@ public class MDSConstructorImpl implements MDSConstructor {
         }
     }
 
-    private void filterEntities(List<Entity> entities) {
-        Iterator<Entity> it = entities.iterator();
+    private void filterEntities(List<EntityDto> entities) {
+        Iterator<EntityDto> it = entities.iterator();
         while (it.hasNext()) {
-            Entity entity = it.next();
+            EntityDto entity = it.next();
 
-            if (!entity.isActualEntity() || isSkippedDDE(entity)) {
+            if (isSkippedDDE(entity)) {
                 it.remove();
             } else if (entity.isDDE()) {
                 Class<?> definition = loadClass(entity, entity.getClassName());
@@ -436,7 +448,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         }
     }
 
-    private boolean isSkippedDDE(Entity entity) {
+    private boolean isSkippedDDE(EntityDto entity) {
         return entity.isDDE() && !MotechClassPool.isDDEReady(entity.getClassName());
     }
 
@@ -503,7 +515,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         return new MdsJDOEnhancer(config, enhancerClassLoader);
     }
 
-    private Class<?> loadClass(Entity entity, String className) {
+    private Class<?> loadClass(EntityDto entity, String className) {
         Bundle declaringBundle = MdsBundleHelper.searchForBundle(bundleContext, entity);
         Class<?> definition = null;
 
@@ -534,11 +546,6 @@ public class MDSConstructorImpl implements MDSConstructor {
     @Autowired
     public void setInfrastructureBuilder(EntityInfrastructureBuilder infrastructureBuilder) {
         this.infrastructureBuilder = infrastructureBuilder;
-    }
-
-    @Autowired
-    public void setAllEntities(AllEntities allEntities) {
-        this.allEntities = allEntities;
     }
 
     @Autowired

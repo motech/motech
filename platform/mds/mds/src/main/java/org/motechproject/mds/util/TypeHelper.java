@@ -18,6 +18,8 @@ import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
 import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.mds.domain.MdsEntity;
+import org.motechproject.mds.domain.MdsVersionedEntity;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -731,6 +733,17 @@ public final class TypeHelper {
         return (Class<?>) PRIMITIVE_TYPE_MAP.getKey(clazz);
     }
 
+    public static String getClassNameForMdsType(Class<?> clazz) {
+        Class<?> chosenClass = clazz;
+
+        // box primitives
+        if (clazz.isPrimitive() || byte[].class.equals(clazz)) {
+            chosenClass = TypeHelper.getWrapperForPrimitive(clazz);
+        }
+
+        return chosenClass.getName();
+    }
+
     /**
      * Parses given value to {@link org.motechproject.commons.api.Range}. If passed value is assignable
      * neither to range nor to map, it throws {@link java.lang.IllegalArgumentException}. If value is a map,
@@ -902,6 +915,21 @@ public final class TypeHelper {
         } else {
             return new ArrayList<>();
         }
+    }
+
+    public static boolean isBaseEntity(String entitySuperClass) {
+        return Object.class.getName().equalsIgnoreCase(entitySuperClass) ||
+                MdsEntity.class.getName().equalsIgnoreCase(entitySuperClass) ||
+                MdsVersionedEntity.class.getName().equalsIgnoreCase(entitySuperClass);
+    }
+
+    public static boolean isSubclassOfMdsEntity(String entitySuperClass) {
+        return MdsEntity.class.getName().equalsIgnoreCase(entitySuperClass)
+                || MdsVersionedEntity.class.getName().equalsIgnoreCase(entitySuperClass);
+    }
+
+    public static boolean isSubclassOfMdsVersionedEntity(String entitySuperClass) {
+        return MdsVersionedEntity.class.getName().equalsIgnoreCase(entitySuperClass);
     }
 
     private static boolean bothNumbers(Object val, String toClass) {
