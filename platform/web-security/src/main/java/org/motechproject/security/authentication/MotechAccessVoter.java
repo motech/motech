@@ -59,7 +59,8 @@ public class MotechAccessVoter implements AccessDecisionVoter<Object> {
 
                 if (StringUtils.equalsIgnoreCase(SecurityConfigConstants.USER_ACCESS_PREFIX + authentication.getName(),
                         attribute.getAttribute())) {
-                    return ACCESS_GRANTED;
+                    result = ACCESS_GRANTED;
+                    break;
                 }
             }
         }
