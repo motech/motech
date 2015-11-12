@@ -498,7 +498,7 @@ public class InstanceServiceImpl implements InstanceService {
             }
 
             for (EntityRecord record : filter.getAddedNewRecords()) {
-                relatedAsColl.add(newInstanceFromEntityRecord(getEntityClass(entity), relatedFields, record.getFields(), relatedDataService));
+                relatedAsColl.add(newInstanceFromEntityRecord(getEntityClass(relatedEntity), relatedFields, record.getFields(), relatedDataService));
             }
 
             // apply pagination ordering (currently in memory)
