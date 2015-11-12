@@ -15,8 +15,6 @@ import java.util.UUID;
  * This class is immutable
  */
 public class MotechEvent implements Serializable {
-    public static final String EVENT_TYPE_KEY_NAME = "eventType";
-
     private static final long serialVersionUID = -6710829948064847678L;
 
     private UUID id;
@@ -109,7 +107,7 @@ public class MotechEvent implements Serializable {
     }
 
     /**
-     * Returns whether event is broadcast
+     * Returns whether event is a broadcast event
      *
      * @return broadcast
      */
@@ -118,7 +116,7 @@ public class MotechEvent implements Serializable {
     }
 
     /**
-     * Sets event as broadcast
+     * Sets event as a broadcast event
      *
      * @param value
      */
@@ -136,7 +134,7 @@ public class MotechEvent implements Serializable {
     }
 
     /**
-     * Returns destination of the message
+     * Returns the id of the Motech listener that this event is meant for
      *
      * @return message destination
      */
@@ -145,7 +143,7 @@ public class MotechEvent implements Serializable {
     }
 
     /**
-     * Sets message destination
+     * Sets the id of the Motech listener that this event is meant for
      *
      * @param value
      */
