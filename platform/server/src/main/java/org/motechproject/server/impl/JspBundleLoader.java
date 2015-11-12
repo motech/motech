@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 import java.net.URL;
 
 import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -206,11 +205,11 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
         Class cl = loader.getClass();
 
         if ("org.apache.catalina.loader.WebappClassLoader".equals(cl.getName())) {
-            ArrayList<Field> fields = new ArrayList<Field>(Arrays.asList(cl.getDeclaredFields()));
             boolean found = false;
-            for (Field field : fields) {
+            for (Field field : cl.getDeclaredFields()) {
                 if ("resourceEntries".equals(field.getName())) {
                     found = true;
+                    break;
                 }
             }
             if (found) {
