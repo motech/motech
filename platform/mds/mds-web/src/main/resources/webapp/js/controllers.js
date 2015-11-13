@@ -4632,9 +4632,7 @@
 
             if (!container.is(e.target) && container.has(e.target).length === 0 &&
                 !button.is(e.target) && button.has(e.target).length === 0 && container.is(":visible")) {
-                if (e.target.offsetParent.hasAttribute("id") && e.target.offsetParent.id !== "ui-datepicker-div") {
-                    $scope.showLookupDialog();
-                }
+                $scope.showLookupDialog();
                 return;
             }
 
