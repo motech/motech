@@ -17,7 +17,7 @@ import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.domain.Records;
-import org.motechproject.mds.web.domain.RelatedInstancesFilter;
+import org.motechproject.mds.web.domain.RelationshipsUpdate;
 import org.motechproject.mds.web.service.InstanceService;
 import org.motechproject.testing.utils.rest.RestTestUtil;
 import org.springframework.test.web.server.MockMvc;
@@ -127,7 +127,7 @@ public class InstanceControllerTest {
     public void shouldRetrieveRelatedFieldValues() throws Exception {
         Records<EntityRecord> records = new Records<>(2, 5, 7, recordsList());
 
-        when(instanceService.getRelatedFieldValue(eq(1L), eq(6L), eq("relField"), any(RelatedInstancesFilter.class), any(QueryParams.class)))
+        when(instanceService.getRelatedFieldValue(eq(1L), eq(6L), eq("relField"), any(RelationshipsUpdate.class), any(QueryParams.class)))
                 .thenReturn(records);
 
         controller.perform(post("/instances/1/instance/6/relField?rows=5&page=2&sortColumn=age&sortDirection=desc"))
@@ -135,7 +135,7 @@ public class InstanceControllerTest {
             .andExpect(content().string(new ObjectMapper().writeValueAsString(records)));
 
         ArgumentCaptor<QueryParams> captor = ArgumentCaptor.forClass(QueryParams.class);
-        verify(instanceService).getRelatedFieldValue(eq(1L), eq(6L), eq("relField"), any(RelatedInstancesFilter.class), captor.capture());
+        verify(instanceService).getRelatedFieldValue(eq(1L), eq(6L), eq("relField"), any(RelationshipsUpdate.class), captor.capture());
         QueryParams queryParams = captor.getValue();
 
         // check query params

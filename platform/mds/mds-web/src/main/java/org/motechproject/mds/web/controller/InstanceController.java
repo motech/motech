@@ -20,7 +20,7 @@ import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
-import org.motechproject.mds.web.domain.RelatedInstancesFilter;
+import org.motechproject.mds.web.domain.RelationshipsUpdate;
 import org.motechproject.mds.web.service.InstanceService;
 import org.motechproject.mds.web.util.QueryParamsBuilder;
 import org.slf4j.Logger;
@@ -177,7 +177,7 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/instances/{entityId}/instance/new/{fieldName}", method = RequestMethod.POST)
     @ResponseBody
     public Records<EntityRecord> getRelatedValues(@PathVariable Long entityId, @PathVariable String fieldName, String filters, GridSettings settings) {
-        RelatedInstancesFilter filter = parseRelatedInstancesFilter(filters);
+        RelationshipsUpdate filter = parseRelatedInstancesFilter(filters);
         QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
         return instanceService.getRelatedFieldValue(entityId, null, fieldName, filter, queryParams);
     }
@@ -186,7 +186,7 @@ public class InstanceController extends MdsController {
     @ResponseBody
     public Records<EntityRecord> getRelatedValues(@PathVariable Long entityId, @PathVariable Long instanceId,
                                     @PathVariable String fieldName, String filters, GridSettings settings) {
-        RelatedInstancesFilter filter = parseRelatedInstancesFilter(filters);
+        RelationshipsUpdate filter = parseRelatedInstancesFilter(filters);
         QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
         return instanceService.getRelatedFieldValue(entityId, instanceId, fieldName, filter, queryParams);
     }
@@ -306,14 +306,14 @@ public class InstanceController extends MdsController {
         }
     }
 
-    private RelatedInstancesFilter parseRelatedInstancesFilter(String filters) {
+    private RelationshipsUpdate parseRelatedInstancesFilter(String filters) {
         if (filters == null) {
-            return new RelatedInstancesFilter();
+            return new RelationshipsUpdate();
         }
 
-        RelatedInstancesFilter filter = null;
+        RelationshipsUpdate filter = null;
         try {
-            filter =  objectMapper.readValue(filters, RelatedInstancesFilter.class);
+            filter =  objectMapper.readValue(filters, RelationshipsUpdate.class);
         } catch (IOException e) {
             LOGGER.error("Could not parse related instances filter from the request. ", e);
         }

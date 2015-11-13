@@ -6,13 +6,13 @@ import java.util.List;
 /**
  * Representation of the related instances, that have been added or removed on the UI.
  */
-public class RelatedInstancesFilter {
+public class RelationshipsUpdate {
 
     private List<Long> removedIds;
     private List<Long> addedIds;
     private List<EntityRecord> addedNewRecords;
 
-    public RelatedInstancesFilter() {
+    public RelationshipsUpdate() {
         this.removedIds = new ArrayList<>();
         this.addedIds = new ArrayList<>();
         this.addedNewRecords = new ArrayList<>();
