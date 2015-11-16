@@ -1,4 +1,4 @@
-#if ( ! $service.listEntities().isEmpty() )
+#if ( ! $schema.getAllEntities().isEmpty() )
 {
     "name": "data-services",
     "objects": [ #foreach ( $entity in $schema.getAllEntities() )

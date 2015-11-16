@@ -18,8 +18,6 @@ import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
 import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.model.Time;
-import org.motechproject.mds.domain.MdsEntity;
-import org.motechproject.mds.domain.MdsVersionedEntity;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -917,19 +915,21 @@ public final class TypeHelper {
         }
     }
 
+    // class names as strings below in order to avoid package cycles
+
     public static boolean isBaseEntity(String entitySuperClass) {
         return Object.class.getName().equalsIgnoreCase(entitySuperClass) ||
-                MdsEntity.class.getName().equalsIgnoreCase(entitySuperClass) ||
-                MdsVersionedEntity.class.getName().equalsIgnoreCase(entitySuperClass);
+                "org.motechproject.mds.domain.MdsEntity".equalsIgnoreCase(entitySuperClass) ||
+                "org.motechproject.mds.domain.MdsVersionedEntity".equalsIgnoreCase(entitySuperClass);
     }
 
     public static boolean isSubclassOfMdsEntity(String entitySuperClass) {
-        return MdsEntity.class.getName().equalsIgnoreCase(entitySuperClass)
-                || MdsVersionedEntity.class.getName().equalsIgnoreCase(entitySuperClass);
+        return "org.motechproject.mds.domain.MdsEntity".equalsIgnoreCase(entitySuperClass)
+                || "org.motechproject.mds.domain.MdsVersionedEntity".equalsIgnoreCase(entitySuperClass);
     }
 
     public static boolean isSubclassOfMdsVersionedEntity(String entitySuperClass) {
-        return MdsVersionedEntity.class.getName().equalsIgnoreCase(entitySuperClass);
+        return "org.motechproject.mds.domain.MdsVersionedEntity".equalsIgnoreCase(entitySuperClass);
     }
 
     private static boolean bothNumbers(Object val, String toClass) {

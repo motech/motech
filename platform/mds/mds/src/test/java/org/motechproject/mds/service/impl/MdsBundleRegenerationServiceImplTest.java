@@ -75,7 +75,7 @@ public class MdsBundleRegenerationServiceImplTest {
     @Test
     public void shouldCallRegenerateMdsDataBundleAfterDdeEnhancement() {
         mdsBundleRegenerationService.regenerateMdsDataBundleAfterDdeEnhancement(MODULES);
-        verify(jarGeneratorService).regenerateMdsDataBundleAfterDdeEnhancement(schemaHolder,
+        verify(jarGeneratorService).regenerateMdsDataBundleAfterDdeEnhancement(eq(schemaHolder),
                 eq(PUPPIES_MODULE), eq(KITTIES_MODULE));
     }
 
@@ -92,7 +92,7 @@ public class MdsBundleRegenerationServiceImplTest {
         parameters.put(MODULE_NAMES_PARAM, MODULES);
         Event event = new Event(REGENERATE_MDS_DATA_BUNDLE_AFTER_DDE_ENHANCEMENT, parameters);
         mdsBundleRegenerationService.handleEvent(event);
-        verify(jarGeneratorService).regenerateMdsDataBundleAfterDdeEnhancement(schemaHolder,
+        verify(jarGeneratorService).regenerateMdsDataBundleAfterDdeEnhancement(eq(schemaHolder),
                 eq(PUPPIES_MODULE), eq(KITTIES_MODULE));
     }
 

@@ -357,7 +357,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             }
         } else if (!type.isRelationship()) {
             initializer = JavassistBuilder.createInitializer(
-                    type.getTypeClass(), field.getBasic().getDisplayName()
+                    type.getTypeClass(), field.getBasic().getDefaultValue()
             );
         }
 

@@ -34,6 +34,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -95,8 +96,9 @@ public class EntityBuilderTest {
         fields.addAll(asList(fieldDto("count", Integer.class),
                 fieldDto("time", Time.class), fieldDto("str", String.class), fieldDto("dec", Double.class),
                 fieldDto("bool", Boolean.class), fieldDto("date", Date.class), fieldDto("dt", DateTime.class),
-                fieldDto("ld", LocalDate.class), fieldDto("locale", Locale.class), enumListField, fieldDto("CapitalizedName", String.class),
-                fieldDto("jd", java.time.LocalDate.class), fieldDto("jdt", LocalDateTime.class)));
+                fieldDto("ld", LocalDate.class), fieldDto("locale", Locale.class), enumListField,
+                fieldDto("CapitalizedName", String.class), fieldDto("jd", java.time.LocalDate.class),
+                fieldDto("jdt", LocalDateTime.class), fieldDto("blob", Byte[].class.getName())));
 
         Class<?> clazz = buildClass();
 
@@ -112,6 +114,7 @@ public class EntityBuilderTest {
         assertField(clazz, "locale", Locale.class);
         assertField(clazz, "jd", java.time.LocalDate.class);
         assertField(clazz, "jdt", LocalDateTime.class);
+        assertField(clazz, "blob", Byte[].class);
         // should use uncapitalized version
         assertField(clazz, "capitalizedName", String.class);
     }
@@ -283,9 +286,8 @@ public class EntityBuilderTest {
 
     @Test
     public void shouldBuildEnumListFieldProperly() throws Exception {
-        FieldDto enumListField = fieldDto("enumList", List.class);
+        FieldDto enumListField = fieldDto("enumList", Collection.class);
         enumListField.addMetadata(new MetadataDto(Constants.MetadataKeys.ENUM_CLASS_NAME, FieldEnum.class.getName()));
-        enumListField.getType().setDisplayName("mds.field.combobox");
         enumListField.addSetting(new SettingDto(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS, "true"));
 
         fields.add(enumListField);

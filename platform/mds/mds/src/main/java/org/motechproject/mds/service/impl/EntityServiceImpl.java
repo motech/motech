@@ -347,7 +347,7 @@ public class EntityServiceImpl implements EntityService {
         }
 
         if ("textArea".equalsIgnoreCase(typeClass)) {
-            setMetadataForTextArea(field);
+            setSettingForTextArea(field);
         }
 
         FieldHelper.addMetadataForRelationship(typeClass, field);
@@ -357,10 +357,10 @@ public class EntityServiceImpl implements EntityService {
         allEntityDrafts.update(draft);
     }
 
-    private void setMetadataForTextArea(Field field) {
+    private void setSettingForTextArea(Field field) {
         if (field != null) {
             for (FieldSetting setting : field.getSettings()) {
-                if ("mds.form.label.textarea".equalsIgnoreCase(setting.getDetails().getName())) {
+                if (Constants.Settings.STRING_TEXT_AREA.equalsIgnoreCase(setting.getDetails().getName())) {
                     setting.setValue("true");
                 }
             }

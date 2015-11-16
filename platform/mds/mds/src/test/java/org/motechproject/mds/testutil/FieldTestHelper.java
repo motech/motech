@@ -1,5 +1,6 @@
 package org.motechproject.mds.testutil;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
@@ -17,6 +18,7 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.TypeHelper;
 
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -143,6 +145,8 @@ public final class FieldTestHelper {
             return LocalDate.now();
         } else if (LocalDateTime.class.equals(clazz)) {
             return LocalDateTime.now();
+        } else if (Byte[].class.equals(clazz)) {
+            return ArrayUtils.toObject("test".getBytes(Charset.forName("UTF-8")));
         } else {
             return clazz.newInstance();
         }

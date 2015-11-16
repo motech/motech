@@ -45,7 +45,8 @@ public class EntitySorterTest {
 
     @Test
     public void shouldProperlySortByHasARelation() {
-        List<EntityDto> entities = EntitySorter.sortByHasARelation(getValidDataModel(), schemaHolder);
+        fixDataModel();
+        List<EntityDto> entities = EntitySorter.sortByHasARelation(getDataModel(), schemaHolder);
 
         Assert.assertTrue(entities.indexOf(entity3) < entities.indexOf(entity2));
         Assert.assertTrue(entities.indexOf(entity3) < entities.indexOf(entity1));
@@ -67,8 +68,9 @@ public class EntitySorterTest {
 
     @Test
     public void shouldNotSignalErrorOnSelfRelation() {
+        fixDataModel();
         List<EntityDto> initialList = new ArrayList<>();
-        initialList.addAll(getValidDataModel());
+        initialList.addAll(getDataModel());
         initialList.add(binaryTree);
 
         List<EntityDto> sortingResult = EntitySorter.sortByHasARelation(initialList, schemaHolder);
@@ -79,28 +81,24 @@ public class EntitySorterTest {
 
     @Test(expected = InvalidRelationshipException.class)
     public void shouldSignalInvalidBidirectionalRelationship() {
-        EntitySorter.sortByHasARelation(getInvalidDataModel(), schemaHolder);
+        EntitySorter.sortByHasARelation(getDataModel(), schemaHolder);
     }
 
     @Test(expected = InvalidEntitySettingsException.class)
     public void shouldSignalInvalidHistoryTrackingSettings() {
-        List<EntityDto> entities = getValidDataModel();
+        fixDataModel();
+        List<EntityDto> entities = getDataModel();
         entities.get(0).setRecordHistory(false);
 
         EntitySorter.sortByHasARelation(entities, schemaHolder);
     }
 
-    private List<EntityDto> getInvalidDataModel() {
+    private List<EntityDto> getDataModel() {
         return asList(book, author, entity1, entity2, entity3);
     }
 
-    private List<EntityDto> getValidDataModel() {
-        //Get invalid data model and fix it, by adding necessary metadata to bi-directional relationship
-        List<EntityDto> entities = getInvalidDataModel();
-
+    private void fixDataModel() {
         authorFieldInBook.addMetadata(new MetadataDto(RELATED_FIELD, "book"));
-
-        return entities;
     }
 
     @Before
@@ -111,11 +109,11 @@ public class EntitySorterTest {
         authorFieldInBook = fieldDto("author", ManyToManyRelationship.class);
         authorFieldInBook.addMetadata(new MetadataDto(RELATED_CLASS, "Author"));
 
-        FieldDto authorField = fieldDto("book", ManyToManyRelationship.class);
-        authorField.addMetadata(new MetadataDto(RELATED_CLASS, "Book"));
+        FieldDto bookFieldInAuthor = fieldDto("book", ManyToManyRelationship.class);
+        bookFieldInAuthor.addMetadata(new MetadataDto(RELATED_CLASS, "Book"));
 
         when(schemaHolder.getFields(book)).thenReturn(singletonList(authorFieldInBook));
-        when(schemaHolder.getFields(author)).thenReturn(singletonList(authorField));
+        when(schemaHolder.getFields(author)).thenReturn(singletonList(bookFieldInAuthor));
 
         entity1 = new EntityDto("Entity1");
         entity2 = new EntityDto("Entity2");

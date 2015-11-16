@@ -80,7 +80,8 @@ class LookupBuilder {
             String fieldName = fieldOrder.get(i);
 
             FieldDto field = getLookupField(fieldName);
-            LookupFieldDto lookupField = lookup.getLookupField(fieldName);
+            // don't use fieldName for fetching fields, as it can contain dots, etc.
+            LookupFieldDto lookupField = lookup.getLookupField(field.getBasic().getName());
 
             FieldDto relationField = null;
             EntityDto relatedEntity = null;
@@ -132,7 +133,8 @@ class LookupBuilder {
             boolean appendJdoVariableName = false;
 
             FieldDto field = getLookupField(lookupFieldName);
-            LookupFieldDto lookupField = lookup.getLookupField(lookupFieldName);
+            // don't use lookupFieldName for fetching fields, as it can contain dots, etc.
+            LookupFieldDto lookupField = lookup.getLookupField(field.getBasic().getName());
 
             FieldDto relationField = null;
 
@@ -346,7 +348,8 @@ class LookupBuilder {
             String fieldName = fieldsOrder.get(i);
 
             FieldDto field = getLookupField(fieldName);
-            LookupFieldDto lookupField = lookup.getLookupField(fieldName);
+            // don't use fieldName for fetching fields, as it can contain dots, etc.
+            LookupFieldDto lookupField = lookup.getLookupField(field.getBasic().getName());
 
             FieldDto relationField = null;
             EntityDto relatedEntity = null;

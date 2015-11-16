@@ -104,11 +104,11 @@ public class EntityInfrastructureBuilderTest {
         FieldDto dateField = fieldDto("dateField", "Display names should not affect methods", DateTime.class);
         FieldDto timeField = fieldDto("timeField", Time.class);
 
-        List<FieldDto> fields = new ArrayList<>();
-        fields.add(testField);
-        fields.add(testField2);
-        fields.add(dateField);
-        fields.add(timeField);
+        when(schemaHolder.getFieldByName(SampleWithLookups.class.getName(), "TestField")).thenReturn(testField);
+        when(schemaHolder.getFieldByName(SampleWithLookups.class.getName(), "TestField2")).thenReturn(testField2);
+        when(schemaHolder.getFieldByName(SampleWithLookups.class.getName(), "dateField")).thenReturn(dateField);
+        when(schemaHolder.getFieldByName(SampleWithLookups.class.getName(), "timeField")).thenReturn(timeField);
+
         lookup.setFieldsOrder(asList("TestField", "TestField2", "dateField", "timeField"));
         lookup.setSingleObjectReturn(true);
         when(schemaHolder.getLookups(entity)).thenReturn(singletonList(lookup));

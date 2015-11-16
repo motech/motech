@@ -2,6 +2,7 @@ package org.motechproject.mds.osgi;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
+import org.motechproject.commons.api.StopWatchHelper;
 import org.motechproject.commons.api.ThreadSuspender;
 import org.motechproject.mds.annotations.internal.EntityProcessorOutput;
 import org.motechproject.mds.annotations.internal.MDSAnnotationProcessor;
@@ -9,6 +10,7 @@ import org.motechproject.mds.annotations.internal.MDSProcessorOutput;
 import org.motechproject.mds.annotations.internal.SchemaComparator;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.loader.EditableLookupsLoader;
@@ -27,12 +29,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jdo.JdoTransactionManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -96,27 +99,24 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         stopWatch.stop();
 
         LOGGER.info("Annotation processing finished in {} ms", stopWatch.getTime());
-        LOGGER.info("Starting bundle refresh");
 
-        stopWatch.reset();
-        stopWatch.start();
-        tmpl.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() + " - start refreshing bundles");
+        // if we found annotations, we will refresh the bundle in order to start weaving the
+        // classes it exposes
+        if (!bundlesToRefresh.isEmpty()) {
+            LOGGER.info("Starting bundle refresh process");
 
-                // if we found annotations, we will refresh the bundle in order to start weaving the
-                // classes it exposes
-                if (!bundlesToRefresh.isEmpty()) {
-                    refreshBundles(bundlesToRefresh);
-                }
+            SchemaHolder schemaHolder = lockAndGetSchema();
 
-                schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - start refreshing bundles");
-            }
-        });
-        stopWatch.stop();
+            LOGGER.info("Refreshing bundles: {}", bundlesToRefresh);
 
-        LOGGER.info("Bundle refresh finished in {} ms", stopWatch.getTime());
+            StopWatchHelper.restart(stopWatch);
+            refreshBundles(bundlesToRefresh, schemaHolder);
+            stopWatch.stop();
+
+            LOGGER.info("Bundle refresh finished in {} ms", stopWatch.getTime());
+        } else {
+            LOGGER.info("No bundles to refresh, proceeding");
+        }
 
         bundleContext.addBundleListener(this);
     }
@@ -180,7 +180,8 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
             LOGGER.info("Unregistering JDO classes for Bundle: {}", bundle.getSymbolicName());
             MdsBundleHelper.unregisterBundleJDOClasses(bundle);
         } else if (eventType == BundleEvent.UNINSTALLED && !skipBundle(bundle)) {
-            refreshBundle(bundle);
+            SchemaHolder schemaHolder = lockAndGetSchema();
+            refreshBundle(bundle, schemaHolder);
         }
     }
 
@@ -214,19 +215,12 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
                     schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - searching for flyway migrations");
                 }
             });
+
+            SchemaHolder schemaHolder = lockAndGetSchema();
+
             // if we found annotations, we will refresh the bundle in order to start weaving the
             // classes it exposes
-            tmpl = new TransactionTemplate(transactionManager);
-            tmpl.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() + " - refreshing after bundle event");
-
-                    refreshBundle(bundle);
-
-                    schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - refreshing after bundle event");
-                }
-            });
+            refreshBundle(bundle, schemaHolder);
         }
     }
 
@@ -286,11 +280,11 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         return !MdsBundleHelper.isBundleMdsDependent(bundle);
     }
 
-    private void refreshBundle(Bundle bundle) {
-        refreshBundles(Arrays.asList(bundle));
+    private void refreshBundle(Bundle bundle, SchemaHolder schemaHolder) {
+        refreshBundles(Collections.singletonList(bundle), schemaHolder);
     }
 
-    private void refreshBundles(List<Bundle> bundles) {
+    private void refreshBundles(List<Bundle> bundles, SchemaHolder schemaHolder) {
         if (LOGGER.isInfoEnabled()) {
             for (Bundle bundle : bundles) {
                 LOGGER.info("Refreshing wiring for bundle {}", bundle.getSymbolicName());
@@ -299,7 +293,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
 
         // we generate the entities bundle but not start it to avoid exceptions when the framework
         // will refresh bundles
-        jarGeneratorService.regenerateMdsDataBundle(entityService.getSchema(), false);
+        jarGeneratorService.regenerateMdsDataBundle(schemaHolder, false);
 
         FrameworkWiring framework = bundleContext.getBundle(0).adapt(FrameworkWiring.class);
         framework.refreshBundles(bundles);
@@ -365,6 +359,34 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
             AwaitingBundle awaitingBundle = awaitingBundles.poll();
             processBundle(awaitingBundle.bundle);
         }
+    }
+
+    private SchemaHolder lockAndGetSchema() {
+        LOGGER.info("Retrieving MDS schema");
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
+        TransactionTemplate trxTemplate = new TransactionTemplate(transactionManager);
+
+        final SchemaHolder schemaHolder = trxTemplate.execute(new TransactionCallback<SchemaHolder>() {
+            @Override
+            public SchemaHolder doInTransaction(TransactionStatus status) {
+                schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() + " - start refreshing bundles");
+
+                SchemaHolder result = entityService.getSchema();
+
+                schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - start refreshing bundles");
+
+                return result;
+            }
+        });
+
+        stopWatch.stop();
+
+        LOGGER.info("Schema retrieved in {} ms", stopWatch.getTime());
+
+        return schemaHolder;
     }
 
     @Autowired

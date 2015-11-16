@@ -67,7 +67,6 @@ public class MDSConstructorImpl implements MDSConstructor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MDSConstructorImpl.class);
 
-    // TODO: stays or goes?
     @Autowired
     private AllEntities allEntities;
 

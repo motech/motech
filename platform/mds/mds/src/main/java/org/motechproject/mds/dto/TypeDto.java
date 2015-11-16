@@ -246,6 +246,11 @@ public class TypeDto {
 
     @JsonIgnore
     public Class<?> getClassObjectForType() {
+        // arrays won't work with the classloader
+        if (Byte[].class.getName().equals(typeClass)) {
+            return Byte[].class;
+        }
+
         try {
             return getClass().getClassLoader().loadClass(typeClass);
         } catch (ClassNotFoundException e) {

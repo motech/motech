@@ -42,7 +42,7 @@ public final class EntitySorter {
         for (int i = 0; i < sorted.size(); ++i) {
             EntityDto entity = sorted.get(i);
             List<FieldDto> fields = (List<FieldDto>) CollectionUtils.select(
-                    schemaHolder.getFields(entity.getClassName()),
+                    schemaHolder.getFields(entity),
                     new Predicate() {
                 @Override
                 public boolean evaluate(Object object) {

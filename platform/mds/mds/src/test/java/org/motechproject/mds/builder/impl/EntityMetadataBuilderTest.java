@@ -22,6 +22,9 @@ import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -42,7 +45,6 @@ import javax.jdo.metadata.PackageMetadata;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
@@ -119,6 +121,7 @@ public class EntityMetadataBuilderTest {
         when(entity.getClassName()).thenReturn(CLASS_NAME);
         when(classMetadata.newFieldMetadata("id")).thenReturn(idMetadata);
         when(classMetadata.newInheritanceMetadata()).thenReturn(inheritanceMetadata);
+        when(schemaHolder.getFieldByName(entity, "id")).thenReturn(idField);
         when(entity.isBaseEntity()).thenReturn(true);
     }
 
@@ -214,7 +217,7 @@ public class EntityMetadataBuilderTest {
         CollectionMetadata collMd = mock(CollectionMetadata.class);
 
         when(entity.getName()).thenReturn(ENTITY_NAME);
-        when(schemaHolder.getFields(CLASS_NAME)).thenReturn(singletonList(oneToManyField));
+        when(schemaHolder.getFields(entity)).thenReturn(singletonList(oneToManyField));
         when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
@@ -236,7 +239,7 @@ public class EntityMetadataBuilderTest {
         final String relClassName = "org.motechproject.test.MyClass";
         final String relFieldName = "myField";
 
-        FieldDto oneToOneField = fieldDto(relFieldName, OneToOneRelationship.class);
+        FieldDto oneToOneField = fieldDto("oneToOneName", OneToOneRelationship.class);
         oneToOneField.addMetadata(new MetadataDto(RELATED_CLASS, relClassName));
         oneToOneField.addMetadata(new MetadataDto(RELATED_FIELD, relFieldName));
 
@@ -244,7 +247,7 @@ public class EntityMetadataBuilderTest {
         when(fmd.getName()).thenReturn("oneToOneName");
 
         when(entity.getName()).thenReturn(ENTITY_NAME);
-        when(schemaHolder.getFields(CLASS_NAME)).thenReturn(asList(oneToOneField));
+        when(schemaHolder.getFields(entity)).thenReturn(singletonList(oneToOneField));
         when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
@@ -277,10 +280,15 @@ public class EntityMetadataBuilderTest {
     public void shouldSetIndexOnMetadataLookupField() throws Exception {
         FieldDto lookupField = fieldDto("lookupField", String.class);
 
+        LookupDto lookup = new LookupDto();
+        lookup.setLookupName("A lookup");
+        lookup.setLookupFields(singletonList(new LookupFieldDto("lookupField", LookupFieldType.VALUE)));
+        lookupField.setLookups(singletonList(lookup));
+
         FieldMetadata fmd = mock(FieldMetadata.class);
 
         when(entity.getName()).thenReturn(ENTITY_NAME);
-        when(schemaHolder.getFields(CLASS_NAME)).thenReturn(singletonList(lookupField));
+        when(schemaHolder.getFields(entity)).thenReturn(singletonList(lookupField));
         when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);

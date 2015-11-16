@@ -109,18 +109,29 @@ public final class JavassistBuilder {
      */
     public static CtField.Initializer createInitializer(String typeClass, String defaultValueAsString) {
         Object defaultValue = TypeHelper.parse(defaultValueAsString, typeClass);
+        return createInitializer(typeClass, defaultValue);
+    }
 
+    /**
+     * Creates a field initializer for the given type and default value.
+     *
+     * @param typeClass the field type
+     * @param defaultValue the default value for the field
+     * @return field initializer
+     */
+    public static CtField.Initializer createInitializer(String typeClass, Object defaultValue) {
         //The distinction made in order to avoid the cyclomatic complexity error
         if(typeClass.startsWith("java")) {
-            return createInitializerForJavaPlatformPackages(typeClass, defaultValue, defaultValueAsString);
+            return createInitializerForJavaPlatformPackages(typeClass, defaultValue, defaultValue);
         } else {
             return createInitializerForThirdPartyPackages(typeClass, defaultValue);
         }
     }
 
+
     private static CtField.Initializer createInitializerForJavaPlatformPackages(String typeClass,
                                                                                 Object defaultValue,
-                                                                                String defaultValueAsString) {
+                                                                                Object defaultValueg) {
         switch (typeClass) {
             case "java.lang.Integer":
             case "java.lang.Double":
@@ -138,7 +149,7 @@ public final class JavassistBuilder {
                 java.time.LocalDate javaLocalDate = (java.time.LocalDate) defaultValue;
                 return createJavaTimeInitializer(typeClass, javaLocalDate.toString());
             case "java.util.Locale":
-                return createLocaleInitializer(defaultValueAsString);
+                return createLocaleInitializer(defaultValueg);
             default:
                 return null;
         }
@@ -310,7 +321,7 @@ public final class JavassistBuilder {
      * @param defaultValue the default value
      * @return {@link java.util.Locale} initializer
      */
-    public static CtField.Initializer createLocaleInitializer(String defaultValue) {
+    public static CtField.Initializer createLocaleInitializer(Object defaultValue) {
         return CtField.Initializer.byExpr(String.format("%s.toLocale(\"%s\")", LocaleUtils.class.getName(), defaultValue));
     }
 }
