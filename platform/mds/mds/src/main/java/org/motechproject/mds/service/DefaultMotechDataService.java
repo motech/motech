@@ -42,6 +42,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.jdo.Query;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -415,9 +416,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
-    public Collection<T> findByIds(Collection<Long> ids) {
+    public List<T> findByIds(Collection<Long> ids) {
         if (ids == null) {
-            return null;
+            return new ArrayList<>();
         }
 
         return repository.retrieveAll(ids);

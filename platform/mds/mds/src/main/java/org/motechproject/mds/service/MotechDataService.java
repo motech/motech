@@ -214,13 +214,14 @@ public interface MotechDataService<T> {
     T findById(Long id);
 
     /**
-     * Retrieves multiple instances of type {@value T} and given ids from MDS. It will fail,
-     * if at least one instance of the id taken from the collection does not exist.
+     * Retrieves multiple instances of type {@value T} and given ids from MDS. It will not fail
+     * if it is unable to find an instance for one or more IDs and will return a collection of these
+     * instances that could be found. If null is passed as keys, it will return an empty list.
      *
      * @param ids a collection of ids to find
      * @return a collection of instances with the given ids
      */
-    Collection<T> findByIds(Collection<Long> ids);
+    List<T> findByIds(Collection<Long> ids);
 
     /**
      * Allows to wrap several instructions into a single transaction. Developers should implement

@@ -703,7 +703,8 @@ public class InstanceServiceImpl implements InstanceService {
         }
     }
 
-    private void setRelationProperty(Object instance, FieldRecord fieldRecord) throws NoSuchMethodException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, CannotCompileException {
+    private void setRelationProperty(Object instance, FieldRecord fieldRecord)
+            throws NoSuchMethodException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, CannotCompileException {
         String fieldName = fieldRecord.getName();
         String methodName =  MemberUtil.getSetterName(fieldName);
         Class<?> clazz = instance.getClass().getClassLoader().loadClass(instance.getClass().getName());
@@ -731,7 +732,7 @@ public class InstanceServiceImpl implements InstanceService {
         invokeMethod(method, instance, value, methodName, fieldName);
     }
 
-    private Object buildRelatedInstances(MotechDataService service, Class<?> parameterType, Class<?> argumentType, Object fieldValue, Object related)
+    private Object buildRelatedInstances(MotechDataService service, Class<?> parameterType, Class<?> argumentType, Object fieldValue, Object relatedObject)
             throws IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException, CannotCompileException, NoSuchFieldException {
         Object parsedValue;
         RelationshipsUpdate relationshipsUpdate = mapper.convertValue(fieldValue, RelationshipsUpdate.class);
@@ -740,40 +741,55 @@ public class InstanceServiceImpl implements InstanceService {
         List<FieldDto> entityFields = getEntityFields(relatedEntity.getId());
 
        if (Collection.class.isAssignableFrom(parameterType)) {
-           Class<?> collectionImplementation = TypeHelper.suggestCollectionImplementation((Class<? extends Collection>) parameterType);
-           parsedValue = collectionImplementation == null ? new ArrayList() : collectionImplementation.newInstance();
-           Collection relatedInstances = ((Collection) parsedValue);
-
-           // Add already related instances, provided any exist
-           if (related != null) {
-               relatedInstances.addAll((Collection) related);
-           }
-
-           // Add new, existing relations, based on the passed IDs
-           relatedInstances.addAll(service.findByIds(relationshipsUpdate.getAddedIds()));
-
-           // Remove existing relations if their ID is on the list
-           relatedInstances.removeIf(new Predicate() {
-               @Override
-               public boolean test(Object o) {
-                   return relationshipsUpdate.getRemovedIds().contains(PropertyUtil.safeGetProperty(o, Constants.Util.ID_FIELD_NAME));
-               }
-           });
-
-           // Add new relations, that do not exist in db yet
-           for (EntityRecord record : relationshipsUpdate.getAddedNewRecords()) {
-               relatedInstances.add(newInstanceFromEntityRecord(argumentType, entityFields, record.getFields(), service));
-           }
-
+           parsedValue = parseRelationshipCollection(service, (Class<? extends Collection>) parameterType, argumentType, (Collection) relatedObject, relationshipsUpdate, entityFields);
        } else {
-           if (!relationshipsUpdate.getAddedIds().isEmpty()) {
-               parsedValue = findRelatedObjectById(relationshipsUpdate.getAddedIds().get(0), service);
-           } else {
-               parsedValue = newInstanceFromEntityRecord(argumentType, entityFields, relationshipsUpdate.getAddedNewRecords().get(0).getFields(), service);
-           }
+           parsedValue = parseRelationshipValue(service, argumentType, relationshipsUpdate, entityFields);
        }
 
        return parsedValue;
+    }
+
+    private Object parseRelationshipValue(MotechDataService service, Class<?> argumentType, RelationshipsUpdate relationshipsUpdate, List<FieldDto> entityFields)
+            throws IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException, CannotCompileException, NoSuchFieldException {
+        Object parsedValue;
+
+        if (!relationshipsUpdate.getAddedIds().isEmpty()) {
+            parsedValue = findRelatedObjectById(relationshipsUpdate.getAddedIds().get(0), service);
+        } else {
+            parsedValue = newInstanceFromEntityRecord(argumentType, entityFields, relationshipsUpdate.getAddedNewRecords().get(0).getFields(), service);
+        }
+
+        return parsedValue;
+    }
+
+    private Object parseRelationshipCollection(MotechDataService service, Class<? extends Collection> parameterType, Class<?> argumentType, Collection existingRelatedInstances, RelationshipsUpdate relationshipsUpdate, List<FieldDto> entityFields)
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, CannotCompileException, NoSuchFieldException {
+        Collection relatedInstances;
+
+        Class<?> collectionImplementation = TypeHelper.suggestCollectionImplementation(parameterType);
+        relatedInstances = (Collection) (collectionImplementation == null ? new ArrayList() : collectionImplementation.newInstance());
+
+        // Add already related instances, provided any exist
+        if (existingRelatedInstances != null) {
+            relatedInstances.addAll(existingRelatedInstances);
+        }
+
+        // Add new, existing relations, based on the passed IDs
+        relatedInstances.addAll(service.findByIds(relationshipsUpdate.getAddedIds()));
+
+        // Remove existing relations if their ID is on the list
+        relatedInstances.removeIf(new Predicate() {
+            @Override
+            public boolean test(Object o) {
+                return relationshipsUpdate.getRemovedIds().contains(PropertyUtil.safeGetProperty(o, Constants.Util.ID_FIELD_NAME));
+            }
+        });
+
+        // Add new relations, that do not exist in db yet
+        for (EntityRecord record : relationshipsUpdate.getAddedNewRecords()) {
+            relatedInstances.add(newInstanceFromEntityRecord(argumentType, entityFields, record.getFields(), service));
+        }
+        return relatedInstances;
     }
 
     private Object findRelatedObjectById(Object id, MotechDataService service) {

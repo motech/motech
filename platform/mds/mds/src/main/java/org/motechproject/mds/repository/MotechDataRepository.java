@@ -82,10 +82,11 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
         return getPersistenceManager().getObjectById(classType, key);
     }
 
-    public Collection<T> retrieveAll(Collection<Long> keys) {
+    public List<T> retrieveAll(Collection<Long> keys) {
         Query query = getPersistenceManager().newQuery(classType);
         query.setFilter(":keys.contains(this.id)");
-        return (Collection) query.execute(keys);
+        Collection result = (Collection) query.execute(keys);
+        return new ArrayList<>(result);
     }
 
     public T create(T object) {
