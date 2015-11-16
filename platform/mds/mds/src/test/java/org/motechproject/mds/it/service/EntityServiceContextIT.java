@@ -590,7 +590,7 @@ public class EntityServiceContextIT extends BaseIT {
         userPreferencesService.unselectField(entityId, "motech", "owner");
 
         UserPreferencesDto userPreferencesDto = userPreferencesService.getUserPreferences(entityId, "motech");
-        assertEquals(asList("creator,", "modifiedBy", "creationDate", "modificationDate", "f1name"),
+        assertEquals(asList("creator", "modifiedBy", "creationDate", "modificationDate", "f1name"),
                 userPreferencesDto.getVisibleFields());
 
         entityService.commitChanges(entityId);
