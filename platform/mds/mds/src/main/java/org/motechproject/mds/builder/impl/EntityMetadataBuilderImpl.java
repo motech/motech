@@ -384,9 +384,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         SettingDto maxLengthSetting = field.getSetting(Constants.Settings.STRING_MAX_LENGTH);
         ColumnMetadata colMd = fmd.newColumnMetadata();
         // only set the metadata if the setting is different from default
-        // TODO: what's this about ??
-        if (maxLengthSetting != null // &&
-                /*!StringUtils.equals(maxLengthSetting.getValue(), maxLengthSetting.getDetails().getDefaultValue())*/) {
+        if (maxLengthSetting != null) {
             colMd.setLength(Integer.parseInt(maxLengthSetting.getValueAsString()));
         }
 

@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * A class that holds the MDS schema - entities, types, fields, lookups, advanced settings and so on.
+ * Used during MDS processing in order to avoid repeatedly querying the database.
+ */
 public class SchemaHolder {
 
     private Map<String, EntityHolder> entityMap = new HashMap<>();
