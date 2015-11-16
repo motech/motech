@@ -305,6 +305,16 @@
             return parseUri(window.location.href).anchor;
         };
 
+        /**
+        Deprecated. This function exists for backward compatibility
+        and should not be used.
+        */
+        $scope.active = function(url) {
+            if (window.location.href.indexOf(url) !== -1) {
+                return "active";
+            }
+        };
+
         $scope.safeApply = function (fun) {
             var phase = this.$root.$$phase;
 
