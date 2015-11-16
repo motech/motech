@@ -14,6 +14,8 @@
 
     <osgi:reference id="entityServiceOSGi" interface="org.motechproject.mds.service.EntityService"/>
 
+    <osgi:reference id="userPreferencesServiceOSGi" interface="org.motechproject.mds.service.UserPreferencesService"/>
+
     <osgi:reference id="historyServiceOSGi" interface="org.motechproject.mds.service.HistoryService" availability="optional"/>
 
     <osgi:reference id="trashServiceOSGi" interface="org.motechproject.mds.service.TrashService" availability="optional"/>

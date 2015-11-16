@@ -9,9 +9,12 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MdsBundleRegenerationService;
+import org.motechproject.mds.service.UserPreferencesService;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.comparator.EntityNameComparator;
+import org.motechproject.mds.web.domain.UserPreferencesFields;
 import org.motechproject.mds.web.matcher.EntityMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.motechproject.mds.util.Constants.Roles;
+import static org.motechproject.mds.util.SecurityUtil.getUsername;
 
 /**
  * The <code>EntityController</code> is the Spring Framework Controller used by view layer for
@@ -47,6 +51,7 @@ public class EntityController extends MdsController {
 
     private MdsBundleRegenerationService mdsBundleRegenerationService;
     private EntityService entityService;
+    private UserPreferencesService userPreferencesService;
 
     @RequestMapping(value = "/entities/byModule", method = RequestMethod.GET)
     @ResponseBody
@@ -255,6 +260,33 @@ public class EntityController extends MdsController {
         return entityService.getAdvancedSettings(entityId, true);
     }
 
+    @RequestMapping(value = "/entities/{entityId}/preferences/fields", method = RequestMethod.POST)
+    @PreAuthorize(Roles.DATA_ACCESS)
+    @ResponseStatus(HttpStatus.OK)
+    public void updateEntityDispleyableFieldsForUser(@RequestBody UserPreferencesFields fieldPreferences, @PathVariable Long entityId) {
+        switch (fieldPreferences.getAction()) {
+            case Constants.UserPreferences.SELECT:
+                userPreferencesService.selectField(entityId, getUsername(), fieldPreferences.getField());
+                break;
+            case Constants.UserPreferences.SELECT_ALL:
+                userPreferencesService.selectFields(entityId, getUsername());
+                break;
+            case Constants.UserPreferences.UNSELECT:
+                userPreferencesService.unselectField(entityId, getUsername(), fieldPreferences.getField());
+                break;
+            case Constants.UserPreferences.UNSELECT_ALL:
+                userPreferencesService.unselectFields(entityId, getUsername());
+                break;
+        }
+    }
+
+    @RequestMapping(value = "/entities/{entityId}/preferences/gridSize", method = RequestMethod.POST)
+    @PreAuthorize(Roles.DATA_ACCESS)
+    @ResponseStatus(HttpStatus.OK)
+    public void updateEntityGridRowsNumberForUser(@RequestBody Integer pageSize, @PathVariable Long entityId) {
+        userPreferencesService.updateGridSize(entityId, getUsername(), pageSize);
+    }
+
     @Autowired
     public void setEntityService(EntityService entityService) {
         this.entityService = entityService;
@@ -263,5 +295,10 @@ public class EntityController extends MdsController {
     @Autowired
     public void setMdsBundleRegenerationService(MdsBundleRegenerationService mdsBundleRegenerationService) {
         this.mdsBundleRegenerationService = mdsBundleRegenerationService;
+    }
+
+    @Autowired
+    public void setUserPreferencesService(UserPreferencesService userPreferencesService) {
+        this.userPreferencesService = userPreferencesService;
     }
 }

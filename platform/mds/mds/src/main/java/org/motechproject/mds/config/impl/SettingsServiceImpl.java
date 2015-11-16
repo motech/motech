@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Properties;
 
+import static org.motechproject.mds.util.Constants.Config.MDS_DEFAULT_GRID_SIZE;
 import static org.motechproject.mds.util.Constants.Config.MDS_DELETE_MODE;
 import static org.motechproject.mds.util.Constants.Config.MDS_EMPTY_TRASH;
 import static org.motechproject.mds.util.Constants.Config.MDS_TIME_UNIT;
@@ -51,12 +52,18 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
+    public Integer getGridSize() {
+        return getModuleSettings().getGridSize();
+    }
+
+    @Override
     @Transactional
     public void saveModuleSettings(ModuleSettings settings) {
         ConfigSettings configSetting = new ConfigSettings();
-        configSetting.setEmptyTrash(Boolean.parseBoolean(settings.getProperty(MDS_EMPTY_TRASH)));
-        configSetting.setAfterTimeUnit(TimeUnit.fromString(settings.getProperty(MDS_TIME_UNIT)));
-        configSetting.setDeleteMode(DeleteMode.fromString(settings.getProperty(MDS_DELETE_MODE)));
+        configSetting.setEmptyTrash(settings.isEmptyTrash());
+        configSetting.setAfterTimeUnit(settings.getTimeUnit());
+        configSetting.setDeleteMode(settings.getDeleteMode());
+        configSetting.setDefaultGridSize(settings.getGridSize());
 
         if (settings.getProperty(MDS_TIME_VALUE) != null) {
             configSetting.setAfterTimeValue(Integer.parseInt(settings.getProperty(MDS_TIME_VALUE)));
@@ -89,6 +96,7 @@ public class SettingsServiceImpl implements SettingsService {
             props.put(MDS_EMPTY_TRASH, configSettings.getEmptyTrash());
             props.put(MDS_TIME_UNIT, configSettings.getAfterTimeUnit());
             props.put(MDS_DELETE_MODE, configSettings.getDeleteMode());
+            props.put(MDS_DEFAULT_GRID_SIZE, configSettings.getDefaultGridSize());
         } else {
             props = mdsConfig.getProperties(MODULE_FILE);
         }

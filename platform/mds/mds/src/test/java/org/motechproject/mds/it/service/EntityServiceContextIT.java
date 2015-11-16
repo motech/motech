@@ -21,6 +21,7 @@ import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.dto.UserPreferencesDto;
 import org.motechproject.mds.ex.entity.EntityAlreadyExistException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.it.BaseIT;
@@ -31,6 +32,7 @@ import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.TypeService;
+import org.motechproject.mds.service.UserPreferencesService;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.util.Constants;
@@ -73,10 +75,10 @@ import static org.motechproject.mds.dto.LookupFieldType.RANGE;
 import static org.motechproject.mds.dto.LookupFieldType.SET;
 import static org.motechproject.mds.dto.LookupFieldType.VALUE;
 import static org.motechproject.mds.testutil.LookupTestHelper.lookupFieldsFromNames;
+import static org.motechproject.mds.util.Constants.MetadataKeys.OWNING_SIDE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE;
-import static org.motechproject.mds.util.Constants.MetadataKeys.OWNING_SIDE;
 
 public class EntityServiceContextIT extends BaseIT {
     private static final String SIMPLE_NAME = "Test";
@@ -103,6 +105,9 @@ public class EntityServiceContextIT extends BaseIT {
 
     @Autowired
     private AllEntityDrafts allEntityDrafts;
+
+    @Autowired
+    private UserPreferencesService userPreferencesService;
 
     @Before
     public void setUp() throws Exception {
@@ -551,6 +556,48 @@ public class EntityServiceContextIT extends BaseIT {
         entityService.updateMaxFetchDepth(entityDto.getId(), 3);
         entityDto = entityService.getEntity(entityDto.getId());
         assertEquals(Integer.valueOf(3), entityDto.getMaxFetchDepth());
+    }
+
+
+    @Test
+    public void shouldUpdateUserPreferencesAfterCommit() {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setName("UserPrefTest");
+        entityDto = entityService.createEntity(entityDto);
+
+        final Long entityId = entityDto.getId();
+
+        entityService.saveDraftEntityChanges(entityId,
+                DraftBuilder.forNewField("disp", "f1name", Long.class.getName()));
+        List<FieldDto> fields = entityService.getFields(entityId);
+        assertNotNull(fields);
+        assertEquals(asList("id", "creator", "owner", "modifiedBy", "creationDate", "modificationDate", "f1name"),
+                extract(fields, on(FieldDto.class).getBasic().getName()));
+        entityService.commitChanges(entityId);
+
+        FieldDto field = selectFirst(fields, having(on(FieldDto.class).getBasic().getName(), equalTo("f1name")));
+        entityService.saveDraftEntityChanges(entityDto.getId(),
+                DraftBuilder.forFieldEdit(field.getId(), "basic.name", "newName"));
+
+        fields = entityService.getFields(entityId);
+
+        assertNotNull(fields);
+        assertEquals(asList("Id", "Created By", "Owner", "Modified By", "Creation Date", "Modification Date", "disp"),
+                extract(fields, on(FieldDto.class).getBasic().getDisplayName()));
+
+        userPreferencesService.selectFields(entityId, "motech");
+        userPreferencesService.unselectField(entityId, "motech", "id");
+        userPreferencesService.unselectField(entityId, "motech", "owner");
+
+        UserPreferencesDto userPreferencesDto = userPreferencesService.getUserPreferences(entityId, "motech");
+        assertEquals(asList("creator,", "modifiedBy", "creationDate", "modificationDate", "f1name"),
+                userPreferencesDto.getVisibleFields());
+
+        entityService.commitChanges(entityId);
+
+        userPreferencesDto = userPreferencesService.getUserPreferences(entityId, "motech");
+        assertEquals(asList("creator", "modifiedBy", "creationDate", "modificationDate", "newName"),
+                userPreferencesDto.getVisibleFields());
     }
 
     private void assertRelatedField(EntityDto relatedEntity, FieldDto relatedField, String collection) {

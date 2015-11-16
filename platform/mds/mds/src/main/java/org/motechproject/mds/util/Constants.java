@@ -224,6 +224,11 @@ public final class Constants {
         public static final String MDS_TIME_UNIT = "mds.emptyTrash.afterTimeUnit";
 
         /**
+         * The property that specifies default number of records in each data browser grid.
+         */
+        public static final String MDS_DEFAULT_GRID_SIZE = "mds.default.gridSize";
+
+        /**
          * Constant <code>EMPTY_TRASH_JOB</code> presents a name of job scheduled by scheduler
          * module.
          */
@@ -606,6 +611,20 @@ public final class Constants {
         public static final String FILESYSTEM_PREFIX = "filesystem:";
 
         public static final String PRE_SCHEMA_CREATION_DIRECTORY = "preSchemaGeneration";
+    }
+
+    /**
+     *  Constants corresponding to the user preferences.
+     */
+    public static final class UserPreferences {
+
+        public static final String SELECT = "select";
+
+        public static final String SELECT_ALL = "select_all";
+
+        public static final String UNSELECT = "unselect";
+
+        public static final String UNSELECT_ALL = "unselect_all";
     }
 
     /**

@@ -143,18 +143,33 @@
     * whether is selected for display in the jqGrid
     */
     function isSelectedField(name, selectedFields) {
-        var result = true;
-        if (selectedFields !== undefined && $.isArray(selectedFields)) {
-            $.each(selectedFields, function (i, sField) {
-                if(name === sField.basic.name) {
-                    result = true;
-                } else {
-                    result = false;
+        var i;
+        if (selectedFields) {
+            for (i = 0; i < selectedFields.length; i += 1) {
+                if (name === selectedFields[i].basic.name) {
+                    return true;
                 }
-                return (!result);
+            }
+        }
+        return false;
+    }
+
+    function handleGridPagination(pgButton, pager, scope, http) {
+        var newPage = 1, last, newSize;
+        if ("user" === pgButton) {
+            newPage = parseInt(pager.find('input:text').val(), 10);
+            last = parseInt($(this).getGridParam("lastpage"), 10);
+            if (newPage > last || newPage === 0) {
+                return 'stop';
+            }
+        } else if ("records" === pgButton) {
+            newSize = parseInt(pager.find('select')[0].value, 10);
+            http.post('../mds/entities/' + scope.selectedEntity.id + "/preferences/gridSize", newSize)
+            .error(function () {
+                handleResponse('mds.error', 'mds.preferences.error.grid', '');
+                unblockUI();
             });
         }
-        return result;
     }
 
     function buildGridColModel(colModel, fields, scope, ignoreHideFields) {
@@ -1193,7 +1208,7 @@
     /**
     * Displays entity instances data using jqGrid
     */
-    directives.directive('entityInstancesGrid', function ($rootScope, $route, $timeout) {
+    directives.directive('entityInstancesGrid', function ($rootScope, $route, $timeout, $http) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -1221,6 +1236,10 @@
                             mtype: "POST",
                             postData: {
                                 fields: JSON.stringify(scope.lookupBy)
+                            },
+                            rowNum: scope.entityAdvanced.userPreferences.gridRowsNumber,
+                            onPaging: function (pgButton) {
+                                handleGridPagination(pgButton, $(this.p.pager), scope, $http);
                             },
                             jsonReader: {
                                 repeatitems: false
@@ -1474,11 +1493,10 @@
                                 var name = scope.getFieldName(optionElement.text());
                                 // don't act for fields show automatically in trash and history
                                 if (scope.autoDisplayFields.indexOf(name) === -1) {
-                                    // set the cookie, users have their own browsing settings
-                                    scope.markFieldForDataBrowser(name, checked);
+                                    scope.addFieldForDataBrowser(name, checked);
                                 }
                             } else {
-                                scope.markAllFieldsForDataBrowser(checked);
+                                scope.addFieldsForDataBrowser(checked);
                             }
 
                             noSelectedFields = true;
@@ -1568,6 +1586,10 @@
                                     scope.historyInstance(id);
                                 }
                             },
+                            rowNum: scope.entityAdvanced.userPreferences.gridRowsNumber,
+                            onPaging: function (pgButton) {
+                                handleGridPagination(pgButton, $(this.p.pager), scope, $http);
+                            },
                             resizeStop: function (width, index) {
                                 var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
                                 if (colModel.length - 1 === index + 1 || (colModel[index + 1] !== undefined && isLastNextColumn(colModel, index))) {
@@ -1655,7 +1677,7 @@
     /**
     * Displays entity instance trash data using jqGrid
     */
-    directives.directive('instanceTrashGrid', function ($timeout) {
+    directives.directive('instanceTrashGrid', function ($timeout, $http) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -1686,6 +1708,10 @@
                             },
                             jsonReader: {
                                 repeatitems: false
+                            },
+                            rowNum: scope.entityAdvanced.userPreferences.gridRowsNumber,
+                            onPaging: function (pgButton) {
+                                handleGridPagination(pgButton, $(this.p.pager), scope, $http);
                             },
                             onSelectRow: function (id) {
                                 firstLoad = true;

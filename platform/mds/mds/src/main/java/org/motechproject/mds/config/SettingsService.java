@@ -38,6 +38,13 @@ public interface SettingsService {
     TimeUnit getTimeUnit();
 
     /**
+     * Returns current setting of the grid size.
+     *
+     * @return the size of the grid
+     */
+    Integer getGridSize();
+
+    /**
      * Updates all MDS settings and performs necessary actions if required (eg. scheduling jobs, that remove
      * instances from trash).
      *

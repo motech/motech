@@ -24,22 +24,34 @@ import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.entity.EntityReadOnlyException;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MdsBundleRegenerationService;
+import org.motechproject.mds.service.UserPreferencesService;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.web.ExampleData;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.TestData;
+import org.motechproject.mds.web.domain.UserPreferencesFields;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.test.web.server.MockMvc;
 import org.springframework.test.web.server.ResultActions;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -68,6 +80,9 @@ public class EntityControllerTest {
 
     @Mock
     private EntityService entityService;
+
+    @Mock
+    private UserPreferencesService userPreferencesService;
 
     @Mock
     private MdsBundleRegenerationService mdsBundleRegenerationService;
@@ -209,7 +224,7 @@ public class EntityControllerTest {
     public void shouldSaveTemporaryChange() throws Exception {
         DraftData data = new DraftData();
         data.setEdit(true);
-        data.setValues(new HashMap<>());
+        data.setValues(new HashMap<String, Object>());
         data.getValues().put(DraftData.PATH, "basic.displayName");
         data.getValues().put(DraftData.FIELD_ID, "2");
         data.getValues().put(DraftData.VALUE, Arrays.asList("test"));
@@ -299,7 +314,7 @@ public class EntityControllerTest {
 
     @Test
     public void shouldCommitChanges() throws Exception {
-        when(entityService.commitChanges(9007L)).thenReturn(new ArrayList<>());
+        when(entityService.commitChanges(9007L)).thenReturn(new ArrayList<String>());
 
         controller.perform(post("/entities/9007/commit")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -390,6 +405,82 @@ public class EntityControllerTest {
         controller.perform(get("/entities/7/advanced"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(new ObjectMapper().writeValueAsString(expected)));
+    }
+
+    @Test
+    public void shouldUpdateGridSize() throws Exception {
+        setUpSecurityContext();
+        controller.perform(post("/entities/2/preferences/gridSize")
+                .body(new ObjectMapper().writeValueAsBytes(20))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(userPreferencesService).updateGridSize(2l, "motech", 20);
+    }
+
+    @Test
+    public void shouldSelectField() throws Exception {
+        setUpSecurityContext();
+        controller.perform(post("/entities/2/preferences/fields")
+                .body(new ObjectMapper().writeValueAsString(new UserPreferencesFields("fieldName",
+                        Constants.UserPreferences.SELECT)).getBytes(Charset.forName("UTF-8")))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(userPreferencesService).selectField(2l, "motech", "fieldName");
+    }
+
+
+    @Test
+    public void shouldUnselectField() throws Exception {
+        setUpSecurityContext();
+        controller.perform(post("/entities/2/preferences/fields")
+                .body(new ObjectMapper().writeValueAsString(new UserPreferencesFields("fieldName",
+                        Constants.UserPreferences.UNSELECT)).getBytes(Charset.forName("UTF-8")))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(userPreferencesService).unselectField(2l, "motech", "fieldName");
+    }
+
+
+    @Test
+    public void shouldSelectFields() throws Exception {
+        setUpSecurityContext();
+        controller.perform(post("/entities/2/preferences/fields")
+                .body(new ObjectMapper().writeValueAsString(new UserPreferencesFields("fieldName",
+                        Constants.UserPreferences.SELECT_ALL)).getBytes(Charset.forName("UTF-8")))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(userPreferencesService).selectFields(2l, "motech");
+    }
+
+
+    @Test
+    public void shouldUnselectFields() throws Exception {
+        setUpSecurityContext();
+        controller.perform(post("/entities/2/preferences/fields")
+                .body(new ObjectMapper().writeValueAsString(new UserPreferencesFields("fieldName",
+                        Constants.UserPreferences.UNSELECT_ALL)).getBytes(Charset.forName("UTF-8")))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(userPreferencesService).unselectFields(2l, "motech");
+    }
+
+    private void setUpSecurityContext() {
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("mdsSchemaAccess");
+        List<SimpleGrantedAuthority> authorities = asList(authority);
+
+        User principal = new User("motech", "motech", authorities);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, "motech", authorities);
+
+        SecurityContext securityContext = new SecurityContextImpl();
+        securityContext.setAuthentication(authentication);
+
+        SecurityContextHolder.setContext(securityContext);
     }
 
     private FieldDto findFieldById(List<FieldDto> fields, Long id) {

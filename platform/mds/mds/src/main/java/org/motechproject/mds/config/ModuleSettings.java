@@ -1,5 +1,6 @@
 package org.motechproject.mds.config;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
@@ -16,6 +17,7 @@ import java.util.Properties;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang.StringUtils.isNumeric;
+import static org.motechproject.mds.util.Constants.Config.MDS_DEFAULT_GRID_SIZE;
 import static org.motechproject.mds.util.Constants.Config.MDS_DELETE_MODE;
 import static org.motechproject.mds.util.Constants.Config.MDS_EMPTY_TRASH;
 import static org.motechproject.mds.util.Constants.Config.MDS_TIME_UNIT;
@@ -36,6 +38,7 @@ public class ModuleSettings extends Properties {
     public static final Boolean DEFAULT_EMPTY_TRASH = false;
     public static final Integer DEFAULT_TIME_VALUE = 1;
     public static final TimeUnit DEFAULT_TIME_UNIT = TimeUnit.HOURS;
+    public static final Integer DEFAULT_GRID_SIZE = 10;
 
     public DeleteMode getDeleteMode() {
         Object objectValue = getValueForKey(MDS_DELETE_MODE);
@@ -159,6 +162,30 @@ public class ModuleSettings extends Properties {
         set(MDS_TIME_UNIT, unit, DEFAULT_TIME_UNIT);
     }
 
+    public void setGridSize(String size) {
+        if (isNotBlank(size) && isNumeric(size)) {
+            setGridSize(Integer.parseInt(size));
+        } else {
+            setGridSize(DEFAULT_GRID_SIZE);
+        }
+    }
+
+    public void setGridSize(Integer size) {
+        set(MDS_DEFAULT_GRID_SIZE, size, DEFAULT_GRID_SIZE);
+    }
+
+    public Integer getGridSize() {
+        Object objectValue = getValueForKey(MDS_DEFAULT_GRID_SIZE);
+        Integer value = DEFAULT_GRID_SIZE;
+
+        if (objectValue != null && StringUtils.isNotBlank(objectValue.toString())) {
+            value = Integer.parseInt(objectValue.toString());
+        }
+
+        return value;
+    }
+
+
     private void set(String key, Object given, Object defaultValue) {
         Object value = null == given ? defaultValue : given;
         String valueAsString = value.toString();
@@ -215,6 +242,7 @@ public class ModuleSettings extends Properties {
             jgen.writeObjectField("emptyTrash", value.isEmptyTrash());
             jgen.writeObjectField("timeValue", value.getTimeValue());
             jgen.writeObjectField("timeUnit", value.getTimeUnit());
+            jgen.writeObjectField("gridSize", value.getGridSize());
             jgen.writeEndObject();
         }
     }
@@ -229,12 +257,14 @@ public class ModuleSettings extends Properties {
             String emptyTrash = getValue(jsonNode, "emptyTrash");
             String timeValue = getValue(jsonNode, "timeValue");
             String timeUnit = getValue(jsonNode, "timeUnit");
+            String gridSize = getValue(jsonNode, "gridSize");
 
             ModuleSettings settings = new ModuleSettings();
             settings.setDeleteMode(deleteMode);
             settings.setEmptyTrash(emptyTrash);
             settings.setTimeValue(timeValue);
             settings.setTimeUnit(timeUnit);
+            settings.setGridSize(gridSize);
 
             return settings;
         }
