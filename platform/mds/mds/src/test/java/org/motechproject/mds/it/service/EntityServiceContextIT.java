@@ -558,7 +558,6 @@ public class EntityServiceContextIT extends BaseIT {
         assertEquals(Integer.valueOf(3), entityDto.getMaxFetchDepth());
     }
 
-
     @Test
     public void shouldUpdateUserPreferencesAfterCommit() {
         EntityDto entityDto = new EntityDto();
@@ -575,15 +574,10 @@ public class EntityServiceContextIT extends BaseIT {
                 extract(fields, on(FieldDto.class).getBasic().getName()));
         entityService.commitChanges(entityId);
 
-        FieldDto field = selectFirst(fields, having(on(FieldDto.class).getBasic().getName(), equalTo("f1name")));
+        List<Field> draftFields = entityService.getEntityDraft(entityId).getFields();
+        Field field = selectFirst(draftFields, having(on(Field.class).getName(), equalTo("f1name")));
         entityService.saveDraftEntityChanges(entityDto.getId(),
                 DraftBuilder.forFieldEdit(field.getId(), "basic.name", "newName"));
-
-        fields = entityService.getFields(entityId);
-
-        assertNotNull(fields);
-        assertEquals(asList("Id", "Created By", "Owner", "Modified By", "Creation Date", "Modification Date", "disp"),
-                extract(fields, on(FieldDto.class).getBasic().getDisplayName()));
 
         userPreferencesService.selectFields(entityId, "motech");
         userPreferencesService.unselectField(entityId, "motech", "id");
