@@ -30,6 +30,16 @@
                 </div>
                 <div class="form-inline margin-before2">
                     <div class="form-group">
+                        <label class="">{{msg('mds.form.label.indexRequired')}}</label>
+                    </div>
+                    <div class="form-group offset-2">
+                        <div class="checkbox">
+                            <input type="checkbox" ng-disabled="lookup.readOnly || lookup.referenced" ng-model="lookup.indexRequired" mds-auto-save-advanced-change="click"  mds-path="indexes.{{activeIndex}}.indexRequired" checked>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-inline margin-before2">
+                    <div class="form-group">
                         <label class="">{{msg('mds.form.label.lookupReturns')}}</label>
                     </div>
                     <div class="form-group offset-2">

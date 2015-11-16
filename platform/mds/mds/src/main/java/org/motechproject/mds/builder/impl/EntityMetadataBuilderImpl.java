@@ -13,6 +13,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldSetting;
+import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.ex.MdsException;
@@ -298,7 +299,14 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                     String inheritedFieldName = ClassName.getSimpleName(entity.getSuperClass()) + "." + fieldName;
                     fmd = cmd.newFieldMetadata(inheritedFieldName);
                 }
-                fmd.setIndexed(true);
+                fmd.setIndexed(false);
+                for (Lookup lookup : field.getLookups()) {
+                    if (lookup.isIndexRequired()) {
+                        fmd.setIndexed(true);
+                        break;
+                    }
+                }
+
             }
             if (fmd != null) {
                 setColumnParameters(fmd, field, definition);

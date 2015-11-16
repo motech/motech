@@ -20,6 +20,7 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.domain.Type;
@@ -301,7 +302,9 @@ public class EntityMetadataBuilderTest {
         Field lookupField = mock(Field.class);
         Type string = new Type(String.class);
         Set<org.motechproject.mds.domain.Lookup> lookups = new HashSet<>();
-        lookups.add(new org.motechproject.mds.domain.Lookup());
+        Lookup lookup = new Lookup();
+        lookup.setIndexRequired(true);
+        lookups.add(lookup);
 
         when(lookupField.getName()).thenReturn("lookupField");
         when(lookupField.getType()).thenReturn(string);

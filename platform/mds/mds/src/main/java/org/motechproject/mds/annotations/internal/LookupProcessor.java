@@ -104,6 +104,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
         String lookupName = generateLookupName(annotation.name(), method.getName());
         List<LookupFieldDto> lookupFields = findLookupFields(method, entity);
         boolean restExposed = processRestExposed(method);
+        boolean indexRequired = annotation.indexRequired();
 
         verifyLookupParameters(method, returnClassName, lookupName, lookupFields, method.getParameterTypes());
 
@@ -113,6 +114,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
         lookup.setLookupFields(lookupFields);
         lookup.setReadOnly(true);
         lookup.setMethodName(method.getName());
+        lookup.setIndexRequired(indexRequired);
 
         if (!restOptionsModifiedByUser(entity)) {
             lookup.setExposedViaRest(restExposed);
