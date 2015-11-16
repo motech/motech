@@ -45,7 +45,7 @@ public class MotechEventTransformerBundleIT extends BasePaxIT {
         TransformedEventListener eventListener = new TransformedEventListener();
         eventListenerRegistry.registerListener(eventListener, EVENT_SUBJECT);
         MotechEvent event = new MotechEvent(EVENT_SUBJECT);
-        event.getParameters().put("message-destination", eventListener.getIdentifier());
+        event.setMessageDestination(eventListener.getIdentifier());
         outboundEventGateway.sendEventMessage(event);
 
         waitForHandledEvent(eventListener);

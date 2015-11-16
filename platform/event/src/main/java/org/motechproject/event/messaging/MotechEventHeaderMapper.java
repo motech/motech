@@ -33,9 +33,8 @@ public class MotechEventHeaderMapper extends DefaultJmsHeaderMapper {
         super.fromHeaders(messageHeaders, message);
         try {
             MotechEvent motechEvent = (MotechEvent) ((ActiveMQObjectMessage) message).getObject();
-            Boolean isFailedMessage = (Boolean) motechEvent.getParameters().get(MotechEvent.PARAM_INVALID_MOTECH_EVENT);
 
-            if (isFailedMessage != null && isFailedMessage) {
+            if (motechEvent.isInvalid()) {
                 long redeliveryCount = motechEvent.getMessageRedeliveryCount();
                 Double delay = motechEventConfig.getMessageRedeliveryDelay() * MILLIS_PER_SEC *
                         ((Math.pow(2, redeliveryCount - 1)));
