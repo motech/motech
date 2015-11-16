@@ -7,6 +7,7 @@ import org.joda.time.Period;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
+import org.motechproject.scheduler.constants.SchedulerConstants;
 import org.motechproject.scheduler.contract.CronJobId;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
@@ -784,7 +785,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     private void putMotechEventDataToJobDataMap(JobDataMap jobDataMap, MotechEvent motechEvent) {
         jobDataMap.putAll(motechEvent.getParameters());
-        jobDataMap.put(MotechEvent.EVENT_TYPE_KEY_NAME, motechEvent.getSubject());
+        jobDataMap.put(SchedulerConstants.EVENT_TYPE_KEY_NAME, motechEvent.getSubject());
     }
 
     private List<String> extractTriggerNames(List<TriggerKey> triggerKeys) {
