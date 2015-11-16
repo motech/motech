@@ -2,6 +2,7 @@ package org.motechproject.scheduler.service.impl;
 
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.scheduler.constants.SchedulerConstants;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -41,9 +42,9 @@ public class MotechScheduledJob implements Job {
             JobDataMap jobDataMap = jobDetail.getJobDataMap();
 
             String jobId = jobDetail.getKey().getName();
-            String eventType = jobDataMap.getString(MotechEvent.EVENT_TYPE_KEY_NAME);
+            String eventType = jobDataMap.getString(SchedulerConstants.EVENT_TYPE_KEY_NAME);
             Map<String, Object> params = jobDataMap.getWrappedMap();
-            params.remove(MotechEvent.EVENT_TYPE_KEY_NAME);
+            params.remove(SchedulerConstants.EVENT_TYPE_KEY_NAME);
             params.put("JobID", jobId);
 
             MotechEvent motechEvent = new MotechEvent(eventType, params);
