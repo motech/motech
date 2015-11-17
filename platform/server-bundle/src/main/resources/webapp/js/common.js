@@ -207,6 +207,12 @@ function innerLayout(conf, eastConfig) {
                 $('#inner-center').trigger("change");
                 return false;
             },
+            onopen: function (paneName) {
+                $('.ui-layout-button-toggle-'+paneName).addClass('active');
+            },
+            onclose: function (paneName) {
+                $('.ui-layout-button-toggle-'+paneName).removeClass('active');
+            },
             defaults: {
                 enableCursorHotkey: false
             }
