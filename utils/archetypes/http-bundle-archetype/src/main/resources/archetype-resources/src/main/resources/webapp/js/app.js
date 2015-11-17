@@ -10,6 +10,6 @@
         .config(['$routeProvider',
         function ($routeProvider) {
             $routeProvider.
-                when('/helloWorld', {templateUrl: '../${artifactId}/resources/partials/say-hello.html', controller: 'HelloWorldController'});
+                when('/${artifactId}/helloWorld', {templateUrl: '../${artifactId}/resources/partials/say-hello.html', controller: 'HelloWorldController'});
     }]);
 }());

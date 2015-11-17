@@ -2,25 +2,30 @@
     <div class="header-footer-breadcrumb">
         <ul class="breadcrumb" role="navigation">
             <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
-            <li ng-show="active('#/webSecurity/profile')"><a role="menu" href="#/webSecurity/profile">{{msg('websecurity')}}</a></li>
-            <li ng-show="active('#/webSecurity/permissions')"><a role="menu" href="#/webSecurity/permissions">{{msg('websecurity')}}</a></li>
-            <li ng-show="active('#/webSecurity/roles')"><a role="menu" href="#/webSecurity/roles">{{msg('websecurity')}}</a></li>
-            <li ng-show="active('#/webSecurity/users')"><a role="menu" href="#/webSecurity/users">{{msg('websecurity')}}</a></li>
-            <li ng-show="active('#/webSecurity/dynamicURL')"><a role="menu" href="#/webSecurity/dynamicURL">{{msg('websecurity')}}</a></li>
-            <li ng-show="active('#/webSecurity/profile')" ng-class="active('#/webSecurity/profile')">{{msg('security.profile')}}</li>
-            <li ng-show="active('#/webSecurity/permissions')" ng-class="active('#/webSecurity/permissions')">{{msg('security.managePermissions')}}</li>
-            <li ng-show="active('#/webSecurity/roles')" ng-class="active('#/webSecurity/roles')">{{msg('security.manageRoles')}}</li>
-            <li ng-show="active('#/webSecurity/users')" ng-class="active('#/webSecurity/users')">{{msg('security.administeringUsers')}}</li>
-            <li ng-show="active('#/webSecurity/dynamicURL')" ng-class="active('#/webSecurity/dynamicURL')">{{msg('security.manageURL')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'profile'"><a role="menu" href="#/webSecurity/profile">{{msg('websecurity')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'permissions'"><a role="menu" href="#/webSecurity/permissions">{{msg('websecurity')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'roles'"><a role="menu" href="#/webSecurity/roles">{{msg('websecurity')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'users'"><a role="menu" href="#/webSecurity/users">{{msg('websecurity')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'dynamicURL'"><a role="menu" href="#/webSecurity/dynamicURL">{{msg('websecurity')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'profile'" ng-class="{'active': selectedTabState.selectedTab === 'profile'}">{{msg('security.profile')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'permissions'" ng-class="{'active': selectedTabState.selectedTab === 'permissions'}">{{msg('security.managePermissions')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'roles'" ng-class="{'active': selectedTabState.selectedTab === 'roles'}">{{msg('security.manageRoles')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'users'" ng-class="{'active': selectedTabState.selectedTab === 'users'}">{{msg('security.administeringUsers')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'dynamicURL'" ng-class="{'active': selectedTabState.selectedTab === 'dynamicURL'}">{{msg('security.manageURL')}}</li>
         </ul>
     </div>
     <div class="header-footer">
         <ul id="content-tabs" class="nav nav-tabs">
-            <li ng-show="active('#/webSecurity/profile')" ng-class="active('#/webSecurity/profile')"><a  href="#/webSecurity/profile">{{msg('security.profile')}}</a></li>
-            <li ng-show="active('#/webSecurity/permissions')" ng-class="active('#/webSecurity/permissions')"><a  href="#/webSecurity/permissions">{{msg('security.managePermissions')}}</a></li>
-            <li ng-show="active('#/webSecurity/roles')" ng-class="active('#/webSecurity/roles')"><a href="#/webSecurity/roles">{{msg('security.manageRoles')}}</a></li>
-            <li ng-show="active('#/webSecurity/users')" ng-class="active('#/webSecurity/users')"><a href="#/webSecurity/users">{{msg('security.administeringUsers')}}</a></li>
-            <li ng-show="active('#/webSecurity/dynamicURL')" ng-class="active('#/webSecurity/dynamicURL')"><a href="#/webSecurity/dynamicURL">{{msg('security.manageURL')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'profile'" ng-class="{'active': selectedTabState.selectedTab === 'profile'}"
+                ng-click="selectedTabState.selectedTab = 'profile'"><a  href="#/webSecurity/profile">{{msg('security.profile')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'permissions'" ng-class="{'active': selectedTabState.selectedTab === 'permissions'}"
+                ng-click="selectedTabState.selectedTab = 'permissions'"><a  href="#/webSecurity/permissions">{{msg('security.managePermissions')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'roles'" ng-class="{'active': selectedTabState.selectedTab === 'roles'}"
+                ng-click="selectedTabState.selectedTab = 'roles'"><a href="#/webSecurity/roles">{{msg('security.manageRoles')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'users'" ng-class="{'active': selectedTabState.selectedTab === 'users'}"
+                ng-click="selectedTabState.selectedTab = 'users'"><a href="#/webSecurity/users">{{msg('security.administeringUsers')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'dynamicURL'" ng-class="{'active': selectedTabState.selectedTab === 'dynamicURL'}"
+                ng-click="selectedTabState.selectedTab = 'dynamicURL'"><a href="#/webSecurity/dynamicURL">{{msg('security.manageURL')}}</a></li>
         </ul>
     </div>
     <div class="ui-layout-content">
