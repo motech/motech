@@ -27,8 +27,6 @@ import java.util.Set;
 public class ServerEventRelay implements EventRelay, EventHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerEventRelay.class);
 
-    private static final String MESSAGE_DESTINATION = "message-destination";
-    private static final String BROADCAST_MESSAGE = "broadcast-message";
     private static final String PROXY_IN_OSGI = "proxy-in-osgi";
 
     private EventListenerRegistry eventListenerRegistry;
@@ -67,7 +65,7 @@ public class ServerEventRelay implements EventRelay, EventHandler {
         // broadcast the event if there are listeners for it, or if it should get proxied as an OSGi event,
         // since we don't keep track of OSGi listeners
         if (!listeners.isEmpty() || proxyInOsgi(event)) {
-            event.getParameters().put(BROADCAST_MESSAGE, Boolean.TRUE);
+            event.setBroadcast(true);
             outboundEventGateway.broadcastEventMessage(event);
         }
     }
@@ -79,7 +77,7 @@ public class ServerEventRelay implements EventRelay, EventHandler {
      */
     public void relayQueueEvent(MotechEvent event) {
         verifyEventNotNull(event);
-        String messageDestination = (String) event.getParameters().get(MESSAGE_DESTINATION);
+        String messageDestination = event.getMessageDestination();
         if (null != messageDestination) {
             EventListener listener = getEventListener(event, messageDestination);
             if (null != listener) {
@@ -156,11 +154,11 @@ public class ServerEventRelay implements EventRelay, EventHandler {
         } catch (RuntimeException e) {
             LOGGER.error("Handling error for event with subject {}", event.getSubject(), e);
 
-            event.getParameters().put(MotechEvent.PARAM_INVALID_MOTECH_EVENT, Boolean.TRUE);
-            event.getParameters().put(MESSAGE_DESTINATION, listener.getIdentifier());
+            event.setInvalid(true);
+            event.setMessageDestination(listener.getIdentifier());
 
             if (event.getMessageRedeliveryCount() == motechEventConfig.getMessageMaxRedeliveryCount()) {
-                event.getParameters().put(MotechEvent.PARAM_DISCARDED_MOTECH_EVENT, Boolean.TRUE);
+                event.setDiscarded(true);
                 LOGGER.error("Discarding Motech event {}. Max retry count reached.", event);
                 throw e;
             }
@@ -213,8 +211,8 @@ public class ServerEventRelay implements EventRelay, EventHandler {
         for (EventListener listener : listeners) {
             parameters = new HashMap<>();
             parameters.putAll(event.getParameters());
-            parameters.put(MESSAGE_DESTINATION, listener.getIdentifier());
             enrichedEventMessage = new MotechEvent(event.getSubject(), parameters);
+            enrichedEventMessage.setMessageDestination(listener.getIdentifier());
             outboundEventGateway.sendEventMessage(enrichedEventMessage);
         }
     }
@@ -254,6 +252,11 @@ public class ServerEventRelay implements EventRelay, EventHandler {
     private MotechEvent copyMotechEvent(MotechEvent event) {
         MotechEvent copy = new MotechEvent(event.getSubject(), event.getParameters());
         copy.setId(event.getId());
+        copy.setMessageRedeliveryCount(event.getMessageRedeliveryCount());
+        copy.setInvalid(event.isInvalid());
+        copy.setDiscarded(event.isDiscarded());
+        copy.setBroadcast(event.isBroadcast());
+        copy.setMessageDestination(event.getMessageDestination());
         return copy;
     }
 

@@ -68,8 +68,8 @@ public class ServerEventRelayBundleIT extends BasePaxIT {
         for (int pollCount = 0; pollCount < 10; pollCount++) {
             motechEvent = eventListener.getMotechEvent();
             if (motechEvent != null) {
-                isDiscarded = (Boolean) motechEvent.getParameters().get(MotechEvent.PARAM_DISCARDED_MOTECH_EVENT);
-                if (isDiscarded != null && isDiscarded) {
+                isDiscarded = motechEvent.isDiscarded();
+                if (isDiscarded) {
                     break;
                 }
             }
