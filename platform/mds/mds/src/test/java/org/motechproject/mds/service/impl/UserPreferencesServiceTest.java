@@ -54,6 +54,9 @@ public class UserPreferencesServiceTest {
     @Captor
     ArgumentCaptor<List<Field>> fieldsCaptor;
 
+    @Captor
+    ArgumentCaptor<Field> fieldCaptor;
+
     @InjectMocks
     private UserPreferencesService userPreferencesService = new UserPreferencesServiceImpl();
 
@@ -116,23 +119,17 @@ public class UserPreferencesServiceTest {
 
     @Test
     public void shouldSelectField() {
-        List<Field> preferencesFields = new ArrayList<>();
-        preferencesFields.add(getField2());
-
         when(allUserPreferences.retrieveByClassNameAndUsername(CLASS_NAME, USERNAME)).thenReturn(userPreferences);
         when(entity.getField("sampleField1")).thenReturn(getField1());
-        when(userPreferences.getVisibleFields()).thenReturn(preferencesFields);
 
         userPreferencesService.selectField(15l, USERNAME, "sampleField1");
 
-        verify(userPreferences).setVisibleFields(fieldsCaptor.capture());
+        verify(userPreferences).addField(fieldCaptor.capture());
         verify(allUserPreferences).update(userPreferences);
 
-        List<Field> fields = fieldsCaptor.getValue();
-        assertNotNull(fields);
-        assertEquals(2, fields.size());
-        assertEquals("sampleField2", fields.get(0).getName());
-        assertEquals("sampleField1", fields.get(1).getName());
+        Field field = fieldCaptor.getValue();
+        assertNotNull(field);
+        assertEquals("sampleField1", field.getName());
     }
 
     @Test(expected = FieldNotFoundException.class)
@@ -147,24 +144,19 @@ public class UserPreferencesServiceTest {
 
     @Test
     public void shouldUnselectField() {
-        List<Field> preferencesFields = new ArrayList<>();
-        preferencesFields.add(getField2());
         Field field1 = getField1();
-        preferencesFields.add(field1);
 
         when(allUserPreferences.retrieveByClassNameAndUsername(CLASS_NAME, USERNAME)).thenReturn(userPreferences);
         when(entity.getField("sampleField1")).thenReturn(field1);
-        when(userPreferences.getVisibleFields()).thenReturn(preferencesFields);
 
         userPreferencesService.unselectField(15l, USERNAME, "sampleField1");
 
-        verify(userPreferences).setVisibleFields(fieldsCaptor.capture());
+        verify(userPreferences).removeField(fieldCaptor.capture());
         verify(allUserPreferences).update(userPreferences);
 
-        List<Field> fields = fieldsCaptor.getValue();
-        assertNotNull(fields);
-        assertEquals(1, fields.size());
-        assertEquals("sampleField2", fields.get(0).getName());
+        Field field = fieldCaptor.getValue();
+        assertNotNull(field);
+        assertEquals("sampleField1", field.getName());
     }
 
     @Test

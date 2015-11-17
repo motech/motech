@@ -24,16 +24,4 @@ CREATE TABLE IF NOT EXISTS "ConfigSettings" (
   PRIMARY KEY ("id")
 );
 
-DO
-$$
-BEGIN
-    IF NOT EXISTS (SELECT column_name
-            FROM information_schema.columns
-            WHERE table_schema = current_schema()
-            AND table_name = 'ConfigSettings'
-            AND column_name = 'defaultGridSize')
-    THEN
-        ALTER TABLE "ConfigSettings" ADD "defaultGridSize" int DEFAULT 10;
-    END IF;
-END
-$$
+ALTER TABLE "ConfigSettings" ADD "defaultGridSize" int DEFAULT 50;

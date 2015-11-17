@@ -4005,11 +4005,11 @@
         $scope.addFieldsForDataBrowser = function(checked) {
             var field, i, fieldsData = {
                 field: '',
-                action: 'select_all'
+                action: 'ADD_ALL'
             };
 
             if (!checked) {
-                fieldsData.action = 'unselect_all';
+                fieldsData.action = 'REMOVE_ALL';
                 $scope.selectedFields = [];
             } else {
                 $scope.selectedFields = [];
@@ -4028,11 +4028,11 @@
         $scope.addFieldForDataBrowser = function(selected, checked) {
             var field, i, fieldsData = {
                 field: selected,
-                action: 'select'
+                action: 'ADD'
             };
 
             if (!checked) {
-                fieldsData.action = 'unselect';
+                fieldsData.action = 'REMOVE';
                 if ($scope.isFieldSelected(selected)) {
                     for (i = 0; i < $scope.selectedFields.length; i += 1) {
                         field = $scope.selectedFields[i];

@@ -10,11 +10,10 @@ import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MdsBundleRegenerationService;
 import org.motechproject.mds.service.UserPreferencesService;
-import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.comparator.EntityNameComparator;
-import org.motechproject.mds.web.domain.UserPreferencesFields;
+import org.motechproject.mds.web.domain.GridFieldSelectionUpdate;
 import org.motechproject.mds.web.matcher.EntityMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -263,18 +262,18 @@ public class EntityController extends MdsController {
     @RequestMapping(value = "/entities/{entityId}/preferences/fields", method = RequestMethod.POST)
     @PreAuthorize(Roles.DATA_ACCESS)
     @ResponseStatus(HttpStatus.OK)
-    public void updateEntityDispleyableFieldsForUser(@RequestBody UserPreferencesFields fieldPreferences, @PathVariable Long entityId) {
+    public void updateEntityDispleyableFieldsForUser(@RequestBody GridFieldSelectionUpdate fieldPreferences, @PathVariable Long entityId) {
         switch (fieldPreferences.getAction()) {
-            case Constants.UserPreferences.SELECT:
+            case ADD:
                 userPreferencesService.selectField(entityId, getUsername(), fieldPreferences.getField());
                 break;
-            case Constants.UserPreferences.SELECT_ALL:
+            case ADD_ALL:
                 userPreferencesService.selectFields(entityId, getUsername());
                 break;
-            case Constants.UserPreferences.UNSELECT:
+            case REMOVE:
                 userPreferencesService.unselectField(entityId, getUsername(), fieldPreferences.getField());
                 break;
-            case Constants.UserPreferences.UNSELECT_ALL:
+            case REMOVE_ALL:
                 userPreferencesService.unselectFields(entityId, getUsername());
                 break;
         }

@@ -1,7 +1,5 @@
 package org.motechproject.mds.config;
 
-import java.util.Properties;
-
 /**
  * The <code>SettingsService</code> is a generic class, allowing access to all
  * MDS settings, as well as providing an ability to easily change these settings.
@@ -58,11 +56,4 @@ public interface SettingsService {
      * @return MDS settings
      */
     ModuleSettings getModuleSettings();
-
-    /**
-     * Retrieves all MDS settings as {@link java.util.Properties}.
-     *
-     * @return MDS settings
-     */
-    Properties getProperties();
 }

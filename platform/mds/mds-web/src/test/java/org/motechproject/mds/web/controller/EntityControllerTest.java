@@ -2,6 +2,7 @@ package org.motechproject.mds.web.controller;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,13 +26,13 @@ import org.motechproject.mds.ex.entity.EntityReadOnlyException;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MdsBundleRegenerationService;
 import org.motechproject.mds.service.UserPreferencesService;
-import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.web.ExampleData;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.TestData;
-import org.motechproject.mds.web.domain.UserPreferencesFields;
+import org.motechproject.mds.web.domain.GridFieldSelectionUpdate;
+import org.motechproject.mds.web.domain.GridSelectionAction;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,7 +47,6 @@ import org.springframework.test.web.server.setup.MockMvcBuilders;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -127,6 +127,14 @@ public class EntityControllerTest {
                 return exampleData.getAdvanced((Long) invocation.getArguments()[0]);
             }
         });
+    }
+
+    @After
+    public void resetSecurity() {
+        SecurityContext securityContext = new SecurityContextImpl();
+        securityContext.setAuthentication(null);
+
+        SecurityContextHolder.setContext(securityContext);
     }
 
     @Test
@@ -227,7 +235,7 @@ public class EntityControllerTest {
         data.setValues(new HashMap<String, Object>());
         data.getValues().put(DraftData.PATH, "basic.displayName");
         data.getValues().put(DraftData.FIELD_ID, "2");
-        data.getValues().put(DraftData.VALUE, Arrays.asList("test"));
+        data.getValues().put(DraftData.VALUE, asList("test"));
 
         ResultActions actions = controller.perform(get("/entities/9007"))
                 .andExpect(status().isOk());
@@ -283,7 +291,7 @@ public class EntityControllerTest {
         data.setValues(new HashMap<String, Object>());
         data.getValues().put(DraftData.PATH, "basic.displayName");
         data.getValues().put(DraftData.FIELD_ID, "2");
-        data.getValues().put(DraftData.VALUE, Arrays.asList("test"));
+        data.getValues().put(DraftData.VALUE, asList("test"));
 
         controller.perform(post("/entities/9007/draft")
                 .body(new ObjectMapper().writeValueAsBytes(data))
@@ -422,8 +430,8 @@ public class EntityControllerTest {
     public void shouldSelectField() throws Exception {
         setUpSecurityContext();
         controller.perform(post("/entities/2/preferences/fields")
-                .body(new ObjectMapper().writeValueAsString(new UserPreferencesFields("fieldName",
-                        Constants.UserPreferences.SELECT)).getBytes(Charset.forName("UTF-8")))
+                .body(new ObjectMapper().writeValueAsString(new GridFieldSelectionUpdate("fieldName",
+                        GridSelectionAction.ADD)).getBytes(Charset.forName("UTF-8")))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
@@ -435,8 +443,8 @@ public class EntityControllerTest {
     public void shouldUnselectField() throws Exception {
         setUpSecurityContext();
         controller.perform(post("/entities/2/preferences/fields")
-                .body(new ObjectMapper().writeValueAsString(new UserPreferencesFields("fieldName",
-                        Constants.UserPreferences.UNSELECT)).getBytes(Charset.forName("UTF-8")))
+                .body(new ObjectMapper().writeValueAsString(new GridFieldSelectionUpdate("fieldName",
+                        GridSelectionAction.REMOVE)).getBytes(Charset.forName("UTF-8")))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
@@ -448,8 +456,8 @@ public class EntityControllerTest {
     public void shouldSelectFields() throws Exception {
         setUpSecurityContext();
         controller.perform(post("/entities/2/preferences/fields")
-                .body(new ObjectMapper().writeValueAsString(new UserPreferencesFields("fieldName",
-                        Constants.UserPreferences.SELECT_ALL)).getBytes(Charset.forName("UTF-8")))
+                .body(new ObjectMapper().writeValueAsString(new GridFieldSelectionUpdate("fieldName",
+                        GridSelectionAction.ADD_ALL)).getBytes(Charset.forName("UTF-8")))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
@@ -461,8 +469,8 @@ public class EntityControllerTest {
     public void shouldUnselectFields() throws Exception {
         setUpSecurityContext();
         controller.perform(post("/entities/2/preferences/fields")
-                .body(new ObjectMapper().writeValueAsString(new UserPreferencesFields("fieldName",
-                        Constants.UserPreferences.UNSELECT_ALL)).getBytes(Charset.forName("UTF-8")))
+                .body(new ObjectMapper().writeValueAsString(new GridFieldSelectionUpdate("fieldName",
+                        GridSelectionAction.REMOVE_ALL)).getBytes(Charset.forName("UTF-8")))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 

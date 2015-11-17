@@ -74,12 +74,10 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
         UserPreferences userPreferences =  allUserPreferences.retrieveByClassNameAndUsername(entity.getClassName(), username);
         userPreferences = checkPreferences(userPreferences, entity, username);
 
-        if (newSize == null) {
-            userPreferences.setGridRowsNumber(settingsService.getGridSize());
-        } else {
-            userPreferences.setGridRowsNumber(newSize);
+        if (userPreferences.getGridRowsNumber() != newSize) {
+            userPreferences.setGridRowsNumber(newSize == null ? settingsService.getGridSize() : newSize);
+            allUserPreferences.update(userPreferences);
         }
-        allUserPreferences.update(userPreferences);
     }
 
     @Override
@@ -91,9 +89,8 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
 
         Field field = entity.getField(fieldName);
         assertField(field);
-        List<Field> fields = userPreferences.getVisibleFields();
-        fields.add(field);
-        userPreferences.setVisibleFields(fields);
+        userPreferences.addField(field);
+
         allUserPreferences.update(userPreferences);
     }
 
@@ -106,11 +103,7 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
 
         Field field = entity.getField(fieldName);
         assertField(field);
-        if (userPreferences.getVisibleFields().contains(field)) {
-            List<Field> fields = userPreferences.getVisibleFields();
-            fields.remove(field);
-            userPreferences.setVisibleFields(fields);
-        }
+        userPreferences.removeField(field);
 
         allUserPreferences.update(userPreferences);
     }

@@ -26,20 +26,4 @@ CREATE TABLE IF NOT EXISTS ConfigSettings (
   PRIMARY KEY (id)
 );
 
-DELIMITER $$
-CREATE PROCEDURE insert_default_grid_size_column()
-BEGIN
-    IF NOT EXISTS (SELECT column_name
-            FROM INFORMATION_SCHEMA.COLUMNS
-            WHERE table_schema = DATABASE()
-            AND table_name = "ConfigSettings"
-            AND column_name = "defaultGridSize")
-    THEN
-        ALTER TABLE ConfigSettings add defaultGridSize int DEFAULT 10;
-    END IF;
-END
-$$
-
-DELIMITER ;
-CALL insert_default_grid_size_column();
-DROP PROCEDURE insert_default_grid_size_column;
+ALTER TABLE ConfigSettings add defaultGridSize int DEFAULT 50;

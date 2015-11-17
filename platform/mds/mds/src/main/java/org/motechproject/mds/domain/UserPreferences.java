@@ -87,4 +87,16 @@ public class UserPreferences {
         return new UserPreferencesDto(className, username, gridRowsNumber, fields);
     }
 
+    public void addField(Field field) {
+        if (visibleFields == null) {
+            visibleFields = new ArrayList<>();
+        }
+        visibleFields.add(field);
+    }
+
+    public void removeField(Field field) {
+        if (visibleFields != null && visibleFields.contains(field)) {
+            visibleFields.remove(field);
+        }
+    }
 }

@@ -154,21 +154,17 @@
         return false;
     }
 
-    function handleGridPagination(pgButton, pager, scope, http) {
+    function handleGridPagination(pgButton, pager, scope) {
         var newPage = 1, last, newSize;
-        if ("user" === pgButton) {
-            newPage = parseInt(pager.find('input:text').val(), 10);
-            last = parseInt($(this).getGridParam("lastpage"), 10);
-            if (newPage > last || newPage === 0) {
+        if ("user" === pgButton) { //Handle changing page by the page input
+            newPage = parseInt(pager.find('input:text').val(), 10); // get new page number
+            last = parseInt($(this).getGridParam("lastpage"), 10); // get last page number
+            if (newPage > last || newPage === 0) { // check range - if we cross range then stop
                 return 'stop';
             }
-        } else if ("records" === pgButton) {
+        } else if ("records" === pgButton) { //Page size change, we must update scope value to avoid wrong page size in the trash screen
             newSize = parseInt(pager.find('select')[0].value, 10);
-            http.post('../mds/entities/' + scope.selectedEntity.id + "/preferences/gridSize", newSize)
-            .error(function () {
-                handleResponse('mds.error', 'mds.preferences.error.grid', '');
-                unblockUI();
-            });
+            scope.entityAdvanced.userPreferences.gridRowsNumber = newSize;
         }
     }
 
@@ -1208,7 +1204,7 @@
     /**
     * Displays entity instances data using jqGrid
     */
-    directives.directive('entityInstancesGrid', function ($rootScope, $route, $timeout, $http) {
+    directives.directive('entityInstancesGrid', function ($rootScope, $route, $timeout) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -1239,7 +1235,7 @@
                             },
                             rowNum: scope.entityAdvanced.userPreferences.gridRowsNumber,
                             onPaging: function (pgButton) {
-                                handleGridPagination(pgButton, $(this.p.pager), scope, $http);
+                                handleGridPagination(pgButton, $(this.p.pager), scope);
                             },
                             jsonReader: {
                                 repeatitems: false
@@ -1588,7 +1584,7 @@
                             },
                             rowNum: scope.entityAdvanced.userPreferences.gridRowsNumber,
                             onPaging: function (pgButton) {
-                                handleGridPagination(pgButton, $(this.p.pager), scope, $http);
+                                handleGridPagination(pgButton, $(this.p.pager), scope);
                             },
                             resizeStop: function (width, index) {
                                 var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
@@ -1677,7 +1673,7 @@
     /**
     * Displays entity instance trash data using jqGrid
     */
-    directives.directive('instanceTrashGrid', function ($timeout, $http) {
+    directives.directive('instanceTrashGrid', function ($timeout) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -1711,7 +1707,7 @@
                             },
                             rowNum: scope.entityAdvanced.userPreferences.gridRowsNumber,
                             onPaging: function (pgButton) {
-                                handleGridPagination(pgButton, $(this.p.pager), scope, $http);
+                                handleGridPagination(pgButton, $(this.p.pager), scope);
                             },
                             onSelectRow: function (id) {
                                 firstLoad = true;

@@ -114,7 +114,6 @@ public class MdsBundleIT extends BasePaxIT {
     private static final String FOO = "Foo";
     private static final String FOO_CLASS = String.format("%s.%s", Constants.PackagesGenerated.ENTITY, FOO);
 
-
     private static final String CLASS_NAME = "org.motechproject.sampleModule.SampleEntity";
     private static final String USERNAME = "motech";
     private static final int INSTANCE_COUNT = 5;
@@ -212,12 +211,12 @@ public class MdsBundleIT extends BasePaxIT {
 
     @Test
     public void testUserPreferences() {
-        EntityDto entityDto = createEntity();
+        EntityDto entityDto = createEntityForPreferencesTest();
 
         // first retrieve - should create default user preferences for entity
         UserPreferencesDto userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
 
-        assertEquals(new Integer(10), userPreferencesDto.getGridRowsNumber());
+        assertEquals(new Integer(50), userPreferencesDto.getGridRowsNumber());
         assertEquals(3, userPreferencesDto.getVisibleFields().size());
         assertEquals("someBoolean", userPreferencesDto.getVisibleFields().get(0));
         assertEquals("someString", userPreferencesDto.getVisibleFields().get(1));
@@ -230,7 +229,7 @@ public class MdsBundleIT extends BasePaxIT {
         // if null then default value from settings will be used
         userPreferencesService.updateGridSize(entityDto.getId(), USERNAME, null);
         userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
-        assertEquals(new Integer(10), userPreferencesDto.getGridRowsNumber());
+        assertEquals(new Integer(50), userPreferencesDto.getGridRowsNumber());
 
         userPreferencesService.unselectFields(entityDto.getId(), USERNAME);
         userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
@@ -256,7 +255,7 @@ public class MdsBundleIT extends BasePaxIT {
         assertTrue(userPreferencesDto.getVisibleFields().contains("someString"));
         assertTrue(userPreferencesDto.getVisibleFields().contains("someInteger"));
 
-        // if field will be removed from entity the it should be removed also from preferences (CASCADE)
+        // if field will be removed from entity then it should be removed also from preferences (CASCADE)
         TransactionTemplate transactionTemplate = new TransactionTemplate(mdsTransactionManager);
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
@@ -276,7 +275,7 @@ public class MdsBundleIT extends BasePaxIT {
         assertFalse(userPreferencesDto.getVisibleFields().contains("someInteger"));
     }
 
-    private EntityDto createEntity() {
+    private EntityDto createEntityForPreferencesTest() {
         EntityDto entityDto = new EntityDto(null, CLASS_NAME);
         entityDto = entityService.createEntity(entityDto);
 

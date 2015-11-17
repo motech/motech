@@ -614,20 +614,6 @@ public final class Constants {
     }
 
     /**
-     *  Constants corresponding to the user preferences.
-     */
-    public static final class UserPreferences {
-
-        public static final String SELECT = "select";
-
-        public static final String SELECT_ALL = "select_all";
-
-        public static final String UNSELECT = "unselect";
-
-        public static final String UNSELECT_ALL = "unselect_all";
-    }
-
-    /**
      * Formats for table data exported by MDS.
      */
     public static final class ExportFormat {
