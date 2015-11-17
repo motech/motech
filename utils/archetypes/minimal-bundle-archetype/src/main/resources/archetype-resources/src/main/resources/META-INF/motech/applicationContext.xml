@@ -35,7 +35,7 @@
                 <entry key="messages" value="../${artifactId}/resources/messages/" />
             </map>
         </constructor-arg>
-        <property name="defaultURL" value="/helloWorld"/>
+        <property name="defaultURL" value="/${artifactId}/helloWorld"/>
     </bean>
 #end
 

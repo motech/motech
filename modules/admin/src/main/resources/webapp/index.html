@@ -3,33 +3,50 @@
         <ul class="breadcrumb" role="navigation">
             <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
             <li><a role="menu" href="#/admin/bundles">{{msg('admin.module')}}</a></li>
-            <li ng-show="active('#/admin/bundles')" ng-class="active('#/admin/bundles')">{{msg('admin.manageModules')}}</li>
-            <li ng-show="active('#/admin/bundle/')" ng-class="active('#/admin/bundle/')">{{msg('admin.bundle.title')}}</li>
-            <li ng-show="active('#/admin/messages')||active('#/admin/messagesSettings')"><a role="menu" href="#/admin/messages">{{msg('admin.messages')}}</a></li>
-            <li ng-show="active('#/admin/messages')&&!active('#/admin/messagesSettings')" ng-class="active('#/admin/messages')">{{msg('admin.messages')}}</li>
-            <li ng-show="active('#/admin/messagesSettings')" ng-class="active('#/admin/messagesSettings')">{{msg('admin.messages.notifications.title')}}</li>
-            <li ng-show="active('#/admin/platform-settings')" ng-class="active('#/admin/platform-settings')">{{msg('admin.settings')}}</li>
-            <li ng-show="active('#/admin/log')&&!active('#/admin/logOptions')" ng-class="active('#/admin/log')">{{msg('admin.log')}}</li>
-            <li ng-show="active('#/admin/logOptions')" ng-class="active('#/admin/logOptions')">{{msg('admin.log.options')}}</li>
-            <li ng-show="active('#/admin/topics')" ng-class="active('#/admin/topics')">{{msg('admin.topics')}}</li>
-            <li ng-show="active('#/admin/queues')&&!active('#/admin/queues/browse')" ng-class="active('#/admin/queues')">{{msg('admin.queues')}}</li>
-            <li ng-show="active('#/admin/queues/browse')"><a role="menu" href="#/admin/queues">{{msg('admin.queues')}}</a></li>
-            <li ng-show="active('#/admin/queues/browse')" ng-class="active('#/admin/queues/browse')">{{msg('admin.queue.messages.pending')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'bundles'"
+                ng-class="{'active': selectedTabState.selectedTab === 'bundles' || 'active': selectedTabState.selectedTab === 'bundle'}">{{msg('admin.manageModules')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'bundle'"
+                ng-class="{'active': selectedTabState.selectedTab === 'bundles' || 'active': selectedTabState.selectedTab === 'bundle'}">{{msg('admin.bundle.title')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'messages' || selectedTabState.selectedTab === 'messagesSettings'">
+                <a role="menu" href="#/admin/messages">{{msg('admin.messages')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'messages'" ng-class="{'active': selectedTabState.selectedTab === 'messages'}">{{msg('admin.messages')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'messagesSettings'" ng-class="{'active': selectedTabState.selectedTab === 'messagesSettings'}">{{msg('admin.messages.notifications.title')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'platform-settings'" ng-class="{'active': selectedTabState.selectedTab === 'platform-settings'}">{{msg('admin.settings')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'log'" ng-class="{'active': selectedTabState.selectedTab === 'log'}">{{msg('admin.log')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'logOptions'" ng-class="{'active': selectedTabState.selectedTab === 'logOptions'}">{{msg('admin.log.options')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'topics'" ng-class="{'active': selectedTabState.selectedTab === 'topics'}">{{msg('admin.topics')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'queues'" ng-class="{'active': selectedTabState.selectedTab === 'queues'}">{{msg('admin.queues')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'browse'"> <a role="menu" href="#/admin/queues">{{msg('admin.queues')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'browse'" ng-class="{'active': selectedTabState.selectedTab === 'browse'}">{{msg('admin.queue.messages.pending')}}</li>
         </ul>
     </div>
     <div class="header-footer">
         <ul id="content-tabs" role="tablist" class="nav nav-tabs">
-            <li class="active" ng-show="active('#/admin/bundles')||active('#/admin/bundle')"><a href="#/admin/bundle">{{msg('admin.bundles')}}</a></li>
-            <li class="active" ng-show="active('#/admin/messages')&&!active('#/admin/messagesSettings')"><a href="#/admin/messages">{{msg('admin.messages')}}</a></li>
-            <li ng-show="active('#/admin/messagesSettings')"><a href="#/admin/messages">{{msg('admin.messages')}}</a></li>
-            <li ng-class="active('#/admin/messagesSettings')" ng-show="active('#/admin/messagesSettings')||active('#/admin/messages')"><a href="#/admin/messagesSettings">{{msg('admin.messages.notifications.title')}}</a></li>
-            <li class="active" ng-show="active('#/admin/platform-settings')"><a href="#/admin/platform-settings">{{msg('admin.settings')}}</a></li>
-            <li class="active" ng-show="active('#/admin/log')&&!active('#/admin/logOptions')"><a href="#/admin/log">{{msg('admin.log')}}</a></li>
-            <li ng-class="" ng-show="active('#/admin/logOptions')"><a href="#/admin/log">{{msg('admin.log')}}</a></li>
-            <li ng-class="active('#/admin/logOptions')" ng-show="active('#/admin/logOptions')||active('#/admin/log')"><a href="#/admin/logOptions">{{msg('admin.log.options')}}</a></li>
-            <li class="active" ng-show="active('#/admin/topics')"><a href="#/admin/topics">{{msg('admin.topic.statistics')}}</a></li>
-            <li class="active" ng-show="active('#/admin/queues')&&!active('#/admin/queues/browse')"><a href="#/admin/queues">{{msg('admin.queue.statistics')}}</a></li>
-            <li class="active" ng-show="active('#/admin/queues/browse')"><a href="#/admin/queues/browse">{{msg('admin.queue.messages.pending')}}</a></li>
+            <li ng-class="{'active': selectedTabState.selectedTab === 'bundles' || selectedTabState.selectedTab === 'bundle'}"
+                ng-show="selectedTabState.selectedTab === 'bundles' || selectedTabState.selectedTab === 'bundle'"
+                ng-click="selectedTabState.selectedTab = 'bundles'"><a href="#/admin/bundles">{{msg('admin.bundles')}}</a></li>
+            <li ng-class="{'active': selectedTabState.selectedTab === 'messages'}" ng-show="selectedTabState.selectedTab === 'messages'">
+                <a href="#/admin/messages">{{msg('admin.messages')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'messagesSettings'" ng-click="selectedTabState.selectedTab = 'messages'">
+                <a href="#/admin/messages">{{msg('admin.messages')}}</a></li>
+            <li ng-class="{'active': selectedTabState.selectedTab === 'messagesSettings'}"
+                ng-show="selectedTabState.selectedTab === 'messages' || selectedTabState.selectedTab === 'messagesSettings'"
+                ng-click="selectedTabState.selectedTab = 'messagesSettings'"><a href="#/admin/messagesSettings">{{msg('admin.messages.notifications.title')}}</a></li>
+            <li class="active" ng-show="selectedTabState.selectedTab === 'platform-settings'" ng-click="selectedTabState.selectedTab = 'platform-settings'">
+                <a href="#/admin/platform-settings">{{msg('admin.settings')}}</a></li>
+            <li ng-class="{'active': selectedTabState.selectedTab === 'log'}" ng-show="selectedTabState.selectedTab === 'log'">
+                <a href="#/admin/log">{{msg('admin.log')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'logOptions'" ng-click="selectedTabState.selectedTab = 'log'">
+                <a href="#/admin/log">{{msg('admin.log')}}</a></li>
+            <li ng-class="{'active': selectedTabState.selectedTab === 'logOptions'}"
+                ng-show="selectedTabState.selectedTab === 'logOptions' || selectedTabState.selectedTab === 'log'"
+                ng-click="selectedTabState.selectedTab = 'logOptions'"><a href="#/admin/logOptions">{{msg('admin.log.options')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'topics'" ng-class="{'active': selectedTabState.selectedTab === 'topics'}"
+                ng-click="selectedTabState.selectedTab = 'topics'"><a href="#/admin/topics">{{msg('admin.topic.statistics')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'queues'" ng-class="{'active': selectedTabState.selectedTab === 'queues'}">
+                <a href="#/admin/queues">{{msg('admin.queue.statistics')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'browse'" ng-class="{'active': selectedTabState.selectedTab === 'browse'}">
+                <a href="#/admin/queues/browse">{{msg('admin.queue.messages.pending')}}</a></li>
         </ul>
         <div class="clearfix"></div>
     </div>
@@ -41,7 +58,7 @@
             </div>
         </div>
     </div>
-    <div ng-controller="AdminPaginationMessageCtrl" class="header-footer pagination-centered" ng-show="pagedItems.length &gt; 0 && active('#/admin/messages') && !active('#/admin/messagesSettings')">
+    <div ng-controller="AdminPaginationMessageCtrl" class="header-footer pagination-centered" ng-show="pagedItems.length &gt; 0 && selectedTabState.selectedTab === 'messages'">
         <ul class="pagination pagination-sm lightblue">
             <li ng-class="{disabled: currentPage == 0}"><a ng-click="firstPage()">{{msg('server.pagination.first')}}</a></li>
             <li ng-class="{disabled: currentPage == 0}"><a ng-click="prevPage()">{{msg('server.pagination.prev')}}</a></li>

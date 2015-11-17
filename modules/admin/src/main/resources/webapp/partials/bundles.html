@@ -99,7 +99,8 @@
                     <img ng-src="../admin/api/bundles/{{bundle.bundleId}}/icon" class="small-icon"/>
                 </div>
             </td>
-            <td><a ng-href="#/admin/bundle/{{bundle.bundleId}}">{{bundle.name | moduleName }}</a>
+            <td><a ng-href="#/admin/bundle/{{bundle.bundleId}}"
+                   ng-click="selectedTabState.selectedTab = 'bundle'">{{bundle.name | moduleName }}</a>
                     <span ng-show="showDocs(bundle)" class="pull-right btn btn-xs btn-primary" ng-click="openInNewTab(bundle.docURL)">
                         <i class="fa fa-fw fa-info-circle"></i>
                     </span>
