@@ -11,7 +11,8 @@
     </div>
     <div class="header-footer">
         <ul id="content-tabs" class="nav nav-tabs">
-            <li ng-class="active('${symbol_pound}/hello-world')"><a href="${symbol_pound}/helloWorld" >{{msg('${artifactId}')}}</a></li>
+            <li ng-class="{'active': selectedTabState.selectedTab === 'helloWorld'}" ng-click="selectedTabState.selectedTab = 'helloWorld'">
+                <a href="${symbol_pound}/helloWorld" >{{msg('${artifactId}')}}</a></li>
         </ul>
     </div>
     <div class="ui-layout-content">
