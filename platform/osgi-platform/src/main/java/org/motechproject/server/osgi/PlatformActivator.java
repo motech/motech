@@ -2,6 +2,8 @@ package org.motechproject.server.osgi;
 
 import org.eclipse.gemini.blueprint.OsgiException;
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleApplicationContextListener;
+import org.eclipse.gemini.blueprint.extender.support.scanning.ConfigurationScanner;
+import org.eclipse.gemini.blueprint.extender.support.scanning.DefaultConfigurationScanner;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.server.osgi.event.OsgiEventProxy;
 import org.motechproject.server.osgi.event.impl.OsgiEventProxyImpl;
@@ -32,6 +34,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+
 
 /**
  * The PlatformActivator is responsible for starting up MOTECH. Formerly this code lived in the WAR archive
@@ -184,7 +187,31 @@ public class PlatformActivator implements BundleActivator {
 
 
     private void registerStatusManager() {
-        platformStatusManager = new PlatformStatusManagerImpl();
+        List<Bundle> bundles = new ArrayList<>();
+        bundles.addAll(bundlesByType.get(BundleType.MOTECH_MODULE));
+        bundles.addAll(bundlesByType.get(BundleType.MDS_BUNDLE));
+        bundles.addAll(bundlesByType.get(BundleType.PLATFORM_BUNDLE_PRE_MDS));
+        bundles.addAll(bundlesByType.get(BundleType.PLATFORM_BUNDLE_PRE_WS));
+        bundles.addAll(bundlesByType.get(BundleType.WS_BUNDLE));
+        bundles.addAll(bundlesByType.get(BundleType.PLATFORM_BUNDLE_POST_WS));
+
+        Map<String, List<Bundle>> bundlesToStart = new HashMap<>();
+        bundlesToStart.put(PlatformStatusManager.OSGI_BUNDLES, new ArrayList<>());
+        bundlesToStart.put(PlatformStatusManager.BLUEPRINT_BUNDLES, new ArrayList<>());
+
+        ConfigurationScanner configurationScanner = new DefaultConfigurationScanner();
+
+        for(Bundle bundle : bundles){
+            String[] config = configurationScanner.getConfigurations(bundle);
+
+            if (config.length > 0) {
+                bundlesToStart.get(PlatformStatusManager.BLUEPRINT_BUNDLES).add(bundle);
+            } else {
+                bundlesToStart.get(PlatformStatusManager.OSGI_BUNDLES).add(bundle);
+            }
+        }
+
+        platformStatusManager = new PlatformStatusManagerImpl(bundlesToStart);
 
         bundleContext.addBundleListener(platformStatusManager);
 

@@ -6,6 +6,9 @@ package org.motechproject.server.osgi.status;
  */
 public interface PlatformStatusManager {
 
+    String OSGI_BUNDLES = "osgi-bundles";
+    String BLUEPRINT_BUNDLES = "blueprint-bundles";
+
     /**
      * Used to fetch the current status of the platform.
      * @return the current status of the platform, never null
