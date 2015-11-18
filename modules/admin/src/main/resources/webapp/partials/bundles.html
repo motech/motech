@@ -118,8 +118,8 @@
                 </span>
                 <span ng-show="bundle.isActive()">
                     <a ng-click="stopBundleModal(bundle)">
-                        <img src="../admin/img/trans.gif" alt="{{msg('admin.bundles.pause')}}" title="{{msg('admin.bundles.pause')}}"
-                             class="action action-pause"/>
+                        <img src="../admin/img/trans.gif" alt="{{msg('admin.bundles.stop')}}" title="{{msg('admin.bundles.stop')}}"
+                             class="action action-stop"/>
                     </a>
                     <a ng-click="restartBundle(bundle)">
                         <img src="../admin/img/trans.gif" alt="{{msg('admin.bundles.restart')}}"
@@ -147,6 +147,6 @@
         </tbody>
     </table>
     <div ng-include="'../admin/partials/widgets/remove-bundle-modal.html'"></div>
-    <div ng-include="'../admin/partials/widgets/pause-bundle-modal.html'"></div>
+    <div ng-include="'../admin/partials/widgets/stop-bundle-modal.html'"></div>
 </div>
 

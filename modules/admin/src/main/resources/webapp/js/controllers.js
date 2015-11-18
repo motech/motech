@@ -129,7 +129,7 @@
         $scope.module = "";
 
         $scope.stopBundleModal = function (bundle) {
-            $('#pauseBundleModal').on('show.bs.modal', function() {
+            $('#stopBundleModal').on('show.bs.modal', function() {
                 $scope.bundle = bundle;
             }).on('hide.bs.modal', function () {
                 $scope.bundle = undefined;
