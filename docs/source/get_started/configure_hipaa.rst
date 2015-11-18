@@ -202,3 +202,16 @@ As mentioned, MOTECH does not provide out of the box encryption utils. You can i
 The Privacy Rule
 ================
 
+The HIPAA Privacy Rule establishes national standards to protect individuals’ medical records and other personal
+health information and applies to health plans, health care clearinghouses, and those health care providers that conduct
+certain health care transactions electronically.  The Rule requires appropriate safeguards to protect the privacy of
+personal health information, and sets limits and conditions on the uses and disclosures that may be made of such
+information without patient authorization. The Rule also gives patients rights over their health information,
+including rights to examine and obtain a copy of their health records, and to request corrections.
+
+It is up to you as an implementer and an entity covered by HIPAA to adhere to the privacy rule. You have take care
+to always send the required minimum of data at all times. Moreover the rule covers rules around disclosing PHI, sharing it
+with your business partners and so on.
+
+You can find more information looking at the `Guidance on Significant Aspects of the Privacy Rule <http://www.hhs.gov/ocr/privacy/hipaa/understanding/coveredentities/privacyguidance.html>`_
+and the `Guidance in de-identification of PHI in accordance with HIPAA: <http://www.hhs.gov/ocr/privacy/hipaa/understanding/coveredentities/De-identification/guidance.html>`_.
