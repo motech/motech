@@ -129,6 +129,7 @@ public class PlatformActivator implements BundleActivator {
             EventAdmin eventAdmin = bundleContext.getService(ref);
 
             OsgiEventProxy osgiEventProxy = new OsgiEventProxyImpl(eventAdmin);
+            platformStatusManager.setOsgiEventProxy(osgiEventProxy);
             bundleContext.registerService(OsgiEventProxy.class, osgiEventProxy, null);
         }
     }
@@ -207,9 +208,8 @@ public class PlatformActivator implements BundleActivator {
             bundles.addAll(bundlesByType.get(BundleType.PLATFORM_BUNDLE_POST_WS));
         }
 
-        Map<String, List<Bundle>> bundlesToStart = new HashMap<>();
-        bundlesToStart.put(PlatformStatusManager.OSGI_BUNDLES, new ArrayList<>());
-        bundlesToStart.put(PlatformStatusManager.BLUEPRINT_BUNDLES, new ArrayList<>());
+        List<Bundle> osgiBundles = new ArrayList<>();
+        List<Bundle> blueprintBundles = new ArrayList<>();
 
         ConfigurationScanner configurationScanner = new DefaultConfigurationScanner();
 
@@ -217,13 +217,13 @@ public class PlatformActivator implements BundleActivator {
             String[] config = configurationScanner.getConfigurations(bundle);
 
             if (config.length > 0) {
-                bundlesToStart.get(PlatformStatusManager.BLUEPRINT_BUNDLES).add(bundle);
+                blueprintBundles.add(bundle);
             } else {
-                bundlesToStart.get(PlatformStatusManager.OSGI_BUNDLES).add(bundle);
+                osgiBundles.add(bundle);
             }
         }
 
-        platformStatusManager = new PlatformStatusManagerImpl(bundlesToStart);
+        platformStatusManager = new PlatformStatusManagerImpl(osgiBundles, blueprintBundles);
 
         bundleContext.addBundleListener(platformStatusManager);
 
