@@ -1342,11 +1342,13 @@
                                 if ($('#instancesTable').getGridParam('records') > 0) {
                                     $('#pageInstancesTable_center').show();
                                     $('#entityInstancesTable .ui-jqgrid-hdiv').show();
+                                    $('.jqgfirstrow').css('height','0');
                                 } else {
                                     if (noSelectedFields) {
                                         $('#pageInstancesTable_center').hide();
                                         $('#entityInstancesTable .ui-jqgrid-hdiv').hide();
                                     }
+                                    $('.jqgfirstrow').css('height','1px');
                                 }
                                 $('#entityInstancesTable .ui-jqgrid-hdiv').addClass("table-lightblue");
                                 $('#entityInstancesTable .ui-jqgrid-btable').addClass("table-lightblue");
@@ -1469,8 +1471,11 @@
                                 shrinkToFit: false,
                                 gridComplete: function () {
                                     $('#pageInstancesBrowserTable_center').addClass('page_instancesTable_center');
-                                    if ($('#browserTable').getGridParam('records') !== 0) {
+                                    if ($('#browserTable').getGridParam('records') > 0) {
                                         $('#pageInstancesBrowserTable_center').show();
+                                        $('.jqgfirstrow').css('height','0');
+                                    } else {
+                                        $('.jqgfirstrow').css('height','1px');
                                     }
                                     tableWidth = $('#instanceBrowserTable').width();
                                     $('#instanceBrowserTable').children().width('100%');
@@ -1674,11 +1679,13 @@
                                 if ($('#historyTable').getGridParam('records') > 0) {
                                     $('#pageInstanceHistoryTable_center').show();
                                     $('#instanceHistoryTable .ui-jqgrid-hdiv').show();
+                                    $('.jqgfirstrow').css('height','0');
                                 } else {
                                     if (noSelectedFields) {
                                         $('#pageInstanceHistoryTable_center').hide();
                                         $('#instanceHistoryTable .ui-jqgrid-hdiv').hide();
                                     }
+                                    $('.jqgfirstrow').css('height','1px');
                                 }
                                 $('#instanceHistoryTable .ui-jqgrid-hdiv').addClass('table-lightblue');
                                 $('#instanceHistoryTable .ui-jqgrid-btable').addClass("table-lightblue");
@@ -1798,11 +1805,13 @@
                                 if ($('#trashTable').getGridParam('records') > 0) {
                                     $('#pageInstanceTrashTable_center').show();
                                     $('#instanceTrashTable .ui-jqgrid-hdiv').show();
+                                    $('.jqgfirstrow').css('height','0');
                                 } else {
                                     if (noSelectedFields) {
                                         $('#pageInstanceTrashTable_center').hide();
                                         $('#instanceTrashTable .ui-jqgrid-hdiv').hide();
                                     }
+                                    $('.jqgfirstrow').css('height','1px');
                                 }
                                 $('#instanceTrashTable .ui-jqgrid-hdiv').addClass("table-lightblue");
                                 $('#instanceTrashTable .ui-jqgrid-btable').addClass("table-lightblue");
