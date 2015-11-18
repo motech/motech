@@ -4,6 +4,7 @@ Configuring Your MOTECH App to be HIPAA Compliant
 .. contents:: Table of Contents
     :depth: 2
 
+==============
 What is HIPAA?
 ==============
 
@@ -28,6 +29,7 @@ U.S. Department of Health & Human services:
 
 http://www.hhs.gov/ocr/privacy/hipaa/administrative/combined/hipaa-simplification-201303.pdf
 
+======================
 Scope of this document
 ======================
 
@@ -40,6 +42,19 @@ This document focuses on the MOTECH part of the patient - what can be configured
 in order to be HIPAA compliant. Take note that this is only a part of the full picture and it is up to you to make sure
 you are fully compliant. More information on HIPAA and being compliant can be found on the website of the
 U.S. Department of Health & Human Services: http://www.hhs.gov/ocr/privacy/hipaa/understanding/srsummary.html
+
+=================
+The Security Rule
+=================
+
+The HIPAA Security Rule establishes national standards to protect individuals electronic personal health information
+that is created, received, used, or maintained by a covered entity. The Security Rule requires appropriate
+administrative, physical and technical safeguards to ensure the confidentiality, integrity, and security of
+electronic protected health information.
+
+This section of the document will focus on the technical safeguards that should be configured in MOTECH in order to
+achieve HIPAA compliance.
+
 
 Technical safeguards
 ====================
@@ -173,7 +188,17 @@ it can be configured to use communication level cryptographic protocols such as 
 
 MOTECH can be also configured to connect to the database using SSL.
 
+This is important to note when communicating with outside services such as the IVR provider, SMS provider, the SMTP server
+for sending emails, outside systems such as OpenMRS or Commcare and so on. When using these services that are not the same
+host as the MOTECH server, make sure that use `HTTPS` instead of plain `HTTP` or in other cases, such as the email server,
+make sure that proper cryptographic configuration is being used - this is not configured out of the box.
+
 * Encryption (Addressable) - Implement a mechanism to encrypt electronic protected health information whenever deemed appropriate.
 
 As mentioned, MOTECH does not provide out of the box encryption utils. You can implement you own encryption methods using
 `JAVA cryptography <https://docs.oracle.com/javase/8/docs/technotes/guides/security/crypto/CryptoSpec.html>`_ or any other tool.
+
+================
+The Privacy Rule
+================
+
