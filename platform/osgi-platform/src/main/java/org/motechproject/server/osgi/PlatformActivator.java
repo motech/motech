@@ -188,12 +188,24 @@ public class PlatformActivator implements BundleActivator {
 
     private void registerStatusManager() {
         List<Bundle> bundles = new ArrayList<>();
-        bundles.addAll(bundlesByType.get(BundleType.MOTECH_MODULE));
-        bundles.addAll(bundlesByType.get(BundleType.MDS_BUNDLE));
-        bundles.addAll(bundlesByType.get(BundleType.PLATFORM_BUNDLE_PRE_MDS));
-        bundles.addAll(bundlesByType.get(BundleType.PLATFORM_BUNDLE_PRE_WS));
-        bundles.addAll(bundlesByType.get(BundleType.WS_BUNDLE));
-        bundles.addAll(bundlesByType.get(BundleType.PLATFORM_BUNDLE_POST_WS));
+        if (bundlesByType.containsKey(BundleType.MOTECH_MODULE)) {
+            bundles.addAll(bundlesByType.get(BundleType.MOTECH_MODULE));
+        }
+        if (bundlesByType.containsKey(BundleType.MDS_BUNDLE)) {
+            bundles.addAll(bundlesByType.get(BundleType.MDS_BUNDLE));
+        }
+        if (bundlesByType.containsKey(BundleType.PLATFORM_BUNDLE_PRE_MDS)) {
+            bundles.addAll(bundlesByType.get(BundleType.PLATFORM_BUNDLE_PRE_MDS));
+        }
+        if (bundlesByType.containsKey(BundleType.PLATFORM_BUNDLE_PRE_WS)) {
+            bundles.addAll(bundlesByType.get(BundleType.PLATFORM_BUNDLE_PRE_WS));
+        }
+        if (bundlesByType.containsKey(BundleType.WS_BUNDLE)) {
+            bundles.addAll(bundlesByType.get(BundleType.WS_BUNDLE));
+        }
+        if (bundlesByType.containsKey(BundleType.PLATFORM_BUNDLE_POST_WS)) {
+            bundles.addAll(bundlesByType.get(BundleType.PLATFORM_BUNDLE_POST_WS));
+        }
 
         Map<String, List<Bundle>> bundlesToStart = new HashMap<>();
         bundlesToStart.put(PlatformStatusManager.OSGI_BUNDLES, new ArrayList<>());
