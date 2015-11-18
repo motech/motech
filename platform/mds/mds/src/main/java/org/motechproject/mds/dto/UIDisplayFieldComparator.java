@@ -1,4 +1,3 @@
-
 package org.motechproject.mds.dto;
 
 import java.util.Comparator;

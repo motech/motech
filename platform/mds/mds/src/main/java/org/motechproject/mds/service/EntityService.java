@@ -487,5 +487,10 @@ public interface EntityService {
      */
     List<FieldDto> getEntityFieldsForUI(Long entityId);
 
+    /**
+     * Retrieves the current MDS schema - entities, fields, lookups, advanced settings etc. This schema can be
+     * processed outside of a transacton.
+     * @return the current MDS schema
+     */
     SchemaHolder getSchema();
 }

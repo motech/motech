@@ -16,9 +16,9 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
-import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.entity.EntityCreationException;
@@ -27,7 +27,6 @@ import org.motechproject.mds.helper.EntitySorter;
 import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.javassist.JavassistLoader;
 import org.motechproject.mds.javassist.MotechClassPool;
-import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
@@ -66,9 +65,6 @@ import java.util.Properties;
 public class MDSConstructorImpl implements MDSConstructor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MDSConstructorImpl.class);
-
-    @Autowired
-    private AllEntities allEntities;
 
     private MdsConfig mdsConfig;
     private EntityBuilder entityBuilder;
@@ -302,9 +298,7 @@ public class MDSConstructorImpl implements MDSConstructor {
 
     @Override
     @Transactional
-    public void updateFields(Long entityId, Map<String, String> fieldNameChanges) {
-        Entity entity = allEntities.retrieveById(entityId);
-
+    public void updateFields(Entity entity, Map<String, String> fieldNameChanges) {
         for (String key : fieldNameChanges.keySet()) {
             String tableName = ClassTableName.getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace(), entity.getTableName(), null);
             updateFieldName(key, fieldNameChanges.get(key), tableName);

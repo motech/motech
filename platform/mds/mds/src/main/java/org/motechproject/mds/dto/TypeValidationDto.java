@@ -3,6 +3,9 @@ package org.motechproject.mds.dto;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
+/**
+ * Dto class representing a validation for a given type.
+ */
 public class TypeValidationDto {
 
     private Long id;

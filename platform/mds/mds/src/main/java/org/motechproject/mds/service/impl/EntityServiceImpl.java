@@ -401,7 +401,7 @@ public class EntityServiceImpl implements EntityService {
         Entity parent = draft.getParentEntity();
         String username = draft.getDraftOwnerUsername();
 
-        mdsConstructor.updateFields(parent.getId(), draft.getFieldNameChanges());
+        mdsConstructor.updateFields(parent, draft.getFieldNameChanges());
         comboboxDataMigrationHelper.migrateComboboxDataIfNecessary(parent, draft);
 
         configureRelatedFields(parent, draft, modulesToRefresh);

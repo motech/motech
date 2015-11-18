@@ -1,5 +1,6 @@
 package org.motechproject.mds.builder;
 
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.dto.SchemaHolder;
 
 import java.util.Map;
@@ -33,8 +34,8 @@ public interface MDSConstructor {
      * column names to the new value. This is done for the entity instances, history instances
      * and trash instances.
      *
-     * @param entityId The ID of an entity to update
+     * @param entity the entity to update
      * @param fieldNameChanges A map, indexed by current field names and values being updated field names.
      */
-    void updateFields(Long entityId, Map<String, String> fieldNameChanges);
+    void updateFields(Entity entity, Map<String, String> fieldNameChanges);
 }

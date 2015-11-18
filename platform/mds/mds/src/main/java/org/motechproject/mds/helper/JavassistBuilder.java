@@ -122,7 +122,7 @@ public final class JavassistBuilder {
     public static CtField.Initializer createInitializer(String typeClass, Object defaultValue) {
         //The distinction made in order to avoid the cyclomatic complexity error
         if(typeClass.startsWith("java")) {
-            return createInitializerForJavaPlatformPackages(typeClass, defaultValue, defaultValue);
+            return createInitializerForJavaPlatformPackages(typeClass, defaultValue);
         } else {
             return createInitializerForThirdPartyPackages(typeClass, defaultValue);
         }
@@ -130,8 +130,7 @@ public final class JavassistBuilder {
 
 
     private static CtField.Initializer createInitializerForJavaPlatformPackages(String typeClass,
-                                                                                Object defaultValue,
-                                                                                Object defaultValueg) {
+                                                                                Object defaultValue) {
         switch (typeClass) {
             case "java.lang.Integer":
             case "java.lang.Double":
@@ -149,7 +148,7 @@ public final class JavassistBuilder {
                 java.time.LocalDate javaLocalDate = (java.time.LocalDate) defaultValue;
                 return createJavaTimeInitializer(typeClass, javaLocalDate.toString());
             case "java.util.Locale":
-                return createLocaleInitializer(defaultValueg);
+                return createLocaleInitializer(defaultValue);
             default:
                 return null;
         }
