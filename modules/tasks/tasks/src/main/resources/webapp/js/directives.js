@@ -57,7 +57,7 @@
                         elem.jqGrid('setLabel', 'message', scope.msg('task.subsection.message'));
                         elem.jqGrid('setLabel', 'date', scope.msg('task.subsection.information'));
 
-                        $('#outsideTaskHistoryTable').children('div').width('100%');
+                        $('#outsideTaskHistoryTable').children('div').css('width','100%');
                         $('.ui-jqgrid-htable').addClass("table-lightblue");
                         $('.ui-jqgrid-btable').addClass("table-lightblue");
                         $('.ui-jqgrid-htable').width('100%');
