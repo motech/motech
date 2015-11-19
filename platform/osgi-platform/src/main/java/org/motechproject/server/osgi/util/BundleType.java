@@ -4,6 +4,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,8 +59,8 @@ public enum BundleType {
             "commons-api", "commons-sql", "commons-date", "osgi-web-util", "server-api", "config-core", "event"
     ));
 
-    public static final Set<String> PLATFORM_PRE_WS_BUNDLES = new HashSet<>(Arrays.asList(
-        "server-config"
+    public static final Set<String> PLATFORM_PRE_WS_BUNDLES = new HashSet<>(Collections.singletonList(
+            "server-config"
     ));
 
     public static BundleType forBundle(Bundle bundle) {

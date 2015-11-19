@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.util.LookupName;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class LookupDto {
 
     public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
                      List<LookupFieldDto> lookupFields, boolean readOnly) {
-        this(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly, null, new ArrayList<String>());
+        this(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly, null, new ArrayList<>());
     }
 
     public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<LookupFieldDto> lookupFields,
@@ -201,6 +202,16 @@ public class LookupDto {
 
     public void setFieldsOrder(List<String> fieldsOrder) {
         this.fieldsOrder = fieldsOrder;
+    }
+
+    @JsonIgnore
+    public LookupFieldDto getLookupField(String fieldName) {
+        for (LookupFieldDto lookupField : lookupFields) {
+            if (StringUtils.equals(fieldName, lookupField.getName())) {
+                return lookupField;
+            }
+        }
+        return null;
     }
 
     /**

@@ -10,6 +10,7 @@ import org.motechproject.mds.util.Constants;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -229,10 +230,19 @@ public class FieldDto {
         MetadataDto md = getMetadata(Constants.MetadataKeys.VERSION_FIELD);
         String metadataValue = md == null ? null : md.getValue();
         if (StringUtils.isNotBlank(metadataValue)) {
-            return new Boolean(metadataValue);
+            return Boolean.valueOf(metadataValue);
         }
 
         return false;
+    }
+
+    public void removeSetting(String key) {
+        Iterator<SettingDto> it = settings.iterator();
+        while (it.hasNext()) {
+            if (StringUtils.equals(key, it.next().getKey())) {
+                it.remove();
+            }
+        }
     }
 
     public List<SettingDto> getSettings() {

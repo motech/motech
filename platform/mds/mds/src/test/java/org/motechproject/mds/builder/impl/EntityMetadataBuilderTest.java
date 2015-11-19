@@ -17,12 +17,16 @@ import org.motechproject.mds.annotations.internal.samples.AnotherSample;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
 import org.motechproject.mds.builder.Sample;
 import org.motechproject.mds.domain.ClassData;
-import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
-import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
-import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.LookupFieldDto;
+import org.motechproject.mds.dto.LookupFieldType;
+import org.motechproject.mds.dto.MetadataDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -39,11 +43,9 @@ import javax.jdo.metadata.InheritanceMetadata;
 import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.PackageMetadata;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -56,6 +58,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.mds.testutil.FieldTestHelper.fieldDto;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
 import static org.motechproject.mds.util.Constants.Util.CREATION_DATE_DISPLAY_FIELD_NAME;
@@ -88,10 +91,10 @@ public class EntityMetadataBuilderTest {
     private EntityMetadataBuilder entityMetadataBuilder = new EntityMetadataBuilderImpl();
 
     @Mock
-    private Entity entity;
+    private EntityDto entity;
 
     @Mock
-    private Field idField;
+    private FieldDto idField;
 
     @Mock
     private JDOMetadata jdoMetadata;
@@ -108,6 +111,9 @@ public class EntityMetadataBuilderTest {
     @Mock
     private InheritanceMetadata inheritanceMetadata;
 
+    @Mock
+    private SchemaHolder schemaHolder;
+
     @Before
     public void setUp() {
         initMocks(this);
@@ -115,7 +121,7 @@ public class EntityMetadataBuilderTest {
         when(entity.getClassName()).thenReturn(CLASS_NAME);
         when(classMetadata.newFieldMetadata("id")).thenReturn(idMetadata);
         when(classMetadata.newInheritanceMetadata()).thenReturn(inheritanceMetadata);
-        when(entity.getField("id")).thenReturn(idField);
+        when(schemaHolder.getFieldByName(entity, "id")).thenReturn(idField);
         when(entity.isBaseEntity()).thenReturn(true);
     }
 
@@ -128,7 +134,7 @@ public class EntityMetadataBuilderTest {
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
 
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class, schemaHolder);
 
         verify(jdoMetadata).newPackageMetadata(PACKAGE);
         verify(packageMetadata).newClassMetadata(ENTITY_NAME);
@@ -144,7 +150,7 @@ public class EntityMetadataBuilderTest {
         when(packageMetadata.getName()).thenReturn(PACKAGE);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
 
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class, schemaHolder);
 
         verify(jdoMetadata, never()).newPackageMetadata(PACKAGE);
         verify(jdoMetadata).getPackages();
@@ -160,15 +166,15 @@ public class EntityMetadataBuilderTest {
         when(jdoMetadata.newPackageMetadata(anyString())).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(anyString())).thenReturn(classMetadata);
 
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class, schemaHolder);
         verify(classMetadata).setTable(TABLE_NAME_1);
 
         when(entity.getModule()).thenReturn(MODULE);
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class, schemaHolder);
         verify(classMetadata).setTable(TABLE_NAME_2);
 
         when(entity.getNamespace()).thenReturn(NAMESPACE);
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class, schemaHolder);
         verify(classMetadata).setTable(TABLE_NAME_3);
     }
 
@@ -204,25 +210,14 @@ public class EntityMetadataBuilderTest {
 
     @Test
     public void shouldAddOneToManyRelationshipMetadata() {
-        Field oneToManyField = mock(Field.class);
-        org.motechproject.mds.domain.FieldMetadata entityFmd = mock(org.motechproject.mds.domain.FieldMetadata.class);
-        Type oneToManyType = mock(Type.class);
-
-        when(entityFmd.getKey()).thenReturn(RELATED_CLASS);
-        when(entityFmd.getValue()).thenReturn("org.motechproject.test.MyClass");
-
-        when(oneToManyType.getTypeClass()).thenReturn((Class) OneToManyRelationship.class);
-        when(oneToManyType.isRelationship()).thenReturn(true);
-
-        when(oneToManyField.getName()).thenReturn("oneToManyName");
-        when(oneToManyField.getMetadata()).thenReturn(asList(entityFmd));
-        when(oneToManyField.getType()).thenReturn(oneToManyType);
+        FieldDto oneToManyField = fieldDto("oneToManyName", OneToManyRelationship.class);
+        oneToManyField.addMetadata(new MetadataDto(RELATED_CLASS, "org.motechproject.test.MyClass"));
 
         FieldMetadata fmd = mock(FieldMetadata.class);
         CollectionMetadata collMd = mock(CollectionMetadata.class);
 
         when(entity.getName()).thenReturn(ENTITY_NAME);
-        when(entity.getFields()).thenReturn(asList(oneToManyField));
+        when(schemaHolder.getFields(entity)).thenReturn(singletonList(oneToManyField));
         when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
@@ -230,7 +225,7 @@ public class EntityMetadataBuilderTest {
         when(fmd.getCollectionMetadata()).thenReturn(collMd);
         when(fmd.getName()).thenReturn("oneToManyName");
 
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class, schemaHolder);
 
         verifyCommonClassMetadata();
         verify(fmd).setDefaultFetchGroup(true);
@@ -241,33 +236,18 @@ public class EntityMetadataBuilderTest {
 
     @Test
     public void shouldAddOneToOneRelationshipMetadata() throws NotFoundException, CannotCompileException {
-        final String myClassName = "org.motechproject.test.MyClass";
-        final String myFieldName = "myField";
+        final String relClassName = "org.motechproject.test.MyClass";
+        final String relFieldName = "myField";
 
-        Field oneToOneField = mock(Field.class);
-        org.motechproject.mds.domain.FieldMetadata relatedClassFmd = mock(org.motechproject.mds.domain.FieldMetadata.class);
-        org.motechproject.mds.domain.FieldMetadata relatedFieldFmd = mock(org.motechproject.mds.domain.FieldMetadata.class);
-
-        Type oneToOneType = mock(Type.class);
-
-        when(relatedClassFmd.getKey()).thenReturn(RELATED_CLASS);
-        when(relatedClassFmd.getValue()).thenReturn(myClassName);
-
-        when(relatedFieldFmd.getKey()).thenReturn(RELATED_FIELD);
-        when(relatedFieldFmd.getValue()).thenReturn(myFieldName);
-
-        when(oneToOneType.getTypeClass()).thenReturn((Class) OneToOneRelationship.class);
-        when(oneToOneType.isRelationship()).thenReturn(true);
-
-        when(oneToOneField.getName()).thenReturn("oneToOneName");
-        when(oneToOneField.getMetadata(RELATED_FIELD)).thenReturn(relatedFieldFmd);
-        when(oneToOneField.getType()).thenReturn(oneToOneType);
+        FieldDto oneToOneField = fieldDto("oneToOneName", OneToOneRelationship.class);
+        oneToOneField.addMetadata(new MetadataDto(RELATED_CLASS, relClassName));
+        oneToOneField.addMetadata(new MetadataDto(RELATED_FIELD, relFieldName));
 
         FieldMetadata fmd = mock(FieldMetadata.class);
         when(fmd.getName()).thenReturn("oneToOneName");
 
         when(entity.getName()).thenReturn(ENTITY_NAME);
-        when(entity.getFields()).thenReturn(asList(oneToOneField));
+        when(schemaHolder.getFields(entity)).thenReturn(singletonList(oneToOneField));
         when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
@@ -280,16 +260,16 @@ public class EntityMetadataBuilderTest {
         CtField myField = mock(CtField.class);
         CtField relatedField = mock(CtField.class);
 
-        when(myClass.getName()).thenReturn(myClassName);
+        when(myClass.getName()).thenReturn(relClassName);
         when(myClass.getDeclaredFields()).thenReturn(new CtField[]{myField});
 
         when(myField.getType()).thenReturn(relatedClass);
-        when(myField.getName()).thenReturn(myFieldName);
+        when(myField.getName()).thenReturn(relFieldName);
 
         when(relatedClass.getDeclaredFields()).thenReturn(new CtField[]{relatedField});
         when(relatedClass.getName()).thenReturn(CLASS_NAME);
 
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class, schemaHolder);
 
         verifyCommonClassMetadata();
         verify(fmd).setDefaultFetchGroup(true);
@@ -298,19 +278,17 @@ public class EntityMetadataBuilderTest {
 
     @Test
     public void shouldSetIndexOnMetadataLookupField() throws Exception {
-        Field lookupField = mock(Field.class);
-        Type string = new Type(String.class);
-        Set<org.motechproject.mds.domain.Lookup> lookups = new HashSet<>();
-        lookups.add(new org.motechproject.mds.domain.Lookup());
+        FieldDto lookupField = fieldDto("lookupField", String.class);
 
-        when(lookupField.getName()).thenReturn("lookupField");
-        when(lookupField.getType()).thenReturn(string);
-        when(lookupField.getLookups()).thenReturn(lookups);
+        LookupDto lookup = new LookupDto();
+        lookup.setLookupName("A lookup");
+        lookup.setLookupFields(singletonList(new LookupFieldDto("lookupField", LookupFieldType.VALUE)));
+        lookupField.setLookups(singletonList(lookup));
 
         FieldMetadata fmd = mock(FieldMetadata.class);
 
         when(entity.getName()).thenReturn(ENTITY_NAME);
-        when(entity.getFields()).thenReturn(asList(lookupField));
+        when(schemaHolder.getFields(entity)).thenReturn(singletonList(lookupField));
         when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
@@ -318,7 +296,7 @@ public class EntityMetadataBuilderTest {
         PowerMockito.mockStatic(FieldUtils.class);
         when(FieldUtils.getDeclaredField(eq(Sample.class), anyString(), eq(true))).thenReturn(Sample.class.getDeclaredField("notInDefFg"));
 
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class, schemaHolder);
 
         verifyCommonClassMetadata();
         verify(fmd).setIndexed(true);
@@ -331,18 +309,15 @@ public class EntityMetadataBuilderTest {
         when(jdoMetadata.newPackageMetadata(anyString())).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(anyString())).thenReturn(classMetadata);
 
-        Type string = new Type(String.class);
-        Type dateTime = new Type(DateTime.class);
-
-        List<Field> fields = new ArrayList<>();
+        List<FieldDto> fields = new ArrayList<>();
         // for these fields the appropriate generator should be added
-        fields.add(new Field(entity, CREATOR_FIELD_NAME, CREATOR_DISPLAY_FIELD_NAME, string, true, true));
-        fields.add(new Field(entity, OWNER_FIELD_NAME, OWNER_DISPLAY_FIELD_NAME, string, true, true));
-        fields.add(new Field(entity, CREATION_DATE_FIELD_NAME, CREATION_DATE_DISPLAY_FIELD_NAME, dateTime, true, true));
-        fields.add(new Field(entity, MODIFIED_BY_FIELD_NAME, MODIFIED_BY_DISPLAY_FIELD_NAME, string, true, true));
-        fields.add(new Field(entity, MODIFICATION_DATE_FIELD_NAME, MODIFICATION_DATE_DISPLAY_FIELD_NAME, dateTime, true, true));
+        fields.add(fieldDto(1L, CREATOR_FIELD_NAME, String.class.getName(), CREATOR_DISPLAY_FIELD_NAME, null));
+        fields.add(fieldDto(2L, OWNER_FIELD_NAME, String.class.getName(), OWNER_DISPLAY_FIELD_NAME, null));
+        fields.add(fieldDto(3L, CREATION_DATE_FIELD_NAME, DateTime.class.getName(), CREATION_DATE_DISPLAY_FIELD_NAME, null));
+        fields.add(fieldDto(4L, MODIFIED_BY_FIELD_NAME, String.class.getName(), MODIFIED_BY_DISPLAY_FIELD_NAME, null));
+        fields.add(fieldDto(5L, MODIFICATION_DATE_FIELD_NAME, DateTime.class.getName(), MODIFICATION_DATE_DISPLAY_FIELD_NAME, null));
 
-        doReturn(fields).when(entity).getFields();
+        doReturn(fields).when(schemaHolder).getFields(CLASS_NAME);
 
         final List<FieldMetadata> list = new ArrayList<>();
 
@@ -365,7 +340,7 @@ public class EntityMetadataBuilderTest {
         PowerMockito.mockStatic(FieldUtils.class);
         when(FieldUtils.getDeclaredField(eq(Sample.class), anyString(), eq(true))).thenReturn(Sample.class.getDeclaredField("notInDefFg"));
 
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class, schemaHolder);
 
         for (FieldMetadata metadata : list) {
             String name = metadata.getName();
@@ -387,7 +362,7 @@ public class EntityMetadataBuilderTest {
         when(jdoMetadata.newPackageMetadata(anyString())).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(anyString())).thenReturn(classMetadata);
 
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, AnotherSample.class);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, AnotherSample.class, schemaHolder);
 
         verifyZeroInteractions(inheritanceMetadata);
     }
@@ -399,16 +374,14 @@ public class EntityMetadataBuilderTest {
         when(jdoMetadata.newPackageMetadata(anyString())).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(anyString())).thenReturn(classMetadata);
 
-        Field field = mock(Field.class);
-        when(field.getName()).thenReturn("notInDefFg");
-        when(field.getType()).thenReturn(new Type(OneToOneRelationship.class));
-        when(entity.getFields()).thenReturn(asList(field));
+        FieldDto field = fieldDto("notInDefFg", OneToOneRelationship.class);
+        when(schemaHolder.getFields(CLASS_NAME)).thenReturn(singletonList(field));
 
         FieldMetadata fmd = mock(FieldMetadata.class);
         when(fmd.getName()).thenReturn("notInDefFg");
         when(classMetadata.newFieldMetadata("notInDefFg")).thenReturn(fmd);
 
-        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class, schemaHolder);
 
         verify(fmd, never()).setDefaultFetchGroup(anyBoolean());
     }
