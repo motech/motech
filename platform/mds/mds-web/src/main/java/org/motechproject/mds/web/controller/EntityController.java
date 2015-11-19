@@ -9,6 +9,7 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MdsBundleRegenerationService;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.comparator.EntityNameComparator;
@@ -216,35 +217,45 @@ public class EntityController extends MdsController {
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
     public List<FieldDto> getFields(@PathVariable Long entityId) {
-        return entityService.getFields(entityId);
+        List<FieldDto> fields = entityService.getFields(entityId);
+        processFieldsForUI(fields);
+        return fields;
     }
 
     @RequestMapping(value = "/entities/{entityId}/entityFields", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
     public List<FieldDto> getEntityFields(@PathVariable Long entityId) {
-        return entityService.getEntityFieldsForUI(entityId);
-}
+        List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
+        processFieldsForUI(fields);
+        return fields;
+    }
 
     @RequestMapping(value = "/entities/entityFieldsByClassName", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
     public List<FieldDto> getEntityFieldsByClassName(@RequestParam(value = "entityClassName", required = true) String entityClassName) {
-        return entityService.getEntityFieldsByClassNameForUI(entityClassName);
+        List<FieldDto> fields = entityService.getEntityFieldsByClassNameForUI(entityClassName);
+        processFieldsForUI(fields);
+        return fields;
     }
 
     @RequestMapping(value = "/entities/{entityId}/displayFields", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
     public List<FieldDto> getDisplayFields(@PathVariable Long entityId) {
-        return entityService.getDisplayFields(entityId);
+        List<FieldDto> fields = entityService.getDisplayFields(entityId);
+        processFieldsForUI(fields);
+        return fields;
     }
 
     @RequestMapping(value = "entities/{entityId}/fields/{name}", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
     public FieldDto getFieldByName(@PathVariable Long entityId, @PathVariable String name) {
-        return entityService.findFieldByName(entityId, name);
+        FieldDto field = entityService.findFieldByName(entityId, name);
+        processFieldForUI(field);
+        return field;
     }
 
     @RequestMapping(value = "/entities/{entityId}/advanced", method = RequestMethod.GET)
@@ -259,6 +270,20 @@ public class EntityController extends MdsController {
     @ResponseBody
     public AdvancedSettingsDto getCommitedAdvanced(@PathVariable final Long entityId) {
         return entityService.getAdvancedSettings(entityId, true);
+    }
+
+    private void processFieldsForUI(List<FieldDto> fields) {
+        for (FieldDto field : fields) {
+            processFieldForUI(field);
+        }
+    }
+
+    private void processFieldForUI(FieldDto field) {
+        if (Constants.Util.TRUE.equalsIgnoreCase(
+                field.getSettingsValueAsString(Constants.Settings.STRING_TEXT_AREA))) {
+            field.setType(textAreaUIType());
+            field.removeSetting(Constants.Settings.STRING_TEXT_AREA);
+        }
     }
 
     @Autowired

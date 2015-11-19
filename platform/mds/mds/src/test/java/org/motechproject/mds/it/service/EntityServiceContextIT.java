@@ -20,6 +20,7 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.RestOptionsDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.EntityAlreadyExistException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
@@ -126,7 +127,9 @@ public class EntityServiceContextIT extends BaseIT {
         setProperty(monitor, "bundleStarted", true);
         setProperty(monitor, "bundleInstalled", true);
         setProperty(monitor, "contextInitialized", true);
-        jarGeneratorService.regenerateMdsDataBundle();
+
+        SchemaHolder schemaHolder = entityService.getSchema();
+        jarGeneratorService.regenerateMdsDataBundle(schemaHolder);
 
         // then
         // 1. new entry in db should be added

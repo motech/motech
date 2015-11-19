@@ -10,6 +10,7 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.LookupFieldType;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.ServiceNotFoundException;
@@ -75,7 +76,8 @@ public class MdsDummyDataGeneratorImpl implements MdsDummyDataGenerator {
         }
 
         if (regenerateBundle) {
-            jarGeneratorService.regenerateMdsDataBundle();
+            SchemaHolder schemaHolder = entityService.getSchema();
+            jarGeneratorService.regenerateMdsDataBundle(schemaHolder);
         }
     }
 
