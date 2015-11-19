@@ -218,9 +218,12 @@ public class MdsBundleIT extends BasePaxIT {
 
         assertEquals(new Integer(50), userPreferencesDto.getGridRowsNumber());
         assertEquals(3, userPreferencesDto.getVisibleFields().size());
-        assertEquals("someBoolean", userPreferencesDto.getVisibleFields().get(0));
-        assertEquals("someString", userPreferencesDto.getVisibleFields().get(1));
-        assertEquals("someInteger", userPreferencesDto.getVisibleFields().get(2));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("someBoolean"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("someString"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("someInteger"));
+
+        assertEquals(0, userPreferencesDto.getSelectedFields().size());
+        assertEquals(0, userPreferencesDto.getUnselectedFields().size());
 
         userPreferencesService.updateGridSize(entityDto.getId(), USERNAME, 100);
         userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
@@ -231,29 +234,55 @@ public class MdsBundleIT extends BasePaxIT {
         userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
         assertEquals(new Integer(50), userPreferencesDto.getGridRowsNumber());
 
-        userPreferencesService.unselectFields(entityDto.getId(), USERNAME);
-        userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
-        assertEquals(0, userPreferencesDto.getVisibleFields().size());
-
-        userPreferencesService.selectFields(entityDto.getId(), USERNAME);
-        userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
-        assertEquals(9, userPreferencesDto.getVisibleFields().size());
-        assertTrue(userPreferencesDto.getVisibleFields().contains("someBoolean"));
-        assertTrue(userPreferencesDto.getVisibleFields().contains("someString"));
-        assertTrue(userPreferencesDto.getVisibleFields().contains("someInteger"));
-
         userPreferencesService.unselectField(entityDto.getId(), USERNAME, "someString");
         userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
-        assertEquals(8,  userPreferencesDto.getVisibleFields().size());
+
+        assertEquals(2, userPreferencesDto.getVisibleFields().size());
         assertTrue(userPreferencesDto.getVisibleFields().contains("someBoolean"));
         assertTrue(userPreferencesDto.getVisibleFields().contains("someInteger"));
+
+        assertEquals(0, userPreferencesDto.getSelectedFields().size());
+        assertEquals(1, userPreferencesDto.getUnselectedFields().size());
+        assertTrue(userPreferencesDto.getUnselectedFields().contains("someString"));
+
+        userPreferencesService.selectField(entityDto.getId(), USERNAME, "otherInteger");
+        userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
+
+        assertEquals(3, userPreferencesDto.getVisibleFields().size());
+        assertTrue(userPreferencesDto.getVisibleFields().contains("someBoolean"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("someInteger"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("otherInteger"));
+
+        assertEquals(1, userPreferencesDto.getSelectedFields().size());
+        assertTrue(userPreferencesDto.getSelectedFields().contains("otherInteger"));
+        assertEquals(1, userPreferencesDto.getUnselectedFields().size());
+        assertTrue(userPreferencesDto.getUnselectedFields().contains("someString"));
 
         userPreferencesService.selectField(entityDto.getId(), USERNAME, "someString");
         userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
-        assertEquals(9,  userPreferencesDto.getVisibleFields().size());
+
+        assertEquals(4, userPreferencesDto.getVisibleFields().size());
         assertTrue(userPreferencesDto.getVisibleFields().contains("someBoolean"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("otherInteger"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("otherInteger"));
         assertTrue(userPreferencesDto.getVisibleFields().contains("someString"));
-        assertTrue(userPreferencesDto.getVisibleFields().contains("someInteger"));
+
+        assertEquals(2, userPreferencesDto.getSelectedFields().size());
+        assertTrue(userPreferencesDto.getSelectedFields().contains("otherInteger"));
+        assertTrue(userPreferencesDto.getSelectedFields().contains("someString"));
+        assertEquals(0, userPreferencesDto.getUnselectedFields().size());
+
+        userPreferencesService.unselectFields(entityDto.getId(), USERNAME);
+        userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
+        assertEquals(0, userPreferencesDto.getVisibleFields().size());
+        assertEquals(0, userPreferencesDto.getSelectedFields().size());
+        assertEquals(10, userPreferencesDto.getUnselectedFields().size());
+
+        userPreferencesService.selectFields(entityDto.getId(), USERNAME);
+        userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
+        assertEquals(10, userPreferencesDto.getVisibleFields().size());
+        assertEquals(10, userPreferencesDto.getSelectedFields().size());
+        assertEquals(0, userPreferencesDto.getUnselectedFields().size());
 
         // if field will be removed from entity then it should be removed also from preferences (CASCADE)
         TransactionTemplate transactionTemplate = new TransactionTemplate(mdsTransactionManager);
@@ -269,10 +298,10 @@ public class MdsBundleIT extends BasePaxIT {
         });
 
         userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
-        assertEquals(8, userPreferencesDto.getVisibleFields().size());
-        assertTrue(userPreferencesDto.getVisibleFields().contains("someBoolean"));
-        assertTrue(userPreferencesDto.getVisibleFields().contains("someString"));
-        assertFalse(userPreferencesDto.getVisibleFields().contains("someInteger"));
+        assertEquals(9, userPreferencesDto.getVisibleFields().size());
+        assertTrue(userPreferencesDto.getSelectedFields().contains("someBoolean"));
+        assertTrue(userPreferencesDto.getSelectedFields().contains("someString"));
+        assertFalse(userPreferencesDto.getSelectedFields().contains("someInteger"));
     }
 
     private EntityDto createEntityForPreferencesTest() {
@@ -295,6 +324,10 @@ public class MdsBundleIT extends BasePaxIT {
         fields.add(new FieldDto(null, entityDto.getId(),
                 TypeDto.INTEGER,
                 new FieldBasicDto("Some Integer", "someInteger"),
+                false, false, false, false, false, null, null, null, null));
+        fields.add(new FieldDto(null, entityDto.getId(),
+                TypeDto.INTEGER,
+                new FieldBasicDto("Other Integer", "otherInteger"),
                 false, false, false, false, false, null, null, null, null));
 
         entityService.addFields(entityDto, fields);

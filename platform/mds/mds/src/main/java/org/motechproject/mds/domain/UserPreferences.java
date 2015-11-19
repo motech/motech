@@ -32,16 +32,23 @@ public class UserPreferences {
 
     @Persistent(defaultFetchGroup = "true")
     @Join
-    @Element(column = "visibleField",  deleteAction = ForeignKeyAction.DEFAULT)
-    private List<Field> visibleFields;
+    @Element(column = "selectedField",  deleteAction = ForeignKeyAction.CASCADE)
+    private List<Field> selectedFields;
+
+    @Persistent(defaultFetchGroup = "true")
+    @Join
+    @Element(column = "unselectedField",  deleteAction = ForeignKeyAction.CASCADE)
+    private List<Field> unselectedFields;
 
     public UserPreferences() {
     }
 
-    public UserPreferences(String username, String className, List<Field> visibleFields) {
+    public UserPreferences(String username, String className, Integer gridRowsNumber, List<Field> selectedFields, List<Field> unselectedFields) {
         this.username = username;
         this.className = className;
-        this.visibleFields = visibleFields;
+        this.gridRowsNumber = gridRowsNumber;
+        this.selectedFields = selectedFields;
+        this.unselectedFields = unselectedFields;
     }
 
     public String getUsername() {
@@ -68,35 +75,72 @@ public class UserPreferences {
         this.gridRowsNumber = gridRowsNumber;
     }
 
-    public List<Field> getVisibleFields() {
-        if (visibleFields == null) {
+    public List<Field> getSelectedFields() {
+        if (selectedFields == null) {
             return new ArrayList<>();
         }
-        return visibleFields;
+        return selectedFields;
     }
 
-    public void setVisibleFields(List<Field> visibleFields) {
-        this.visibleFields = visibleFields;
+    public void setSelectedFields(List<Field> selectedFields) {
+        this.selectedFields = selectedFields;
     }
 
-    public UserPreferencesDto toDto() {
-        List<String> fields = new ArrayList<>();
-        for (Field field : getVisibleFields()) {
-            fields.add(field.getName());
+
+    public List<Field> getUnselectedFields() {
+        if (unselectedFields == null) {
+            return new ArrayList<>();
         }
-        return new UserPreferencesDto(className, username, gridRowsNumber, fields);
+        return unselectedFields;
     }
 
-    public void addField(Field field) {
-        if (visibleFields == null) {
-            visibleFields = new ArrayList<>();
+    public void setUnselectedFields(List<Field> unselectedFields) {
+        this.unselectedFields = unselectedFields;
+    }
+
+    public UserPreferencesDto toDto(List<String> displayableFields) {
+        List<String> mergedFields = new ArrayList<>(displayableFields);
+        List<String> selected = new ArrayList<>();
+        List<String> unselected = new ArrayList<>();
+
+        for (Field field : getUnselectedFields()) {
+            if (mergedFields.contains(field.getName())) {
+                mergedFields.remove(field.getName());
+            }
+            unselected.add(field.getName());
         }
-        visibleFields.add(field);
+
+        for (Field field : getSelectedFields()) {
+            if (!mergedFields.contains(field.getName())) {
+                mergedFields.add(field.getName());
+            }
+            selected.add(field.getName());
+        }
+
+        return new UserPreferencesDto(className, username, gridRowsNumber, mergedFields, selected, unselected);
     }
 
-    public void removeField(Field field) {
-        if (visibleFields != null && visibleFields.contains(field)) {
-            visibleFields.remove(field);
+    public void selectField(Field field) {
+        if (selectedFields == null) {
+            selectedFields = new ArrayList<>();
+        }
+        selectedFields.add(field);
+
+        // if field is selected then we must remove it from unselected list
+        if (unselectedFields != null && unselectedFields.contains(field)) {
+            unselectedFields.remove(field);
+        }
+    }
+
+    public void unselectField(Field field) {
+        if (unselectedFields == null) {
+            unselectedFields = new ArrayList<>();
+        }
+        unselectedFields.add(field);
+
+        // if field is unselected then we must remove it from selected list
+        if (selectedFields != null && selectedFields.contains(field)) {
+            selectedFields.remove(field);
         }
     }
 }

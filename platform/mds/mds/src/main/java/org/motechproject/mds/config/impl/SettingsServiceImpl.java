@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Properties;
 
 import static org.motechproject.mds.util.Constants.Config.MDS_DEFAULT_GRID_SIZE;
@@ -77,7 +78,7 @@ public class SettingsServiceImpl implements SettingsService {
     @Override
     @Transactional
     public ModuleSettings getModuleSettings() {
-        ConfigSettings configSettings = allConfigSettings.retrieve("id", 1);
+        ConfigSettings configSettings = getConfigFromDb();
         ModuleSettings moduleSettings;
 
         if (configSettings != null) {
@@ -92,6 +93,14 @@ public class SettingsServiceImpl implements SettingsService {
         }
 
         return moduleSettings;
+    }
+
+    private ConfigSettings getConfigFromDb() {
+        List<ConfigSettings> configs = allConfigSettings.retrieveAll();
+        if (configs != null && configs.size() > 0) {
+            return configs.get(0);
+        }
+        return null;
     }
 
     private ModuleSettings getSettingsFromFile() {

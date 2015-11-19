@@ -436,8 +436,8 @@ public class EntityServiceImpl implements EntityService {
         mdsConstructor.updateFields(parent.getId(), draft.getFieldNameChanges());
         comboboxDataMigrationHelper.migrateComboboxDataIfNecessary(parent, draft);
 
-        configureRelatedFields(parent, draft, modulesToRefresh);
         List<UserPreferencesDto> oldEntityPreferences = userPreferencesService.getEntityPreferences(parent.getId());
+        configureRelatedFields(parent, draft, modulesToRefresh);
         parent.updateFromDraft(draft);
         updateUserPreferences(parent, draft, oldEntityPreferences);
 
@@ -453,25 +453,33 @@ public class EntityServiceImpl implements EntityService {
 
     private void updateUserPreferences(Entity parent, EntityDraft draft, List<UserPreferencesDto> userPreferencesDtos) {
         for (UserPreferencesDto preferencesDto : userPreferencesDtos) {
-            List<String> fields = preferencesDto.getVisibleFields();
-            List<Field> newFields = new ArrayList<>();
-            for (String field : fields) {
-
-                String name = field;
-                if (draft.getFieldNameChanges().containsKey(name)) {
-                    name = draft.getFieldNameChanges().get(name);
-                }
-
-                Field newfield = parent.getField(name);
-                if (newfield != null) {
-                    newFields.add(newfield);
-                }
-            }
             UserPreferences preferences = allUserPreferences.retrieveByClassNameAndUsername(preferencesDto.getClassName(),
                     preferencesDto.getUsername());
-            preferences.setVisibleFields(newFields);
+
+            preferences.setSelectedFields(getFieldsForPreferences(parent, draft, preferencesDto.getSelectedFields()));
+            preferences.setUnselectedFields(getFieldsForPreferences(parent, draft, preferencesDto.getUnselectedFields()));
+
             allUserPreferences.update(preferences);
         }
+    }
+
+    private List<Field> getFieldsForPreferences(Entity parent, EntityDraft draft, List<String> oldList) {
+        List<Field> newFields = new ArrayList<>();
+
+        for (String field : oldList) {
+
+            String name = field;
+            if (draft.getFieldNameChanges().containsKey(name)) {
+                name = draft.getFieldNameChanges().get(name);
+            }
+
+            Field newfield = parent.getField(name);
+            if (newfield != null) {
+                newFields.add(newfield);
+            }
+        }
+
+        return newFields;
     }
 
     private void addModuleToRefresh(Entity entity, List<String> modulesToRefresh) {

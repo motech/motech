@@ -584,14 +584,17 @@ public class EntityServiceContextIT extends BaseIT {
         userPreferencesService.unselectField(entityId, "motech", "owner");
 
         UserPreferencesDto userPreferencesDto = userPreferencesService.getUserPreferences(entityId, "motech");
-        assertEquals(asList("creator", "modifiedBy", "creationDate", "modificationDate", "f1name"),
+        assertEquals(asList( "f1name", "creator", "modifiedBy", "creationDate", "modificationDate"),
                 userPreferencesDto.getVisibleFields());
 
         entityService.commitChanges(entityId);
 
         userPreferencesDto = userPreferencesService.getUserPreferences(entityId, "motech");
-        assertEquals(asList("creator", "modifiedBy", "creationDate", "modificationDate", "newName"),
+        assertEquals(asList("newName", "creator", "modifiedBy", "creationDate", "modificationDate"),
                 userPreferencesDto.getVisibleFields());
+
+        assertEquals(asList("id", "owner"),
+                userPreferencesDto.getUnselectedFields());
     }
 
     private void assertRelatedField(EntityDto relatedEntity, FieldDto relatedField, String collection) {

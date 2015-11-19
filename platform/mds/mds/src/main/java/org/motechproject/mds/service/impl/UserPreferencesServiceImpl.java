@@ -34,11 +34,12 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
         Entity entity = getEntity(id);
         List<UserPreferences> userPreferences =  allUserPreferences.retrieveByClassName(entity.getClassName());
         List<UserPreferencesDto> dtos = new ArrayList<>();
+        List<String> displayableFields = getDisplayableFields(entity);
 
         if (userPreferences != null) {
             Integer defaultGridSize = settingsService.getGridSize();
             for (UserPreferences preferences : userPreferences) {
-                UserPreferencesDto dto = preferences.toDto();
+                UserPreferencesDto dto = preferences.toDto(displayableFields);
                 if (dto.getGridRowsNumber() == null) {
                     dto.setGridRowsNumber(defaultGridSize);
                 }
@@ -57,7 +58,7 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
         userPreferences = checkPreferences(userPreferences, entity, username);
 
         if (userPreferences != null) {
-            UserPreferencesDto dto = userPreferences.toDto();
+            UserPreferencesDto dto = userPreferences.toDto(getDisplayableFields(entity));
             if (dto.getGridRowsNumber() == null) {
                 dto.setGridRowsNumber(settingsService.getGridSize());
             }
@@ -89,7 +90,7 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
 
         Field field = entity.getField(fieldName);
         assertField(field);
-        userPreferences.addField(field);
+        userPreferences.selectField(field);
 
         allUserPreferences.update(userPreferences);
     }
@@ -103,7 +104,7 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
 
         Field field = entity.getField(fieldName);
         assertField(field);
-        userPreferences.removeField(field);
+        userPreferences.unselectField(field);
 
         allUserPreferences.update(userPreferences);
     }
@@ -117,7 +118,8 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
 
         List<Field> fields = new ArrayList<>();
         fields.addAll(entity.getFields());
-        userPreferences.setVisibleFields(fields);
+        userPreferences.setSelectedFields(fields);
+        userPreferences.setUnselectedFields(new ArrayList<Field>());
 
         allUserPreferences.update(userPreferences);
     }
@@ -128,7 +130,12 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
         Entity entity = getEntity(id);
         UserPreferences userPreferences =  allUserPreferences.retrieveByClassNameAndUsername(entity.getClassName(), username);
         userPreferences = checkPreferences(userPreferences, entity, username);
-        userPreferences.setVisibleFields(new ArrayList<Field>());
+
+        List<Field> fields = new ArrayList<>();
+        fields.addAll(entity.getFields());
+        userPreferences.setUnselectedFields(fields);
+        userPreferences.setSelectedFields(new ArrayList<Field>());
+
         allUserPreferences.update(userPreferences);
     }
 
@@ -157,20 +164,20 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
         return entity;
     }
 
-    private UserPreferences createDefaultPreferences(Entity entity, String username) {
-        List<Field> displayFields = new ArrayList<>();
+    private List<String> getDisplayableFields(Entity entity) {
+        List<String> displayFields = new ArrayList<>();
         for (Field field : entity.getFields()) {
             if (field.isUIDisplayable() && !field.isNonDisplayable()) {
-                displayFields.add(field);
+                displayFields.add(field.getName());
             }
         }
 
-        return allUserPreferences.create(new UserPreferences(username, entity.getClassName(), displayFields));
+        return displayFields;
     }
 
     private UserPreferences checkPreferences(UserPreferences userPreferences, Entity entity, String username) {
         if (userPreferences == null) {
-            return createDefaultPreferences(entity, username);
+            return allUserPreferences.create(new UserPreferences(username, entity.getClassName(), null, new ArrayList<Field>(), new ArrayList<Field>()));
         }
         return userPreferences;
     }
