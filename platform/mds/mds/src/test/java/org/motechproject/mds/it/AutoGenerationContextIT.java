@@ -5,7 +5,7 @@ import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.mds.it.BaseInstanceIT;
+
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.SecurityUtil;

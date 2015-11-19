@@ -8,6 +8,7 @@ import org.motechproject.mds.domain.EntityAudit;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.domain.UserPreferences;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.jdo.JdoTransactionManager;
@@ -99,6 +100,10 @@ public abstract class BaseIT {
         return getAll(EntityDraft.class);
     }
 
+    protected List<UserPreferences> getUserPreferences() {
+        return getAll(UserPreferences.class);
+    }
+
     protected List<EntityDraft> getEntityDrafts() {
         return getAll(EntityDraft.class);
     }
@@ -118,6 +123,7 @@ public abstract class BaseIT {
         getPersistenceManager().deletePersistentAll(getEntities());
         getPersistenceManager().deletePersistentAll(getEntitiesAudits());
         getPersistenceManager().deletePersistentAll(getEntitiesDrafts());
+        getPersistenceManager().deletePersistentAll(getUserPreferences());
     }
 
     protected <T> List<T> cast(Class<T> clazz, Collection collection) {
