@@ -1,4 +1,4 @@
-package org.motechproject.mds.util;
+package org.motechproject.mds.builder.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.domain.EntityType;

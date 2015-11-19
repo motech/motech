@@ -132,7 +132,7 @@ public class EntityBuilderImpl implements EntityBuilder {
                     break;
                 case TRASH:
                     // this field contains information about the schema version of an entity
-                    addProperty(declaring, Long.class.getName(),Constants.HistoryTrash.SCHEMA_VERSION, null);
+                    addProperty(declaring, Long.class.getName(), Constants.HistoryTrash.SCHEMA_VERSION, null);
                     break;
                 default:
             }
@@ -254,8 +254,7 @@ public class EntityBuilderImpl implements EntityBuilder {
     }
 
     private void addProperty(CtClass declaring, String typeClassName, String propertyName,
-                             String defaultValue)
-            throws PropertyCreationException {
+                             String defaultValue) {
         try {
             String name = uncapitalize(propertyName);
             JavassistUtil.removeFieldIfExists(declaring, propertyName);
