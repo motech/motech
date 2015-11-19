@@ -12,7 +12,7 @@ From http://www.hhs.gov/ocr/privacy/hipaa/understanding/srsummary.html:
 
 The Health Insurance Portability and Accountability Act of 1996 (HIPAA) required the Secretary of the U.S.
 Department of Health and Human Services (HHS) to develop regulations protecting the privacy and security of certain
-health information.1 To fulfill this requirement, HHS published what are commonly known as the HIPAA Privacy Rule and
+health information. To fulfill this requirement, HHS published what are commonly known as the HIPAA Privacy Rule and
 the HIPAA Security Rule. The Privacy Rule, or Standards for Privacy of Individually Identifiable Health Information,
 establishes national standards for the protection of certain health information. The Security Standards for the
 Protection of Electronic Protected Health Information (the Security Rule) establish a national set of security standards
@@ -31,7 +31,7 @@ Scope of this document
 ======================
 
 Compliance with HIPAA requires implementing physical and technical safeguards, as well as technical and administrative
-policies when it comes to dealing with sensitive patient. It is impossible for us to help you achieve full compliance,
+policies when it comes to dealing with sensitive patient data. It is impossible for us to help you achieve full compliance,
 without knowing the details of your organization or the data you are storing. Ultimately it falls on your and/or your hosts
 shoulders to guarantee full HIPAA compliance.
 
@@ -90,7 +90,7 @@ any kind of access to ePHI can be accessed without authentication and authorizat
 
 If you are implementing your own modules, you must make sure to secure all HTTP endpoints that require specific permissions
 using Spring Security measures, preferably annotations but other ways of doing it are also acceptable. If you add a new endpoint
-without adding any security safeguards, then by default it still we restricted to only authenticated users (all authenticated users,
+without adding any security safeguards, then by default it still will be restricted to only authenticated users (all authenticated users,
 which very often is not what you should do).
 
 Refer to the :doc:`Security Model </architecture/security_model>` documentation for more information.
@@ -126,8 +126,8 @@ Encryption and decryption (Addressable)
 Implement a mechanism to encrypt and decrypt electronic protected health information.
 
 MOTECH does not provide any out of the box solution for this. It is up to you to either configure encryption and you have
-a few options for achieving this. The first one is to this manually in your code - you would have manually encrypt
-decrypt all sensitive data going in and out of the database.
+a few options for achieving this. The first one is to do this manually in your code - you would have to manually encrypt
+and decrypt all sensitive data going in and out of the database.
 
 You can also use encryption on the database level, by either using database features or by placing the database data
 directory on an encrypted disk. Refer to this documentation for `PostgreSQL <http://www.postgresql.org/docs/9.3/static/encryption-options.html>`_.
@@ -141,9 +141,9 @@ Standard: Audit controls
 Implement hardware, software, and/or procedural mechanisms that record and examine activity in information systems that
 contain or use electronic protected health information.
 
-If you are using MOTECH Data Services for persistence, then you are given a history recording feature for you data out of box.
-It is not enabled for new entities by default, so you will have to turn on it either through UI or the @Entity annotation.
-The history feature will track all changes to an entity and record them in a separate table of the table. This history
+If you are using MOTECH Data Services for persistence, then you are given a history recording feature for your data out of box.
+It is not enabled for new entities by default, so you will have to turn it on, either through UI or the @Entity annotation.
+The history feature will track all changes to an entity and record them in a separate table in the database. This history
 can be viewed through the MDS UI.
 
 MDS also stores the last modification date and the modification author in the entity table itself - this is always
@@ -158,7 +158,7 @@ as you see fit, even during runtime.
 A status message API for posting status messages that get persisted in the database is also exposed by the admin module
 and can be leveraged.
 
-When you develop you own application, you make sure you have enough logging statements to trace activity in the
+When you develop your own application, you should make sure you have enough logging statements to trace activity in the
 application.
 
 ###################
@@ -205,7 +205,7 @@ Implement security measures to ensure that electronically transmitted electronic
 is not improperly modified without detection until disposed of.
 
 This means using encryption for all e-PHI data being sent over the wire. This includes, but is not limited to HTTP
-communication, database communication (if its over a network), emails and so forth. Since MOTECH runs on Tomcat,
+communication, database communication (if it's over a network), emails and so forth. Since MOTECH runs on Tomcat,
 it can be configured to use communication level cryptographic protocols such as TLS or SSL. This is described in the
 `Apache Tomcat SSL/TLS Configuration HOW-TO <https://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html>`_.
 
@@ -221,7 +221,7 @@ Encryption (Addressable)
 
 Implement a mechanism to encrypt electronic protected health information whenever deemed appropriate.
 
-As mentioned, MOTECH does not provide out of the box encryption utils. You can implement you own encryption methods using
+As mentioned, MOTECH does not provide out of the box encryption utils. You can implement your own encryption methods using
 `JAVA cryptography <https://docs.oracle.com/javase/8/docs/technotes/guides/security/crypto/CryptoSpec.html>`_ or any other tool.
 
 The Privacy Rule
@@ -234,7 +234,7 @@ personal health information, and sets limits and conditions on the uses and disc
 information without patient authorization. The Rule also gives patients rights over their health information,
 including rights to examine and obtain a copy of their health records, and to request corrections.
 
-It is up to you as an implementer and an entity covered by HIPAA to adhere to the privacy rule. You have take care
+It is up to you as an implementer and an entity covered by HIPAA to adhere to the privacy rule. You have to take care
 to always send the required minimum of data at all times. Moreover the rule covers rules around disclosing PHI, sharing it
 with your business partners and so on.
 
