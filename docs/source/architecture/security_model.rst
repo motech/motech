@@ -225,7 +225,9 @@ date of the password expiration. The default is 0, meaning password will never e
 should be sent for users with their passwords nearing expiration. Takes true or false, false is default. The number
 of days until sending reminder is controlled by :code:`security.password.reminder.daysBeforeExpiration` setting.
 
-**Days before password expiration to send the reminder** (:code:`security.password.reminder.daysBeforeExpiration`)
+**Days before password expiration to send the reminder** (:code:`security.password.reminder.daysBeforeExpiration`) - The number
+of days **before** password expiration that mark the date on which an email reminder will be sent to the user if
+:code:`security.password.reminder.sendReminder is set to true. The reminders are sent on midnight.
 
 .. _password-validator:
 
