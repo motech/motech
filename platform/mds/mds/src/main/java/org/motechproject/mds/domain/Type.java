@@ -2,6 +2,7 @@ package org.motechproject.mds.domain;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.dto.TypeValidationDto;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.TypeHelper;
 
@@ -13,6 +14,7 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -125,6 +127,15 @@ public class Type {
 
     public List<TypeValidation> getValidations() {
         return validations;
+    }
+
+    @NotPersistent
+    public List<TypeValidationDto> getTypeValidationDtos() {
+        List<TypeValidationDto> dtos = new ArrayList<>();
+        for (TypeValidation validation : getValidations()) {
+            dtos.add(validation.toDto());
+        }
+        return dtos;
     }
 
     public void setValidations(List<TypeValidation> validations) {

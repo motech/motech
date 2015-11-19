@@ -10,12 +10,12 @@ import javassist.NotFoundException;
 import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.builder.EntityInfrastructureBuilder;
 import org.motechproject.mds.domain.ClassData;
-import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.ex.entity.EntityInfrastructureException;
 import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
-import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TransactionalMotechDataService;
@@ -49,19 +49,17 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
     private BundleContext bundleContext;
 
-    private AllEntities allEntities;
-
     @Override
-    public List<ClassData> buildInfrastructure(Entity entity) {
-        return build(entity.getClassName(), entity);
+    public List<ClassData> buildInfrastructure(EntityDto entity, SchemaHolder schemaHolder) {
+        return build(entity.getClassName(), entity, schemaHolder);
     }
 
     @Override
     public List<ClassData> buildHistoryInfrastructure(String className) {
-        return build(className, null);
+        return build(className, null, null);
     }
 
-    private List<ClassData> build(String className, Entity entity) {
+    private List<ClassData> build(String className, EntityDto entity, SchemaHolder schemaHolder) {
         List<ClassData> list = new ArrayList<>();
 
         // create a repository(dao) for the entity
@@ -71,13 +69,13 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
         // create an interface for the service
         String interfaceClassName = MotechClassPool.getInterfaceName(className);
-        byte[] interfaceCode = getInterfaceCode(interfaceClassName, className, entity);
+        byte[] interfaceCode = getInterfaceCode(interfaceClassName, className, entity, schemaHolder);
         list.add(new ClassData(interfaceClassName, entity.getModule(), entity.getNamespace(), interfaceCode, true));
 
         // create the implementation of the service
         String serviceClassName = MotechClassPool.getServiceImplName(className);
         byte[] serviceCode = getServiceCode(
-                serviceClassName, interfaceClassName, className, entity
+                serviceClassName, interfaceClassName, className, entity, schemaHolder
         );
         list.add(new ClassData(serviceClassName, serviceCode));
 
@@ -118,7 +116,8 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         }
     }
 
-    private byte[] getInterfaceCode(String interfaceClassName, String className, Entity entity) {
+    private byte[] getInterfaceCode(String interfaceClassName, String className, EntityDto entity,
+                                    SchemaHolder schemaHolder) {
         try {
             // the interface can come from the developer for DDE, but it doesn't have to
             // in which case it will be generated from scratch
@@ -147,9 +146,12 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
             // for each lookup we generate three methods - normal lookup, lookup with query params and
             // a count method for the lookup
             if (null != entity) {
-                for (Lookup lookup : entity.getLookups()) {
+                List<LookupDto> lookups = schemaHolder.getLookups(entity);
+
+                for (LookupDto lookup : lookups) {
                     for (LookupType lookupType : LookupType.values()) {
-                        LookupBuilder lookupBuilder = new LookupBuilder(entity, lookup, interfaceClass, lookupType, allEntities);
+                        LookupBuilder lookupBuilder = new LookupBuilder(entity, lookup, interfaceClass,
+                                lookupType, schemaHolder);
                         methods.add(lookupBuilder.buildSignature());
                     }
                 }
@@ -169,7 +171,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
     }
 
     private byte[] getServiceCode(String serviceClassName, String interfaceClassName,
-                                  String className, Entity entity) {
+                                  String className, EntityDto entity, SchemaHolder schemaHolder) {
         try {
             CtClass superClass = classPool.getCtClass(TransactionalMotechDataService.class.getName());
             superClass.setGenericSignature(getGenericSignature(className));
@@ -188,9 +190,12 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
             // for each lookup we generate three methods - normal lookup, lookup with query params and
             // a count method for the lookup
             if (null != entity) {
-                for (Lookup lookup : entity.getLookups()) {
+                List<LookupDto> lookups = schemaHolder.getLookups(entity);
+
+                for (LookupDto lookup : lookups) {
                     for (LookupType lookupType : LookupType.values()) {
-                        LookupBuilder lookupBuilder = new LookupBuilder(entity, lookup, serviceClass, lookupType, allEntities);
+                        LookupBuilder lookupBuilder = new LookupBuilder(entity, lookup, serviceClass,
+                                lookupType, schemaHolder);
                         methods.add(lookupBuilder.buildMethod());
                     }
                 }
@@ -273,10 +278,5 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
     @Autowired
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
-    }
-
-    @Autowired
-    public void setAllEntities(AllEntities allEntities){
-        this.allEntities = allEntities;
     }
 }

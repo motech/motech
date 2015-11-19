@@ -53,12 +53,7 @@ public class AvailableController extends MdsController {
         list.remove(typeService.findType(org.joda.time.LocalDate.class));
 
         // TextArea type is available only from UI
-        TypeDto textAreaType = new TypeDto();
-        textAreaType.setDefaultName("textArea");
-        textAreaType.setDisplayName("mds.field.textArea");
-        textAreaType.setDescription("mds.field.description.textArea");
-        textAreaType.setTypeClass("textArea");
-        list.add(textAreaType);
+        list.add(textAreaUIType());
 
         CollectionUtils.filter(list, new TypeMatcher(data.getTerm(), messageSource));
         Collections.sort(list, new TypeDisplayNameComparator(messageSource));

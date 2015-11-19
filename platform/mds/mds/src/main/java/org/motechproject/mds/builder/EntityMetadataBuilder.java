@@ -1,8 +1,9 @@
 package org.motechproject.mds.builder;
 
 import org.motechproject.mds.domain.ClassData;
-import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.SchemaHolder;
 
 import javax.jdo.metadata.JDOMetadata;
 
@@ -16,11 +17,12 @@ public interface EntityMetadataBuilder {
      * Adds information about package and class name to a {@link javax.jdo.metadata.JDOMetadata}
      * instance.
      *
-     * @param jdoMetadata a empty instance of {@link javax.jdo.metadata.JDOMetadata}.
-     * @param entity      a instance of {@link org.motechproject.mds.domain.Entity}
-     * @param definition  the definition of the class
+     * @param jdoMetadata  a empty instance of {@link javax.jdo.metadata.JDOMetadata}.
+     * @param entity       a instance of {@link org.motechproject.mds.domain.Entity}
+     * @param definition   the definition of the class
+     * @param schemaHolder the holder of the current schema
      */
-    void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity, Class<?> definition);
+    void addEntityMetadata(JDOMetadata jdoMetadata, EntityDto entity, Class<?> definition, SchemaHolder schemaHolder);
 
     /**
      * Adds base information about package and class name to a
@@ -45,13 +47,15 @@ public interface EntityMetadataBuilder {
      * @param entity      an entity to fetch fields from
      * @param entityType type of the entity(history or trash)
      * @param definition  the definition of the parent class
+     * @param schemaHolder the holder of the current schema
      */
-    void addHelperClassMetadata(JDOMetadata jdoMetadata, ClassData classData, Entity entity,
-                                EntityType entityType, Class<?> definition);
+    void addHelperClassMetadata(JDOMetadata jdoMetadata, ClassData classData, EntityDto entity,
+                                EntityType entityType, Class<?> definition, SchemaHolder schemaHolder);
 
     /**
      * This updates the metadata after enhancement. Nucleus makes some "corrections" which do not work with
      * the runtime enhancer.
+     * @param jdoMetadata an empty instance of {@link javax.jdo.metadata.JDOMetadata}.
      */
-    void fixEnhancerIssuesInMetadata(JDOMetadata jdoMetadata);
+    void fixEnhancerIssuesInMetadata(JDOMetadata jdoMetadata, SchemaHolder schemaHolder);
 }

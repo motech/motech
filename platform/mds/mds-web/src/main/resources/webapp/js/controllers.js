@@ -4628,11 +4628,12 @@
         */
         $(document).mouseup(function (e) {
             var container = $("#lookup-dialog"),
-            button = $("#lookupDialogButton");
+            button = $("#lookupDialogButton"),
+            date_picker = $("#ui-datepicker-div");
 
             if (!container.is(e.target) && container.has(e.target).length === 0 &&
                 !button.is(e.target) && button.has(e.target).length === 0 && container.is(":visible")) {
-                if (e.target.offsetParent.hasAttribute("id") && e.target.offsetParent.id !== "ui-datepicker-div") {
+                if(!date_picker.is(e.target) && date_picker.has(e.target).length === 0){
                     $scope.showLookupDialog();
                 }
                 return;

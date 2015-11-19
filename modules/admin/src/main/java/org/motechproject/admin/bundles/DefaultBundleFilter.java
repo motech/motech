@@ -19,6 +19,7 @@ public class DefaultBundleFilter extends MotechBundleFilter {
 
     private static final String MOTECH_PACKAGE = "org.motechproject";
     private static final String PLATFORM_PREFIX = MOTECH_PACKAGE + ".motech-platform";
+    private static final String OSGI_PLATFORM_NAME = MOTECH_PACKAGE + ".motech-osgi-platform";
     private static final String FRAMEWORK_NAME = "org.apache.felix.framework";
 
     @Autowired
@@ -39,7 +40,8 @@ public class DefaultBundleFilter extends MotechBundleFilter {
     private boolean isPlatformBundle(Bundle bundle) {
         String symbolicName = bundle.getSymbolicName();
         return StringUtils.startsWith(symbolicName, PLATFORM_PREFIX) || StringUtils.equals(symbolicName, FRAMEWORK_NAME)
-                || StringUtils.equals(symbolicName, bundleContext.getBundle().getSymbolicName());
+                || StringUtils.equals(symbolicName, bundleContext.getBundle().getSymbolicName())
+                || StringUtils.equals(symbolicName, OSGI_PLATFORM_NAME);
 
     }
 }
