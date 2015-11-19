@@ -6,6 +6,7 @@ import org.mockito.MockitoAnnotations;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
@@ -187,7 +188,8 @@ public abstract class BaseInstanceIT extends BaseIT {
         tracking.setAllowDeleteEvent(false);
         entityService.updateTracking(entity.getId(), tracking);
 
-        mdsConstructor.constructEntities();
+        SchemaHolder schemaHolder = entityService.getSchema();
+        mdsConstructor.constructEntities(schemaHolder);
 
         PersistenceManagerFactory factory = getPersistenceManagerFactory();
 

@@ -29,6 +29,7 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.dto.RestOptionsDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.rest.RestProjection;
@@ -112,7 +113,9 @@ public class MdsRestBundleIT extends BasePaxIT {
             clearEntities();
             prepareEntity();
             prepareFilteredEntity();
-            jarGeneratorService.regenerateMdsDataBundle();
+
+            SchemaHolder schemaHolder = entityService.getSchema();
+            jarGeneratorService.regenerateMdsDataBundle(schemaHolder);
         }
 
         getDataService().deleteAll();

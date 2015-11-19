@@ -1,5 +1,7 @@
 package org.motechproject.mds.domain;
 
+import org.motechproject.mds.dto.TypeValidationDto;
+
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -71,6 +73,17 @@ public class TypeValidation {
 
     public void setAnnotations(List<Class<? extends Annotation>> annotations) {
         this.annotations = annotations;
+    }
+
+    public TypeValidationDto toDto() {
+        TypeValidationDto dto = new TypeValidationDto();
+
+        dto.setId(id);
+        dto.setDisplayName(displayName);
+        dto.setValueType(valueType.getTypeClassName());
+        dto.setAnnotations(annotations);
+
+        return dto;
     }
 
     @Override

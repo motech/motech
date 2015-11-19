@@ -189,14 +189,8 @@ public class Field {
 
         List<SettingDto> settingsDto = new ArrayList<>();
 
-
         for (FieldSetting setting : settings) {
-            // since textArea setting is used only to distinguish between TextArea and String fields we don't display it on UI
-            if (setting.getDetails().getName().equalsIgnoreCase("mds.form.label.textarea")) {
-                typeDto = generateTypeForTextArea(setting);
-            } else {
-                settingsDto.add(setting.toDto());
-            }
+            settingsDto.add(setting.toDto());
         }
 
 
@@ -211,18 +205,6 @@ public class Field {
 
         return new FieldDto(id, entity == null ? null : entity.getId(), typeDto, basic, readOnly, nonEditable,
                 nonDisplayable, uiFilterable, uiChanged, metaDto, validationDto, settingsDto, lookupDtos);
-    }
-
-    private TypeDto generateTypeForTextArea(FieldSetting setting) {
-        if (setting.getValue().equalsIgnoreCase("false")) {
-            return null;
-        }
-        TypeDto typeDto = new TypeDto();
-        typeDto.setDefaultName("textArea");
-        typeDto.setDisplayName("mds.field.textArea");
-        typeDto.setDescription("mds.field.description.textArea");
-        typeDto.setTypeClass("textArea");
-        return typeDto;
     }
 
     private Object parseDefaultValue() {

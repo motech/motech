@@ -96,7 +96,7 @@ import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
  * By default all public fields (the field is public if it has public modifier or single methods
  * called 'getter and 'setter') will be added in the MDS definition of the entity. The field type
  * will be mapped on the appropriate type in the MDS system. If the appropriate mapping does not
- * exist an {@link org.motechproject.mds.ex.type.TypeNotFoundException} exception will be raised.
+ * exist an {@link org.motechproject.mds.ex.type.NoSuchTypeException} exception will be raised.
  * <p/>
  * Fields or acceptable methods with the {@link org.motechproject.mds.annotations.Ignore}
  * annotation are ignored by the processor and they are not added into entity definition.

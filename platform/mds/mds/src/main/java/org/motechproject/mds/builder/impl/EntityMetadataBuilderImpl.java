@@ -9,24 +9,24 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
-import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
-import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.FieldSetting;
 import org.motechproject.mds.domain.RelationshipHolder;
-import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.dto.SchemaHolder;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.MetadataDto;
+import org.motechproject.mds.dto.SettingDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.reflections.ReflectionsUtil;
-import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.KeyNames;
 import org.motechproject.mds.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +60,7 @@ import javax.jdo.metadata.MemberMetadata;
 import javax.jdo.metadata.PackageMetadata;
 import javax.jdo.metadata.ValueMetadata;
 import javax.jdo.metadata.VersionMetadata;
+import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
@@ -96,10 +97,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private static final String ID_SUFFIX = "_ID";
 
-    private AllEntities allEntities;
-
     @Override
-    public void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity, Class<?> definition) {
+    public void addEntityMetadata(JDOMetadata jdoMetadata, EntityDto entity, Class<?> definition, SchemaHolder schemaHolder) {
         String className = (entity.isDDE()) ? entity.getClassName() : ClassName.getEntityClassName(entity.getClassName());
         String packageName = ClassName.getPackage(className);
         String tableName = ClassTableName.getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace(), entity.getTableName(), null);
@@ -115,17 +114,18 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         addInheritanceMetadata(cmd, definition);
 
         if (!entity.isSubClassOfMdsEntity() && !entity.isSubClassOfMdsVersionedEntity()) {
-            addIdField(cmd, entity);
+            addIdField(cmd, entity, schemaHolder);
             //we add versioning metadata only for Standard class.
             addVersioningMetadata(cmd, definition);
         }
 
-        addMetadataForFields(cmd, null, entity, EntityType.STANDARD, definition);
+        addMetadataForFields(cmd, null, entity, EntityType.STANDARD, definition, schemaHolder);
     }
 
     @Override
-    public void addHelperClassMetadata(JDOMetadata jdoMetadata, ClassData classData, Entity entity,
-                                       EntityType entityType, Class<?> definition) {
+    public void addHelperClassMetadata(JDOMetadata jdoMetadata, ClassData classData,
+                                       EntityDto entity, EntityType entityType, Class<?> definition,
+                                       SchemaHolder schemaHolder) {
         String packageName = ClassName.getPackage(classData.getClassName());
         String simpleName = ClassName.getSimpleName(classData.getClassName());
         String tableName = ClassTableName.getTableName(classData.getClassName(), classData.getModule(), classData.getNamespace(),
@@ -145,13 +145,13 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         addIdField(cmd, classData.getClassName());
 
         if (entity != null) {
-            addMetadataForFields(cmd, classData, entity, entityType, definition);
+            addMetadataForFields(cmd, classData, entity, entityType, definition, schemaHolder);
         }
     }
 
     @Override
     @Transactional
-    public void fixEnhancerIssuesInMetadata(JDOMetadata jdoMetadata) {
+    public void fixEnhancerIssuesInMetadata(JDOMetadata jdoMetadata, SchemaHolder schemaHolder) {
         for (PackageMetadata pmd : jdoMetadata.getPackages()) {
             for (ClassMetadata cmd : pmd.getClasses()) {
                 String className = String.format("%s.%s", pmd.getName(), cmd.getName());
@@ -159,19 +159,19 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
                 if (entityType == EntityType.STANDARD) {
 
-                    Entity entity = allEntities.retrieveByClassName(className);
+                    EntityDto entity = schemaHolder.getEntityByClassName(className);
 
                     if (null != entity) {
                         for (MemberMetadata mmd : cmd.getMembers()) {
                             CollectionMetadata collMd = mmd.getCollectionMetadata();
-                            Field field = entity.getField(mmd.getName());
+                            FieldDto field = schemaHolder.getFieldByName(entity, mmd.getName());
 
                             if (null != collMd) {
                                 fixCollectionMetadata(collMd, field);
                             }
 
                             if (null != field && field.getType().isRelationship()) {
-                                fixRelationMetadata(pmd, field);
+                                fixRelationMetadata(pmd, entity, field);
                             }
 
                             //Defining column name for join and element results in setting it both as XML attribute and child element
@@ -185,7 +185,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     @Override
     public void addBaseMetadata(JDOMetadata jdoMetadata, ClassData classData, EntityType entityType, Class<?> definition) {
-        addHelperClassMetadata(jdoMetadata, classData, null, entityType, definition);
+        addHelperClassMetadata(jdoMetadata, classData, null, entityType, definition, null);
     }
 
     private void addVersioningMetadata(ClassMetadata cmd, Class<?> definition) {
@@ -205,7 +205,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
 
-    private void fixCollectionMetadata(CollectionMetadata collMd, Field field) {
+    private void fixCollectionMetadata(CollectionMetadata collMd, FieldDto field) {
         String elementType = collMd.getElementType();
         RelationshipHolder holder = new RelationshipHolder(field);
 
@@ -217,9 +217,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
     }
 
-    private void fixRelationMetadata(PackageMetadata pmd, Field field) {
+    private void fixRelationMetadata(PackageMetadata pmd, EntityDto entity, FieldDto field) {
         RelationshipHolder holder = new RelationshipHolder(field);
-        Entity entity = field.getEntity();
 
         //for bidirectional 1:1 and 1:N relationship we're letting RDBMS take care of cascade deletion
         //this must be set here cause we can't get related class metadata before metadata enhancement
@@ -231,7 +230,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             ForeignKeyMetadata rfkmd = getOrCreateFkMetadata(rfmd);
             rfkmd.setDeleteAction(ForeignKeyAction.CASCADE);
 
-            rfkmd.setName(KeyNames.foreignKeyName(entity.getName(), entity.getId(), field.getName(),
+            rfkmd.setName(KeyNames.foreignKeyName(entity.getName(), entity.getId(), field.getBasic().getName(),
                     EntityType.STANDARD));
         }
     }
@@ -255,7 +254,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         if (annotation == null) {
             InheritanceMetadata imd = cmd.newInheritanceMetadata();
-            imd.setCustomStrategy("complete-table");
+            imd.setCustomStrategy("complete-table" );
         }
     }
 
@@ -276,25 +275,27 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
     }
 
-    private void addMetadataForFields(ClassMetadata cmd, ClassData classData, Entity entity, EntityType entityType,
-                                      Class<?> definition) {
-        for (Field field : entity.getFields()) {
+    private void addMetadataForFields(ClassMetadata cmd, ClassData classData, EntityDto entity,
+                                      EntityType entityType, Class<?> definition, SchemaHolder schemaHolder) {
+        List<FieldDto> fields = schemaHolder.getFields(entity);
+
+        for (FieldDto field : fields) {
             if (field.isVersionField() && entityType != EntityType.STANDARD) {
                 continue;
             }
 
             String fieldName = getNameForMetadata(field);
-            processField(cmd, classData, entity, entityType, definition, fieldName, field);
+            processField(cmd, classData, entity, entityType, definition, fieldName, field, schemaHolder);
         }
     }
 
-    public void processField(ClassMetadata cmd, ClassData classData, Entity entity, EntityType entityType,
-                             Class<?> definition, String fieldName, Field field) {
+    public void processField(ClassMetadata cmd, ClassData classData, EntityDto entity, EntityType entityType,
+                             Class<?> definition, String fieldName, FieldDto field, SchemaHolder schemaHolder) {
         // Metadata for ID field has been added earlier in addIdField() method
         if (!fieldName.equals(ID_FIELD_NAME)) {
             FieldMetadata fmd = null;
 
-            if (isFieldNotInherited(fieldName, entity)) {
+            if (isFieldNotInherited(fieldName, entity, schemaHolder)) {
                 fmd = setFieldMetadata(cmd, classData, entity, entityType, field, definition);
             }
             // when field is in Lookup, we set field metadata indexed to retrieve instance faster
@@ -304,7 +305,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                     fmd = cmd.newFieldMetadata(inheritedFieldName);
                 }
 
-                if (!Constants.Util.TRUE.equalsIgnoreCase(field.getSettingValue(Constants.Settings.STRING_TEXT_AREA))) {
+                if (!isBlobOrClob(field)) {
                     IndexMetadata imd = getOrCreateIndexMetadata(fmd);
                     imd.setName(KeyNames.lookupIndexKeyName(entity.getName(), entity.getId(), fieldName, entityType));
                 }
@@ -317,43 +318,42 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
     }
 
-    private boolean isFieldRequired(Field field, EntityType entityType) {
-        return field.isRequired() && !(entityType.equals(EntityType.TRASH) && field.getType().isRelationship());
+    private boolean isFieldRequired(FieldDto field, EntityType entityType) {
+        return field.getBasic().isRequired() && !(entityType.equals(EntityType.TRASH) && field.getType().isRelationship());
     }
 
-    private boolean isFieldNotInherited(String fieldName, Entity entity) {
+    private boolean isFieldNotInherited(String fieldName, EntityDto entity, SchemaHolder schemaHolder) {
         if ((entity.isSubClassOfMdsEntity() || entity.isSubClassOfMdsVersionedEntity()) && (ArrayUtils.contains(FIELD_VALUE_GENERATOR, fieldName))
                 || isVersionFieldFromMdsVersionedEntity(entity, fieldName)) {
             return false;
         } else {
             // return false if it is inherited field from superclass
-            return entity.isBaseEntity() || !isFieldFromSuperClass(entity.getSuperClass(), fieldName);
+            return entity.isBaseEntity() || !isFieldFromSuperClass(entity.getSuperClass(), fieldName, schemaHolder);
         }
     }
 
-    private boolean isVersionFieldFromMdsVersionedEntity(Entity entity, String fieldName) {
+    private boolean isVersionFieldFromMdsVersionedEntity(EntityDto entity, String fieldName) {
         return entity.isSubClassOfMdsVersionedEntity() && INSTANCE_VERSION_FIELD_NAME.equals(fieldName);
     }
-    private boolean isFieldFromSuperClass(String className, String fieldName) {
-        Entity entity = allEntities.retrieveByClassName(className);
-        return entity.getField(fieldName) != null;
+    private boolean isFieldFromSuperClass(String className, String fieldName, SchemaHolder schemaHolder) {
+        return schemaHolder.getFieldByName(className, fieldName) != null;
     }
 
-    private FieldMetadata setFieldMetadata(ClassMetadata cmd, ClassData classData, Entity entity,
-                                           EntityType entityType, Field field, Class<?> definition) {
+    private FieldMetadata setFieldMetadata(ClassMetadata cmd, ClassData classData, EntityDto entity,
+                                           EntityType entityType, FieldDto field, Class<?> definition) {
         String name = getNameForMetadata(field);
 
-        Type type = field.getType();
-        Class<?> typeClass = type.getTypeClass();
+        TypeDto type = field.getType();
+        Class<?> typeClass = type.getClassObjectForType();
 
         if (ArrayUtils.contains(FIELD_VALUE_GENERATOR, name)) {
             return setAutoGenerationMetadata(cmd, name);
         } else if (type.isCombobox()) {
             return setComboboxMetadata(cmd, entity, field, definition, entityType);
         } else if (type.isRelationship()) {
-            return setRelationshipMetadata(cmd, classData, field, entityType, definition);
+            return setRelationshipMetadata(cmd, classData, entity, field, entityType, definition);
         } else if (Map.class.isAssignableFrom(typeClass)) {
-            return setMapMetadata(cmd, field, definition, entityType);
+            return setMapMetadata(cmd, entity, field, definition, entityType);
         } else if (Time.class.isAssignableFrom(typeClass)) {
             return setTimeMetadata(cmd, name);
         }
@@ -374,32 +374,31 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         return fmd;
     }
 
-    private void setColumnParameters(FieldMetadata fmd, Field field, Class<?> definition) {
+    private void setColumnParameters(FieldMetadata fmd, FieldDto field, Class<?> definition) {
         Value valueAnnotation = null;
-        java.lang.reflect.Field fieldDefinition = FieldUtils.getDeclaredField(definition, field.getName(), true);
+        java.lang.reflect.Field fieldDefinition = FieldUtils.getDeclaredField(definition, field.getBasic().getName(), true);
         //@Value in datanucleus is used with maps.
-        if (fieldDefinition != null && java.util.Map.class.isAssignableFrom(field.getType().getTypeClass())) {
+        if (fieldDefinition != null && java.util.Map.class.isAssignableFrom(field.getType().getClassObjectForType())) {
             valueAnnotation = ReflectionsUtil.getAnnotationSelfOrAccessor(fieldDefinition, Value.class);
         }
 
-        if ((field.getMetadata(DATABASE_COLUMN_NAME) != null || field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH) != null
-                || field.getSettingByName(Constants.Settings.STRING_TEXT_AREA) != null) || (valueAnnotation != null)) {
+        if ((field.getMetadata(DATABASE_COLUMN_NAME) != null || field.getSetting(Constants.Settings.STRING_MAX_LENGTH) != null
+                || field.getSetting(Constants.Settings.STRING_TEXT_AREA) != null) || (valueAnnotation != null)) {
             addColumnMetadata(fmd, field, valueAnnotation);
         }
     }
 
-    private void addColumnMetadata(FieldMetadata fmd, Field field, Value valueAnnotation) {
-        FieldSetting maxLengthSetting = field.getSettingByName(Constants.Settings.STRING_MAX_LENGTH);
+    private void addColumnMetadata(FieldMetadata fmd, FieldDto field, Value valueAnnotation) {
+        SettingDto maxLengthSetting = field.getSetting(Constants.Settings.STRING_MAX_LENGTH);
         ColumnMetadata colMd = fmd.newColumnMetadata();
         // only set the metadata if the setting is different from default
-        if (maxLengthSetting != null && !StringUtils.equals(maxLengthSetting.getValue(),
-                maxLengthSetting.getDetails().getDefaultValue())) {
-            colMd.setLength(Integer.parseInt(maxLengthSetting.getValue()));
+        if (maxLengthSetting != null) {
+            colMd.setLength(Integer.parseInt(maxLengthSetting.getValueAsString()));
         }
 
         // if TextArea then change length
-        if (field.getSettingByName(Constants.Settings.STRING_TEXT_AREA) != null &&
-                "true".equalsIgnoreCase(field.getSettingByName(Constants.Settings.STRING_TEXT_AREA).getValue())) {
+        if (field.getSetting(Constants.Settings.STRING_TEXT_AREA) != null &&
+                "true".equalsIgnoreCase(field.getSetting(Constants.Settings.STRING_TEXT_AREA).getValueAsString())) {
             fmd.setIndexed(false);
             colMd.setSQLType("CLOB");
         }
@@ -436,11 +435,12 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         return fmd;
     }
 
-    private FieldMetadata setMapMetadata(ClassMetadata cmd, Field field, Class<?> definition, EntityType entityType) {
+    private FieldMetadata setMapMetadata(ClassMetadata cmd, EntityDto entity, FieldDto field,
+                                         Class<?> definition, EntityType entityType) {
         FieldMetadata fmd = cmd.newFieldMetadata(getNameForMetadata(field));
 
-        org.motechproject.mds.domain.FieldMetadata keyMetadata = field.getMetadata(MAP_KEY_TYPE);
-        org.motechproject.mds.domain.FieldMetadata valueMetadata = field.getMetadata(MAP_VALUE_TYPE);
+        MetadataDto keyMetadata = field.getMetadata(MAP_KEY_TYPE);
+        MetadataDto valueMetadata = field.getMetadata(MAP_VALUE_TYPE);
 
         boolean serialized = shouldSerializeMap(keyMetadata, valueMetadata);
 
@@ -464,22 +464,22 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             ForeignKeyMetadata fkmd = getOrCreateFkMetadata(jmd);
             fkmd.setDeleteAction(ForeignKeyAction.CASCADE);
 
-            Entity entity = field.getEntity();
-            fkmd.setName(KeyNames.mapForeignKeyName(entity.getName(), entity.getId(), field.getName(), entityType));
+            fkmd.setName(KeyNames.mapForeignKeyName(entity.getName(), entity.getId(), field.getBasic().getName(),
+                    entityType));
         }
         return fmd;
     }
 
-    private boolean shouldSerializeMap(org.motechproject.mds.domain.FieldMetadata keyMetadata,
-                                       org.motechproject.mds.domain.FieldMetadata valueMetadata) {
+    private boolean shouldSerializeMap(MetadataDto keyMetadata, MetadataDto valueMetadata) {
         // If generics types of map are not supported in MDS, we serialized the field in DB.
         return keyMetadata == null || valueMetadata == null ||
                 ! (TypeHelper.isTypeSupportedInMap(keyMetadata.getValue(), true) &&
                         TypeHelper.isTypeSupportedInMap(valueMetadata.getValue(), false));
     }
 
-    private FieldMetadata setRelationshipMetadata(ClassMetadata cmd, ClassData classData, Field field,
-                                         EntityType entityType, Class<?> definition) {
+    private FieldMetadata setRelationshipMetadata(ClassMetadata cmd, ClassData classData,
+                                                  EntityDto entity, FieldDto field,
+                                                  EntityType entityType, Class<?> definition) {
 
         RelationshipHolder holder = new RelationshipHolder(classData, field);
         FieldMetadata fmd = cmd.newFieldMetadata(getNameForMetadata(field));
@@ -487,7 +487,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         addDefaultFetchGroupMetadata(fmd, definition);
 
         if (entityType == EntityType.STANDARD) {
-            processRelationship(fmd, holder, field, definition);
+            processRelationship(fmd, holder, entity, field, definition);
         } else {
             processHistoryTrashRelationship(cmd, fmd, holder);
         }
@@ -495,7 +495,9 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         return fmd;
     }
 
-    private void processRelationship(FieldMetadata fmd, RelationshipHolder holder, Field field, Class<?> definition) {
+    private void processRelationship(FieldMetadata fmd, RelationshipHolder holder,
+                                     EntityDto entity, FieldDto field,
+                                     Class<?> definition) {
         String relatedClass = holder.getRelatedClass();
 
         fmd.newExtensionMetadata(DATANUCLEUS, "cascade-persist", holder.isCascadePersist() ? TRUE : FALSE);
@@ -513,7 +515,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
 
         if (holder.isManyToMany()) {
-            addManyToManyMetadata(fmd, holder, field, definition);
+            addManyToManyMetadata(fmd, holder, entity, field, definition);
         }
     }
 
@@ -535,8 +537,9 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
     }
 
-    private void addManyToManyMetadata(FieldMetadata fmd, RelationshipHolder holder, Field field, Class<?> definition) {
-        java.lang.reflect.Field fieldDefinition = FieldUtils.getDeclaredField(definition, field.getName(), true);
+    private void addManyToManyMetadata(FieldMetadata fmd, RelationshipHolder holder, EntityDto entity, FieldDto field,
+                                       Class<?> definition) {
+        java.lang.reflect.Field fieldDefinition = FieldUtils.getDeclaredField(definition, field.getBasic().getName(), true);
         Join join = fieldDefinition.getAnnotation(Join.class);
 
         // If tables and column names have been specified in annotations, do not set their metadata
@@ -552,11 +555,11 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             Persistent persistent = fieldDefinition.getAnnotation(Persistent.class);
             Element element = fieldDefinition.getAnnotation(Element.class);
 
-            setTableNameMetadata(fmd, persistent, field, holder, EntityType.STANDARD);
+            setTableNameMetadata(fmd, persistent, entity, field, holder, EntityType.STANDARD);
             setElementMetadata(fmd, element, holder);
 
             if (join == null || StringUtils.isEmpty(join.column())) {
-                setJoinMetadata(jmd, fmd, ClassName.getSimpleName(field.getEntity().getClassName()).toUpperCase() + ID_SUFFIX);
+                setJoinMetadata(jmd, fmd, ClassName.getSimpleName(entity.getClassName()).toUpperCase() + ID_SUFFIX);
            }
         }
     }
@@ -581,11 +584,13 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         joinMetadata.newColumnMetadata().setName(column);
     }
 
-    private void setTableNameMetadata(FieldMetadata fmd, Persistent persistent, Field field, RelationshipHolder holder, EntityType entityType) {
+    private void setTableNameMetadata(FieldMetadata fmd, Persistent persistent, EntityDto entity, FieldDto field,
+                                      RelationshipHolder holder, EntityType entityType) {
         if (persistent != null && StringUtils.isNotEmpty(persistent.table()) && entityType != EntityType.STANDARD) {
             fmd.setTable(entityType.getTableName(persistent.table()));
         } else if (persistent == null || StringUtils.isEmpty(persistent.table())) {
-            fmd.setTable(getJoinTableName(field.getEntity().getModule(), field.getEntity().getNamespace(), field.getName(), holder.getRelatedField()));
+            fmd.setTable(getJoinTableName(entity.getModule(), entity.getNamespace(), field.getBasic().getName(),
+                    holder.getRelatedField()));
         }
     }
 
@@ -605,8 +610,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
     }
 
-    private FieldMetadata setComboboxMetadata(ClassMetadata cmd, Entity entity, Field field, Class<?> definition,
-                                              EntityType entityType) {
+    private FieldMetadata setComboboxMetadata(ClassMetadata cmd, EntityDto entity, FieldDto field,
+                                              Class<?> definition, EntityType entityType) {
         ComboboxHolder holder = new ComboboxHolder(entity, field);
         String fieldName = getNameForMetadata(field);
         FieldMetadata fmd = cmd.newFieldMetadata(fieldName);
@@ -661,8 +666,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         return jdoMetadata.newPackageMetadata(packageName);
     }
 
-    private void addIdField(ClassMetadata cmd, Entity entity) {
-        boolean containsID = null != entity.getField(ID_FIELD_NAME);
+    private void addIdField(ClassMetadata cmd, EntityDto entity, SchemaHolder schemaHolder) {
+        boolean containsID = null != schemaHolder.getFieldByName(entity, ID_FIELD_NAME);
         boolean isBaseClass = entity.isBaseEntity();
 
         if (containsID && isBaseClass) {
@@ -739,12 +744,12 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         return jmd.getForeignKeyMetadata() == null ? jmd.newForeignKeyMetadata() : jmd.getForeignKeyMetadata();
     }
 
-    private String getNameForMetadata(Field field) {
-        return StringUtils.uncapitalize(field.getName());
+    private String getNameForMetadata(FieldDto field) {
+        return StringUtils.uncapitalize(field.getBasic().getName());
     }
 
-    @Autowired
-    public void setAllEntities(AllEntities allEntities) {
-        this.allEntities = allEntities;
+    private boolean isBlobOrClob(FieldDto field) {
+        return field.getType().isBlob() || Constants.Util.TRUE.equalsIgnoreCase(
+                field.getSettingsValueAsString(Constants.Settings.STRING_TEXT_AREA));
     }
 }

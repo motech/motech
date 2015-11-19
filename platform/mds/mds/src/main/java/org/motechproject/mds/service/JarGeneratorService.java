@@ -1,5 +1,7 @@
 package org.motechproject.mds.service;
 
+import org.motechproject.mds.dto.SchemaHolder;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -29,17 +31,19 @@ public interface JarGeneratorService {
      * implementations of these interfaces. The jar should also contains class related with
      * historical data and trash.
      *
+     * @param schemaHolder the holder of the MDS that should be built
      * @return file that points to the entities bundle jar.
      * @throws IOException if an I/O error occurs while creating the jar file.
      */
-    File generate() throws IOException;
+    File generate(SchemaHolder schemaHolder) throws IOException;
 
     /**
      * Constructs entities, builds and starts the entities bundle jar
      *
-     * @see #generate()
+     * @param schemaHolder the holder of the MDS that should be built
+     * @see #generate(SchemaHolder)
      */
-    void regenerateMdsDataBundle();
+    void regenerateMdsDataBundle(SchemaHolder schemaHolder);
 
 
     /**
@@ -47,18 +51,20 @@ public interface JarGeneratorService {
      * This method should be used after DDE enhancement. It will build all DDE classes
      * and refresh modules from which the DDE being enhanced comes from.
      *
+     * @param schemaHolder the holder of the MDS that should be built
      * @param moduleNames modules names of the entities from which the enhanced DDE comes from
-     * @see #generate()
+     * @see #generate(SchemaHolder)
      */
-    void regenerateMdsDataBundleAfterDdeEnhancement(String... moduleNames);
+    void regenerateMdsDataBundleAfterDdeEnhancement(SchemaHolder schemaHolder, String... moduleNames);
 
     /**
      * Constructs entities, builds the entities bundle jar. The generated bundle will start only if
      * the <strong>startBundle</strong> will be set to {@code true}.
      *
+     * @param schemaHolder the holder of the MDS that should be built
      * @param startBundle {@code true} if the generated bundle should start;
      *                    otherwise {@code false}.
-     * @see #generate()
+     * @see #generate(SchemaHolder)
      */
-    void regenerateMdsDataBundle(boolean startBundle);
+    void regenerateMdsDataBundle(SchemaHolder schemaHolder, boolean startBundle);
 }

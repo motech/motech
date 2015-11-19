@@ -3,6 +3,8 @@ package org.motechproject.mds.web.controller;
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
 import org.apache.commons.io.IOUtils;
+import org.motechproject.mds.dto.SchemaHolder;
+import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,6 +26,7 @@ public class JarGeneratorController extends MdsController {
     private static final String APPLICATION_JAVA_ARCHIVE = "application/java-archive";
 
     private JarGeneratorService jarGeneratorService;
+    private EntityService entityService;
 
     @RequestMapping(value = "/jar", method = RequestMethod.GET)
     public void generateJar(HttpServletResponse response) throws IOException, NotFoundException, CannotCompileException {
@@ -35,7 +38,9 @@ public class JarGeneratorController extends MdsController {
         );
 
         OutputStream output = response.getOutputStream();
-        File jar = jarGeneratorService.generate();
+
+        SchemaHolder schemaHolder = entityService.getSchema();
+        File jar = jarGeneratorService.generate(schemaHolder);
 
         try (FileInputStream input = new FileInputStream(jar)) {
             IOUtils.copy(input, output);

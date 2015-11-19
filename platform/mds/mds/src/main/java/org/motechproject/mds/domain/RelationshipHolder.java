@@ -1,6 +1,8 @@
 package org.motechproject.mds.domain;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.util.Constants;
 
 import java.util.List;
@@ -15,7 +17,7 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_FIELD;
  * relationship type.
  */
 public class RelationshipHolder extends FieldHolder {
-    private Type fieldType;
+    private TypeDto fieldType;
     private EntityType entityType;
     private String fieldName;
 
@@ -23,11 +25,21 @@ public class RelationshipHolder extends FieldHolder {
         this(null, field);
     }
 
-    public RelationshipHolder(ClassData data, Field field) {
+    public RelationshipHolder(FieldDto fieldDto) {
+        this(null, fieldDto);
+    }
+
+    public RelationshipHolder(ClassData data, FieldDto field) {
         super(field);
         this.fieldType = field.getType();
         this.entityType = null == data ? EntityType.STANDARD : data.getType();
-        this.fieldName = field.getName();
+        this.fieldName = field.getBasic().getName();
+    }
+
+    public RelationshipHolder(ClassData data, Field field) {
+        super(field);
+        this.fieldType = field.getType().toDto();
+        this.entityType = null == data ? EntityType.STANDARD : data.getType();
     }
 
     /**
@@ -53,19 +65,19 @@ public class RelationshipHolder extends FieldHolder {
     }
 
     public boolean isOneToMany() {
-        return OneToManyRelationship.class.isAssignableFrom(fieldType.getTypeClass());
+        return OneToManyRelationship.class.getName().equals((fieldType.getTypeClass()));
     }
 
     public boolean isOneToOne() {
-        return OneToOneRelationship.class.isAssignableFrom(fieldType.getTypeClass());
+        return OneToOneRelationship.class.getName().equals(fieldType.getTypeClass());
     }
 
     public boolean isManyToMany() {
-        return ManyToManyRelationship.class.isAssignableFrom(fieldType.getTypeClass());
+        return ManyToManyRelationship.class.getName().equals(fieldType.getTypeClass());
     }
 
     public boolean isManyToOne() {
-        return ManyToOneRelationship.class.isAssignableFrom(fieldType.getTypeClass());
+        return ManyToOneRelationship.class.getName().equals(fieldType.getTypeClass());
     }
 
     public boolean isCascadePersist() {

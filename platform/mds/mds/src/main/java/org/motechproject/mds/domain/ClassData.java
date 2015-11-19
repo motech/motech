@@ -1,6 +1,7 @@
 package org.motechproject.mds.domain;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.mds.dto.EntityDto;
 
 import java.util.Arrays;
 
@@ -26,6 +27,10 @@ public class ClassData {
 
     public ClassData(Entity entity, byte[] bytecode) {
         this(entity, bytecode, false);
+    }
+
+    public ClassData(EntityDto entity, byte[] bytecode) {
+        this(entity.getClassName(), entity.getModule(), entity.getNamespace(), bytecode);
     }
 
     public ClassData(Entity entity, byte[] bytecode, boolean interfaceClass) {
