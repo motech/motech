@@ -11,10 +11,10 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.RelationshipHolder;
-import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.MetadataDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.MdsException;
@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Element;
@@ -148,7 +147,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
     @Override
-    @Transactional
     public void fixEnhancerIssuesInMetadata(JDOMetadata jdoMetadata, SchemaHolder schemaHolder) {
         for (PackageMetadata pmd : jdoMetadata.getPackages()) {
             for (ClassMetadata cmd : pmd.getClasses()) {

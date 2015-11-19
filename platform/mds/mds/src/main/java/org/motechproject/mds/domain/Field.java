@@ -566,7 +566,7 @@ public class Field {
     public boolean isVersionField() {
         String metadataValue = getMetadataValue(Constants.MetadataKeys.VERSION_FIELD);
         if (StringUtils.isNotBlank(metadataValue)) {
-            return new Boolean(metadataValue);
+            return Boolean.valueOf(metadataValue);
         }
 
         return false;
