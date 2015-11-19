@@ -35,6 +35,7 @@ import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
 import javax.jdo.metadata.CollectionMetadata;
 import javax.jdo.metadata.FieldMetadata;
+import javax.jdo.metadata.IndexMetadata;
 import javax.jdo.metadata.InheritanceMetadata;
 import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.PackageMetadata;
@@ -107,6 +108,9 @@ public class EntityMetadataBuilderTest {
 
     @Mock
     private InheritanceMetadata inheritanceMetadata;
+
+    @Mock
+    private IndexMetadata indexMetadata;
 
     @Before
     public void setUp() {
@@ -310,18 +314,22 @@ public class EntityMetadataBuilderTest {
         FieldMetadata fmd = mock(FieldMetadata.class);
 
         when(entity.getName()).thenReturn(ENTITY_NAME);
+        when(entity.getId()).thenReturn(14L);
         when(entity.getFields()).thenReturn(asList(lookupField));
         when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
         when(classMetadata.newFieldMetadata("lookupField")).thenReturn(fmd);
+        when(fmd.newIndexMetadata()).thenReturn(indexMetadata);
+
         PowerMockito.mockStatic(FieldUtils.class);
         when(FieldUtils.getDeclaredField(eq(Sample.class), anyString(), eq(true))).thenReturn(Sample.class.getDeclaredField("notInDefFg"));
 
         entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
 
         verifyCommonClassMetadata();
-        verify(fmd).setIndexed(true);
+        verify(fmd).newIndexMetadata();
+        verify(indexMetadata).setName("lkp_idx_" + ENTITY_NAME + "_lookupField_14");
     }
 
     @Test

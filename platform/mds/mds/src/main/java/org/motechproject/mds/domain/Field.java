@@ -584,10 +584,15 @@ public class Field {
     public boolean isVersionField() {
         String metadataValue = getMetadataValue(Constants.MetadataKeys.VERSION_FIELD);
         if (StringUtils.isNotBlank(metadataValue)) {
-            return new Boolean(metadataValue);
+            return Boolean.valueOf(metadataValue);
         }
 
         return false;
+    }
+
+    public String getSettingValue(String key) {
+        FieldSetting fieldSetting = getSettingByName(key);
+        return fieldSetting == null ? null : fieldSetting.getValue();
     }
 
     private void updateSettings(List<SettingDto> settingsList) {

@@ -635,6 +635,20 @@ public final class Constants {
         }
     }
 
+    /**
+     * Constants related to history and trash classes.
+     */
+    public static final class HistoryTrash {
+
+        public static final String HISTORY_SUFFIX = "__History";
+
+        public static final String TRASH_SUFFIX = "__Trash";
+
+        public static final String SCHEMA_VERSION = "SchemaVersion";
+
+        public static final String CURRENT_VERSION = "CurrentVersion";
+    }
+
     private Constants() {
     }
 }

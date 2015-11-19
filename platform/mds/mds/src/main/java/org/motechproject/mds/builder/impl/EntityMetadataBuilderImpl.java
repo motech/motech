@@ -22,6 +22,7 @@ import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.util.KeyNames;
 import org.motechproject.mds.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,7 @@ import javax.jdo.metadata.ColumnMetadata;
 import javax.jdo.metadata.ElementMetadata;
 import javax.jdo.metadata.FieldMetadata;
 import javax.jdo.metadata.ForeignKeyMetadata;
+import javax.jdo.metadata.IndexMetadata;
 import javax.jdo.metadata.InheritanceMetadata;
 import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.JoinMetadata;
@@ -217,6 +219,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private void fixRelationMetadata(PackageMetadata pmd, Field field) {
         RelationshipHolder holder = new RelationshipHolder(field);
+        Entity entity = field.getEntity();
 
         //for bidirectional 1:1 and 1:N relationship we're letting RDBMS take care of cascade deletion
         //this must be set here cause we can't get related class metadata before metadata enhancement
@@ -225,10 +228,12 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             String relatedClass = ClassName.getSimpleName(holder.getRelatedClass());
             MemberMetadata rfmd = getFieldMetadata(getClassMetadata(pmd, relatedClass), holder.getRelatedField());
 
-            ForeignKeyMetadata rfkmd = rfmd.newForeignKeyMetadata();
+            ForeignKeyMetadata rfkmd = getOrCreateFkMetadata(rfmd);
             rfkmd.setDeleteAction(ForeignKeyAction.CASCADE);
-        }
 
+            rfkmd.setName(KeyNames.foreignKeyName(entity.getName(), entity.getId(), field.getName(),
+                    EntityType.STANDARD));
+        }
     }
 
     private void fixDuplicateColumnDefinitions(MemberMetadata mmd) {
@@ -298,7 +303,11 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                     String inheritedFieldName = ClassName.getSimpleName(entity.getSuperClass()) + "." + fieldName;
                     fmd = cmd.newFieldMetadata(inheritedFieldName);
                 }
-                fmd.setIndexed(true);
+
+                if (!Constants.Util.TRUE.equalsIgnoreCase(field.getSettingValue(Constants.Settings.STRING_TEXT_AREA))) {
+                    IndexMetadata imd = getOrCreateIndexMetadata(fmd);
+                    imd.setName(KeyNames.lookupIndexKeyName(entity.getName(), entity.getId(), fieldName, entityType));
+                }
             }
             if (fmd != null) {
                 setColumnParameters(fmd, field, definition);
@@ -340,11 +349,11 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         if (ArrayUtils.contains(FIELD_VALUE_GENERATOR, name)) {
             return setAutoGenerationMetadata(cmd, name);
         } else if (type.isCombobox()) {
-            return setComboboxMetadata(cmd, entity, field, definition);
+            return setComboboxMetadata(cmd, entity, field, definition, entityType);
         } else if (type.isRelationship()) {
             return setRelationshipMetadata(cmd, classData, field, entityType, definition);
         } else if (Map.class.isAssignableFrom(typeClass)) {
-            return setMapMetadata(cmd, field, definition);
+            return setMapMetadata(cmd, field, definition, entityType);
         } else if (Time.class.isAssignableFrom(typeClass)) {
             return setTimeMetadata(cmd, name);
         }
@@ -427,7 +436,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         return fmd;
     }
 
-    private FieldMetadata setMapMetadata(ClassMetadata cmd, Field field, Class<?> definition) {
+    private FieldMetadata setMapMetadata(ClassMetadata cmd, Field field, Class<?> definition, EntityType entityType) {
         FieldMetadata fmd = cmd.newFieldMetadata(getNameForMetadata(field));
 
         org.motechproject.mds.domain.FieldMetadata keyMetadata = field.getMetadata(MAP_KEY_TYPE);
@@ -451,8 +460,12 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
             fmd.setTable(ClassTableName.getTableName(cmd.getTable(), getNameForMetadata(field)));
             JoinMetadata jmd = fmd.newJoinMetadata();
-            ForeignKeyMetadata fkmd = jmd.newForeignKeyMetadata();
+
+            ForeignKeyMetadata fkmd = getOrCreateFkMetadata(jmd);
             fkmd.setDeleteAction(ForeignKeyAction.CASCADE);
+
+            Entity entity = field.getEntity();
+            fkmd.setName(KeyNames.mapForeignKeyName(entity.getName(), entity.getId(), field.getName(), entityType));
         }
         return fmd;
     }
@@ -592,7 +605,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
     }
 
-    private FieldMetadata setComboboxMetadata(ClassMetadata cmd, Entity entity, Field field, Class<?> definition) {
+    private FieldMetadata setComboboxMetadata(ClassMetadata cmd, Entity entity, Field field, Class<?> definition,
+                                              EntityType entityType) {
         ComboboxHolder holder = new ComboboxHolder(entity, field);
         String fieldName = getNameForMetadata(field);
         FieldMetadata fmd = cmd.newFieldMetadata(fieldName);
@@ -603,7 +617,10 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             fmd.setTable(ClassTableName.getTableName(cmd.getTable(), fieldName));
 
             JoinMetadata jm = fmd.newJoinMetadata();
-            jm.newForeignKeyMetadata();
+
+            ForeignKeyMetadata fkmd = getOrCreateFkMetadata(jm);
+            fkmd.setName(KeyNames.cbForeignKeyName(entity.getName(), entity.getId(), fieldName, entityType));
+
             jm.setDeleteAction(ForeignKeyAction.CASCADE);
             jm.newColumnMetadata().setName(fieldName + "_OID");
         }
@@ -652,7 +669,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             FieldMetadata metadata = cmd.newFieldMetadata(ID_FIELD_NAME);
             metadata.setValueStrategy(IdGeneratorStrategy.INCREMENT);
             metadata.setPrimaryKey(true);
-            metadata.setIndexed(true);
         }
     }
 
@@ -673,7 +689,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             FieldMetadata metadata = cmd.newFieldMetadata(ID_FIELD_NAME);
             metadata.setValueStrategy(IdGeneratorStrategy.INCREMENT);
             metadata.setPrimaryKey(true);
-            metadata.setIndexed(true);
         }
     }
 
@@ -710,6 +725,18 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
 
         return false;
+    }
+
+    private IndexMetadata getOrCreateIndexMetadata(FieldMetadata fmd) {
+        return fmd.getIndexMetadata() == null ? fmd.newIndexMetadata() : fmd.getIndexMetadata();
+    }
+
+    private ForeignKeyMetadata getOrCreateFkMetadata(MemberMetadata mmd) {
+        return mmd.getForeignKeyMetadata() == null ? mmd.newForeignKeyMetadata() : mmd.getForeignKeyMetadata();
+    }
+
+    private ForeignKeyMetadata getOrCreateFkMetadata(JoinMetadata jmd) {
+        return jmd.getForeignKeyMetadata() == null ? jmd.newForeignKeyMetadata() : jmd.getForeignKeyMetadata();
     }
 
     private String getNameForMetadata(Field field) {

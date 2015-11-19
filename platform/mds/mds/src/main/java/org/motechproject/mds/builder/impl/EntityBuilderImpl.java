@@ -22,6 +22,7 @@ import org.motechproject.mds.helper.EnumHelper;
 import org.motechproject.mds.helper.JavassistBuilder;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.JavassistUtil;
 import org.motechproject.mds.util.MemberUtil;
 import org.motechproject.mds.util.TypeHelper;
@@ -111,7 +112,7 @@ public class EntityBuilderImpl implements EntityBuilder {
 
             switch (type) {
                 case HISTORY:
-                    String className = type.getName(entity.getClassName());
+                    String className = type.getClassName(entity.getClassName());
                     String simpleName = ClassName.getSimpleName(className);
                     Type idType = entity.getField("id").getType();
 
@@ -119,18 +120,18 @@ public class EntityBuilderImpl implements EntityBuilder {
 
                     // this field is related with id field in entity
                     addProperty(
-                            declaring, idType.getTypeClassName(), simpleName + "CurrentVersion",
+                            declaring, idType.getTypeClassName(), simpleName + Constants.HistoryTrash.CURRENT_VERSION,
                             null
                     );
 
                     // this field contains information about the schema version of an entity
                     addProperty(
-                            declaring, Long.class.getName(), simpleName + "SchemaVersion", null
+                            declaring, Long.class.getName(), simpleName + Constants.HistoryTrash.SCHEMA_VERSION, null
                     );
                     break;
                 case TRASH:
                     // this field contains information about the schema version of an entity
-                    addProperty(declaring, Long.class.getName(), "schemaVersion", null);
+                    addProperty(declaring, Long.class.getName(),Constants.HistoryTrash.SCHEMA_VERSION, null);
                     break;
                 default:
             }
@@ -232,7 +233,7 @@ public class EntityBuilderImpl implements EntityBuilder {
 
     private CtClass getDeclaringClass(Entity entity, EntityType type, Bundle bundle)
             throws NotFoundException {
-        String className = type.getName(entity.getClassName());
+        String className = type.getClassName(entity.getClassName());
         boolean isDDE = null != bundle;
 
         CtClass declaring = classPool.getOrNull(className);

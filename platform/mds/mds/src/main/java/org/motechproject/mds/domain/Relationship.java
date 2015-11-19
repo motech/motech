@@ -24,6 +24,6 @@ public class Relationship {
                     field.getName(), field.getEntity().getName()));
         }
 
-        return type.getName(fmd.getValue());
+        return type.getClassName(fmd.getValue());
     }
 }
