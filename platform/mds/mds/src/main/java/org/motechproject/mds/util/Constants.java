@@ -228,6 +228,11 @@ public final class Constants {
         public static final String MDS_TIME_UNIT = "mds.emptyTrash.afterTimeUnit";
 
         /**
+         * The property that specifies default number of records in each data browser grid.
+         */
+        public static final String MDS_DEFAULT_GRID_SIZE = "mds.default.gridSize";
+
+        /**
          * Constant <code>EMPTY_TRASH_JOB</code> presents a name of job scheduled by scheduler
          * module.
          */

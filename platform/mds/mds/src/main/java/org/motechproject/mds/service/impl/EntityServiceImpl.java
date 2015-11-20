@@ -21,6 +21,7 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.domain.UIDisplayFieldComparator;
+import org.motechproject.mds.domain.UserPreferences;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.DraftData;
 import org.motechproject.mds.dto.DraftResult;
@@ -36,6 +37,7 @@ import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.dto.UserPreferencesDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.ex.entity.EntityAlreadyExistException;
@@ -57,8 +59,10 @@ import org.motechproject.mds.repository.AllEntityAudits;
 import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllTypes;
 import org.motechproject.mds.service.ComboboxValueService;
+import org.motechproject.mds.repository.AllUserPreferences;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.UserPreferencesService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.LookupName;
@@ -71,6 +75,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,7 +116,9 @@ public class EntityServiceImpl implements EntityService {
     private AllTypes allTypes;
     private AllEntityDrafts allEntityDrafts;
     private AllEntityAudits allEntityAudits;
+    private AllUserPreferences allUserPreferences;
     private MDSConstructor mdsConstructor;
+    private UserPreferencesService userPreferencesService;
 
     private BundleContext bundleContext;
     private EntityValidator entityValidator;
@@ -404,9 +412,10 @@ public class EntityServiceImpl implements EntityService {
         mdsConstructor.updateFields(parent, draft.getFieldNameChanges());
         comboboxDataMigrationHelper.migrateComboboxDataIfNecessary(parent, draft);
 
+        List<UserPreferencesDto> oldEntityPreferences = userPreferencesService.getEntityPreferences(parent.getId());
         configureRelatedFields(parent, draft, modulesToRefresh);
-
         parent.updateFromDraft(draft);
+        updateUserPreferences(parent, draft, oldEntityPreferences);
 
         if (username != null) {
             allEntityAudits.createAudit(parent, username);
@@ -416,6 +425,37 @@ public class EntityServiceImpl implements EntityService {
         addModuleToRefresh(parent, modulesToRefresh);
 
         return modulesToRefresh;
+    }
+
+    private void updateUserPreferences(Entity parent, EntityDraft draft, List<UserPreferencesDto> userPreferencesDtos) {
+        for (UserPreferencesDto preferencesDto : userPreferencesDtos) {
+            UserPreferences preferences = allUserPreferences.retrieveByClassNameAndUsername(preferencesDto.getClassName(),
+                    preferencesDto.getUsername());
+
+            preferences.setSelectedFields(getFieldsForPreferences(parent, draft, preferencesDto.getSelectedFields()));
+            preferences.setUnselectedFields(getFieldsForPreferences(parent, draft, preferencesDto.getUnselectedFields()));
+
+            allUserPreferences.update(preferences);
+        }
+    }
+
+    private List<Field> getFieldsForPreferences(Entity parent, EntityDraft draft, List<String> oldList) {
+        List<Field> newFields = new ArrayList<>();
+
+        for (String field : oldList) {
+
+            String name = field;
+            if (draft.getFieldNameChanges().containsKey(name)) {
+                name = draft.getFieldNameChanges().get(name);
+            }
+
+            Field newfield = parent.getField(name);
+            if (newfield != null) {
+                newFields.add(newfield);
+            }
+        }
+
+        return newFields;
     }
 
     private void addModuleToRefresh(Entity entity, List<String> modulesToRefresh) {
@@ -1384,9 +1424,19 @@ public class EntityServiceImpl implements EntityService {
         //For dataBrowser we need to add information about the lookup fields(type, settings, displayName)
         if (committed) {
             addNonPersistentDataForLookupFields(advancedSettingsDto.getIndexes(), entity);
+            addEntityUserPreferences(advancedSettingsDto, entity);
         }
         addLookupsReferences(advancedSettingsDto.getIndexes(), entity.getClassName());
         return advancedSettingsDto;
+    }
+
+    private void addEntityUserPreferences(AdvancedSettingsDto advancedSettingsDto, Entity entity) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            UserPreferencesDto userPreferencesDto = userPreferencesService.getUserPreferences(entity.getId(),
+                    SecurityContextHolder.getContext().getAuthentication().getName());
+            advancedSettingsDto.setUserPreferences(userPreferencesDto);
+        }
     }
 
     private void addNonPersistentDataForLookupFields(Collection<LookupDto> lookupDtos, Entity entity) {
@@ -1477,6 +1527,11 @@ public class EntityServiceImpl implements EntityService {
     }
 
     @Autowired
+    public void setAllUserPreferences(AllUserPreferences allUserPreferences) {
+        this.allUserPreferences = allUserPreferences;
+    }
+
+    @Autowired
     public void setMDSConstructor(MDSConstructor mdsConstructor) {
         this.mdsConstructor = mdsConstructor;
     }
@@ -1494,5 +1549,10 @@ public class EntityServiceImpl implements EntityService {
     @Autowired
     public void setComboboxDataMigrationHelper(ComboboxDataMigrationHelper comboboxDataMigrationHelper) {
         this.comboboxDataMigrationHelper = comboboxDataMigrationHelper;
+    }
+
+    @Autowired
+    public void setUserPreferencesService(UserPreferencesService userPreferencesService) {
+        this.userPreferencesService = userPreferencesService;
     }
 }
