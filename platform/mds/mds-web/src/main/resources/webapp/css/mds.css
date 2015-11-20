@@ -495,3 +495,23 @@
 .mds .form-inline .form-group label {
     display: inline-block;
 }
+
+.form-inline .form-control.input-records {
+    width: auto;
+    min-width: 40px;
+    font-size: 13px;
+    font-weight: normal;
+    text-align: left;
+    background-color: #F5F5F5;
+    background-image: linear-gradient(to bottom, #fff 0px, #e0e0e0 100%);
+    background-repeat: repeat-x;
+    border-radius: 14px 4px 4px 14px;
+    border-color: #ccc;
+    text-shadow: 0 1px 0 #fff;
+    color: #333;
+    cursor: auto;
+    padding: 5px 12px;
+    display: inline-block;
+    vertical-align: middle;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15) inset, 0 1px 1px rgba(0, 0, 0, 0.075);
+}

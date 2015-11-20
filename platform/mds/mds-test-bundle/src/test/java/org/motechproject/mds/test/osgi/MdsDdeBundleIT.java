@@ -332,6 +332,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
         simpleClassWithVersioningService.deleteAll();
         consultantDataService.deleteAll();
         companyDataService.deleteAll();
+        entryDataService.deleteAll();
         removeFromListManyToMany();
     }
 

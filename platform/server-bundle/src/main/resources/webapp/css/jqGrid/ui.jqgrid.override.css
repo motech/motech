@@ -32,14 +32,6 @@
     background: #224477 url("../../img/navbar.jpg") repeat-x 0 0;
 }
 
-.overrideJqgridTable .ui-jqgrid.ui-widget-content {
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
-    border-radius: 0 0 4px 4px;
-    border-top: 1px solid #D4E1F9;
-}
-
 .overrideJqgridTable .ui-jqgrid .table-lightblue .ui-widget-content {
     background: #E4F1F9;
 }
@@ -49,7 +41,8 @@
 }
 
 .overrideJqgridTable .ui-jqgrid .ui-state-default.ui-jqgrid-hdiv.table-lightblue,
-.overrideJqgridTable .ui-jqgrid .ui-state-default.table-lightblue .ui-jqgrid-htable th {
+.overrideJqgridTable .ui-jqgrid .ui-state-default.table-lightblue .ui-jqgrid-htable th,
+.overrideJqgridTable .ui-jqgrid .ui-jqgrid-htable.table-lightblue th {
     border-color: #c5dbec;
     color: #224477;
     background: #D9EDF7;
@@ -78,6 +71,20 @@
 
 .overrideJqgridTable .ui-jqgrid.ui-widget-content {
     background: #FFFFFF;
+    border: 1px solid #c5dbec;
+    border-bottom-style: none;
+    border-radius: 4px 4px 0 0;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.overrideJqgridTable#instanceBrowserTable .ui-jqgrid.ui-widget-content {
+    border-style: none;
+}
+
+.relation-field .overrideJqgridTable .ui-jqgrid.ui-widget-content {
+    border: 1px solid #c5dbec;
+    border-radius: 4px;
 }
 
 .overrideJqgridTable .ui-jqgrid .ui-jqgrid-titlebar {
@@ -160,3 +167,29 @@ table.ui-pg-table {
     border: 1px solid rgba(104, 164, 191, 1);
 }
 
+.overrideJqgridTable .ui-jqgrid .ui-paging-info {
+    margin-left: 4px;
+    display: inline;
+}
+
+.ui-jqgrid table {
+    border-collapse: separate;
+    border-style: none;
+}
+
+div.ui-jqgrid-view table.ui-jqgrid-btable td {
+    border-left-style: none
+}
+
+div.ui-jqgrid-view table.ui-jqgrid-btable th {
+    border-left-style: none
+}
+
+.ui-jqgrid .ui-pg-table {
+    padding-bottom: 0;
+}
+
+.ui-jqgrid .ui-jqgrid-hdiv {
+    height: auto;
+    overflow-y: hidden;
+}

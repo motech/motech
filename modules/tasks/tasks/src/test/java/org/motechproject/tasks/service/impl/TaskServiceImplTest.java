@@ -17,9 +17,9 @@ import org.mockito.verification.VerificationMode;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.query.QueryExecution;
+import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionEventBuilder;
 import org.motechproject.tasks.domain.ActionParameterBuilder;
-import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.EventParameter;
@@ -41,6 +41,7 @@ import org.motechproject.tasks.domain.TaskEventInformation;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
+import org.motechproject.tasks.ex.TaskNameAlreadyExistsException;
 import org.motechproject.tasks.ex.TaskNotFoundException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
 import org.motechproject.tasks.ex.ValidationException;
@@ -75,6 +76,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.tasks.domain.ParameterType.UNICODE;
@@ -190,6 +192,21 @@ public class TaskServiceImplTest {
         when(providerService.getProviderById(1234L)).thenReturn(provider);
 
         taskService.save(task);
+    }
+
+    @Test(expected = TaskNameAlreadyExistsException.class)
+    public void shouldNotSaveTaskWithDuplicateName() {
+        when(tasksDataService.findTasksByName("name")).thenReturn(
+                asList(new Task("name", trigger, asList(action))));
+
+        Task t = new Task("name", trigger, asList(action), null, false, false);
+
+        try {
+            taskService.save(t);
+        } finally {
+            verify(tasksDataService, times(1)).findTasksByName(t.getName());
+            verifyNoMoreInteractions(tasksDataService);
+        }
     }
 
     @Test

@@ -140,9 +140,9 @@ public class InstanceController extends MdsController {
         List<HistoryRecord> historyRecordsList = instanceService.getInstanceHistory(entityId, instanceId, queryParams);
 
         long recordCount = instanceService.countHistoryRecords(entityId, instanceId);
-        int rowCount = (int) Math.ceil(recordCount / (double) settings.getRows());
+        int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
 
-        return new Records<>(settings.getPage(), rowCount, (int) recordCount, historyRecordsList);
+        return new Records<>(queryParams.getPage(), rowCount, (int) recordCount, historyRecordsList);
     }
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/previousVersion/{historyId}", method = RequestMethod.GET)
@@ -169,7 +169,7 @@ public class InstanceController extends MdsController {
         return instanceService.getEntityInstance(entityId, instanceId);
     }
 
-    @RequestMapping(value = "/instances/{entityId}/instance/{instanceId}/{fieldName}", method = RequestMethod.GET)
+    @RequestMapping(value = "/instances/{entityId}/instance/{instanceId}/{fieldName}", method = RequestMethod.POST)
     @ResponseBody
     public Records<EntityRecord> getRelatedValues(@PathVariable Long entityId, @PathVariable Long instanceId,
                                     @PathVariable String fieldName, GridSettings settings) {
@@ -200,9 +200,9 @@ public class InstanceController extends MdsController {
         List<EntityRecord> trashRecordsList = instanceService.getTrashRecords(entityId, queryParams);
 
         long recordCount = instanceService.countTrashRecords(entityId);
-        int rowCount = (int) Math.ceil(recordCount / (double) settings.getRows());
+        int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
 
-        return new Records<>(settings.getPage(), rowCount, (int) recordCount, trashRecordsList);
+        return new Records<>(queryParams.getPage(), rowCount, (int) recordCount, trashRecordsList);
 
     }
 
@@ -271,9 +271,9 @@ public class InstanceController extends MdsController {
             recordCount = instanceService.countRecords(entityId);
         }
 
-        int rowCount = (int) Math.ceil(recordCount / (double) settings.getRows());
+        int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
 
-        return new Records<>(settings.getPage(), rowCount, (int) recordCount, entityRecords);
+        return new Records<>(queryParams.getPage(), rowCount, (int) recordCount, entityRecords);
     }
 
     @RequestMapping(value = "/instances/{entityId}/csvimport", method = RequestMethod.POST)

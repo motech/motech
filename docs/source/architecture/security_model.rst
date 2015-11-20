@@ -13,7 +13,7 @@ Introduction
 Security aspects in MOTECH are handled by the web-security module. It is responsible for users, roles and permissions
 management, authentication, filtering requests and more. The web-security module uses `Spring security <http://projects.spring.io/spring-security/>`_
 in the backend and allows to use certain tools from the Spring security, like @PreAuthorize and @PostAuthorize annotations or
-SecurituContextHolder, that makes it possible to retrieve current authentication data. The web-security module provides an
+SecurityContextHolder, that makes it possible to retrieve current authentication data. The web-security module provides an
 ability to administer users, roles, permissions and security rules via UI, for users that have been given the necessary
 permissions. The web-security module uses MDS as the datastore. User details, as well as roles, permissions and configured
 security rules are kept there. User passwords are hashed before storing, using bcrypt hashing algorithm.

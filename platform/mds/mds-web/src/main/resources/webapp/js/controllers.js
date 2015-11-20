@@ -3457,6 +3457,7 @@
         */
         $scope.addInstance = function(module, entityName) {
             blockUI();
+            $scope.setHiddenFilters();
 
             // load the entity if coming from the 'Add' link in the main DataBrowser page
             if (!$scope.selectedEntity) {
@@ -3490,6 +3491,36 @@
                     });
                     unblockUI();
                 });
+            });
+        };
+
+        $scope.addNewRelatedInstance = function (field) {
+            var relatedClass = $scope.getRelatedClass(field);
+
+            motechConfirm('mds.confirm.disabledInstanceAddNew', 'mds.confirm', function (val) {
+                if (val) {
+                    $scope.baseExtended = {
+                        instanceId: $scope.selectedInstance,
+                        entityClassName: $scope.selectedEntity.className
+                    };
+
+                    $scope.instanceEditMode = false;
+
+                    $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
+                        Instances.newInstance({id: data.id}, function(data) {
+                            $scope.currentRecord = data;
+                            $scope.fields = data.fields;
+                            angular.forEach($scope.fields, function(field) {
+                                if ( field.type.typeClass === "java.util.List" && field.value !== null && field.value.length === 0 ) {
+                                    field.value = null;
+                                }
+                            });
+                            unblockUI();
+                        });
+                    }).error(function(response) {
+                        handleResponse('mds.error', 'mds.dataBrowsing.error.instancesList', response);
+                    });
+                }
             });
         };
 
@@ -3555,6 +3586,7 @@
                     if ($scope.editedField.displayValue[id] === undefined) {
                         $scope.editedField.value.push(data.value);
                         $scope.editedField.displayValue[id] = data.displayValue;
+                        $scope.addExistingRelatedData(field.id, data.value.id);
                         closeModal = true;
                     } else {
                         motechAlert('mds.info.instanceAlreadyRelated', 'mds.info');
@@ -3581,17 +3613,46 @@
            field.value = undefined;
         };
 
-        $scope.removeManyRelatedData = function(field, obj) {
-           field.value.removeObject(obj);
-           field.displayValue[obj.id] = undefined;
+        $scope.extractIdByFieldId = function (fieldId, relatedData, name) {
+            var result = [];
+            angular.forEach(relatedData, function (item) {
+                if (item.fieldId === parseInt(fieldId, 10)) {
+                    result.push(item[name]);
+                }
+            });
+            return result;
         };
 
-        $scope.setRelatedEntity = function(field) {
-            $('#instanceBrowserModal').on('hide.bs.modal', function () {
-                $scope.relatedEntity = undefined;
-                $scope.filterBy = [];
-            });
+        $scope.addedExistingRelatedDataTmp = [];
 
+        $scope.addExistingRelatedData = function (fieldid, relatedDataId) {
+            $scope.addedExistingRelatedDataTmp.push({fieldId: fieldid, addedIds: relatedDataId});
+        };
+
+        $scope.getAddedExistingRelatedDataTmp = function (fieldId) {
+           return $scope.extractIdByFieldId(fieldId, $scope.addedExistingRelatedDataTmp, 'addedIds');
+        };
+
+        $scope.removedRelatedDataTmp = [];
+
+        $scope.removeManyRelatedData = function(field, relatedInstance) {
+            if (field && relatedInstance !== undefined && relatedInstance.id !== undefined) {
+               $scope.removedRelatedDataTmp.push({fieldId: field.id, removedIds: relatedInstance.id});
+               field.displayValue[relatedInstance.id] = undefined;
+               field.value.removeObject(relatedInstance);
+            }
+        };
+
+        $scope.getRemovedRelatedDataTmp = function (fieldId) {
+            return $scope.extractIdByFieldId(fieldId, $scope.removedRelatedDataTmp, 'removedIds');
+        };
+
+        $scope.resetRelatedData = function () {
+            $scope.removedRelatedDataTmp = [];
+            $scope.addedExistingRelatedDataTmp = [];
+        };
+
+        $scope.getRelatedClass = function(field) {
             var i, relatedClass;
             if (field.metadata !== undefined && field.metadata !== null && field.metadata.isArray === true) {
                 for (i = 0 ; i < field.metadata.length ; i += 1) {
@@ -3601,6 +3662,17 @@
                     }
                 }
             }
+            return relatedClass;
+        };
+
+        $scope.setRelatedEntity = function(field) {
+            var relatedClass;
+            $('#instanceBrowserModal').on('hide.bs.modal', function () {
+                $scope.relatedEntity = undefined;
+                $scope.filterBy = [];
+            });
+
+            relatedClass = $scope.getRelatedClass(field);
             if (relatedClass !== undefined) {
                 blockUI();
                 $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
@@ -3737,8 +3809,18 @@
         * Unselects adding or editing instance to allow user to return to entities list by modules
         */
         $scope.unselectInstance = function() {
-            if ($scope.previouslyEdited) {
-                var prev = $scope.previouslyEdited;
+            var prev;
+            $scope.setVisibleIfExistFilters();
+            if ($scope.baseExtended) {
+                prev = $scope.baseExtended;
+                $scope.selectEntityByClassName(prev.entityClassName, function() {
+                    $scope.editInstance(prev.instanceId);
+                    $scope.entityClassName = prev.entityClassName;
+                    $scope.baseExtended = null;
+                });
+                $scope.removeIdFromUrl();
+            } else if ($scope.previouslyEdited) {
+                prev = $scope.previouslyEdited;
                 $scope.selectEntityByClassName(prev.entityClassName, function() {
                     $scope.editInstance(prev.instanceId);
                     $scope.entityClassName = prev.entityClassName;
@@ -3753,13 +3835,9 @@
                 $scope.addedEntity = undefined;
                 $scope.selectedInstance = undefined;
                 $scope.loadedFields = undefined;
-                innerLayout({
-                    spacing_closed: 30,
-                    east__minSize: 200,
-                    east__maxSize: 350
-                });
                 $scope.removeIdFromUrl();
             }
+            $scope.resetRelatedData();
             resizeLayout();
         };
 
@@ -4020,6 +4098,16 @@
 
         $scope.isComboboxField = function(field) {
              return field.type.typeClass === "java.util.Collection";
+        };
+
+        $scope.isMultiSelectCombobox = function(field) {
+            var result;
+            angular.forEach(field.settings, function(setting) {
+                if (setting.name === "mds.form.label.allowMultipleSelections") {
+                    result = setting.value;
+                }
+            });
+            return result;
         };
 
         $scope.dataBrowserPreferencesCookieName = function(entity) {

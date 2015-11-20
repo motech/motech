@@ -29,6 +29,7 @@ import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.CustomParserNotFoundException;
+import org.motechproject.tasks.ex.TaskNameAlreadyExistsException;
 import org.motechproject.tasks.ex.TaskNotFoundException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
 import org.motechproject.tasks.ex.ValidationException;
@@ -111,6 +112,7 @@ public class TaskServiceImpl implements TaskService {
             throw new ValidationException(TASK, errors);
         }
 
+        validateName(task);
         errors.addAll(validateTrigger(task));
         errors.addAll(validateDataSources(task));
         errors.addAll(validateActions(task));
@@ -577,6 +579,18 @@ public class TaskServiceImpl implements TaskService {
         logResultOfValidation("task action", task.getName(), errors);
 
         return errors;
+    }
+
+    private void validateName(Task task) {
+
+        Long taskId = task.getId();
+        List<Task> tasksWithName = tasksDataService.findTasksByName(task.getName());
+
+        if(taskId == null && tasksWithName.size() > 0) {
+            throw new TaskNameAlreadyExistsException(task.getName());
+        } else if (taskId != null && tasksWithName.size() > 0 && !tasksWithName.get(0).getId().equals(taskId)) {
+            throw new TaskNameAlreadyExistsException(task.getName());
+        }
     }
 
     private void logResultOfValidation(String validationName, String taskName, Set<TaskError> errors) {

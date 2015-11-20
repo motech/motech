@@ -30,6 +30,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,10 +56,12 @@ public class MotechNativeTestContainer
     private static final String TESTED_SYMBOLIC_NAME = "org.motechproject.testing.osgi.TestedSymbolicName";
     private static final String FAKE_MODULE_STARTUP_EVENT = "org.motechproject.testing.osgi.FakeStartupModulesEvent";
     private static final String CONTEXT_SERVICE_NAME = "org.springframework.context.service.name";
+    private static final String CONTEXT_PATH = "Context-Path";
 
     private long probeId;
     private ExamSystem examSystem;
     private boolean startupEventSent;
+    private int expectedContexts = 1;
 
     public MotechNativeTestContainer(ExamSystem system, FrameworkFactory frameworkFactory) throws IOException {
         super(system, frameworkFactory);
@@ -78,6 +81,10 @@ public class MotechNativeTestContainer
             // note that we do not start the probe
 
             probeId = bundle.getBundleId();
+
+            if (bundleHasWebContext(bundle)) {
+                expectedContexts++;
+            }
 
             return probeId;
         } catch (BundleException e) {
@@ -116,6 +123,7 @@ public class MotechNativeTestContainer
                 LOGGER.error("Expected tested bundle {} is not installed", symbolicName);
             } else {
                 int retries = 0;
+
                 try {
                     while (!isReady(bundle)) {
                         LOGGER.debug("Waiting for tested bundle {}, {}/{}", bundle, retries, MAX_WAIT_RETRIES);
@@ -147,7 +155,15 @@ public class MotechNativeTestContainer
                 throw new TestContainerException("Error during retrieving service references", e);
             }
 
-            return refs != null && refs.length > 0;
+            return areContextsReady(refs);
+        }
+        return false;
+    }
+
+    private boolean areContextsReady(ServiceReference[] refs) {
+        if (refs != null && refs.length >= expectedContexts) {
+            LOGGER.info("Tested bundle contexts: {}", Arrays.toString(refs));
+            return true;
         }
         return false;
     }
@@ -234,5 +250,9 @@ public class MotechNativeTestContainer
         }
 
         return null;
+    }
+
+    private boolean bundleHasWebContext(Bundle bundle) {
+        return bundle.getHeaders().get(CONTEXT_PATH) != null;
     }
 }

@@ -921,7 +921,7 @@ ID field is not used in the hashCode method, as it may cause issue while detachi
 
 In rare conditions the StackOverflowError may originate from the Datanucleus L2 Cache and it is most likely a bug
 in Datanucleus. If such problem arises, please first make sure that all of the above conditions have been resolved.
-If it doesn't help, the Motech Data Service exposes the evictAll method, that cleats the entire Datanucleus cache.
+If it doesn't help, the Motech Data Service exposes the evictAll method, that clears the entire Datanucleus cache.
 Moreover, it is possible to adjust the `Datanucleus L2 cache settings <http://www.datanucleus.org/products/accessplatform/persistence_properties.html#cache>`_
 or even turn it off completely. Please keep in mind that these steps may affect MDS performance.
 

@@ -43,6 +43,15 @@ function unblockUI() {
     resizeLayout();
 }
 
+function getAvailableTabs(moduleName, callback) {
+    'use strict';
+    return $.ajax({
+        url: '../server/available/' + moduleName,
+        success: callback,
+        async: false
+    });
+}
+
 var jFormErrorHandler = function(response) {
         'use strict';
         unblockUI();
