@@ -24,6 +24,17 @@
             <select class="form-control input-auto" ng-disabled="checkTimeSelectDisable()" ng-model="settings.timeUnit" ng-options="t.value as t.label for t in timeUnits"></select>
         </div>
     </div>
+    <div class="form-group">
+        {{msg('mds.userPreferences.info')}}
+    </div>
+    <div class="form-group form-inline">
+        <label class="label-radio">
+            {{msg('mds.userPreferences.gridSize')}}
+        </label>
+        <div class="settings-input-group">
+            <select class="form-control input-auto" ng-model="settings.gridSize" ng-options="size for size in gridSizes"></select>
+        </div>
+    </div>
     <span class="btn btn-default" ng-click="saveSettings()">{{msg('mds.dataRetention.save')}}</span>
 
 </form>
