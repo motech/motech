@@ -1,5 +1,6 @@
 package org.motechproject.security.event;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.Days;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
@@ -63,7 +64,12 @@ public class PasswordExpirationCheckEventHandler {
                                 "expiration", user.getUserName(), daysWithoutPasswordChange, daysTillReminder);
 
                 if (daysWithoutPasswordChange == daysTillReminder) {
-                    sendPasswordReminderEvent(user, daysTillPasswordChange, numberOfDaysForReminder);
+                    if (StringUtils.isNotBlank(user.getEmail())) {
+                        sendPasswordReminderEvent(user, daysTillPasswordChange, numberOfDaysForReminder);
+                    } else {
+                        LOGGER.debug("User {} doesn't have an email address set, skipping sending of reminder",
+                                user.getUserName());
+                    }
                 }
             }
         } else {
