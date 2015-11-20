@@ -62,7 +62,7 @@
                         elem.jqGrid('setLabel', 'message', scope.msg('task.subsection.message'));
                         elem.jqGrid('setLabel', 'date', scope.msg('task.subsection.information'));
 
-                        $('#outsideTaskHistoryTable').children('div').width('100%');
+                        $('#outsideTaskHistoryTable').children('div').css('width','100%');
                         $('.ui-jqgrid-htable').addClass("table-lightblue");
                         $('.ui-jqgrid-btable').addClass("table-lightblue");
                         $('.ui-jqgrid-htable').width('100%');
@@ -233,7 +233,7 @@
             link: function (scope, element, attrs) {
                 element.droppable({
                     drop: function (event, ui) {
-                        var parent = scope, value, eventKey, dragElement, browser, emText, dataSource,
+                        var parent = scope, value, eventKey, dragElement, browser, emText, dataSource, removeButton,
                             position = function (dropElement, dragElement) {
                                 var sel, range, space = document.createTextNode(''), el, frag, node, lastNode, rangeInDropElem;
 
@@ -309,7 +309,19 @@
                                 dragElement.css("position", "relative");
                                 dragElement.css("left", "0px");
                                 dragElement.css("top", "0px");
+                                dragElement.css("width", "auto");
                                 dragElement.attr("unselectable", "on");
+
+                                // Adding remove button to the dragged bean
+                                dragElement.append(" &nbsp;");
+                                dragElement.append(" &nbsp;");
+                                removeButton = $('<button/>', {
+                                        text: 'x',
+                                        type: 'button'
+                                });
+                                removeButton.addClass('close');
+                                removeButton.addClass('badge-close');
+                                dragElement.append(removeButton);
 
                                 if ((dragElement.data('type') !== 'INTEGER' || dragElement.data('type') !== 'DOUBLE') && dragElement.data('popover') !== 'no') {
                                     if (dragElement.data('type') === 'UNICODE' || dragElement.data('type') === 'TEXTAREA') {
@@ -320,7 +332,11 @@
                                         } else {
                                             dragElement.attr("manipulationpopover", "DATE");
                                         }
+                                    } else {
+                                        dragElement.attr("manipulationpopover", "NONE");
                                     }
+                                } else {
+                                    dragElement.attr("manipulationpopover", "NONE");
                                 }
 
                                 dragElement.addClass('pointer');
@@ -541,13 +557,20 @@
                        });
                 }
 
-                el.on('click', function () {
+                el.on('click', function (event) {
                     var man = $("[ismanipulate=true]").text();
-                    if (man.length === 0) {
-                        angular.element(this).attr('ismanipulate', 'true');
-                    } else {
-                        angular.element(this).removeAttr('ismanipulate');
+                    if (event.target && event.target.className === 'close badge-close' && event.target.parentElement) {
+                        event.target.parentElement.remove();
+                        return;
                     }
+                    if (manType !== 'NONE') {
+                        if (man.length === 0) {
+                            angular.element(this).attr('ismanipulate', 'true');
+                        } else {
+                            angular.element(this).removeAttr('ismanipulate');
+                        }
+                    }
+
                 });
 
 
@@ -695,7 +718,7 @@
                         trigger: 'manual'
                     }).click(function (event) {
                         event.stopPropagation();
-                        if (!$(this).hasClass('hasPopoverShow')) {
+                        if (!$(this).hasClass('hasPopoverShow') && (event.target || event.target.className !== 'close badge-close')) {
                             var otherPopoverElem = $('.hasPopoverShow');
 
                             window.getSelection().removeAllRanges();
@@ -705,18 +728,27 @@
                                 otherPopoverElem.removeClass('hasPopoverShow');
                                 otherPopoverElem.removeAttr('ismanipulate');
                             }
-                            if (filter.key) {
+                            if (filter && filter.key) {
                                 $(this).attr('manipulate', filter.key.split("?").slice(1).join(" "));
                             }
 
                             $(this).addClass('hasPopoverShow');
                             $(this).attr('ismanipulate', 'true');
                             $(this).popover('show');
-                        } else {
+                        } else if (event.target || event.target.className !== 'close badge-close') {
                             $(this).popover('hide');
                             $(this).removeClass('hasPopoverShow');
                             $(this).removeAttr('ismanipulate');
                             $(this).focus();
+                        } else {
+                            if (event.target.parentElement) {
+                                event.target.parentElement.remove();
+                                $(this).popover('hide');
+                                $(this).removeClass('hasPopoverShow');
+                                $(this).removeAttr('ismanipulate');
+                                $(this).focus();
+                                return;
+                            }
                         }
 
                         $('.dragpopover').click(function (event) {
@@ -737,7 +769,7 @@
                     });
 
                     el.on("manipulateChanged", function () {
-                        if (filter.key) {
+                        if (filter && filter.key) {
                             var manipulateAttributes = el.attr('manipulate'),
                                 key = filter.key.split("?")[0], array, i;
 

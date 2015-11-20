@@ -180,6 +180,11 @@
     margin: 0 2px;
 }
 
+.tasks .badge-close {
+    float: none; !important;
+    font-size: 12px; !important;
+}
+
 .tasks editable-content > div[contenteditable] {
   border: 2px dotted #AAAAAA;
   background-color: #FFFFFF;

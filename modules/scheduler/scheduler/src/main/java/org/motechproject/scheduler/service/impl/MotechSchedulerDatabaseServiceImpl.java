@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.motechproject.commons.sql.util.Drivers;
-import org.motechproject.event.MotechEvent;
+import org.motechproject.scheduler.constants.SchedulerConstants;
 import org.motechproject.scheduler.contract.EventInfo;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
@@ -161,9 +161,9 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
                            scheduler.getJobDetail(jobKey).getJobDataMap().getWrappedMap()
                         );
 
-                        if (eventInfo.getParameters().containsKey(MotechEvent.EVENT_TYPE_KEY_NAME)) {
-                            subject = eventInfo.getParameters().get(MotechEvent.EVENT_TYPE_KEY_NAME).toString();
-                            eventInfo.getParameters().remove(MotechEvent.EVENT_TYPE_KEY_NAME);
+                        if (eventInfo.getParameters().containsKey(SchedulerConstants.EVENT_TYPE_KEY_NAME)) {
+                            subject = eventInfo.getParameters().get(SchedulerConstants.EVENT_TYPE_KEY_NAME).toString();
+                            eventInfo.getParameters().remove(SchedulerConstants.EVENT_TYPE_KEY_NAME);
                         } else {
                             subject = jobKey.getName().substring(0, jobKey.getName().indexOf('-'));
                         }

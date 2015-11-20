@@ -1,5 +1,6 @@
 package org.motechproject.mds.web.controller;
 
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.MdsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,5 +35,16 @@ public abstract class MdsController {
         } else {
             return String.format("key:%s\nparams:%s", exception.getMessageKey(), exception.getParams());
         }
+    }
+
+    protected TypeDto textAreaUIType() {
+        TypeDto textAreaType = new TypeDto();
+
+        textAreaType.setDefaultName("textArea");
+        textAreaType.setDisplayName("mds.field.textArea");
+        textAreaType.setDescription("mds.field.description.textArea");
+        textAreaType.setTypeClass("textArea");
+
+        return textAreaType;
     }
 }

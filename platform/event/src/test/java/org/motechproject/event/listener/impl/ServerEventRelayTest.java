@@ -40,7 +40,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ServerEventRelayTest {
 
-    public static final String MESSAGE_DESTINATION = "message-destination";
     public static final String LISTENER_IDENTIFIER = "test-identifier";
     public static final String SECONDARY_LISTENER_IDENTIFIER = "secondary-test-identifier";
     public static final String SUBJECT = "org.motechproject.server.someevent";
@@ -100,10 +99,10 @@ public class ServerEventRelayTest {
         MotechEvent capturedEvent;
 
         capturedEvent = argumentCaptor.getAllValues().get(0);
-        assertThat(capturedEvent.getParameters(), Matchers.hasEntry(MESSAGE_DESTINATION, (Object) LISTENER_IDENTIFIER));
+        assertEquals(capturedEvent.getMessageDestination(), LISTENER_IDENTIFIER);
 
         capturedEvent = argumentCaptor.getAllValues().get(1);
-        assertThat(capturedEvent.getParameters(), Matchers.hasEntry(MESSAGE_DESTINATION, (Object) SECONDARY_LISTENER_IDENTIFIER));
+        assertEquals(capturedEvent.getMessageDestination(), SECONDARY_LISTENER_IDENTIFIER);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -125,7 +124,7 @@ public class ServerEventRelayTest {
 
         eventRelay.relayQueueEvent(event);
 
-        assertThat(event.getParameters().get(MESSAGE_DESTINATION).toString(), is(buggyListener.getIdentifier()));
+        assertThat(event.getMessageDestination().toString(), is(buggyListener.getIdentifier()));
     }
 
     @Test
@@ -203,7 +202,7 @@ public class ServerEventRelayTest {
 
     private MotechEvent createEvent(String messageDestination) {
         MotechEvent event = createEvent();
-        event.getParameters().put(MESSAGE_DESTINATION, messageDestination);
+        event.setMessageDestination(messageDestination);
         return event;
     }
 

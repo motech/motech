@@ -8,6 +8,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.mds.util.TypeHelper;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -275,6 +276,21 @@ public class EntityDto {
     @JsonIgnore
     public boolean isDDE() {
         return StringUtils.isNotBlank(module);
+    }
+
+    @JsonIgnore
+    public boolean isBaseEntity() {
+        return TypeHelper.isBaseEntity(getSuperClass());
+    }
+
+    @JsonIgnore
+    public boolean isSubClassOfMdsEntity () {
+        return TypeHelper.isSubclassOfMdsEntity(getSuperClass());
+    }
+
+    @JsonIgnore
+    public boolean isSubClassOfMdsVersionedEntity () {
+        return TypeHelper.isSubclassOfMdsVersionedEntity(getSuperClass());
     }
 
     /**

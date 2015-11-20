@@ -25,6 +25,7 @@ public class AllConfigSettings extends MotechDataRepository<ConfigSettings> {
             rec.setAfterTimeUnit(record.getAfterTimeUnit());
             rec.setDeleteMode(record.getDeleteMode());
             rec.setEmptyTrash(record.getEmptyTrash());
+            rec.setDefaultGridSize(record.getDefaultGridSize());
             update(rec);
         }
     }

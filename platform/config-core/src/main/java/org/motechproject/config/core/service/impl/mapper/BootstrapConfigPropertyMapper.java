@@ -31,7 +31,6 @@ public final class BootstrapConfigPropertyMapper {
         properties.setProperty(BootstrapConfig.SQL_DRIVER, bootstrapConfig.getSqlConfig().getDriver());
         setIfNotBlank(properties, BootstrapConfig.SQL_USER, bootstrapConfig.getSqlConfig().getUsername());
         setIfNotBlank(properties, BootstrapConfig.SQL_PASSWORD, bootstrapConfig.getSqlConfig().getPassword());
-        properties.setProperty(BootstrapConfig.TENANT_ID, bootstrapConfig.getTenantId());
         properties.setProperty(BootstrapConfig.CONFIG_SOURCE, bootstrapConfig.getConfigSource().getName());
         setIfNotBlank(properties, BootstrapConfig.OSGI_FRAMEWORK_STORAGE, bootstrapConfig.getOsgiFrameworkStorage());
         properties.putAll(bootstrapConfig.getActiveMqProperties());
@@ -59,7 +58,6 @@ public final class BootstrapConfigPropertyMapper {
                     bootstrapProperties.getProperty(BootstrapConfig.SQL_DRIVER),
                     bootstrapProperties.getProperty(BootstrapConfig.SQL_USER),
                     bootstrapProperties.getProperty(BootstrapConfig.SQL_PASSWORD)),
-                    bootstrapProperties.getProperty(BootstrapConfig.TENANT_ID),
                     ConfigSource.valueOf(bootstrapProperties.getProperty(BootstrapConfig.CONFIG_SOURCE)),
                     bootstrapProperties.getProperty(BootstrapConfig.OSGI_FRAMEWORK_STORAGE),
                     bootstrapProperties.getProperty(BootstrapConfig.QUEUE_URL),

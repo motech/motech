@@ -15,7 +15,6 @@ import static org.motechproject.config.core.domain.BootstrapConfig.*;
 
 public class BootstrapConfigPropertyMapperTest {
 
-    private String tenantId = "tenantId";
     private String sqlUrl = "jdbc:mysql://localhost:3306/";
     private String sqlUsername = "root";
     private String sqlPassword = "password";
@@ -26,19 +25,17 @@ public class BootstrapConfigPropertyMapperTest {
 
     @Test
     public void shouldMapToPropertiesFromBootstrapConfig() {
-        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, configSource, felixPath, queueUrl));
+        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), configSource, felixPath, queueUrl));
 
-        Assert.assertThat(bootstrapProperties.getProperty(TENANT_ID), Matchers.is(tenantId));
         Assert.assertThat(bootstrapProperties.getProperty(CONFIG_SOURCE), is(configSource.getName()));
     }
 
     @Test
     public void shouldMapToPropertiesFromBootstrapConfig_WhenUsernameAndPasswordAreBlank() {
-        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), tenantId, configSource, felixPath, queueUrl));
+        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), configSource, felixPath, queueUrl));
 
         Assert.assertThat(bootstrapProperties.getProperty(sqlUsername), nullValue());
         Assert.assertThat(bootstrapProperties.getProperty(sqlPassword), nullValue());
-        Assert.assertThat(bootstrapProperties.getProperty(TENANT_ID), is(tenantId));
         Assert.assertThat(bootstrapProperties.getProperty(CONFIG_SOURCE), is(configSource.getName()));
     }
 
@@ -49,7 +46,6 @@ public class BootstrapConfigPropertyMapperTest {
         bootstrapProperties.setProperty(SQL_DRIVER, sqlDriver);
         bootstrapProperties.setProperty(SQL_USER, sqlUsername);
         bootstrapProperties.setProperty(SQL_PASSWORD, sqlPassword);
-        bootstrapProperties.setProperty(TENANT_ID, tenantId);
         bootstrapProperties.setProperty(CONFIG_SOURCE, configSource.getName());
         bootstrapProperties.setProperty(QUEUE_URL, queueUrl);
 
@@ -58,7 +54,6 @@ public class BootstrapConfigPropertyMapperTest {
         Assert.assertThat(bootstrapConfig.getSqlConfig().getUrl(), Matchers.is(sqlUrl));
         Assert.assertThat(bootstrapConfig.getSqlConfig().getUsername(), Matchers.is(sqlUsername));
         Assert.assertThat(bootstrapConfig.getSqlConfig().getPassword(), Matchers.is(sqlPassword));
-        Assert.assertThat(bootstrapConfig.getTenantId(), Matchers.is(tenantId));
         Assert.assertThat(bootstrapConfig.getConfigSource(), is(configSource));
         Assert.assertThat(bootstrapConfig.getQueueUrl(), is(queueUrl));
     }

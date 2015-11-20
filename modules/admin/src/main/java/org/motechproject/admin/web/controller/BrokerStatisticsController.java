@@ -1,18 +1,15 @@
 package org.motechproject.admin.web.controller;
 
+import org.motechproject.admin.domain.QueueMBean;
 import org.motechproject.admin.domain.QueueMessage;
 import org.motechproject.admin.domain.TopicMBean;
-import org.motechproject.commons.api.Tenant;
-import org.motechproject.admin.domain.QueueMBean;
 import org.motechproject.admin.jmx.MBeanService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,28 +22,24 @@ public class BrokerStatisticsController {
     @Autowired
     private MBeanService mBeanService;
 
-    @Autowired
-    @Qualifier("currentTenant")
-    private Tenant tenant;
-
     /**
-     * Returns the topic statistics for the tenant.
+     * Returns the topic statistics.
      * @return a list {@link org.motechproject.admin.domain.TopicMBean} with the statistics, one for each topic
      */
     @RequestMapping(value = "/topics")
     @ResponseBody
     public List<TopicMBean> topics() {
-        return mBeanService.getTopicStatistics(tenant.getId());
+        return mBeanService.getTopicStatistics();
     }
 
     /**
-     * Returns the queue statistics for the tenant.
+     * Returns the queue statistics.
      * @return a list {@link org.motechproject.admin.domain.QueueMBean} with the statistics, one for each queue
      */
     @RequestMapping(value = "/queues")
     @ResponseBody
     public List<QueueMBean> queues() {
-        return mBeanService.getQueueStatistics(tenant.getId());
+        return mBeanService.getQueueStatistics();
     }
 
     /**
@@ -57,9 +50,6 @@ public class BrokerStatisticsController {
     @RequestMapping(value = "/queues/browse")
     @ResponseBody
     public List<QueueMessage> browseQueueMessages(@RequestParam(required = true) String queueName) {
-        if (tenant.canHaveQueue(queueName)) {
-            return mBeanService.getQueueMessages(queueName);
-        }
-        return Collections.emptyList();
+        return mBeanService.getQueueMessages(queueName);
     }
 }

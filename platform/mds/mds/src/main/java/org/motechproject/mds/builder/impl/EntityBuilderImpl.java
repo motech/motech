@@ -8,14 +8,15 @@ import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewConstructor;
 import javassist.NotFoundException;
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
-import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
-import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Relationship;
-import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.EntityCreationException;
 import org.motechproject.mds.ex.object.PropertyCreationException;
 import org.motechproject.mds.helper.EnumHelper;
@@ -24,7 +25,6 @@ import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.JavassistUtil;
 import org.motechproject.mds.util.MemberUtil;
-import org.motechproject.mds.util.TypeHelper;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
+import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
@@ -49,19 +50,19 @@ public class EntityBuilderImpl implements EntityBuilder {
     private final ClassPool classPool = MotechClassPool.getDefault();
 
     @Override
-    public ClassData build(Entity entity) {
+    public ClassData build(EntityDto entity, List<FieldDto> fields) {
         LOGGER.debug("Building EUDE: " + entity.getName());
-        return build(entity, EntityType.STANDARD, null);
+        return build(entity, fields, EntityType.STANDARD, null);
     }
 
     @Override
-    public ClassData buildDDE(Entity entity, Bundle bundle) {
+    public ClassData buildDDE(EntityDto entity, List<FieldDto> fields, Bundle bundle) {
         LOGGER.debug("Building DDE: " + entity.getClassName());
-        return build(entity, EntityType.STANDARD, bundle);
+        return build(entity, fields, EntityType.STANDARD, bundle);
     }
 
     @Override
-    public void prepareHistoryClass(Entity entity) {
+    public void prepareHistoryClass(EntityDto entity) {
         String className = entity.getClassName();
         LOGGER.debug("Building empty history class for: {}", className);
 
@@ -78,7 +79,7 @@ public class EntityBuilderImpl implements EntityBuilder {
     }
 
     @Override
-    public void prepareTrashClass(Entity entity) {
+    public void prepareTrashClass(EntityDto entity) {
         String className = entity.getClassName();
         LOGGER.debug("Building empty trash class for: {}", className);
 
@@ -94,32 +95,32 @@ public class EntityBuilderImpl implements EntityBuilder {
     }
 
     @Override
-    public ClassData buildHistory(Entity entity) {
+    public ClassData buildHistory(EntityDto entity, List<FieldDto> fields) {
         LOGGER.debug("Building history class for: {}", entity.getClassName());
-        return build(entity, EntityType.HISTORY, null);
+        return build(entity, fields, EntityType.HISTORY, null);
     }
 
     @Override
-    public ClassData buildTrash(Entity entity) {
+    public ClassData buildTrash(EntityDto entity, List<FieldDto> fields) {
         LOGGER.debug("Building trash class for: {}", entity.getClassName());
-        return build(entity, EntityType.TRASH, null);
+        return build(entity, fields, EntityType.TRASH, null);
     }
 
-    private ClassData build(Entity entity, EntityType type, Bundle bundle) {
+    private ClassData build(EntityDto entity, List<FieldDto> fields, EntityType type, Bundle bundle) {
         try {
-            CtClass declaring = makeClass(entity, type, bundle);
+            CtClass declaring = makeClass(entity, fields, type, bundle);
 
             switch (type) {
                 case HISTORY:
                     String className = type.getName(entity.getClassName());
                     String simpleName = ClassName.getSimpleName(className);
-                    Type idType = entity.getField("id").getType();
+                    TypeDto idType = TypeDto.LONG;
 
                     // add 4 extra fields to history class definition
 
                     // this field is related with id field in entity
                     addProperty(
-                            declaring, idType.getTypeClassName(), simpleName + "CurrentVersion",
+                            declaring, idType.getTypeClass(), simpleName + "CurrentVersion",
                             null
                     );
 
@@ -144,7 +145,7 @@ public class EntityBuilderImpl implements EntityBuilder {
         }
     }
 
-    private CtClass makeClass(Entity entity, EntityType type, Bundle bundle)
+    private CtClass makeClass(EntityDto entity, List<FieldDto> fields, EntityType type, Bundle bundle)
             throws NotFoundException, CannotCompileException, ReflectiveOperationException {
         // try to get declaring class
         CtClass declaring = getDeclaringClass(entity, type, bundle);
@@ -153,7 +154,8 @@ public class EntityBuilderImpl implements EntityBuilder {
         injectDefaultConstructor(declaring);
 
         // create properties (add fields, getters and setters)
-        for (Field field : entity.getFields()) {
+        for (FieldDto field : fields) {
+            String fieldName = field.getBasic().getName();
             try {
 
                 // We skip version fields for trash and history
@@ -161,14 +163,13 @@ public class EntityBuilderImpl implements EntityBuilder {
                     continue;
                 }
 
-                String fieldName = field.getName();
                 CtField ctField;
 
                 if (!shouldLeaveExistingField(field, declaring)) {
                     JavassistUtil.removeFieldIfExists(declaring, fieldName);
                     ctField = createField(declaring, entity, field, type);
 
-                    if (isBlank(field.getDefaultValue())) {
+                    if (isObjectNullOrBlankString(field.getBasic().getDefaultValue())) {
                         declaring.addField(ctField);
                     } else {
                         declaring.addField(ctField, createInitializer(entity, field));
@@ -188,7 +189,7 @@ public class EntityBuilderImpl implements EntityBuilder {
                     createSetter(declaring, fieldName, ctField);
                 }
             } catch (RuntimeException e) {
-                throw new EntityCreationException("Error while processing field " + field.getName(), e);
+                throw new EntityCreationException("Error while processing field " + fieldName, e);
             }
         }
 
@@ -230,7 +231,7 @@ public class EntityBuilderImpl implements EntityBuilder {
         }
     }
 
-    private CtClass getDeclaringClass(Entity entity, EntityType type, Bundle bundle)
+    private CtClass getDeclaringClass(EntityDto entity, EntityType type, Bundle bundle)
             throws NotFoundException {
         String className = type.getName(entity.getClassName());
         boolean isDDE = null != bundle;
@@ -277,10 +278,10 @@ public class EntityBuilderImpl implements EntityBuilder {
         }
     }
 
-    private CtField createField(CtClass declaring, Entity entity, Field field,
+    private CtField createField(CtClass declaring, EntityDto entity, FieldDto field,
                                 EntityType entityType)
-            throws IllegalAccessException, InstantiationException, CannotCompileException {
-        Type fieldType = field.getType();
+            throws IllegalAccessException, InstantiationException, CannotCompileException, ClassNotFoundException {
+        TypeDto fieldType = field.getType();
         String genericSignature = null;
         CtClass type = null;
 
@@ -303,15 +304,16 @@ public class EntityBuilderImpl implements EntityBuilder {
                 type = classPool.getOrNull(holder.getUnderlyingType());
             }
         } else if (fieldType.isRelationship()) {
-            Relationship relationshipType = (Relationship) fieldType.getTypeClass().newInstance();
+            Class fieldClass = getClass().getClassLoader().loadClass(fieldType.getTypeClass());
+            Relationship relationshipType = (Relationship) fieldClass.newInstance();
 
             genericSignature = relationshipType.getGenericSignature(field, entityType);
             type = classPool.getOrNull(relationshipType.getFieldType(field, entityType));
         } else {
-            type = classPool.getOrNull(fieldType.getTypeClassName());
+            type = classPool.getOrNull(fieldType.getTypeClass());
         }
 
-        return JavassistBuilder.createField(declaring, type, field.getName(), genericSignature);
+        return JavassistBuilder.createField(declaring, type, field.getBasic().getName(), genericSignature);
     }
 
     private void createGetter(CtClass declaring, String fieldName, CtField ctField)
@@ -328,50 +330,58 @@ public class EntityBuilderImpl implements EntityBuilder {
         declaring.addMethod(setter);
     }
 
-    private CtField.Initializer createInitializer(Entity entity, Field field) {
-        Type type = field.getType();
+    private CtField.Initializer createInitializer(EntityDto entity, FieldDto field) {
+        TypeDto type = field.getType();
         CtField.Initializer initializer = null;
 
         if (type.isCombobox()) {
             ComboboxHolder holder = new ComboboxHolder(entity, field);
 
             if (holder.isStringCollection()) {
-                Object defaultValue = TypeHelper.parse(field.getDefaultValue(), holder.getTypeClassName());
                 initializer = JavassistBuilder.createCollectionInitializer(
-                        holder.getUnderlyingType(), defaultValue
+                        holder.getUnderlyingType(), field.getBasic().getDefaultValue()
                 );
             } else if (holder.isEnumCollection()) {
-                Object defaultValue = TypeHelper.parse(field.getDefaultValue(), holder.getTypeClassName());
+                Object defaultValue = field.getBasic().getDefaultValue();
                 initializer = JavassistBuilder.createCollectionInitializer(
                         holder.getEnumName(), EnumHelper.prefixEnumValues((Collection) defaultValue)
                 );
             } else if (holder.isString()) {
                 initializer = JavassistBuilder.createInitializer(
-                        holder.getUnderlyingType(), field.getDefaultValue()
+                        holder.getUnderlyingType(), field.getBasic().getDefaultValue().toString()
                 );
             } else if (holder.isEnum()) {
                 initializer = JavassistBuilder.createEnumInitializer(
-                        holder.getEnumName(), EnumHelper.prefixEnumValue(field.getDefaultValue())
+                        holder.getEnumName(), EnumHelper.prefixEnumValue(field.getBasic().getDefaultValue().toString())
                 );
             }
         } else if (!type.isRelationship()) {
             initializer = JavassistBuilder.createInitializer(
-                    type.getTypeClassName(), field.getDefaultValue()
+                    type.getTypeClass(), field.getBasic().getDefaultValue()
             );
         }
 
         return initializer;
     }
 
-    private boolean shouldLeaveExistingField(Field field, CtClass declaring) {
+    private boolean shouldLeaveExistingField(FieldDto field, CtClass declaring) {
         return field.isReadOnly()
-                && (JavassistUtil.containsField(declaring, field.getName()) ||
-                    JavassistUtil.containsDeclaredField(declaring, field.getName()));
+                && (JavassistUtil.containsField(declaring, field.getBasic().getName()) ||
+                    JavassistUtil.containsDeclaredField(declaring, field.getBasic().getName()));
     }
 
-    private boolean shouldLeaveExistingMethod(Field field, String methodName, CtClass declaring) {
+    private boolean shouldLeaveExistingMethod(FieldDto field, String methodName, CtClass declaring) {
         return field.isReadOnly()
                 && (JavassistUtil.containsMethod(declaring, methodName) ||
                     JavassistUtil.containsDeclaredMethod(declaring, methodName));
+    }
+
+    private boolean isObjectNullOrBlankString(Object obj) {
+        if (obj instanceof String) {
+            String str = (String) obj;
+            return StringUtils.isBlank(str);
+        } else {
+            return obj == null;
+        }
     }
 }

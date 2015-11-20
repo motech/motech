@@ -148,7 +148,7 @@ var jFormErrorHandler = function(response) {
             autowidth: true,
             rownumbers: false,
             rowNum: 10,
-            rowList: [10, 20, 50],
+            rowList: [10, 20, 50, 100],
             width: '100%',
             height: 'auto',
             sortorder: 'asc',
@@ -206,6 +206,12 @@ function innerLayout(conf, eastConfig) {
             onresize_start: function () {
                 $('#inner-center').trigger("change");
                 return false;
+            },
+            onopen: function (paneName) {
+                $('.ui-layout-button-toggle-'+paneName).addClass('active');
+            },
+            onclose: function (paneName) {
+                $('.ui-layout-button-toggle-'+paneName).removeClass('active');
             },
             defaults: {
                 enableCursorHotkey: false

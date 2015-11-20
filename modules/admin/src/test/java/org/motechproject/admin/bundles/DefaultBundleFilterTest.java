@@ -97,4 +97,12 @@ public class DefaultBundleFilterTest {
 
         assertFalse(bundleFilter.passesCriteria(bundle));
     }
+
+    @Test
+    public void testOSGiPlatformBundle() {
+        when(bundle.getSymbolicName()).thenReturn("org.motechproject.motech-osgi-platform");
+        when(headers.get(ExtendedBundleInformation.EXPORT_PACKAGE)).thenReturn(MOTECH_IMPORT_EXPORT);
+
+        assertFalse(bundleFilter.passesCriteria(bundle));
+    }
 }

@@ -3,16 +3,16 @@
         <ul class="breadcrumb" role="navigation">
             <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
             <li><a role="menu" href="#/email/send">{{msg('email')}}</a></li>
-            <li ng-show="active('#/email/send')" ng-class="active('#/email/send')">{{msg('email.send')}}</li>
-            <li ng-show="active('#/email/logging')" ng-class="active('#/email/logging')">{{msg('email.logging')}}</li>
-            <li ng-show="active('#/email/settings')" ng-class="active('#/email/settings')">{{msg('email.settings')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'send'" ng-class="{'active': selectedTabState.selectedTab === 'send'}">{{msg('email.send')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'logging'" ng-class="{'active': selectedTabState.selectedTab === 'logging'}">{{msg('email.logging')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'settings'" ng-class="{'active': selectedTabState.selectedTab === 'settings'}">{{msg('email.settings')}}</li>
         </ul>
     </div>
     <div class="header-footer">
         <ul id="content-tabs" class="nav nav-tabs tasks ">
-            <li ng-class="active('#/email/send')"><a  ng-href="#/email/send">{{msg('email.send')}}</a></li>
-            <li ng-class="active('#/email/logging')"><a ng-href="#/email/logging">{{msg('email.logging')}}</a></li>
-            <li ng-class="active('#/email/settings')"><a  ng-href="#/email/settings">{{msg('email.settings')}}</a></li>
+            <li ng-class="{'active': selectedTabState.selectedTab === 'send'}" ng-click="selectedTabState.selectedTab = 'send'"><a  ng-href="#/email/send">{{msg('email.send')}}</a></li>
+            <li ng-class="{'active': selectedTabState.selectedTab === 'logging'}" ng-click="selectedTabState.selectedTab = 'logging'"><a ng-href="#/email/logging">{{msg('email.logging')}}</a></li>
+            <li ng-class="{'active': selectedTabState.selectedTab === 'settings'}" ng-click="selectedTabState.selectedTab = 'settings'"><a  ng-href="#/email/settings">{{msg('email.settings')}}</a></li>
         </ul>
     </div>
     <div class="ui-layout-content">

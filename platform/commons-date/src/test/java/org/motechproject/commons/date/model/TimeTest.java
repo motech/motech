@@ -58,4 +58,20 @@ public class TimeTest {
         assertEquals(new Time(9, 22), new Time("9:22:11"));
         assertEquals(new Time(7, 30), new Time("7:30"));
     }
+
+    @Test
+    public void shouldCorrectlyCompareTime() {
+        Time time1 = new Time(11, 50);
+        Time time2 = new Time(11, 51);
+        Time time3 = new Time(12, 00);
+
+        assertTrue(time2.isAfter(time1));
+        assertTrue(time1.isBefore(time2));
+
+        assertTrue(time3.isAfter(time2));
+        assertTrue(time2.isBefore(time3));
+
+        assertTrue(time3.isAfter(time1));
+        assertTrue(time1.isBefore(time3));
+    }
 }

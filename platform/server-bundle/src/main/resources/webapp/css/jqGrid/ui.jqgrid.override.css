@@ -193,3 +193,7 @@ div.ui-jqgrid-view table.ui-jqgrid-btable th {
     height: auto;
     overflow-y: hidden;
 }
+
+.ui-jqgrid tr.jqgfirstrow td {
+    border-color: #F3FBFE;
+}

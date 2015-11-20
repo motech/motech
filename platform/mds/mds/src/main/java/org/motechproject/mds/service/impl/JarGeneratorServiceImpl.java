@@ -12,19 +12,21 @@ import org.motechproject.mds.MDSDataProvider;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
-import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityInfo;
-import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.FieldInfo;
-import org.motechproject.mds.domain.RestOptions;
-import org.motechproject.mds.domain.UIDisplayFieldComparator;
+import org.motechproject.mds.dto.AdvancedSettingsDto;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.RestOptionsDto;
+import org.motechproject.mds.dto.SchemaHolder;
+import org.motechproject.mds.dto.TrackingDto;
+import org.motechproject.mds.dto.UIDisplayFieldComparator;
 import org.motechproject.mds.event.CrudEventBuilder;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.helper.ActionParameterTypeResolver;
 import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
-import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.JdoListenerRegistryService;
@@ -43,7 +45,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import javax.annotation.Resource;
@@ -101,91 +102,95 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private MDSDataProvider mdsDataProvider;
     private EntitiesBundleMonitor monitor;
     private BundleContext bundleContext;
-    private AllEntities allEntities;
     private final Object lock = new Object();
     private boolean moduleRefreshed;
 
     @Override
-    @Transactional
-    public synchronized void regenerateMdsDataBundle() {
-        regenerateMdsDataBundle(true);
+    public synchronized void regenerateMdsDataBundle(SchemaHolder schemaHolder) {
+        regenerateMdsDataBundle(schemaHolder, true);
     }
 
     @Override
-    @Transactional
-    public void regenerateMdsDataBundleAfterDdeEnhancement(String... moduleNames) {
-        regenerateMdsDataBundle(true, null == moduleNames ? new String[0] : moduleNames);
+    public void regenerateMdsDataBundleAfterDdeEnhancement(SchemaHolder schemaHolder, String... moduleNames) {
+        regenerateMdsDataBundle(schemaHolder, true, null == moduleNames ? new String[0] : moduleNames);
     }
 
-    @Transactional
-    public void regenerateMdsDataBundle(boolean startBundle) {
-        regenerateMdsDataBundle(startBundle, new String[0]);
+    @Override
+    public void regenerateMdsDataBundle(SchemaHolder schemaHolder, boolean startBundle) {
+        regenerateMdsDataBundle(schemaHolder, startBundle, new String[0]);
     }
 
-    private synchronized void regenerateMdsDataBundle(boolean startBundle, String... moduleNames) {
+    private synchronized void regenerateMdsDataBundle(SchemaHolder schemaHolder, boolean startBundle, String... moduleNames) {
         LOGGER.info("Regenerating the mds entities bundle");
 
-        clearModulesCache(moduleNames);
-        cleanEntitiesBundleCachedClasses();
-
-        boolean constructed = mdsConstructor.constructEntities();
-
-        if (!constructed) {
-            return;
-        }
-
-        LOGGER.info("Updating mds data provider");
-        mdsDataProvider.updateDataProvider();
-
-        File dest = new File(monitor.bundleLocation());
-        if (dest.exists()) {
-            // proceed when the bundles context is ready, we want the context processors to finish
-            LOGGER.info("Waiting for entities context");
-            monitor.waitForEntitiesContext();
-        }
-
-        File tmpBundleFile;
-
+        ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         try {
-            LOGGER.info("Generating bundle jar");
-            tmpBundleFile = generate();
-            LOGGER.info("Generated bundle jar");
-        } catch (IOException e) {
-            throw new MdsException("Unable to generate entities bundle", e);
-        }
+            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
 
-        FileUtils.deleteQuietly(dest);
+            clearModulesCache(moduleNames);
+            cleanEntitiesBundleCachedClasses();
 
-        try {
-            FileUtils.copyFile(tmpBundleFile, dest);
-        } catch (IOException e) {
-            LOGGER.error("Unable to copy the mds-entities bundle to the bundle directory. Installing from temp directory", e);
-            // install from temp directory
-            dest = tmpBundleFile;
-        }
+            boolean constructed = mdsConstructor.constructEntities(schemaHolder);
 
-        monitor.stopEntitiesBundle();
+            if (!constructed) {
+                return;
+            }
 
-        // In case of some core bundles, we must first stop some modules in order to avoid problems during refresh
-        stopModulesForCoreBundleRefresh(moduleNames);
+            LOGGER.info("Updating mds data provider");
+            mdsDataProvider.updateDataProvider(schemaHolder);
 
-        try {
-            monitor.start(dest, false);
+            File dest = new File(monitor.bundleLocation());
+            if (dest.exists()) {
+                // proceed when the bundles context is ready, we want the context processors to finish
+                LOGGER.info("Waiting for entities context");
+                monitor.waitForEntitiesContext();
+            }
+
+            File tmpBundleFile;
+
+            try {
+                LOGGER.info("Generating bundle jar");
+                tmpBundleFile = generate(schemaHolder);
+                LOGGER.info("Generated bundle jar");
+            } catch (IOException e) {
+                throw new MdsException("Unable to generate entities bundle", e);
+            }
+
+            FileUtils.deleteQuietly(dest);
+
+            try {
+                FileUtils.copyFile(tmpBundleFile, dest);
+            } catch (IOException e) {
+                LOGGER.error("Unable to copy the mds-entities bundle to the bundle directory. Installing from temp directory", e);
+                // install from temp directory
+                dest = tmpBundleFile;
+            }
+
+            monitor.stopEntitiesBundle();
+
+            // In case of some core bundles, we must first stop some modules in order to avoid problems during refresh
+            stopModulesForCoreBundleRefresh(moduleNames);
+
+            try {
+                monitor.start(dest, false);
+            } finally {
+                FileUtils.deleteQuietly(tmpBundleFile);
+            }
+
+            refreshModules(moduleNames);
+
+            if (startBundle) {
+                monitor.start();
+            }
+
+            // Start bundles again if we stopped them manually
+            startModulesForCoreBundleRefresh(moduleNames);
+
+            // Give framework some time before returning to the caller
+            ThreadSuspender.sleep(2000);
         } finally {
-            FileUtils.deleteQuietly(tmpBundleFile);
+            Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
-
-        refreshModules(moduleNames);
-
-        if (startBundle) {
-            monitor.start();
-        }
-
-        // Start bundles again if we stopped them manually
-        startModulesForCoreBundleRefresh(moduleNames);
-
-        // Give framework some time before returning to the caller
-        ThreadSuspender.sleep(2000);
     }
 
     private void stopModulesForCoreBundleRefresh(String[] moduleNames) {
@@ -264,8 +269,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     }
 
     @Override
-    @Transactional
-    public File generate() throws IOException {
+    public File generate(SchemaHolder schemaHolder) throws IOException {
         Path tempDir = Files.createTempDirectory("mds");
         Path tempFile = Files.createTempFile(tempDir, "mds-entities", ".jar");
 
@@ -301,7 +305,11 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                 }
 
                 if (!classData.isEnumClassData()) {
-                    EntityInfo info = buildEntityInfo(classData);
+                    EntityDto entity = schemaHolder.getEntityByClassName(classData.getClassName());
+                    List<FieldDto> fields = schemaHolder.getFields(entity);
+                    AdvancedSettingsDto advancedSettings = schemaHolder.getAdvancedSettings(entity);
+
+                    EntityInfo info = buildEntityInfo(classData, entity, fields, advancedSettings);
 
                     // we keep the name to construct a file containing all entity names
                     // the file is required for schema generation
@@ -332,13 +340,6 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                         }
                     }
 
-                    Entity entity = allEntities.retrieveByClassName(classData.getClassName());
-
-                    info.setFieldsInfo(getFieldsInfo(entity));
-                    info.setEntityName(entity.getName());
-                    setAllowedEvents(info, entity);
-                    updateRestOptions(info, entity);
-
                     information.add(info);
                 }
             }
@@ -350,37 +351,46 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
             jdoListenerRegistryService.removeInactiveListeners(entityNamesSb.toString());
             String entityWithListenersNames = jdoListenerRegistryService.getEntitiesListenerStr();
 
-            addEntries(output, blueprint, context, channel, entityNamesSb.toString(), historyEntitySb.toString(), entityWithListenersNames);
+            addEntries(output, blueprint, context, channel, entityNamesSb.toString(), historyEntitySb.toString(),
+                    entityWithListenersNames);
 
             return tempFile.toFile();
         }
     }
 
-    private EntityInfo buildEntityInfo(ClassData classData) {
+    private EntityInfo buildEntityInfo(ClassData classData, EntityDto entity, List<FieldDto> fields,
+                                       AdvancedSettingsDto advancedSettings) {
         EntityInfo info = new EntityInfo();
 
         info.setClassName(classData.getClassName());
         info.setModule(classData.getModule());
         info.setNamespace(classData.getNamespace());
 
+        info.setFieldsInfo(getFieldsInfo(entity, fields, advancedSettings));
+        info.setEntityName(entity.getName());
+        setAllowedEvents(info, advancedSettings);
+        updateRestOptions(info, advancedSettings);
+
         return info;
     }
 
-    private void updateRestOptions(EntityInfo info, Entity entity) {
-        RestOptions restOptions = entity.getRestOptions();
+    private void updateRestOptions(EntityInfo info, AdvancedSettingsDto advancedSettings) {
+        RestOptionsDto restOptions = advancedSettings.getRestOptions();
 
         if (restOptions != null) {
-            info.setRestCreateEnabled(restOptions.isAllowCreate());
-            info.setRestReadEnabled(restOptions.isAllowRead());
-            info.setRestUpdateEnabled(restOptions.isAllowUpdate());
-            info.setRestDeleteEnabled(restOptions.isAllowDelete());
+            info.setRestCreateEnabled(restOptions.isCreate());
+            info.setRestReadEnabled(restOptions.isRead());
+            info.setRestUpdateEnabled(restOptions.isUpdate());
+            info.setRestDeleteEnabled(restOptions.isDelete());
         }
     }
 
-    private void setAllowedEvents(EntityInfo info, Entity entity) {
-        info.setCreateEventFired(entity.isAllowCreateEvent());
-        info.setUpdateEventFired(entity.isAllowUpdateEvent());
-        info.setDeleteEventFired(entity.isAllowDeleteEvent());
+    private void setAllowedEvents(EntityInfo info, AdvancedSettingsDto advancedSettings) {
+        TrackingDto tracking = advancedSettings.getTracking();
+
+        info.setCreateEventFired(tracking.isAllowCreateEvent());
+        info.setUpdateEventFired(tracking.isAllowUpdateEvent());
+        info.setDeleteEventFired(tracking.isAllowDeleteEvent());
     }
 
     private void addEntries(JarOutputStream output, String blueprint, String context, String channel,
@@ -557,27 +567,31 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         return sb.toString();
     }
 
-    private List<FieldInfo> getFieldsInfo(Entity entity) {
+    private List<FieldInfo> getFieldsInfo(EntityDto entity, List<FieldDto> fields,
+                                          AdvancedSettingsDto advancedSettings) {
         List<FieldInfo> fieldsInfo = new ArrayList<>();
-        List<Field> fields = new ArrayList<>(entity.getFields());
-        Collections.sort(fields, new UIDisplayFieldComparator());
-        for (Field field : fields) {
+
+        Collections.sort(fields, new UIDisplayFieldComparator(advancedSettings.getBrowsing().getDisplayedFields()));
+
+        for (FieldDto field : fields) {
             FieldInfo fieldInfo = new FieldInfo();
 
-            fieldInfo.setName(field.getName());
-            fieldInfo.setDisplayName(field.getDisplayName());
-            fieldInfo.setRequired(field.isRequired());
-            fieldInfo.setRestExposed(field.isExposedViaRest());
+            fieldInfo.setName(field.getBasic().getName());
+            fieldInfo.setDisplayName(field.getBasic().getDisplayName());
+            fieldInfo.setRequired(field.getBasic().isRequired());
             fieldInfo.setAutoGenerated(TRUE.equals(field.getMetadataValue(AUTO_GENERATED)));
 
+            boolean exposedByRest = advancedSettings.isFieldExposedByRest(field.getBasic().getName());
+            fieldInfo.setRestExposed(exposedByRest);
+
             FieldInfo.TypeInfo typeInfo = fieldInfo.getTypeInfo();
-            typeInfo.setType(field.getType().getTypeClassName());
-            typeInfo.setTaskType(ActionParameterTypeResolver.resolveType(field));
+            typeInfo.setType(field.getType().getTypeClass());
+            typeInfo.setTaskType(ActionParameterTypeResolver.resolveType(entity, field));
 
             // combobox values
             typeInfo.setCombobox(field.getType().isCombobox());
             if (field.getType().isCombobox()) {
-                ComboboxHolder cbHolder = new ComboboxHolder(field);
+                ComboboxHolder cbHolder = new ComboboxHolder(entity, field);
                 String[] items = cbHolder.getValues();
                 if (ArrayUtils.isNotEmpty(items)) {
                     typeInfo.setItems(Arrays.asList(items));
@@ -666,11 +680,6 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     @Autowired
     public void setMonitor(EntitiesBundleMonitor monitor) {
         this.monitor = monitor;
-    }
-
-    @Autowired
-    public void setAllEntities(AllEntities allEntities) {
-        this.allEntities = allEntities;
     }
 
     @Autowired

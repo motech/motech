@@ -2,6 +2,7 @@ package org.motechproject.server.impl;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.motechproject.server.api.BundleLoader;
 import org.motechproject.server.api.BundleLoadingException;
 import org.osgi.framework.Bundle;
@@ -20,6 +21,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -213,7 +215,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
 
     private static void clearMap(Class cl, Object obj, String name)
             throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        Field field = cl.getDeclaredField(name);
+        Field field = FieldUtils.getField(cl, name, true);
         field.setAccessible(true);
         Object cache = field.get(obj);
         Class ccl = cache.getClass();

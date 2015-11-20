@@ -8,6 +8,7 @@ import org.motechproject.mds.builder.MDSDataProviderBuilder;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.ex.dataprovider.DataProviderException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.lookup.LookupExecutor;
@@ -159,8 +160,8 @@ public class MDSDataProvider extends AbstractDataProvider {
         return "org.motechproject.mds.entity";
     }
 
-    public void updateDataProvider() {
-        setBody(mdsDataProviderBuilder.generateDataProvider());
+    public void updateDataProvider(SchemaHolder schemaHolder) {
+        setBody(mdsDataProviderBuilder.generateDataProvider(schemaHolder));
         // we unregister the service, then register again
         if (serviceRegistration != null) {
             serviceRegistration.unregister();

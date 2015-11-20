@@ -10,7 +10,6 @@ import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.bootstrap.BootstrapManager;
 import org.motechproject.config.core.datanucleus.DatanucleusManager;
 import org.motechproject.config.core.domain.ConfigLocation;
-import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.environment.Environment;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
 
@@ -23,14 +22,6 @@ import static org.mockito.Mockito.when;
 
 
 public class CoreConfigurationServiceImplTest {
-
-    private final String bootstrapFileLocation = "file_location";
-    private final String bootstrapFile = bootstrapFileLocation + "/bootstrap.properties";
-    private final String dbUrl = "http://localhost:5984";
-    private final String username = "user";
-    private final String password = "pass";
-    private final String tenantId = "test_tenant_id";
-    private final String configSource = ConfigSource.FILE.getName();
 
     @Mock
     private Environment environmentMock;
