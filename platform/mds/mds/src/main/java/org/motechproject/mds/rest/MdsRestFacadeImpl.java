@@ -25,6 +25,7 @@ import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.BlobDeserializer;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.PropertyUtil;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -90,6 +91,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
+    @Transactional
     public RestResponse get(QueryParams queryParams, boolean includeBlob) {
         if (!restOptions.isRead()) {
             throw operationNotSupportedEx("READ");
@@ -106,6 +108,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
+    @Transactional
     public RestResponse get(Long id, boolean includeBlob) {
         if (!restOptions.isRead()) {
             throw operationNotSupportedEx("READ");
@@ -125,6 +128,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
+    @Transactional
     public RestProjection create(InputStream instanceBody) {
         if (!restOptions.isCreate()) {
             throw operationNotSupportedEx("CREATE");
@@ -145,6 +149,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
+    @Transactional
     public RestProjection update(InputStream instanceBody) {
         if (!restOptions.isUpdate()) {
             throw operationNotSupportedEx("UPDATE");
@@ -162,6 +167,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         if (!restOptions.isDelete()) {
             throw operationNotSupportedEx("DELETE");
@@ -171,6 +177,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
+    @Transactional
     public Object executeLookup(String lookupName, Map<String, String> lookupMap, QueryParams queryParams, boolean includeBlob) {
         if (lookupExecutors.containsKey(lookupName)) {
             LookupExecutor executor = lookupExecutors.get(lookupName);
