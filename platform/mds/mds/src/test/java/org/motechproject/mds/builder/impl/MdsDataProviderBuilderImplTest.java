@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -86,8 +87,11 @@ public class MdsDataProviderBuilderImplTest {
         lookup.setLookupFields(lookupFields);
         lookupList.add(lookup);
 
+        AdvancedSettingsDto advancedSettings = new AdvancedSettingsDto();
+        advancedSettings.setIndexes(lookupList);
+
         SchemaHolder schema = new SchemaHolder();
-        schema.addEntity(entity, null, fieldList, lookupList);
+        schema.addEntity(entity, advancedSettings, fieldList);
 
         String generatedJson = mdsDataProviderBuilder.generateDataProvider(schema);
 

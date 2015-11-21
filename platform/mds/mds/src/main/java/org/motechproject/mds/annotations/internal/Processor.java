@@ -1,5 +1,6 @@
 package org.motechproject.mds.annotations.internal;
 
+import org.motechproject.mds.dto.SchemaHolder;
 import org.osgi.framework.Bundle;
 
 import java.lang.annotation.Annotation;
@@ -26,8 +27,9 @@ public interface Processor<A extends Annotation> {
      * Executes the specific actions on data with the given annotation.
      *
      * @param bundle instance of bundle that represent the given module.
+     * @param schemaHolder the current MDS schema
      */
-    void execute(Bundle bundle);
+    void execute(Bundle bundle, SchemaHolder schemaHolder);
 
     /**
      * Checks if the processor found some data.
