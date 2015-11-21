@@ -381,8 +381,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     private void addColumnMetadata(FieldMetadata fmd, FieldDto field, Value valueAnnotation) {
         SettingDto maxLengthSetting = field.getSetting(Constants.Settings.STRING_MAX_LENGTH);
         ColumnMetadata colMd = fmd.newColumnMetadata();
-        // only set the metadata if the setting is different from default
-        if (maxLengthSetting != null) {
+        // text(clob) fields don't have length
+        if (maxLengthSetting != null && !isClob(field)) {
             colMd.setLength(Integer.parseInt(maxLengthSetting.getValueAsString()));
         }
 
@@ -717,5 +717,10 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private String getNameForMetadata(FieldDto field) {
         return StringUtils.uncapitalize(field.getBasic().getName());
+    }
+
+    private boolean isClob(FieldDto field) {
+        return Constants.Util.TRUE.equalsIgnoreCase(
+                field.getSettingsValueAsString(Constants.Settings.STRING_TEXT_AREA));
     }
 }

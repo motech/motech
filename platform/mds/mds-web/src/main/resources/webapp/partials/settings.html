@@ -2,7 +2,7 @@
     <div id="settings-tab">
         <ul class="nav nav-tabs mds-settings" id="myTab">
             <li class="active">
-                <a target="_self" href="#data-retention" data-toggle="tab">{{msg('mds.tab.dataRetention')}}</a>
+                <a target="_self" href="#mds-settings" data-toggle="tab">{{msg('mds.tab.mdsSettings')}}</a>
             </li>
             <li>
                 <a target="_self" href="#import" data-toggle="tab">{{msg('mds.tab.import')}}</a>
@@ -13,8 +13,8 @@
         </ul>
 
         <div class="tab-content">
-            <div class="tab-pane active inside" id="data-retention">
-                <div ng-include="'../mds/resources/partials/widgets/data-retention.html'"></div>
+            <div class="tab-pane active inside" id="mds-settings">
+                <div ng-include="'../mds/resources/partials/widgets/mds-settings.html'"></div>
             </div>
             <div class="tab-pane" id="import">
                 <div ng-include="'../mds/resources/partials/widgets/import.html'"></div>
