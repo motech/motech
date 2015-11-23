@@ -3,7 +3,10 @@ package org.motechproject.security.filter;
 import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechProxyManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.web.context.WebApplicationContext;
@@ -14,6 +17,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,6 +39,8 @@ import static org.springframework.security.core.authority.AuthorityUtils.createA
  * dynamically updated and all requests re-directed to that chain.
  */
 public class MotechDelegatingFilterProxy extends DelegatingFilterProxy {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MotechDelegatingFilterProxy.class);
     private static final String ADMIN_MODE_FILE = "admin-mode.conf";
 
     private Filter anonymousFilter;
@@ -59,6 +65,10 @@ public class MotechDelegatingFilterProxy extends DelegatingFilterProxy {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         WebApplicationContext context = super.findWebApplicationContext();
         MotechProxyManager proxyManager = context.getBean(MotechProxyManager.class);
+
+        if (request instanceof HttpServletRequest) {
+            traceRequest((HttpServletRequest) request);
+        }
 
         if (isAdminMode) {
             anonymousFilter.doFilter(request, response, filterChain);
@@ -95,6 +105,15 @@ public class MotechDelegatingFilterProxy extends DelegatingFilterProxy {
         }
 
         return adminModeProperty;
+    }
+
+    private void traceRequest(HttpServletRequest req) {
+        LOGGER.trace("HTTP request {} received from {}", req.getPathInfo(), req.getRemoteAddr());
+        if (req.getSession() != null && req.getSession().getAttribute("SPRING_SECURITY_CONTEXT") != null) {
+            SecurityContext securityContext = (SecurityContext) req.getSession().getAttribute("SPRING_SECURITY_CONTEXT");
+            LOGGER.trace("Session for request {} contains security context. Username: {}; Permissions: {} ",
+                    req.getPathInfo(), securityContext.getAuthentication().getName(), securityContext.getAuthentication().getAuthorities());
+        }
     }
 
     private class MotechAnonymousAuthenticationFilter extends AnonymousAuthenticationFilter {
