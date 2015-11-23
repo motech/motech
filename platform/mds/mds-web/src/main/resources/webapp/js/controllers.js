@@ -4014,11 +4014,6 @@
             return result;
         };
 
-        $scope.dataBrowserPreferencesCookieName = function(entity) {
-            var username = $rootScope.username || '';
-            return username + '_org.motechproject.mds.databrowser.fields.' + entity.className + '#' + entity.id;
-        };
-
         $scope.isFieldSelected = function(name) {
             var i;
             for (i = 0; i < $scope.selectedFields.length; i += 1) {
@@ -4791,6 +4786,26 @@
             } else {
                 return obj;
             }
+        };
+
+        $scope.saveColumnWidth = function (fieldName, width) {
+            var cookieName = $scope.getTableWidthCookieName($scope.selectedEntity),
+                data = $scope.getColumnsWidth();
+            data[fieldName] = width;
+            $.cookie(cookieName, JSON.stringify(data), { expires : 7 });
+        };
+
+        $scope.getColumnsWidth = function() {
+            var cookieName = $scope.getTableWidthCookieName($scope.selectedEntity);
+            if ($.cookie(cookieName)) {
+               return JSON.parse($.cookie(cookieName));
+            }
+            return {};
+        };
+
+        $scope.getTableWidthCookieName = function(entity) {
+            var username = $rootScope.username || '';
+            return username + 'table.width_org.motechproject.mds.databrowser.fields.' + entity.className + '#' + entity.id;
         };
     });
 
