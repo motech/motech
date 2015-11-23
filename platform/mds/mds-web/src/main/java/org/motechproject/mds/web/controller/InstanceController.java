@@ -188,7 +188,9 @@ public class InstanceController extends MdsController {
     public Records<EntityRecord> getRelatedValues(@PathVariable Long entityId, @PathVariable String fieldName, String filters, GridSettings settings) {
         RelationshipsUpdate filter = parseRelatedInstancesFilter(filters);
         QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
-        return instanceService.getRelatedFieldValue(entityId, null, fieldName, filter, queryParams);
+        Records<EntityRecord> records = instanceService.getRelatedFieldValue(entityId, null, fieldName, filter, queryParams);
+        processFieldsForUI(records);
+        return records;
     }
 
     @RequestMapping(value = "/instances/{entityId}/instance/{instanceId}/{fieldName}", method = RequestMethod.POST)
