@@ -3524,6 +3524,45 @@
             });
         };
 
+        $scope.addNewRelatedInstanceInline = function (field) {
+            var relatedClass  = $scope.getRelatedClass(field);
+            $('#newFieldPanel_' + field.id).removeClass('hidden');
+            $scope.baseExtended = {
+                instanceId: $scope.selectedInstance,
+                entityClassName: $scope.selectedEntity.className
+                //previouslyEdited: $scope.previouslyEdited
+            };
+            //$scope.instanceEditMode = false;
+
+            $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
+                Instances.newInstance({id: data.id}, function(data) {
+                    $scope.currentRelationRecord = data;
+                    $scope.rfields = data.fields;
+                    angular.forEach($scope.rfields, function(field) {
+                        if ( field.type.typeClass === "java.util.List" && field.value !== null && field.value.length === 0 ) {
+                            field.value = null;
+                        }
+                    });
+                    unblockUI();
+                });
+            }).error(function(response) {
+                handleResponse('mds.error', 'mds.dataBrowsing.error.instancesList', response);
+            });
+
+        };
+
+        $scope.cancelAddRelatedForm = function (fieldid) {
+            $scope.rfields = null;
+            $('#newFieldPanel_' + fieldid).addClass('hidden');
+            $scope.baseExtended = null;
+        };
+
+        $scope.cancelEditRelatedForm = function (fieldid) {
+            $scope.editrelatedfields = null;
+            $('#editFieldPanel_' + fieldid).addClass('hidden');
+
+        };
+
         /**
         * Sets selected entity by module and entity name
         */
@@ -3557,6 +3596,23 @@
                     });
                 }
             });
+        };
+
+        $scope.editrelatedfields = null;
+
+        $scope.editInstanceOfEntity2 = function(instanceId, entityClassName, field) {
+            if (instanceId === 'null') {
+            $scope.editedField = field;
+            $('#editFieldPanel_' + field.id).removeClass('hidden');
+            $scope.$apply(function () {
+                $scope.editrelatedfields = angular.copy(field.value[0]);
+            });
+            angular.forEach($scope.editrelatedfields, function(field) {
+                if ( field.type.typeClass === "java.util.List" && field.value !== null && field.value.length === 0 ) {
+                    field.value = null;
+                }
+            });
+            }
         };
 
         $scope.shouldHideEdition = function(field) {
@@ -3633,6 +3689,10 @@
            return $scope.extractIdByFieldId(fieldId, $scope.addedExistingRelatedDataTmp, 'addedIds');
         };
 
+        $scope.updateRelatedData = function (field, relatedData) {
+            $('#editFieldPanel_' + field.id).addClass('hidden');
+        };
+
         $scope.removedRelatedDataTmp = [];
 
         $scope.removeManyRelatedData = function(field, relatedInstance) {
@@ -3647,9 +3707,27 @@
             return $scope.extractIdByFieldId(fieldId, $scope.removedRelatedDataTmp, 'removedIds');
         };
 
+        $scope.addedNewRelatedDataTmp = [];
+
+        $scope.addNewRelatedData = function (field, relatedData) {
+            $scope.editedField = field;
+            if ($scope.editedField.value === undefined || $scope.editedField.value === null || $scope.editedField.value === '') {
+                $scope.editedField.value = [];
+            }                             //$scope.editedField.value.push({});
+            $scope.editedField.value.push(relatedData);
+            $scope.addedNewRelatedDataTmp.push({fieldId: field.id, addedNewRecords: {id: null, entitySchemaId: $scope.currentRelationRecord.entitySchemaId, fields: relatedData} });
+            $('#newFieldPanel_' + field.id).delay(3500).addClass('hidden');
+            $scope.baseExtended = null;
+        };
+
+        $scope.getAddedNewRelatedDataTmp = function (fieldId) {
+            return $scope.extractIdByFieldId(fieldId, $scope.addedNewRelatedDataTmp, 'addedNewRecords');
+        };
+
         $scope.resetRelatedData = function () {
             $scope.removedRelatedDataTmp = [];
             $scope.addedExistingRelatedDataTmp = [];
+            $scope.addedNewRelatedDataTmp = [];
         };
 
         $scope.getRelatedClass = function(field) {

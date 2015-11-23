@@ -3,7 +3,7 @@
         <div class="btn-group">
             <span class="col-sm-1 form-control input-sm input-records btn" id="relationsTableTotalRecords_{{field.id}}">0</span>
             <button ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance" class="btn btn-sm btn-default" target="_self"
-                id="instanceGrid_hide"  show-relations-grid="relationsTable_{{field.id}}">
+                    id="instanceGrid_hide"  show-relations-grid="relationsTable_{{field.id}}">
                 <i class="fa fa-fw fa-lg fa-angle-double-up"></i>
                 {{msg('mds.btn.showHide')}}
             </button>
@@ -21,9 +21,48 @@
                 {{msg('mds.btn.addExisting')}} {{field.displayName}}
             </button>
         </div>
+        <div class="btn-group">
+            <button ng-click="addNewRelatedInstanceInline(field)" type="button" class="btn btn-sm btn-default" ng-disabled="field.nonEditable"  ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
+                <i class="fa fa-lg fa-plus"></i> Inline {{msg('mds.btn.addNew')}} {{field.displayName}}
+            </button>
+        </div>
     </div>
     <div id="instance_relationsTable_{{field.id}}" class="overrideJqgridTable margin-before">
         <table id="relationsTable_{{field.id}}" field-id="{{field.id}}" relations-field-grid="{{field}}" entity-relations-grid="pageRelationsTable_{{field.id}}"></table>
         <div id="pageRelationsTable_{{field.id}}"></div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="panel panel-default clearfix new-relation-form hidden" id="editFieldPanel_{{field.id}}">
+        <div class="panel-heading"><strong>{{msg('mds.dataBrowsing.edit')}} - {{field.displayName}}</strong></div>
+        <div class="panel-body">
+            <div class="clearfix" editrelatedfieldsform ng-model="editrelatedfields"></div>
+        </div>
+        <div class="panel-footer clearfix">
+            <div class="col-md-offset-2 col-sm-offset-3 col-md-10 col-sm-9">
+                <button class="btn btn-sm btn-success" ng-click="updateRelatedData($parent.field, fields)">
+                    {{msg('mds.events.update')}}
+                </button>
+                <button class="btn btn-sm btn-default" ng-click="cancelEditRelatedForm(field.id)">
+                    {{msg('mds.btn.cancel')}}
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div ng-if="true" class="panel panel-default clearfix new-relation-form hidden" id="newFieldPanel_{{field.id}}">
+        <div class="panel-heading"><strong>{{msg('mds.form.newField')}} - {{field.displayName}}</strong></div>
+        <div class="panel-body">
+            <div class="clearfix" relatedfieldsform ng-model="rfields"></div>
+        </div>
+        <div class="panel-footer clearfix">
+            <div class="col-md-offset-2 col-sm-offset-3 col-md-10 col-sm-9">
+                <button class="btn btn-sm btn-success" ng-click="addNewRelatedData($parent.field, fields)">
+                    {{msg('mds.btn.add')}}
+                </button>
+                <button class="btn btn-sm btn-default" ng-click="cancelAddRelatedForm(field.id)">
+                    {{msg('mds.btn.cancel')}}
+                </button>
+            </div>
+        </div>
     </div>
 </div>
