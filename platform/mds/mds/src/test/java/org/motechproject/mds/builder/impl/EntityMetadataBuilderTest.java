@@ -39,7 +39,6 @@ import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
 import javax.jdo.metadata.CollectionMetadata;
 import javax.jdo.metadata.FieldMetadata;
-import javax.jdo.metadata.ForeignKeyMetadata;
 import javax.jdo.metadata.IndexMetadata;
 import javax.jdo.metadata.InheritanceMetadata;
 import javax.jdo.metadata.JDOMetadata;
@@ -221,8 +220,6 @@ public class EntityMetadataBuilderTest {
         FieldMetadata fmd = mock(FieldMetadata.class);
         CollectionMetadata collMd = mock(CollectionMetadata.class);
 
-        ForeignKeyMetadata fkmd = mock(ForeignKeyMetadata.class);
-
         when(entity.getName()).thenReturn(ENTITY_NAME);
         when(entity.getId()).thenReturn(2L);
         when(schemaHolder.getFields(entity)).thenReturn(singletonList(oneToManyField));
@@ -232,7 +229,6 @@ public class EntityMetadataBuilderTest {
         when(classMetadata.newFieldMetadata("oneToManyName")).thenReturn(fmd);
         when(fmd.getCollectionMetadata()).thenReturn(collMd);
         when(fmd.getName()).thenReturn("oneToManyName");
-        when(fmd.newForeignKeyMetadata()).thenReturn(fkmd);
 
         entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class, schemaHolder);
 
@@ -241,7 +237,6 @@ public class EntityMetadataBuilderTest {
         verify(collMd).setEmbeddedElement(false);
         verify(collMd).setSerializedElement(false);
         verify(collMd).setElementType("org.motechproject.test.MyClass");
-        verify(fkmd).setName("fk_Sample_oneToManyName_2");
     }
 
     @Test
@@ -255,8 +250,6 @@ public class EntityMetadataBuilderTest {
 
         FieldMetadata fmd = mock(FieldMetadata.class);
         when(fmd.getName()).thenReturn("oneToOneName");
-
-        ForeignKeyMetadata fkmd = mock(ForeignKeyMetadata.class);
 
         when(entity.getName()).thenReturn(ENTITY_NAME);
         when(entity.getId()).thenReturn(3L);
@@ -282,14 +275,11 @@ public class EntityMetadataBuilderTest {
         when(relatedClass.getDeclaredFields()).thenReturn(new CtField[]{relatedField});
         when(relatedClass.getName()).thenReturn(CLASS_NAME);
 
-        when(fmd.newForeignKeyMetadata()).thenReturn(fkmd);
-
         entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class, schemaHolder);
 
         verifyCommonClassMetadata();
         verify(fmd).setDefaultFetchGroup(true);
         verify(fmd).setPersistenceModifier(PersistenceModifier.PERSISTENT);
-        verify(fkmd).setName("fk_Sample_oneToOneName_3");
     }
 
     @Test
