@@ -7,6 +7,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.FieldInstanceDto;
+import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.csv.CsvImportException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
@@ -91,7 +92,9 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/instances/{entityId}/new")
     @ResponseBody
     public EntityRecord newInstance(@PathVariable Long entityId) {
-        return instanceService.newInstance(entityId);
+        EntityRecord entityRecord = instanceService.newInstance(entityId);
+        processFieldsForUI(entityRecord);
+        return entityRecord;
     }
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/fields", method = RequestMethod.GET)
@@ -147,7 +150,10 @@ public class InstanceController extends MdsController {
         long recordCount = instanceService.countHistoryRecords(entityId, instanceId);
         int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
 
-        return new Records<>(queryParams.getPage(), rowCount, (int) recordCount, historyRecordsList);
+        Records<HistoryRecord> records = new Records<>(queryParams.getPage(), rowCount, (int) recordCount,
+                historyRecordsList);
+        processFieldsForUIinHistoryRecords(records);
+        return records;
     }
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/previousVersion/{historyId}", method = RequestMethod.GET)
@@ -158,6 +164,7 @@ public class InstanceController extends MdsController {
         if (historyRecord == null) {
             throw new EntityNotFoundException(entityId);
         }
+        processFieldsForUIInHistoryRecord(historyRecord);
         return historyRecord;
     }
 
@@ -171,7 +178,9 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/instances/{entityId}/instance/{instanceId}", method = RequestMethod.GET)
     @ResponseBody
     public EntityRecord getInstance(@PathVariable Long entityId, @PathVariable Long instanceId) {
-        return instanceService.getEntityInstance(entityId, instanceId);
+        EntityRecord entityRecord = instanceService.getEntityInstance(entityId, instanceId);
+        processFieldsForUI(entityRecord);
+        return entityRecord;
     }
 
     @RequestMapping(value = "/instances/{entityId}/instance/new/{fieldName}", method = RequestMethod.POST)
@@ -188,7 +197,10 @@ public class InstanceController extends MdsController {
                                     @PathVariable String fieldName, String filters, GridSettings settings) {
         RelationshipsUpdate filter = parseRelatedInstancesFilter(filters);
         QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
-        return instanceService.getRelatedFieldValue(entityId, instanceId, fieldName, filter, queryParams);
+        Records<EntityRecord> records = instanceService.getRelatedFieldValue(entityId, instanceId, fieldName, filter,
+                queryParams);
+        processFieldsForUI(records);
+        return records;
     }
 
     /**
@@ -204,7 +216,9 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/instances/{entityId}/field/{fieldId}/instance/{instanceId}", method = RequestMethod.GET)
     @ResponseBody
     public FieldRecord getInstanceValueAsRelatedField(@PathVariable Long entityId, @PathVariable Long fieldId, @PathVariable Long instanceId) {
-        return instanceService.getInstanceValueAsRelatedField(entityId, fieldId, instanceId);
+        FieldRecord record = instanceService.getInstanceValueAsRelatedField(entityId, fieldId, instanceId);
+        processFieldForUI(record);
+        return record;
     }
 
     @RequestMapping(value = "/entities/{entityId}/trash", method = RequestMethod.GET)
@@ -216,14 +230,18 @@ public class InstanceController extends MdsController {
         long recordCount = instanceService.countTrashRecords(entityId);
         int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
 
-        return new Records<>(queryParams.getPage(), rowCount, (int) recordCount, trashRecordsList);
-
+        Records<EntityRecord> records = new Records<>(queryParams.getPage(), rowCount, (int) recordCount,
+                trashRecordsList);
+        processFieldsForUI(records);
+        return records;
     }
 
     @RequestMapping(value = "/entities/{entityId}/trash/{instanceId}", method = RequestMethod.GET)
     @ResponseBody
     public EntityRecord getSingleTrashInstance(@PathVariable Long entityId, @PathVariable Long instanceId) {
-        return instanceService.getSingleTrashRecord(entityId, instanceId);
+        EntityRecord entityRecord = instanceService.getSingleTrashRecord(entityId, instanceId);
+        processFieldsForUI(entityRecord);
+        return entityRecord;
     }
 
     @RequestMapping(value = "/entities/{entityId}/exportInstances", method = RequestMethod.GET)
@@ -261,7 +279,7 @@ public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
     @ResponseBody
-    public Records<?> getInstances(@PathVariable Long entityId, GridSettings settings) throws IOException {
+    public Records<EntityRecord> getInstances(@PathVariable Long entityId, GridSettings settings) throws IOException {
         String lookup = settings.getLookup();
         String filterStr = settings.getFilter();
         Map<String, Object> fieldMap = getFields(settings);
@@ -287,7 +305,9 @@ public class InstanceController extends MdsController {
 
         int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
 
-        return new Records<>(queryParams.getPage(), rowCount, (int) recordCount, entityRecords);
+        Records<EntityRecord> records = new Records<>(queryParams.getPage(), rowCount, (int) recordCount, entityRecords);
+        processFieldsForUI(records);
+        return records;
     }
 
     @RequestMapping(value = "/instances/{entityId}/csvimport", method = RequestMethod.POST)
@@ -356,5 +376,36 @@ public class InstanceController extends MdsController {
         int index = ArrayUtils.indexOf(content, (byte) ',') + 1;
 
         return ArrayUtils.toObject(decoder.decode(ArrayUtils.subarray(content, index, content.length)));
+    }
+
+    private void processFieldsForUI(Records<EntityRecord> records) {
+        for (EntityRecord record : records.getRows()) {
+            processFieldsForUI(record);
+        }
+    }
+
+    private void processFieldsForUIinHistoryRecords(Records<HistoryRecord> records) {
+        for (HistoryRecord record : records.getRows()) {
+            processFieldsForUIInHistoryRecord(record);
+        }
+    }
+
+    private void processFieldsForUIInHistoryRecord(HistoryRecord record) {
+        for (FieldRecord fieldRecord : record.getFields()) {
+            processFieldForUI(fieldRecord);
+        }
+    }
+
+    private void processFieldsForUI(EntityRecord entityRecord) {
+        for (FieldRecord fieldRecord : entityRecord.getFields()) {
+            processFieldForUI(fieldRecord);
+        }
+    }
+
+    private void processFieldForUI(FieldRecord fieldRecord) {
+        SettingDto textAreaSetting = fieldRecord.getSettingByName(Constants.Settings.STRING_TEXT_AREA);
+        if (textAreaSetting != null && Constants.Util.TRUE.equalsIgnoreCase(textAreaSetting.getValueAsString())) {
+            fieldRecord.setType(textAreaUIType());
+        }
     }
 }

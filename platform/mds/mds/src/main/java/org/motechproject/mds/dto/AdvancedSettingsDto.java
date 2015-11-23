@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ public class AdvancedSettingsDto {
     private List<LookupDto> indexes = new ArrayList<>();
     private RestOptionsDto restOptions = new RestOptionsDto();
     private BrowsingSettingsDto browsing = new BrowsingSettingsDto();
+    private UserPreferencesDto userPreferences;
 
     public Long getId() {
         return id;
@@ -75,6 +77,20 @@ public class AdvancedSettingsDto {
 
     public void setBrowsing(BrowsingSettingsDto browsing) {
         this.browsing = browsing;
+    }
+
+    public UserPreferencesDto getUserPreferences() {
+        return userPreferences;
+    }
+
+    public void setUserPreferences(UserPreferencesDto userPreferences) {
+        this.userPreferences = userPreferences;
+    }
+
+    @JsonIgnore
+    public boolean isFieldExposedByRest(String fieldName) {
+        return restOptions != null && restOptions.getFieldNames() != null &&
+                restOptions.getFieldNames().contains(fieldName);
     }
 
     /**

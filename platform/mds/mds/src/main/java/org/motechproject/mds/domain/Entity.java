@@ -12,6 +12,7 @@ import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.util.ValidationUtil;
 
 import javax.jdo.annotations.Discriminator;
@@ -324,12 +325,14 @@ public class Entity {
         this.superClass = superClass;
     }
 
+    @NotPersistent
     public boolean isSubClassOfMdsEntity () {
-        return MdsEntity.class.getName().equalsIgnoreCase(getSuperClass()) || MdsVersionedEntity.class.getName().equalsIgnoreCase(getSuperClass());
+        return TypeHelper.isSubclassOfMdsEntity(getSuperClass());
     }
 
+    @NotPersistent
     public boolean isSubClassOfMdsVersionedEntity () {
-        return MdsVersionedEntity.class.getName().equalsIgnoreCase(getSuperClass());
+        return TypeHelper.isSubclassOfMdsVersionedEntity(getSuperClass());
     }
 
     public boolean isAbstractClass() {
@@ -358,9 +361,7 @@ public class Entity {
 
     @NotPersistent
     public boolean isBaseEntity() {
-        return Object.class.getName().equalsIgnoreCase(getSuperClass()) ||
-                MdsEntity.class.getName().equalsIgnoreCase(getSuperClass()) ||
-                MdsVersionedEntity.class.getName().equalsIgnoreCase(getSuperClass());
+        return TypeHelper.isBaseEntity(getSuperClass());
     }
 
     @NotPersistent

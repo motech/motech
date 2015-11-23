@@ -1,15 +1,15 @@
-#if ( ! $service.listEntities().isEmpty() )
+#if ( ! $schema.getAllEntities().isEmpty() )
 {
     "name": "data-services",
-    "objects": [ #foreach ( $entity in $service.listEntities() )
+    "objects": [ #foreach ( $entity in $schema.getAllEntities() )
         {
             "displayName": "$entity.getName()",
             "type": "$entity.getClassName()",
-            "lookupFields": [ #foreach ( $lookup in $service.getEntityLookups($entity.getId()) )
+            "lookupFields": [ #foreach ( $lookup in $schema.getLookups($entity) )
                 {
                     "displayName": "$lookup.getLookupName()",
                     "fields": [
-                        #foreach ( $field in $lookup.getLookupFields() ) "$field.getLookupFieldName()" #if( $velocityHasNext ) , #end #end
+                        #foreach ( $field in $lookup.getLookupFields() ) "$field.getName()" #if( $velocityHasNext ) , #end #end
                     ]
                 },#end
                 {
@@ -20,7 +20,7 @@
                 }
             ],
             "fields": [
-                #foreach ( $field in $service.getEntityFields($entity.getId()) )
+                #foreach ( $field in $schema.getFields($entity) )
                 {
                     "displayName": "$field.getBasic().getDisplayName()",
                     "fieldKey": "$field.getBasic().getName()"

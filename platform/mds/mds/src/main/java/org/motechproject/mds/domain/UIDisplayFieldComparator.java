@@ -1,15 +1,13 @@
 
 package org.motechproject.mds.domain;
 
-import org.motechproject.mds.domain.Field;
-
 import java.util.Comparator;
 
 /**
  * <code>UIDisplayFieldComparator</code> compares positions
  * added in UIDisplayable annotation. Fields without annotation are placed at the end.
  */
-public class UIDisplayFieldComparator implements Comparator<Field> {
+public class UIDisplayFieldComparator implements Comparator<Field>{
 
     @Override
     public int compare(Field o1, Field o2) {

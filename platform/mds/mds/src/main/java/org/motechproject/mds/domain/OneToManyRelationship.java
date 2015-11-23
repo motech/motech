@@ -1,6 +1,7 @@
 package org.motechproject.mds.domain;
 
 import javassist.bytecode.Descriptor;
+import org.motechproject.mds.dto.FieldDto;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.RELATIONSHIP_COL
 public class OneToManyRelationship extends Relationship {
 
     @Override
-    public String getFieldType(Field field, EntityType type) {
+    public String getFieldType(FieldDto field, EntityType type) {
         if (isNotBlank(field.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE))) {
             return field.getMetadataValue(RELATIONSHIP_COLLECTION_TYPE);
         }
@@ -22,7 +23,7 @@ public class OneToManyRelationship extends Relationship {
     }
 
     @Override
-    public String getGenericSignature(Field field, EntityType type) {
+    public String getGenericSignature(FieldDto field, EntityType type) {
         String elementClass = type == EntityType.STANDARD ?
                 getRelatedClassName(field, type) :
                 Long.class.getName();

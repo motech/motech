@@ -1,5 +1,7 @@
 package org.motechproject.mds.service.impl;
 
+import org.motechproject.mds.dto.SchemaHolder;
+import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MdsBundleRegenerationService;
 import org.motechproject.server.osgi.event.OsgiEventProxy;
@@ -31,12 +33,14 @@ public class MdsBundleRegenerationServiceImpl implements MdsBundleRegenerationSe
 
     private OsgiEventProxy osgiEventProxy;
     private JarGeneratorService jarGeneratorService;
-    private final Set<UUID> regenerateRequestIds = Collections.synchronizedSet(new HashSet<UUID>());
+    private final Set<UUID> regenerateRequestIds = Collections.synchronizedSet(new HashSet<>());
+    private EntityService entityService;
 
     @Override
     public void regenerateMdsDataBundle() {
         broadcast(REGENERATE_MDS_DATA_BUNDLE);
-        jarGeneratorService.regenerateMdsDataBundle();
+        SchemaHolder schemaHolder = entityService.getSchema();
+        jarGeneratorService.regenerateMdsDataBundle(schemaHolder);
     }
 
     @Override
@@ -45,7 +49,9 @@ public class MdsBundleRegenerationServiceImpl implements MdsBundleRegenerationSe
         params.put(MODULE_NAMES_EVENT_PARAM, moduleNames);
 
         broadcast(REGENERATE_MDS_DATA_BUNDLE_AFTER_DDE_ENHANCEMENT, params);
-        jarGeneratorService.regenerateMdsDataBundleAfterDdeEnhancement(moduleNames);
+
+        SchemaHolder schemaHolder = entityService.getSchema();
+        jarGeneratorService.regenerateMdsDataBundleAfterDdeEnhancement(schemaHolder, moduleNames);
     }
 
     @Override
@@ -64,14 +70,16 @@ public class MdsBundleRegenerationServiceImpl implements MdsBundleRegenerationSe
 
     private void handleMdsDataBundleRegeneration(Event event) {
         if (!isBroadcastFromThisInstance(event)) {
-            jarGeneratorService.regenerateMdsDataBundle();
+            SchemaHolder schemaHolder = entityService.getSchema();
+            jarGeneratorService.regenerateMdsDataBundle(schemaHolder);
         }
     }
 
     private void handleMdsDataBundleRegenerationAfterDdeEnhancement(Event event) {
         if (!isBroadcastFromThisInstance(event)) {
+            SchemaHolder schemaHolder = entityService.getSchema();
             String[] moduleNames = (String[]) event.getProperty(MODULE_NAMES_EVENT_PARAM);
-            jarGeneratorService.regenerateMdsDataBundleAfterDdeEnhancement(moduleNames);
+            jarGeneratorService.regenerateMdsDataBundleAfterDdeEnhancement(schemaHolder, moduleNames);
         }
     }
 
@@ -86,7 +94,7 @@ public class MdsBundleRegenerationServiceImpl implements MdsBundleRegenerationSe
     }
 
     private void broadcast(String subject) {
-        broadcast(subject, new HashMap<String, Object>());
+        broadcast(subject, new HashMap<>());
     }
 
     private void broadcast(String subject, Map<String, Object> params) {
@@ -106,5 +114,10 @@ public class MdsBundleRegenerationServiceImpl implements MdsBundleRegenerationSe
     @Autowired
     public void setJarGeneratorService(JarGeneratorService jarGeneratorService) {
         this.jarGeneratorService = jarGeneratorService;
+    }
+
+    @Autowired
+    public void setEntityService(EntityService entityService) {
+        this.entityService = entityService;
     }
 }

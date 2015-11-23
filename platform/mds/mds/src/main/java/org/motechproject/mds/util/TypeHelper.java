@@ -727,6 +727,17 @@ public final class TypeHelper {
         return (Class<?>) PRIMITIVE_TYPE_MAP.getKey(clazz);
     }
 
+    public static String getClassNameForMdsType(Class<?> clazz) {
+        Class<?> chosenClass = clazz;
+
+        // box primitives
+        if (clazz.isPrimitive() || byte[].class.equals(clazz)) {
+            chosenClass = TypeHelper.getWrapperForPrimitive(clazz);
+        }
+
+        return chosenClass.getName();
+    }
+
     /**
      * Parses given value to {@link org.motechproject.commons.api.Range}. If passed value is assignable
      * neither to range nor to map, it throws {@link java.lang.IllegalArgumentException}. If value is a map,
@@ -898,6 +909,23 @@ public final class TypeHelper {
         } else {
             return new ArrayList<>();
         }
+    }
+
+    // class names as strings below in order to avoid package cycles
+
+    public static boolean isBaseEntity(String entitySuperClass) {
+        return Object.class.getName().equalsIgnoreCase(entitySuperClass) ||
+                "org.motechproject.mds.domain.MdsEntity".equalsIgnoreCase(entitySuperClass) ||
+                "org.motechproject.mds.domain.MdsVersionedEntity".equalsIgnoreCase(entitySuperClass);
+    }
+
+    public static boolean isSubclassOfMdsEntity(String entitySuperClass) {
+        return "org.motechproject.mds.domain.MdsEntity".equalsIgnoreCase(entitySuperClass)
+                || "org.motechproject.mds.domain.MdsVersionedEntity".equalsIgnoreCase(entitySuperClass);
+    }
+
+    public static boolean isSubclassOfMdsVersionedEntity(String entitySuperClass) {
+        return "org.motechproject.mds.domain.MdsVersionedEntity".equalsIgnoreCase(entitySuperClass);
     }
 
     private static boolean bothNumbers(Object val, String toClass) {

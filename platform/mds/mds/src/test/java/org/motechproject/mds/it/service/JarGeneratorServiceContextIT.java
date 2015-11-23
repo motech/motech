@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.it.BaseIT;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
@@ -95,12 +96,15 @@ public class JarGeneratorServiceContextIT extends BaseIT {
         setProperty(monitor, "bundleInstalled", true);
         setProperty(monitor, "contextInitialized", true);
 
-        constructor.constructEntities();
+        SchemaHolder schemaHolder = entityService.getSchema();
+        constructor.constructEntities(schemaHolder);
     }
 
     @Test
     public void testGenerate() throws Exception {
-        File file = generator.generate();
+        SchemaHolder schemaHolder = entityService.getSchema();
+        File file = generator.generate(schemaHolder);
+
         try (FileInputStream stream = new FileInputStream(file);
              JarInputStream input = new JarInputStream(stream)) {
 
