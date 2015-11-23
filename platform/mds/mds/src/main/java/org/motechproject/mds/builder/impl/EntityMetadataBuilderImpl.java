@@ -487,14 +487,15 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         if (entityType == EntityType.STANDARD) {
             processRelationship(fmd, holder, entity, field, definition);
+
+            if (shouldSetCascadeDelete(holder, EntityType.STANDARD)) {
+                ForeignKeyMetadata fkmd = getOrCreateFkMetadata(fmd);
+                fkmd.setDeleteAction(ForeignKeyAction.CASCADE);
+            }
+
         } else {
             processHistoryTrashRelationship(cmd, fmd, holder);
         }
-
-
-        ForeignKeyMetadata fkmd = getOrCreateFkMetadata(fmd);
-        fkmd.setName(KeyNames.foreignKeyName(entity.getName(), entity.getId(),
-                field.getBasic().getName(), entityType));
 
         return fmd;
     }
