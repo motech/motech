@@ -19,6 +19,7 @@ import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.commons.sql.service.SqlDBManager;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.service.CoreConfigurationService;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.DraftData;
@@ -33,12 +34,15 @@ import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.dto.UserPreferencesDto;
+import org.motechproject.mds.jdo.MdsTransactionManager;
 import org.motechproject.mds.osgi.TestClass;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.SqlQueryExecution;
 import org.motechproject.mds.service.ComboboxValueService;
+import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
@@ -46,6 +50,7 @@ import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.service.MetadataService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.RestDocumentationService;
+import org.motechproject.mds.service.UserPreferencesService;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
@@ -62,6 +67,9 @@ import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
@@ -95,6 +103,7 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
@@ -115,6 +124,8 @@ public class MdsBundleIT extends BasePaxIT {
     private static final String FOO = "Foo";
     private static final String FOO_CLASS = String.format("%s.%s", Constants.PackagesGenerated.ENTITY, FOO);
 
+    private static final String CLASS_NAME = "org.motechproject.sampleModule.SampleEntity";
+    private static final String USERNAME = "motech";
     private static final int INSTANCE_COUNT = 5;
     private static final Byte[] BYTE_ARRAY_VALUE = new Byte[]{110, 111, 112};
     private static final Period TEST_PERIOD = new Period().withDays(3).withHours(7).withMinutes(50);
@@ -147,6 +158,8 @@ public class MdsBundleIT extends BasePaxIT {
     private MotechDataService service;
     private File configurationFile;
     private String startingCacheType;
+    private AllEntities allEntities;
+    private MdsTransactionManager mdsTransactionManager;
 
     @Inject
     private SqlDBManager sqlDBManager;
@@ -163,12 +176,17 @@ public class MdsBundleIT extends BasePaxIT {
     @Inject
     private CoreConfigurationService coreConfigurationService;
 
+    @Inject
+    private UserPreferencesService userPreferencesService;
+
     @Before
     public void setUp() throws Exception {
         WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext, MDS_BUNDLE_SYMBOLIC_NAME, 10000, 12);
 
         entityService = context.getBean(EntityService.class);
         generator = context.getBean(JarGeneratorService.class);
+        allEntities = context.getBean(AllEntities.class);
+        mdsTransactionManager = context.getBean(MdsTransactionManager.class);
 
         clearEntities();
         setUpSecurityContextForDefaultUser("mdsSchemaAccess");
@@ -234,6 +252,144 @@ public class MdsBundleIT extends BasePaxIT {
         verifyComboboxDataMigration();
         verifyInstanceDeleting();
         verifyRestDocumentation();
+    }
+
+    @Test
+    public void testUserPreferences() {
+        EntityDto entityDto = createEntityForPreferencesTest();
+
+        // first retrieve - should create default user preferences for entity
+        UserPreferencesDto userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
+
+        assertEquals(new Integer(50), userPreferencesDto.getGridRowsNumber());
+        assertEquals(3, userPreferencesDto.getVisibleFields().size());
+        assertTrue(userPreferencesDto.getVisibleFields().contains("someBoolean"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("someString"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("someInteger"));
+
+        assertEquals(0, userPreferencesDto.getSelectedFields().size());
+        assertEquals(0, userPreferencesDto.getUnselectedFields().size());
+
+        userPreferencesService.updateGridSize(entityDto.getId(), USERNAME, 100);
+        userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
+        assertEquals(new Integer(100), userPreferencesDto.getGridRowsNumber());
+
+        // if null then default value from settings will be used
+        userPreferencesService.updateGridSize(entityDto.getId(), USERNAME, null);
+        userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
+        assertEquals(new Integer(50), userPreferencesDto.getGridRowsNumber());
+
+        userPreferencesService.unselectField(entityDto.getId(), USERNAME, "someString");
+        userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
+
+        assertEquals(2, userPreferencesDto.getVisibleFields().size());
+        assertTrue(userPreferencesDto.getVisibleFields().contains("someBoolean"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("someInteger"));
+
+        assertEquals(0, userPreferencesDto.getSelectedFields().size());
+        assertEquals(1, userPreferencesDto.getUnselectedFields().size());
+        assertTrue(userPreferencesDto.getUnselectedFields().contains("someString"));
+
+        userPreferencesService.selectField(entityDto.getId(), USERNAME, "otherInteger");
+        userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
+
+        assertEquals(3, userPreferencesDto.getVisibleFields().size());
+        assertTrue(userPreferencesDto.getVisibleFields().contains("someBoolean"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("someInteger"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("otherInteger"));
+
+        assertEquals(1, userPreferencesDto.getSelectedFields().size());
+        assertTrue(userPreferencesDto.getSelectedFields().contains("otherInteger"));
+        assertEquals(1, userPreferencesDto.getUnselectedFields().size());
+        assertTrue(userPreferencesDto.getUnselectedFields().contains("someString"));
+
+        userPreferencesService.selectField(entityDto.getId(), USERNAME, "someString");
+        userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
+
+        assertEquals(4, userPreferencesDto.getVisibleFields().size());
+        assertTrue(userPreferencesDto.getVisibleFields().contains("someBoolean"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("otherInteger"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("otherInteger"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("someString"));
+
+        assertEquals(2, userPreferencesDto.getSelectedFields().size());
+        assertTrue(userPreferencesDto.getSelectedFields().contains("otherInteger"));
+        assertTrue(userPreferencesDto.getSelectedFields().contains("someString"));
+        assertEquals(0, userPreferencesDto.getUnselectedFields().size());
+
+        userPreferencesService.unselectFields(entityDto.getId(), USERNAME);
+        userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
+        assertEquals(0, userPreferencesDto.getVisibleFields().size());
+        assertEquals(0, userPreferencesDto.getSelectedFields().size());
+        assertEquals(10, userPreferencesDto.getUnselectedFields().size());
+
+        userPreferencesService.selectFields(entityDto.getId(), USERNAME);
+        userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
+        assertEquals(10, userPreferencesDto.getVisibleFields().size());
+        assertEquals(10, userPreferencesDto.getSelectedFields().size());
+        assertEquals(0, userPreferencesDto.getUnselectedFields().size());
+
+        // if field will be removed from entity then it should be removed also from preferences (CASCADE)
+        TransactionTemplate transactionTemplate = new TransactionTemplate(mdsTransactionManager);
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Entity entity = allEntities.retrieveByClassName(CLASS_NAME);
+                List<Field> fields = entity.getFields();
+                fields.remove(entity.getField("someInteger"));
+                entity.setFields(fields);
+                allEntities.update(entity);
+            }
+        });
+
+        userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
+        assertEquals(9, userPreferencesDto.getVisibleFields().size());
+        assertTrue(userPreferencesDto.getSelectedFields().contains("someBoolean"));
+        assertTrue(userPreferencesDto.getSelectedFields().contains("someString"));
+        assertFalse(userPreferencesDto.getSelectedFields().contains("someInteger"));
+    }
+
+    private EntityDto createEntityForPreferencesTest() {
+        EntityDto entityDto = new EntityDto(null, CLASS_NAME);
+        entityDto = entityService.createEntity(entityDto);
+
+        List<FieldDto> fields = new ArrayList<>();
+        fields.add(new FieldDto(null, entityDto.getId(),
+                TypeDto.BOOLEAN,
+                new FieldBasicDto("Some Boolean", "someBoolean"),
+                false, false, false, false, false, null, null, null, null));
+
+        fields.add(new FieldDto(null, entityDto.getId(),
+                TypeDto.STRING,
+                new FieldBasicDto("Some String", "someString"),
+                false, false, false, false, false, null, null,
+                asList(
+                        new SettingDto("mds.form.label.textarea", false, BOOLEAN)
+                ), null));
+        fields.add(new FieldDto(null, entityDto.getId(),
+                TypeDto.INTEGER,
+                new FieldBasicDto("Some Integer", "someInteger"),
+                false, false, false, false, false, null, null, null, null));
+        fields.add(new FieldDto(null, entityDto.getId(),
+                TypeDto.INTEGER,
+                new FieldBasicDto("Other Integer", "otherInteger"),
+                false, false, false, false, false, null, null, null, null));
+
+        entityService.addFields(entityDto, fields);
+
+        TransactionTemplate transactionTemplate = new TransactionTemplate(mdsTransactionManager);
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Entity entity = allEntities.retrieveByClassName(CLASS_NAME);
+                entity.getField("someInteger").setUIDisplayable(true);
+                entity.getField("someString").setUIDisplayable(true);
+                entity.getField("someBoolean").setUIDisplayable(true);
+                allEntities.update(entity);
+            }
+        });
+
+        return entityDto;
     }
 
     private void verifyComboboxDataMigration() throws NoSuchFieldException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -901,6 +1057,7 @@ public class MdsBundleIT extends BasePaxIT {
 
         for (EntityDto entity : entityService.listEntities()) {
             if (!entity.isDDE()) {
+                userPreferencesService.removeUserPreferences(entity.getId(), USERNAME);
                 entityService.deleteEntity(entity.getId());
             }
         }

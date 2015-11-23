@@ -20,6 +20,7 @@ import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.dto.UserPreferencesDto;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.entity.EntityAlreadyExistException;
 import org.motechproject.mds.ex.field.FieldUsedInLookupException;
@@ -30,6 +31,7 @@ import org.motechproject.mds.repository.AllEntityAudits;
 import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllTypes;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.UserPreferencesService;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.validation.EntityValidator;
 import org.osgi.framework.BundleContext;
@@ -103,6 +105,8 @@ public class EntityServiceImplTest {
     @Mock
     private Lookup draftLookup;
 
+    @Mock
+    private UserPreferencesService userPreferencesService;
 
     @Mock
     private BundleContext bundleContext;
@@ -534,6 +538,8 @@ public class EntityServiceImplTest {
 
         when(allEntities.retrieveById(8L)).thenReturn(entity);
         when(allEntityDrafts.retrieve(eq(entity), anyString())).thenReturn(draft);
+
+        when(userPreferencesService.getEntityPreferences(8l)).thenReturn(new ArrayList<UserPreferencesDto>());
 
         entityService.commitChanges(8L);
     }
