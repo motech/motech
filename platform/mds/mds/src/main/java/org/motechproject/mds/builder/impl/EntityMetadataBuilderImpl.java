@@ -253,7 +253,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         if (annotation == null) {
             InheritanceMetadata imd = cmd.newInheritanceMetadata();
-            imd.setCustomStrategy("complete-table" );
+            imd.setCustomStrategy("complete-table");
         }
     }
 
@@ -490,6 +490,11 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         } else {
             processHistoryTrashRelationship(cmd, fmd, holder);
         }
+
+
+        ForeignKeyMetadata fkmd = getOrCreateFkMetadata(fmd);
+        fkmd.setName(KeyNames.foreignKeyName(entity.getName(), entity.getId(),
+                field.getBasic().getName(), entityType));
 
         return fmd;
     }
