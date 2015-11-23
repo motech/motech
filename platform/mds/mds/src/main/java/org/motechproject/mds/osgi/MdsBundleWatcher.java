@@ -286,6 +286,20 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         Map<String, Long> entityIdMappings = new HashMap<>();
         Set<String> newEntities = new HashSet<>();
 
+        Bundle bundle = output.getBundle();
+
+        try {
+            migrationService.processBundle(bundle);
+        } catch (IOException e) {
+            LOGGER.error("An error occurred while copying the migrations from bundle: {}", bundle.getSymbolicName(), e);
+        }
+
+        try {
+            editableLookupsLoader.addEditableLookups(output, bundle);
+        } catch (MdsException e) {
+            LOGGER.error("Unable to read JSON defined lookups from bundle: {}", bundle, e);
+        }
+
         for (EntityProcessorOutput result : output.getEntityProcessorOutputs()) {
             EntityDto processedEntity = result.getEntityProcessingResult();
 
@@ -317,20 +331,6 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
                     entityService.incrementVersion(entityId);
                 }
             }
-        }
-
-        Bundle bundle = output.getBundle();
-
-        try {
-            migrationService.processBundle(bundle);
-        } catch (IOException e) {
-            LOGGER.error("An error occurred while copying the migrations from bundle: {}", bundle.getSymbolicName(), e);
-        }
-
-        try {
-            editableLookupsLoader.addEditableLookups(output, bundle);
-        } catch (MdsException e) {
-            LOGGER.error("Unable to read JSON defined lookups from bundle: {}", bundle, e);
         }
     }
 
