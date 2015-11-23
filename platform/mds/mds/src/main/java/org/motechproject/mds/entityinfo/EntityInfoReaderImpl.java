@@ -11,6 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Implementation of the {@link EntityInfoReader} which reads entity information from json
+ * files from the META-INF/entity-info directory inside the classpath. Used by mds-entities bundle,
+ * which has all entity schema packed inside of it.
+ */
 public class EntityInfoReaderImpl implements EntityInfoReader {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
