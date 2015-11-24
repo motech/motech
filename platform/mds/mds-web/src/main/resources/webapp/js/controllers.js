@@ -4805,7 +4805,7 @@
 
         $scope.getTableWidthCookieName = function(entity) {
             var username = $rootScope.username || '';
-            return username + 'table.width_org.motechproject.mds.databrowser.fields.' + entity.className + '#' + entity.id;
+            return username + '_table.width_org.motechproject.mds.databrowser.fields.' + entity.className;
         };
     });
 
