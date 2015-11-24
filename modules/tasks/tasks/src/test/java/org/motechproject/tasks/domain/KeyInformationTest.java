@@ -16,6 +16,7 @@ public class KeyInformationTest {
     private static final String KEY_VALUE = "key";
     private static final Long DATA_PROVIDER_ID = 12345L;
     private static final String OBJECT_TYPE = "Test";
+    private static final String OBJECT_TYPE_2 = "Test_Data";
     private static final Long OBJECT_ID = 1L;
 
     @Test
@@ -40,6 +41,11 @@ public class KeyInformationTest {
         KeyInformation key = KeyInformation.parse(original);
 
         assertKeyFromAdditionalData(original, key);
+
+        original = String.format("%s.%s.%s#%d.%s", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_ID, OBJECT_TYPE_2, OBJECT_ID, KEY_VALUE);
+        key = KeyInformation.parse(original);
+
+        assertKeyFromAdditionalData(original, key, OBJECT_TYPE_2);
     }
 
     @Test
@@ -48,6 +54,10 @@ public class KeyInformationTest {
         KeyInformation key = KeyInformation.parse(original);
 
         assertKeyFromAdditionalData(original, key);
+
+        original = String.format("%s.%s.%s#%d.%s?toupper?join(-)", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_ID, OBJECT_TYPE_2, OBJECT_ID, KEY_VALUE);
+        key = KeyInformation.parse(original);
+        assertKeyFromAdditionalData(original, key, OBJECT_TYPE_2);
     }
 
     @Test
@@ -101,12 +111,16 @@ public class KeyInformationTest {
     }
 
     private void assertKeyFromAdditionalData(String original, KeyInformation additionalDataKey) {
+        assertKeyFromAdditionalData(original, additionalDataKey, OBJECT_TYPE);
+    }
+
+    private void assertKeyFromAdditionalData(String original, KeyInformation additionalDataKey, String objectType) {
         assertTrue(additionalDataKey.fromAdditionalData());
         assertFalse(additionalDataKey.fromTrigger());
 
         assertEquals(DATA_PROVIDER_ID, additionalDataKey.getDataProviderId());
-        assertEquals(OBJECT_TYPE, additionalDataKey.getObjectType());
-        assertEquals(OBJECT_ID, additionalDataKey.getObjectId());
+        assertEquals(objectType, additionalDataKey.getObjectType());
+        assertEquals(OBJECT_ID, additionalDataKey.getObjectId());git 
         assertEquals(KEY_VALUE, additionalDataKey.getKey());
         assertEquals(original, additionalDataKey.getOriginalKey());
 
