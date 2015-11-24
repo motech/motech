@@ -150,7 +150,7 @@ public class EditableLookupsLoaderTest {
         List<EntityProcessorOutput> entityProcessorOutputs = new ArrayList<>();
         entityProcessorOutputs.add(entityProcessorOutput);
 
-        output = new MDSProcessorOutput(entityProcessorOutputs, new HashMap<String, List<LookupDto>>());
+        output = new MDSProcessorOutput(entityProcessorOutputs, new HashMap<>(), bundle);
     }
 
     private EntityDto prepareEntityDto() {
