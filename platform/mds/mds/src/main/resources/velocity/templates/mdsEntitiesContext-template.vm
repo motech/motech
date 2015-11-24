@@ -33,6 +33,8 @@
 
     <bean id="csvImportExportService" class="org.motechproject.mds.service.impl.csv.CsvImportExportServiceImpl" />
 
+    <bean id="entityInfoReader" class="org.motechproject.mds.entityinfo.EntityInfoReaderImpl" />
+
     #foreach ( $entry in $list )
         #if ( $StringUtils.isNotBlank( $entry.repository ) )
             <bean id="$entry.repository" class="$entry.repository" />
@@ -47,7 +49,7 @@
 
             <bean id="$entry.restId" class="org.motechproject.mds.rest.MdsRestFacadeImpl">
                 <property name="dataService" ref="$entry.serviceName"/>
-                <property name="allEntities" ref="allEntities"/>
+                <property name="entityInfoReader" ref="entityInfoReader"/>
             </bean>
         #end
     #end
@@ -68,7 +70,7 @@
 
     <bean id="persistenceManagerFactory" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">
         <property name="targetPersistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
-        <property name="allowCreate" value="true"/>
+        <property name="allowCreate" value="false"/>
     </bean>
 
     <bean id="mdsJdoDialect" class="org.motechproject.mds.jdo.MdsJdoDialect">
