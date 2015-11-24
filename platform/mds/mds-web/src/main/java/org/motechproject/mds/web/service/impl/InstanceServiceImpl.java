@@ -493,7 +493,7 @@ public class InstanceServiceImpl implements InstanceService {
             MotechDataService relatedDataService = getServiceForEntity(relatedEntity);
             Collection relatedAsColl = new ArrayList<>();
 
-            // Fetch/Remove related instances only if this is an existing instance
+            // If the relationship already exists, fetch instances and use correct type
             if (instanceId != null) {
                 // get the instance of the original entity
                 Object instance = service.findById(instanceId);
@@ -504,14 +504,15 @@ public class InstanceServiceImpl implements InstanceService {
 
                 // the value of the related field
                 relatedAsColl = TypeHelper.asCollection(PropertyUtil.getProperty(instance, fieldName));
-                relatedAsColl.addAll(relatedDataService.findByIds(filter.getAddedIds()));
-                relatedAsColl.removeIf(new Predicate() {
-                    @Override
-                    public boolean test(Object o) {
-                        return filter.getRemovedIds().contains(PropertyUtil.safeGetProperty(o, Constants.Util.ID_FIELD_NAME));
-                    }
-                });
             }
+
+            relatedAsColl.addAll(relatedDataService.findByIds(filter.getAddedIds()));
+            relatedAsColl.removeIf(new Predicate() {
+                @Override
+                public boolean test(Object o) {
+                    return filter.getRemovedIds().contains(PropertyUtil.safeGetProperty(o, Constants.Util.ID_FIELD_NAME));
+                }
+            });
 
             for (EntityRecord record : filter.getAddedNewRecords()) {
                 relatedAsColl.add(newInstanceFromEntityRecord(getEntityClass(relatedEntity), relatedFields, record.getFields(), relatedDataService));
