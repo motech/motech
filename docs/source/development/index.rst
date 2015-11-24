@@ -19,4 +19,5 @@ This section of the documentation is aimed at developers and maintainers of the 
    project_management
    releases
    browser
+   ui_guidelines
    hot_deployment
