@@ -1517,7 +1517,7 @@
                                         $('.jqgfirstrow').css('height','1px');
                                     }
                                     tableWidth = $('#instanceBrowserTable').width();
-                                    $('#instanceBrowserTable').children().width('100%');
+                                    $('#instanceBrowserTable').children().css('width','100%');
                                     $('#instanceBrowserTable .ui-jqgrid-htable').addClass("table-lightblue");
                                     $('#instanceBrowserTable .ui-jqgrid-btable').addClass("table-lightblue");
                                     $('#instanceBrowserTable .ui-jqgrid-htable').width(tableWidth);
@@ -1547,6 +1547,266 @@
                 });
             }
 
+        };
+    });
+
+
+    /**
+    * Displays related instances data using jqGrid
+    */
+    directives.directive('entityRelationsGrid', function ($timeout, $http, MDSUtils) {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                var tableWidth, isHiddenGrid, eventResize, eventChange, relatedClass,
+                    filter = {removedIds: [], addedIds: [], addedNewRecords: []},
+                    elem = angular.element(element),
+                    gridId = attrs.id,
+                    pagerGrid = attrs.entityRelationsGrid,
+                    gridRecords = 0,
+                    fieldId = attrs.fieldId,
+                    relationsField = attrs.relationsFieldGrid,
+                    selectedEntityId = scope.selectedEntity.id,
+                    selectedInstance = (scope.selectedInstance !== undefined && angular.isNumber(parseInt(scope.selectedInstance, 10)))? parseInt(scope.selectedInstance, 10) : undefined;
+
+                relatedClass = scope.getRelatedClass(scope.field);
+                //if (selectedInstance !== undefined) {
+                    blockUI();
+                    $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
+                        scope.relatedEntity = data;
+                        unblockUI();
+                        $.ajax({
+                            type: "GET",
+                            url: "../mds/entities/" + scope.relatedEntity.id + "/entityFields",
+                            dataType: "json",
+                            success: function (result) {
+                                var colModel = [], i, spanText;
+
+                                colModel.push({
+                                    name: scope.msg('mds.form.label.action').toUpperCase(),
+                                    width: 150,
+                                    align: 'center',
+                                    title:  false,
+                                    frozen: true,
+                                    hidden:  scope.field.nonEditable,
+                                    formatter: function (array, options, data) {
+                                        return "<button class='btn btn-default btn-xs btn-danger-hover removeRelatedInstance' "
+                                        + " title='" + scope.msg('mds.dataBrowsing.removeRelatedInstance')
+                                        + "'><i class='fa fa-fw fa-trash-o'></i>"
+                                        + scope.msg('mds.dataBrowsing.remove') + "</button>";
+                                    },
+                                    sortable: false
+                                });
+
+                                buildGridColModel(colModel, result, scope, false, true);
+
+                                elem.jqGrid({
+                                    url: "../mds/instances/" + selectedEntityId + "/instance/" + ((selectedInstance !== undefined)? selectedInstance : "new") + "/" + scope.field.name,
+                                    headers: {
+                                        'Accept': 'application/x-www-form-urlencoded',
+                                        'Content-Type': 'application/x-www-form-urlencoded'
+                                    },
+                                    datatype: 'json',
+                                    mtype: "POST",
+                                    postData: {
+                                        filters: (filter.removedIds !== null) ? JSON.stringify(filter) : ""
+                                    },
+                                    jsonReader: {
+                                        repeatitems: false
+                                    },
+                                    onSelectRow: function (id, status, e) {
+                                        if (!scope.field.nonEditable &&  e.target.getAttribute('class') !== null && (e.target.getAttribute('class').indexOf('removeRelatedInstance') >= 0
+                                            || (e.target.tagName ==='I' && e.target.parentElement.getAttribute('class').indexOf('removeRelatedInstance') >= 0))) {
+
+                                            var fieldVal = MDSUtils.find(scope.field.value, [{field: 'id', value: id}], true),
+                                                objVal = scope.field.value.filter(function(item) {return item.id === parseInt(id, 10);})[0],
+                                                postdata = $('#' + gridId).jqGrid('getGridParam','postData');
+
+                                            filter.removedIds.push(parseInt(id, 10));
+                                            $.extend($('#' + gridId)[0].p.postData, { filters: JSON.stringify(filter) });
+                                            $('#' + gridId).jqGrid('setGridParam', { search: true, postData: postdata });
+                                            $('#' + attrs.id).jqGrid().trigger("reloadGrid");
+
+                                            scope.removeManyRelatedData(scope.field, objVal);
+                                        }
+                                    },
+                                    ondblClickRow : function(id,iRow,iCol,e) {
+                                        if (!scope.field.nonEditable && !(e.target.children[0] !== undefined && e.target.children[0].getAttribute('class').indexOf('removeRelatedInstance') >= 0)) {
+                                            scope.editInstanceOfEntity2(id, scope.getMetadata(scope.field, 'related.class'), scope.field);
+                                        }
+                                    },
+                                    resizeStop: function (width, index) {
+                                        var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
+                                        if (colModel.length - 1 === index + 1 || (colModel[index + 1] !== undefined && isLastNextColumn(colModel, index))) {
+                                            widthOrg = colModel[index].widthOrg;
+                                            widthNew = colModel[index + 1].width + Math.abs(widthOrg - width);
+                                            colModel[index + 1].width = widthNew;
+                                            colModel[index].width = width;
+
+                                            $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
+                                            $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
+                                        }
+                                        tableWidth = $('#instance_' + gridId).width();
+                                        $('#' + gridId).jqGrid("setGridWidth", tableWidth);
+                                    },
+                                    loadonce: false,
+                                    headertitles: true,
+                                    colModel: colModel,
+                                    pager: '#' + pagerGrid,
+                                    viewrecords: true,
+                                    autowidth: true,
+                                    loadui: 'block',
+                                    shrinkToFit: false,
+                                    gridComplete: function () {
+                                        $('#' + gridId).jqGrid('setFrozenColumns');
+                                        $('#' + attrs.entityRelationsGrid + '_center').addClass('page_' + gridId + '_center');
+                                        gridRecords = $('#' + gridId).getGridParam('records');
+                                        if (gridRecords > 0) {
+                                            $('#relationsTableTotalRecords_' + fieldId).text(gridRecords + '  ' + scope.msg('mds.field.items'));
+                                            $('#' + attrs.entityRelationsGrid + '_center').show();
+                                            $(".jqgfirstrow").css("height","0");
+                                        } else {
+                                            $('#relationsTableTotalRecords_' + fieldId).text('0  ' + scope.msg('mds.field.items'));
+                                            $('#' + attrs.entityRelationsGrid + '_center').hide();
+                                            $(".jqgfirstrow").css("height","1px");
+                                        }
+                                        $('#gview_' + gridId + ' .ui-jqgrid-hdiv').show();
+                                        $('#gview_' + gridId + ' .ui-jqgrid-hdiv').addClass("table-lightblue");
+                                        $('#gview_' + gridId + ' .ui-jqgrid-btable').addClass("table-lightblue");
+                                        $timeout(function() {
+                                            resizeGridWidth(gridId);
+                                        }, 250);
+                                    }
+                                });
+                            }
+                        });
+                    }).error(function (response) {
+                        handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
+                    });
+                //}
+
+                elem.on('jqGridSortCol', function (e, fieldName) {
+                    // For correct sorting in jqgrid we need to convert back to the original name
+                    e.target.p.sortname = backToReservedFieldName(fieldName);
+                });
+
+                scope.$watch('addedExistingRelatedDataTmp', function () {
+                    var postdataFilters,
+                        postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+                    if (postdata !== undefined) {
+                        postdataFilters = JSON.parse(postdata.filters);
+                        filter = postdataFilters;
+                        filter.addedIds = scope.getAddedExistingRelatedDataTmp(scope.field.id);
+                        $('#' + attrs.id).jqGrid('setGridParam', { postData: {filters: ''}});
+                        postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+                        $.extend(postdata, { filters: JSON.stringify(filter) });
+                        $('#' + attrs.id).jqGrid('setGridParam', { search: true, postData: postdata });
+                        $('#' + attrs.id).jqGrid().trigger("reloadGrid");
+                    }
+                }, true);
+
+                scope.$watch('addedNewRelatedDataTmp', function () {
+                var postdata,
+                    records = scope.getAddedNewRelatedDataTmp(fieldId);
+
+                    if (records !== null && records.length > 0) {
+                        $('#' + attrs.id).jqGrid({pager:'#' + pagerGrid});
+                        postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+                        if (postdata !== undefined) {
+                            if (postdata.filters !== undefined) { //postData.hasOwnProperty('filters')
+                                filter = JSON.parse(postdata.filters);
+                            }
+                            filter.addedNewRecords = records;
+                            $('#' + attrs.id).jqGrid('setGridParam', { postData: { filters: ''} });
+                            postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+                            $.extend(postdata, { filters: angular.toJson(filter) });
+                            $('#' + attrs.id).jqGrid('setGridParam', { search: true, postData: postdata });
+                            $('#' + attrs.id).jqGrid().trigger("reloadGrid");
+                        }
+                    }
+                }, true);
+
+                $(window).on('resize', function() {
+                    clearTimeout(eventResize);
+                    eventResize = $timeout(function() {
+                        $(".ui-layout-content").scrollTop(0);
+                        resizeGridWidth(gridId);
+                    }, 200);
+                }).trigger('resize');
+
+                $('#inner-center').on('change', function() {
+                    clearTimeout(eventChange);
+                    eventChange = $timeout(function() {
+                        resizeGridWidth(gridId);
+                    }, 200);
+                });
+            }
+
+        };
+    });
+
+    directives.directive('relatedfieldsform', function () {
+        return {
+            restrict: 'A',
+            scope: false,
+            require: 'ngModel',
+            replace: true,
+            link: function (scope, element, attrs, ctrl) {
+                if (scope.rfields === undefined) {element.addClass('hidden');}
+                scope.$watch(attrs.ngModel, function () {
+                    if (scope.rfields !== undefined && scope.rfields !== null) {element.removeClass('hidden');}
+                    scope.fields = scope.rfields;
+               });
+            },
+            templateUrl: '../mds/resources/partials/widgets/entityInstanceFields.html'
+        };
+    });
+
+    directives.directive('editrelatedfieldsform', function () {
+        return {
+            restrict: 'A',
+            scope: false,
+            require: 'ngModel',
+            replace: true,
+            link: function(scope, element, attrs, ngModel) {
+                if (scope.editrelatedfields === undefined) {element.addClass('hidden');}
+
+                scope.$parent.$watch(attrs.ngModel, function (newValue, oldValue, scope) {
+                    scope.fields = newValue;
+                    if (scope.editrelatedfields !== undefined  && scope.editrelatedfields !== null) {
+                        element.removeClass('hidden');
+                        scope.fields = scope.editrelatedfields;
+                    }
+                });
+            },
+            templateUrl:'../mds/resources/partials/widgets/entityInstanceFields.html'
+        };
+    });
+
+    directives.directive('showRelationsGrid', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                var isHiddenGrid,
+                elem = angular.element(element),
+                gridId = attrs.showRelationsGrid;
+
+                elem.on('click', function () {
+                    isHiddenGrid = $('#' + gridId).jqGrid('getGridParam','hiddengrid');
+                    $('#' + gridId).jqGrid('setGridParam', { hiddengrid: !isHiddenGrid });
+                    if (isHiddenGrid) {
+                        $(this).children().removeClass('fa-angle-double-down');
+                        $(this).children().addClass('fa-angle-double-up');
+                        $('#' + gridId).jqGrid('setGridState','visible');
+                        $('#gbox_' + gridId).removeClass('hidden').delay(500).fadeIn("slow");
+                    } else {
+                        $(this).children().removeClass('fa-angle-double-up');
+                        $(this).children().addClass('fa-angle-double-down');
+                        $('#' + gridId).jqGrid('setGridState','hidden');
+                        $('#gbox_' + gridId).delay(3500).addClass('hidden');
+                    }
+                });
+            }
         };
     });
 
