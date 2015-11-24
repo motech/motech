@@ -120,7 +120,7 @@ public class KeyInformationTest {
 
         assertEquals(DATA_PROVIDER_ID, additionalDataKey.getDataProviderId());
         assertEquals(objectType, additionalDataKey.getObjectType());
-        assertEquals(OBJECT_ID, additionalDataKey.getObjectId());git 
+        assertEquals(OBJECT_ID, additionalDataKey.getObjectId());
         assertEquals(KEY_VALUE, additionalDataKey.getKey());
         assertEquals(original, additionalDataKey.getOriginalKey());
 
