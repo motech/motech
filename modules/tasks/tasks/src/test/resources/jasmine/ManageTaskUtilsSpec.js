@@ -338,7 +338,7 @@
                 }
             };
 
-            expect(utils.createErrorMessage(scope, response)).toEqual(msg);
+            expect(utils.createErrorMessage(scope, response, false)).toEqual(msg);
         });
 
         it('Should convert value to proper view value', function () {

@@ -94,16 +94,21 @@ public class TaskController {
     }
 
     /**
-     * Updates the task with the given ID. If ID isn't specified in passed task nothing will happen.
+     * Updates the task with the given ID and returns the list
+     * of errors that will occur when enabling task.
+     * If ID isn't specified in passed task nothing will happen.
      *
      * @param task  the task to be saved, not null
+     * @return list of task errors
      */
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void saveTask(@RequestBody Task task) {
+    @ResponseBody
+    public Set<TaskError> saveTask(@RequestBody Task task) {
         if (task.getId() != null) {
-            taskService.save(task);
+            return taskService.save(task);
         }
+        return null;
     }
 
     /**
@@ -148,14 +153,17 @@ public class TaskController {
     }
 
     /**
-     * Creates new task from the request body.
+     * Creates new task from the request body and returns the list
+     * of errors that will occur when enabling task.
      *
      * @param task  the task to be saved, not null
+     * @return list of task errors
      */
     @RequestMapping(value = "/task/save", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void save(@RequestBody Task task) {
-            taskService.save(task);
+    @ResponseBody
+    public Set<TaskError> save(@RequestBody Task task) {
+        return taskService.save(task);
     }
 
     @ExceptionHandler(ValidationException.class)

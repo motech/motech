@@ -333,8 +333,13 @@
 
                 return $('<div/>').append(span).html();
             },
-            createErrorMessage: function (scope, response) {
-                var msg = scope.msg('task.error.saved') + '\n';
+            createErrorMessage: function (scope, response, warning) {
+                var msg;
+                if (warning) {
+                   msg = scope.msg('task.success.savedWithWarning') + '\n';
+                } else {
+                   msg = scope.msg('task.error.saved') + '\n';
+                }
 
                 if(jQuery.type(response) === "array") {
                     angular.forEach(response, function (r) {
