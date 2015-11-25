@@ -10,6 +10,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.annotations.internal.samples.AnotherSample;
 import org.motechproject.mds.annotations.internal.samples.RelatedSample;
 import org.motechproject.mds.annotations.internal.samples.Sample;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.TrackingDto;
 
 import static org.mockito.Mockito.atLeastOnce;
@@ -22,6 +23,9 @@ public class CrudEventsProcessorTest {
 
     @Spy
     private MockBundle bundle = new MockBundle();
+
+    @Mock
+    private SchemaHolder schemaHolder;
 
     @Mock
     private TrackingDto initialTrackingDto;
@@ -39,7 +43,7 @@ public class CrudEventsProcessorTest {
 
         processor.setClazz(Sample.class);
         processor.setTrackingDto(initialTrackingDto);
-        processor.execute(bundle);
+        processor.execute(bundle, schemaHolder);
 
         verify(initialTrackingDto, atLeastOnce()).setAllEvents(false);
         verify(initialTrackingDto).setAllowCreateEvent(true);
@@ -51,7 +55,7 @@ public class CrudEventsProcessorTest {
 
         processor.setClazz(RelatedSample.class);
         processor.setTrackingDto(initialTrackingDto);
-        processor.execute(bundle);
+        processor.execute(bundle, schemaHolder);
 
         verify(initialTrackingDto).setAllEvents(true);
     }
@@ -62,7 +66,7 @@ public class CrudEventsProcessorTest {
 
         processor.setClazz(AnotherSample.class);
         processor.setTrackingDto(initialTrackingDto);
-        processor.execute(bundle);
+        processor.execute(bundle, schemaHolder);
 
         verify(initialTrackingDto, times(2)).setAllEvents(false);
     }

@@ -32,7 +32,6 @@ public class MBeanService {
     public static final String JMS_MESSAGE_ID = "JMSMessageID";
     public static final String JMS_REDELIVERED = "JMSRedelivered";
     public static final String JMS_TIMESTAMP = "JMSTimestamp";
-    public static final String DESTINATION = "Destination";
 
     @Autowired
     private MotechMBeanServer mBeanServer;
@@ -47,7 +46,7 @@ public class MBeanService {
         try {
             List<TopicMBean> topics = new ArrayList<>();
             for (ObjectName name : mBeanServer.getTopics()) {
-                String destination = name.getKeyProperty(DESTINATION);
+                String destination = name.getKeyProperty(mBeanServer.getDestinationProperty());
                 TopicViewMBean topicView = mBeanServer.getTopicViewMBean(name);
                 TopicMBean topic = new TopicMBean(destination);
                 topic.setEnqueueCount(topicView.getEnqueueCount());
@@ -72,7 +71,7 @@ public class MBeanService {
         try {
             List<QueueMBean> queues = new ArrayList<>();
             for (ObjectName name : mBeanServer.getQueues()) {
-                String destination = name.getKeyProperty(DESTINATION);
+                String destination = name.getKeyProperty(mBeanServer.getDestinationProperty());
                 QueueViewMBean queueView = mBeanServer.getQueueViewMBean(name);
                 QueueMBean queue = new QueueMBean(destination);
                 queue.setEnqueueCount(queueView.getEnqueueCount());

@@ -239,7 +239,7 @@
                             elem.jqGrid('setLabel', value, scope.msg('scheduler.' + value));
                         });
 
-                        $('#outsideSchedulerTable').children('div').width('100%');
+                        $('#outsideSchedulerTable').children('div').css('width','100%');
                         $('.ui-jqgrid-htable').addClass('table-lightblue');
                         $('.ui-jqgrid-btable').addClass("table-lightblue");
                         $('.ui-jqgrid-htable').width('100%');

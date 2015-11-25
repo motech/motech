@@ -285,7 +285,7 @@
                             }
                         });
 
-                        $('#outsideEmailLoggingTable').children('div').width('100%');
+                        $('#outsideEmailLoggingTable').children('div').css('width','100%');
                         $('.ui-jqgrid-htable').addClass('table-lightblue');
                         $('.ui-jqgrid-btable').addClass("table-lightblue");
                         $('.ui-jqgrid-htable').addClass('table-lightblue');

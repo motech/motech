@@ -1,6 +1,7 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.reflections.MDSInterfaceResolver;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
@@ -28,16 +29,16 @@ public class MDSAnnotationProcessor {
     private InstanceLifecycleListenerProcessor instanceLifecycleListenerProcessor;
     private InstanceLifecycleListenersProcessor instanceLifecycleListenersProcessor;
 
-    public MDSProcessorOutput processAnnotations(Bundle bundle) {
+    public MDSProcessorOutput processAnnotations(Bundle bundle, SchemaHolder schemaHolder) {
         String symbolicName = bundle.getSymbolicName();
 
         LOGGER.debug("Starting scanning bundle {} for MDS annotations.", symbolicName);
 
-        entityProcessor.execute(bundle);
+        entityProcessor.execute(bundle, schemaHolder);
         List<EntityProcessorOutput> entityProcessorOutput = entityProcessor.getProcessingResult();
 
         lookupProcessor.setEntityProcessingResult(entityProcessorOutput);
-        lookupProcessor.execute(bundle);
+        lookupProcessor.execute(bundle, schemaHolder);
         Map<String, List<LookupDto>> lookupProcessorOutput = lookupProcessor.getProcessingResult();
 
         instanceLifecycleListenerProcessor.processAnnotations(bundle);
@@ -45,7 +46,7 @@ public class MDSAnnotationProcessor {
 
         LOGGER.debug("Finished scanning bundle {} for MDS annotations. Starting to process the results.", symbolicName);
 
-        MDSProcessorOutput output = new MDSProcessorOutput(entityProcessorOutput, lookupProcessorOutput);
+        MDSProcessorOutput output = new MDSProcessorOutput(entityProcessorOutput, lookupProcessorOutput, bundle);
 
         // If there's any MDS annotation present, we start scanning for MDS service interfaces in the bundle
         if (!output.getEntityProcessorOutputs().isEmpty() || !output.getLookupProcessorOutputs().isEmpty()) {

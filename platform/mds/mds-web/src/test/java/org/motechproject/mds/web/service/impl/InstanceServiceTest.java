@@ -1,6 +1,7 @@
 package org.motechproject.mds.web.service.impl;
 
 import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,11 +21,13 @@ import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.object.ObjectNotFoundException;
 import org.motechproject.mds.ex.object.ObjectUpdateException;
+import org.motechproject.mds.ex.object.SecurityException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
+import org.motechproject.mds.service.UserPreferencesService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
@@ -38,7 +41,13 @@ import org.motechproject.mds.web.service.InstanceService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.motechproject.mds.ex.object.SecurityException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.core.userdetails.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,9 +69,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -99,11 +111,22 @@ public class InstanceServiceTest {
     @Mock
     private MotechDataService serviceForAnotherSample;
 
+    @Mock
+    private UserPreferencesService userPreferencesService;
+
     @Before
     public void setUp() {
         when(entity.getClassName()).thenReturn(TestSample.class.getName());
         when(entity.getId()).thenReturn(ENTITY_ID);
         when(bundleContext.getBundles()).thenReturn(new Bundle[0]);
+    }
+
+    @After
+    public void resetSecurity() {
+        SecurityContext securityContext = new SecurityContextImpl();
+        securityContext.setAuthentication(null);
+
+        SecurityContextHolder.setContext(securityContext);
     }
 
     @Test
@@ -158,6 +181,9 @@ public class InstanceServiceTest {
 
         //Make sure all fields that were in the instance are still available
         assertEquals(records.get(0).getFields().size(), 5);
+
+        // should not perform update when username is null or blank
+        verify(userPreferencesService, never()).updateGridSize(anyLong(), anyString(), anyInt());
     }
 
     @Test(expected = ObjectNotFoundException.class)
@@ -628,6 +654,58 @@ public class InstanceServiceTest {
         assertEquals(Integer.valueOf(2), records.getTotal()); // 2 pages total
         assertEquals(Integer.valueOf(3), records.getRecords()); // 3 records total
         assertEquals(asList(1L, 2L), extract(records.getRows(), on(EntityRecord.class).getFieldByName("id").getValue()));
+    }
+
+    @Test
+    public void shouldNotUpdateGridSizeWhenUsernameIsBlank() {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setReadOnlySecurityMode(null);
+        entityDto.setSecurityMode(null);
+        entityDto.setClassName(TestSample.class.getName());
+
+        EntityRecord entityRecord = new EntityRecord(ENTITY_ID + 1, null, new ArrayList<FieldRecord>());
+
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityDto);
+
+        mockDataService();
+        instanceService.getEntityRecords(entityRecord.getId(), new QueryParams(1, 100));
+
+        verify(entityService).getEntityFieldsForUI(ENTITY_ID + 1);
+        verify(userPreferencesService, never()).updateGridSize(anyLong(), anyString(), anyInt());
+    }
+
+    @Test
+    public void shouldUpdateGridSize() {
+        setUpSecurityContext();
+
+        EntityDto entityDto = new EntityDto();
+        entityDto.setReadOnlySecurityMode(null);
+        entityDto.setSecurityMode(null);
+        entityDto.setClassName(TestSample.class.getName());
+
+        EntityRecord entityRecord = new EntityRecord(ENTITY_ID + 1, null, new ArrayList<FieldRecord>());
+
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityDto);
+
+        mockDataService();
+        instanceService.getEntityRecords(entityRecord.getId(), new QueryParams(1, 100));
+
+        verify(entityService).getEntityFieldsForUI(ENTITY_ID + 1);
+        verify(userPreferencesService).updateGridSize(ENTITY_ID + 1, "motech", 100);
+    }
+
+    private void setUpSecurityContext() {
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("mdsSchemaAccess");
+        List<SimpleGrantedAuthority> authorities = asList(authority);
+
+        User principal = new User("motech", "motech", authorities);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, "motech", authorities);
+
+        SecurityContext securityContext = new SecurityContextImpl();
+        securityContext.setAuthentication(authentication);
+
+        SecurityContextHolder.setContext(securityContext);
     }
 
     private List buildRelatedRecord() {

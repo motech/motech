@@ -39,6 +39,8 @@ import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.service.TypeService;
+import org.motechproject.mds.service.UserPreferencesService;
+
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.service.HistoryTrashClassHelper;
 import org.motechproject.mds.util.Constants;
@@ -88,6 +90,7 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.RELATED_CLASS;
 import static org.motechproject.mds.util.Constants.Util.ID_FIELD_NAME;
+import static org.motechproject.mds.util.SecurityUtil.getUsername;
 
 /**
  * Default implementation of the {@link org.motechproject.mds.web.service.InstanceService} interface.
@@ -104,6 +107,7 @@ public class InstanceServiceImpl implements InstanceService {
     private TrashService trashService;
     private TypeService typeService;
     private RelationshipDisplayUtil relationshipDisplayUtil;
+    private UserPreferencesService userPreferencesService;
 
     @Override
     @Transactional
@@ -190,6 +194,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         MotechDataService service = getServiceForEntity(entity);
         List instances = service.retrieveAll(queryParams);
+        updateGridSize(entityId, queryParams);
 
         return instancesToRecords(instances, entity, fields, service, EntityType.STANDARD);
     }
@@ -208,6 +213,7 @@ public class InstanceServiceImpl implements InstanceService {
         MotechDataService service = getServiceForEntity(entity);
         List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
         Collection collection = trashService.getInstancesFromTrash(entity.getClassName(), queryParams);
+        updateGridSize(entityId, queryParams);
 
         return instancesToRecords(collection, entity, fields, service, EntityType.TRASH);
     }
@@ -354,6 +360,8 @@ public class InstanceServiceImpl implements InstanceService {
         Object instance = service.retrieve(ID_FIELD_NAME, instanceId);
 
         List history = historyService.getHistoryForInstance(instance, queryParams);
+        updateGridSize(entityId, queryParams);
+
         List<HistoryRecord> result = new ArrayList<>();
         for (Object o : history) {
             result.add(convertToHistoryRecord(o, entity, instanceId, service));
@@ -467,6 +475,13 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public void validateNonEditableProperty(Long entityId) {
         validateNonEditableProperty(getEntity(entityId));
+    }
+
+    private void updateGridSize(Long entityId, QueryParams queryParams) {
+        String username = getUsername();
+        if (queryParams != null && StringUtils.isNotBlank(username)) {
+            userPreferencesService.updateGridSize(entityId, username, queryParams.getPageSize());
+        }
     }
 
     private void validateNonEditableProperty(EntityDto entity) {
@@ -1027,5 +1042,10 @@ public class InstanceServiceImpl implements InstanceService {
     @Autowired
     public void setRelationshipDisplayUtil(RelationshipDisplayUtil relationshipDisplayUtil) {
         this.relationshipDisplayUtil = relationshipDisplayUtil;
+    }
+
+    @Autowired
+    public void setUserPreferencesService(UserPreferencesService userPreferencesService) {
+        this.userPreferencesService = userPreferencesService;
     }
 }

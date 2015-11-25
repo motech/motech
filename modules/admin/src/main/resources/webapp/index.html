@@ -4,9 +4,9 @@
             <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
             <li><a role="menu" href="#/admin/bundles">{{msg('admin.module')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'bundles'"
-                ng-class="{'active': selectedTabState.selectedTab === 'bundles' || 'active': selectedTabState.selectedTab === 'bundle'}">{{msg('admin.manageModules')}}</li>
+                ng-class="{'active': selectedTabState.selectedTab === 'bundles'}">{{msg('admin.manageModules')}}</li>
             <li ng-show="selectedTabState.selectedTab === 'bundle'"
-                ng-class="{'active': selectedTabState.selectedTab === 'bundles' || 'active': selectedTabState.selectedTab === 'bundle'}">{{msg('admin.bundle.title')}}</li>
+                ng-class="{'active': selectedTabState.selectedTab === 'bundles'}">{{msg('admin.bundle.title')}}</li>
             <li ng-show="selectedTabState.selectedTab === 'messages' || selectedTabState.selectedTab === 'messagesSettings'">
                 <a role="menu" href="#/admin/messages">{{msg('admin.messages')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'messages'" ng-class="{'active': selectedTabState.selectedTab === 'messages'}">{{msg('admin.messages')}}</li>
