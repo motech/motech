@@ -6,13 +6,13 @@ import org.eclipse.gemini.blueprint.context.event.OsgiBundleContextClosedEvent;
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleContextFailedEvent;
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleContextRefreshedEvent;
 import org.motechproject.server.osgi.event.OsgiEventProxy;
+import org.motechproject.server.osgi.util.PlatformConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,8 +25,7 @@ public class PlatformStatusManagerImpl implements PlatformStatusManager, OsgiBun
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformStatusManagerImpl.class);
 
-    private static final String EVENT_SUBJECT = "All bundles started.";
-    private static final String ERROR_MESSAGE = "OsgiEventProxy is set null";
+    private static final String OSGIEVENTPROXY_IS_NULL_MESSAGE = "OsgiEventProxy is set to null";
 
     private final PlatformStatus platformStatus = new PlatformStatus();
 
@@ -38,10 +37,6 @@ public class PlatformStatusManagerImpl implements PlatformStatusManager, OsgiBun
     public PlatformStatusManagerImpl(List<Bundle> osgiBundles, List<Bundle> blueprintBundles) {
         this.osgiBundles = osgiBundles;
         this.blueprintBundles = blueprintBundles;
-    }
-
-    public PlatformStatusManagerImpl() {
-        this(new ArrayList<>(), new ArrayList<>());
     }
 
     @Override
@@ -60,10 +55,15 @@ public class PlatformStatusManagerImpl implements PlatformStatusManager, OsgiBun
         if (bundleEvent.getType() == BundleEvent.STARTED) {
             LOGGER.debug("Bundle {} started", symbolicName);
             platformStatus.addOSGiStartedBundle(symbolicName);
-            checkOsgiBundle(bundleEvent.getBundle());
+            checkBundleOsgiStarted(bundleEvent.getBundle());
         } else if (bundleEvent.getType() == BundleEvent.STOPPED) {
             LOGGER.trace("Bundle {} stopped", symbolicName);
             platformStatus.removeOSGiStartedBundle(symbolicName);
+            osgiBundles.remove(bundleEvent.getBundle());
+            blueprintBundles.remove(bundleEvent.getBundle());
+        } else if (bundleEvent.getType() == BundleEvent.UNRESOLVED) {
+            osgiBundles.remove(bundleEvent.getBundle());
+            blueprintBundles.remove(bundleEvent.getBundle());
         }
     }
 
@@ -97,7 +97,7 @@ public class PlatformStatusManagerImpl implements PlatformStatusManager, OsgiBun
         LOGGER.debug("Received context refreshed event {} from {}", event, symbolicName);
         LOGGER.info("{} ready", symbolicName);
 
-        checkBlueprintBundle(event.getBundle());
+        checkBundleBlueprintStarted(event.getBundle());
 
         platformStatus.addStartedBundle(symbolicName);
     }
@@ -118,32 +118,32 @@ public class PlatformStatusManagerImpl implements PlatformStatusManager, OsgiBun
         LOGGER.debug("Received context closed event {} from {}", event, symbolicName);
         LOGGER.info("{} failed to start due to {}", symbolicName, failureCauseMsg);
 
-        checkBlueprintBundle(event.getBundle());
+        checkBundleBlueprintStarted(event.getBundle());
 
         platformStatus.removeStartedBundle(symbolicName);
         platformStatus.addContextError(symbolicName, failureCauseMsg);
     }
 
-    private void checkOsgiBundle(Bundle bundle) {
+    private void checkBundleOsgiStarted(Bundle bundle) {
         if (osgiBundles.contains(bundle)) {
             osgiBundles.remove(bundle);
-            checkStartedBundle();
+            checkAllBundlesStarted();
         }
     }
 
-    private void checkBlueprintBundle(Bundle bundle) {
+    private void checkBundleBlueprintStarted(Bundle bundle) {
         if(blueprintBundles.contains(bundle)) {
             blueprintBundles.remove(bundle);
-            checkStartedBundle();
+            checkAllBundlesStarted();
         }
     }
 
-    private void checkStartedBundle() {
+    private void checkAllBundlesStarted() {
         if(osgiBundles.isEmpty() && blueprintBundles.isEmpty()) {
             if (osgiEventProxy != null) {
-                osgiEventProxy.sendEvent(EVENT_SUBJECT);
+                osgiEventProxy.sendEvent(PlatformConstants.MODULES_STARTUP_TOPIC);
             } else {
-                throw new IllegalStateException(ERROR_MESSAGE);
+                throw new IllegalStateException(OSGIEVENTPROXY_IS_NULL_MESSAGE);
             }
         }
     }
