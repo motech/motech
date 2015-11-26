@@ -178,7 +178,8 @@
     }
 
     function buildGridColModel(colModel, fields, scope, removeVersionField, ignoreHideFields) {
-        var i, j, cmd, field, skip = false;
+        var i, j, cmd, field, skip = false, widthTable;
+        widthTable = scope.getColumnsWidth();
 
         for (i = 0; i < fields.length; i += 1) {
             field = fields[i];
@@ -203,7 +204,7 @@
                    name: field.basic.name,
                    index: field.basic.name,
                    jsonmap: "fields." + i + ".value",
-                   width: 220,
+                   width: widthTable[field.basic.name]? widthTable[field.basic.name] : 220,
                    hidden: ignoreHideFields? false : !isSelectedField(field.basic.name, scope.selectedFields)
                 };
 
@@ -258,6 +259,26 @@
             return (result);
         });
         return result;
+    }
+
+    function handleColumnResize(tableName, gridId, index, width, scope) {
+        var tableWidth, widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
+        if (colModel.length - 1 === index + 1 || (colModel[index + 1] !== undefined && isLastNextColumn(colModel, index))) {
+            widthOrg = colModel[index].widthOrg;
+            if (Math.floor(width) > Math.floor(widthOrg)) {
+                widthNew = colModel[index + 1].width + Math.floor(width - widthOrg);
+                colModel[index + 1].width = widthNew;
+                scope.saveColumnWidth(colModel[index + 1].index, widthNew);
+
+                $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
+                $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
+            }
+            colModel[index].widthOrg = width;
+        }
+
+        scope.saveColumnWidth(colModel[index].index, width);
+        tableWidth = $(tableName).width();
+        $('#' + gridId).jqGrid("setGridWidth", tableWidth);
     }
 
     /*
@@ -1293,7 +1314,7 @@
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                var elem = angular.element(element), tableWidth, eventResize, eventChange,
+                var elem = angular.element(element), eventResize, eventChange,
                 gridId = attrs.id,
                 firstLoad = true;
 
@@ -1334,20 +1355,7 @@
                                 scope.editInstance(id, scope.selectedEntity.module, scope.selectedEntity.name);
                             },
                             resizeStop: function (width, index) {
-                                var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
-                                if (colModel.length - 1 === index + 1 || (colModel[index + 1] !== undefined && isLastNextColumn(colModel, index))) {
-                                    widthOrg = colModel[index].widthOrg;
-                                    if (Math.floor(width) > Math.floor(widthOrg)) {
-                                        widthNew = colModel[index + 1].width + Math.floor(width - widthOrg);
-                                        colModel[index + 1].width = widthNew;
-
-                                        $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
-                                        $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
-                                    }
-                                    colModel[index].widthOrg = width;
-                                }
-                                tableWidth = $('#entityInstancesTable').width();
-                                $('#' + gridId).jqGrid("setGridWidth", tableWidth);
+                                handleColumnResize('#entityInstancesTable', gridId, index, width, scope);
                             },
                             loadonce: false,
                             headertitles: true,
@@ -1892,7 +1900,7 @@
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
-                var elem = angular.element(element), tableWidth, eventResize, eventChange,
+                var elem = angular.element(element), eventResize, eventChange,
                 gridId = attrs.id,
                 firstLoad = true;
 
@@ -1936,20 +1944,7 @@
                                 handleGridPagination(pgButton, $(this.p.pager), scope);
                             },
                             resizeStop: function (width, index) {
-                                var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
-                                if (colModel.length - 1 === index + 1 || (colModel[index + 1] !== undefined && isLastNextColumn(colModel, index))) {
-                                    widthOrg = colModel[index].widthOrg;
-                                    if (Math.floor(width) > Math.floor(widthOrg)) {
-                                        widthNew = colModel[index + 1].width + Math.floor(width - widthOrg);
-                                        colModel[index + 1].width = widthNew;
-
-                                        $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
-                                        $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
-                                    }
-                                    colModel[index].widthOrg = width;
-                                }
-                                tableWidth = $('#instanceHistoryTable').width();
-                                $('#' + gridId).jqGrid("setGridWidth", tableWidth);
+                                handleColumnResize('#instanceHistoryTable', gridId, index, width, scope);
                             },
                             headertitles: true,
                             colModel: colModel,
@@ -2028,7 +2023,7 @@
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                var elem = angular.element(element), tableWidth, eventResize, eventChange,
+                var elem = angular.element(element), eventResize, eventChange,
                 gridId = attrs.id,
                 firstLoad = true;
 
@@ -2065,20 +2060,7 @@
                                 scope.trashInstance(id);
                             },
                             resizeStop: function (width, index) {
-                                var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
-                                if (colModel.length - 1 === index + 1 || (colModel[index + 1] !== undefined && isLastNextColumn(colModel, index))) {
-                                    widthOrg = colModel[index].widthOrg;
-                                    if (Math.floor(width) > Math.floor(widthOrg)) {
-                                        widthNew = colModel[index + 1].width + Math.floor(width - widthOrg);
-                                        colModel[index + 1].width = widthNew;
-
-                                        $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
-                                        $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
-                                    }
-                                    colModel[index].widthOrg = width;
-                                }
-                                tableWidth = $('#instanceTrashTable').width();
-                                $('#' + gridId).jqGrid("setGridWidth", tableWidth);
+                                handleColumnResize('#instanceTrashTable', gridId, index, width, scope);
                             },
                             loadonce: false,
                             headertitles: true,

@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -21,6 +19,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.motechproject.config.core.domain.BootstrapConfig.SQL_DRIVER;
@@ -62,7 +61,10 @@ public class SqlDBManagerImpl implements SqlDBManager {
     @Override
     public Properties getSqlProperties(Properties propertiesToUpdate) throws IOException {
         Properties propertiesAfterUpdate = new Properties();
-        propertiesAfterUpdate.load(new StringReader(StrSubstitutor.replace(getPropertiesAsString(propertiesToUpdate), sqlProperties)));
+        propertiesAfterUpdate.putAll(propertiesToUpdate);
+
+        replaceProperties(propertiesAfterUpdate);
+
         return propertiesAfterUpdate;
     }
 
@@ -174,14 +176,14 @@ public class SqlDBManagerImpl implements SqlDBManager {
         }
     }
 
-    private static String getPropertiesAsString(Properties prop) {
-        StringWriter writer = new StringWriter();
-        try {
-            prop.store(writer, "");
-        } catch (IOException e) {
-            LOGGER.error("Unable to get properties as String", e);
+    private void replaceProperties(Properties props) {
+        StrSubstitutor substitutor = new StrSubstitutor(sqlProperties);
+        for (Map.Entry<Object, Object> entry : props.entrySet()) {
+            if (entry.getValue() instanceof String) {
+                String substituted = substitutor.replace(entry.getValue());
+                entry.setValue(substituted);
+            }
         }
-        return writer.getBuffer().toString();
     }
 
     private String getQuartzDriverDeletegate(String sqlDriver) {

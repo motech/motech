@@ -4,12 +4,13 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
-import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.entityinfo.EntityInfo;
+import org.motechproject.mds.entityinfo.EntityInfoReader;
+import org.motechproject.mds.entityinfo.FieldInfo;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.ex.HistoryInstanceNotFoundException;
 import org.motechproject.mds.ex.SchemaVersionException;
 import org.motechproject.mds.ex.TrashInstanceNotFoundException;
-import org.motechproject.mds.ex.entity.EntityNotFoundException;
 import org.motechproject.mds.ex.object.ObjectNotFoundException;
 import org.motechproject.mds.ex.object.ObjectUpdateException;
 import org.motechproject.mds.ex.object.SecurityException;
@@ -73,6 +74,8 @@ import static org.motechproject.mds.util.SecurityUtil.getUsername;
 @Service
 public abstract class DefaultMotechDataService<T> implements MotechDataService<T> {
 
+    private static final Logger MDS_LOGGER = LoggerFactory.getLogger(DefaultMotechDataService.class);
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private MotechDataRepository<T> repository;
@@ -80,9 +83,12 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private HistoryService historyService;
     private AllEntities allEntities;
     private OsgiEventProxy osgiEventProxy;
+    private JdoTransactionManager transactionManager;
+    private ApplicationContext applicationContext;
+    private EntityInfoReader entityInfoReader;
+
     private SecurityMode securityMode;
     private Long schemaVersion;
-    private JdoTransactionManager transactionManager;
     private boolean recordHistory;
     private boolean allowCreateEvent;
     private boolean allowUpdateEvent;
@@ -90,39 +96,36 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private String module;
     private String entityName;
     private String namespace;
-    private Field versionField;
-    private ApplicationContext applicationContext;
+    private String versionFieldName;
 
     @PostConstruct
-    public void initializeSecurityState() {
-        Class clazz = repository.getClassType();
-        String name = clazz.getName();
-        Entity entity = allEntities.retrieveByClassName(name);
+    public void init() {
+        debug("Initializing {}", getClass().getName());
 
-        if (entity == null) {
-            throw new EntityNotFoundException(name);
-        }
+        EntityInfo entityInfo = entityInfoReader.getEntityInfo(repository.getClassType().getName());
 
-        securityMode = entity.getSecurityMode();
-        schemaVersion = entity.getEntityVersion();
-        recordHistory = entity.isRecordHistory();
-        allowCreateEvent = entity.isAllowCreateEvent();
-        allowUpdateEvent = entity.isAllowUpdateEvent();
-        allowDeleteEvent = entity.isAllowDeleteEvent();
-        module = entity.getModule();
-        entityName = entity.getName();
-        namespace = entity.getNamespace();
+        securityMode = entityInfo.getSecurityMode();
+        schemaVersion = entityInfo.getSchemaVersion();
+        recordHistory = entityInfo.isRecordHistory();
+        allowCreateEvent = entityInfo.isCreateEventFired();
+        allowUpdateEvent = entityInfo.isUpdateEventFired();
+        allowDeleteEvent = entityInfo.isDeleteEventFired();
+        module = entityInfo.getModule();
+        entityName = entityInfo.getEntityName();
+        namespace = entityInfo.getNamespace();
 
         // we need the field types for handling lookups with null values
         Map<String, String> fieldTypeMap = new HashMap<>();
-        for (Field field : entity.getFields()) {
-            fieldTypeMap.put(field.getName(), field.getType().getTypeClassName());
+        for (FieldInfo field : entityInfo.getFieldsInfo()) {
+            fieldTypeMap.put(field.getName(), field.getType());
             if (field.isVersionField()) {
-                versionField = field;
+                versionFieldName = field.getName();
             }
         }
 
         repository.setFieldTypeMap(fieldTypeMap);
+
+        debug("{} ready", getClass().getName());
     }
 
     @Override
@@ -220,8 +223,8 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         } else {
             PropertyUtil.copyProperties(fromDbInstance, transientObject, null, fieldsToUpdate);
 
-            if (versionField != null) {
-                StateManagerUtil.setTransactionVersion(fromDbInstance, versionField.getName());
+            if (versionFieldName != null) {
+                StateManagerUtil.setTransactionVersion(fromDbInstance, versionFieldName);
             }
 
             updateModificationData(fromDbInstance);
@@ -385,10 +388,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     @Override
     public String getVersionFieldName(){
-        if (versionField != null) {
-            return versionField.getName();
-        }
-        return null;
+        return versionFieldName;
     }
 
     @Override
@@ -531,13 +531,20 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return logger;
     }
 
-    @Autowired
-    public void setRepository(MotechDataRepository<T> repository) {
-        this.repository = repository;
+    protected void debug(String msg, Object... args) {
+        if (MDS_LOGGER.isDebugEnabled() && !getLogger().isDebugEnabled()) {
+            MDS_LOGGER.debug(msg, args);
+        } else {
+            getLogger().debug(msg, args);
+        }
     }
 
     protected MotechDataRepository<T> getRepository() {
         return repository;
+    }
+
+    public void setRepository(MotechDataRepository<T> repository) {
+        this.repository = repository;
     }
 
     @Autowired
@@ -569,5 +576,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Autowired
     public void setHistoryService(HistoryService historyService) {
         this.historyService = historyService;
+    }
+
+    @Autowired
+    public void setEntityInfoReader(EntityInfoReader entityInfoReader) {
+        this.entityInfoReader = entityInfoReader;
     }
 }

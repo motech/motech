@@ -4,6 +4,7 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.datanucleus.PropertyNames;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -1146,6 +1147,9 @@ public class MdsBundleIT extends BasePaxIT {
     private void setCacheType(String type) throws IOException {
         try (FileOutputStream outputStream = new FileOutputStream(configurationFile)) {
             Properties datanucleusProps = coreConfigurationService.loadDatanucleusConfig();
+
+            datanucleusProps.remove(PropertyNames.PROPERTY_VALIDATION_FACTORY);
+
             if (type != null) {
                 datanucleusProps.setProperty("datanucleus.cache.level2.type", type);
             } else {

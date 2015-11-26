@@ -4,6 +4,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.RestOperations;
 import org.motechproject.mds.annotations.RestOperation;
 import org.motechproject.mds.dto.RestOptionsDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ public class RestOperationsProcessor implements Processor<RestOperations> {
     }
 
     @Override
-    public void execute(Bundle bundle) {
+    public void execute(Bundle bundle, SchemaHolder schemaHolder) {
         RestOperations annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(clazz, clazz, RestOperations.class);
 
         //When user modified settings on the UI, annotation is omitted

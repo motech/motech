@@ -294,6 +294,7 @@
                             org.motechproject.mds.domain;version=${project.version},
                             org.motechproject.mds.dto;version=${project.version},
                             org.motechproject.mds.enhancer;version=${project.version},
+                            org.motechproject.mds.entityinfo;version=${project.version},
                             org.motechproject.mds.event;version=${project.version},
                             org.motechproject.mds.ex;version=${project.version},
                             org.motechproject.mds.ex.csv;version=${project.version},
@@ -319,6 +320,7 @@
                             org.motechproject.mds.service.impl.csv;version=${project.version},
                             org.motechproject.mds.service.impl.csv.writer;version=${project.version},
                             org.motechproject.mds.service;version=${project.version},
+                            org.motechproject.mds.tasks;version=${project.version},
                             org.motechproject.mds.util;version=${project.version},
                             org.motechproject.mdsmigration.java;version=${project.version}
                         </Export-Package>

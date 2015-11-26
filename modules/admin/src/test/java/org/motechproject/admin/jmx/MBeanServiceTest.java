@@ -41,7 +41,7 @@ public class MBeanServiceTest {
         given(mBeanServer.getQueueViewMBean(any(ObjectName.class))).willReturn(queueViewMBean);
 
         given(mBeanServer.getQueues()).willReturn(queues);
-        given(fooQueue.getKeyProperty(MotechMBeanServer.DESTINATION)).willReturn("foo_queue");
+        given(fooQueue.getKeyProperty(mBeanServer.getDestinationProperty())).willReturn("foo_queue");
 
         List<QueueMBean> queueStatistics = mBeanService.getQueueStatistics();
         assertThat(queueStatistics.size(), Is.is(1));

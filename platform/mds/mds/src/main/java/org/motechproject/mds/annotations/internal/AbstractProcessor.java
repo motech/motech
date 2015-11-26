@@ -1,5 +1,6 @@
 package org.motechproject.mds.annotations.internal;
 
+import org.motechproject.mds.dto.SchemaHolder;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,7 @@ import java.util.Set;
 /**
  * The <code>AbstractProcessor</code> is a base abstract class, that implements the
  * {@link org.motechproject.mds.annotations.internal.Processor} interface. It provides default
- * implementation of the {@link #execute(org.osgi.framework.Bundle)} method. It also defines
+ * implementation of the {@link #execute(org.osgi.framework.Bundle, SchemaHolder)} method. It also defines
  * several new methods that have to be implemented by the inherited classes.
  *
  * @param <A> the type of related annotation.
@@ -20,6 +21,7 @@ abstract class AbstractProcessor<A extends Annotation> implements Processor<A> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProcessor.class);
 
     private Bundle bundle;
+    private SchemaHolder schemaHolder;
 
     /**
      * Returns a list of element on which the actions inside the
@@ -47,22 +49,16 @@ abstract class AbstractProcessor<A extends Annotation> implements Processor<A> {
     protected abstract void afterExecution();
 
     /**
-     * Executes the {@link #execute(org.osgi.framework.Bundle)} method with the {@value null}
-     * parameter.
-     */
-    public void execute() {
-        execute(null);
-    }
-
-    /**
      * {@inheritDoc}
      * <p/>
      * Developer have to specify what actions have to be done before and after processing each
      * found element.
      */
     @Override
-    public void execute(Bundle bundle) {
+    public void execute(Bundle bundle, SchemaHolder schemaHolder) {
         this.bundle = bundle;
+        this.schemaHolder = schemaHolder;
+
         Class<A> annotation = getAnnotationType();
         Set<? extends AnnotatedElement> elements = getElementsToProcess();
 
@@ -91,5 +87,13 @@ abstract class AbstractProcessor<A extends Annotation> implements Processor<A> {
 
     void setBundle(Bundle bundle) {
         this.bundle = bundle;
+    }
+
+    protected SchemaHolder getSchemaHolder() {
+        return schemaHolder;
+    }
+
+    void setSchemaHolder(SchemaHolder schemaHolder) {
+        this.schemaHolder = schemaHolder;
     }
 }
