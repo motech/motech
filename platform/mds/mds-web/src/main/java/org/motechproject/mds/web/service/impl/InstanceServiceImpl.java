@@ -1,5 +1,6 @@
 package org.motechproject.mds.web.service.impl;
 
+import ch.lambdaj.Lambda;
 import javassist.CannotCompileException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -507,10 +508,20 @@ public class InstanceServiceImpl implements InstanceService {
             }
 
             relatedAsColl.addAll(relatedDataService.findByIds(filter.getAddedIds()));
+
+            List<Long> updatedInstancesIds = new ArrayList<>();
+            for (EntityRecord record : filter.getAddedNewRecords()) {
+                Integer id = (Integer) record.getFieldByName(Constants.Util.ID_FIELD_NAME).getValue();
+                if (id != null && id > 0) {
+                    updatedInstancesIds.add(id.longValue());
+                }
+            }
+
             relatedAsColl.removeIf(new Predicate() {
                 @Override
                 public boolean test(Object o) {
-                    return filter.getRemovedIds().contains(PropertyUtil.safeGetProperty(o, Constants.Util.ID_FIELD_NAME));
+                    Long objectId = (Long) PropertyUtil.safeGetProperty(o, Constants.Util.ID_FIELD_NAME);
+                    return filter.getRemovedIds().contains(objectId) || updatedInstancesIds.contains(objectId);
                 }
             });
 
