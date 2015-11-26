@@ -1,6 +1,5 @@
 package org.motechproject.mds.web.service.impl;
 
-import ch.lambdaj.Lambda;
 import javassist.CannotCompileException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
