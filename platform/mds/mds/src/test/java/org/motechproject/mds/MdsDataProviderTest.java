@@ -12,6 +12,7 @@ import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.DefaultMotechDataService;
+import org.motechproject.mds.tasks.MDSDataProvider;
 import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.testutil.records.Record;
 import org.osgi.framework.BundleContext;

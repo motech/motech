@@ -25,6 +25,7 @@ public interface JarGeneratorService {
     String LISTENER_LIST_FILE = "entitiesWithJdoListeners.txt";
     String HISTORY_LIST_FILE = "entitiesWithHistory.txt";
     String VALIDATION_PROVIDER = "META-INF/services/javax.validation.spi.ValidationProvider";
+    String ENTITY_INFO_DIR = "META-INF/entity-info/";
 
     /**
      * Generates a jar file that contains entity class definitions, repositories, interfaces,

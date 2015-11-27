@@ -1,4 +1,4 @@
-package org.motechproject.mds;
+package org.motechproject.mds.tasks;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
@@ -168,7 +168,7 @@ public class MDSDataProvider extends AbstractDataProvider {
             serviceRegistration = null;
         }
         // only register if we actually have entities
-        if (CollectionUtils.isNotEmpty(entityService.listEntities())) {
+        if (CollectionUtils.isNotEmpty(schemaHolder.getAllEntities())) {
             serviceRegistration = bundleContext.registerService(DataProvider.class.getName(), this, null);
         }
     }

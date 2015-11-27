@@ -17,9 +17,9 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.RestOptionsDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.lookup.LookupWrongParameterTypeException;
-import org.motechproject.mds.service.EntityService;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
@@ -47,16 +47,16 @@ import static org.motechproject.mds.testutil.FieldTestHelper.lookupFieldDtos;
 public class LookupProcessorTest {
 
     @Mock
-    Reflections reflections;
+    private Reflections reflections;
 
     @Mock
-    Paranamer paranamer;
+    private Paranamer paranamer;
 
     @Mock
-    EntityService entityService;
+    private SchemaHolder schemaHolder;
 
     @InjectMocks
-    LookupProcessor lookupProcessor;
+    private LookupProcessor lookupProcessor;
 
     private String[] argNames = {"arg0", "arg1", "arg2"};
 
@@ -65,6 +65,7 @@ public class LookupProcessorTest {
     @Before
     public void setUp() throws NoSuchMethodException {
         lookupProcessor = new LookupProcessor();
+        lookupProcessor.setSchemaHolder(schemaHolder);
         initMocks(this);
     }
 
@@ -284,7 +285,7 @@ public class LookupProcessorTest {
 
         AdvancedSettingsDto advanced = mock(AdvancedSettingsDto.class);
         RestOptionsDto restOptions = mock(RestOptionsDto.class);
-        when(entityService.safeGetAdvancedSettingsCommitted(TEST_CLASS_NAME)).thenReturn(advanced);
+        when(schemaHolder.getAdvancedSettings(TEST_CLASS_NAME)).thenReturn(advanced);
         when(advanced.getRestOptions()).thenReturn(restOptions);
         when(restOptions.isModifiedByUser()).thenReturn(true);
 

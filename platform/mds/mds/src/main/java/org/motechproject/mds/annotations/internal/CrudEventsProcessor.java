@@ -2,6 +2,7 @@ package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.CrudEvents;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.reflections.ReflectionsUtil;
@@ -31,7 +32,7 @@ public class CrudEventsProcessor implements Processor<CrudEvents> {
     }
 
     @Override
-    public void execute(Bundle bundle) {
+    public void execute(Bundle bundle, SchemaHolder schemaHolder) {
         CrudEvents annotation = ReflectionsUtil.getAnnotationClassLoaderSafe(clazz, clazz, CrudEvents.class);
 
         //When user modified settings on the UI, annotation is omitted
