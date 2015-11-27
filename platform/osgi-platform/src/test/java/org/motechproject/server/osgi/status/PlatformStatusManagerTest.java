@@ -122,7 +122,8 @@ public class PlatformStatusManagerTest {
         platformStatusManager.bundleChanged(bundleEvent(commonSql, BundleEvent.STARTED));
         platformStatusManager.bundleChanged(bundleEvent(mdsEntities, BundleEvent.STARTED));
         platformStatusManager.bundleChanged(bundleEvent(configCore, BundleEvent.STARTED));
-        platformStatusManager.bundleChanged(bundleEvent(mds, BundleEvent.UNRESOLVED));
+        platformStatusManager.bundleChanged(bundleEvent(mds, BundleEvent.STARTED));
+        platformStatusManager.bundleChanged(bundleEvent(mds, BundleEvent.STOPPED));
 
         verify(osgiEventProxy, never()).sendEvent(PlatformConstants.MODULES_STARTUP_TOPIC);
 

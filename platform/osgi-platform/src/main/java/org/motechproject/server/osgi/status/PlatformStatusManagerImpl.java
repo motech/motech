@@ -59,11 +59,8 @@ public class PlatformStatusManagerImpl implements PlatformStatusManager, OsgiBun
         } else if (bundleEvent.getType() == BundleEvent.STOPPED) {
             LOGGER.trace("Bundle {} stopped", symbolicName);
             platformStatus.removeOSGiStartedBundle(symbolicName);
-            osgiBundles.remove(bundleEvent.getBundle());
-            blueprintBundles.remove(bundleEvent.getBundle());
-        } else if (bundleEvent.getType() == BundleEvent.UNRESOLVED) {
-            osgiBundles.remove(bundleEvent.getBundle());
-            blueprintBundles.remove(bundleEvent.getBundle());
+            checkBundleOsgiStarted(bundleEvent.getBundle());
+            checkBundleBlueprintStarted(bundleEvent.getBundle());
         }
     }
 
