@@ -39,6 +39,7 @@ import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
 import javax.jdo.metadata.CollectionMetadata;
 import javax.jdo.metadata.FieldMetadata;
+import javax.jdo.metadata.ForeignKeyMetadata;
 import javax.jdo.metadata.IndexMetadata;
 import javax.jdo.metadata.InheritanceMetadata;
 import javax.jdo.metadata.JDOMetadata;
@@ -78,6 +79,7 @@ import static org.motechproject.mds.util.Constants.Util.VALUE_GENERATOR;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({MotechClassPool.class, FieldUtils.class})
 public class EntityMetadataBuilderTest {
+
     private static final String PACKAGE = "org.motechproject.mds.entity";
     private static final String ENTITY_NAME = "Sample";
     private static final String MODULE = "MrS";
@@ -251,6 +253,8 @@ public class EntityMetadataBuilderTest {
         FieldMetadata fmd = mock(FieldMetadata.class);
         when(fmd.getName()).thenReturn("oneToOneName");
 
+        ForeignKeyMetadata fkmd = mock(ForeignKeyMetadata.class);
+
         when(entity.getName()).thenReturn(ENTITY_NAME);
         when(entity.getId()).thenReturn(3L);
         when(schemaHolder.getFields(entity)).thenReturn(singletonList(oneToOneField));
@@ -258,6 +262,7 @@ public class EntityMetadataBuilderTest {
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
         when(classMetadata.newFieldMetadata("oneToOneName")).thenReturn(fmd);
+        when(fmd.newForeignKeyMetadata()).thenReturn(fkmd);
 
         /* We simulate configuration for the bi-directional relationship (the related class has got
            a field that links back to the main class) */
@@ -280,6 +285,7 @@ public class EntityMetadataBuilderTest {
         verifyCommonClassMetadata();
         verify(fmd).setDefaultFetchGroup(true);
         verify(fmd).setPersistenceModifier(PersistenceModifier.PERSISTENT);
+        verify(fkmd).setName("fk_Sample_oneToOneName_3");
     }
 
     @Test

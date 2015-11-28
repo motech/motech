@@ -11,10 +11,10 @@ import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.RelationshipHolder;
-import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.MetadataDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.MdsException;
@@ -226,11 +226,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             String relatedClass = ClassName.getSimpleName(holder.getRelatedClass());
             MemberMetadata rfmd = getFieldMetadata(getClassMetadata(pmd, relatedClass), holder.getRelatedField());
 
-            ForeignKeyMetadata rfkmd = getOrCreateFkMetadata(rfmd);
+            ForeignKeyMetadata rfkmd = getOrCreateRelFkMetadata(rfmd, entity, field);
             rfkmd.setDeleteAction(ForeignKeyAction.CASCADE);
-
-            rfkmd.setName(KeyNames.foreignKeyName(entity.getName(), entity.getId(), field.getBasic().getName(),
-                    EntityType.STANDARD));
         }
     }
 
@@ -487,12 +484,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         if (entityType == EntityType.STANDARD) {
             processRelationship(fmd, holder, entity, field, definition);
-
-            if (shouldSetCascadeDelete(holder, EntityType.STANDARD)) {
-                ForeignKeyMetadata fkmd = getOrCreateFkMetadata(fmd);
-                fkmd.setDeleteAction(ForeignKeyAction.CASCADE);
-            }
-
         } else {
             processHistoryTrashRelationship(cmd, fmd, holder);
         }
@@ -511,16 +502,30 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         if (holder.isOneToMany() || holder.isManyToMany()) {
             setUpCollectionMetadata(fmd, relatedClass, holder, EntityType.STANDARD);
         } else if (holder.isOneToOne()) {
-            fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
+            processOneToOneRelationship(fmd, holder);
+        }
 
-            //for bidirectional 1:1 we're setting foreign key with cascade deletion after metadata enhancement
-            if (holder.getRelatedField() == null) {
-                fmd.setDependent(holder.isCascadeDelete());
-            }
+        if (holder.isOneToOne() || holder.isManyToOne()) {
+            ForeignKeyMetadata fkmd = getOrCreateRelFkMetadata(fmd, entity, field);
+            fkmd.setDeleteAction(ForeignKeyAction.NULL);
         }
 
         if (holder.isManyToMany()) {
             addManyToManyMetadata(fmd, holder, entity, field, definition);
+        }
+
+        if (shouldSetCascadeDelete(holder, EntityType.STANDARD)) {
+            ForeignKeyMetadata fkmd = getOrCreateFkMetadata(fmd);
+            fkmd.setDeleteAction(ForeignKeyAction.CASCADE);
+        }
+    }
+
+    private void processOneToOneRelationship(FieldMetadata fmd, RelationshipHolder holder) {
+        fmd.setPersistenceModifier(PersistenceModifier.PERSISTENT);
+
+        //for bidirectional 1:1 we're setting foreign key with cascade deletion after metadata enhancement
+        if (holder.getRelatedField() == null) {
+            fmd.setDependent(holder.isCascadeDelete());
         }
     }
 
@@ -544,36 +549,42 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private void addManyToManyMetadata(FieldMetadata fmd, RelationshipHolder holder, EntityDto entity, FieldDto field,
                                        Class<?> definition) {
-        java.lang.reflect.Field fieldDefinition = FieldUtils.getDeclaredField(definition, field.getBasic().getName(), true);
-        Join join = fieldDefinition.getAnnotation(Join.class);
-
         // If tables and column names have been specified in annotations, do not set their metadata
         // Join metadata must be present at exactly one side of the M:N relation when using Sets
         // When using Lists join metadata must be present at two sides of M:N relation
         if (!holder.isOwningSide() || holder.isListManyToMany()) {
+            java.lang.reflect.Field fieldDefinition = FieldUtils.getDeclaredField(definition, field.getBasic().getName(),
+                    true);
+
+            Join join = fieldDefinition.getAnnotation(Join.class);
+            Persistent persistent = fieldDefinition.getAnnotation(Persistent.class);
+            Element element = fieldDefinition.getAnnotation(Element.class);
+
             JoinMetadata jmd = null;
 
             if (join == null) {
                 jmd = fmd.newJoinMetadata();
             }
 
-            Persistent persistent = fieldDefinition.getAnnotation(Persistent.class);
-            Element element = fieldDefinition.getAnnotation(Element.class);
-
             setTableNameMetadata(fmd, persistent, entity, field, holder, EntityType.STANDARD);
-            setElementMetadata(fmd, element, holder);
+            setElementMetadata(fmd, element, holder, entity);
 
             if (join == null || StringUtils.isEmpty(join.column())) {
                 setJoinMetadata(jmd, fmd, ClassName.getSimpleName(entity.getClassName()).toUpperCase() + ID_SUFFIX);
-           }
+                ForeignKeyMetadata fkmd = getOrCreateFkMetadata(jmd);
+                fkmd.setName(KeyNames.foreignKeyName(entity.getName(), entity.getId(), field.getBasic().getName(),
+                        EntityType.STANDARD));
+            }
         }
     }
 
-    private void setElementMetadata(FieldMetadata fmd, Element element, RelationshipHolder holder) {
+    private void setElementMetadata(FieldMetadata fmd, Element element, RelationshipHolder holder, EntityDto entity) {
         if (element == null || StringUtils.isEmpty(element.column())) {
             ElementMetadata emd = fmd.newElementMetadata();
-
             emd.setColumn((ClassName.getSimpleName(holder.getRelatedClass()) + ID_SUFFIX).toUpperCase());
+            ForeignKeyMetadata fkmd = emd.newForeignKeyMetadata();
+            fkmd.setName(KeyNames.foreignKeyName(ClassName.getSimpleName(holder.getRelatedClass()), entity.getId(),
+                    holder.getRelatedField(), EntityType.STANDARD));
         }
     }
 
@@ -743,6 +754,13 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private ForeignKeyMetadata getOrCreateFkMetadata(MemberMetadata mmd) {
         return mmd.getForeignKeyMetadata() == null ? mmd.newForeignKeyMetadata() : mmd.getForeignKeyMetadata();
+    }
+
+    private ForeignKeyMetadata getOrCreateRelFkMetadata(MemberMetadata mmd, EntityDto entity, FieldDto field) {
+        ForeignKeyMetadata fkmd = getOrCreateFkMetadata(mmd);
+        fkmd.setName(KeyNames.foreignKeyName(entity.getName(), entity.getId(), field.getBasic().getName(),
+                EntityType.STANDARD));
+        return fkmd;
     }
 
     private ForeignKeyMetadata getOrCreateFkMetadata(JoinMetadata jmd) {
