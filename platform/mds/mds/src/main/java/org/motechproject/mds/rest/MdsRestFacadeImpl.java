@@ -4,11 +4,10 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.module.SimpleModule;
-import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.RelationshipHolder;
-import org.motechproject.mds.domain.RestOptions;
 import org.motechproject.mds.dto.DtoHelper;
+import org.motechproject.mds.entityinfo.EntityInfo;
+import org.motechproject.mds.entityinfo.EntityInfoReader;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
@@ -22,11 +21,11 @@ import org.motechproject.mds.ex.rest.RestNoLookupResultException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
 import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.QueryParams;
-import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.BlobDeserializer;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.PropertyUtil;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -52,13 +51,12 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private MotechDataService<T> dataService;
-    private AllEntities allEntities;
+    private EntityInfoReader entityInfoReader;
 
     private Class<T> entityClass;
     private String moduleName;
     private String entityName;
     private String namespace;
-
 
     private Map<String, LookupExecutor> lookupExecutors = new HashMap<>();
     private Set<String> forbiddenLookupMethodNames = new HashSet<>();
@@ -77,7 +75,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     @PostConstruct
     public void init() {
         entityClass = dataService.getClassType();
-        Entity entity = allEntities.retrieveByClassName(entityClass.getName());
+        EntityInfo entity = entityInfoReader.getEntityInfo(entityClass.getName());
 
         moduleName = entity.getModule();
         entityName = entity.getName();
@@ -93,6 +91,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
+    @Transactional
     public RestResponse get(QueryParams queryParams, boolean includeBlob) {
         if (!restOptions.isRead()) {
             throw operationNotSupportedEx("READ");
@@ -109,6 +108,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
+    @Transactional
     public RestResponse get(Long id, boolean includeBlob) {
         if (!restOptions.isRead()) {
             throw operationNotSupportedEx("READ");
@@ -128,6 +128,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
+    @Transactional
     public RestProjection create(InputStream instanceBody) {
         if (!restOptions.isCreate()) {
             throw operationNotSupportedEx("CREATE");
@@ -148,6 +149,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
+    @Transactional
     public RestProjection update(InputStream instanceBody) {
         if (!restOptions.isUpdate()) {
             throw operationNotSupportedEx("UPDATE");
@@ -165,6 +167,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         if (!restOptions.isDelete()) {
             throw operationNotSupportedEx("DELETE");
@@ -174,6 +177,7 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
     }
 
     @Override
+    @Transactional
     public Object executeLookup(String lookupName, Map<String, String> lookupMap, QueryParams queryParams, boolean includeBlob) {
         if (lookupExecutors.containsKey(lookupName)) {
             LookupExecutor executor = lookupExecutors.get(lookupName);
@@ -223,8 +227,8 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
         this.dataService = dataService;
     }
 
-    public void setAllEntities(AllEntities allEntities) {
-        this.allEntities = allEntities;
+    public void setEntityInfoReader(EntityInfoReader entityInfoReader) {
+        this.entityInfoReader = entityInfoReader;
     }
 
     private void readFieldsExposedByRest(Map<String, FieldDto> fieldMap) {
@@ -237,8 +241,8 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
         }
     }
 
-    private void readLookups(Entity entity) {
-        for (LookupDto lookup : entity.getLookupDtos()) {
+    private void readLookups(EntityInfo entity) {
+        for (LookupDto lookup : entity.getLookups()) {
             Map<String, FieldDto> fieldMap = getLookupFieldsMapping(entity, lookup);
             String lookuMethodpName = lookup.getMethodName();
             if (lookup.isExposedViaRest()) {
@@ -252,30 +256,25 @@ public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
         }
     }
 
-    private Map<String, FieldDto> getLookupFieldsMapping(Entity entity, LookupDto lookup) {
+    private Map<String, FieldDto> getLookupFieldsMapping(EntityInfo entity, LookupDto lookup) {
         Map<String, FieldDto> fieldMap = new HashMap<>();
         for (LookupFieldDto lookupField : lookup.getLookupFields()) {
-            Field field;
+            FieldDto field;
             if (StringUtils.isNotBlank(lookupField.getRelatedName())) {
-                Entity relatedEntity = allEntities.retrieveByClassName(new RelationshipHolder(entity.getField(lookupField.getName())).getRelatedClass());
-                field = relatedEntity.getField(lookupField.getRelatedName());
+                RelationshipHolder relHolder = new RelationshipHolder(entity.getField(lookupField.getName()).getField());
+                EntityInfo relatedEntity = entityInfoReader.getEntityInfo(relHolder.getRelatedClass());
+                field = relatedEntity.getField(lookupField.getRelatedName()).getField();
             } else {
-                field = entity.getField(lookupField.getName());
+                field = entity.getField(lookupField.getName()).getField();
             }
-            fieldMap.put(lookupField.getLookupFieldName(), field.toDto());
+            fieldMap.put(lookupField.getLookupFieldName(), field);
         }
         return fieldMap;
 
     }
 
-    private void readRestOptions(Entity entity) {
-        RestOptions restOptsFromDb = entity.getRestOptions();
-
-        if (restOptsFromDb == null) {
-            restOptions = new RestOptionsDto();
-        } else {
-            restOptions = restOptsFromDb.toDto();
-        }
+    private void readRestOptions(EntityInfo entity) {
+        restOptions = entity.getAdvancedSettings().getRestOptions();
     }
 
     private void readBlobFieldsExposedByRest(Map<String, FieldDto> fieldMap) {

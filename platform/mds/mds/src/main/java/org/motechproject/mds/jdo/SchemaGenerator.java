@@ -34,13 +34,13 @@ import java.util.Set;
  */
 public class SchemaGenerator implements InitializingBean {
 
-    public  static final String CONNECTION_DRIVER_KEY = "javax.jdo.option.ConnectionDriverName";
+    public static final String CONNECTION_DRIVER_KEY = "javax.jdo.option.ConnectionDriverName";
 
-    public  static final String CONNECTION_URL_KEY = "javax.jdo.option.ConnectionURL";
+    public static final String CONNECTION_URL_KEY = "javax.jdo.option.ConnectionURL";
 
-    public  static final String CONNECTION_USER_NAME_KEY = "javax.jdo.option.ConnectionUserName";
+    public static final String CONNECTION_USER_NAME_KEY = "javax.jdo.option.ConnectionUserName";
 
-    public  static final String CONNECTION_USER_PASSWORD_KEY = "javax.jdo.option.ConnectionPassword";
+    public static final String CONNECTION_USER_PASSWORD_KEY = "javax.jdo.option.ConnectionPassword";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SchemaGenerator.class);
 
@@ -77,7 +77,7 @@ public class SchemaGenerator implements InitializingBean {
     }
 
     public void runMigrations(File migrationDirectory) {
-        LOGGER.debug("Starting the flyway modules migrations.");
+        LOGGER.debug("Starting the flyway modules migrations from {}.", migrationDirectory.getAbsolutePath());
         //No migration directory
         if (!migrationDirectory.exists()) {
             LOGGER.debug("The migration directory doesn't exist. Skipping migration.");

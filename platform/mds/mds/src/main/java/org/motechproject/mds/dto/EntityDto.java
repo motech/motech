@@ -44,6 +44,7 @@ public class EntityDto {
     private boolean securityOptionsModified;
     private Integer maxFetchDepth;
     private boolean readOnlyAccess;
+    private Long schemaVersion;
 
     public EntityDto() {
         this(null, null, null, null, null, null, null, null);
@@ -86,7 +87,10 @@ public class EntityDto {
         this(id, className, name, module, namespace, null, false, securityMode, securityMembers, null, null, superClass, false, false, null);
     }
 
-    public EntityDto(Long id, String className, String name, String module, String namespace, String tableName, boolean recordHistory, SecurityMode securityMode, Set<String> securityMembers, SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers, String superClass, boolean abstractClass, boolean securityOptionsModified, String bundleSymbolicName) {
+    public EntityDto(Long id, String className, String name, String module, String namespace,
+                     String tableName, boolean recordHistory, SecurityMode securityMode, Set<String> securityMembers,
+                     SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers, String superClass,
+                     boolean abstractClass, boolean securityOptionsModified, String bundleSymbolicName) {
         this.id = id;
         this.className = className;
         this.name = name;
@@ -95,7 +99,7 @@ public class EntityDto {
         this.tableName = tableName;
         this.recordHistory = recordHistory;
         this.securityMode = securityMode != null ? securityMode : SecurityMode.EVERYONE;
-        this.securityMembers = securityMembers != null ? new HashSet<>(securityMembers) : new HashSet<String>();
+        this.securityMembers = securityMembers != null ? new HashSet<>(securityMembers) : new HashSet<>();
         this.readOnlySecurityMode = readOnlySecurityMode;
         this.readOnlySecurityMembers = readOnlySecurityMembers;
         this.readOnly = isNotBlank(module) || isNotBlank(namespace);
@@ -271,6 +275,14 @@ public class EntityDto {
 
     public void setReadOnlyAccess(boolean readOnlyAccess) {
         this.readOnlyAccess = readOnlyAccess;
+    }
+
+    public Long getSchemaVersion() {
+        return schemaVersion;
+    }
+
+    public void setSchemaVersion(Long schemaVersion) {
+        this.schemaVersion = schemaVersion;
     }
 
     @JsonIgnore

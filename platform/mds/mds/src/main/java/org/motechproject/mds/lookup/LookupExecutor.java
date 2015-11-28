@@ -110,7 +110,7 @@ public class LookupExecutor {
     }
 
     private String getTypeClass(FieldDto field) {
-        String typeClass = null;
+        String typeClass;
 
         if (field.getType().isCombobox()) {
             ComboboxHolder holder = new ComboboxHolder(entityClass, field);

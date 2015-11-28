@@ -22,8 +22,8 @@ public class SchemaHolder {
     private Map<String, List<TypeValidationDto>> typeValidations = new HashMap<>();
 
     public void addEntity(EntityDto entity, AdvancedSettingsDto advancedSettings,
-                          List<FieldDto> fields, List<LookupDto> lookups) {
-        EntityHolder entityHolder = new EntityHolder(entity, advancedSettings, fields, lookups);
+                          List<FieldDto> fields) {
+        EntityHolder entityHolder = new EntityHolder(entity, advancedSettings, fields);
         entityMap.put(entityHolder.getEntityClassName(), entityHolder);
     }
 
@@ -123,14 +123,12 @@ public class SchemaHolder {
         private EntityDto entity;
         private AdvancedSettingsDto advancedSettings;
         private List<FieldDto> fields;
-        private List<LookupDto> lookups;
 
         public EntityHolder(EntityDto entity, AdvancedSettingsDto advancedSettings,
-                            List<FieldDto> fields, List<LookupDto> lookups) {
+                            List<FieldDto> fields) {
             this.entity = entity;
             this.advancedSettings = advancedSettings;
             this.fields = fields;
-            this.lookups = lookups;
         }
 
         public EntityDto getEntity() {
@@ -166,11 +164,7 @@ public class SchemaHolder {
         }
 
         public List<LookupDto> getLookups() {
-            return lookups;
-        }
-
-        public void setLookups(List<LookupDto> lookups) {
-            this.lookups = lookups;
+            return getAdvancedSettings().getIndexes();
         }
 
         @Override

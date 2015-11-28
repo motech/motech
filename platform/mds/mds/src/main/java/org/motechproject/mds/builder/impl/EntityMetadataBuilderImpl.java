@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Element;
@@ -149,7 +148,6 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
     }
 
     @Override
-    @Transactional
     public void fixEnhancerIssuesInMetadata(JDOMetadata jdoMetadata, SchemaHolder schemaHolder) {
         for (PackageMetadata pmd : jdoMetadata.getPackages()) {
             for (ClassMetadata cmd : pmd.getClasses()) {

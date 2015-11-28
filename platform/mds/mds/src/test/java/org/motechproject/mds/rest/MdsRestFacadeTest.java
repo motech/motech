@@ -12,9 +12,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.entityinfo.EntityInfo;
 import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.RestOptions;
+import org.motechproject.mds.dto.AdvancedSettingsDto;
+import org.motechproject.mds.entityinfo.EntityInfoReaderImpl;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
@@ -25,7 +26,6 @@ import org.motechproject.mds.ex.rest.RestLookupNotFoundException;
 import org.motechproject.mds.ex.rest.RestNoLookupResultException;
 import org.motechproject.mds.ex.rest.RestOperationNotSupportedException;
 import org.motechproject.mds.query.QueryParams;
-import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.testutil.records.Record;
@@ -73,10 +73,7 @@ public class MdsRestFacadeTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
-    private AllEntities allEntities;
-
-    @Mock
-    private Entity entity;
+    private EntityInfo entity;
 
     @Mock
     private Field valueField;
@@ -85,10 +82,13 @@ public class MdsRestFacadeTest {
     private RestFacadeTestService dataService;
 
     @Mock
-    private RestOptions restOptions;
+    private EntityInfoReaderImpl entityInfoReader;
 
     @Mock
-    private RestOptionsDto restOptionsDto;
+    private RestOptionsDto restOptions;
+
+    @Mock
+    private AdvancedSettingsDto advancedSettingsDto;
 
     @InjectMocks
     private MdsRestFacadeImpl<Record> mdsRestFacade = new MdsRestFacadeImpl<>();
@@ -102,27 +102,27 @@ public class MdsRestFacadeTest {
     @Before
     public void setUp() {
         when(dataService.getClassType()).thenReturn(Record.class);
-        when(allEntities.retrieveByClassName(Record.class.getName())).thenReturn(entity);
+        when(entityInfoReader.getEntityInfo(Record.class.getName())).thenReturn(entity);
         when(entity.getName()).thenReturn(ENTITY_NAME);
         when(entity.getModule()).thenReturn(TEST_MODULE);
         when(entity.getClassName()).thenReturn(Record.class.getName());
         when(entity.getNamespace()).thenReturn(NAMESPACE);
-        when(entity.getRestOptions()).thenReturn(restOptions);
-        when(restOptions.toDto()).thenReturn(restOptionsDto);
+        when(entity.getAdvancedSettings()).thenReturn(advancedSettingsDto);
+        when(advancedSettingsDto.getRestOptions()).thenReturn(restOptions);
 
         // set up rest fields
         FieldDto valueField = FieldTestHelper.fieldDto(3L, VALUE_FIELD, String.class.getName(), VALUE_FIELD, null);
         FieldDto dateField = FieldTestHelper.fieldDto(4L, DATE_FIELD, Date.class.getName(), DATE_FIELD, null);
         FieldDto blobField = FieldTestHelper.fieldDto(5L, BLOB_FIELD, Byte[].class.getName(), BLOB_FIELD, null);
         blobField.setType(new TypeDto("mds.field.blob", StringUtils.EMPTY, BLOB_FIELD, Byte[].class.getName()));
-        when(restOptionsDto.getFieldNames()).thenReturn(Arrays.asList(VALUE_FIELD, DATE_FIELD, BLOB_FIELD));
+        when(restOptions.getFieldNames()).thenReturn(Arrays.asList(VALUE_FIELD, DATE_FIELD, BLOB_FIELD));
 
         // set up lookups
         FieldDto strField = FieldTestHelper.fieldDto(1L, STR_FIELD, String.class.getName(), STR_FIELD, null);
         FieldDto intField = FieldTestHelper.fieldDto(2L, INT_FIELD, Integer.class.getName(), INT_FIELD, null);
         when(entity.getFieldDtos()).thenReturn(asList(intField, strField, valueField, dateField, blobField));
-        when(entity.getField(STR_FIELD)).thenReturn(FieldTestHelper.field(1l, STR_FIELD, String.class));
-        when(entity.getField(INT_FIELD)).thenReturn(FieldTestHelper.field(2l, INT_FIELD, Integer.class));
+        when(entity.getField(STR_FIELD)).thenReturn(FieldTestHelper.fieldInfo(STR_FIELD, String.class, false, true));
+        when(entity.getField(INT_FIELD)).thenReturn(FieldTestHelper.fieldInfo(INT_FIELD, Integer.class, false, true));
 
         LookupDto forbiddenLookup = new LookupDto(FORBIDDEN_LOOKUP_NAME, true, false,
                 asList(FieldTestHelper.lookupFieldDto(1L, STR_FIELD), FieldTestHelper.lookupFieldDto(2L, INT_FIELD)),
@@ -130,7 +130,7 @@ public class MdsRestFacadeTest {
         LookupDto supportedLookup = new LookupDto(SUPPORTED_LOOKUP_NAME, false, true,
                 asList(FieldTestHelper.lookupFieldDto(1L, STR_FIELD), FieldTestHelper.lookupFieldDto(2L, INT_FIELD)),
                 true);
-        when(entity.getLookupDtos()).thenReturn(asList(forbiddenLookup, supportedLookup));
+        when(entity.getLookups()).thenReturn(asList(forbiddenLookup, supportedLookup));
 
         //set up record
         recordOne = testRecord();
@@ -427,10 +427,10 @@ public class MdsRestFacadeTest {
 
     private void setUpCrudAccess(boolean allowCreate, boolean allowRead,
                                  boolean allowUpdate, boolean allowDelete) {
-        when(restOptionsDto.isCreate()).thenReturn(allowCreate);
-        when(restOptionsDto.isRead()).thenReturn(allowRead);
-        when(restOptionsDto.isUpdate()).thenReturn(allowUpdate);
-        when(restOptionsDto.isDelete()).thenReturn(allowDelete);
+        when(restOptions.isCreate()).thenReturn(allowCreate);
+        when(restOptions.isRead()).thenReturn(allowRead);
+        when(restOptions.isUpdate()).thenReturn(allowUpdate);
+        when(restOptions.isDelete()).thenReturn(allowDelete);
     }
 
     private Record testRecord() {

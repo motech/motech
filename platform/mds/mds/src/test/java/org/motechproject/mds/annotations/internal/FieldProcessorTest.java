@@ -20,16 +20,14 @@ import org.motechproject.mds.annotations.internal.samples.Sample;
 import org.motechproject.mds.domain.ManyToOneRelationship;
 import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
-import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.MetadataDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.dto.TypeValidationDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
-import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.Constants;
 
 import javax.validation.constraints.DecimalMax;
@@ -47,6 +45,7 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.apache.commons.lang.reflect.FieldUtils.getDeclaredField;
 import static org.apache.commons.lang.reflect.MethodUtils.getAccessibleMethod;
 import static org.junit.Assert.assertEquals;
@@ -68,10 +67,7 @@ public class FieldProcessorTest {
     private MockBundle bundle = new MockBundle();
 
     @Mock
-    private EntityService entityService;
-
-    @Mock
-    private TypeService typeService;
+    private SchemaHolder schemaHolder;
 
     @Captor
     private ArgumentCaptor<EntityDto> entityCaptor;
@@ -86,24 +82,30 @@ public class FieldProcessorTest {
     @Before
     public void setUp() throws Exception {
         processor = new FieldProcessor();
-        processor.setTypeService(typeService);
         processor.setEntity(entity);
         processor.setClazz(Sample.class);
         processor.setBundle(bundle);
-        processor.setEntityService(entityService);
+        processor.setSchemaHolder(schemaHolder);
 
-        doReturn(TypeDto.BOOLEAN).when(typeService).findType(Boolean.class);
-        doReturn(TypeDto.STRING).when(typeService).findType(String.class);
-        doReturn(TypeDto.TIME).when(typeService).findType(Time.class);
-        doReturn(TypeDto.DATE).when(typeService).findType(Date.class);
-        doReturn(TypeDto.BOOLEAN).when(typeService).findType(boolean.class);
-        doReturn(TypeDto.DOUBLE).when(typeService).findType(double.class);
-        doReturn(TypeDto.INTEGER).when(typeService).findType(int.class);
-        doReturn(TypeDto.LONG).when(typeService).findType(long.class);
-        doReturn(TypeDto.ONE_TO_ONE_RELATIONSHIP).when(typeService).findType(OneToOneRelationship.class);
-        doReturn(TypeDto.ONE_TO_MANY_RELATIONSHIP).when(typeService).findType(OneToManyRelationship.class);
-        doReturn(TypeDto.MANY_TO_ONE_RELATIONSHIP).when(typeService).findType(ManyToOneRelationship.class);
-        when(entityService.getEntityByClassName(anyString())).thenReturn(null);
+        doReturn(TypeDto.STRING).when(schemaHolder).getType(String.class);
+        doReturn(TypeDto.STRING).when(schemaHolder).getType(String.class.getName());
+        doReturn(TypeDto.TIME).when(schemaHolder).getType(Time.class);
+        doReturn(TypeDto.DATE).when(schemaHolder).getType(Date.class);
+        doReturn(TypeDto.BOOLEAN).when(schemaHolder).getType(Boolean.class);
+        doReturn(TypeDto.BOOLEAN).when(schemaHolder).getType(boolean.class);
+        doReturn(TypeDto.DOUBLE).when(schemaHolder).getType(Double.class);
+        doReturn(TypeDto.DOUBLE).when(schemaHolder).getType(Double.class.getName());
+        doReturn(TypeDto.DOUBLE).when(schemaHolder).getType(double.class);
+        doReturn(TypeDto.INTEGER).when(schemaHolder).getType(Integer.class.getName());
+        doReturn(TypeDto.INTEGER).when(schemaHolder).getType(Integer.class);
+        doReturn(TypeDto.INTEGER).when(schemaHolder).getType(int.class);
+        doReturn(TypeDto.LONG).when(schemaHolder).getType(Long.class);
+        doReturn(TypeDto.LONG).when(schemaHolder).getType(long.class);
+        doReturn(TypeDto.COLLECTION).when(schemaHolder).getType(Collection.class);
+        doReturn(TypeDto.ONE_TO_ONE_RELATIONSHIP).when(schemaHolder).getType(OneToOneRelationship.class);
+        doReturn(TypeDto.ONE_TO_MANY_RELATIONSHIP).when(schemaHolder).getType(OneToManyRelationship.class);
+        doReturn(TypeDto.MANY_TO_ONE_RELATIONSHIP).when(schemaHolder).getType(ManyToOneRelationship.class);
+        when(schemaHolder.getEntityByClassName(anyString())).thenReturn(null);
     }
 
     @Test
@@ -129,7 +131,7 @@ public class FieldProcessorTest {
 
         processor.process(world);
 
-        verify(typeService).findType(Boolean.class);
+        verify(schemaHolder).getType(Boolean.class);
 
         Collection<FieldDto> fields = processor.getElements();
 
@@ -171,7 +173,7 @@ public class FieldProcessorTest {
 
         processor.process(setLocalTime);
 
-        verify(typeService).findType(Time.class);
+        verify(schemaHolder).getType(Time.class);
 
         Collection<FieldDto> fields = processor.getElements();
 
@@ -196,7 +198,7 @@ public class FieldProcessorTest {
 
         processor.process(getServerDate);
 
-        verify(typeService).findType(Date.class);
+        verify(schemaHolder).getType(Date.class);
 
         Collection<FieldDto> fields = processor.getElements();
 
@@ -222,7 +224,7 @@ public class FieldProcessorTest {
 
         processor.process(setIgnoredField);
         processor.process(getIgnoredField);
-        verify(typeService, times(2)).findType(String.class);
+        verify(schemaHolder, times(2)).getType(String.class);
 
         Collection<FieldDto> setterFields = processor.getElements();
         assertEquals(1, setterFields.size());
@@ -237,62 +239,40 @@ public class FieldProcessorTest {
 
     @Test
     public void shouldAssignFieldValidation() throws Exception {
-        Type integer = new Type(Integer.class);
-        Type decimal = new Type(Double.class);
-        Type string = new Type(String.class);
+        TypeValidationDto intMinValue = new TypeValidationDto("mds.field.validation.minValue", Integer.class.getName());
+        TypeValidationDto intMaxValue = new TypeValidationDto("mds.field.validation.maxValue", Integer.class.getName());
+        TypeValidationDto intMustBeInSet = new TypeValidationDto("mds.field.validation.mustBeInSet", String.class.getName());
+        TypeValidationDto intCannotBeInSet = new TypeValidationDto("mds.field.validation.cannotBeInSet", String.class.getName());
 
-        TypeValidation intMinValue = new TypeValidation("mds.field.validation.minValue", integer);
-        TypeValidation intMaxValue = new TypeValidation("mds.field.validation.maxValue", integer);
-        TypeValidation intMustBeInSet = new TypeValidation("mds.field.validation.mustBeInSet", string);
-        TypeValidation intCannotBeInSet = new TypeValidation("mds.field.validation.cannotBeInSet", string);
+        TypeValidationDto decMinValue = new TypeValidationDto("mds.field.validation.minValue", Double.class.getName());
+        TypeValidationDto decMaxValue = new TypeValidationDto("mds.field.validation.maxValue", Double.class.getName());
+        TypeValidationDto decMustBeInSet = new TypeValidationDto("mds.field.validation.mustBeInSet", String.class.getName());
+        TypeValidationDto decCannotBeInSet = new TypeValidationDto("mds.field.validation.cannotBeInSet", String.class.getName());
 
-        TypeValidation decMinValue = new TypeValidation("mds.field.validation.minValue", decimal);
-        TypeValidation decMaxValue = new TypeValidation("mds.field.validation.maxValue", decimal);
-        TypeValidation decMustBeInSet = new TypeValidation("mds.field.validation.mustBeInSet", string);
-        TypeValidation decCannotBeInSet = new TypeValidation("mds.field.validation.cannotBeInSet", string);
+        TypeValidationDto regex = new TypeValidationDto("mds.field.validation.regex", String.class.getName());
+        TypeValidationDto minLength = new TypeValidationDto("mds.field.validation.minLength", Integer.class.getName());
+        TypeValidationDto maxLength = new TypeValidationDto("mds.field.validation.maxLength", Integer.class.getName());
 
-        TypeValidation regex = new TypeValidation("mds.field.validation.regex", string);
-        TypeValidation minLength = new TypeValidation("mds.field.validation.minLength", integer);
-        TypeValidation maxLength = new TypeValidation("mds.field.validation.maxLength", integer);
+        doReturn(singletonList(intMinValue)).when(schemaHolder).findValidations(Integer.class.getName(), DecimalMin.class);
+        doReturn(singletonList(intMaxValue)).when(schemaHolder).findValidations(Integer.class.getName(), DecimalMax.class);
+        doReturn(singletonList(intMustBeInSet)).when(schemaHolder).findValidations(Integer.class.getName(), InSet.class);
+        doReturn(singletonList(intCannotBeInSet)).when(schemaHolder).findValidations(Integer.class.getName(), NotInSet.class);
+        doReturn(singletonList(intMinValue)).when(schemaHolder).findValidations(Integer.class.getName(), Min.class);
+        doReturn(singletonList(intMaxValue)).when(schemaHolder).findValidations(Integer.class.getName(), Max.class);
 
-        doReturn(TypeDto.INTEGER).when(typeService).findType(Integer.class);
-        doReturn(TypeDto.DOUBLE).when(typeService).findType(Double.class);
-        doReturn(TypeDto.STRING).when(typeService).findType(String.class);
+        doReturn(singletonList(decMinValue)).when(schemaHolder).findValidations(Double.class.getName(), DecimalMin.class);
+        doReturn(singletonList(decMaxValue)).when(schemaHolder).findValidations(Double.class.getName(), DecimalMax.class);
+        doReturn(singletonList(decMustBeInSet)).when(schemaHolder).findValidations(Double.class.getName(), InSet.class);
+        doReturn(singletonList(decCannotBeInSet)).when(schemaHolder).findValidations(Double.class.getName(), NotInSet.class);
+        doReturn(singletonList(decMinValue)).when(schemaHolder).findValidations(Double.class.getName(), Min.class);
+        doReturn(singletonList(decMaxValue)).when(schemaHolder).findValidations(Double.class.getName(), Max.class);
 
-        doReturn(integer).when(typeService).getType(intMinValue);
-        doReturn(integer).when(typeService).getType(intMaxValue);
-        doReturn(string).when(typeService).getType(intMustBeInSet);
-        doReturn(string).when(typeService).getType(intCannotBeInSet);
+        doReturn(singletonList(regex)).when(schemaHolder).findValidations(String.class.getName(), Pattern.class);
+        doReturn(asList(minLength, maxLength)).when(schemaHolder).findValidations(String.class.getName(), Size.class);
+        doReturn(singletonList(minLength)).when(schemaHolder).findValidations(String.class.getName(), DecimalMin.class);
+        doReturn(singletonList(maxLength)).when(schemaHolder).findValidations(String.class.getName(), DecimalMax.class);
 
-        doReturn(decimal).when(typeService).getType(decMinValue);
-        doReturn(decimal).when(typeService).getType(decMaxValue);
-        doReturn(string).when(typeService).getType(decMustBeInSet);
-        doReturn(string).when(typeService).getType(decCannotBeInSet);
-
-        doReturn(string).when(typeService).getType(regex);
-        doReturn(integer).when(typeService).getType(minLength);
-        doReturn(integer).when(typeService).getType(maxLength);
-
-        doReturn(asList(intMinValue)).when(typeService).findValidations(TypeDto.INTEGER, DecimalMin.class);
-        doReturn(asList(intMaxValue)).when(typeService).findValidations(TypeDto.INTEGER, DecimalMax.class);
-        doReturn(asList(intMustBeInSet)).when(typeService).findValidations(TypeDto.INTEGER, InSet.class);
-        doReturn(asList(intCannotBeInSet)).when(typeService).findValidations(TypeDto.INTEGER, NotInSet.class);
-        doReturn(asList(intMinValue)).when(typeService).findValidations(TypeDto.INTEGER, Min.class);
-        doReturn(asList(intMaxValue)).when(typeService).findValidations(TypeDto.INTEGER, Max.class);
-
-        doReturn(asList(decMinValue)).when(typeService).findValidations(TypeDto.DOUBLE, DecimalMin.class);
-        doReturn(asList(decMaxValue)).when(typeService).findValidations(TypeDto.DOUBLE, DecimalMax.class);
-        doReturn(asList(decMustBeInSet)).when(typeService).findValidations(TypeDto.DOUBLE, InSet.class);
-        doReturn(asList(decCannotBeInSet)).when(typeService).findValidations(TypeDto.DOUBLE, NotInSet.class);
-        doReturn(asList(decMinValue)).when(typeService).findValidations(TypeDto.DOUBLE, Min.class);
-        doReturn(asList(decMaxValue)).when(typeService).findValidations(TypeDto.DOUBLE, Max.class);
-
-        doReturn(asList(regex)).when(typeService).findValidations(TypeDto.STRING, Pattern.class);
-        doReturn(asList(minLength, maxLength)).when(typeService).findValidations(TypeDto.STRING, Size.class);
-        doReturn(asList(minLength)).when(typeService).findValidations(TypeDto.STRING, DecimalMin.class);
-        doReturn(asList(maxLength)).when(typeService).findValidations(TypeDto.STRING, DecimalMax.class);
-
-        processor.execute();
+        processor.execute(bundle, schemaHolder);
         Collection<FieldDto> fields = processor.getElements();
 
         FieldDto pi = findFieldWithName(fields, "pi");

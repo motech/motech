@@ -970,12 +970,7 @@ public class EntityServiceImpl implements EntityService {
             LOGGER.debug("Field dtos created in {} ms", stopWatch.getTime());
 
             StopWatchHelper.restart(stopWatch);
-            List<LookupDto> lookupDtos = entity.getLookupDtos();
-            stopWatch.stop();
-            LOGGER.debug("Lookup dtos created in {} ms", stopWatch.getTime());
-
-            StopWatchHelper.restart(stopWatch);
-            entitiesHolder.addEntity(entityDto, advSettingsDto, fieldDtos, lookupDtos);
+            entitiesHolder.addEntity(entityDto, advSettingsDto, fieldDtos);
             stopWatch.stop();
             LOGGER.debug("Result stored in {} ms", stopWatch.getTime());
         }
