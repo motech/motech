@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The <code>SendEmailEventHandlerImpl</code> class is responsible for listening to and handling events
@@ -21,12 +22,8 @@ public class SendEmailEventHandlerImpl {
 
     private EmailSenderService emailSenderService;
 
-    @Autowired
-    public SendEmailEventHandlerImpl(EmailSenderService emailSenderService) {
-        this.emailSenderService = emailSenderService;
-    }
-
     @MotechListener (subjects = { SendEmailConstants.SEND_EMAIL_SUBJECT })
+    @Transactional
     public void handle(MotechEvent event) {
         String fromAddress = (String) event.getParameters().get(SendEmailConstants.FROM_ADDRESS);
         String toAddress = (String) event.getParameters().get(SendEmailConstants.TO_ADDRESS);
@@ -39,5 +36,10 @@ public class SendEmailEventHandlerImpl {
         }
 
         emailSenderService.send(new Mail(fromAddress, toAddress, subject, message));
+    }
+
+    @Autowired
+    public void setEmailSenderService(EmailSenderService emailSenderService) {
+        this.emailSenderService = emailSenderService;
     }
 }

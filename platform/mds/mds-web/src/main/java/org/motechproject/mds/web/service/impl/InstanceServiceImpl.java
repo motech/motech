@@ -244,9 +244,7 @@ public class InstanceServiceImpl implements InstanceService {
         MotechDataService service = getServiceForEntity(entity);
         validateCredentialsForReading(entity);
 
-        Object instance = service.retrieve(ID_FIELD_NAME, instanceId);
-
-        return service.getDetachedField(instance, fieldName);
+        return service.getDetachedField(instanceId, fieldName);
     }
 
     @Override

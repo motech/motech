@@ -23,6 +23,9 @@ public class SimpleClassWithVersioning {
     private String stringField;
 
     @Field
+    private Long id;
+
+    @Field
     @NonEditable
     private Long version;
 
@@ -40,5 +43,9 @@ public class SimpleClassWithVersioning {
 
     public void setVersion(Long version) {
         this.version = version;
+    }
+
+    public Long getId() {
+        return id;
     }
 }

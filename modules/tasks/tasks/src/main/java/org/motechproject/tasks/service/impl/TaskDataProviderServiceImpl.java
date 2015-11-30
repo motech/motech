@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import java.io.ByteArrayInputStream;
@@ -67,6 +68,7 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
     }
 
     @Override
+    @Transactional
     public void registerProvider(final InputStream stream) {
         final Type type = new TypeToken<TaskDataProvider>() { } .getType();
         final TaskDataProvider provider = (TaskDataProvider) motechJsonReader.readFromStream(stream, type);
@@ -98,6 +100,7 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
     }
 
     @Override
+    @Transactional
     public void bind(Object service, Map properties) {
         LOGGER.info("Data Service for task data providers registered, starting to register queued providers");
 

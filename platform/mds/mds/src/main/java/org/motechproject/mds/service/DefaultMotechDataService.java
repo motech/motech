@@ -42,6 +42,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
+import javax.jdo.JDOHelper;
+import javax.jdo.ObjectState;
 import javax.jdo.Query;
 import java.util.HashMap;
 import java.util.List;
@@ -172,6 +174,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Transactional
     public T update(final T object) {
         validateCredentials(object);
+        if (JDOHelper.getObjectState(object) == ObjectState.TRANSIENT) {
+            return updateFromTransient(object);
+        }
 
         updateModificationData(object);
         final T updatedInstance = repository.update(object);
@@ -346,7 +351,22 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     @Override
     @Transactional
+    public T detachedCopy(T object) {
+        return repository.detachedCopy(object);
+    }
+
+    @Override
+    @Transactional
+    public Object getDetachedField(Long id, String fieldName) {
+        return getDetachedField(findById(id), fieldName);
+    }
+
+    @Override
+    @Transactional
     public Object getDetachedField(T instance, String fieldName) {
+        if (JDOHelper.getObjectState(instance) == ObjectState.TRANSIENT) {
+            return repository.getDetachedField(findById((Long) getId(instance)), fieldName);
+        }
         return repository.getDetachedField(instance, fieldName);
     }
 

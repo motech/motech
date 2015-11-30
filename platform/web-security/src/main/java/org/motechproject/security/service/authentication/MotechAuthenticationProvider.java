@@ -84,7 +84,7 @@ public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticat
             }
             authentication.setDetails(new MotechUserProfile(user));
             return new User(user.getUserName(), user.getPassword(), user.isActive(), true, !UserStatus.MUST_CHANGE_PASSWORD.equals(user.getUserStatus()),
-                    !UserStatus.BLOCKED.equals(user.getUserStatus()), authoritiesService.authoritiesFor(user));
+                    !UserStatus.BLOCKED.equals(user.getUserStatus()), authoritiesService.authoritiesFor(user.getUserName()));
         }
     }
 
