@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import static java.util.Collections.singletonList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -190,7 +191,7 @@ public class ConfigurationServiceTest {
     public void shouldUpdateMotechSettings() {
         when(configLoader.loadMotechSettings()).thenReturn(new SettingsRecord());
         final SettingsRecord settingsRecord = new SettingsRecord();
-        when(settingService.retrieve("id", 1)).thenReturn(settingsRecord);
+        when(settingService.retrieveAll()).thenReturn(singletonList(settingsRecord));
         configurationService.addOrUpdate(FileHelper.getResourceFile("config/motech-settings.properties"));
         verify(settingService).update(settingsRecord);
     }
