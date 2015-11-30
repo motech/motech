@@ -1,0 +1,42 @@
+<input type="hidden" ng-model="data.value" period-amount>
+<button class="btn-sm btn btn-default">
+    {{msg('task.btn.changePeriod')}}
+</button>
+<div contenteditable ng-model="data.value" droppable class="actionField period-input period-field word-wrap input-extra-fluid" data-index="{{index}}" data-type="{{data.type}}">
+    <span ng-bind-html-unsafe="data.value" ng-model="data.value" class="html">
+        <h1 contentEditable="false">
+            <span class="editable"></span>
+        </h1>
+    </span>
+</div>
+<div id="periodModal" class="tasks modal fade" tabindex="-1" role="dialog" aria-hidden="true" data-index="{{index}}" data-action="{{action}}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="closePeriodModal()">&times;</button>
+                <h4 class="modal-title" id="importTaskModalLabel">{{msg('task.form.setPeriod')}}</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div id="period-slider">
+                    <label class="slider-label" for="amount-period-year">{{msg('task.dateTimeUnits.years')}}&#58;</label><input type="text" id="amount-period-year" readonly>
+                    <div id="period-year">0</div>
+                    <label class="slider-label" for="amount-period-month">{{msg('task.dateTimeUnits.months')}}&#58;</label><input type="text" id="amount-period-month" readonly>
+                    <div id="period-month">0</div>
+                    <label class="slider-label" for="amount-period-week">{{msg('task.dateTimeUnits.weeks')}}&#58;</label><input type="text" id="amount-period-week" readonly>
+                    <div id="period-week">0</div>
+                    <label class="slider-label" for="amount-period-day">{{msg('task.dateTimeUnits.days')}}&#58;</label><input type="text" id="amount-period-day" readonly>
+                    <div id="period-day">0</div>
+                    <label class="slider-label" for="amount-period-hour">{{msg('task.dateTimeUnits.hours')}}&#58;</label><input type="text" id="amount-period-hour" readonly>
+                    <div id="period-hour">0</div>
+                    <label class="slider-label" for="amount-period-minute">{{msg('task.dateTimeUnits.minutes')}}&#58;</label><input type="text" id="amount-period-minute" readonly>
+                    <div id="period-minute">0</div>
+                    <label class="slider-label" for="amount-period-second">{{msg('task.dateTimeUnits.seconds')}}&#58;</label><input type="text" id="amount-period-second" readonly>
+                    <div id="period-second">0</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" ng-click="closePeriodModal()">{{msg('task.button.close')}}</button>
+            </div>
+        </div>
+    </div>
+</div>

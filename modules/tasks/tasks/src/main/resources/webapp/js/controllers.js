@@ -1382,6 +1382,10 @@
                 return message;
             }
         };
+
+        $scope.closePeriodModal = function () {
+            $('body').children("#periodModal").modal('hide');
+        };
     });
 
     controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $routeParams, $filter) {
