@@ -142,7 +142,7 @@ public final class MdsBundleHelper {
      */
     public static ClassLoader getMdsEntitiesBundleClassLoader(BundleContext bundleContext) {
         Bundle bundle = findMdsEntitiesBundle(bundleContext);
-        return bundle.adapt(BundleWiring.class).getClassLoader();
+        return bundle == null ? null : bundle.adapt(BundleWiring.class).getClassLoader();
     }
 
     private static JDOImplHelper getJDOImplHelper() {
