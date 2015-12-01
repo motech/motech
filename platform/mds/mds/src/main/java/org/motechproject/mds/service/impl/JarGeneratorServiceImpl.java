@@ -27,6 +27,7 @@ import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.JdoListenerRegistryService;
+import org.motechproject.mds.service.MdsOsgiBundleApplicationContextListener;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.JavassistUtil;
 import org.motechproject.osgi.web.util.BundleHeaders;
@@ -101,6 +102,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private EntitiesBundleMonitor monitor;
     private BundleContext bundleContext;
     private AllEntities allEntities;
+    private MdsOsgiBundleApplicationContextListener mdsOsgiBundleApplicationContextListener;
+
     private final Object lock = new Object();
     private boolean moduleRefreshed;
 
@@ -174,6 +177,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
             FileUtils.deleteQuietly(tmpBundleFile);
         }
 
+        // We must clear module names which was restarted after failing
+        mdsOsgiBundleApplicationContextListener.clearBundlesSet();
         refreshModules(moduleNames);
 
         if (startBundle) {
@@ -676,5 +681,10 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     @Autowired
     public void setListenerRegistryService(JdoListenerRegistryService jdoListenerRegistryService) {
         this.jdoListenerRegistryService = jdoListenerRegistryService;
+    }
+
+    @Autowired
+    public void setMdsOsgiBundleApplicationContextListener(MdsOsgiBundleApplicationContextListener mdsOsgiBundleApplicationContextListener) {
+        this.mdsOsgiBundleApplicationContextListener = mdsOsgiBundleApplicationContextListener;
     }
 }
