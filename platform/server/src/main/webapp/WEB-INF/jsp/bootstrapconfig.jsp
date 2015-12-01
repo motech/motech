@@ -17,8 +17,7 @@
 
     <%@ include file="faviconPage.jsp" %>
 
-    <script type="text/javascript" src="static/js/jquery.js"></script>
-    <script type="text/javascript" src="static/js/angular.min.js"></script>
+    <script type="text/javascript" src="<c:url value="/static/common/js/motech.min.js" />"></script>
     <script type="text/javascript" src="static/js/bootstrap-page.js"></script>
     <script type="text/javascript">
         var bootstrapApp = angular.module('bootstrapApp',[]);

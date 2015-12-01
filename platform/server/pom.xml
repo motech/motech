@@ -275,6 +275,10 @@
                             </directory>
                             <targetPath>WEB-INF/bundles</targetPath>
                         </resource>
+                        <resource>
+                            <directory>../../ui/build/assets</directory>
+                            <targetPath>static/common</targetPath>
+                        </resource>
                     </webResources>
                 </configuration>
             </plugin>

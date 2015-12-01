@@ -604,7 +604,7 @@
         ]).then(function () {
             if ($scope.user.lang) {
                 $scope.userLang = $scope.getLanguage(toLocale($scope.user.lang));
-                moment.lang($scope.user.lang);
+                moment.locale($scope.user.lang);
             }
         });
 

@@ -1,0 +1,20 @@
+{
+  "name": "motech.ui",
+  "version": "1.0.0",
+  "description": "User interface files for the motech project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "gulp": "~3.9.0",
+    "bower": "~1.6.8",
+    "gulp-concat": "~2.6.0",
+    "gulp-uglify": "~1.5.1"
+  },
+  "devDependencies": {
+    "bower-files": "~3.11.3"
+  }
+}

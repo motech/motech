@@ -110,23 +110,8 @@ public final class Header {
         StringBuilder builder = new StringBuilder();
 
         addCSS(builder, resourcePath, bundle, order.getCss());
-        addScripts(builder, bundle, resourcePath, "lib", order.getLib());
-        addScripts(builder, bundle, resourcePath, "js", order.getJs());
 
         return builder.toString();
-    }
-
-    private static void addScripts(StringBuilder builder, Bundle bundle, String resourcePath,
-                                   String folderName, List<ElementOrder> order) {
-        List<String> js = get(bundle, folderName, "*.js", order);
-
-        for (String entryPath : js) {
-            String path = "../" + resourcePath + entryPath;
-            String script = createScript(path);
-
-            builder.append(script);
-            builder.append("\n");
-        }
     }
 
     private static void addCSS(StringBuilder builder, String resourcePath, Bundle bundle,
@@ -195,10 +180,6 @@ public final class Header {
                 paths.add(idx - 1, path);
             }
         }
-    }
-
-    private static String createScript(String url) {
-        return String.format("<script type=\"text/javascript\" src=\"%s\"></script>", url);
     }
 
     private static String createCSS(String url) {
