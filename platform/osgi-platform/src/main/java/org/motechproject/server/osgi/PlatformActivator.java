@@ -2,6 +2,8 @@ package org.motechproject.server.osgi;
 
 import org.eclipse.gemini.blueprint.OsgiException;
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleApplicationContextListener;
+import org.eclipse.gemini.blueprint.extender.support.scanning.ConfigurationScanner;
+import org.eclipse.gemini.blueprint.extender.support.scanning.DefaultConfigurationScanner;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.server.osgi.event.OsgiEventProxy;
 import org.motechproject.server.osgi.event.impl.OsgiEventProxyImpl;
@@ -32,6 +34,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+
 
 /**
  * The PlatformActivator is responsible for starting up MOTECH. Formerly this code lived in the WAR archive
@@ -126,6 +129,7 @@ public class PlatformActivator implements BundleActivator {
             EventAdmin eventAdmin = bundleContext.getService(ref);
 
             OsgiEventProxy osgiEventProxy = new OsgiEventProxyImpl(eventAdmin);
+            platformStatusManager.setOsgiEventProxy(osgiEventProxy);
             bundleContext.registerService(OsgiEventProxy.class, osgiEventProxy, null);
         }
     }
@@ -184,7 +188,42 @@ public class PlatformActivator implements BundleActivator {
 
 
     private void registerStatusManager() {
-        platformStatusManager = new PlatformStatusManagerImpl();
+        List<Bundle> bundles = new ArrayList<>();
+        if (bundlesByType.containsKey(BundleType.MOTECH_MODULE)) {
+            bundles.addAll(bundlesByType.get(BundleType.MOTECH_MODULE));
+        }
+        if (bundlesByType.containsKey(BundleType.MDS_BUNDLE)) {
+            bundles.addAll(bundlesByType.get(BundleType.MDS_BUNDLE));
+        }
+        if (bundlesByType.containsKey(BundleType.PLATFORM_BUNDLE_PRE_MDS)) {
+            bundles.addAll(bundlesByType.get(BundleType.PLATFORM_BUNDLE_PRE_MDS));
+        }
+        if (bundlesByType.containsKey(BundleType.PLATFORM_BUNDLE_PRE_WS)) {
+            bundles.addAll(bundlesByType.get(BundleType.PLATFORM_BUNDLE_PRE_WS));
+        }
+        if (bundlesByType.containsKey(BundleType.WS_BUNDLE)) {
+            bundles.addAll(bundlesByType.get(BundleType.WS_BUNDLE));
+        }
+        if (bundlesByType.containsKey(BundleType.PLATFORM_BUNDLE_POST_WS)) {
+            bundles.addAll(bundlesByType.get(BundleType.PLATFORM_BUNDLE_POST_WS));
+        }
+
+        List<Bundle> osgiBundles = new ArrayList<>();
+        List<Bundle> blueprintBundles = new ArrayList<>();
+
+        ConfigurationScanner configurationScanner = new DefaultConfigurationScanner();
+
+        for(Bundle bundle : bundles){
+            String[] config = configurationScanner.getConfigurations(bundle);
+
+            if (config.length > 0) {
+                blueprintBundles.add(bundle);
+            } else {
+                osgiBundles.add(bundle);
+            }
+        }
+
+        platformStatusManager = new PlatformStatusManagerImpl(osgiBundles, blueprintBundles);
 
         bundleContext.addBundleListener(platformStatusManager);
 
