@@ -68,6 +68,8 @@ public enum BundleType {
 
         if (isFragmentBundle(bundle)) {
             return BundleType.FRAGMENT_BUNDLE;
+        } else if (PlatformConstants.FELIX_FRAMEWORK_BUNDLE.equals(symbolicName)) {
+            return FRAMEWORK_BUNDLE;
         } else if (symbolicName == null || PlatformConstants.PAX_IT_SYMBOLIC_NAME.equals(symbolicName)) {
             return BundleType.THIRD_PARTY_BUNDLE;
         } else if (symbolicName.equals(PlatformConstants.MDS_BUNDLE_NAME)) {
@@ -80,8 +82,6 @@ public enum BundleType {
             return getPlatformBundleType(symbolicName);
         } else if (importsExportsMotechPackage(bundle)) {
             return BundleType.MOTECH_MODULE;
-        } else if (PlatformConstants.FELIX_FRAMEWORK_BUNDLE.equals(symbolicName)) {
-            return FRAMEWORK_BUNDLE;
         } else {
             return BundleType.THIRD_PARTY_BUNDLE;
         }
