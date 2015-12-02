@@ -85,7 +85,7 @@ public class PlatformStatusManagerImpl implements PlatformStatusManager, OsgiBun
         final String failureCauseMsg = event.getFailureCause().getMessage();
 
         LOGGER.debug("Received context failed event {} from {}", event, symbolicName);
-        LOGGER.info("{} failed to start due to {}", symbolicName, failureCauseMsg);
+        LOGGER.error("{} failed to start due to {}", symbolicName, failureCauseMsg);
 
         platformStatus.removeStartedBundle(symbolicName);
         platformStatus.addContextError(symbolicName, failureCauseMsg);

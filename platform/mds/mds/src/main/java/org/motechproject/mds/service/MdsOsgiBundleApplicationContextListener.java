@@ -5,6 +5,7 @@ import org.eclipse.gemini.blueprint.context.event.OsgiBundleApplicationContextLi
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleContextFailedEvent;
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleContextRefreshedEvent;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.BundleFailsReport;
 import org.motechproject.mds.domain.BundleRestartStatus;
 import org.motechproject.mds.repository.AllBundleFailsReports;
@@ -35,27 +36,40 @@ import java.util.Set;
 public class MdsOsgiBundleApplicationContextListener implements OsgiBundleApplicationContextListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MdsOsgiBundleApplicationContextListener.class);
-    private static final String MESSAGE_SUBJECT = "org.motechproject.message";
-    private static final String MESSAGE_KEY = "message";
-    private static final String LEVEL_KEY = "level";
-    private static final String MODULE_NAME_KEY = "moduleName";
     private static final String WARN_MESSAGE= "%s failed to start but it was successfully restarted.";
     private static final String CRITICAL_MESSAGE= "%s failed to start and the MDS module was unable to restart it.";
+
+    public static final String MESSAGE_SUBJECT = "org.motechproject.message";
+    public static final String MESSAGE_KEY = "message";
+    public static final String LEVEL_KEY = "level";
+    public static final String MODULE_NAME_KEY = "moduleName";
+    public static final String TIMEOUT_EXCEPTION_MESSAGE = "Application context initialization for '%s' has timed out waiting for";
 
     private Set<String> restartedBundles = new HashSet<>();
     private AllBundleFailsReports allBundleFailsReports;
     private JdoTransactionManager transactionManager;
     private OsgiEventProxy osgiEventProxy;
+    private SettingsService settingsService;
 
     @Override
     public void onOsgiApplicationEvent(OsgiBundleApplicationContextEvent event) {
-        String symbolicName = event.getBundle().getSymbolicName();
 
+        if (!settingsService.getModuleSettings().isRestartModuleAfterTimeout()) {
+            return;
+        }
+
+        String symbolicName = event.getBundle().getSymbolicName();
         if (event instanceof OsgiBundleContextFailedEvent) {
             if (!restartedBundles.contains(symbolicName)) { // We want refresh bundles only one time
                 OsgiBundleContextFailedEvent failedEvent = (OsgiBundleContextFailedEvent) event;
                 final String failureCauseMsg = failedEvent.getFailureCause().getMessage();
                 Bundle bundle = failedEvent.getBundle();
+
+                // we will restart bundle only after timeout
+                // this is temporary solution until we don't fix problems with context
+                if (!failureCauseMsg.startsWith(String.format(TIMEOUT_EXCEPTION_MESSAGE, symbolicName))) {
+                    return;
+                }
 
                 LOGGER.error("Received context failed event {} from {}", event, symbolicName);
                 LOGGER.error("{} failed to start due to {}", symbolicName, failureCauseMsg);
@@ -152,5 +166,11 @@ public class MdsOsgiBundleApplicationContextListener implements OsgiBundleApplic
     public void setOsgiEventProxy(OsgiEventProxy osgiEventProxy) {
         this.osgiEventProxy = osgiEventProxy;
     }
+
+    @Autowired
+    public void setSettingsService(SettingsService settingsService) {
+        this.settingsService = settingsService;
+    }
+
 
 }

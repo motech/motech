@@ -7,3 +7,5 @@ CREATE TABLE "BundleFailsReport" (
   "reportDate" timestamp,
   PRIMARY KEY ("id")
 );
+
+ALTER TABLE "ConfigSettings" add "refreshModuleAfterTimeout" bit(1) DEFAULT 0;

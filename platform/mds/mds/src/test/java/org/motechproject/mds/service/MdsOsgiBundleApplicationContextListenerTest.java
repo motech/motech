@@ -9,6 +9,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.BundleFailsReport;
 import org.motechproject.mds.domain.BundleRestartStatus;
 import org.motechproject.mds.repository.AllBundleFailsReports;
@@ -38,8 +39,9 @@ import static org.mockito.Mockito.when;
 @PrepareForTest(JdoTransactionManager.class)
 public class MdsOsgiBundleApplicationContextListenerTest {
 
-    private static final String SAMPLE_SYMBOLIC_NAME = "sample-symbolic-name";
-    private static final String FAILURE_MESSAGE = "failure-message";
+    private static final String SAMPLE_SYMBOLIC_NAME = "org.motechproject.ebodac";
+    private static final String FAILURE_MESSAGE_1 = "Application context initialization for 'org.motechproject.ebodac' has timed out waiting for (|(objectClass=org.motechproject.ebodac.repository.ReportPrimerVaccinationDataService)";
+    private static final String FAILURE_MESSAGE_2 = "Error creating bean with name 'sendSmsEventHandler' defined in URL [bundle://50.0:1/org/motechproject/sms/event/SendSmsEventHandler.class]: Unsatisfied dependency expressed through constructor argument with index 0";
 
     @Mock
     private AllBundleFailsReports allBundleFailsReports;
@@ -65,6 +67,9 @@ public class MdsOsgiBundleApplicationContextListenerTest {
     @Mock
     private OsgiEventProxy osgiEventProxy;
 
+    @Mock
+    SettingsService settingsService;
+
     @InjectMocks
     private MdsOsgiBundleApplicationContextListener mdsOsgiBundleApplicationContextListener = new MdsOsgiBundleApplicationContextListener();
 
@@ -76,8 +81,9 @@ public class MdsOsgiBundleApplicationContextListenerTest {
 
     @Before
     public void setUp() {
+        when(settingsService.isRefreshModuleAfterTimeout()).thenReturn(true);
         when(bundle.getSymbolicName()).thenReturn(SAMPLE_SYMBOLIC_NAME);
-        when(throwable.getMessage()).thenReturn(FAILURE_MESSAGE);
+        when(throwable.getMessage()).thenReturn(FAILURE_MESSAGE_1);
         when(allBundleFailsReports.getLastInProgressReport(anyString(), eq(SAMPLE_SYMBOLIC_NAME))).thenReturn(report);
         transactionManager = PowerMockito.mock(JdoTransactionManager.class);
         PowerMockito.when(transactionManager.getTransaction(any(TransactionDefinition.class))).thenReturn(transactionStatus);
@@ -91,7 +97,7 @@ public class MdsOsgiBundleApplicationContextListenerTest {
         verify(allBundleFailsReports).create(bundleFailsReportArgumentCaptor.capture());
         BundleFailsReport failsReport = bundleFailsReportArgumentCaptor.getValue();
         assertEquals(SAMPLE_SYMBOLIC_NAME, failsReport.getBundleSymbolicName());
-        assertEquals(FAILURE_MESSAGE, failsReport.getErrorMessage());
+        assertEquals(FAILURE_MESSAGE_1, failsReport.getErrorMessage());
         assertEquals(BundleRestartStatus.IN_PROGRESS, failsReport.getBundleRestartStatus());
 
         verify(bundle).start();
@@ -101,11 +107,11 @@ public class MdsOsgiBundleApplicationContextListenerTest {
 
         verify(report).setBundleRestartStatus(BundleRestartStatus.SUCCESS);
         verify(allBundleFailsReports).update(report);
-        verify(osgiEventProxy).sendEvent(eq("org.motechproject.message"), paramsArgumentCaptor.capture());
+        verify(osgiEventProxy).sendEvent(eq(MdsOsgiBundleApplicationContextListener.MESSAGE_SUBJECT), paramsArgumentCaptor.capture());
 
         Map<String, Object> params = paramsArgumentCaptor.getValue();
-        assertEquals("WARN", params.get("level"));
-        assertEquals("mds", params.get("moduleName"));
+        assertEquals("WARN", params.get(MdsOsgiBundleApplicationContextListener.LEVEL_KEY));
+        assertEquals("mds", params.get(MdsOsgiBundleApplicationContextListener.MODULE_NAME_KEY));
     }
 
     @Test
@@ -115,7 +121,7 @@ public class MdsOsgiBundleApplicationContextListenerTest {
         verify(allBundleFailsReports).create(bundleFailsReportArgumentCaptor.capture());
         BundleFailsReport failsReport = bundleFailsReportArgumentCaptor.getValue();
         assertEquals(SAMPLE_SYMBOLIC_NAME, failsReport.getBundleSymbolicName());
-        assertEquals(FAILURE_MESSAGE, failsReport.getErrorMessage());
+        assertEquals(FAILURE_MESSAGE_1, failsReport.getErrorMessage());
         assertEquals(BundleRestartStatus.IN_PROGRESS, failsReport.getBundleRestartStatus());
 
         verify(bundle).start();
@@ -125,11 +131,11 @@ public class MdsOsgiBundleApplicationContextListenerTest {
 
         verify(report).setBundleRestartStatus(BundleRestartStatus.ERROR);
         verify(allBundleFailsReports).update(report);
-        verify(osgiEventProxy).sendEvent(eq("org.motechproject.message"), paramsArgumentCaptor.capture());
+        verify(osgiEventProxy).sendEvent(eq(MdsOsgiBundleApplicationContextListener.MESSAGE_SUBJECT), paramsArgumentCaptor.capture());
 
         Map<String, Object> params = paramsArgumentCaptor.getValue();
-        assertEquals("CRITICAL", params.get("level"));
-        assertEquals("mds", params.get("moduleName"));
+        assertEquals("CRITICAL", params.get(MdsOsgiBundleApplicationContextListener.LEVEL_KEY));
+        assertEquals("mds", params.get(MdsOsgiBundleApplicationContextListener.MODULE_NAME_KEY));
     }
 
     @Test
@@ -141,6 +147,36 @@ public class MdsOsgiBundleApplicationContextListenerTest {
 
         verify(allBundleFailsReports, never()).create(bundleFailsReportArgumentCaptor.capture());
         verify(allBundleFailsReports, never()).update(bundleFailsReportArgumentCaptor.capture());
-        verify(osgiEventProxy, never()).sendEvent(eq("org.motechproject.message"), paramsArgumentCaptor.capture());
+        verify(osgiEventProxy, never()).sendEvent(eq(MdsOsgiBundleApplicationContextListener.MESSAGE_SUBJECT), paramsArgumentCaptor.capture());
+    }
+
+    @Test
+    public void shouldDoNothingWhenProblemIsOtherThanTimeout() throws BundleException {
+        when(throwable.getMessage()).thenReturn(FAILURE_MESSAGE_2);
+
+        mdsOsgiBundleApplicationContextListener.onOsgiApplicationEvent(new OsgiBundleContextFailedEvent(source, bundle, throwable));
+
+        assertEquals(0, mdsOsgiBundleApplicationContextListener.getRestartedBundles().size());
+        verify(allBundleFailsReports, never()).create(bundleFailsReportArgumentCaptor.capture());
+        verify(bundle, never()).start();
+        verify(bundle, never()).stop();
+        verify(report, never()).setBundleRestartStatus(BundleRestartStatus.ERROR);
+        verify(allBundleFailsReports, never()).update(report);
+        verify(osgiEventProxy, never()).sendEvent(eq(MdsOsgiBundleApplicationContextListener.MESSAGE_SUBJECT), paramsArgumentCaptor.capture());
+    }
+
+    @Test
+    public void shouldDoNothingWhenSettingIsDisabled() throws BundleException {
+        when(settingsService.isRefreshModuleAfterTimeout()).thenReturn(false);
+
+        mdsOsgiBundleApplicationContextListener.onOsgiApplicationEvent(new OsgiBundleContextFailedEvent(source, bundle, throwable));
+
+        assertEquals(0, mdsOsgiBundleApplicationContextListener.getRestartedBundles().size());
+        verify(allBundleFailsReports, never()).create(bundleFailsReportArgumentCaptor.capture());
+        verify(bundle, never()).start();
+        verify(bundle, never()).stop();
+        verify(report, never()).setBundleRestartStatus(BundleRestartStatus.ERROR);
+        verify(allBundleFailsReports, never()).update(report);
+        verify(osgiEventProxy, never()).sendEvent(eq(MdsOsgiBundleApplicationContextListener.MESSAGE_SUBJECT), paramsArgumentCaptor.capture());
     }
 }
