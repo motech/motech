@@ -338,7 +338,7 @@
                 if (warning) {
                    msg = scope.msg('task.success.savedWithWarning') + '\n';
                 } else {
-                   msg = scope.msg('task.error.saved') + '\n';
+                   msg = scope.msg('task.error.enabled') + '\n';
                 }
 
                 if(jQuery.type(response) === "array") {

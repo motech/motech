@@ -6,7 +6,7 @@
 
     var controllers = angular.module('tasks.controllers', []);
 
-    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope) {
+    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope, $http, ManageTaskUtils) {
         var tasks, activities = [],
             searchMatch = function (item, method, searchQuery) {
                 var result;
@@ -50,6 +50,7 @@
         $scope.itemsPerPage = 10;
         $scope.currentFilter = 'allItems';
         $scope.formatInput = [];
+        $scope.util = ManageTaskUtils;
 
         innerLayout({
             spacing_closed: 30,
@@ -106,10 +107,12 @@
         $scope.enableTask = function (item, enabled) {
             item.task.enabled = enabled;
 
-            item.task.$save(dummyHandler, function (response) {
-                item.task.enabled = !enabled;
-                handleResponse('task.error.actionNotChangeTitle', 'task.error.actionNotChange', response);
-            });
+            $http.post('../tasks/api/task/' + item.task.id, item.task)
+                .success(dummyHandler)
+                .error(function (response) {
+                    item.task.enabled = !enabled;
+                    jAlert($scope.util.createErrorMessage($scope, response, false), $scope.msg('task.error.actionNotChangeTitle'));
+                });
         };
 
         $scope.deleteTask = function (item) {

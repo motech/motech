@@ -326,7 +326,7 @@
 
         it('Should create error message', function () {
             var response = [ { message: '{0}', args: [ 'abc' ] }, { message: '{0}-{1}', args: [ 'def', '1234' ] } ],
-                msg = 'task.error.saved\n - abc\n - def-1234\n';
+                msg = 'task.error.enabled\n - abc\n - def-1234\n';
 
             scope.msg = function (key, args) {
                 if (args === undefined) {
