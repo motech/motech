@@ -17,11 +17,13 @@
                 },
                 {
                     "displayName": "server.provider.datetimenow",
-                    "fieldKey": "now"
+                    "fieldKey": "now",
+                    "type": "DATE"
                 },
                 {
                     "displayName": "server.provider.today",
-                    "fieldKey": "today"
+                    "fieldKey": "today",
+                    "type": "DATE"
                 }
             ]
         }
