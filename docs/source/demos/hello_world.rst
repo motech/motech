@@ -210,6 +210,7 @@ In our Hello World module, we provide a data service layer to create :code:`Hell
     import org.motechproject.helloworld.event.HelloWorldEventSubjects;
     import org.motechproject.helloworld.service.HelloWorldRecordService;
     import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.stereotype.Component;
 
     @Component
     public class HelloWorldEventHandler {
