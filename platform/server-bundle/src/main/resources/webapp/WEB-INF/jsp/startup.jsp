@@ -6,7 +6,14 @@
 
     <%@ include file="faviconPage.jsp" %>
 
-    ${mainHeader}
+    <link rel="stylesheet" type="text/css" href="../../static/common/css/motech.css">
+
+    <script type="text/javascript" src="../../static/common/js/motech.min.js"></script>
+    <script type="text/javascript" src="resources/js/app.js"></script>
+    <script type="text/javascript" src="resources/js/services.js"></script>
+    <script type="text/javascript" src="resources/js/controllers.js"></script>
+    <script type="text/javascript" src="resources/js/startup.js"></script>
+
 </head>
 <body ng-controller="MotechMasterCtrl" class="body-startup">
 <div class="bodywrap">
@@ -17,7 +24,7 @@
     <div class="startup" ng-show="ready">
         <a href=".">
             <div class="startup-logo" ng-cloak>
-                <img src="./../../static/img/motech-logo.gif" alt="motech-logo">
+                <img src="./../../static/common/img/motech-logo.gif" alt="motech-logo">
             </div>
         </a>
         <div class="clearfix"></div>

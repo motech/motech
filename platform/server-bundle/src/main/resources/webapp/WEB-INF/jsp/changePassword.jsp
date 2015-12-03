@@ -4,7 +4,11 @@
         <meta charset="UTF-8">
         <title>MOTECH - Mobile Technology for Community Health</title>
 
-        ${mainHeader}
+        <link rel="stylesheet" type="text/css" href="../../static/common/css/motech.css">
+        <script type="text/javascript" src="../../static/common/js/motech.min.js"></script>
+        <script type="text/javascript" src="resources/js/app.js"></script>
+        <script type="text/javascript" src="resources/js/services.js"></script>
+        <script type="text/javascript" src="resources/js/controllers.js"></script>
 
     </head>
 
@@ -13,7 +17,7 @@
             <div class="header">
                 <div class="container">
                     <div class="dashboard-logo">
-                        <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="./../../static/img/motech-logo.gif">
+                        <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="./../../static/common/img/motech-logo.gif">
                     </div>
                     <div class="hidden-xs hidden-sm">
                         <div class="header-title">{{msg('server.motechTitle')}}</div>

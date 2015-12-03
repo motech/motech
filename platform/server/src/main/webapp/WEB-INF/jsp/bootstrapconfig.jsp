@@ -9,11 +9,7 @@
     <meta charset="UTF-8">
     <title>MOTECH - Mobile Technology for Community Health</title>
 
-    <link rel="stylesheet" type="text/css" href="static/css/jquery-ui.min.css">
-    <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="static/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" type="text/css" href="static/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="static/css/bootstrap-page.css">
+    <link rel="stylesheet" type="text/css" href="<c:url value="/static/common/css/motech.css" />">
 
     <%@ include file="faviconPage.jsp" %>
 
@@ -39,7 +35,7 @@
     <div class="startup">
         <a href=".">
             <div class="startup-logo" ng-cloak>
-                <img src="static/img/motech-logo.gif" alt="motech-logo">
+                <img src="static/common/img/motech-logo.gif" alt="motech-logo">
             </div>
         </a>
         <div class="clearfix"></div>
@@ -182,7 +178,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-3 control-label"><img id="loader" alt="loading" src="static/img/load.gif" style="display:none"/></label>
+                                <label class="col-sm-3 control-label"><img id="loader" alt="loading" src="static/common/img/load.gif" style="display:none"/></label>
                                 <div class="col-sm-9">
                                     <input class="btn btn-primary" type="button" name="VERIFYSQL" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required" value="<spring:message code="server.bootstrap.verifySql"/>" onclick="verifyDbConnection()"/>
                                     <input class="btn btn-success" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required || bcform.OsgiFrameworkStorage.$error.required || bcform.queueUrl.$error.required" value="<spring:message code="server.bootstrap.submit"/>"/>

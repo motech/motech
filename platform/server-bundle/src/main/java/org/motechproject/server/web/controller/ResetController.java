@@ -9,10 +9,8 @@ import org.motechproject.server.web.dto.ChangePasswordViewData;
 import org.motechproject.server.web.dto.ResetViewData;
 import org.motechproject.server.web.form.ChangePasswordForm;
 import org.motechproject.server.web.form.ResetForm;
-import org.motechproject.server.web.helper.Header;
 import org.motechproject.server.web.validator.ChangePasswordFormValidator;
 import org.motechproject.server.web.validator.ResetFormValidator;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,15 +44,11 @@ public class ResetController {
     private ResetFormValidator resetFormValidator;
 
     @Autowired
-    private BundleContext bundleContext;
-
-    @Autowired
     private MotechUserService motechUserService;
 
     @RequestMapping(value = "/changepassword", method = RequestMethod.GET)
     public ModelAndView changePasswordView(HttpServletRequest request) {
         ModelAndView mav = new ModelAndView("changePassword");
-        mav.addObject("mainHeader", Header.generateHeader(bundleContext.getBundle()));
 
         return mav;
     }
@@ -89,9 +83,7 @@ public class ResetController {
 
     @RequestMapping(value = "/forgotreset", method = RequestMethod.GET)
     public ModelAndView resetView(HttpServletRequest request) {
-        ModelAndView mav = new ModelAndView("reset");
-        mav.addObject("mainHeader", Header.generateHeader(bundleContext.getBundle()));
-        return mav;
+        return new ModelAndView("reset");
     }
 
     @RequestMapping(value = "/forgotresetviewdata", method = RequestMethod.GET)

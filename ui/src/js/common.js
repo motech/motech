@@ -19,9 +19,9 @@ function blockUI() {
     'use strict';
     $.blockUI({theme: false, message :
         '<div class="splash">' +
-            '<div class="splash-logo"><img src="./../../static/img/motech-logo.gif" alt="motech-logo"></div>' +
+            '<div class="splash-logo"><img src="./../../static/common/img/motech-logo.gif" alt="motech-logo"></div>' +
             '<div class="clearfix"></div>' +
-            '<div class="splash-loader"><img src="./../../static/img/loadingbar.gif" alt="Loading..."></div>' +
+            '<div class="splash-loader"><img src="./../../static/common/img/loadingbar.gif" alt="Loading..."></div>' +
             '<div class="clearfix"></div>' + '<br>' +
         '</div>'
     });

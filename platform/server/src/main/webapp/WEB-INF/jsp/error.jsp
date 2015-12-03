@@ -7,9 +7,7 @@
     <head>
         <meta charset="UTF-8">
         <title><spring:message code="server.error"/> ${errorCode}: MOTECH - <spring:message code="server.mobileTech"/></title>
-        <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/static/css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/static/css/bootstrap-page.css">
-        <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/static/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="<c:url value="/static/common/css/motech.css" />">
 
         <%@ include file="faviconPage.jsp" %>
 
@@ -21,7 +19,7 @@
             <div class="header">
                 <div class="container">
                     <a href="<%=request.getContextPath()%>">
-                        <div class="dashboard-logo"><img class="logo" alt="Logo - Mobile Technology for Community Health" src="<%=request.getContextPath()%>/static/img/motech-logo.gif"></div>
+                        <div class="dashboard-logo"><img class="logo" alt="Logo - Mobile Technology for Community Health" src="<%=request.getContextPath()%>/static/common/img/motech-logo.gif"></div>
                     </a>
                     <div class="hidden-xs hidden-sm">
                         <div class="header-title">
