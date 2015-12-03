@@ -68,14 +68,14 @@
                 scope.outerLayout.addCloseBtn( "#tbarCloseSouth", "south" );
                 scope.outerLayout.addCloseBtn( "#tbarCloseWest", "west" );
 
-                $('#tabbuttons').live({
+                $('#tabbuttons').on({
                     mouseover: function() {
                         scope.outerLayout.addOpenBtn( '#tabbuttons li a', "west" );
                         $('#tabbuttons li a').attr({"title" : ''});
                     }
                 });
 
-                $('.ui-layout-resizer').live({
+                $('.ui-layout-resizer').on({
                     mouseover: function() {
                         $('.ui-layout-toggler-closed').attr({"title" : scope.msg('server.jqlayout.openPane')});
                         $('.ui-layout-button-close').attr({"title" : scope.msg('server.jqlayout.closePane')});
@@ -83,7 +83,7 @@
                         $('.ui-layout-resizer-open').attr({"title" : scope.msg('server.jqlayout.resize')});
                     }
                 });
-                $('.ui-layout-toggler').live({
+                $('.ui-layout-toggler').on({
                     mouseover: function() {
                         $('.ui-layout-toggler-closed').attr({"title" : scope.msg('server.jqlayout.openPane')});
                         $('.ui-layout-button-close').attr({"title" : scope.msg('server.jqlayout.closePane')});
@@ -170,7 +170,7 @@
         };
     });
 
-    widgetModule.directive('serverTime', function ($http) {
+    widgetModule.directive('serverTime', ['$http', function ($http) {
         return function (scope, element, attributes) {
             var localTime, serverTime, calculatedDate, recalculatedDate, diff,
             formatPattern = 'YYYY-MM-DD HH:mm',
@@ -209,9 +209,9 @@
                 setTime();
             }, 60000);
         };
-    });
+    }]);
 
-    widgetModule.directive('serverUpTime', function ($http) {
+    widgetModule.directive('serverUpTime', ['$http', function ($http) {
         return function (scope, element, attributes) {
             var currentDate, serverStartTime,
             setUpTime = function () {
@@ -240,9 +240,9 @@
                 setUpTime();
             }, 60000);
         };
-    });
+    }]);
 
-    widgetModule.directive('serverNodeName', function ($http) {
+    widgetModule.directive('serverNodeName', ['$http', function ($http) {
         return function (scope, element, attributes) {
             var getNodeName = function() {
                 $http.post('getNodeName').success( function(data, status) {
@@ -256,9 +256,9 @@
 
             getNodeName();
         };
-    });
+    }]);
 
-    widgetModule.directive('motechModules', function ($compile, $timeout, $http, $templateCache) {
+    widgetModule.directive('motechModules', ['$compile', '$timeout', '$http', '$templateCache', function ($compile, $timeout, $http, $templateCache) {
         var templateLoader;
 
         return {
@@ -280,9 +280,9 @@
                 };
             }
         };
-    });
+    }]);
 
-    widgetModule.directive('validatePassword', function($http) {
+    widgetModule.directive('validatePassword', ['$http', function($http) {
         return {
             restrict: 'A',
             require: 'ngModel',
@@ -314,7 +314,7 @@
                 });
             }
         };
-    });
+    }]);
 
     widgetModule.directive('confirmPassword', function() {
         return {

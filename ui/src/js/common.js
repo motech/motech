@@ -243,3 +243,16 @@ function innerLayout(conf, eastConfig) {
         element.expire();
     });
 }
+
+
+// Move any modal to top of DOM stack while it is active/shown to avoid overlap.
+jQuery(document).ready(function(){
+    $('body').on('show.bs.modal', '.modal', function () {
+        var modal = $(this);
+        var parent = $(this).parent();
+        modal.appendTo('body');
+        modal.one('hidden.bs.modal', function () {
+            modal.appendTo(parent);
+        });
+    });
+});

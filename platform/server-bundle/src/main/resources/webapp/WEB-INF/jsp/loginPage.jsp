@@ -8,6 +8,15 @@
 
     ${mainHeader}
 
+<<<<<<< HEAD
+=======
+    <script type="text/javascript" src="../../static/common/js/motech.min.js"></script>
+    <script type="text/javascript" src="resources/js/app.js"></script>
+    <script type="text/javascript" src="resources/js/services.js"></script>
+    <script type="text/javascript" src="resources/js/controllers.js"></script>
+
+
+>>>>>>> f275b2d... removed additional login form action strings because it was creating an Angular exception
 </head>
 <body class="body-down" ng-controller="MotechMasterCtrl" ng-init="getLoginViewData()">
     <div class="splash login" ng-hide="ready">
@@ -61,7 +70,7 @@
                         <div class="box-content clearfix" ng-cloak>
                             <div class="well3">
                                 <div ng-if="loginViewData.loginMode.repository">
-                                    <form action="{{loginViewData.contextPath}}j_spring_security_check" method="POST" class="inside form-horizontal">
+                                    <form action="{{loginContextPath}}" method="POST" class="inside form-horizontal">
                                         <div class="form-group">
                                             <h4>
                                                 {{msg('security.signInWithId')}}
@@ -86,7 +95,7 @@
                                 </div>
                                 <div ui-if="loginViewData.loginMode.openId" ng-cloak>
                                     <div class="clearfix"></div>
-                                    <form class="inside form-horizontal" action="{{loginViewData.contextPath}}j_spring_openid_security_check" method="POST">
+                                    <form class="inside form-horizontal" action="{{loginContextPathOpenId}}" method="POST">
                                         <div class="form-group open-id">
                                             <p>{{msg('security.signInWith')}} {{loginViewData.openIdProviderName}} {{msg('security.users')}}&nbsp;&nbsp;</p>
                                             <input name="openid_identifier" type="hidden" value="{{loginViewData.openIdProviderUrl}}"/>
@@ -143,7 +152,7 @@
                                     <div class="well3">
                                         <div class="left-divider">
                                             <div ui-if="loginViewData.loginMode.repository" ng-cloak>
-                                                <form class="inside form-horizontal" action="{{loginViewData.contextPath}}j_spring_security_check" method="POST">
+                                                <form class="inside form-horizontal" action="{{loginViewData.contextPath}}" method="POST">
                                                     <div class="form-group">
                                                         <h4>
                                                             {{msg('security.signInWithId')}}&nbsp;
@@ -162,7 +171,7 @@
                                                 </form>
                                             </div>
                                             <div ui-if="loginViewData.loginMode.openId" ng-cloak>
-                                                <form class="inside form-horizontal" action="{{loginViewData.contextPath}}j_spring_openid_security_check" method="POST">
+                                                <form class="inside form-horizontal" action="{{loginViewData.contextPath}}" method="POST">
                                                     <div class="form-group open-id">
                                                         <p>For ${openIdProviderName} users:&nbsp;&nbsp;</p>
                                                         <input name="openid_identifier" type="hidden" value="{{loginViewData.openIdProviderUrl}}"/>
