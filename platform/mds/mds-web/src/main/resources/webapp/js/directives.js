@@ -1558,7 +1558,7 @@
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                var tableWidth, isHiddenGrid, eventResize, eventChange, relatedClass,
+                var tableWidth, isHiddenGrid, eventResize, eventChange, relatedClass, relatedEntityId, updatePostData,
                     filter = {removedIds: [], addedIds: [], addedNewRecords: []},
                     elem = angular.element(element),
                     gridId = attrs.id,
@@ -1570,10 +1570,10 @@
                     selectedInstance = (scope.selectedInstance !== undefined && angular.isNumber(parseInt(scope.selectedInstance, 10)))? parseInt(scope.selectedInstance, 10) : undefined;
 
                 relatedClass = scope.getRelatedClass(scope.field);
-                //if (selectedInstance !== undefined) {
                     blockUI();
                     $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
                         scope.relatedEntity = data;
+                        relatedEntityId = data.id;
                         unblockUI();
                         $.ajax({
                             type: "GET",
@@ -1618,21 +1618,14 @@
                                         if (!scope.field.nonEditable &&  e.target.getAttribute('class') !== null && (e.target.getAttribute('class').indexOf('removeRelatedInstance') >= 0
                                             || (e.target.tagName ==='I' && e.target.parentElement.getAttribute('class').indexOf('removeRelatedInstance') >= 0))) {
 
-                                            var fieldVal = MDSUtils.find(scope.field.value, [{field: 'id', value: id}], true),
-                                                objVal = scope.field.value.filter(function(item) {return item.id === parseInt(id, 10);})[0],
-                                                postdata = $('#' + gridId).jqGrid('getGridParam','postData');
-
-                                            filter.removedIds.push(parseInt(id, 10));
-                                            $.extend($('#' + gridId)[0].p.postData, { filters: JSON.stringify(filter) });
-                                            $('#' + gridId).jqGrid('setGridParam', { search: true, postData: postdata });
-                                            $('#' + attrs.id).jqGrid().trigger("reloadGrid");
-
-                                            scope.removeManyRelatedData(scope.field, objVal);
+                                            scope.relatedData.removeNewAdded(scope.field, parseInt(id, 10));
                                         }
                                     },
                                     ondblClickRow : function(id,iRow,iCol,e) {
-                                        if (!scope.field.nonEditable && !(e.target.children[0] !== undefined && e.target.children[0].getAttribute('class').indexOf('removeRelatedInstance') >= 0)) {
-                                            scope.editInstanceOfEntity2(id, scope.getMetadata(scope.field, 'related.class'), scope.field);
+                                        if (!scope.field.nonEditable && e.target.tagName !=='I' && e.target.tagName !== 'BUTTON' && e.target.tagName ==='TD'
+                                            && !(e.target.children[0] !== undefined && e.target.children[0].getAttribute('class').indexOf('removeRelatedInstance') >= 0)) {
+
+                                           scope.editRelatedInstanceOfEntity(parseInt(id, 10), relatedEntityId, scope.field);
                                         }
                                     },
                                     resizeStop: function (width, index) {
@@ -1658,7 +1651,6 @@
                                     loadui: 'block',
                                     shrinkToFit: false,
                                     gridComplete: function () {
-                                        $('#' + gridId).jqGrid('setFrozenColumns');
                                         $('#' + attrs.entityRelationsGrid + '_center').addClass('page_' + gridId + '_center');
                                         gridRecords = $('#' + gridId).getGridParam('records');
                                         if (gridRecords > 0) {
@@ -1677,52 +1669,59 @@
                                             resizeGridWidth(gridId);
                                         }, 250);
                                     }
-                                });
+                                }).jqGrid('setFrozenColumns');
                             }
                         });
                     }).error(function (response) {
                         handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
                     });
-                //}
 
                 elem.on('jqGridSortCol', function (e, fieldName) {
                     // For correct sorting in jqgrid we need to convert back to the original name
                     e.target.p.sortname = backToReservedFieldName(fieldName);
                 });
 
-                scope.$watch('addedExistingRelatedDataTmp', function () {
-                    var postdataFilters,
-                        postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+                updatePostData = function (filter, postdata) {
+                    $('#' + attrs.id).jqGrid('setGridParam', { postData: { filters: ''} });
+                    postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+                    $.extend(postdata, { filters: angular.toJson(filter) });
+                    $('#' + attrs.id).jqGrid('setGridParam', { search: true, postData: postdata });
+                    $('#' + attrs.id).jqGrid().trigger("reloadGrid");
+                };
+
+                scope.$watch('field.value.removedIds', function (newValue) {
+                    var postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+
                     if (postdata !== undefined) {
-                        postdataFilters = JSON.parse(postdata.filters);
-                        filter = postdataFilters;
-                        filter.addedIds = scope.getAddedExistingRelatedDataTmp(scope.field.id);
-                        $('#' + attrs.id).jqGrid('setGridParam', { postData: {filters: ''}});
-                        postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
-                        $.extend(postdata, { filters: JSON.stringify(filter) });
-                        $('#' + attrs.id).jqGrid('setGridParam', { search: true, postData: postdata });
-                        $('#' + attrs.id).jqGrid().trigger("reloadGrid");
+                        if (postdata.filters !== undefined) {
+                            filter = JSON.parse(postdata.filters);
+                        }
+                        filter.removedIds = newValue;
+                        updatePostData(filter, postdata);
                     }
                 }, true);
 
-                scope.$watch('addedNewRelatedDataTmp', function () {
-                var postdata,
-                    records = scope.getAddedNewRelatedDataTmp(fieldId);
+                scope.$watch('field.value.addedIds', function (newValue) {
+                    var postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
 
-                    if (records !== null && records.length > 0) {
-                        $('#' + attrs.id).jqGrid({pager:'#' + pagerGrid});
-                        postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
-                        if (postdata !== undefined) {
-                            if (postdata.filters !== undefined) { //postData.hasOwnProperty('filters')
-                                filter = JSON.parse(postdata.filters);
-                            }
-                            filter.addedNewRecords = records;
-                            $('#' + attrs.id).jqGrid('setGridParam', { postData: { filters: ''} });
-                            postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
-                            $.extend(postdata, { filters: angular.toJson(filter) });
-                            $('#' + attrs.id).jqGrid('setGridParam', { search: true, postData: postdata });
-                            $('#' + attrs.id).jqGrid().trigger("reloadGrid");
+                    if (postdata !== undefined) {
+                        if (postdata.filters !== undefined) {
+                            filter = JSON.parse(postdata.filters);
                         }
+                        filter.addedIds = newValue;
+                        updatePostData(filter, postdata);
+                    }
+                }, true);
+
+                scope.$watch('field.value.addedNewRecords', function (newValue) {
+                    var postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+
+                    if (postdata !== undefined) {
+                        if (postdata.filters !== undefined) {
+                            filter = JSON.parse(postdata.filters);
+                        }
+                        filter.addedNewRecords = newValue;
+                        updatePostData(filter, postdata);
                     }
                 }, true);
 
@@ -1751,12 +1750,10 @@
             scope: false,
             require: 'ngModel',
             replace: true,
-            link: function (scope, element, attrs, ctrl) {
-                if (scope.rfields === undefined) {element.addClass('hidden');}
-                scope.$watch(attrs.ngModel, function () {
-                    if (scope.rfields !== undefined && scope.rfields !== null) {element.removeClass('hidden');}
-                    scope.fields = scope.rfields;
-               });
+            link: function (scope, element, attrs, ngModel) {
+                scope.$parent.$watch(attrs.ngModel, function () {
+                    scope.fields = scope.newRelatedFields;
+                });
             },
             templateUrl: '../mds/resources/partials/widgets/entityInstanceFields.html'
         };
@@ -1769,13 +1766,10 @@
             require: 'ngModel',
             replace: true,
             link: function(scope, element, attrs, ngModel) {
-                if (scope.editrelatedfields === undefined) {element.addClass('hidden');}
-
-                scope.$parent.$watch(attrs.ngModel, function (newValue, oldValue, scope) {
-                    scope.fields = newValue;
-                    if (scope.editrelatedfields !== undefined  && scope.editrelatedfields !== null) {
-                        element.removeClass('hidden');
-                        scope.fields = scope.editrelatedfields;
+                scope.$parent.$watch(attrs.ngModel, function () {
+                    scope.fields = scope.editRelatedFields;
+                    if (scope.editRelatedFields !== undefined  && scope.editRelatedFields !== null) {
+                        scope.fields = scope.editRelatedFields;
                     }
                 });
             },
@@ -1803,7 +1797,7 @@
                         $(this).children().removeClass('fa-angle-double-up');
                         $(this).children().addClass('fa-angle-double-down');
                         $('#' + gridId).jqGrid('setGridState','hidden');
-                        $('#gbox_' + gridId).delay(3500).addClass('hidden');
+                        $('#gbox_' + gridId).addClass('hidden');
                     }
                 });
             }
@@ -3573,7 +3567,7 @@
         };
     });
 
-    directives.directive('mdsVisitedInput', function () {
+    directives.directive('mdsVisitedInputs', function () {
         return {
             restrict: 'A',
             require: 'ngModel',
