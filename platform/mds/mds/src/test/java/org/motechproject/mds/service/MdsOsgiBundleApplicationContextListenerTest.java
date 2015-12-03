@@ -9,6 +9,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.mds.config.ModuleSettings;
 import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.BundleFailsReport;
 import org.motechproject.mds.domain.BundleRestartStatus;
@@ -81,6 +82,9 @@ public class MdsOsgiBundleApplicationContextListenerTest {
 
     @Before
     public void setUp() {
+        ModuleSettings moduleSettings = new ModuleSettings();
+        moduleSettings.setRestartModuleAfterTimeout(true);
+        when(settingsService.getModuleSettings()).thenReturn(moduleSettings);
         when(settingsService.isRefreshModuleAfterTimeout()).thenReturn(true);
         when(bundle.getSymbolicName()).thenReturn(SAMPLE_SYMBOLIC_NAME);
         when(throwable.getMessage()).thenReturn(FAILURE_MESSAGE_1);
@@ -167,7 +171,7 @@ public class MdsOsgiBundleApplicationContextListenerTest {
 
     @Test
     public void shouldDoNothingWhenSettingIsDisabled() throws BundleException {
-        when(settingsService.isRefreshModuleAfterTimeout()).thenReturn(false);
+        when(settingsService.getModuleSettings()).thenReturn(new ModuleSettings());
 
         mdsOsgiBundleApplicationContextListener.onOsgiApplicationEvent(new OsgiBundleContextFailedEvent(source, bundle, throwable));
 
