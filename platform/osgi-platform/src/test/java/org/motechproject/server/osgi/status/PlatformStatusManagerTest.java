@@ -7,10 +7,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.server.osgi.event.OsgiEventProxy;
+import org.motechproject.server.osgi.util.PlatformConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.springframework.context.ApplicationContext;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +24,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -35,7 +42,7 @@ public class PlatformStatusManagerTest {
     private static final String EMAIL = "org.motechproject.motech-platform-email";
     private static final String MOTECH_TASKS = "org.motechproject.motech-tasks";
 
-    private PlatformStatusManagerImpl platformStatusManager = new PlatformStatusManagerImpl();
+    private PlatformStatusManagerImpl platformStatusManager = new PlatformStatusManagerImpl(new ArrayList<>(), new ArrayList<>());
 
     @Mock
     private ApplicationContext applicationContext;
@@ -93,6 +100,46 @@ public class PlatformStatusManagerTest {
                 asList("mds error", "server config error"));
     }
 
+    @Test
+    public void shouldSendAnOsgiEvent() {
+        Bundle commonSql = mockBundle(COMMONS_SQL);
+        Bundle mdsEntities = mockBundle(MDS_ENTITIES);
+        Bundle configCore = mockBundle(CONFIG_CORE);
+        Bundle motechTasks = mockBundle(MOTECH_TASKS);
+        Bundle event = mockBundle(EVENT);
+        Bundle email = mockBundle(EMAIL);
+        Bundle osgiWebUtils = mockBundle(OSGI_WEB_UTILS);
+        Bundle mds = mockBundle(MDS);
+
+        List<Bundle> osgiBundles = new ArrayList<>(Arrays.asList(commonSql, mdsEntities, configCore, mds));
+        List<Bundle> blueprintBundles = new ArrayList<>(Arrays.asList(motechTasks, event, email, osgiWebUtils, mds));
+
+        platformStatusManager = new PlatformStatusManagerImpl(osgiBundles, blueprintBundles);
+        OsgiEventProxy osgiEventProxy = mock(OsgiEventProxy.class);
+        platformStatusManager.setOsgiEventProxy(osgiEventProxy);
+
+        platformStatusManager.bundleChanged(bundleEvent(commonSql, BundleEvent.STARTED));
+        platformStatusManager.bundleChanged(bundleEvent(commonSql, BundleEvent.STARTED));
+        platformStatusManager.bundleChanged(bundleEvent(mdsEntities, BundleEvent.STARTED));
+        platformStatusManager.bundleChanged(bundleEvent(configCore, BundleEvent.STARTED));
+        platformStatusManager.bundleChanged(bundleEvent(mds, BundleEvent.STARTED));
+        platformStatusManager.bundleChanged(bundleEvent(mds, BundleEvent.STOPPED));
+
+        verify(osgiEventProxy, never()).sendEvent(PlatformConstants.MODULES_STARTUP_TOPIC);
+
+        platformStatusManager.onOsgiApplicationEvent(new OsgiBundleContextRefreshedEvent(applicationContext, motechTasks));
+        platformStatusManager.onOsgiApplicationEvent(new OsgiBundleContextFailedEvent(applicationContext, event, new RuntimeException("event error")));
+        platformStatusManager.onOsgiApplicationEvent(new OsgiBundleContextRefreshedEvent(applicationContext, email));
+        platformStatusManager.onOsgiApplicationEvent(new OsgiBundleContextRefreshedEvent(applicationContext, osgiWebUtils));
+
+        verify(osgiEventProxy, only()).sendEvent(PlatformConstants.MODULES_STARTUP_TOPIC);
+
+        platformStatusManager.bundleChanged(bundleEvent(mdsEntities, BundleEvent.STOPPED));
+        platformStatusManager.onOsgiApplicationEvent(new OsgiBundleContextFailedEvent(applicationContext, mds, new RuntimeException("mds error")));
+
+        verify(osgiEventProxy, only()).sendEvent(PlatformConstants.MODULES_STARTUP_TOPIC);
+    }
+
     public OsgiBundleContextRefreshedEvent ctxRefreshedEvent(String symbolicName) {
         return new OsgiBundleContextRefreshedEvent(applicationContext, mockBundle(symbolicName));
     }
@@ -133,8 +180,11 @@ public class PlatformStatusManagerTest {
     }
 
     private BundleEvent bundleEvent(String symbolicName, int eventType) {
+        return bundleEvent(mockBundle(symbolicName), eventType);
+    }
+
+    private BundleEvent bundleEvent(Bundle bundle, int eventType) {
         BundleEvent bundleEvent = mock(BundleEvent.class);
-        Bundle bundle = mockBundle(symbolicName);
 
         when(bundleEvent.getBundle()).thenReturn(bundle);
         when(bundleEvent.getType()).thenReturn(eventType);
