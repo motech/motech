@@ -276,7 +276,7 @@
                             <targetPath>WEB-INF/bundles</targetPath>
                         </resource>
                         <resource>
-                            <directory>../../ui/build/assets</directory>
+                            <directory>${modules.root.dir}/ui/build/assets</directory>
                             <targetPath>static/common</targetPath>
                         </resource>
                     </webResources>
@@ -323,6 +323,14 @@
                                     </includes>
                                     <followSymlinks>false</followSymlinks>
                                 </fileset>
+                                <fileset>
+                                    <directory>${modules.root.dir}/ui</directory>
+                                    <includes>
+                                        <include>bower_components/**/*</include>
+                                        <include>build/**/*</include>
+                                        <include>node_modules/**/*</include>
+                                    </includes>
+                                </fileset>
                             </filesets>
                         </configuration>
                     </execution>
@@ -332,6 +340,54 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <workingDirectory>${modules.root.dir}/ui</workingDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>exec-npm-install</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>exec-bower-install</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <executable>bower</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>exec-gulp</id>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <executable>gulp</executable>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
     <profiles>

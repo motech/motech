@@ -1,0 +1,11 @@
+{
+  "root": {
+    "src": "./src",
+    "dest": "./build"
+  },
+  "assets": {
+    "src": "./src",
+    "dest": "./build/assets"
+  },
+  "staticPath": "../../static/common/"
+}
