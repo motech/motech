@@ -12,6 +12,7 @@ import org.motechproject.admin.notification.EmailNotifier;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.commons.api.Range;
 import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.email.exception.EmailSendException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.osgi.web.UIFrameworkService;
@@ -268,7 +269,12 @@ public class StatusMessageServiceImpl implements StatusMessageService {
                 if (notificationRule.getActionType() == ActionType.SMS) {
                     smsRecipients.add(notificationRule.getRecipient());
                 } else if (notificationRule.getActionType() == ActionType.EMAIL) {
-                    emailNotifier.send(message, notificationRule.getRecipient());
+                    try {
+                        emailNotifier.send(message, notificationRule.getRecipient());
+                    } catch (EmailSendException e) {
+                        LOGGER.error("Error while sending notification email to {}",
+                                notificationRule.getRecipient(), e);
+                    }
                 }
             }
         }

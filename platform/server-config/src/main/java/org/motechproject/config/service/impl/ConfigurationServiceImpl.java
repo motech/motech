@@ -29,7 +29,6 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedWriter;
@@ -129,15 +128,23 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     @Caching(cacheable = {@Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName") })
-    // we are manipulating the domain object, we don't want a tx here
-    @Transactional(propagation = Propagation.NEVER)
     public MotechSettings getPlatformSettings() {
         if (settingService == null) {
             return null;
         }
         SettingsRecord settings = getSettings();
-        settings.mergeWithDefaults(defaultConfig);
-        return settings;
+
+        SettingsRecord merged = new SettingsRecord();
+
+        merged.setPlatformInitialized(settings.isPlatformInitialized());
+        merged.setLastRun(settings.getLastRun());
+        merged.setFilePath(settings.getFilePath());
+        merged.setConfigFileChecksum(settings.getConfigFileChecksum());
+        merged.setPlatformSettings(settings.getPlatformSettings());
+
+        merged.mergeWithDefaults(defaultConfig);
+
+        return merged;
     }
 
     @Override
