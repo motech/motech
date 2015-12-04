@@ -416,6 +416,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
+    @Transactional
     public List<T> findByIds(Collection<Long> ids) {
         if (ids == null) {
             return new ArrayList<>();
