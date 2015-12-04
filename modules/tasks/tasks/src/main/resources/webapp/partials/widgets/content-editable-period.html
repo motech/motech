@@ -13,7 +13,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" ng-click="closePeriodModal()">&times;</button>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title" id="importTaskModalLabel">{{msg('task.form.setPeriod')}}</h4>
             </div>
             <div class="modal-body clearfix">
@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-default" ng-click="closePeriodModal()">{{msg('task.button.close')}}</button>
+                <button class="btn btn-default" data-dismiss="modal">{{msg('task.button.close')}}</button>
             </div>
         </div>
     </div>
