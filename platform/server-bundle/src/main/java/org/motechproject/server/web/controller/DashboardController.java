@@ -93,7 +93,7 @@ public class DashboardController {
     public String getNodeName() throws UnknownHostException {
         InetAddress ip = InetAddress.getLocalHost();
 
-        return ip.getHostName();
+        return '"' + ip.getHostName() + '"';
     }
 
     @Autowired
