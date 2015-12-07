@@ -1,0 +1,31 @@
+<div id="periodModal" class="period modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="importTaskModalLabel">{{msg('mds.form.setPeriod')}}</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div id="period-slider">
+                    <label class="slider-label" for="amount-period-year">{{msg('mds.dateTimeUnits.years')}}&#58;</label><input type="text" id="amount-period-year" readonly>
+                    <div id="period-year">0</div>
+                    <label class="slider-label" for="amount-period-month">{{msg('mds.dateTimeUnits.months')}}&#58;</label><input type="text" id="amount-period-month" readonly>
+                    <div id="period-month">0</div>
+                    <label class="slider-label" for="amount-period-week">{{msg('mds.dateTimeUnits.weeks')}}&#58;</label><input type="text" id="amount-period-week" readonly>
+                    <div id="period-week">0</div>
+                    <label class="slider-label" for="amount-period-day">{{msg('mds.dateTimeUnits.days')}}&#58;</label><input type="text" id="amount-period-day" readonly>
+                    <div id="period-day">0</div>
+                    <label class="slider-label" for="amount-period-hour">{{msg('mds.dateTimeUnits.hours')}}&#58;</label><input type="text" id="amount-period-hour" readonly>
+                    <div id="period-hour">0</div>
+                    <label class="slider-label" for="amount-period-minute">{{msg('mds.dateTimeUnits.minutes')}}&#58;</label><input type="text" id="amount-period-minute" readonly>
+                    <div id="period-minute">0</div>
+                    <label class="slider-label" for="amount-period-second">{{msg('mds.dateTimeUnits.seconds')}}&#58;</label><input type="text" id="amount-period-second" readonly>
+                    <div id="period-second">0</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">{{msg('mds.btn.close')}}</button>
+            </div>
+        </div>
+    </div>
+</div>

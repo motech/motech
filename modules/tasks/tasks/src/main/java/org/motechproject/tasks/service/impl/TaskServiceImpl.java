@@ -104,7 +104,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void save(final Task task) {
+    public Set<TaskError> save(final Task task) {
         LOGGER.info("Saving task: {} with ID: {}", task.getName(), task.getId());
         Set<TaskError> errors = TaskValidator.validate(task);
 
@@ -130,6 +130,7 @@ public class TaskServiceImpl implements TaskService {
         addOrUpdate(task);
         registerHandler(task.getTrigger().getEffectiveListenerSubject());
         LOGGER.info("Saved task: {} with ID: {}", task.getName(), task.getId());
+        return errors;
     }
 
     @Override
