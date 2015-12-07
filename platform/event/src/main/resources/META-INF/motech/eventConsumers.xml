@@ -13,6 +13,10 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.event"/>
 
+    <channel id="controlChannel"/>
+
+    <control-bus input-channel="controlChannel"/>
+
     <channel id="eventQueueChannel"/>
 
     <jms:message-driven-channel-adapter
@@ -27,6 +31,7 @@
     <outbound-channel-adapter
             id="queueOutboundChannelAdapter"
             channel="eventQueueChannel"
+            auto-startup="false"
             ref="eventRelay"
             method="relayQueueEvent"/>
 
@@ -44,6 +49,7 @@
     <outbound-channel-adapter
             id="topicOutboundChannelAdapter"
             channel="eventTopicChannel"
+            auto-startup="false"
             ref="eventRelay"
             method="relayTopicEvent"/>
 
