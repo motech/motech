@@ -1,5 +1,6 @@
 package org.motechproject.event.listener;
 
+import org.apache.maven.model.Organization;
 import org.motechproject.server.osgi.event.OsgiEventProxy;
 import org.motechproject.server.osgi.util.PlatformConstants;
 import org.osgi.service.event.Event;
@@ -8,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.MessageChannel;
 import org.springframework.integration.message.GenericMessage;
 
+/**
+ * Handles incoming events and starts ActiveMQ outbound channels.
+ */
 public class EventConsumerStarter implements EventHandler {
     private MessageChannel controlChannel;
 
@@ -16,6 +20,14 @@ public class EventConsumerStarter implements EventHandler {
         this.controlChannel = controlChannel;
     }
 
+    /**
+     * Receives an OSGi event with the proxy topic.
+     * If event has {@link OsgiEventProxy#SUBJECT_PARAM subject} param
+     * with specified {@link PlatformConstants#MODULES_STARTUP_TOPIC value},
+     * then ActiveMQ outbound channels will be started.
+     *
+     * @param osgiEvent the event sent from OSGi
+     */
     @Override
     public void handleEvent(Event osgiEvent) {
         String subject = (String) osgiEvent.getProperty(OsgiEventProxy.SUBJECT_PARAM);
