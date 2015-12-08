@@ -1,6 +1,5 @@
 package org.motechproject.event.listener;
 
-import org.apache.maven.model.Organization;
 import org.motechproject.server.osgi.event.OsgiEventProxy;
 import org.motechproject.server.osgi.util.PlatformConstants;
 import org.osgi.service.event.Event;
