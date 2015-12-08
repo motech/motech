@@ -84,6 +84,9 @@ public class SchemaGenerator implements InitializingBean {
             return;
         }
 
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName(mdsSqlProperties.getProperty(CONNECTION_DRIVER_KEY));
         dataSource.setUrl(mdsSqlProperties.getProperty(CONNECTION_URL_KEY));
@@ -99,6 +102,8 @@ public class SchemaGenerator implements InitializingBean {
         flyway.setInitOnMigrate(true);
 
         flyway.migrate();
+
+        Thread.currentThread().setContextClassLoader(cl);
         LOGGER.info("Modules migration completed.");
     }
 

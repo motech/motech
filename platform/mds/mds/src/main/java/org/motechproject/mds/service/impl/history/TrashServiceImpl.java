@@ -3,13 +3,12 @@ package org.motechproject.mds.service.impl.history;
 import org.apache.commons.beanutils.MethodUtils;
 import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.config.SettingsService;
-import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
-import org.motechproject.mds.service.HistoryTrashClassHelper;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
+import org.motechproject.mds.service.HistoryTrashClassHelper;
 import org.motechproject.mds.service.MdsSchedulerService;
 import org.motechproject.mds.service.TrashService;
 import org.slf4j.Logger;
@@ -151,19 +150,17 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
 
     @Override
     @Transactional
-    public void emptyTrash(List<Entity> entities) {
+    public void emptyTrash(Collection<String> entitiesClassNames) {
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
-        for (Entity entity : entities) {
-            if (entity.isActualEntity()) {
-                Class<?> trashClass = HistoryTrashClassHelper.getClass(entity.getClassName(), EntityType.TRASH,
-                        getBundleContext());
+        for (String className : entitiesClassNames) {
+            Class<?> trashClass = HistoryTrashClassHelper.getClass(className, EntityType.TRASH,
+                    getBundleContext());
 
-                Query query = manager.newQuery(trashClass);
-                Collection instances = (Collection) query.execute();
+            Query query = manager.newQuery(trashClass);
+            Collection instances = (Collection) query.execute();
 
-                manager.deletePersistentAll(instances);
-            }
+            manager.deletePersistentAll(instances);
         }
     }
 

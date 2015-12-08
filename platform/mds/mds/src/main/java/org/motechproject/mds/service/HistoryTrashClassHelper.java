@@ -46,7 +46,7 @@ public final class HistoryTrashClassHelper {
         return uncapitalize(historyClass.getSimpleName() + "CurrentVersion");
     }
 
-    public static String schemaVersion(Class<?> historyClass) {
+    public static String historySchemaVersion(Class<?> historyClass) {
         return uncapitalize(historyClass.getSimpleName() + "SchemaVersion");
     }
 

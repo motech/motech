@@ -447,7 +447,8 @@
                                 <configuration>
                                     <autocommit>true</autocommit>
                                     <sqlCommand>
-                                        CREATE DATABASE motech_data_services;
+                                        CREATE DATABASE motechdata;
+                                        CREATE DATABASE motechschema;
                                     </sqlCommand>
                                     <onError>continue</onError>
                                 </configuration>

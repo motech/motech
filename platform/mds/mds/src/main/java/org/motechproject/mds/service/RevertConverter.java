@@ -1,8 +1,9 @@
 package org.motechproject.mds.service;
 
-import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.RelationshipHolder;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.entityinfo.EntityInfo;
+import org.motechproject.mds.entityinfo.FieldInfo;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.TypeHelper;
 import org.springframework.context.ApplicationContext;
@@ -15,21 +16,22 @@ import java.util.Collection;
  */
 public class RevertConverter implements PropertyUtil.ValueConverter {
 
-    private final Entity entity;
+    private final EntityInfo entityInfo;
     private final ApplicationContext applicationContext;
 
-    public RevertConverter(Entity entity, ApplicationContext applicationContext) {
-        this.entity = entity;
+    public RevertConverter(EntityInfo entityInfo, ApplicationContext applicationContext) {
+        this.entityInfo = entityInfo;
         this.applicationContext = applicationContext;
     }
 
     @Override
     public Object convert(Object value, PropertyDescriptor descriptor) {
-        Field field = entity.getField(descriptor.getName());
-        if (value == null || field == null || !field.getType().isRelationship()) {
+        FieldInfo field = entityInfo.getField(descriptor.getName());
+        FieldDto fieldDto = field.getField();
+        if (value == null || field == null || !fieldDto.getType().isRelationship()) {
             return value;
         } else {
-            RelationshipHolder relHolder = new RelationshipHolder(field);
+            RelationshipHolder relHolder = new RelationshipHolder(fieldDto);
             String relatedClass = relHolder.getRelatedClass();
 
             MotechDataService relatedDataService = ServiceUtil.getServiceFromAppContext(applicationContext,

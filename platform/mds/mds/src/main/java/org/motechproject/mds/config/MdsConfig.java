@@ -29,23 +29,32 @@ public class MdsConfig {
     private static final String FLYWAY_MYSQL_MIGRATION_PATH = "db/migration/mysql";
     private static final String FLYWAY_JAVA_MIGRATION_PATH = "org/motechproject/mdsmigration/java";
     private static final String FLYWAY_DEFAULT_MIGRATION_PATH = "db/migration/default";
+    private static final String CONNECTION_URL_KEY = "javax.jdo.option.ConnectionURL";
 
     private Map<String, Properties> config = new HashMap<>();
 
     private SqlDBManager sqlDBManager;
     private CoreConfigurationService coreConfigurationService;
-    private Properties mdsSqlProperties;
+    private Properties mdsDataSqlProperties;
+    private Properties mdsInternalSqlProperties;
 
     public MdsConfig() {}
 
     public void init() {
-        if (mdsSqlProperties == null) {
-            mdsSqlProperties = getDataNucleusProperties();
+        if (mdsDataSqlProperties == null) {
+            mdsDataSqlProperties = getDataNucleusProperties();
+        }
+
+        if (mdsInternalSqlProperties == null) {
+            mdsInternalSqlProperties = getDataNucleusPropertiesForInternalInfrastructure();
         }
 
         //Create database if it doesn't exists
         sqlDBManager.createDatabase(
-            mdsSqlProperties.getProperty("javax.jdo.option.ConnectionURL")
+                mdsDataSqlProperties.getProperty(CONNECTION_URL_KEY)
+        );
+        sqlDBManager.createDatabase(
+                mdsInternalSqlProperties.getProperty(CONNECTION_URL_KEY)
         );
     }
 
@@ -69,10 +78,6 @@ public class MdsConfig {
 
     public void setSqlDBManager(SqlDBManager sqlDBManager) {
         this.sqlDBManager = sqlDBManager;
-    }
-
-    public void setMdsSqlProperties(Properties mdsSqlProperties) {
-        this.mdsSqlProperties = mdsSqlProperties;
     }
 
     public  String getResourceFileName(Resource resource) {
@@ -110,13 +115,17 @@ public class MdsConfig {
         properties.remove("javax.jdo.option.Optimistic");
         properties.remove("datanucleus.flush.mode");
         addBeanValidationFactoryProperty(properties);
+        properties.put("javax.jdo.option.ConnectionURL", getSchemaConnectionURL(properties));
+
         return properties;
     }
 
     public Properties getDataNucleusProperties() {
-        Properties dnProperties = coreConfigurationService.loadDatanucleusConfig();
-        addBeanValidationFactoryProperty(dnProperties);
-        return dnProperties;
+        Properties properties = new Properties();
+        properties.putAll(coreConfigurationService.loadDatanucleusConfig());
+        properties.put("javax.jdo.option.ConnectionURL", getDataConnectionURL(properties));
+        addBeanValidationFactoryProperty(properties);
+        return properties;
     }
 
     public String[] getFlywayLocations() {
@@ -137,5 +146,17 @@ public class MdsConfig {
         // Datanucleus expects the validator factory as the actual object, not just a string property
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         properties.put(PropertyNames.PROPERTY_VALIDATION_FACTORY, validatorFactory);
+    }
+
+    private String getSchemaConnectionURL(Properties properties) {
+        String databaseName = properties.get(Constants.Util.SCHEMA_DATABASE_KEY) == null ? Constants.Util.DEFAULT_SCHEMA_DATABASE
+                : (String) properties.get(Constants.Util.SCHEMA_DATABASE_KEY);
+        return properties.get(CONNECTION_URL_KEY) + databaseName;
+    }
+
+    private String getDataConnectionURL(Properties properties) {
+        String databaseName = properties.get(Constants.Util.MDS_DATABASE_KEY) == null ? Constants.Util.DEFAULT_DATA_DATABASE
+                : (String) properties.get(Constants.Util.MDS_DATABASE_KEY);
+        return properties.get(CONNECTION_URL_KEY) + databaseName;
     }
 }

@@ -187,7 +187,7 @@ public class MdsBundleIT extends BasePaxIT {
         entityService = context.getBean(EntityService.class);
         generator = context.getBean(JarGeneratorService.class);
         allEntities = context.getBean(AllEntities.class);
-        mdsTransactionManager = context.getBean(MdsTransactionManager.class);
+        mdsTransactionManager = context.getBean("transactionManager", MdsTransactionManager.class);
 
         clearEntities();
         setUpSecurityContextForDefaultUser("mdsSchemaAccess");

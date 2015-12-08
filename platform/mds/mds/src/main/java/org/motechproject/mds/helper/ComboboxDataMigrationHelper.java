@@ -1,15 +1,19 @@
 package org.motechproject.mds.helper;
 
+import org.apache.commons.lang3.StringUtils;
 import org.motechproject.commons.sql.service.SqlDBManager;
 import org.motechproject.mds.config.DeleteMode;
+import org.motechproject.mds.config.MdsConfig;
 import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.ex.entity.DataMigrationFailedException;
+import org.motechproject.mds.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +26,6 @@ import java.util.Map;
 
 import static javax.jdo.Query.SQL;
 import static org.motechproject.mds.util.Constants.Config.MYSQL_DRIVER_CLASSNAME;
-import static org.motechproject.mds.util.Constants.Util.MDS_DATABASE;
 
 /**
  * Responsible for migrating data of Combobox fields between correct tables. Transfers data from entity table to Combobox
@@ -45,6 +48,7 @@ public class ComboboxDataMigrationHelper {
     private PersistenceManagerFactory persistenceManagerFactory;
     private SqlDBManager sqlDBManager;
     private SettingsService settingsService;
+    private MdsConfig mdsConfig;
 
     /**
      * Compares given entity with it's draft and migrates data to proper table if multiple selections were allowed or
@@ -105,12 +109,15 @@ public class ComboboxDataMigrationHelper {
     }
 
     private void migrateDataToSingleSelectTable(String dstTable, String field) throws DataMigrationFailedException {
-
         String srcTable = dstTable + "_" + field.toUpperCase();
+        String mdsDataBase = (String) mdsConfig.getDataNucleusProperties().get(Constants.Util.MDS_DATABASE_KEY);
+        if (StringUtils.isNotBlank(mdsDataBase)) {
+            mdsDataBase = Constants.Util.DEFAULT_DATA_DATABASE;
+        }
 
         try {
 
-            if (!sqlDBManager.hasColumn(MDS_DATABASE, dstTable, field)) {
+            if (!sqlDBManager.hasColumn(mdsDataBase, dstTable, field)) {
                 LOGGER.info(String.format("Adding column %s to table %s.", field, dstTable));
                 executeQuery(prepareAddColumnQuery(dstTable, field));
             }
@@ -204,6 +211,7 @@ public class ComboboxDataMigrationHelper {
     }
 
     @Autowired
+    @Qualifier("dataPersistenceManagerFactory")
     public void setPersistenceManagerFactory(PersistenceManagerFactory persistenceManagerFactory) {
         this.persistenceManagerFactory = persistenceManagerFactory;
     }
@@ -216,5 +224,10 @@ public class ComboboxDataMigrationHelper {
     @Autowired
     public void setSettingsService(SettingsService settingsService) {
         this.settingsService = settingsService;
+    }
+
+    @Autowired
+    public void setMdsConfig(MdsConfig mdsConfig) {
+        this.mdsConfig = mdsConfig;
     }
 }

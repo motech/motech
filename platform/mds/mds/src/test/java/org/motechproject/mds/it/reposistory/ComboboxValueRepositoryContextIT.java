@@ -1,5 +1,6 @@
 package org.motechproject.mds.it.reposistory;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.domain.Entity;
@@ -15,8 +16,13 @@ import org.motechproject.mds.service.impl.MetadataServiceImpl;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.PropertyUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import javax.jdo.PersistenceManagerFactory;
 import java.util.ArrayList;
@@ -32,10 +38,12 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
     private static final String ENTITY_NAME = "TestForCbValues";
     private static final String CB_FIELD_MULTI_NAME = "cbFieldMulti";
     private static final String CB_FIELD_SINGLE_NAME = "cbFieldSingle";
+    private final Logger LOGGER = LoggerFactory.getLogger(ComboboxValueRepositoryContextIT.class);
 
     private ComboboxValueRepository cbValueRepository;
 
     @Autowired
+    @Qualifier("dataPersistenceManagerFactory")
     private PersistenceManagerFactory persistenceManagerFactory;
 
     @Override
@@ -72,6 +80,11 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
         cbValueRepository.setPersistenceManagerFactory(persistenceManagerFactory);
     }
 
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
+
     @Test
     public void shouldRetrieveComboboxMultiSelectValuesFromDb() {
         // This service is normally taken from the generated entities bundle
@@ -91,7 +104,7 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
         Entity entity = getAllEntities().retrieveByClassName(ClassName.getEntityClassName(ENTITY_NAME));
         Field cbField = entity.getField(CB_FIELD_SINGLE_NAME);
 
-        List<String> values = cbValueRepository.getComboboxValuesForStringField(entity, cbField);
+        List<String> values = cbValueRepository.getComboboxValuesForStringField(entity.toDto(), cbField.toDto());
 
         assertNotNull(values);
         assertEquals(asList("five", "four", "one", "two"), values);
@@ -100,27 +113,36 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
     private void setUpTestData() throws Exception {
         MotechDataService service = getService();
 
-        service.create(objectInstance("one", asList("one", "two")));
-        service.create(objectInstance("two", asList("two", "one", "four")));
-        service.create(objectInstance("four", asList("four", "four", "four")));
-        service.create(objectInstance("five", singletonList("five")));
-        service.create(objectInstance("one", asList("one", "two", "four", "three")));
-        service.create(objectInstance(null, null));
-        service.create(objectInstance(null, singletonList(null)));
-        service.create(objectInstance("", singletonList("")));
+        service.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                service.create(objectInstance("one", asList("one", "two")));
+                service.create(objectInstance("two", asList("two", "one", "four")));
+                service.create(objectInstance("four", asList("four", "four", "four")));
+                service.create(objectInstance("five", singletonList("five")));
+                service.create(objectInstance("one", asList("one", "two", "four", "three")));
+                service.create(objectInstance(null, null));
+                service.create(objectInstance(null, singletonList(null)));
+                service.create(objectInstance("", singletonList("")));
+            }
+        });
 
         assertEquals("There were issues creating test data", 8, service.count());
     }
 
-    private Object objectInstance(String singleValue, List<String> multiValues) throws Exception {
-        Class clazz = getEntityClass();
-
-        Object obj = clazz.newInstance();
-        PropertyUtil.setProperty(obj, CB_FIELD_SINGLE_NAME, singleValue);
-        if (multiValues != null) {
-            PropertyUtil.setProperty(obj, CB_FIELD_MULTI_NAME, new ArrayList<>(multiValues));
+    private Object objectInstance(String singleValue, List<String> multiValues) {
+        Object obj = null;
+        try {
+            Class clazz = getEntityClass();
+            obj = clazz.newInstance();
+            PropertyUtil.setProperty(obj, CB_FIELD_SINGLE_NAME, singleValue);
+            if (multiValues != null) {
+                PropertyUtil.setProperty(obj, CB_FIELD_MULTI_NAME, new ArrayList<>(multiValues));
+            }
+        } catch (Exception e) {
+            LOGGER.error("Cannot create instance", e);
+            return null;
         }
-
         return obj;
     }
 }
