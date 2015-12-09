@@ -28,6 +28,7 @@ import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.JdoListenerRegistryService;
+import org.motechproject.mds.service.MdsOsgiBundleApplicationContextListener;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.JavassistUtil;
 import org.motechproject.osgi.web.util.BundleHeaders;
@@ -42,6 +43,7 @@ import org.osgi.framework.wiring.FrameworkWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.velocity.VelocityEngineUtils;
@@ -102,6 +104,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private EntitiesBundleMonitor monitor;
     private BundleContext bundleContext;
     private AllEntities allEntities;
+    private MdsOsgiBundleApplicationContextListener mdsOsgiBundleApplicationContextListener;
+
     private final Object lock = new Object();
     private boolean moduleRefreshed;
 
@@ -175,6 +179,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
             FileUtils.deleteQuietly(tmpBundleFile);
         }
 
+        // We must clear module names which was restarted after failing
+        mdsOsgiBundleApplicationContextListener.clearBundlesSet();
         refreshModules(moduleNames);
 
         if (startBundle) {
@@ -675,5 +681,11 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     @Autowired
     public void setListenerRegistryService(JdoListenerRegistryService jdoListenerRegistryService) {
         this.jdoListenerRegistryService = jdoListenerRegistryService;
+    }
+
+    @Autowired
+    @Qualifier("mdsOsgiBundleApplicationContextListener")
+    public void setMdsOsgiBundleApplicationContextListener(MdsOsgiBundleApplicationContextListener mdsOsgiBundleApplicationContextListener) {
+        this.mdsOsgiBundleApplicationContextListener = mdsOsgiBundleApplicationContextListener;
     }
 }
