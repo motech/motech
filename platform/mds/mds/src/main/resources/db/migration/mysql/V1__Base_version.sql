@@ -583,9 +583,657 @@ LOCK TABLES "TypeValidation_annotations" WRITE;
 INSERT INTO "TypeValidation_annotations" VALUES (1,'javax.validation.constraints.DecimalMin',0),(1,'javax.validation.constraints.Min',1),(2,'javax.validation.constraints.DecimalMax',0),(2,'javax.validation.constraints.Max',1),(3,'org.motechproject.mds.annotations.InSet',0),(4,'org.motechproject.mds.annotations.NotInSet',0),(5,'javax.validation.constraints.Pattern',0),(6,'javax.validation.constraints.DecimalMin',0),(6,'javax.validation.constraints.Size',1),(7,'javax.validation.constraints.DecimalMax',0),(7,'javax.validation.constraints.Size',1),(8,'javax.validation.constraints.DecimalMin',0),(8,'javax.validation.constraints.Min',1),(9,'javax.validation.constraints.DecimalMax',0),(9,'javax.validation.constraints.Max',1),(10,'org.motechproject.mds.annotations.InSet',0),(11,'org.motechproject.mds.annotations.NotInSet',0);
 /*!40000 ALTER TABLE "TypeValidation_annotations" ENABLE KEYS */;
 UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+-- Old V2
+
+INSERT INTO "Type" VALUES (10,'mds.field.description.map','mds.field.map','mapName','java.util.Map');
+
+-- Old V3
+
+--
+-- Change value type for InSet and NotInSet validations
+--
+
+UPDATE TypeValidation
+SET TYPE_ID = (SELECT id
+               FROM Type
+               WHERE typeClass LIKE 'java.lang.String')
+WHERE displayName LIKE 'mds.field.validation.mustBeInSet';
+
+UPDATE TypeValidation
+SET TYPE_ID = (SELECT id
+               FROM Type
+               WHERE typeClass LIKE 'java.lang.String')
+WHERE displayName LIKE 'mds.field.validation.cannotBeInSet';
+
+-- Old V4
+
+--
+-- Merge Integer and Long types into one type named Integer but handled by Long type class
+--
+
+-- First let's change the class responsible for handling the Integer type
+UPDATE Type
+SET typeClass = 'java.lang.Long'
+WHERE typeClass LIKE 'java.lang.Integer';
+
+-- Assign all fields of long type to integer type
+UPDATE Field
+SET type_id_OID = (SELECT id
+                   FROM Type
+                   WHERE displayName LIKE 'mds.field.integer')
+WHERE type_id_OID = (SELECT id
+                     FROM Type
+                     WHERE displayName LIKE 'mds.field.long');
+
+-- Now we can remove the Long type from the database
+DELETE FROM Type
+WHERE displayName LIKE 'mds.field.long';
+
+-- Old V5
+
+--
+-- Add new type to MDS - org.joda.time.Period
+--
+
+INSERT INTO "Type" VALUES (11,'mds.field.description.period','mds.field.period','period','org.joda.time.Period');
+
+
+-- Old V6
+
+--
+-- add locale type to the MDS
+--
+
+INSERT INTO Type
+SELECT id + 1, 'mds.field.description.locale','mds.field.locale','locale','java.util.Locale'
+FROM Type
+ORDER BY id DESC
+LIMIT 1;
+
+UPDATE SEQUENCE_TABLE
+SET NEXT_VAL = (SELECT id + 1 FROM Type ORDER BY id DESC LIMIT 1)
+WHERE SEQUENCE_NAME LIKE 'org.motechproject.mds.domain.Type';
+
+-- Old V7
+
+
+INSERT INTO "Type" VALUES (13,'mds.field.description.blob','mds.field.blob','blobName','[Ljava.lang.Byte;');
+
+
+-- Old V8
+
+
+--
+-- Add new type to MDS
+--
+
+INSERT INTO "Type" VALUES (14,'mds.field.description.localDate','mds.field.localDate','localDateName','org.joda.time.LocalDate');
+
+
+-- Old V9
+
+--
+-- Bring back the Integer handler type to MDS
+--
+
+-- First let's change the class responsible for handling the Integer type
+UPDATE Type
+SET typeClass = 'java.lang.Integer'
+WHERE typeClass LIKE 'java.lang.Long';
+
+-- Create a separate class for handling Long type
+INSERT INTO Type
+SELECT id + 1, 'mds.field.description.long','mds.field.long','long','java.lang.Long'
+FROM Type
+ORDER BY id DESC
+LIMIT 1;
+
+UPDATE SEQUENCE_TABLE
+SET NEXT_VAL = (SELECT id + 1 FROM Type ORDER BY id DESC LIMIT 1)
+WHERE SEQUENCE_NAME LIKE 'org.motechproject.mds.domain.Type';
+
+-- The handler class for existing fields must stay the same (Long)
+-- Assign fields of the Integer type to the Long type
+UPDATE Field
+SET type_id_OID = (SELECT id
+                   FROM Type
+                   WHERE displayName LIKE 'mds.field.long')
+WHERE type_id_OID = (SELECT id
+                     FROM Type
+                     WHERE displayName LIKE 'mds.field.integer');
+
+-- Old V10
+
+INSERT INTO Type
+SELECT id + 1, 'mds.field.description.relationship','mds.field.relationship','relationshipName','org.motechproject.mds.domain.Relationship'
+FROM Type
+ORDER BY id DESC
+LIMIT 1;
+
+INSERT INTO Type
+SELECT id + 1, 'mds.field.description.relationship.oneToMany','mds.field.relationship.oneToMany','oneToManyRelationshipName','org.motechproject.mds.domain.OneToManyRelationship'
+FROM Type
+ORDER BY id DESC
+LIMIT 1;
+
+UPDATE SEQUENCE_TABLE
+SET NEXT_VAL = (SELECT id + 1 FROM Type ORDER BY id DESC LIMIT 1)
+WHERE SEQUENCE_NAME LIKE 'org.motechproject.mds.domain.Type';
+
+-- Old V11
+
+--
+-- insert settings for relationship types
+--
+
+INSERT INTO TypeSetting
+SELECT (ts.id + 1), 'true', 'mds.form.label.cascadePersist', t.id
+FROM TypeSetting ts, Type t
+WHERE t.typeClass LIKE 'java.lang.Boolean'
+ORDER BY ts.id DESC
+LIMIT 1;
+
+INSERT INTO TypeSetting
+SELECT (ts.id + 1), 'true', 'mds.form.label.cascadeUpdate', t.id
+FROM TypeSetting ts, Type t
+WHERE t.typeClass LIKE 'java.lang.Boolean'
+ORDER BY ts.id DESC
+LIMIT 1;
+
+INSERT INTO TypeSetting
+SELECT (ts.id + 1), 'false', 'mds.form.label.cascadeDelete', t.id
+FROM TypeSetting ts, Type t
+WHERE t.typeClass LIKE 'java.lang.Boolean'
+ORDER BY ts.id DESC
+LIMIT 1;
+
+UPDATE SEQUENCE_TABLE
+SET NEXT_VAL = (SELECT id + 1 FROM TypeSetting ORDER BY id DESC LIMIT 1)
+WHERE SEQUENCE_NAME LIKE 'org.motechproject.mds.domain.TypeSetting';
+
+--
+-- connect settings with relationship types
+--
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 0
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'org.motechproject.mds.domain.Relationship' AND ts.name LIKE 'mds.form.label.cascadePersist';
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 1
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'org.motechproject.mds.domain.Relationship' AND ts.name LIKE 'mds.form.label.cascadeUpdate';
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 2
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'org.motechproject.mds.domain.Relationship' AND ts.name LIKE 'mds.form.label.cascadeDelete';
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 0
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'org.motechproject.mds.domain.OneToManyRelationship' AND ts.name LIKE 'mds.form.label.cascadePersist';
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 1
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'org.motechproject.mds.domain.OneToManyRelationship' AND ts.name LIKE 'mds.form.label.cascadeUpdate';
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 2
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'org.motechproject.mds.domain.OneToManyRelationship' AND ts.name LIKE 'mds.form.label.cascadeDelete';
+
+-- Old V12
+
+--
+-- insert settings for string type
+--
+
+INSERT INTO TypeSetting
+SELECT (ts.id + 1), 'false', 'mds.form.label.textarea', t.id
+FROM TypeSetting ts, Type t
+WHERE t.typeClass LIKE 'java.lang.Boolean'
+ORDER BY ts.id DESC
+LIMIT 1;
+
+UPDATE SEQUENCE_TABLE
+SET NEXT_VAL = (SELECT id + 1 FROM TypeSetting ORDER BY id DESC LIMIT 1)
+WHERE SEQUENCE_NAME LIKE 'org.motechproject.mds.domain.TypeSetting';
+
+--
+-- connect settings with string types
+--
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 0
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'java.lang.String' AND ts.name LIKE 'mds.form.label.textarea';
+
+-- Old V13
+
+INSERT INTO Type
+SELECT id + 1, 'mds.field.description.relationship.oneToOne','mds.field.relationship.oneToOne','oneToOneRelationshipName','org.motechproject.mds.domain.OneToOneRelationship'
+FROM Type
+ORDER BY id DESC
+LIMIT 1;
+
+UPDATE SEQUENCE_TABLE
+SET NEXT_VAL = (SELECT id + 1 FROM Type ORDER BY id DESC LIMIT 1)
+WHERE SEQUENCE_NAME LIKE 'org.motechproject.mds.domain.Type';
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 0
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'org.motechproject.mds.domain.OneToOneRelationship' AND ts.name LIKE 'mds.form.label.cascadePersist';
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 1
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'org.motechproject.mds.domain.OneToOneRelationship' AND ts.name LIKE 'mds.form.label.cascadeUpdate';
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 2
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'org.motechproject.mds.domain.OneToOneRelationship' AND ts.name LIKE 'mds.form.label.cascadeDelete';
+
+-- Old V14
+
+ALTER TABLE "FieldSetting" DROP COLUMN "value";
+ALTER TABLE "FieldSetting" ADD COLUMN "value" TEXT DEFAULT NULL;
+
+-- Old V15
+
+-- This migrations adds the length setting to the String type
+--
+-- insert settings for string type
+--
+
+INSERT INTO TypeSetting
+SELECT (ts.id + 1), '255', 'mds.form.label.maxTextLength', t.id
+FROM TypeSetting ts, Type t
+WHERE t.typeClass LIKE 'java.lang.Integer'
+ORDER BY ts.id DESC
+LIMIT 1;
+
+UPDATE SEQUENCE_TABLE
+SET NEXT_VAL = (SELECT id + 1 FROM TypeSetting ORDER BY id DESC LIMIT 1)
+WHERE SEQUENCE_NAME LIKE 'org.motechproject.mds.domain.TypeSetting';
+
+--
+-- connect settings with string types
+--
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 1
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'java.lang.String' AND ts.name LIKE 'mds.form.label.maxTextLength';
+
+--
+-- add validations to the setting
+--
+
+INSERT INTO TYPE_SETTING_SETTING_OPTION
+SELECT ts.id, 1, 0
+FROM TypeSetting ts
+WHERE ts.name LIKE 'mds.form.label.maxTextLength'
+LIMIT 1;
+
+INSERT INTO TYPE_SETTING_SETTING_OPTION
+SELECT ts.id, 2, 1
+FROM TypeSetting ts
+WHERE ts.name LIKE 'mds.form.label.maxTextLength'
+LIMIT 1;
+
+-- Old V16
+
+-- Adjusts default names for some types.
+-- We should be consistent with these names.
+--
+
+UPDATE Type
+SET defaultName = 'map'
+WHERE defaultName = 'mapName';
+
+UPDATE Type
+SET defaultName = 'blob'
+WHERE defaultName = 'blobName';
+
+UPDATE Type
+SET defaultName = 'localDate'
+WHERE defaultName = 'localDateName';
+
+UPDATE Type
+SET defaultName = 'relationship'
+WHERE defaultName = 'relationshipName';
+
+UPDATE Type
+SET defaultName = 'oneToManyRelationship'
+WHERE defaultName = 'oneToManyRelationshipName';
+
+UPDATE Type
+SET defaultName = 'oneToOneRelationship'
+WHERE defaultName = 'oneToOneRelationshipName';
+
+
+-- Old V17
+
+-- Adds ManyToOne relationship type ---
+
+INSERT INTO Type
+SELECT id + 1, 'mds.field.description.relationship.manyToOne','mds.field.relationship.manyToOne','manyToOneRelationship','org.motechproject.mds.domain.ManyToOneRelationship'
+FROM Type
+ORDER BY id DESC
+LIMIT 1;
+
+UPDATE SEQUENCE_TABLE
+SET NEXT_VAL = (SELECT id + 1 FROM Type ORDER BY id DESC LIMIT 1)
+WHERE SEQUENCE_NAME LIKE 'org.motechproject.mds.domain.Type';
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 0
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'org.motechproject.mds.domain.ManyToOneRelationship' AND ts.name LIKE 'mds.form.label.cascadePersist';
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 1
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'org.motechproject.mds.domain.ManyToOneRelationship' AND ts.name LIKE 'mds.form.label.cascadeUpdate';
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 2
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'org.motechproject.mds.domain.ManyToOneRelationship' AND ts.name LIKE 'mds.form.label.cascadeDelete';
+
+-- Old V18
+
+-- Adds ManyToMany relationship type ---
+
+INSERT INTO Type
+SELECT id + 1, 'mds.field.description.relationship.manyToMany','mds.field.relationship.manyToMany','manyToManyRelationship','org.motechproject.mds.domain.ManyToManyRelationship'
+FROM Type
+ORDER BY id DESC
+LIMIT 1;
+
+UPDATE SEQUENCE_TABLE
+SET NEXT_VAL = (SELECT id + 1 FROM Type ORDER BY id DESC LIMIT 1)
+WHERE SEQUENCE_NAME LIKE 'org.motechproject.mds.domain.Type';
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 0
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'org.motechproject.mds.domain.ManyToManyRelationship' AND ts.name LIKE 'mds.form.label.cascadePersist';
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 1
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'org.motechproject.mds.domain.ManyToManyRelationship' AND ts.name LIKE 'mds.form.label.cascadeUpdate';
+
+INSERT INTO TYPE_TYPE_SETTING
+SELECT t.id, ts.id, 2
+FROM Type t, TypeSetting ts
+WHERE t.typeClass LIKE 'org.motechproject.mds.domain.ManyToManyRelationship' AND ts.name LIKE 'mds.form.label.cascadeDelete';
+
+-- Old V19
+
+-- This migration changes length of the value column in FieldValidation ---
+
+ALTER TABLE FieldValidation MODIFY value VARCHAR(1024);
+
+-- Old V20
+
+-- adds recordHistory column ---
+
+ALTER TABLE Tracking add recordHistory bit(1) NOT NULL;
+
+-- Old V21
+
+-- clean up auditing columns ---
+
+ALTER TABLE Field DROP COLUMN tracked;
+
+ALTER TABLE Tracking DROP COLUMN allowCreate;
+ALTER TABLE Tracking DROP COLUMN allowRead;
+ALTER TABLE Tracking DROP COLUMN allowUpdate;
+ALTER TABLE Tracking DROP COLUMN allowDelete;
+
+-- Old V22
+-- adds crudEvents columns ---
+
+ALTER TABLE Tracking add allowCreateEvent bit(1) NOT NULL default 0;
+ALTER TABLE Tracking add allowDeleteEvent bit(1) NOT NULL default 0;
+ALTER TABLE Tracking add allowUpdateEvent bit(1) NOT NULL default 0;
+
+-- Old V23
+
+-- Rename Date to java.util.Date and LocalDate to Date
+
+UPDATE Type
+SET displayName = 'mds.field.javaUtilDate'
+WHERE typeClass LIKE 'java.util.Date';
+
+UPDATE Type
+SET displayName = 'mds.field.date',
+defaultName = 'date'
+WHERE typeClass LIKE 'org.joda.time.LocalDate';
+-- Old V24
+
+-- adds tableName column ---
+
+ALTER TABLE Entity ADD tableName varchar(255) DEFAULT NULL;
+
+-- Old V25
+
+-- change default value of the MDS CRUD events and add new flag ---
+
+ALTER TABLE Tracking ALTER allowCreateEvent SET DEFAULT 1;
+ALTER TABLE Tracking ALTER allowDeleteEvent SET DEFAULT 1;
+ALTER TABLE Tracking ALTER allowUpdateEvent SET DEFAULT 1;
+ALTER TABLE Tracking add modifiedByUser bit(1) NOT NULL default 0;
+
+-- Old V26
+-- add new flag to RestOptions---
+
+ALTER TABLE RestOptions add modifiedByUser bit(1) NOT NULL default 0;
+
+-- Old V27
+
+CREATE TABLE RestDocs(
+    id bigint(20) PRIMARY KEY,
+    documentation mediumtext
+);
+-- Old V28
+CREATE TABLE IF NOT EXISTS SchemaChangeLock(
+    id bigint(20) PRIMARY KEY,
+    lockId int(1) UNIQUE
+);
+
+INSERT IGNORE INTO SchemaChangeLock VALUES (1, 1);
+
+-- Old V29
+DROP TABLE IF EXISTS RestDocs;
+
+-- Old V30
+
+-- conditionally adds maxFetchDepth column ---
+
+DROP PROCEDURE IF EXISTS addMaxFetchDepth;
+
+DELIMITER //
+CREATE PROCEDURE addMaxFetchDepth()
+BEGIN
+
+IF NOT EXISTS (SELECT * FROM information_schema.columns WHERE table_name = 'Entity' AND column_name = 'maxFetchDepth') THEN
+
+ALTER TABLE Entity ADD maxFetchDepth bigint(20) DEFAULT NULL;
+
+END IF;
+
+END//
+
+DELIMITER ;
+
+CALL addMaxFetchDepth();
+
+DROP PROCEDURE IF EXISTS addMaxFetchDepth;
+
+-- Old V31
+
+-- adds securityOptionsModified column ---
+
+ALTER TABLE Entity add securityOptionsModified bit(1) NOT NULL default 0;
+
+-- Old V32
+-- adds nonEditable column ---
+
+DELIMITER $$
+CREATE PROCEDURE insert_non_editable_column()
+BEGIN
+    IF NOT EXISTS (SELECT column_name
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE table_schema = DATABASE()
+            AND table_name = 'Field'
+            AND column_name = 'nonEditable')
+    THEN
+        ALTER TABLE Field add nonEditable bit(1) NOT NULL default 0;
+    END IF;
+END
+$$
+
+DELIMITER ;
+CALL insert_non_editable_column();
+DROP PROCEDURE insert_non_editable_column;
+
+-- Old V33
+
+-- Spring Migration!!!
+
+-- Old V34
+
+-- adds nonDisplayable column ---
+
+DELIMITER $$
+CREATE PROCEDURE insert_non_displayable_column()
+BEGIN
+    IF NOT EXISTS (SELECT column_name
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE table_schema = DATABASE()
+            AND table_name = 'Field'
+            AND column_name = 'nonDisplayable')
+    THEN
+        ALTER TABLE Field add nonDisplayable bit(1) NOT NULL default 0;
+    END IF;
+END
+$$
+
+DELIMITER ;
+CALL insert_non_displayable_column();
+DROP PROCEDURE insert_non_displayable_column;
+
+-- Old V35
+
+-- adds placeholder column ---
+
+ALTER TABLE Field ADD placeholder varchar(255) DEFAULT NULL;
+
+-- Old V36
+
+CREATE TABLE MigrationMapping (
+  flywayMigrationVersion int NOT NULL,
+  moduleMigrationVersion int NOT NULL,
+  moduleName varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  PRIMARY KEY (flywayMigrationVersion)
+);
+-- Old V37
+
+--
+-- Change combobox typeClass and defaultName
+--
+
+UPDATE Type
+SET typeClass = 'java.util.Collection', defaultName = 'collection'
+WHERE displayName LIKE 'mds.field.combobox';
+
+-- Old V38
+
+-- adds nonEditable column ---
+
+ALTER TABLE Tracking add nonEditable bit(1) NOT NULL default 0;
+
+-- Old V39
+
+-- adds fieldsOrder column ---
+
+ALTER TABLE Lookup ADD fieldsOrder MEDIUMBLOB DEFAULT NULL;
+
+-- Old V40
+
+-- add readOnlySecurityMembers table and readOnlySecurityMode column in Entity table --
+
+ALTER TABLE Entity ADD readOnlySecurityMode varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL;
+
+CREATE TABLE IF NOT EXISTS Entity_readOnlySecurityMembers (
+  Entity_OID bigint(20) NOT NULL,
+  ReadOnlySecurityMember varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  PRIMARY KEY (Entity_OID, ReadOnlySecurityMember),
+  KEY Entity_readOnlySecurityMembers_N49 (Entity_OID),
+  CONSTRAINT Entity_readOnlySecurityMembers_FK1 FOREIGN KEY (Entity_OID) REFERENCES Entity (id)
+);
+
+-- Old V41
+
+-- adds bundleSymbolicName column ---
+
+ALTER TABLE Entity ADD bundleSymbolicName varchar(255) DEFAULT NULL;
+
+-- Old V42
+
+-- add support for java.time API
+INSERT INTO Type VALUES (21, 'mds.field.description.datetime', 'mds.field.datetime8', 'datetime', 'java.time.LocalDateTime');
+INSERT INTO Type VALUES (22, 'mds.field.description.localDate', 'mds.field.date8', 'localDate', 'java.time.LocalDate');
+-- Old V43
+
+CREATE TABLE IF NOT EXISTS UserPreferences (
+  className varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  username varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  gridRowsNumber int,
+  PRIMARY KEY (className, username)
+);
+
+CREATE TABLE IF NOT EXISTS UserPreferences_selectedFields (
+  className_OID varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  username_OID varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  selectedField bigint(20),
+  IDX int(11),
+  PRIMARY KEY (className_OID, username_OID, IDX),
+  KEY UserPreferences_selectedFields_N49 (selectedField),
+  KEY UserPreferences_selectedFields_N50 (className_OID, username_OID),
+  CONSTRAINT UserPreferences_visibleFields_FK1 FOREIGN KEY (className_OID, username_OID) REFERENCES UserPreferences (className, username),
+  CONSTRAINT UserPreferences_visibleFields_FK2 FOREIGN KEY (selectedField) REFERENCES Field (id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS UserPreferences_unselectedFields (
+  className_OID varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  username_OID varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  unselectedField bigint(20),
+  IDX int(11),
+  PRIMARY KEY (className_OID, username_OID, IDX),
+  KEY UserPreferences_unselectedFields_N49 (unselectedField),
+  KEY UserPreferences_unselectedFields_N50 (className_OID, username_OID),
+  CONSTRAINT UserPreferences_unselectedFields_FK1 FOREIGN KEY (className_OID, username_OID) REFERENCES UserPreferences (className, username),
+  CONSTRAINT UserPreferences_unselectedFields_FK2 FOREIGN KEY (unselectedField) REFERENCES Field (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS ConfigSettings (
+  id bigint(20),
+  afterTimeUnit varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  afterTimeValue int(11),
+  deleteMode varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  emptyTrash bit(1),
+  PRIMARY KEY (id)
+);
+
+ALTER TABLE ConfigSettings add defaultGridSize int DEFAULT 50;
