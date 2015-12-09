@@ -104,5 +104,4 @@ public class MDSInitializer {
     public void setMdsConfig(MdsConfig mdsConfig) {
         this.mdsConfig = mdsConfig;
     }
-
 }
