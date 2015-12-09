@@ -3,7 +3,7 @@ package org.motechproject.mds.it;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.motechproject.mds.domain.BundleFailsReport;
+import org.motechproject.mds.domain.BundleFailureReport;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityAudit;
 import org.motechproject.mds.domain.EntityDraft;
@@ -117,8 +117,8 @@ public abstract class BaseIT {
         return getAll(Lookup.class);
     }
 
-    protected List<BundleFailsReport> getBundleFailsReports() {
-        return getAll(BundleFailsReport.class);
+    protected List<BundleFailureReport> getBundleFailsReports() {
+        return getAll(BundleFailureReport.class);
     }
 
     protected void clearDB() {

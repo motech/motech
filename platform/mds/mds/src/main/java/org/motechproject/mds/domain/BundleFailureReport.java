@@ -10,10 +10,10 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 /**
- * The <code>BundleFailsReport</code> class contains information about an bundle fails.
+ * The <code>BundleFailureReport</code> class contains information about a bundle failure caused by a timeout after MDS schema regeneration.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE)
-public class BundleFailsReport {
+public class BundleFailureReport {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
@@ -29,16 +29,16 @@ public class BundleFailsReport {
     private String bundleSymbolicName;
 
     @Persistent
-    @Column(length = 8096)
+    @Column(sqlType = "CLOB")
     private String errorMessage;
 
     @Persistent
     private BundleRestartStatus bundleRestartStatus;
 
-    public BundleFailsReport() {
+    public BundleFailureReport() {
     }
 
-    public BundleFailsReport(DateTime reportDate, String nodeName, String bundleSymbolicName, String errorMessage, BundleRestartStatus bundleRestartStatus) {
+    public BundleFailureReport(DateTime reportDate, String nodeName, String bundleSymbolicName, String errorMessage, BundleRestartStatus bundleRestartStatus) {
         this.reportDate = reportDate;
         this.nodeName = nodeName;
         this.bundleSymbolicName = bundleSymbolicName;

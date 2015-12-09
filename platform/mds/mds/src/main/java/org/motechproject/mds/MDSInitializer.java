@@ -1,12 +1,10 @@
 package org.motechproject.mds;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.gemini.blueprint.context.event.OsgiBundleApplicationContextListener;
 import org.motechproject.mds.config.MdsConfig;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.osgi.MdsBundleWatcher;
 import org.motechproject.mds.osgi.MdsWeavingHook;
-import org.motechproject.mds.service.MdsOsgiBundleApplicationContextListener;
 import org.motechproject.server.osgi.util.PlatformConstants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.weaving.WeavingHook;
@@ -39,7 +37,6 @@ public class MDSInitializer {
     private EntitiesBundleMonitor monitor;
     private EventAdmin eventAdmin;
     private MdsConfig mdsConfig;
-    private MdsOsgiBundleApplicationContextListener mdsOsgiBundleApplicationContextListener;
 
     @PostConstruct
     public void initMDS() throws IOException {
@@ -76,8 +73,6 @@ public class MDSInitializer {
         eventAdmin.postEvent(new Event(PlatformConstants.MDS_STARTUP_TOPIC, new HashMap<String, Object>()));
 
         LOGGER.info("MOTECH data services initialization complete");
-
-        bundleContext.registerService(OsgiBundleApplicationContextListener.class, mdsOsgiBundleApplicationContextListener, null);
     }
 
     @Autowired
@@ -109,10 +104,4 @@ public class MDSInitializer {
     public void setMdsConfig(MdsConfig mdsConfig) {
         this.mdsConfig = mdsConfig;
     }
-
-    @Autowired
-    public void setMdsOsgiBundleApplicationContextListener(MdsOsgiBundleApplicationContextListener mdsOsgiBundleApplicationContextListener) {
-        this.mdsOsgiBundleApplicationContextListener = mdsOsgiBundleApplicationContextListener;
-    }
-
 }

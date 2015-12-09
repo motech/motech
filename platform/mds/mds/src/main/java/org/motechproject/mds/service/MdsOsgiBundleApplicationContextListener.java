@@ -6,9 +6,9 @@ import org.eclipse.gemini.blueprint.context.event.OsgiBundleContextFailedEvent;
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleContextRefreshedEvent;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.config.SettingsService;
-import org.motechproject.mds.domain.BundleFailsReport;
+import org.motechproject.mds.domain.BundleFailureReport;
 import org.motechproject.mds.domain.BundleRestartStatus;
-import org.motechproject.mds.repository.AllBundleFailsReports;
+import org.motechproject.mds.repository.AllBundleFailureReports;
 import org.motechproject.server.osgi.event.OsgiEventProxy;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jdo.JdoTransactionManager;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -32,12 +32,12 @@ import java.util.Set;
  * The <code>MdsOsgiBundleApplicationContextListener</code> acts as an listener for Blueprint events to get notified about
  * modules being started or failing. When the module failing then it will be automatically restarted.
  */
-@Component
+@Service("mdsOsgiBundleApplicationContextListener")
 public class MdsOsgiBundleApplicationContextListener implements OsgiBundleApplicationContextListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MdsOsgiBundleApplicationContextListener.class);
-    private static final String WARN_MESSAGE= "%s failed to start but it was successfully restarted.";
-    private static final String CRITICAL_MESSAGE= "%s failed to start and the MDS module was unable to restart it.";
+    private static final String RESTART_SUCCESS_WARN_MSG= "%s failed to start but it was successfully restarted.";
+    private static final String RESTART_FAILURE_CRIT_MSG= "%s failed to start and the MDS module was unable to restart it.";
 
     public static final String MESSAGE_SUBJECT = "org.motechproject.message";
     public static final String MESSAGE_KEY = "message";
@@ -46,7 +46,7 @@ public class MdsOsgiBundleApplicationContextListener implements OsgiBundleApplic
     public static final String TIMEOUT_EXCEPTION_MESSAGE = "Application context initialization for '%s' has timed out waiting for";
 
     private Set<String> restartedBundles = new HashSet<>();
-    private AllBundleFailsReports allBundleFailsReports;
+    private AllBundleFailureReports allBundleFailureReports;
     private JdoTransactionManager transactionManager;
     private OsgiEventProxy osgiEventProxy;
     private SettingsService settingsService;
@@ -85,13 +85,12 @@ public class MdsOsgiBundleApplicationContextListener implements OsgiBundleApplic
                     LOGGER.error("Cannot restart {} bundle due to {}", symbolicName, e);
                 }
             } else {
-                OsgiBundleContextFailedEvent failedEvent = (OsgiBundleContextFailedEvent) event;
-                LOGGER.error("Cannot restart {} bundle due to {}", symbolicName, failedEvent.getFailureCause().getMessage());
-                sendMessage("CRITICAL", String.format(CRITICAL_MESSAGE, symbolicName));
+                LOGGER.error("cannot restart {} bundle since it we already attempted it.", symbolicName);
+                sendMessage("CRITICAL", String.format(RESTART_FAILURE_CRIT_MSG, symbolicName));
                 updateReportStatus(symbolicName, BundleRestartStatus.ERROR);
             }
         } else if (event instanceof OsgiBundleContextRefreshedEvent && restartedBundles.contains(symbolicName) ) {
-            sendMessage("WARN", String.format(WARN_MESSAGE, symbolicName));
+            sendMessage("WARN", String.format(RESTART_SUCCESS_WARN_MSG, symbolicName));
             updateReportStatus(symbolicName, BundleRestartStatus.SUCCESS);
             restartedBundles.remove(symbolicName);
         }
@@ -120,7 +119,7 @@ public class MdsOsgiBundleApplicationContextListener implements OsgiBundleApplic
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                allBundleFailsReports.create(new BundleFailsReport(DateUtil.now(), getNodeName(), symbolicName, failureCauseMsg, bundleRestartStatus));
+                allBundleFailureReports.create(new BundleFailureReport(DateUtil.now(), getNodeName(), symbolicName, failureCauseMsg, bundleRestartStatus));
             }
         });
     }
@@ -131,11 +130,11 @@ public class MdsOsgiBundleApplicationContextListener implements OsgiBundleApplic
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 // We retrieve the last fail report
-                BundleFailsReport report = allBundleFailsReports.getLastInProgressReport(getNodeName(), symbolicName);
+                BundleFailureReport report = allBundleFailureReports.getLastInProgressReport(getNodeName(), symbolicName);
 
                 if (report != null) {
                     report.setBundleRestartStatus(bundleRestartStatus);
-                    allBundleFailsReports.update(report);
+                    allBundleFailureReports.update(report);
                 }
             }
         });
@@ -153,8 +152,8 @@ public class MdsOsgiBundleApplicationContextListener implements OsgiBundleApplic
     }
 
     @Autowired
-    public void setAllBundleFailsReports(AllBundleFailsReports allBundleFailsReports) {
-        this.allBundleFailsReports = allBundleFailsReports;
+    public void setAllBundleFailureReports(AllBundleFailureReports allBundleFailureReports) {
+        this.allBundleFailureReports = allBundleFailureReports;
     }
 
     @Autowired

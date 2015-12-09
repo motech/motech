@@ -1,7 +1,7 @@
 package org.motechproject.mds.repository;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.motechproject.mds.domain.BundleFailsReport;
+import org.motechproject.mds.domain.BundleFailureReport;
 import org.motechproject.mds.domain.BundleRestartStatus;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Order;
@@ -10,20 +10,20 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * The <code>AllBundleFailsReports</code> class is a repository class that operates on instances of
- * {@link org.motechproject.mds.domain.BundleFailsReport}.
+ * The <code>AllBundleFailureReports</code> class is a repository class that operates on instances of
+ * {@link BundleFailureReport}.
  */
 @Repository
-public class AllBundleFailsReports extends MotechDataRepository<BundleFailsReport> {
+public class AllBundleFailureReports extends MotechDataRepository<BundleFailureReport> {
 
     private static final String[] PROPERTIES = new String[] { "nodeName", "bundleSymbolicName", "bundleRestartStatus"};
 
-    protected AllBundleFailsReports() {
-        super(BundleFailsReport.class);
+    protected AllBundleFailureReports() {
+        super(BundleFailureReport.class);
     }
 
-    public BundleFailsReport getLastInProgressReport(String nodeName, String symbolicName) {
-        List<BundleFailsReport> reportList = retrieveAll(PROPERTIES, new Object[] { nodeName, symbolicName, BundleRestartStatus.IN_PROGRESS },
+    public BundleFailureReport getLastInProgressReport(String nodeName, String symbolicName) {
+        List<BundleFailureReport> reportList = retrieveAll(PROPERTIES, new Object[] { nodeName, symbolicName, BundleRestartStatus.IN_PROGRESS },
                 new QueryParams(1, 1, new Order("reportDate", Order.Direction.DESC)), null);
 
         if (CollectionUtils.isNotEmpty(reportList)) {
