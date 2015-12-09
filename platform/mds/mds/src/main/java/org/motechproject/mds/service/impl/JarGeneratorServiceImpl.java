@@ -173,6 +173,12 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
             // In case of some core bundles, we must first stop some modules in order to avoid problems during refresh
             stopModulesForCoreBundleRefresh(moduleNames);
 
+            try {
+                monitor.start(dest, false);
+            } finally {
+                FileUtils.deleteQuietly(tmpBundleFile);
+            }
+
             // We must clear module names which was restarted after failing
             mdsOsgiBundleApplicationContextListener.clearBundlesSet();
             refreshModules(moduleNames);
