@@ -66,9 +66,7 @@ public class MotechDelegatingFilterProxy extends DelegatingFilterProxy {
         WebApplicationContext context = super.findWebApplicationContext();
         MotechProxyManager proxyManager = context.getBean(MotechProxyManager.class);
 
-        if (request instanceof HttpServletRequest) {
-            traceRequest((HttpServletRequest) request);
-        }
+        traceRequest(request);
 
         if (isAdminMode) {
             anonymousFilter.doFilter(request, response, filterChain);
@@ -107,12 +105,19 @@ public class MotechDelegatingFilterProxy extends DelegatingFilterProxy {
         return adminModeProperty;
     }
 
-    private void traceRequest(HttpServletRequest req) {
-        LOGGER.trace("HTTP request {} received from {}", req.getPathInfo(), req.getRemoteAddr());
-        if (req.getSession() != null && req.getSession().getAttribute("SPRING_SECURITY_CONTEXT") != null) {
-            SecurityContext securityContext = (SecurityContext) req.getSession().getAttribute("SPRING_SECURITY_CONTEXT");
-            LOGGER.trace("Session for request {} contains security context. Username: {}; Permissions: {} ",
-                    req.getPathInfo(), securityContext.getAuthentication().getName(), securityContext.getAuthentication().getAuthorities());
+    private void traceRequest(ServletRequest req) {
+        if (req instanceof HttpServletRequest) {
+            HttpServletRequest request = (HttpServletRequest) req;
+            LOGGER.trace("HTTP request {} received from {}", request.getPathInfo(), req.getRemoteAddr());
+            if (request.getSession() != null && request.getSession().getAttribute("SPRING_SECURITY_CONTEXT") != null) {
+                SecurityContext securityContext = (SecurityContext) request.getSession().getAttribute("SPRING_SECURITY_CONTEXT");
+                LOGGER.trace("Session for request {} contains security context. Username: {}; Permissions: {} ",
+                        request.getPathInfo(), securityContext.getAuthentication().getName(), securityContext.getAuthentication().getAuthorities());
+            } else {
+                LOGGER.trace("No session found for request {}", request.getPathInfo());
+            }
+        } else {
+            LOGGER.trace("Request received from {}", req.getRemoteAddr());
         }
     }
 
