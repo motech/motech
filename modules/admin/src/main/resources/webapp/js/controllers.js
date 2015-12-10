@@ -127,10 +127,13 @@
         $scope.modules[$scope.mavenStr('sms')] = 'SMS';
 
         $scope.module = "";
-        $scope.bundle = undefined;
 
-        $scope.selectBundle = function (bundle) {
-            $scope.bundle = bundle;
+        $scope.stopBundleModal = function (bundle) {
+            $('#stopBundleModal').on('show.bs.modal', function() {
+                $scope.bundle = bundle;
+            }).on('hide.bs.modal', function () {
+                $scope.bundle = undefined;
+            }).modal('show');
         };
 
         $scope.stopBundle = function (bundle) {
@@ -174,35 +177,38 @@
             });
         };
 
-        $scope.closeRemoveBundleModal = function () {
-            $('#removeBundleModal').modal('hide');
-            $scope.bundle = undefined;
+        $scope.uninstallBundleModal = function (bundle) {
+            $('#removeBundleModal').on('show.bs.modal', function () {
+                $scope.bundle = bundle;
+            }).on('hide.bs.modal', function () {
+                $scope.bundle = undefined;
+            }).modal('show');
         };
 
-        $scope.uninstallBundle = function (withConfig) {
-            $('#removeBundleModal').modal('hide');
-            var oldState = $scope.bundle.state;
-            $scope.bundle.state = LOADING_STATE;
+        $scope.uninstallBundle = function (bundle, withConfig) {
+            blockUI();
+            var oldState = bundle.state;
+            bundle.state = LOADING_STATE;
             if (withConfig) {
-                $scope.bundle.$uninstallWithConfig(function () {
+                bundle.$uninstallWithConfig(function () {
                     // remove bundle from list
-                    $scope.bundles.removeObject($scope.bundle);
+                    $scope.bundles.removeObject(bundle);
                     $scope.refreshModuleList();
                     unblockUI();
                 }, function () {
                     motechAlert('admin.bundles.error.uninstall', 'admin.error');
-                    $scope.bundle.state = oldState;
+                    bundle.state = oldState;
                     unblockUI();
                 });
             } else {
                 $scope.bundle.$uninstall(function () {
                     // remove bundle from list
-                    $scope.bundles.removeObject($scope.bundle);
+                    $scope.bundles.removeObject(bundle);
                     $scope.refreshModuleList();
                     unblockUI();
                 }, function () {
                     motechAlert('admin.bundles.error.uninstall', 'admin.error');
-                    $scope.bundle.state = oldState;
+                    bundle.state = oldState;
                     unblockUI();
                 });
             }
