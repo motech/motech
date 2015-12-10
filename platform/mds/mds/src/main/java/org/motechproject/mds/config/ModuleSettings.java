@@ -14,12 +14,14 @@ public class ModuleSettings {
     public static final Integer DEFAULT_TIME_VALUE = 1;
     public static final TimeUnit DEFAULT_TIME_UNIT = TimeUnit.HOURS;
     public static final Integer DEFAULT_GRID_SIZE = 50;
+    public static final Boolean DEFAULT_BUNDLE_RESTART = false;
 
     private DeleteMode deleteMode;
     private Boolean emptyTrash;
     private Integer timeValue;
     private TimeUnit timeUnit;
     private Integer gridSize;
+    private Boolean refreshModuleAfterTimeout;
 
     public ModuleSettings() {
     }
@@ -83,9 +85,20 @@ public class ModuleSettings {
         return gridSize;
     }
 
+    public Boolean isRestartModuleAfterTimeout() {
+        if (refreshModuleAfterTimeout == null) {
+            return DEFAULT_BUNDLE_RESTART;
+        }
+        return refreshModuleAfterTimeout;
+    }
+
+    public void setRestartModuleAfterTimeout(Boolean refreshModuleAfterTimeout) {
+        this.refreshModuleAfterTimeout = refreshModuleAfterTimeout == null ? DEFAULT_BUNDLE_RESTART : refreshModuleAfterTimeout;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(getDeleteMode(), isEmptyTrash(), getTimeValue(), getTimeUnit(), getGridSize());
+        return Objects.hash(getDeleteMode(), isEmptyTrash(), getTimeValue(), getTimeUnit(), getGridSize(), isRestartModuleAfterTimeout());
     }
 
     @Override
@@ -104,6 +117,7 @@ public class ModuleSettings {
                 && Objects.equals(this.isEmptyTrash(), other.isEmptyTrash())
                 && Objects.equals(this.getTimeValue(), other.getTimeValue())
                 && Objects.equals(this.getTimeUnit(), other.getTimeUnit())
-                && Objects.equals(this.getGridSize(), other.getGridSize());
+                && Objects.equals(this.getGridSize(), other.getGridSize())
+                && Objects.equals(this.isRestartModuleAfterTimeout(), other.isRestartModuleAfterTimeout());
     }
 }
