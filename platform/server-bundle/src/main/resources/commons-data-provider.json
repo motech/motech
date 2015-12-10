@@ -1,0 +1,31 @@
+{
+    "name":"MOTECH Commons",
+    "objects": [
+        {
+            "displayName":"server.provider.displayName",
+            "type":"PlatformCommons",
+            "lookupFields": [
+                {
+                    "displayName": "server.provider.lookupDisplayName",
+                    "fields": []
+                }
+            ],
+            "fields":[
+                {
+                    "displayName": "server.provider.motechVersion",
+                    "fieldKey": "motechVersion"
+                },
+                {
+                    "displayName": "server.provider.datetimenow",
+                    "fieldKey": "now",
+                    "type": "DATE"
+                },
+                {
+                    "displayName": "server.provider.today",
+                    "fieldKey": "today",
+                    "type": "DATE"
+                }
+            ]
+        }
+    ]
+}

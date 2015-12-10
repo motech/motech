@@ -30,3 +30,11 @@ Developing and Submitting Your Code
 #. Generate a pull request from your forked repository and our team will review it.
 #. Please incorporate code review feedback and update your pull request as needed. Once your change has passed code review, one of the project maintainers will merge your change to the repo.
 #. Resolve the relevant issue(s) in Jira.
+
+Developing and Contributing Your Module
+=======================================
+#. If you have your own module that you would like to contribute, let us know by sending email on motech-dev@googlegroups.com (or post on our `mailing list <https://groups.google.com/forum/?fromgroups#!forum/motech-dev>`_). It should contain basic information about your module, such as description, what the module does, if it needs any external configuration and how to test it properly.
+#. We will create a Jira issue with high priority for reviewing the module. It will be reviewed and discussed on our weekly call.
+#. The Jira issue will be assigned to someone, who will work with the contributor to fix any possible issues. At this time only major bugs or blocking issues will be addressed. Minor issues will get their own Jira tickets and will be resolved in later time, depending on the priority we assign them.
+#. When the module is ready, we will fork it to the `Community Modules Repository <https://github.com/motech-community-modules>`_ and we will give the contributor rights to administer his module.
+#. Note that we can reject a module contribution if we deem it improper to maintain it on our side. In case of any further questions feel free to ask on our mailing list.

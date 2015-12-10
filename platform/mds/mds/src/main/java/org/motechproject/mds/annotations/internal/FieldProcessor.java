@@ -16,8 +16,6 @@ import org.motechproject.mds.domain.ManyToManyRelationship;
 import org.motechproject.mds.domain.ManyToOneRelationship;
 import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
-import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -25,17 +23,16 @@ import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.dto.TypeValidationDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.ex.field.EnumFieldAccessException;
 import org.motechproject.mds.reflections.ReflectionsUtil;
-import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MemberUtil;
 import org.motechproject.mds.util.PropertyUtil;
+import org.motechproject.mds.util.TypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
@@ -109,8 +106,6 @@ import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
 class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     private static final Logger LOGGER = LoggerFactory.getLogger(FieldProcessor.class);
 
-    private TypeService typeService;
-    private EntityService entityService;
     private List<FieldDto> cachedFields;
     private String cachedClassname;
 
@@ -246,10 +241,10 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
         if (!StringUtils.equals(cachedClassname, className)) {
 
-            EntityDto entityDto = entityService.getEntityByClassName(className);
+            EntityDto entityDto = getSchemaHolder().getEntityByClassName(className);
 
             if (entityDto != null) {
-                cachedFields = entityService.getEntityFields(entityDto.getId());
+                cachedFields = getSchemaHolder().getFields(entityDto);
             } else {
                 cachedFields = new ArrayList<>();
             }
@@ -374,20 +369,20 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         if (isRelationship) {
 
             if (isCollection && relatedFieldIsCollection) {
-                type = typeService.findType(ManyToManyRelationship.class);
+                type = getSchemaHolder().getType(ManyToManyRelationship.class);
             } else if (isCollection) {
-                type = typeService.findType(OneToManyRelationship.class);
+                type = getSchemaHolder().getType(OneToManyRelationship.class);
             } else if (relatedFieldIsCollection) {
                 // a collection is mapped by this field
-                type = typeService.findType(ManyToOneRelationship.class);
+                type = getSchemaHolder().getType(ManyToOneRelationship.class);
             } else {
                 // its one to one
-                type = typeService.findType(OneToOneRelationship.class);
+                type = getSchemaHolder().getType(OneToOneRelationship.class);
             }
         } else if (isCollection || classType.isEnum()) {
-            type = typeService.findType(Collection.class);
+            type = getSchemaHolder().getType(Collection.class);
         } else {
-            type = typeService.findType(classType);
+            type = getSchemaHolder().getType(classType);
         }
 
         return type;
@@ -395,16 +390,6 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
     @Override
     protected void afterExecution() {
-    }
-
-    @Autowired
-    public void setTypeService(TypeService typeService) {
-        this.typeService = typeService;
-    }
-
-    @Autowired
-    public void setEntityService(EntityService entityService) {
-        this.entityService = entityService;
     }
 
     public void setEntity(EntityDto entity) {
@@ -516,11 +501,12 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         FieldValidationDto validationDto = null;
 
         for (Annotation annotation : ac.getAnnotations()) {
-            List<TypeValidation> validations = typeService.findValidations(type, annotation.annotationType());
+            List<TypeValidationDto> validations = getSchemaHolder().findValidations(type.getTypeClass(),
+                    annotation.annotationType());
 
-            for (TypeValidation validation : validations) {
+            for (TypeValidationDto validation : validations) {
                 String displayName = validation.getDisplayName();
-                Type valueType = typeService.getType(validation);
+                TypeDto valueType = getSchemaHolder().getType(validation.getValueType());
 
                 if (null == valueType) {
                     throw new IllegalStateException("The valueType is not set in: " + validation);
@@ -533,11 +519,11 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
                     valueAsString = valueAsString.replaceAll("(\\{|\\})", "");
                 }
 
-                Object value = valueType.parse(valueAsString);
+                Object value = TypeHelper.parse(valueAsString, valueType.getClassObjectForType());
 
                 ValidationCriterionDto dto = new ValidationCriterionDto();
                 dto.setDisplayName(displayName);
-                dto.setType(valueType.toDto());
+                dto.setType(valueType);
                 dto.setEnabled(true);
                 dto.setValue(value);
 

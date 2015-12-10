@@ -1,6 +1,7 @@
 package org.motechproject.mds.dto;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.util.List;
 import java.util.Objects;
@@ -49,6 +50,7 @@ public class LookupFieldDto {
         this.relatedName = relatedName;
     }
 
+    @JsonIgnore
     public String getLookupFieldName() {
         if (StringUtils.isNotBlank(getRelatedName())) {
             return getName() + "." + getRelatedName();

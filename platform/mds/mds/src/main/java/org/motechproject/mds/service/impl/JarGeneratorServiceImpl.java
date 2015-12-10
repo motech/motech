@@ -7,19 +7,18 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.app.VelocityEngine;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.commons.api.ThreadSuspender;
-import org.motechproject.mds.MDSDataProvider;
+import org.motechproject.mds.tasks.MDSDataProvider;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
-import org.motechproject.mds.domain.EntityInfo;
-import org.motechproject.mds.domain.FieldInfo;
+import org.motechproject.mds.entityinfo.EntityInfo;
+import org.motechproject.mds.entityinfo.FieldInfo;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
-import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.SchemaHolder;
-import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.dto.UIDisplayFieldComparator;
 import org.motechproject.mds.event.CrudEventBuilder;
 import org.motechproject.mds.ex.MdsException;
@@ -30,6 +29,7 @@ import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.JdoListenerRegistryService;
+import org.motechproject.mds.service.MdsOsgiBundleApplicationContextListener;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.JavassistUtil;
 import org.motechproject.osgi.web.util.BundleHeaders;
@@ -44,6 +44,7 @@ import org.osgi.framework.wiring.FrameworkWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
@@ -54,6 +55,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -81,8 +83,6 @@ import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_MANIFESTVERSI
 import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_NAME_SUFFIX;
 import static org.motechproject.mds.util.Constants.Manifest.MANIFEST_VERSION;
 import static org.motechproject.mds.util.Constants.PackagesGenerated;
-import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED;
-import static org.motechproject.mds.util.Constants.Util.TRUE;
 
 /**
  * Default implementation of {@link org.motechproject.mds.service.JarGeneratorService} interface.
@@ -102,6 +102,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private MDSDataProvider mdsDataProvider;
     private EntitiesBundleMonitor monitor;
     private BundleContext bundleContext;
+    private MdsOsgiBundleApplicationContextListener mdsOsgiBundleApplicationContextListener;
+
     private final Object lock = new Object();
     private boolean moduleRefreshed;
 
@@ -177,6 +179,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                 FileUtils.deleteQuietly(tmpBundleFile);
             }
 
+            // We must clear module names which was restarted after failing
+            mdsOsgiBundleApplicationContextListener.clearBundlesSet();
             refreshModules(moduleNames);
 
             if (startBundle) {
@@ -309,7 +313,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                     List<FieldDto> fields = schemaHolder.getFields(entity);
                     AdvancedSettingsDto advancedSettings = schemaHolder.getAdvancedSettings(entity);
 
-                    EntityInfo info = buildEntityInfo(classData, entity, fields, advancedSettings);
+                    EntityInfo info = buildEntityInfo(entity, fields, advancedSettings);
 
                     // we keep the name to construct a file containing all entity names
                     // the file is required for schema generation
@@ -353,44 +357,20 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
             addEntries(output, blueprint, context, channel, entityNamesSb.toString(), historyEntitySb.toString(),
                     entityWithListenersNames);
+            addEntityInfoFiles(output, information);
 
             return tempFile.toFile();
         }
     }
 
-    private EntityInfo buildEntityInfo(ClassData classData, EntityDto entity, List<FieldDto> fields,
-                                       AdvancedSettingsDto advancedSettings) {
+    private EntityInfo buildEntityInfo(EntityDto entity, List<FieldDto> fields, AdvancedSettingsDto advancedSettings) {
         EntityInfo info = new EntityInfo();
 
-        info.setClassName(classData.getClassName());
-        info.setModule(classData.getModule());
-        info.setNamespace(classData.getNamespace());
-
+        info.setEntity(entity);
+        info.setAdvancedSettings(advancedSettings);
         info.setFieldsInfo(getFieldsInfo(entity, fields, advancedSettings));
-        info.setEntityName(entity.getName());
-        setAllowedEvents(info, advancedSettings);
-        updateRestOptions(info, advancedSettings);
 
         return info;
-    }
-
-    private void updateRestOptions(EntityInfo info, AdvancedSettingsDto advancedSettings) {
-        RestOptionsDto restOptions = advancedSettings.getRestOptions();
-
-        if (restOptions != null) {
-            info.setRestCreateEnabled(restOptions.isCreate());
-            info.setRestReadEnabled(restOptions.isRead());
-            info.setRestUpdateEnabled(restOptions.isUpdate());
-            info.setRestDeleteEnabled(restOptions.isDelete());
-        }
-    }
-
-    private void setAllowedEvents(EntityInfo info, AdvancedSettingsDto advancedSettings) {
-        TrackingDto tracking = advancedSettings.getTracking();
-
-        info.setCreateEventFired(tracking.isAllowCreateEvent());
-        info.setUpdateEventFired(tracking.isAllowUpdateEvent());
-        info.setDeleteEventFired(tracking.isAllowDeleteEvent());
     }
 
     private void addEntries(JarOutputStream output, String blueprint, String context, String channel,
@@ -406,6 +386,16 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         addEntry(output, DATANUCLEUS_PROPERTIES);
         addEntry(output, MOTECH_MDS_PROPERTIES);
         addEntry(output, VALIDATION_PROVIDER);
+    }
+
+    private void addEntityInfoFiles(JarOutputStream output, List<EntityInfo> entityInfos) throws IOException {
+        final ObjectMapper objectMapper = new ObjectMapper();
+
+        for (EntityInfo entityInfo : entityInfos) {
+            String asJson = objectMapper.writeValueAsString(entityInfo);
+            addEntry(output, ENTITY_INFO_DIR + entityInfo.getClassName() + ".json",
+                    asJson.getBytes(Charset.forName("UTF-8")));
+        }
     }
 
     private boolean addClass(JarOutputStream output, String name) {
@@ -576,10 +566,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         for (FieldDto field : fields) {
             FieldInfo fieldInfo = new FieldInfo();
 
-            fieldInfo.setName(field.getBasic().getName());
-            fieldInfo.setDisplayName(field.getBasic().getDisplayName());
-            fieldInfo.setRequired(field.getBasic().isRequired());
-            fieldInfo.setAutoGenerated(TRUE.equals(field.getMetadataValue(AUTO_GENERATED)));
+            fieldInfo.setField(field);
 
             boolean exposedByRest = advancedSettings.isFieldExposedByRest(field.getBasic().getName());
             fieldInfo.setRestExposed(exposedByRest);
@@ -685,5 +672,11 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     @Autowired
     public void setListenerRegistryService(JdoListenerRegistryService jdoListenerRegistryService) {
         this.jdoListenerRegistryService = jdoListenerRegistryService;
+    }
+
+    @Autowired
+    @Qualifier("mdsOsgiBundleApplicationContextListener")
+    public void setMdsOsgiBundleApplicationContextListener(MdsOsgiBundleApplicationContextListener mdsOsgiBundleApplicationContextListener) {
+        this.mdsOsgiBundleApplicationContextListener = mdsOsgiBundleApplicationContextListener;
     }
 }

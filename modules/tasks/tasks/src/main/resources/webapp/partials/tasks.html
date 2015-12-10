@@ -11,43 +11,7 @@
     <div class="clearfix">
         <div class="tasks-list" id="task-list" ng-show="allTasks.length != 0">
             <div ng-repeat="item in pagedItems[currentPage]">
-
-                <div class="task-list-group" ng-hide="item.task.hasRegisteredChannel" style="overflow: auto">
-                    <div class="task-bar channel-deregistered">
-                        <ul class="task-nav">
-                            <li class="task-element">
-                                <div trigger-popover>
-                                    <img ng-src="../tasks/api/channel/icon?moduleName={{item.task.trigger.moduleName}}" class="task-list-img" />
-                                </div>
-                            </li>
-                            <li class="task-element"><img src="../tasks/img/arrow.png" class="task-list-img-arrow"/></li>
-                            <li class="task-element">
-                                <div actions-popover>
-                                    <img ui-if="item.task.actions.length == 1" ng-src="../tasks/api/channel/icon?moduleName={{item.task.actions[0].moduleName}}" class="task-list-img"/>
-                                    <i ui-if="item.task.actions.length > 1" class="fa fa-fw fa-lg fa-bars task-list-img" style="vertical-align: middle;"></i>
-                                </div>
-                            </li>
-                            <li class="divider-vertical"></li>
-                            <li class="task-element pointer task-status task-long-name">
-                                <i class="fa fa-fw fa-lg fa-caret-right i-name" style="visibility: hidden"></i>
-                                <span title="{{item.task.name}}">&nbsp;{{item.task.name}}</span>
-                            </li>
-                        </ul>
-                        <ul class="task-nav pull-right">
-                            <li class="task-element task-paused">
-                                <div class="task-list-button-activity">
-                                    <div class="task-list-text-activity">{{msg('task.channel.deregistered')}}</div>
-                                    <div class="task-list-div-activity"><img class="task-list-img-activity" src="../tasks/img/task-paused.png" /></div>
-                                </div>
-                            </li>
-                            <li class="divider-vertical"></li>
-                            <li class="task-element"><img src="../tasks/img/task-settings-paused.png" class="task-list-img" /></li>
-                        </ul>
-                        <div class="clearfix"></div>
-                    </div>
-                </div>
-
-                <div class="task-list-group" ng-show="item.task.hasRegisteredChannel">
+                <div class="task-list-group">
                     <div class="panel-heading inbox-header" ng-class="{true:'', false:'paused'}[item.task.enabled]">
                         <div class="task-bar" expand-accordion>
                             <a class="accordion-toggle" data-toggle="collapse" data-parent="#task-list" target="_self" href="#collapse3{{$index}}">
@@ -71,21 +35,26 @@
                                     </li>
                                 </ul>
                             </a>
-
                             <ul class="task-nav pull-right">
                                 <li ng-show="item.task.description && item.task.enabled" class="task-element" rel="popover" bs-popover="{{item.task.description}}" data-trigger="hover" data-placement="left"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
                                 <li ng-show="item.task.description && !item.task.enabled"  class="task-element" bs-popover="{{item.task.description}}" data-trigger="hover" data-placement="left"><img src="../tasks/img/task-info-paused.png"  class="task-list-img" /></li>
                                 <li ng-show="item.task.description" class="divider-vertical"></li>
-                                <li ng-hide="item.task.enabled" class="task-element task-paused">
+                                <li ng-show="!item.task.enabled && item.task.hasRegisteredChannel" class="task-element task-paused">
                                     <div class="task-list-button-activity">
                                         <div class="task-list-text-activity">{{msg('task.paused')}}</div>
                                         <div class="task-list-div-activity"><img class="task-list-img-activity" src="../tasks/img/task-paused.png" /></div>
                                     </div>
                                 </li>
-                                <li ng-show="item.task.enabled" class="task-element task-active">
+                                <li ng-show="item.task.enabled && item.task.hasRegisteredChannel" class="task-element task-active">
                                     <div class="task-list-button-activity">
                                         <div class="task-list-div-activity"><img class="task-list-img-activity" src="../tasks/img/task-active.png" /></div>
                                         <div class="task-list-text-activity">{{msg('task.active')}}</div>
+                                    </div>
+                                </li>
+                                <li ng-show="!item.task.hasRegisteredChannel" class="task-element task-paused">
+                                    <div class="task-list-button-activity">
+                                        <div class="task-list-text-activity">{{msg('task.channel.deregistered')}}</div>
+                                        <div class="task-list-div-activity"><img class="task-list-img-activity" src="../tasks/img/task-paused.png" /></div>
                                     </div>
                                 </li>
                                 <li class="divider-vertical"></li>

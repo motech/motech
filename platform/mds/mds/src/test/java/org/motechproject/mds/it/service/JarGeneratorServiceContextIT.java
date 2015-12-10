@@ -130,9 +130,13 @@ public class JarGeneratorServiceContextIT extends BaseIT {
         expected.addAll(asList(JarGeneratorService.BLUEPRINT_XML, JarGeneratorService.DATANUCLEUS_PROPERTIES,
                 JarGeneratorService.MDS_COMMON_CONTEXT, JarGeneratorService.MDS_ENTITIES_CONTEXT,
                 JarGeneratorService.MOTECH_MDS_PROPERTIES, JarGeneratorService.PACKAGE_JDO,
-                JarGeneratorService.ENTITY_LIST_FILE,  JarGeneratorService.HISTORY_LIST_FILE,
+                JarGeneratorService.ENTITY_LIST_FILE, JarGeneratorService.HISTORY_LIST_FILE,
                 JarGeneratorService.LISTENER_LIST_FILE, JarGeneratorService.VALIDATION_PROVIDER,
                 JarGeneratorService.TASK_CHANNEL_JSON));
+        expected.add(JarGeneratorService.ENTITY_INFO_DIR + BAR_CLASS + ".json");
+        expected.add(JarGeneratorService.ENTITY_INFO_DIR + FOO_CLASS + ".json");
+        expected.add(JarGeneratorService.ENTITY_INFO_DIR + SAMPLE_CLASS + ".json");
+        expected.add(JarGeneratorService.ENTITY_INFO_DIR + EXAMPLE_CLASS + ".json");
 
         JarEntry entry = input.getNextJarEntry();
         List<String> actual = new ArrayList<>(8);
