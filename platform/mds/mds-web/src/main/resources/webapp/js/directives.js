@@ -3154,13 +3154,4 @@
             });
         };
     });
-
-    directives.directive('periodModal', function($http, $templateCache, $compile) {
-        return function(scope, element, attrs) {
-            $http.get('../mds/resources/partials/widgets/period-modal.html', { cache: $templateCache }).success(function(response) {
-                var contents = element.html(response).contents();
-                element.replaceWith($compile(contents)(scope));
-            });
-        };
-    });
 }());

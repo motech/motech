@@ -484,6 +484,37 @@
                         });
                     },
                     setParsingPeriod = function () {
+                        periodSliders = elem.parent().find("#period-slider > div");
+                        periodSlider = elem.parent().find("#period-slider");
+                        periodSliders.each(function(index) {
+                            var getValueSettings, valueName = (this.id);
+                            valueName = valueName.substring(valueName.lastIndexOf('-') + 1);
+                            getValueSettings = function (param1, param2) {
+                                var result, resultVal = '';
+                                $.each( param1, function( key, value) {
+                                    if (key === param2){
+                                        result = true;
+                                        resultVal = value;
+                                    } else {
+                                        result = false;
+                                    }
+                                return (!result);
+                                });
+                            return resultVal;
+                            };
+
+                            $( this ).empty().slider({
+                                value: getValueSettings([year, month, week, day, hour, minute, second], valueName),
+                                range: "min",
+                                min: 0,
+                                max: getValueSettings(sliderMax, valueName),
+                                animate: true,
+                                orientation: "horizontal",
+                                slide: refreshPeriod,
+                                change: refreshPeriod
+                            });
+                            periodSlider.children( "#amount-period-" + valueName ).val( $( this ).slider( "value" ) );
+                        });
                         var valueElement = elem.val(), valueDate, valueTime, fieldId = elem.attr('mds-field-id'),
                         checkValue = function (param) {
                             if(isNaN(param) || param === null || param === '' || param === undefined) {
@@ -558,7 +589,7 @@
                         periodSlider.children( "#amount-period-minute" ).val( minute );
                         periodSlider.children( "#amount-period-second" ).val( second );
 
-                        periodSlider.children( "#period-year" ).slider( "value", year);
+                        periodSlider.children( "#period-year" ).slider("value", year);
                         periodSlider.children( "#period-month" ).slider( "value", month);
                         periodSlider.children( "#period-week" ).slider( "value", week);
                         periodSlider.children( "#period-day" ).slider( "value", day);
@@ -623,6 +654,15 @@
                         }
                     });
                 }
+            };
+        });
+
+        widgetModule.directive('periodModal', function($http, $templateCache, $compile) {
+            return function(scope, element, attrs) {
+                $http.get('../server/resources/partials/period-modal.html', { cache: $templateCache }).success(function(response) {
+                    var contents = element.html(response).contents();
+                    element.replaceWith($compile(contents)(scope));
+                });
             };
         });
 
