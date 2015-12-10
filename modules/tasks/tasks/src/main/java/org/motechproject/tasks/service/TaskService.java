@@ -4,12 +4,14 @@ import org.motechproject.commons.api.TasksEventParser;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
+import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Service interface for managing tasks.
@@ -17,11 +19,13 @@ import java.util.List;
 public interface TaskService {
 
     /**
-     * Saves the given task in the database.
+     * Saves the given task in the database and returns the list
+     * of errors that will occur when enabling task.
      *
      * @param task  the task to be saved, not null
+     * @return list of task errors
      */
-    void save(final Task task);
+    Set<TaskError> save(final Task task);
 
     /**
      * Returns the action event that matches the given information about the task action.

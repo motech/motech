@@ -4,23 +4,29 @@ import javassist.CtClass;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.mds.builder.MDSConstructor;
+import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.entityinfo.EntityInfo;
+import org.motechproject.mds.entityinfo.EntityInfoReader;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.entityinfo.FieldInfo;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
+import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
-import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.jdo.PersistenceManagerFactory;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -160,15 +166,36 @@ public abstract class BaseInstanceIT extends BaseIT {
         Object repository = MDSClassLoader.getInstance().loadClass(getRepositoryClass()).newInstance();
         Object service = MDSClassLoader.getInstance().loadClass(getServiceClass()).newInstance();
 
+        EntityInfoReader entityInfoReader = new EntityInfoReader() {
+            @Override
+            public EntityInfo getEntityInfo(String entityClassName) {
+                EntityInfo info = new EntityInfo();
+                info.setEntity(entity);
+                info.setAdvancedSettings(new AdvancedSettingsDto());
+
+                List<FieldInfo> fieldInfos = new ArrayList<>();
+                for (FieldDto fieldDto : getEntityFields()) {
+                    FieldInfo fieldInfo = new FieldInfo();
+                    fieldInfo.setField(fieldDto);
+                    fieldInfos.add(fieldInfo);
+                }
+
+                info.setFieldsInfo(fieldInfos);
+
+                return info;
+            }
+        };
+
         PropertyUtil.safeSetProperty(repository, "persistenceManagerFactory", getPersistenceManagerFactory());
         PropertyUtil.safeSetProperty(service, "transactionManager", getTransactionManager());
         PropertyUtil.safeSetProperty(service, "repository", repository);
         PropertyUtil.safeSetProperty(service, "allEntities", allEntities);
+        PropertyUtil.safeSetProperty(service, "entityInfoReader", entityInfoReader);
         PropertyUtil.safeSetProperty(service, "historyService", getHistoryService());
         PropertyUtil.safeSetProperty(service, "trashService", getTrashService());
 
         MotechDataService mds = (MotechDataService) service;
-        ((DefaultMotechDataService) mds).initializeSecurityState();
+        ((DefaultMotechDataService) mds).init();
 
         return mds;
     }
@@ -187,7 +214,8 @@ public abstract class BaseInstanceIT extends BaseIT {
         tracking.setAllowDeleteEvent(false);
         entityService.updateTracking(entity.getId(), tracking);
 
-        mdsConstructor.constructEntities();
+        SchemaHolder schemaHolder = entityService.getSchema();
+        mdsConstructor.constructEntities(schemaHolder);
 
         PersistenceManagerFactory factory = getPersistenceManagerFactory();
 

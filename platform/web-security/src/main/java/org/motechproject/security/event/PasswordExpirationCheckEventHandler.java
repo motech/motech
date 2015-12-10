@@ -1,5 +1,6 @@
 package org.motechproject.security.event;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.Days;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
@@ -52,18 +53,25 @@ public class PasswordExpirationCheckEventHandler {
 
             LOGGER.info("Daily password reset reminder triggered");
 
-            int numberOfDaysForReminder = settingService.getNumberOfDaysForReminder();
-            int daysTillPasswordChange = settingService.getNumberOfDaysToChangePassword();
-            int daysTillReminder = daysTillPasswordChange - numberOfDaysForReminder;
+            final int passwordExpirationInDays = settingService.getNumberOfDaysToChangePassword();
+            final int daysBeforeExpirationToSendReminder = settingService.getNumberOfDaysForReminder();
+
+            final int daysWithNoPassChangeForReminder = passwordExpirationInDays - daysBeforeExpirationToSendReminder;
 
             for (MotechUser user : allUsers.retrieveAll()) {
-                int daysWithoutPasswordChange = daysWithoutPasswordChange(user);
+                final int daysWithoutPasswordChange = daysWithoutPasswordChange(user);
 
-                LOGGER.debug("User {} hasn't changed password in {} days. Notification is being sent {} days before" +
-                                "expiration", user.getUserName(), daysWithoutPasswordChange, daysTillReminder);
+                LOGGER.debug("User {} hasn't changed password in {} days. Notification is being after {} days without" +
+                                " password change, {} days before expiration", user.getUserName(),
+                        daysWithoutPasswordChange, daysWithNoPassChangeForReminder, daysBeforeExpirationToSendReminder);
 
-                if (daysWithoutPasswordChange == daysTillReminder) {
-                    sendPasswordReminderEvent(user, daysTillPasswordChange, numberOfDaysForReminder);
+                if (daysWithoutPasswordChange == daysWithNoPassChangeForReminder) {
+                    if (StringUtils.isNotBlank(user.getEmail())) {
+                        sendPasswordReminderEvent(user, passwordExpirationInDays, daysBeforeExpirationToSendReminder);
+                    } else {
+                        LOGGER.debug("User {} doesn't have an email address set, skipping sending of reminder",
+                                user.getUserName());
+                    }
                 }
             }
         } else {

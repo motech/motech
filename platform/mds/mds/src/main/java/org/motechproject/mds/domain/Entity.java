@@ -12,6 +12,7 @@ import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.util.ValidationUtil;
 
 import javax.jdo.annotations.Discriminator;
@@ -145,12 +146,15 @@ public class Entity {
     }
 
     public EntityDto toDto() {
-        EntityDto dto = new EntityDto(id, className, getName(), module, namespace, tableName, getTracking() != null ? getTracking().isRecordHistory() : false,
-                securityMode, securityMembers, readOnlySecurityMode, readOnlySecurityMembers, superClass, abstractClass, securityOptionsModified, bundleSymbolicName);
+        EntityDto dto = new EntityDto(id, className, getName(), module, namespace, tableName,
+                getTracking() != null && getTracking().isRecordHistory(), securityMode, securityMembers,
+                readOnlySecurityMode, readOnlySecurityMembers, superClass, abstractClass, securityOptionsModified,
+                bundleSymbolicName);
 
         dto.setMaxFetchDepth(maxFetchDepth);
-        dto.setNonEditable(getTracking() != null ? getTracking().isNonEditable() : false);
+        dto.setNonEditable(getTracking() != null && getTracking().isNonEditable());
         dto.setReadOnlyAccess(dto.checkIfUserHasOnlyReadAccessAuthorization());
+        dto.setSchemaVersion(entityVersion);
 
         return dto;
     }
@@ -324,12 +328,14 @@ public class Entity {
         this.superClass = superClass;
     }
 
+    @NotPersistent
     public boolean isSubClassOfMdsEntity () {
-        return MdsEntity.class.getName().equalsIgnoreCase(getSuperClass()) || MdsVersionedEntity.class.getName().equalsIgnoreCase(getSuperClass());
+        return TypeHelper.isSubclassOfMdsEntity(getSuperClass());
     }
 
+    @NotPersistent
     public boolean isSubClassOfMdsVersionedEntity () {
-        return MdsVersionedEntity.class.getName().equalsIgnoreCase(getSuperClass());
+        return TypeHelper.isSubclassOfMdsVersionedEntity(getSuperClass());
     }
 
     public boolean isAbstractClass() {
@@ -358,9 +364,7 @@ public class Entity {
 
     @NotPersistent
     public boolean isBaseEntity() {
-        return Object.class.getName().equalsIgnoreCase(getSuperClass()) ||
-                MdsEntity.class.getName().equalsIgnoreCase(getSuperClass()) ||
-                MdsVersionedEntity.class.getName().equalsIgnoreCase(getSuperClass());
+        return TypeHelper.isBaseEntity(getSuperClass());
     }
 
     @NotPersistent

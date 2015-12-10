@@ -1,5 +1,6 @@
 package org.motechproject.mds.config;
 
+import org.datanucleus.PropertyNames;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.sql.service.SqlDBManager;
 import org.motechproject.config.core.service.CoreConfigurationService;
@@ -7,6 +8,8 @@ import org.motechproject.mds.util.Constants;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -101,15 +104,19 @@ public class MdsConfig {
     }
 
     public Properties getDataNucleusPropertiesForInternalInfrastructure() {
+        // this for the MDS bundle itself, as opposed to the entities bundle being generated
         Properties properties = new Properties();
         properties.putAll(coreConfigurationService.loadDatanucleusConfig());
         properties.remove("javax.jdo.option.Optimistic");
         properties.remove("datanucleus.flush.mode");
+        addBeanValidationFactoryProperty(properties);
         return properties;
     }
 
     public Properties getDataNucleusProperties() {
-        return coreConfigurationService.loadDatanucleusConfig();
+        Properties dnProperties = coreConfigurationService.loadDatanucleusConfig();
+        addBeanValidationFactoryProperty(dnProperties);
+        return dnProperties;
     }
 
     public String[] getFlywayLocations() {
@@ -124,5 +131,11 @@ public class MdsConfig {
         migrationDirectory = new File(migrationDirectory, flywayLocation.substring(flywayLocation.lastIndexOf('/') + 1));
 
         return migrationDirectory;
+    }
+
+    private void addBeanValidationFactoryProperty(Properties properties) {
+        // Datanucleus expects the validator factory as the actual object, not just a string property
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        properties.put(PropertyNames.PROPERTY_VALIDATION_FACTORY, validatorFactory);
     }
 }

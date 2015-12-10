@@ -1,7 +1,5 @@
 package org.motechproject.mds.config;
 
-import java.util.Properties;
-
 /**
  * The <code>SettingsService</code> is a generic class, allowing access to all
  * MDS settings, as well as providing an ability to easily change these settings.
@@ -38,6 +36,13 @@ public interface SettingsService {
     TimeUnit getTimeUnit();
 
     /**
+     * Returns current setting of the grid size.
+     *
+     * @return the size of the grid
+     */
+    Integer getGridSize();
+
+    /**
      * Updates all MDS settings and performs necessary actions if required (eg. scheduling jobs, that remove
      * instances from trash).
      *
@@ -51,11 +56,4 @@ public interface SettingsService {
      * @return MDS settings
      */
     ModuleSettings getModuleSettings();
-
-    /**
-     * Retrieves all MDS settings as {@link java.util.Properties}.
-     *
-     * @return MDS settings
-     */
-    Properties getProperties();
 }

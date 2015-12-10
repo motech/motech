@@ -4,6 +4,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,8 +59,8 @@ public enum BundleType {
             "commons-api", "commons-sql", "commons-date", "osgi-web-util", "server-api", "config-core", "event"
     ));
 
-    public static final Set<String> PLATFORM_PRE_WS_BUNDLES = new HashSet<>(Arrays.asList(
-        "server-config"
+    public static final Set<String> PLATFORM_PRE_WS_BUNDLES = new HashSet<>(Collections.singletonList(
+            "server-config"
     ));
 
     public static BundleType forBundle(Bundle bundle) {
@@ -67,6 +68,8 @@ public enum BundleType {
 
         if (isFragmentBundle(bundle)) {
             return BundleType.FRAGMENT_BUNDLE;
+        } else if (PlatformConstants.FELIX_FRAMEWORK_BUNDLE.equals(symbolicName)) {
+            return FRAMEWORK_BUNDLE;
         } else if (symbolicName == null || PlatformConstants.PAX_IT_SYMBOLIC_NAME.equals(symbolicName)) {
             return BundleType.THIRD_PARTY_BUNDLE;
         } else if (symbolicName.equals(PlatformConstants.MDS_BUNDLE_NAME)) {
@@ -79,8 +82,6 @@ public enum BundleType {
             return getPlatformBundleType(symbolicName);
         } else if (importsExportsMotechPackage(bundle)) {
             return BundleType.MOTECH_MODULE;
-        } else if (PlatformConstants.FELIX_FRAMEWORK_BUNDLE.equals(symbolicName)) {
-            return FRAMEWORK_BUNDLE;
         } else {
             return BundleType.THIRD_PARTY_BUNDLE;
         }

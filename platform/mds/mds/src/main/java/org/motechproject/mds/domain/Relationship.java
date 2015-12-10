@@ -1,5 +1,7 @@
 package org.motechproject.mds.domain;
 
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.util.Constants;
 
 /**
@@ -8,20 +10,20 @@ import org.motechproject.mds.util.Constants;
  */
 public class Relationship {
 
-    public String getFieldType(Field field, EntityType type) {
+    public String getFieldType(FieldDto field, EntityType type) {
         return getRelatedClassName(field, type);
     }
 
-    public String getGenericSignature(Field field, EntityType type) {
+    public String getGenericSignature(FieldDto field, EntityType type) {
         return null;
     }
 
-    protected String getRelatedClassName(Field field, EntityType type) {
-        FieldMetadata fmd = field.getMetadata(Constants.MetadataKeys.RELATED_CLASS);
+    protected String getRelatedClassName(FieldDto field, EntityType type) {
+        MetadataDto fmd = field.getMetadata(Constants.MetadataKeys.RELATED_CLASS);
 
         if (fmd == null) {
-            throw new IllegalStateException(String.format("Unknown type for relationship %s in entity %s",
-                    field.getName(), field.getEntity().getName()));
+            throw new IllegalStateException(String.format("Unknown type for relationship %s",
+                    field.getBasic().getName()));
         }
 
         return type.getName(fmd.getValue());

@@ -18,10 +18,9 @@ import org.motechproject.mds.annotations.internal.samples.RelatedSample;
 import org.motechproject.mds.annotations.internal.samples.Sample;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.testutil.MockBundle;
 import org.motechproject.mds.util.SecurityMode;
 import org.osgi.framework.Bundle;
@@ -40,6 +39,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -53,10 +53,7 @@ public class EntityProcessorTest extends MockBundle {
     private Bundle bundle = new org.eclipse.gemini.blueprint.mock.MockBundle();
 
     @Mock
-    private EntityService entityService;
-
-    @Mock
-    private TypeService typeService;
+    private SchemaHolder schemaHolder;
 
     @Mock
     private FieldProcessor fieldProcessor;
@@ -102,8 +99,6 @@ public class EntityProcessorTest extends MockBundle {
     @Before
     public void setUp() throws Exception {
         processor = new EntityProcessor();
-        processor.setEntityService(entityService);
-        processor.setTypeService(typeService);
         processor.setFieldProcessor(fieldProcessor);
         processor.setUIFilterableProcessor(uiFilterableProcessor);
         processor.setUIDisplayableProcessor(uiDisplayableProcessor);
@@ -112,21 +107,18 @@ public class EntityProcessorTest extends MockBundle {
         processor.setCrudEventsProcessor(crudEventsProcessor);
         processor.setNonEditableProcessor(nonEditableProcessor);
         processor.setBundle(bundle);
+        processor.setSchemaHolder(schemaHolder);
         processor.beforeExecution();
 
-        when(typeService.findType(Long.class)).thenReturn(TypeDto.LONG);
-        when(typeService.findType(String.class)).thenReturn(TypeDto.STRING);
-        when(typeService.findType(DateTime.class)).thenReturn(TypeDto.DATETIME);
+        when(schemaHolder.getType(Long.class)).thenReturn(TypeDto.LONG);
+        when(schemaHolder.getType(String.class)).thenReturn(TypeDto.STRING);
+        when(schemaHolder.getType(DateTime.class)).thenReturn(TypeDto.DATETIME);
 
-        when(entityService.getEntityByClassName(AnotherSample.class.getName()))
-            .thenReturn(entity);
+        when(schemaHolder.getEntityByClassName(AnotherSample.class.getName())).thenReturn(entity);
 
-        when(entityService.getEntityByClassName(ReadAccessSample.class.getName()))
-                .thenReturn(readOnlyEntity);
+        when(schemaHolder.getEntityByClassName(ReadAccessSample.class.getName())).thenReturn(readOnlyEntity);
 
-        when(entityService.getAdvancedSettings(null, true)).thenReturn(
-                new AdvancedSettingsDto()
-        );
+        when(schemaHolder.getAdvancedSettings(anyString())).thenReturn(new AdvancedSettingsDto());
 
         setUpMockBundle();
     }
@@ -159,16 +151,16 @@ public class EntityProcessorTest extends MockBundle {
 
         verify(fieldProcessor).setClazz(Sample.class);
         verify(fieldProcessor).setEntity(any(EntityDto.class));
-        verify(fieldProcessor).execute(bundle);
+        verify(fieldProcessor).execute(bundle, schemaHolder);
 
         verify(uiFilterableProcessor).setClazz(Sample.class);
-        verify(uiFilterableProcessor).execute(bundle);
+        verify(uiFilterableProcessor).execute(bundle, schemaHolder);
 
         verify(uiDisplayableProcessor).setClazz(Sample.class);
-        verify(uiDisplayableProcessor).execute(bundle);
+        verify(uiDisplayableProcessor).execute(bundle, schemaHolder);
 
         verify(nonEditableProcessor).setClazz(Sample.class);
-        verify(nonEditableProcessor).execute(bundle);
+        verify(nonEditableProcessor).execute(bundle, schemaHolder);
     }
 
     @Test
@@ -177,7 +169,7 @@ public class EntityProcessorTest extends MockBundle {
 
         verify(crudEventsProcessor).setClazz(AnotherSample.class);
         verify(crudEventsProcessor).setTrackingDto(trackingDtoCaptor.capture());
-        verify(crudEventsProcessor).execute(bundle);
+        verify(crudEventsProcessor).execute(bundle, schemaHolder);
 
         TrackingDto trackingDto = trackingDtoCaptor.getValue();
         assertFalse(trackingDto.isRecordHistory());
@@ -186,7 +178,7 @@ public class EntityProcessorTest extends MockBundle {
 
         verify(crudEventsProcessor).setClazz(Sample.class);
         verify(crudEventsProcessor, times(2)).setTrackingDto(trackingDtoCaptor.capture());
-        verify(crudEventsProcessor, times(2)).execute(bundle);
+        verify(crudEventsProcessor, times(2)).execute(bundle, schemaHolder);
 
         trackingDto = trackingDtoCaptor.getValue();
         assertTrue(trackingDto.isRecordHistory());
@@ -236,7 +228,7 @@ public class EntityProcessorTest extends MockBundle {
     public void shouldNotProcessClassWithoutAnnotation() throws Exception {
         processor.process(Object.class);
 
-        verifyZeroInteractions(entityService, fieldProcessor);
+        verifyZeroInteractions(schemaHolder, fieldProcessor);
     }
 
     @Test
@@ -258,8 +250,8 @@ public class EntityProcessorTest extends MockBundle {
         existingTracking.setModifiedByUser(true);
         AdvancedSettingsDto existingAdvancedSettings = new AdvancedSettingsDto();
         existingAdvancedSettings.setTracking(existingTracking);
-        when(entityService.getEntityByClassName(Sample.class.getName())).thenReturn(existingEntity);
-        when(entityService.getAdvancedSettings(1L, true)).thenReturn(existingAdvancedSettings);
+        when(schemaHolder.getEntityByClassName(Sample.class.getName())).thenReturn(existingEntity);
+        when(schemaHolder.getAdvancedSettings(Sample.class.getName())).thenReturn(existingAdvancedSettings);
         when(crudEventsProcessor.getProcessingResult()).thenReturn(existingTracking);
 
         processor.process(Sample.class);
@@ -277,7 +269,7 @@ public class EntityProcessorTest extends MockBundle {
 
         verify(crudEventsProcessor).setClazz(AnotherSample.class);
         verify(crudEventsProcessor).setTrackingDto(trackingDtoCaptor.capture());
-        verify(crudEventsProcessor).execute(bundle);
+        verify(crudEventsProcessor).execute(bundle, schemaHolder);
 
         TrackingDto trackingDto = trackingDtoCaptor.getValue();
         assertTrue(trackingDto.isNonEditable());
@@ -286,7 +278,7 @@ public class EntityProcessorTest extends MockBundle {
 
         verify(crudEventsProcessor).setClazz(Sample.class);
         verify(crudEventsProcessor, times(2)).setTrackingDto(trackingDtoCaptor.capture());
-        verify(crudEventsProcessor, times(2)).execute(bundle);
+        verify(crudEventsProcessor, times(2)).execute(bundle, schemaHolder);
 
         trackingDto = trackingDtoCaptor.getValue();
         assertFalse(trackingDto.isNonEditable());

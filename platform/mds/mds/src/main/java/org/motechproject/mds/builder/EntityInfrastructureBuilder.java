@@ -1,7 +1,8 @@
 package org.motechproject.mds.builder;
 
 import org.motechproject.mds.domain.ClassData;
-import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.SchemaHolder;
 
 import java.util.List;
 
@@ -19,9 +20,10 @@ public interface EntityInfrastructureBuilder {
      * {@link org.motechproject.mds.util.ClassName#getServiceClassName(String)}, respectively.
      *
      * @param entity an instance of {@link org.motechproject.mds.domain.Entity}
+     * @param schemaHolder the current MDS schema holder
      * @return a list of classes that represents infrastructure for the given entity.
      */
-    List<ClassData> buildInfrastructure(Entity entity);
+    List<ClassData> buildInfrastructure(EntityDto entity, SchemaHolder schemaHolder);
 
     /**
      * Builds the repository, interface and implementation of this interface classes for the

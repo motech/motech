@@ -15,8 +15,6 @@ import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.helper.EntityDefaultFieldsHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.reflections.ReflectionsUtil;
-import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.SecurityMode;
@@ -59,8 +57,6 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.TABLE_NAME;
 class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityProcessor.class);
 
-    private EntityService entityService;
-    private TypeService typeService;
     private FieldProcessor fieldProcessor;
     private UIFilterableProcessor uiFilterableProcessor;
     private UIDisplayableProcessor uiDisplayableProcessor;
@@ -112,7 +108,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
             boolean recordHistory = Boolean.parseBoolean(ReflectionsUtil.getAnnotationValue(annotation, HISTORY));
             boolean nonEditable = Boolean.parseBoolean(ReflectionsUtil.getAnnotationValue(annotation, NON_EDITABLE));
 
-            EntityDto entity = entityService.getEntityByClassName(className);
+            EntityDto entity = getSchemaHolder().getEntityByClassName(className);
             RestOptionsDto restOptions = new RestOptionsDto();
             TrackingDto tracking = new TrackingDto();
             Collection<FieldDto> fields;
@@ -128,7 +124,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
             } else {
                 LOGGER.debug("DDE for {} already exists, updating if necessary", className);
 
-                AdvancedSettingsDto advancedSettings = entityService.getAdvancedSettings(entity.getId(), true);
+                AdvancedSettingsDto advancedSettings = getSchemaHolder().getAdvancedSettings(className);
                 restOptions = advancedSettings.getRestOptions();
                 tracking = advancedSettings.getTracking();
                 entity.setBundleSymbolicName(bundleSymbolicName);
@@ -200,8 +196,9 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     }
 
     private void addDefaultFields(EntityDto entity, Collection<FieldDto> fields) {
-        if (!MdsEntity.class.getName().equalsIgnoreCase(entity.getSuperClass()) && !MdsVersionedEntity.class.getName().equalsIgnoreCase(entity.getSuperClass())) {
-            fields.addAll(EntityDefaultFieldsHelper.defaultFields(typeService));
+        if (!MdsEntity.class.getName().equalsIgnoreCase(entity.getSuperClass()) &&
+                !MdsVersionedEntity.class.getName().equalsIgnoreCase(entity.getSuperClass())) {
+            fields.addAll(EntityDefaultFieldsHelper.defaultFields(getSchemaHolder()));
         }
     }
 
@@ -224,8 +221,8 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     }
 
     private void updateUiChangedFields(Collection<FieldDto> fieldsToUpdate, String entityClassName) {
-        if (entityService.getEntityByClassName(entityClassName) != null) {
-            List<FieldDto> currentFields = entityService.getEntityFieldsByClassName(entityClassName);
+        if (getSchemaHolder().getEntityByClassName(entityClassName) != null) {
+            List<FieldDto> currentFields = getSchemaHolder().getFields(entityClassName);
             for (FieldDto field : fieldsToUpdate) {
                 FieldDto currentField = getCurrentField(currentFields, field.getBasic().getName());
                 if (currentField != null && currentField.isUiChanged()) {
@@ -259,33 +256,33 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     private RestOptionsDto processRestOperations(Class clazz, RestOptionsDto restOptions) {
         restOperationsProcessor.setClazz(clazz);
         restOperationsProcessor.setRestOptions(restOptions);
-        restOperationsProcessor.execute(getBundle());
+        restOperationsProcessor.execute(getBundle(), getSchemaHolder());
         return restOperationsProcessor.getProcessingResult();
     }
 
     private TrackingDto processCrudEvents(Class clazz, TrackingDto tracking) {
         crudEventsProcessor.setClazz(clazz);
         crudEventsProcessor.setTrackingDto(tracking);
-        crudEventsProcessor.execute(getBundle());
+        crudEventsProcessor.execute(getBundle(), getSchemaHolder());
         return crudEventsProcessor.getProcessingResult();
     }
 
     private Collection<FieldDto> findFields(Class clazz, EntityDto entity) {
         fieldProcessor.setClazz(clazz);
         fieldProcessor.setEntity(entity);
-        fieldProcessor.execute(getBundle());
+        fieldProcessor.execute(getBundle(), getSchemaHolder());
         return fieldProcessor.getProcessingResult();
     }
 
     private Collection<String> findFilterableFields(Class clazz) {
         uiFilterableProcessor.setClazz(clazz);
-        uiFilterableProcessor.execute(getBundle());
+        uiFilterableProcessor.execute(getBundle(), getSchemaHolder());
         return uiFilterableProcessor.getProcessingResult();
     }
 
     private Map<String, Long> findDisplayedFields(Class clazz) {
         uiDisplayableProcessor.setClazz(clazz);
-        uiDisplayableProcessor.execute(getBundle());
+        uiDisplayableProcessor.execute(getBundle(), getSchemaHolder());
         return uiDisplayableProcessor.getProcessingResult();
     }
 
@@ -293,13 +290,13 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
         restIgnoreProcessor.setClazz(clazz);
         restIgnoreProcessor.setRestOptions(restOptions);
         restIgnoreProcessor.setFields(new ArrayList<>(fields));
-        restIgnoreProcessor.execute(getBundle());
+        restIgnoreProcessor.execute(getBundle(), getSchemaHolder());
         return restIgnoreProcessor.getProcessingResult();
     }
 
     private Map<String, Boolean> findNonEditableFields(Class clazz) {
         nonEditableProcessor.setClazz(clazz);
-        nonEditableProcessor.execute(getBundle());
+        nonEditableProcessor.execute(getBundle(), getSchemaHolder());
         return nonEditableProcessor.getProcessingResult();
     }
 
@@ -346,16 +343,6 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
             }
         }
         return securityMembers;
-    }
-
-    @Autowired
-    public void setEntityService(EntityService entityService) {
-        this.entityService = entityService;
-    }
-
-    @Autowired
-    public void setTypeService(TypeService typeService) {
-        this.typeService = typeService;
     }
 
     @Autowired

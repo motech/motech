@@ -228,6 +228,11 @@ public final class Constants {
         public static final String MDS_TIME_UNIT = "mds.emptyTrash.afterTimeUnit";
 
         /**
+         * The property that specifies default number of records in each data browser grid.
+         */
+        public static final String MDS_DEFAULT_GRID_SIZE = "mds.default.gridSize";
+
+        /**
          * Constant <code>EMPTY_TRASH_JOB</code> presents a name of job scheduled by scheduler
          * module.
          */
@@ -540,7 +545,7 @@ public final class Constants {
         public static final String ALLOW_USER_SUPPLIED = "mds.form.label.allowUserSupplied";
         public static final String COMBOBOX_VALUES = "mds.form.label.values";
         public static final String STRING_MAX_LENGTH = "mds.form.label.maxTextLength";
-        public static final String STRING_TEXT_AREA = "mds.form.label.textArea";
+        public static final String STRING_TEXT_AREA = "mds.form.label.textarea";
         public static final String TEXT_AREA_SQL_TYPE = "TEXT";
 
         public static final String CASCADE_PERSIST = "mds.form.label.cascadePersist";

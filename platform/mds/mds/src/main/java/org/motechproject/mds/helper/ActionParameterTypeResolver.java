@@ -1,8 +1,9 @@
 package org.motechproject.mds.helper;
 
 import org.motechproject.mds.domain.ComboboxHolder;
-import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.TypeDto;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,10 +61,10 @@ public final class ActionParameterTypeResolver {
      * @param field MDS field
      * @return matching task parameter type
      */
-    public static String resolveType(Field field) {
-        Type type = field.getType();
+    public static String resolveType(EntityDto entity, FieldDto field) {
+        TypeDto type = field.getType();
         if (type.isCombobox()) {
-            return resolveComboboxType(new ComboboxHolder(field));
+            return resolveComboboxType(new ComboboxHolder(entity, field));
         } else {
             String matchedType = TYPE_MAPPING.get(type.getDisplayName());
             return null != matchedType ? matchedType : UNKNOWN;

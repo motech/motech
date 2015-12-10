@@ -152,22 +152,34 @@
     * whether is selected for display in the jqGrid
     */
     function isSelectedField(name, selectedFields) {
-        var result = true;
-        if (selectedFields !== undefined && $.isArray(selectedFields)) {
-            $.each(selectedFields, function (i, sField) {
-                if(name === sField.basic.name) {
-                    result = true;
-                } else {
-                    result = false;
+        var i;
+        if (selectedFields) {
+            for (i = 0; i < selectedFields.length; i += 1) {
+                if (name === selectedFields[i].basic.name) {
+                    return true;
                 }
-                return (!result);
-            });
+            }
         }
-        return result;
+        return false;
+    }
+
+    function handleGridPagination(pgButton, pager, scope) {
+        var newPage = 1, last, newSize;
+        if ("user" === pgButton) { //Handle changing page by the page input
+            newPage = parseInt(pager.find('input:text').val(), 10); // get new page number
+            last = parseInt($(this).getGridParam("lastpage"), 10); // get last page number
+            if (newPage > last || newPage === 0) { // check range - if we cross range then stop
+                return 'stop';
+            }
+        } else if ("records" === pgButton) { //Page size change, we must update scope value to avoid wrong page size in the trash screen
+            newSize = parseInt(pager.find('select')[0].value, 10);
+            scope.entityAdvanced.userPreferences.gridRowsNumber = newSize;
+        }
     }
 
     function buildGridColModel(colModel, fields, scope, removeVersionField, ignoreHideFields) {
-        var i, j, cmd, field, skip = false;
+        var i, j, cmd, field, skip = false, widthTable;
+        widthTable = scope.getColumnsWidth();
 
         for (i = 0; i < fields.length; i += 1) {
             field = fields[i];
@@ -192,7 +204,7 @@
                    name: field.basic.name,
                    index: field.basic.name,
                    jsonmap: "fields." + i + ".value",
-                   width: 220,
+                   width: widthTable[field.basic.name]? widthTable[field.basic.name] : 220,
                    hidden: ignoreHideFields? false : !isSelectedField(field.basic.name, scope.selectedFields)
                 };
 
@@ -247,6 +259,26 @@
             return (result);
         });
         return result;
+    }
+
+    function handleColumnResize(tableName, gridId, index, width, scope) {
+        var tableWidth, widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
+        if (colModel.length - 1 === index + 1 || (colModel[index + 1] !== undefined && isLastNextColumn(colModel, index))) {
+            widthOrg = colModel[index].widthOrg;
+            if (Math.floor(width) > Math.floor(widthOrg)) {
+                widthNew = colModel[index + 1].width + Math.floor(width - widthOrg);
+                colModel[index + 1].width = widthNew;
+                scope.saveColumnWidth(colModel[index + 1].index, widthNew);
+
+                $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
+                $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
+            }
+            colModel[index].widthOrg = width;
+        }
+
+        scope.saveColumnWidth(colModel[index].index, width);
+        tableWidth = $(tableName).width();
+        $('#' + gridId).jqGrid("setGridWidth", tableWidth);
     }
 
     /*
@@ -1282,7 +1314,7 @@
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                var elem = angular.element(element), tableWidth, eventResize, eventChange,
+                var elem = angular.element(element), eventResize, eventChange,
                 gridId = attrs.id,
                 firstLoad = true;
 
@@ -1307,6 +1339,10 @@
                             postData: {
                                 fields: JSON.stringify(scope.lookupBy)
                             },
+                            rowNum: scope.entityAdvanced.userPreferences.gridRowsNumber,
+                            onPaging: function (pgButton) {
+                                handleGridPagination(pgButton, $(this.p.pager), scope);
+                            },
                             jsonReader: {
                                 repeatitems: false
                             },
@@ -1319,20 +1355,7 @@
                                 scope.editInstance(id, scope.selectedEntity.module, scope.selectedEntity.name);
                             },
                             resizeStop: function (width, index) {
-                                var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
-                                if (colModel.length - 1 === index + 1 || (colModel[index + 1] !== undefined && isLastNextColumn(colModel, index))) {
-                                    widthOrg = colModel[index].widthOrg;
-                                    if (Math.floor(width) > Math.floor(widthOrg)) {
-                                        widthNew = colModel[index + 1].width + Math.floor(width - widthOrg);
-                                        colModel[index + 1].width = widthNew;
-
-                                        $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
-                                        $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
-                                    }
-                                    colModel[index].widthOrg = width;
-                                }
-                                tableWidth = $('#entityInstancesTable').width();
-                                $('#' + gridId).jqGrid("setGridWidth", tableWidth);
+                                handleColumnResize('#entityInstancesTable', gridId, index, width, scope);
                             },
                             loadonce: false,
                             headertitles: true,
@@ -1358,11 +1381,13 @@
                                 if ($('#instancesTable').getGridParam('records') > 0) {
                                     $('#pageInstancesTable_center').show();
                                     $('#entityInstancesTable .ui-jqgrid-hdiv').show();
+                                    $('.jqgfirstrow').css('height','0');
                                 } else {
                                     if (noSelectedFields) {
                                         $('#pageInstancesTable_center').hide();
                                         $('#entityInstancesTable .ui-jqgrid-hdiv').hide();
                                     }
+                                    $('.jqgfirstrow').css('height','1px');
                                 }
                                 $('#entityInstancesTable .ui-jqgrid-hdiv').addClass("table-lightblue");
                                 $('#entityInstancesTable .ui-jqgrid-btable').addClass("table-lightblue");
@@ -1485,8 +1510,11 @@
                                 shrinkToFit: false,
                                 gridComplete: function () {
                                     $('#pageInstancesBrowserTable_center').addClass('page_instancesTable_center');
-                                    if ($('#browserTable').getGridParam('records') !== 0) {
+                                    if ($('#browserTable').getGridParam('records') > 0) {
                                         $('#pageInstancesBrowserTable_center').show();
+                                        $('.jqgfirstrow').css('height','0');
+                                    } else {
+                                        $('.jqgfirstrow').css('height','1px');
                                     }
                                     tableWidth = $('#instanceBrowserTable').width();
                                     $('#instanceBrowserTable').children().width('100%');
@@ -1558,11 +1586,10 @@
                                 var name = scope.getFieldName(optionElement.text());
                                 // don't act for fields show automatically in trash and history
                                 if (scope.autoDisplayFields.indexOf(name) === -1) {
-                                    // set the cookie, users have their own browsing settings
-                                    scope.markFieldForDataBrowser(name, checked);
+                                    scope.addFieldForDataBrowser(name, checked);
                                 }
                             } else {
-                                scope.markAllFieldsForDataBrowser(checked);
+                                scope.addFieldsForDataBrowser(checked);
                             }
 
                             noSelectedFields = true;
@@ -1613,7 +1640,7 @@
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
-                var elem = angular.element(element), tableWidth, eventResize, eventChange,
+                var elem = angular.element(element), eventResize, eventChange,
                 gridId = attrs.id,
                 firstLoad = true;
 
@@ -1652,21 +1679,12 @@
                                     scope.historyInstance(id);
                                 }
                             },
+                            rowNum: scope.entityAdvanced.userPreferences.gridRowsNumber,
+                            onPaging: function (pgButton) {
+                                handleGridPagination(pgButton, $(this.p.pager), scope);
+                            },
                             resizeStop: function (width, index) {
-                                var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
-                                if (colModel.length - 1 === index + 1 || (colModel[index + 1] !== undefined && isLastNextColumn(colModel, index))) {
-                                    widthOrg = colModel[index].widthOrg;
-                                    if (Math.floor(width) > Math.floor(widthOrg)) {
-                                        widthNew = colModel[index + 1].width + Math.floor(width - widthOrg);
-                                        colModel[index + 1].width = widthNew;
-
-                                        $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
-                                        $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
-                                    }
-                                    colModel[index].widthOrg = width;
-                                }
-                                tableWidth = $('#instanceHistoryTable').width();
-                                $('#' + gridId).jqGrid("setGridWidth", tableWidth);
+                                handleColumnResize('#instanceHistoryTable', gridId, index, width, scope);
                             },
                             headertitles: true,
                             colModel: colModel,
@@ -1690,11 +1708,13 @@
                                 if ($('#historyTable').getGridParam('records') > 0) {
                                     $('#pageInstanceHistoryTable_center').show();
                                     $('#instanceHistoryTable .ui-jqgrid-hdiv').show();
+                                    $('.jqgfirstrow').css('height','0');
                                 } else {
                                     if (noSelectedFields) {
                                         $('#pageInstanceHistoryTable_center').hide();
                                         $('#instanceHistoryTable .ui-jqgrid-hdiv').hide();
                                     }
+                                    $('.jqgfirstrow').css('height','1px');
                                 }
                                 $('#instanceHistoryTable .ui-jqgrid-hdiv').addClass('table-lightblue');
                                 $('#instanceHistoryTable .ui-jqgrid-btable').addClass("table-lightblue");
@@ -1743,7 +1763,7 @@
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                var elem = angular.element(element), tableWidth, eventResize, eventChange,
+                var elem = angular.element(element), eventResize, eventChange,
                 gridId = attrs.id,
                 firstLoad = true;
 
@@ -1771,25 +1791,16 @@
                             jsonReader: {
                                 repeatitems: false
                             },
+                            rowNum: scope.entityAdvanced.userPreferences.gridRowsNumber,
+                            onPaging: function (pgButton) {
+                                handleGridPagination(pgButton, $(this.p.pager), scope);
+                            },
                             onSelectRow: function (id) {
                                 firstLoad = true;
                                 scope.trashInstance(id);
                             },
                             resizeStop: function (width, index) {
-                                var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
-                                if (colModel.length - 1 === index + 1 || (colModel[index + 1] !== undefined && isLastNextColumn(colModel, index))) {
-                                    widthOrg = colModel[index].widthOrg;
-                                    if (Math.floor(width) > Math.floor(widthOrg)) {
-                                        widthNew = colModel[index + 1].width + Math.floor(width - widthOrg);
-                                        colModel[index + 1].width = widthNew;
-
-                                        $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
-                                        $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
-                                    }
-                                    colModel[index].widthOrg = width;
-                                }
-                                tableWidth = $('#instanceTrashTable').width();
-                                $('#' + gridId).jqGrid("setGridWidth", tableWidth);
+                                handleColumnResize('#instanceTrashTable', gridId, index, width, scope);
                             },
                             loadonce: false,
                             headertitles: true,
@@ -1814,11 +1825,13 @@
                                 if ($('#trashTable').getGridParam('records') > 0) {
                                     $('#pageInstanceTrashTable_center').show();
                                     $('#instanceTrashTable .ui-jqgrid-hdiv').show();
+                                    $('.jqgfirstrow').css('height','0');
                                 } else {
                                     if (noSelectedFields) {
                                         $('#pageInstanceTrashTable_center').hide();
                                         $('#instanceTrashTable .ui-jqgrid-hdiv').hide();
                                     }
+                                    $('.jqgfirstrow').css('height','1px');
                                 }
                                 $('#instanceTrashTable .ui-jqgrid-hdiv').addClass("table-lightblue");
                                 $('#instanceTrashTable .ui-jqgrid-btable').addClass("table-lightblue");

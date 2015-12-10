@@ -12,13 +12,12 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.domain.ClassData;
-import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.FieldMetadata;
-import org.motechproject.mds.domain.FieldSetting;
 import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
-import org.motechproject.mds.domain.TypeSetting;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.MetadataDto;
+import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.testutil.EntBuilderTestClass;
 import org.motechproject.mds.testutil.RelatedClass;
 import org.motechproject.mds.util.Constants;
@@ -34,6 +33,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -43,7 +44,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
-import static org.motechproject.mds.testutil.FieldTestHelper.field;
+import static org.motechproject.mds.testutil.FieldTestHelper.fieldDto;
+import static org.motechproject.mds.testutil.FieldTestHelper.fieldDtoWithDefVal;
 import static org.motechproject.mds.testutil.FieldTestHelper.newVal;
 import static org.motechproject.mds.util.Constants.Util.MODIFICATION_DATE_FIELD_NAME;
 import static org.motechproject.mds.util.Constants.Util.MODIFIED_BY_FIELD_NAME;
@@ -60,7 +62,9 @@ public class EntityBuilderTest {
     private MDSClassLoader mdsClassLoader;
 
     @Mock
-    private Entity entity;
+    private EntityDto entity;
+
+    private List<FieldDto> fields;
 
     @Mock
     private Bundle bundle;
@@ -69,23 +73,32 @@ public class EntityBuilderTest {
     public void setUp() {
         mdsClassLoader = MDSClassLoader.getStandaloneInstance(getClass().getClassLoader());
         when(entity.getClassName()).thenReturn(ENTITY_NAME);
-        when(entity.getField(MODIFICATION_DATE_FIELD_NAME)).thenReturn(field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true));
-        when(entity.getField(MODIFIED_BY_FIELD_NAME)).thenReturn(field(MODIFIED_BY_FIELD_NAME, String.class, true));
+
+        fields = new ArrayList<>();
+
+        FieldDto modificationDateField = fieldDto(MODIFICATION_DATE_FIELD_NAME, DateTime.class);
+        FieldDto modifiedByField = fieldDto(MODIFIED_BY_FIELD_NAME, String.class);
+
+        modificationDateField.setReadOnly(true);
+        modifiedByField.setReadOnly(true);
+
+        fields.add(modificationDateField);
+        fields.add(modifiedByField);
     }
 
     @Test
     public void shouldBuildAnEntityWithFields() throws Exception {
-        Field enumListField = field("enumList", List.class);
-        enumListField.addMetadata(new FieldMetadata(enumListField, Constants.MetadataKeys.ENUM_CLASS_NAME, FieldEnum.class.getName()));
+        FieldDto enumListField = fieldDto("enumList", List.class);
+        enumListField.addMetadata(new MetadataDto(Constants.MetadataKeys.ENUM_CLASS_NAME, FieldEnum.class.getName()));
         enumListField.getType().setDisplayName("mds.field.combobox");
-        enumListField.addSetting(new FieldSetting(enumListField, new TypeSetting(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS), "true"));
+        enumListField.addSetting(new SettingDto(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS, "true"));
 
-        when(entity.getFields()).thenReturn(asList(field("count", Integer.class),
-                field("time", Time.class), field("str", String.class), field("dec", Double.class),
-                field("bool", Boolean.class), field("date", Date.class), field("dt", DateTime.class),
-                field("ld", LocalDate.class), field("locale", Locale.class), enumListField, field("CapitalizedName", String.class),
-                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true), field(MODIFIED_BY_FIELD_NAME, String.class, true),
-                field("jd", java.time.LocalDate.class), field("jdt", LocalDateTime.class)));
+        fields.addAll(asList(fieldDto("count", Integer.class),
+                fieldDto("time", Time.class), fieldDto("str", String.class), fieldDto("dec", Double.class),
+                fieldDto("bool", Boolean.class), fieldDto("date", Date.class), fieldDto("dt", DateTime.class),
+                fieldDto("ld", LocalDate.class), fieldDto("locale", Locale.class), enumListField,
+                fieldDto("CapitalizedName", String.class), fieldDto("jd", java.time.LocalDate.class),
+                fieldDto("jdt", LocalDateTime.class), fieldDto("blob", Byte[].class.getName())));
 
         Class<?> clazz = buildClass();
 
@@ -101,6 +114,7 @@ public class EntityBuilderTest {
         assertField(clazz, "locale", Locale.class);
         assertField(clazz, "jd", java.time.LocalDate.class);
         assertField(clazz, "jdt", LocalDateTime.class);
+        assertField(clazz, "blob", Byte[].class);
         // should use uncapitalized version
         assertField(clazz, "capitalizedName", String.class);
     }
@@ -113,13 +127,17 @@ public class EntityBuilderTest {
         final LocalDateTime javaLocalDateTime = LocalDateTime.now().plusDays(1);
         final java.time.LocalDate javaLocalDate = java.time.LocalDate.now().plusDays(1);
 
-        when(entity.getFields()).thenReturn(asList(field("count", Integer.class, 1),
-                field("time", Time.class, new Time(10, 10)), field("str", String.class, "defStr"),
-                field("dec", Double.class, 3.1), field("bool", Boolean.class, (Object) true),
-                field("date", Date.class, date), field("dt", DateTime.class, dateTime),
-                field("ld", LocalDate.class, localDate), field("locale", Locale.class, Locale.CANADA_FRENCH),
-                field("jd", java.time.LocalDate.class, javaLocalDate), field("jdt", LocalDateTime.class, javaLocalDateTime),
-                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true), field(MODIFIED_BY_FIELD_NAME, String.class, true)));
+        fields.addAll(asList(fieldDtoWithDefVal("count", Integer.class, 1),
+                fieldDtoWithDefVal("time", Time.class, new Time(10, 10)),
+                fieldDtoWithDefVal("str", String.class, "defStr"),
+                fieldDtoWithDefVal("dec", Double.class, 3.1),
+                fieldDtoWithDefVal("bool", Boolean.class, true),
+                fieldDtoWithDefVal("date", Date.class, date),
+                fieldDtoWithDefVal("dt", DateTime.class, dateTime),
+                fieldDtoWithDefVal("ld", LocalDate.class, localDate),
+                fieldDtoWithDefVal("locale", Locale.class, Locale.CANADA_FRENCH),
+                fieldDtoWithDefVal("jd", java.time.LocalDate.class, javaLocalDate),
+                fieldDtoWithDefVal("jdt", LocalDateTime.class, javaLocalDateTime)));
 
         Class<?> clazz = buildClass();
 
@@ -139,12 +157,14 @@ public class EntityBuilderTest {
 
     @Test
     public void shouldEditClasses() throws Exception {
-        when(entity.getFields()).thenReturn(asList(field("name", Integer.class), field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true), field(MODIFIED_BY_FIELD_NAME, String.class, true)));
+        FieldDto firstField = fieldDto("name", Integer.class);
+        fields.add(firstField);
 
         Class<?> clazz = buildClass();
         assertField(clazz, "name", Integer.class);
 
-        when(entity.getFields()).thenReturn(asList(field("name2", String.class), field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true), field(MODIFIED_BY_FIELD_NAME, String.class, true)));
+        fields.remove(firstField);
+        fields.add(fieldDto("name2", String.class));
 
         // reload the classloader for class edit
         mdsClassLoader = MDSClassLoader.getStandaloneInstance(getClass().getClassLoader());
@@ -163,18 +183,14 @@ public class EntityBuilderTest {
 
     @Test
     public void shouldBuildHistoryClass() throws Exception {
-        when(entity.getFields()).thenReturn(asList(field("id", Long.class),
-                field("count", Integer.class), field("time", Time.class),
-                field("str", String.class), field("dec", Double.class),
-                field("bool", Boolean.class), field("date", Date.class),
-                field("dt", DateTime.class), field("list", List.class),
-                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true),
-                field(MODIFIED_BY_FIELD_NAME, String.class, true),
-                field("jd", java.time.LocalDate.class), field("jld", LocalDateTime.class)));
+        fields.addAll(asList(fieldDto("id", Long.class),
+                fieldDto("count", Integer.class), fieldDto("time", Time.class),
+                fieldDto("str", String.class), fieldDto("dec", Double.class),
+                fieldDto("bool", Boolean.class), fieldDto("date", Date.class),
+                fieldDto("dt", DateTime.class), fieldDto("list", List.class),
+                fieldDto("jd", java.time.LocalDate.class), fieldDto("jld", LocalDateTime.class)));
 
-        when(entity.getField("id")).thenReturn(field("id", Long.class));
-
-        ClassData classData = entityBuilder.buildHistory(entity);
+        ClassData classData = entityBuilder.buildHistory(entity, fields);
         assertEquals("xx.yy.history.BuilderTest__History", classData.getClassName());
 
         Class<?> clazz = mdsClassLoader.safeDefineClass(classData.getClassName(), classData.getBytecode());
@@ -196,17 +212,14 @@ public class EntityBuilderTest {
 
     @Test(expected = NoSuchFieldException.class)
     public void shouldNotAddVersionFieldToTheHistoryClass() throws Exception {
-        Field versionField = field("version", Long.class);
-        versionField.addMetadata(new FieldMetadata(versionField, Constants.MetadataKeys.VERSION_FIELD, "true"));
-        when(entity.getFields()).thenReturn(asList(
-                field("id", Long.class), versionField,
-                field("count", Integer.class), field("str", String.class),
-                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true),
-                field(MODIFIED_BY_FIELD_NAME, String.class, true)));
+        FieldDto versionField = fieldDto("version", Long.class);
+        versionField.addMetadata(new MetadataDto(Constants.MetadataKeys.VERSION_FIELD, "true"));
+        fields.addAll(asList(
+                fieldDto("id", Long.class), versionField,
+                fieldDto("count", Integer.class), fieldDto("str", String.class)
+        ));
 
-        when(entity.getField("id")).thenReturn(field("id", Long.class));
-
-        ClassData classData = entityBuilder.buildHistory(entity);
+        ClassData classData = entityBuilder.buildHistory(entity, fields);
         assertEquals("xx.yy.history.BuilderTest__History", classData.getClassName());
 
         Class<?> clazz = mdsClassLoader.safeDefineClass(classData.getClassName(), classData.getBytecode());
@@ -226,18 +239,17 @@ public class EntityBuilderTest {
 
     @Test
     public void shouldBuildEnhancedDDE() throws Exception {
-        Field strField = field("testStr", String.class);
-        Field boolField = field("testBool", Boolean.class);
+        FieldDto strField = fieldDto("testStr", String.class);
+        FieldDto boolField = fieldDto("testBool", Boolean.class);
         strField.setReadOnly(true);
         boolField.setReadOnly(true);
 
-        when(entity.getFields()).thenReturn(asList(
-                strField, boolField, field("fromUser", DateTime.class),
-                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true),
-                field(MODIFIED_BY_FIELD_NAME, String.class, true)));
+        fields.addAll(asList(
+                strField, boolField, fieldDto("fromUser", DateTime.class)
+        ));
         when(entity.getClassName()).thenReturn(EntBuilderTestClass.class.getName());
 
-        ClassData classData = entityBuilder.buildDDE(entity, bundle);
+        ClassData classData = entityBuilder.buildDDE(entity, fields, bundle);
         Class<?> builtClass = MDSClassLoader.getStandaloneInstance()
                 .defineClass(classData.getClassName(), classData.getBytecode());
 
@@ -253,21 +265,17 @@ public class EntityBuilderTest {
 
     @Test
     public void shouldBuildRelationshipFields() throws Exception {
-        Field oneToOneField = field("oto", OneToOneRelationship.class);
+        FieldDto oneToOneField = fieldDto("oto", OneToOneRelationship.class);
         oneToOneField.setReadOnly(true);
-        oneToOneField.addMetadata(new FieldMetadata(oneToOneField,
-                Constants.MetadataKeys.RELATED_CLASS, RelatedClass.class.getName()));
-        Field oneToManyField = field("otm", OneToManyRelationship.class);
+        oneToOneField.addMetadata(new MetadataDto(Constants.MetadataKeys.RELATED_CLASS, RelatedClass.class.getName()));
+        FieldDto oneToManyField = fieldDto("otm", OneToManyRelationship.class);
         oneToManyField.setReadOnly(true);
-        oneToManyField.addMetadata(new FieldMetadata(oneToManyField,
-                Constants.MetadataKeys.RELATED_CLASS, RelatedClass.class.getName()));
+        oneToManyField.addMetadata(new MetadataDto(Constants.MetadataKeys.RELATED_CLASS, RelatedClass.class.getName()));
 
-        when(entity.getFields()).thenReturn(asList(oneToOneField, oneToManyField,
-                field(MODIFICATION_DATE_FIELD_NAME, DateTime.class, true),
-                field(MODIFIED_BY_FIELD_NAME, String.class, true)));
+        fields.addAll(asList(oneToOneField, oneToManyField));
         when(entity.getClassName()).thenReturn(EntBuilderTestClass.class.getName());
 
-        ClassData classData = entityBuilder.buildDDE(entity, bundle);
+        ClassData classData = entityBuilder.buildDDE(entity, fields, bundle);
         Class<?> builtClass = MDSClassLoader.getStandaloneInstance()
                 .defineClass(classData.getClassName(), classData.getBytecode());
 
@@ -278,12 +286,11 @@ public class EntityBuilderTest {
 
     @Test
     public void shouldBuildEnumListFieldProperly() throws Exception {
-        Field enumListField = field("enumList", List.class);
-        enumListField.addMetadata(new FieldMetadata(enumListField, Constants.MetadataKeys.ENUM_CLASS_NAME, FieldEnum.class.getName()));
-        enumListField.getType().setDisplayName("mds.field.combobox");
-        enumListField.addSetting(new FieldSetting(enumListField, new TypeSetting(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS), "true"));
+        FieldDto enumListField = fieldDto("enumList", Collection.class);
+        enumListField.addMetadata(new MetadataDto(Constants.MetadataKeys.ENUM_CLASS_NAME, FieldEnum.class.getName()));
+        enumListField.addSetting(new SettingDto(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS, "true"));
 
-        when(entity.getFields()).thenReturn(asList(enumListField));
+        fields.add(enumListField);
 
         Class<?> clazz = buildClass();
 
@@ -304,7 +311,7 @@ public class EntityBuilderTest {
     }
 
     private Class<?> buildClass() {
-        ClassData classData = entityBuilder.build(entity);
+        ClassData classData = entityBuilder.build(entity, fields);
 
         assertEquals(ENTITY_NAME, classData.getClassName());
 

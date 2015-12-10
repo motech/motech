@@ -214,6 +214,21 @@ can find the names of validators provided by MOTECH.
 - :code:`lower_upper_digit` - at least 1 uppercase lowercase and digit
 - :code:`lower_upper_digit_special` - at least 1 uppercase, lowercase, digit and special character
 
+**Days until password expiration** (:code:`security.password.reset.days`) - The number of days after which the users
+password will expire. When a password expires the user will be forced to change his new password after logging into MOTECH.
+The user will have to provide the old password for verification and the new password which has to be different from the
+old one. An expired password will never result in the user being absolutely blocked out of the system - they will always
+be able to regain access by changing their password to a new one. The last password change date is used to calculate the
+date of the password expiration. The default is 0, meaning password will never expire.
+
+**Enable password expiration reminders** (:code:`security.password.reminder.sendReminder`) - Whether email reminders
+should be sent for users with their passwords nearing expiration. Takes true or false, false is default. The number
+of days until sending reminder is controlled by :code:`security.password.reminder.daysBeforeExpiration` setting.
+
+**Days before password expiration to send the reminder** (:code:`security.password.reminder.daysBeforeExpiration`) - The number
+of days **before** password expiration that mark the date on which an email reminder will be sent to the user if
+:code:`security.password.reminder.sendReminder` is set to true. The reminders are sent on midnight.
+
 .. _password-validator:
 
 ###########################

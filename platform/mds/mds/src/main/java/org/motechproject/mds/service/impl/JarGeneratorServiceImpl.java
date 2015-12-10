@@ -7,24 +7,25 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.app.VelocityEngine;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.commons.api.ThreadSuspender;
-import org.motechproject.mds.MDSDataProvider;
+import org.motechproject.mds.tasks.MDSDataProvider;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.ComboboxHolder;
-import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.EntityInfo;
-import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.FieldInfo;
-import org.motechproject.mds.domain.RestOptions;
-import org.motechproject.mds.domain.UIDisplayFieldComparator;
+import org.motechproject.mds.entityinfo.EntityInfo;
+import org.motechproject.mds.entityinfo.FieldInfo;
+import org.motechproject.mds.dto.AdvancedSettingsDto;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.SchemaHolder;
+import org.motechproject.mds.dto.UIDisplayFieldComparator;
 import org.motechproject.mds.event.CrudEventBuilder;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.helper.ActionParameterTypeResolver;
 import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
-import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.JdoListenerRegistryService;
@@ -43,7 +44,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import javax.annotation.Resource;
@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -80,8 +81,6 @@ import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_MANIFESTVERSI
 import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_NAME_SUFFIX;
 import static org.motechproject.mds.util.Constants.Manifest.MANIFEST_VERSION;
 import static org.motechproject.mds.util.Constants.PackagesGenerated;
-import static org.motechproject.mds.util.Constants.Util.AUTO_GENERATED;
-import static org.motechproject.mds.util.Constants.Util.TRUE;
 
 /**
  * Default implementation of {@link org.motechproject.mds.service.JarGeneratorService} interface.
@@ -101,28 +100,25 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     private MDSDataProvider mdsDataProvider;
     private EntitiesBundleMonitor monitor;
     private BundleContext bundleContext;
-    private AllEntities allEntities;
     private final Object lock = new Object();
     private boolean moduleRefreshed;
 
     @Override
-    @Transactional
-    public synchronized void regenerateMdsDataBundle() {
-        regenerateMdsDataBundle(true);
+    public synchronized void regenerateMdsDataBundle(SchemaHolder schemaHolder) {
+        regenerateMdsDataBundle(schemaHolder, true);
     }
 
     @Override
-    @Transactional
-    public void regenerateMdsDataBundleAfterDdeEnhancement(String... moduleNames) {
-        regenerateMdsDataBundle(true, null == moduleNames ? new String[0] : moduleNames);
+    public void regenerateMdsDataBundleAfterDdeEnhancement(SchemaHolder schemaHolder, String... moduleNames) {
+        regenerateMdsDataBundle(schemaHolder, true, null == moduleNames ? new String[0] : moduleNames);
     }
 
-    @Transactional
-    public void regenerateMdsDataBundle(boolean startBundle) {
-        regenerateMdsDataBundle(startBundle, new String[0]);
+    @Override
+    public void regenerateMdsDataBundle(SchemaHolder schemaHolder, boolean startBundle) {
+        regenerateMdsDataBundle(schemaHolder, startBundle, new String[0]);
     }
 
-    private synchronized void regenerateMdsDataBundle(boolean startBundle, String... moduleNames) {
+    private synchronized void regenerateMdsDataBundle(SchemaHolder schemaHolder, boolean startBundle, String... moduleNames) {
         LOGGER.info("Regenerating the mds entities bundle");
 
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
@@ -132,14 +128,14 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
             clearModulesCache(moduleNames);
             cleanEntitiesBundleCachedClasses();
 
-            boolean constructed = mdsConstructor.constructEntities();
+            boolean constructed = mdsConstructor.constructEntities(schemaHolder);
 
             if (!constructed) {
                 return;
             }
 
             LOGGER.info("Updating mds data provider");
-            mdsDataProvider.updateDataProvider();
+            mdsDataProvider.updateDataProvider(schemaHolder);
 
             File dest = new File(monitor.bundleLocation());
             if (dest.exists()) {
@@ -152,7 +148,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
             try {
                 LOGGER.info("Generating bundle jar");
-                tmpBundleFile = generate();
+                tmpBundleFile = generate(schemaHolder);
                 LOGGER.info("Generated bundle jar");
             } catch (IOException e) {
                 throw new MdsException("Unable to generate entities bundle", e);
@@ -271,8 +267,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     }
 
     @Override
-    @Transactional
-    public File generate() throws IOException {
+    public File generate(SchemaHolder schemaHolder) throws IOException {
         Path tempDir = Files.createTempDirectory("mds");
         Path tempFile = Files.createTempFile(tempDir, "mds-entities", ".jar");
 
@@ -308,7 +303,11 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                 }
 
                 if (!classData.isEnumClassData()) {
-                    EntityInfo info = buildEntityInfo(classData);
+                    EntityDto entity = schemaHolder.getEntityByClassName(classData.getClassName());
+                    List<FieldDto> fields = schemaHolder.getFields(entity);
+                    AdvancedSettingsDto advancedSettings = schemaHolder.getAdvancedSettings(entity);
+
+                    EntityInfo info = buildEntityInfo(entity, fields, advancedSettings);
 
                     // we keep the name to construct a file containing all entity names
                     // the file is required for schema generation
@@ -339,13 +338,6 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                         }
                     }
 
-                    Entity entity = allEntities.retrieveByClassName(classData.getClassName());
-
-                    info.setFieldsInfo(getFieldsInfo(entity));
-                    info.setEntityName(entity.getName());
-                    setAllowedEvents(info, entity);
-                    updateRestOptions(info, entity);
-
                     information.add(info);
                 }
             }
@@ -357,37 +349,22 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
             jdoListenerRegistryService.removeInactiveListeners(entityNamesSb.toString());
             String entityWithListenersNames = jdoListenerRegistryService.getEntitiesListenerStr();
 
-            addEntries(output, blueprint, context, channel, entityNamesSb.toString(), historyEntitySb.toString(), entityWithListenersNames);
+            addEntries(output, blueprint, context, channel, entityNamesSb.toString(), historyEntitySb.toString(),
+                    entityWithListenersNames);
+            addEntityInfoFiles(output, information);
 
             return tempFile.toFile();
         }
     }
 
-    private EntityInfo buildEntityInfo(ClassData classData) {
+    private EntityInfo buildEntityInfo(EntityDto entity, List<FieldDto> fields, AdvancedSettingsDto advancedSettings) {
         EntityInfo info = new EntityInfo();
 
-        info.setClassName(classData.getClassName());
-        info.setModule(classData.getModule());
-        info.setNamespace(classData.getNamespace());
+        info.setEntity(entity);
+        info.setAdvancedSettings(advancedSettings);
+        info.setFieldsInfo(getFieldsInfo(entity, fields, advancedSettings));
 
         return info;
-    }
-
-    private void updateRestOptions(EntityInfo info, Entity entity) {
-        RestOptions restOptions = entity.getRestOptions();
-
-        if (restOptions != null) {
-            info.setRestCreateEnabled(restOptions.isAllowCreate());
-            info.setRestReadEnabled(restOptions.isAllowRead());
-            info.setRestUpdateEnabled(restOptions.isAllowUpdate());
-            info.setRestDeleteEnabled(restOptions.isAllowDelete());
-        }
-    }
-
-    private void setAllowedEvents(EntityInfo info, Entity entity) {
-        info.setCreateEventFired(entity.isAllowCreateEvent());
-        info.setUpdateEventFired(entity.isAllowUpdateEvent());
-        info.setDeleteEventFired(entity.isAllowDeleteEvent());
     }
 
     private void addEntries(JarOutputStream output, String blueprint, String context, String channel,
@@ -403,6 +380,16 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         addEntry(output, DATANUCLEUS_PROPERTIES);
         addEntry(output, MOTECH_MDS_PROPERTIES);
         addEntry(output, VALIDATION_PROVIDER);
+    }
+
+    private void addEntityInfoFiles(JarOutputStream output, List<EntityInfo> entityInfos) throws IOException {
+        final ObjectMapper objectMapper = new ObjectMapper();
+
+        for (EntityInfo entityInfo : entityInfos) {
+            String asJson = objectMapper.writeValueAsString(entityInfo);
+            addEntry(output, ENTITY_INFO_DIR + entityInfo.getClassName() + ".json",
+                    asJson.getBytes(Charset.forName("UTF-8")));
+        }
     }
 
     private boolean addClass(JarOutputStream output, String name) {
@@ -564,27 +551,28 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         return sb.toString();
     }
 
-    private List<FieldInfo> getFieldsInfo(Entity entity) {
+    private List<FieldInfo> getFieldsInfo(EntityDto entity, List<FieldDto> fields,
+                                          AdvancedSettingsDto advancedSettings) {
         List<FieldInfo> fieldsInfo = new ArrayList<>();
-        List<Field> fields = new ArrayList<>(entity.getFields());
-        Collections.sort(fields, new UIDisplayFieldComparator());
-        for (Field field : fields) {
+
+        Collections.sort(fields, new UIDisplayFieldComparator(advancedSettings.getBrowsing().getDisplayedFields()));
+
+        for (FieldDto field : fields) {
             FieldInfo fieldInfo = new FieldInfo();
 
-            fieldInfo.setName(field.getName());
-            fieldInfo.setDisplayName(field.getDisplayName());
-            fieldInfo.setRequired(field.isRequired());
-            fieldInfo.setRestExposed(field.isExposedViaRest());
-            fieldInfo.setAutoGenerated(TRUE.equals(field.getMetadataValue(AUTO_GENERATED)));
+            fieldInfo.setField(field);
+
+            boolean exposedByRest = advancedSettings.isFieldExposedByRest(field.getBasic().getName());
+            fieldInfo.setRestExposed(exposedByRest);
 
             FieldInfo.TypeInfo typeInfo = fieldInfo.getTypeInfo();
-            typeInfo.setType(field.getType().getTypeClassName());
-            typeInfo.setTaskType(ActionParameterTypeResolver.resolveType(field));
+            typeInfo.setType(field.getType().getTypeClass());
+            typeInfo.setTaskType(ActionParameterTypeResolver.resolveType(entity, field));
 
             // combobox values
             typeInfo.setCombobox(field.getType().isCombobox());
             if (field.getType().isCombobox()) {
-                ComboboxHolder cbHolder = new ComboboxHolder(field);
+                ComboboxHolder cbHolder = new ComboboxHolder(entity, field);
                 String[] items = cbHolder.getValues();
                 if (ArrayUtils.isNotEmpty(items)) {
                     typeInfo.setItems(Arrays.asList(items));
@@ -673,11 +661,6 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
     @Autowired
     public void setMonitor(EntitiesBundleMonitor monitor) {
         this.monitor = monitor;
-    }
-
-    @Autowired
-    public void setAllEntities(AllEntities allEntities) {
-        this.allEntities = allEntities;
     }
 
     @Autowired
