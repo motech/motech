@@ -1,8 +1,6 @@
 package org.motechproject.mds.listener.records;
 
 import org.motechproject.mds.service.HistoryService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.jdo.listener.InstanceLifecycleEvent;
 import javax.jdo.listener.StoreLifecycleListener;
@@ -15,8 +13,6 @@ import javax.jdo.listener.StoreLifecycleListener;
  */
 public class HistoryListener extends BaseListener implements StoreLifecycleListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HistoryListener.class);
-
     private HistoryService historyService;
 
     @Override
@@ -27,15 +23,15 @@ public class HistoryListener extends BaseListener implements StoreLifecycleListe
     @Override
     public void preStore(InstanceLifecycleEvent event) {
         Object instance = event.getSource();
-        LOGGER.trace("Pre-store event received for {}", instance);
+        getLogger().trace("Pre-store event received for {}", instance);
     }
 
     @Override
     public void postStore(InstanceLifecycleEvent event) {
         Object instance = event.getSource();
-        LOGGER.trace("Post-store event received for {}", instance);
+        getLogger().trace("Post-store event received for {}", instance);
 
-        LOGGER.debug("Recording history for {}", instance);
+        getLogger().debug("Recording history for {}", instance);
         historyService.record(instance);
     }
 }
