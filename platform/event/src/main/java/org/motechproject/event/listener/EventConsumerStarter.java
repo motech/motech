@@ -4,19 +4,21 @@ import org.motechproject.server.osgi.event.OsgiEventProxy;
 import org.motechproject.server.osgi.util.PlatformConstants;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.integration.MessageChannel;
-import org.springframework.integration.message.GenericMessage;
 
 /**
  * Handles incoming events and starts ActiveMQ outbound channels.
  */
 public class EventConsumerStarter implements EventHandler {
-    private MessageChannel controlChannel;
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventConsumerStarter.class);
+
+    private ControlBusGateway controlBusGateway;
 
     @Autowired
-    public EventConsumerStarter(MessageChannel controlChannel) {
-        this.controlChannel = controlChannel;
+    public EventConsumerStarter(ControlBusGateway controlBusGateway) {
+        this.controlBusGateway = controlBusGateway;
     }
 
     /**
@@ -33,10 +35,11 @@ public class EventConsumerStarter implements EventHandler {
         if (subject.equals(PlatformConstants.MODULES_STARTUP_TOPIC)) {
             startActiveMQConsumers();
         }
+        LOGGER.info("ActiveMQ outbound channels started.");
     }
 
     private void startActiveMQConsumers() {
-        controlChannel.send(new GenericMessage<>("@queueOutboundChannelAdapter.start()"));
-        controlChannel.send(new GenericMessage<>("@topicOutboundChannelAdapter.start()"));
+        controlBusGateway.sendCommand("@queueOutboundChannelAdapter.start()");
+        controlBusGateway.sendCommand("@topicOutboundChannelAdapter.start()");
     }
 }
