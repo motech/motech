@@ -1464,7 +1464,7 @@
                     scope.$apply(function() {
                        ctrl.$setViewValue(valueFromInputs);
                     });
-                    scope.$parent.$parent.i.value = valueFromInputs;
+                    //scope.$parent.$parent.i.value = valueFromInputs;
                 },
                 setParsingPeriod = function () {
                     var valueElement = elem.val(), valueDate, valueTime,
@@ -1549,8 +1549,6 @@
                     periodSlider.children( "#period-minute" ).slider( "value", minute);
                     periodSlider.children( "#period-second" ).slider( "value", second );
                 };
-
-
 
                 periodSliders.each(function(index) {
                     var getValueSettings, valueName = (this.id);

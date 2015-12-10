@@ -1,9 +1,9 @@
-<input type="hidden" ng-model="data.value" period-amount-tasks>
+<input type="hidden" ng-model="i.value" period-amount-tasks/>
 <button class="btn-sm btn btn-default">
     {{msg('task.btn.changePeriod')}}
 </button>
-<div contenteditable ng-model="data.value" droppable class="actionField period-input period-field word-wrap input-extra-fluid" data-index="{{index}}" data-type="{{data.type}}">
-    <span ng-bind-html-unsafe="data.value" ng-model="data.value" class="html">
+<div contenteditable ng-model="i.value" droppable class="actionField period-input period-field word-wrap input-extra-fluid" data-index="{{index}}" data-type="{{i.type}}">
+    <span ng-bind-html-unsafe="i.value" ng-model="i.value" class="html">
         <h1 contentEditable="false">
             <span class="editable"></span>
         </h1>
