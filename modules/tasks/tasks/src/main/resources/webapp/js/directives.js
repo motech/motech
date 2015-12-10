@@ -1386,7 +1386,7 @@
         };
     });
 
-    directives.directive('periodAmount', function() {
+    directives.directive('periodAmountTasks', function() {
         return {
             restrict: 'A',
             require: 'ngModel',
