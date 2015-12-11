@@ -1464,7 +1464,6 @@
                     scope.$apply(function() {
                        ctrl.$setViewValue(valueFromInputs);
                     });
-                    //scope.$parent.$parent.i.value = valueFromInputs;
                 },
                 setParsingPeriod = function () {
                     var valueElement = elem.val(), valueDate, valueTime,
