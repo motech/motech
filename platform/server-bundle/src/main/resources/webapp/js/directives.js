@@ -403,8 +403,7 @@
         };
     });
     
-    // code for date-picker
-    
+    /* code for date-picker*/   
     widgetModule.directive('datePicker', function() {
         return {
             restrict: 'A',
@@ -576,7 +575,7 @@
         };
     });
     
-    //Datepicker in commcare module
+    /*Datepicker in commcare module*/
     widgetModule.directive('commcareGridDatePicker', function() {
         return {
             restrict: 'A',
@@ -628,7 +627,7 @@
         };
     });
     
-    //importDatepicker in commcare module
+    /*importDatepicker in commcare module*/
     widgetModule.directive('importDateTimePicker', function() {
         return {
             restrict: 'A',
@@ -737,6 +736,46 @@
                         elem.datetimepicker('option', 'minDate', null);
                         elem.datetimepicker('option', 'minDateTime', null);
                     }                    
+                });
+            }
+        };
+    });
+
+    /*smsGridDatePicker in sms module*/
+    widgetModule.directive('smsGridDatePicker', function() {
+        return {
+            restrict: 'A',
+            link: function(scope, element, attrs) {
+                var elem = angular.element(element),
+                    otherDateTextBox = {},
+                    curId = attrs.id,
+                    curIdLength = curId.length,
+                    otherId = '',
+                    isStartDate = false;
+                     
+                if(curId.substr(curIdLength-2,2) === 'To') {
+                    otherId = curId.slice(0,curIdLength - 2) + 'From';
+                }
+                else {
+                    otherId = curId.slice(0,curIdLength - 4) + 'To';
+                    isStartDate = true;
+                }
+                otherDateTextBox = angular.element('#' + otherId);
+
+                elem.datetimepicker({
+                    dateFormat: "yy-mm-dd",
+                    changeMonth: true,
+                    changeYear: true,
+                    maxDate: +0,
+                    timeFormat: "HH:mm:ss",
+                    onSelect: function (selectedDateTime){
+                        if(isStartDate) {
+                            otherDateTextBox.datetimepicker('option', 'minDate', elem.datetimepicker('getDate') );
+                        }
+                        else {
+                            otherDateTextBox.datetimepicker('option', 'maxDate', elem.datetimepicker('getDate') );
+                        }
+                    }
                 });
             }
         };
