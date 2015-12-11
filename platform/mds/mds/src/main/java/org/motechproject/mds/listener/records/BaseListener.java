@@ -16,18 +16,22 @@ import org.springframework.context.ApplicationContext;
  * we don't normally have access to the spring context of MDS entities. This class
  * retrieves this context by registering as a service listener that for the
  * {@link org.springframework.context.ApplicationContext}. After the context gets
- * retrieved the {@link #afterContextRegistered()} gets called, which allows implementing
- * listeners to initialize.
+ * retrieved it can be used for retrieving the service specified by the implementing listener.
+ * If service retrieval is initiated before the context is available, a wait time of max 5 minutes
+ * will begin.
+ *
+ * @param <T> the type of the service which is used by the implementing listener
  */
-public abstract class BaseListener implements ServiceListener {
+public abstract class BaseListener<T> implements ServiceListener {
 
-    private static final int CTX_WAIT_TIME_MS = 30000;
+    private static final int CTX_WAIT_TIME_MS = 5 * 60 * 1000; // 5 min
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Object ctxWaitLock = new Object();
     private final BundleContext bundleContext;
 
     private ApplicationContext applicationContext;
+    private T service;
 
     public BaseListener() {
         // Listeners get constructed by JDO. Because of this, we must obtain required references
@@ -44,13 +48,16 @@ public abstract class BaseListener implements ServiceListener {
 
     @Override
     public void serviceChanged(ServiceEvent event) {
-        if (event.getType() == ServiceEvent.REGISTERED &&
-                MdsBundleHelper.isMdsEntitiesBundle(event.getServiceReference().getBundle())) {
-            synchronized (ctxWaitLock) {
-                applicationContext = (ApplicationContext) bundleContext.getService(event.getServiceReference());
-                ctxWaitLock.notify();
+        if (MdsBundleHelper.isMdsEntitiesBundle(event.getServiceReference().getBundle())) {
+            if (event.getType() == ServiceEvent.REGISTERED) {
+                synchronized (ctxWaitLock) {
+                    applicationContext = (ApplicationContext) bundleContext.getService(event.getServiceReference());
+                    ctxWaitLock.notify();
+                }
+            } else if (event.getType() == ServiceEvent.UNREGISTERING) {
+                // new listeners will be created with the new context, this one should get unregistered
+                bundleContext.removeServiceListener(this);
             }
-            afterContextRegistered();
         }
     }
 
@@ -69,7 +76,14 @@ public abstract class BaseListener implements ServiceListener {
         return logger;
     }
 
-    protected abstract void afterContextRegistered();
+    protected T getService() {
+        if (service == null) {
+            service = getApplicationContext().getBean(getServiceClass());
+        }
+        return service;
+    }
+
+    protected abstract Class<T> getServiceClass();
 
     private void waitForCtx() {
         synchronized (ctxWaitLock) {

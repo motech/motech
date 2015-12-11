@@ -16,14 +16,7 @@ import javax.jdo.listener.InstanceLifecycleEvent;
  * the object history. Listener operations are executed in one transaction with
  * the actual delete.
  */
-public class TrashListener extends BaseListener implements DeleteLifecycleListener {
-
-    private TrashService trashService;
-
-    @Override
-    protected void afterContextRegistered() {
-        trashService = getApplicationContext().getBean(TrashService.class);
-    }
+public class TrashListener extends BaseListener<TrashService> implements DeleteLifecycleListener {
 
     @Override
     public void preDelete(InstanceLifecycleEvent event) {
@@ -37,9 +30,9 @@ public class TrashListener extends BaseListener implements DeleteLifecycleListen
         MotechDataService dataService = ServiceUtil.getServiceFromAppContext(getApplicationContext(), className);
         Long schemaVersion = dataService.getSchemaVersion();
 
-        if (trashService.isTrashMode()) {
+        if (getService().isTrashMode()) {
             getLogger().debug("Moving to trash {}, schema version {}", new Object[]{instance, schemaVersion});
-            trashService.moveToTrash(instance, schemaVersion);
+            getService().moveToTrash(instance, schemaVersion);
         }
     }
 
@@ -47,5 +40,10 @@ public class TrashListener extends BaseListener implements DeleteLifecycleListen
     public void postDelete(InstanceLifecycleEvent event) {
         Object instance = event.getSource();
         getLogger().trace("Received post-delete for: {}", instance);
+    }
+
+    @Override
+    protected Class<TrashService> getServiceClass() {
+        return TrashService.class;
     }
 }

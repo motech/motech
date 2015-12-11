@@ -11,14 +11,7 @@ import javax.jdo.listener.StoreLifecycleListener;
  * using the {@link org.motechproject.mds.service.HistoryService}. Listener
  * operations are executed in one transaction with the actual store.
  */
-public class HistoryListener extends BaseListener implements StoreLifecycleListener {
-
-    private HistoryService historyService;
-
-    @Override
-    protected void afterContextRegistered() {
-        historyService = getApplicationContext().getBean(HistoryService.class);
-    }
+public class HistoryListener extends BaseListener<HistoryService> implements StoreLifecycleListener {
 
     @Override
     public void preStore(InstanceLifecycleEvent event) {
@@ -32,6 +25,11 @@ public class HistoryListener extends BaseListener implements StoreLifecycleListe
         getLogger().trace("Post-store event received for {}", instance);
 
         getLogger().debug("Recording history for {}", instance);
-        historyService.record(instance);
+        getService().record(instance);
+    }
+
+    @Override
+    protected Class<HistoryService> getServiceClass() {
+        return HistoryService.class;
     }
 }
