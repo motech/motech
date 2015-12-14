@@ -3441,6 +3441,9 @@
         $scope.showViewTrashButton = true;
         $scope.showFiltersButton = true;
         $scope.showDeleteInstanceButton = true;
+        $scope.editRelatedFields = null;
+        $scope.newRelatedFields = null;
+        $scope.isNested = false;
 
         $scope.customModals = [];
 
@@ -3495,14 +3498,21 @@
         };
 
         $scope.addNewRelatedInstance = function (field) {
+            $scope.isNested = true;
             var relatedClass  = $scope.getRelatedClass(field);
             $scope.editedField = angular.copy(field);
             $('#new-related').modal('show');
 
+            $('#new-related').on('hidden.bs.modal', function () {
+                $scope.isNested = false;
+                $scope.newRelatedFields = null;
+                $scope.editRelatedFields = null;
+            });
+
             $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
                 Instances.newInstance({id: data.id}, function(dataInstance) {
                     $scope.currentRelationRecord = dataInstance;
-                    $scope.newRelatedFields = dataInstance.fields;
+                    $scope.newRelatedFields = angular.copy(dataInstance.fields);
                     angular.forEach($scope.newRelatedFields, function(field) {
                         if ( field.type.typeClass === "java.util.List" && field.value !== null && field.value.length === 0 ) {
                             field.value = null;
@@ -3518,12 +3528,14 @@
 
         $scope.cancelAddRelatedForm = function () {
             $scope.newRelatedFields = null;
-            $('#new-related').modal('hide');
+            $scope.isNested = false;
+            $('body #new-related').modal('hide');
         };
 
         $scope.cancelEditRelatedForm = function () {
             $scope.editRelatedFields = null;
-            $('#edit-related').modal('hide');
+            $scope.isNested = false;
+            $('body #edit-related').modal('hide');
         };
 
         /**
@@ -3561,12 +3573,11 @@
             });
         };
 
-        $scope.editRelatedFields = null;
-
         /**
         * Sets the selected instance to edit
         */
         $scope.editRelatedInstanceOfEntity = function(instanceId, relatedEntityId, field) {
+            $scope.isNested = true;
             $scope.editedInstanceId = instanceId;
             $('#edit-related').modal('show');
             var addedNewRecords,
@@ -3685,8 +3696,13 @@
                         return;
                     }
                 });
+                if (field.value === null) {
+                    $scope.relatedData.initValue(field);
+                }
                 field.value.addedNewRecords.push({id: null, entitySchemaId: $scope.currentRelationRecord.entitySchemaId, fields: relatedData} );
                 $('#new-related').modal('hide');
+                $scope.newRelatedFields = null;
+                $scope.isNested = false;
             },
 
             addExisting: function (field, relatedDataId) {
@@ -3694,6 +3710,9 @@
                 if (i >= 0 && i !== false) {
                     field.value.removedIds.splice(i, 1);
                 } else {
+                    if (field.value === null) {
+                        $scope.relatedData.initValue(field);
+                    }
                     field.value.addedIds.push(relatedDataId);
                 }
             },
@@ -3724,7 +3743,9 @@
                     setExisting();
                 }
                 $scope.editedInstanceId = undefined;
+                $scope.editRelatedFields = null;
                 $('#edit-related').modal('hide');
+                $scope.isNested = false;
             },
 
             removeFromExisting: function (field, addedId) {
@@ -3771,13 +3792,13 @@
                 if (i < 0 && field.value.removedIds !== undefined && field.value.removedIds.indexOf(id) < 0) {
                     $scope.safeApply(function () {
                         field.value.removedIds.push(id);
-                        if (field.displayValue[id] !== undefined) {
+                        if (field.displayValue !== null && field.displayValue[id] !== undefined) {
                             field.displayValue[id] = undefined;
                         }
                     });
                 } else {
                     $scope.relatedData.removeFromExisting(field, id);
-                    if (field.displayValue[id] !== undefined) {
+                    if (field.displayValue !== null && field.displayValue[id] !== undefined) {
                         field.displayValue[id] = undefined;
                     }
                 }
@@ -3975,6 +3996,7 @@
                 $scope.loadedFields = undefined;
                 $scope.removeIdFromUrl();
             }
+            $scope.newRelatedFields = null;
             resizeLayout();
         };
 
@@ -3983,7 +4005,7 @@
         * Saves the entity instance after the user clicks save
         *
         */
-    $scope.addEntityInstance = function () {
+        $scope.addEntityInstance = function () {
             blockUI();
 
             var values = $scope.currentRecord.fields;
@@ -4703,8 +4725,8 @@
         * Construct appropriate url according with a field type for form used to set correct
         * value of edit value property.
         */
-        $scope.loadEditValueForm = function (field) {
-            var value = $scope.getTypeSingleClassName(field.type);
+        $scope.loadEditValueForm = function (field, isNestedField) {
+            var value = angular.copy($scope.getTypeSingleClassName(field.type));
 
             if (value === 'boolean') {
 
@@ -4720,6 +4742,8 @@
                 }
             } else if (value === 'string' && field.name === 'owner') {
                 value = 'string-owner';
+            } else if (value === 'oneToMany' && ($scope.newRelatedFields !== null || $scope.editRelatedFields !== null) && isNestedField === true) {
+                value = 'oneToManyRelated';
             }
             return '../mds/resources/partials/widgets/field-edit-Value-{0}.html'
                           .format(value.substring(value.toLowerCase()));

@@ -65,9 +65,9 @@
                     </div>
                 </div>
 
-                <div id="instanceBrowserTable" class="overrideJqgridTable" ng-if="relatedEntity!==undefined">
-                    <table id="browserTable" entity-instances-browser-grid="pageInstancesBrowserTable"></table>
-                    <div id="pageInstancesBrowserTable"></div>
+                <div id="instanceBrowserTable_{{field.id}}" class="overrideJqgridTable" ng-if="relatedEntity!==undefined">
+                    <table id="browserTable_{{field.id}}" entity-instances-browser-grid="pageInstancesBrowserTable_{{field.id}}"></table>
+                    <div id="pageInstancesBrowserTable_{{field.id}}"></div>
                 </div>
 
             </div>
