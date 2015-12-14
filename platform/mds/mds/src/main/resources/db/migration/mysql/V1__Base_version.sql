@@ -3,6 +3,7 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO,ANSI' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+DROP TABLE IF EXISTS "Entity";
 CREATE TABLE "Entity" (
   "id" bigint(20) NOT NULL,
   "className" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
@@ -29,6 +30,7 @@ CREATE TABLE "Entity" (
   CONSTRAINT "Entity_FK1" FOREIGN KEY ("parentEntity_id_OID") REFERENCES "Entity" ("id")
 );
 
+DROP TABLE IF EXISTS "EntityAudit";
 CREATE TABLE "EntityAudit" (
   "id" bigint(20) NOT NULL,
   "modificationDate" datetime DEFAULT NULL,
@@ -38,6 +40,7 @@ CREATE TABLE "EntityAudit" (
   CONSTRAINT "EntityAudit_FK1" FOREIGN KEY ("id") REFERENCES "Entity" ("id")
 );
 
+DROP TABLE IF EXISTS "Entity_securityMembers";
 CREATE TABLE "Entity_securityMembers" (
   "Entity_OID" bigint(20) NOT NULL,
   "SecurityMember" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
@@ -46,6 +49,7 @@ CREATE TABLE "Entity_securityMembers" (
   CONSTRAINT "Entity_securityMembers_FK1" FOREIGN KEY ("Entity_OID") REFERENCES "Entity" ("id")
 );
 
+DROP TABLE IF EXISTS "Field";
 CREATE TABLE "Field" (
   "id" bigint(20) NOT NULL,
   "defaultValue" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
@@ -72,6 +76,7 @@ CREATE TABLE "Field" (
   CONSTRAINT "Field_FK2" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
 
+DROP TABLE IF EXISTS "FieldMetadata";
 CREATE TABLE "FieldMetadata" (
   "id" bigint(20) NOT NULL,
   "field_id_OID" bigint(20) DEFAULT NULL,
@@ -83,6 +88,7 @@ CREATE TABLE "FieldMetadata" (
   CONSTRAINT "FieldMetadata_FK1" FOREIGN KEY ("field_id_OID") REFERENCES "Field" ("id")
 );
 
+DROP TABLE IF EXISTS "FieldSetting";
 CREATE TABLE "FieldSetting" (
   "id" bigint(20) NOT NULL,
   "DETAILS_ID" bigint(20) DEFAULT NULL,
@@ -96,6 +102,7 @@ CREATE TABLE "FieldSetting" (
   CONSTRAINT "FieldSetting_FK1" FOREIGN KEY ("field_id_OID") REFERENCES "Field" ("id")
 );
 
+DROP TABLE IF EXISTS "FieldValidation";
 CREATE TABLE "FieldValidation" (
   "id" bigint(20) NOT NULL,
   "DETAILS_ID" bigint(20) DEFAULT NULL,
@@ -110,6 +117,7 @@ CREATE TABLE "FieldValidation" (
   CONSTRAINT "FieldValidation_FK1" FOREIGN KEY ("DETAILS_ID") REFERENCES "TypeValidation" ("id")
 );
 
+DROP TABLE IF EXISTS "Lookup";
 CREATE TABLE "Lookup" (
   "id" bigint(20) NOT NULL,
   "entity_id_OID" bigint(20) DEFAULT NULL,
@@ -124,6 +132,7 @@ CREATE TABLE "Lookup" (
   CONSTRAINT "Lookup_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
 
+DROP TABLE IF EXISTS "LookupFields";
 CREATE TABLE "LookupFields" (
   "id_OID" bigint(20) NOT NULL,
   "id_EID" bigint(20) NOT NULL,
@@ -135,6 +144,7 @@ CREATE TABLE "LookupFields" (
   CONSTRAINT "LookupFields_FK2" FOREIGN KEY ("id_EID") REFERENCES "Field" ("id")
 );
 
+DROP TABLE IF EXISTS "RestOptions";
 CREATE TABLE "RestOptions" (
   "id" bigint(20) NOT NULL,
   "allowCreate" bit(1) NOT NULL,
@@ -148,12 +158,14 @@ CREATE TABLE "RestOptions" (
   CONSTRAINT "RestOptions_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
 
+DROP TABLE IF EXISTS "SEQUENCE_TABLE";
 CREATE TABLE "SEQUENCE_TABLE" (
   "SEQUENCE_NAME" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   "NEXT_VAL" bigint(20) NOT NULL,
   PRIMARY KEY ("SEQUENCE_NAME")
 );
 
+DROP TABLE IF EXISTS "TYPE_SETTING_SETTING_OPTION";
 CREATE TABLE "TYPE_SETTING_SETTING_OPTION" (
   "TYPE_SETTING_ID_OID" bigint(20) NOT NULL,
   "SETTING_OPTION_ID_EID" bigint(20) DEFAULT NULL,
@@ -165,6 +177,7 @@ CREATE TABLE "TYPE_SETTING_SETTING_OPTION" (
   CONSTRAINT "TYPE_SETTING_SETTING_OPTION_FK1" FOREIGN KEY ("TYPE_SETTING_ID_OID") REFERENCES "TypeSetting" ("id")
 );
 
+DROP TABLE IF EXISTS "TYPE_TYPE_SETTING";
 CREATE TABLE "TYPE_TYPE_SETTING" (
   "TYPE_ID_OID" bigint(20) NOT NULL,
   "TYPE_SETTING_ID_EID" bigint(20) DEFAULT NULL,
@@ -176,6 +189,7 @@ CREATE TABLE "TYPE_TYPE_SETTING" (
   CONSTRAINT "TYPE_TYPE_SETTING_FK2" FOREIGN KEY ("TYPE_SETTING_ID_EID") REFERENCES "TypeSetting" ("id")
 );
 
+DROP TABLE IF EXISTS "TYPE_TYPE_VALIDATION";
 CREATE TABLE "TYPE_TYPE_VALIDATION" (
   "TYPE_ID_OID" bigint(20) NOT NULL,
   "TYPE_VALIDATION_ID_EID" bigint(20) DEFAULT NULL,
@@ -187,6 +201,7 @@ CREATE TABLE "TYPE_TYPE_VALIDATION" (
   CONSTRAINT "TYPE_TYPE_VALIDATION_FK1" FOREIGN KEY ("TYPE_ID_OID") REFERENCES "Type" ("id")
 );
 
+DROP TABLE IF EXISTS "Tracking";
 CREATE TABLE "Tracking" (
   "id" bigint(20) NOT NULL,
   "entity_id_OID" bigint(20) DEFAULT NULL,
@@ -201,6 +216,7 @@ CREATE TABLE "Tracking" (
   CONSTRAINT "Tracking_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
 
+DROP TABLE IF EXISTS "Type";
 CREATE TABLE "Type" (
   "id" bigint(20) NOT NULL,
   "description" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
@@ -210,6 +226,7 @@ CREATE TABLE "Type" (
   PRIMARY KEY ("id")
 );
 
+DROP TABLE IF EXISTS "TypeSetting";
 CREATE TABLE "TypeSetting" (
   "id" bigint(20) NOT NULL,
   "defaultValue" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
@@ -220,12 +237,14 @@ CREATE TABLE "TypeSetting" (
   CONSTRAINT "TypeSetting_FK1" FOREIGN KEY ("TYPE_ID") REFERENCES "Type" ("id")
 );
 
+DROP TABLE IF EXISTS "TypeSettingOption";
 CREATE TABLE "TypeSettingOption" (
   "id" bigint(20) NOT NULL,
   "name" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   PRIMARY KEY ("id")
 );
 
+DROP TABLE IF EXISTS "TypeValidation";
 CREATE TABLE "TypeValidation" (
   "id" bigint(20) NOT NULL,
   "displayName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
@@ -235,6 +254,7 @@ CREATE TABLE "TypeValidation" (
   CONSTRAINT "TypeValidation_FK1" FOREIGN KEY ("TYPE_ID") REFERENCES "Type" ("id")
 );
 
+DROP TABLE IF EXISTS "TypeValidation_annotations";
 CREATE TABLE "TypeValidation_annotations" (
   "id_OID" bigint(20) NOT NULL,
   "ANNOTATION" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
@@ -244,11 +264,13 @@ CREATE TABLE "TypeValidation_annotations" (
   CONSTRAINT "TypeValidation_annotations_FK1" FOREIGN KEY ("id_OID") REFERENCES "TypeValidation" ("id")
 );
 
+DROP TABLE IF EXISTS "SchemaChangeLock";
 CREATE TABLE "SchemaChangeLock" (
     "id" bigint(20) PRIMARY KEY,
     "lockId" int(1) UNIQUE
 );
 
+DROP TABLE IF EXISTS "MigrationMapping";
 CREATE TABLE "MigrationMapping" (
   "flywayMigrationVersion" int NOT NULL,
   "moduleMigrationVersion" int NOT NULL,
@@ -256,6 +278,7 @@ CREATE TABLE "MigrationMapping" (
   PRIMARY KEY ("flywayMigrationVersion")
 );
 
+DROP TABLE IF EXISTS "Entity_readOnlySecurityMembers";
 CREATE TABLE "Entity_readOnlySecurityMembers" (
   "Entity_OID" bigint(20) NOT NULL,
   "ReadOnlySecurityMember" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
@@ -264,6 +287,7 @@ CREATE TABLE "Entity_readOnlySecurityMembers" (
   CONSTRAINT "Entity_readOnlySecurityMembers_FK1" FOREIGN KEY ("Entity_OID") REFERENCES "Entity" ("id")
 );
 
+DROP TABLE IF EXISTS "UserPreferences";
 CREATE TABLE "UserPreferences" (
   "className" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   "username" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
@@ -271,6 +295,7 @@ CREATE TABLE "UserPreferences" (
   PRIMARY KEY ("className", "username")
 );
 
+DROP TABLE IF EXISTS "UserPreferences_selectedFields";
 CREATE TABLE "UserPreferences_selectedFields" (
   "className_OID" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   "username_OID" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
@@ -283,6 +308,7 @@ CREATE TABLE "UserPreferences_selectedFields" (
   CONSTRAINT "UserPreferences_visibleFields_FK2" FOREIGN KEY ("selectedField") REFERENCES "Field" ("id") ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS "UserPreferences_unselectedFields";
 CREATE TABLE "UserPreferences_unselectedFields" (
   "className_OID" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   "username_OID" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
@@ -295,6 +321,7 @@ CREATE TABLE "UserPreferences_unselectedFields" (
   CONSTRAINT "UserPreferences_unselectedFields_FK2" FOREIGN KEY ("unselectedField") REFERENCES "Field" ("id") ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS "ConfigSettings";
 CREATE TABLE "ConfigSettings" (
   "id" bigint(20),
   "afterTimeUnit" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
@@ -302,6 +329,18 @@ CREATE TABLE "ConfigSettings" (
   "deleteMode" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   "emptyTrash" bit(1),
   "defaultGridSize" int DEFAULT 50,
+  "refreshModuleAfterTimeout" bit(1) DEFAULT 0,
+  PRIMARY KEY ("id")
+);
+
+DROP TABLE IF EXISTS "BundleFailsReport";
+CREATE TABLE "BundleFailsReport" (
+  "id" bigint(20),
+  "bundleRestartStatus" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  "bundleSymbolicName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  "errorMessage" mediumtext NOT NULL,
+  "nodeName"	varchar(255) CHARACTER SET latin1 COLLATE latin1_bin,
+  "reportDate" datetime,
   PRIMARY KEY ("id")
 );
 

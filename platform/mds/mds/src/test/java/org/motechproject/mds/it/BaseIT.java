@@ -149,7 +149,7 @@ public abstract class BaseIT {
     }
 
     protected List<BundleFailureReport> getBundleFailsReports() {
-        return getAll(BundleFailureReport.class);
+        return getAll(BundleFailureReport.class, true);
     }
 
     protected void clearDB() {
