@@ -3,6 +3,7 @@ package org.motechproject.mds.it;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.motechproject.mds.domain.BundleFailureReport;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityAudit;
 import org.motechproject.mds.domain.EntityDraft;
@@ -147,6 +148,10 @@ public abstract class BaseIT {
         return getAll(Lookup.class, true);
     }
 
+    protected List<BundleFailureReport> getBundleFailsReports() {
+        return getAll(BundleFailureReport.class);
+    }
+
     protected void clearDB() {
         getPersistenceManager().deletePersistentAll(getFields());
         getPersistenceManager().deletePersistentAll(getLookups());
@@ -155,6 +160,7 @@ public abstract class BaseIT {
         getPersistenceManager().deletePersistentAll(getEntitiesAudits());
         getPersistenceManager().deletePersistentAll(getEntitiesDrafts());
         getPersistenceManager().deletePersistentAll(getUserPreferences());
+        getPersistenceManager().deletePersistentAll(getBundleFailsReports());
     }
 
     protected <T> List<T> cast(Class<T> clazz, Collection collection) {
