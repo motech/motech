@@ -1520,8 +1520,6 @@
                             <password>${motech.sql.password}</password>
                             <url>${motech.sql.url}</url>
                         </configuration>
-                        <!-- For each Bundle IT tests in modules migrated to MDS the 'motech_data_services'
-                            database has to be dropped and created again. -->
                         <executions>
                             <execution>
                                 <id>drop-db</id>

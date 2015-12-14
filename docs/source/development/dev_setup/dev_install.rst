@@ -188,7 +188,8 @@ The versions below may change, most likely the latest stable release will work f
 		.. code-block:: sql
 
 			sql> create database motechquartz;
-			sql> create database motech_data_services;
+			sql> create database motechschema;
+			sql> create database motechdata;
 			sql> exit;
 
 	#. (Optional) Create user for the motechquartz database. MOTECH will use the user and password from the bootstrap configuration by default, but you can adjust that in the Scheduler settings and provide different credentials.
@@ -201,12 +202,11 @@ The versions below may change, most likely the latest stable release will work f
 	.. note::
 
 	    Sometimes it is needed to set the proper database character encoding. For example, to create
-	    motech_data_services database with UTF-8 character encoding, change your sql query to:
+	    motechdata database with UTF-8 character encoding, change your sql query to:
 
             .. code-block:: sql
 
-	            sql> create database motech_data_services
-	                 default character set utf8 collate utf8_general_ci;
+	            sql> create database motechdata default character set utf8 collate utf8_general_ci;
 
 
 #. Setup PostgreSQL (skip if you did not install PostgreSQL server)
@@ -230,7 +230,8 @@ The versions below may change, most likely the latest stable release will work f
 		.. code-block:: sql
 
 			postgres=# create database motechquartz;
-			postgres=# create database motech_data_services;
+			postgres=# create database motechschema;
+			postgres=# create database motechdata;
 			postgres=# (ctrl + D)
 
 	#. (Optional) Create user for the motechquartz database. MOTECH will use the user and password from the bootstrap configuration by default, but you can adjust that in the Scheduler settings and provide different credentials.
