@@ -39,7 +39,7 @@ public class EventConsumerStarter implements EventHandler {
     }
 
     private void startActiveMQConsumers() {
-        controlBusGateway.sendCommand("@queueOutboundChannelAdapter.start()");
-        controlBusGateway.sendCommand("@topicOutboundChannelAdapter.start()");
+        controlBusGateway.sendCommand("@eventQueueJMSIn.start()");
+        controlBusGateway.sendCommand("@eventTopicJMSIn.start()");
     }
 }
