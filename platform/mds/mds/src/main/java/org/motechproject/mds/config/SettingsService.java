@@ -42,6 +42,14 @@ public interface SettingsService {
      */
     Integer getGridSize();
 
+
+    /**
+     * Returns current setting of bundle restarting after timeout.
+     *
+     * @return true, if setting is enabled, false otherwise
+     */
+    Boolean isRefreshModuleAfterTimeout();
+
     /**
      * Updates all MDS settings and performs necessary actions if required (eg. scheduling jobs, that remove
      * instances from trash).

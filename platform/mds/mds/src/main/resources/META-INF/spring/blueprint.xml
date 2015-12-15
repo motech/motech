@@ -59,4 +59,6 @@
         </osgi:service-properties>
     </osgi:service>
 
+    <osgi:service id="mdsOsgiBundleApplicationContextListenerServiceOSGi" auto-export="interfaces" ref="mdsOsgiBundleApplicationContextListener"/>
+
 </beans>
