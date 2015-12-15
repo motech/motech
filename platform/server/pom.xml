@@ -279,6 +279,10 @@
                             <directory>${modules.root.dir}/ui/build/assets</directory>
                             <targetPath>static/common</targetPath>
                         </resource>
+                        <resource>
+                            <directory>${project.build.directory}/generated-pages</directory>
+                            <targetPath>WEB-INF/jsp</targetPath>
+                        </resource>
                     </webResources>
                 </configuration>
             </plugin>
@@ -369,6 +373,23 @@
                             <executable>bower</executable>
                             <arguments>
                                 <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>exec-gulp-header</id>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <executable>gulp</executable>
+                            <arguments>
+                                <argument>header</argument>
+                                <argument>--jsp</argument>
+                                <argument>--staticPath=request.getContextPath/static/common/</argument>
+                                <argument>--destPath=${project.build.directory}/generated-pages</argument>
+                                <argument>--fileName=header.jsp</argument>
                             </arguments>
                         </configuration>
                         <goals>
