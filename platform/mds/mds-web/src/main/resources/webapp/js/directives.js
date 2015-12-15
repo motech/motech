@@ -2,7 +2,7 @@
 
     'use strict';
 
-    var directives = angular.module('mds.directives', []),
+    var directives = angular.module('data-services.directives', []),
         relationshipFormatter = function(cellValue, options, rowObject) {
             var i, result = '', field;
             for (i = 0; i < rowObject.fields.length; i += 1) {
