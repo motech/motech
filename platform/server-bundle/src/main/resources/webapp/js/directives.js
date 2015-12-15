@@ -412,6 +412,7 @@
                     periodSliders = elem.parent().find("#period-slider > div"),
                     periodSlider = elem.parent().find("#period-slider"),
                     parent = elem.parent(),
+                    started = false,
                     openPeriodModal,
                     closePeriodModal,
                     year = '0',
@@ -477,44 +478,50 @@
                         periodSlider.children( "#amount-period-hour" ).val( hour );
                         periodSlider.children( "#amount-period-minute" ).val( minute );
                         periodSlider.children( "#amount-period-second" ).val( second );
-                        elem.val( valueFromInputs );
-
-                        scope.$apply(function() {
-                           ctrl.$setViewValue(valueFromInputs);
+                        scope.$apply(function () {
+                            elem.val( valueFromInputs );
                         });
+                        scope.$apply(function() {
+                            ctrl.$setViewValue(valueFromInputs);
+                        });
+                        element.focus();
+                        element.focusout();
                     },
                     setParsingPeriod = function () {
-                        periodSliders = elem.parent().find("#period-slider > div");
-                        periodSlider = elem.parent().find("#period-slider");
-                        periodSliders.each(function(index) {
-                            var getValueSettings, valueName = (this.id);
-                            valueName = valueName.substring(valueName.lastIndexOf('-') + 1);
-                            getValueSettings = function (param1, param2) {
-                                var result, resultVal = '';
-                                $.each( param1, function( key, value) {
-                                    if (key === param2){
-                                        result = true;
-                                        resultVal = value;
-                                    } else {
-                                        result = false;
-                                    }
-                                return (!result);
-                                });
-                            return resultVal;
-                            };
+                        if (!started) {
+                            periodSliders = elem.parent().find("#period-slider > div");
+                            periodSlider = elem.parent().find("#period-slider");
+                            periodSliders.each(function(index) {
+                                var getValueSettings, valueName = (this.id);
+                                valueName = valueName.substring(valueName.lastIndexOf('-') + 1);
+                                getValueSettings = function (param1, param2) {
+                                    var result, resultVal = '';
+                                    $.each( param1, function( key, value) {
+                                        if (key === param2){
+                                            result = true;
+                                            resultVal = value;
+                                        } else {
+                                            result = false;
+                                        }
+                                    return (!result);
+                                    });
+                                return resultVal;
+                                };
 
-                            $( this ).empty().slider({
-                                value: getValueSettings([year, month, week, day, hour, minute, second], valueName),
-                                range: "min",
-                                min: 0,
-                                max: getValueSettings(sliderMax, valueName),
-                                animate: true,
-                                orientation: "horizontal",
-                                slide: refreshPeriod,
-                                change: refreshPeriod
+                                $( this ).empty().slider({
+                                    value: getValueSettings([year, month, week, day, hour, minute, second], valueName),
+                                    range: "min",
+                                    min: 0,
+                                    max: getValueSettings(sliderMax, valueName),
+                                    animate: true,
+                                    orientation: "horizontal",
+                                    slide: refreshPeriod,
+                                    change: refreshPeriod
+                                });
+                                periodSlider.children( "#amount-period-" + valueName ).val( $( this ).slider( "value" ) );
                             });
-                            periodSlider.children( "#amount-period-" + valueName ).val( $( this ).slider( "value" ) );
-                        });
+                            started = true;
+                        }
                         var valueElement = elem.val(), valueDate, valueTime, fieldId = elem.attr('mds-field-id'),
                         checkValue = function (param) {
                             if(isNaN(param) || param === null || param === '' || param === undefined) {
@@ -597,36 +604,6 @@
                         periodSlider.children( "#period-minute" ).slider( "value", minute);
                         periodSlider.children( "#period-second" ).slider( "value", second );
                     };
-
-                    periodSliders.each(function(index) {
-                        var getValueSettings, valueName = (this.id);
-                        valueName = valueName.substring(valueName.lastIndexOf('-') + 1);
-                        getValueSettings = function (param1, param2) {
-                            var result, resultVal = '';
-                            $.each( param1, function( key, value) {
-                                if (key === param2){
-                                    result = true;
-                                    resultVal = value;
-                                } else {
-                                    result = false;
-                                }
-                            return (!result);
-                            });
-                        return resultVal;
-                        };
-
-                        $( this ).empty().slider({
-                            value: getValueSettings([year, month, week, day, hour, minute, second], valueName),
-                            range: "min",
-                            min: 0,
-                            max: getValueSettings(sliderMax, valueName),
-                            animate: true,
-                            orientation: "horizontal",
-                            slide: refreshPeriod,
-                            change: refreshPeriod
-                        });
-                        periodSlider.children( "#amount-period-" + valueName ).val( $( this ).slider( "value" ) );
-                    });
 
                     elem.siblings('button').on('click', function() {
                         setParsingPeriod();
