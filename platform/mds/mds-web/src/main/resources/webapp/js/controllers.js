@@ -25,7 +25,7 @@
         return found && _.isEqual(found.value, value);
     }
 
-    var controllers = angular.module('mds.controllers', []).filter('orderObj', function () {
+    var controllers = angular.module('data-services.controllers', []).filter('orderObj', function () {
             return function (obj) {
                 if (!obj) {
                     return obj;
