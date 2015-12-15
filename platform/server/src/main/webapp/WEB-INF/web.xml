@@ -44,7 +44,7 @@
 
     <servlet-mapping>
         <servlet-name>bootstrap-servlet</servlet-name>
-        <url-pattern>/bootstrap/*</url-pattern>
+        <url-pattern>/server/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -54,23 +54,23 @@
 
     <error-page>
         <error-code>401</error-code>
-        <location>/bootstrap/error/401</location>
+        <location>/server/error/401</location>
     </error-page>
     <error-page>
         <error-code>403</error-code>
-        <location>/bootstrap/error/403</location>
+        <location>/server/error/403</location>
     </error-page>
     <error-page>
         <error-code>404</error-code>
-        <location>/bootstrap/error/404</location>
+        <location>/server/error/404</location>
     </error-page>
     <error-page>
         <error-code>500</error-code>
-        <location>/bootstrap/error/500</location>
+        <location>/server/error/500</location>
     </error-page>
     <error-page>
         <error-code>503</error-code>
-        <location>/bootstrap/error/503</location>
+        <location>/server/error/503</location>
     </error-page>
 
 </web-app>

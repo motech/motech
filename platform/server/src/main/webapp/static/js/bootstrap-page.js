@@ -84,7 +84,7 @@ function startLoading() {
 var statusRetrievalCount = 0;
 
 function redirect() {
-    $(location).attr('href', "../module/server/");
+    $(location).attr('href', "../../");
 }
 
 function parseSymbolicName(symbolicName) {

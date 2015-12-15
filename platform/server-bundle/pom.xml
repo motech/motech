@@ -105,6 +105,10 @@
                     <exclude>**/*.properties</exclude>
                 </excludes>
             </resource>
+            <resource>
+                <directory>${project.build.directory}/generated-pages</directory>
+                <targetPath>webapp/WEB-INF/jsp</targetPath>
+            </resource>
         </resources>
         <plugins>
             <plugin>
@@ -276,6 +280,32 @@
             <plugin>
                 <groupId>com.github.searls</groupId>
                 <artifactId>jasmine-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <workingDirectory>${modules.root.dir}/ui</workingDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>exec-gulp-header</id>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <executable>gulp</executable>
+                            <arguments>
+                                <argument>header</argument>
+                                <argument>--jsp</argument>
+                                <argument>--destPath=${project.build.directory}/generated-pages</argument>
+                                <argument>--fileName=header.jsp</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

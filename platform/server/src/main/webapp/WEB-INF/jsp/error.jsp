@@ -7,9 +7,8 @@
     <head>
         <meta charset="UTF-8">
         <title><spring:message code="server.error"/> ${errorCode}: MOTECH - <spring:message code="server.mobileTech"/></title>
-        <link rel="stylesheet" type="text/css" href="<c:url value="/static/common/css/motech.css" />">
 
-        <%@ include file="faviconPage.jsp" %>
+        <%@ include file="header.jsp" %>
 
     </head>
 

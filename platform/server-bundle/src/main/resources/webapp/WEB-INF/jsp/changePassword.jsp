@@ -4,8 +4,7 @@
         <meta charset="UTF-8">
         <title>MOTECH - Mobile Technology for Community Health</title>
 
-        <link rel="stylesheet" type="text/css" href="../../static/common/css/motech.css">
-        <script type="text/javascript" src="../../static/common/js/motech.min.js"></script>
+        <%@ include file="header.jsp" %>
         <script type="text/javascript" src="resources/js/app.js"></script>
         <script type="text/javascript" src="resources/js/services.js"></script>
         <script type="text/javascript" src="resources/js/controllers.js"></script>

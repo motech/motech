@@ -19,7 +19,9 @@
     "gulp-watch": "^4.3.5",
     "path": "~0.12.7",
     "require-dir": "~0.3.0",
-    "yargs": "~3.31.0"
+    "yargs": "~3.31.0",
+    "mkdirp": "~0.5.1",
+    "nunjucks": "~2.2.0"
   },
   "devDependencies": {
     "bower-files": "~3.11.3"
