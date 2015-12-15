@@ -503,6 +503,10 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             processOneToOneRelationship(fmd, holder);
         }
 
+        if (holder.isOneToOne() || holder.isManyToOne()) {
+            ForeignKeyMetadata fkmd = getOrCreateRelFkMetadata(fmd, entity, field);
+        }
+
         if (holder.isManyToMany()) {
             addManyToManyMetadata(fmd, holder, entity, field, definition);
         }
