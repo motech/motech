@@ -504,7 +504,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         }
 
         if (holder.isOneToOne() || holder.isManyToOne()) {
-            ForeignKeyMetadata fkmd = getOrCreateRelFkMetadata(fmd, entity, field);
+            getOrCreateRelFkMetadata(fmd, entity, field);
         }
 
         if (holder.isManyToMany()) {
