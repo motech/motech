@@ -273,7 +273,7 @@
 
     });
 
-    controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, $q, $timeout, $routeParams, $http, $compile, $filter) {
+    controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers, $q, $timeout, $routeParams, $http, $compile, $filter) {
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
         $scope.selectedAction = [];
@@ -281,6 +281,54 @@
             taskConfig: {
                 steps: []
             }
+        };
+
+        $scope.openTriggersModal = function(channel) {
+            blockUI();
+            $scope.staticTriggersPager = 1;
+            $scope.dynamicTriggersPager = 1;
+            $scope.selectedChannel = channel;
+            Triggers.get(
+                {
+                    moduleName: channel.moduleName,
+                    staticTriggersPage: $scope.staticTriggersPager,
+                    dynamicTriggersPage: $scope.dynamicTriggersPager
+                },
+                function(data) {
+                    $scope.dynamicTriggers = data.dynamicTriggersList;
+                    $scope.staticTriggers = data.staticTriggersList;
+                    $scope.hasDynamicTriggers = $scope.dynamicTriggers.triggers.length > 0;
+                    $scope.hasStaticTriggers = $scope.staticTriggers.triggers.length > 0;
+                    if ($scope.hasStaticTriggers && $scope.hasDynamicTriggers) {
+                        $scope.divSize = "col-md-6";
+                    } else {
+                        $scope.divSize = "col-md-12";
+                    }
+                    $('#triggersModal').modal('show');
+                    unblockUI();
+                }
+            );
+        };
+
+        $scope.reloadLists = function() {
+            blockUI();
+            Triggers.get(
+                {
+                    moduleName: $scope.selectedChannel.moduleName,
+                    staticTriggersPage: $scope.staticTriggersPager,
+                    dynamicTriggersPage: $scope.dynamicTriggersPager
+                },
+                function(data) {
+                    $scope.dynamicTriggers = data.dynamicTriggersList;
+                    $scope.staticTriggers = data.staticTriggersList;
+                    unblockUI();
+                }
+            );
+        };
+
+        $scope.updatePager = function(pager, number) {
+            $scope[pager] += number;
+            $scope.reloadLists();
         };
 
         innerLayout({
@@ -417,10 +465,12 @@
                     if (val) {
                         $scope.util.trigger.remove($scope);
                         $scope.util.trigger.select($scope, channel, trigger);
+                        $('#triggersModal').modal('hide');
                     }
                 });
             } else {
                 $scope.util.trigger.select($scope, channel, trigger);
+                $('#triggersModal').modal('hide');
             }
         };
 

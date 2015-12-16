@@ -980,6 +980,22 @@
     font-size: 12px;
 }
 
+.tasks .invisible {
+    visibility: hidden
+}
+
+.tasks .list-group-item:hover {
+    background-color: #F4F4F4;
+}
+
+.tasks .popover{
+    max-width: 200%;
+}
+
+.trigger-lists {
+    min-height: 435px;
+}
+
 editable-content .popover .inner-popover, nonEditable, .no-margin-bottom input[type="text"],
 .no-margin-bottom editable-content {
     margin-bottom: 0;

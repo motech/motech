@@ -1,0 +1,77 @@
+<div class="tasks modal fade" id="triggersModal"  tabindex="-1" role="dialog">
+    <div class="modal-dialog" ng-class="{'modal-lg': hasStaticTriggers && hasDynamicTriggers}">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">{{msg('task.tooltip.availableTriggers')}}</h4>
+            </div>
+            <div class="modal-body container-fluid">
+                <div class="row inside">
+                    <div class="col-md-12">
+                        <div class="row" ng-if="hasStaticTriggers && hasDynamicTriggers">
+                            <div class="text-center" ng-class="divSize">
+                                <h4>Static triggers</h4>
+                            </div>
+                            <div class="text-center" ng-class="divSize">
+                                <h4>Dynamic triggers</h4>
+                            </div>
+                        </div>
+                        <div class="row trigger-lists">
+                            <div ng-class="divSize" ng-if="hasStaticTriggers">
+                                <ul class="trigger-list list-group">
+                                    <li ng-click="selectTrigger(selectedChannel, trigger)" class="list-group-item" ng-repeat="trigger in staticTriggers.triggers" popover-loader="taskMsg(trigger.displayName)" two-lists="hasStaticTriggers && hasDynamicTriggers">
+                                    </li>
+                                </ul>
+                            </div>
+                            <div ng-class="divSize" ng-if="hasDynamicTriggers">
+                                <ul class="trigger-list list-group">
+                                    <li ng-click="selectTrigger(selectedChannel, trigger)" class="list-group-item" ng-repeat="trigger in dynamicTriggers.triggers" popover-loader="taskMsg(trigger.displayName)" two-lists="hasStaticTriggers && hasDynamicTriggers">
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-center" ng-class="divSize" ng-if="hasStaticTriggers">
+                                <nav>
+                                    <ul class="pagination tasks">
+                                        <li ng-click="updatePager('staticTriggersPager', -1)" ng-class="{'invisible': staticTriggersPager <= 1}">
+                                            <a aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <li><a>{{staticTriggersPager}}</a></li>
+                                        <li ng-click="updatePager('staticTriggersPager', 1)" ng-class="{'invisible': staticTriggers.hasNextPage === false}">
+                                            <a aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                            <div class="text-center" ng-class="divSize" ng-if="hasDynamicTriggers">
+                                <nav>
+                                    <ul class="pagination tasks">
+                                        <li ng-click="updatePager('dynamicTriggersPager', -1)" ng-class="{'invisible': dynamicTriggersPager <= 1}">
+                                            <a aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <li><a>{{dynamicTriggersPager}}</a></li>
+                                        <li ng-click="updatePager('dynamicTriggersPager', 1)" ng-class="{'invisible': dynamicTriggers.hasNextPage === false}">
+                                            <a aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
