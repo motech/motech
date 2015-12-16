@@ -36,10 +36,11 @@ eg. if you are using mySQL at localhost the JDBC URL should be ``jdbc:mysql://lo
 entered on the MOTECH bootstrap page is only the base for actual database connections urls, you should provide URL with
 SSL parameter to appropriate config files.
 
-For MDS it can be set by editing ``~/.motech/config/datanucleus.properties`` and changing the property ``javax.jdo.option.ConnectionURL``.
-For quartz you have to edit the variable ``org.quartz.dataSource.motechDS.URL`` in ``quartz.properties``. If your config
-source is FILE, then you have to edit the file in scheduler directory in ``~/.motech/config``. If your source is UI, you
-have to change the quartz configuration through the manage modules section in the Admin UI.
+For MDS it can be set by editing ``~/.motech/config/datanucleus_data.properties`` and ``~/.motech/config/datanucleus_data.properties``
+files and changing the property ``javax.jdo.option.ConnectionURL``. For quartz you have to edit the variable
+``org.quartz.dataSource.motechDS.URL`` in ``quartz.properties``. If your config source is FILE, then you have to edit the
+file in scheduler directory in ``~/.motech/config``. If your source is UI, you have to change the quartz configuration
+through the manage modules section in the Admin UI.
 
 .. _instructions: http://dev.mysql.com/doc/refman/5.6/en/using-ssl-connections.html
 .. _documentation: https://docs.oracle.com/cd/E29585_01/PlatformServices.61x/security/src/csec_ssl_jsp_start_server.html

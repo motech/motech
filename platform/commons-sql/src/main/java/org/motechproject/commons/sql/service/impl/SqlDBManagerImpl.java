@@ -142,6 +142,16 @@ public class SqlDBManagerImpl implements SqlDBManager {
         return hasColumn;
     }
 
+    @Override
+    public JdbcUrl prepareConnectionUri(String connectionUrl) {
+        String parsedConnection = StrSubstitutor.replace(connectionUrl, sqlProperties);
+        try {
+            return new JdbcUrl(parsedConnection);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Invalid connection url " + connectionUrl, e);
+        }
+    }
+
     private void loadSqlProperties() {
         sqlProperties = new Properties();
 
@@ -191,15 +201,6 @@ public class SqlDBManagerImpl implements SqlDBManager {
             return Drivers.QUARTZ_POSTGRESQL_DELEGATE;
         } else {
             return Drivers.QUARTZ_STD_JDBC_DELEGATE;
-        }
-    }
-
-    private JdbcUrl prepareConnectionUri(String connectionUrl) {
-        String parsedConnection = StrSubstitutor.replace(connectionUrl, sqlProperties);
-        try {
-            return new JdbcUrl(parsedConnection);
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Invalid connection url " + connectionUrl, e);
         }
     }
 

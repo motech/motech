@@ -57,7 +57,7 @@
             <bean factory-bean="mdsConfig" factory-method="getFlywayLocations" />
         </property>
         <property name="sqlMigrationPrefix" value="V"/>
-        <property name="outOfOrder" value="false"/>
+        <property name="outOfOrder" value="true"/>
         <property name="initOnMigrate" value="true"/>
     </bean>
 

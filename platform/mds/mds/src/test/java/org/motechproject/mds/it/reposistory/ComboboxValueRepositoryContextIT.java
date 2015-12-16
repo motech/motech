@@ -113,36 +113,40 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
     private void setUpTestData() throws Exception {
         MotechDataService service = getService();
 
+        final Object instance1 = objectInstance("one", asList("one", "two"));
+        final Object instance2 = objectInstance("two", asList("two", "one", "four"));
+        final Object instance3 = objectInstance("four", asList("four", "four", "four"));
+        final Object instance4 = objectInstance("five", singletonList("five"));
+        final Object instance5 = objectInstance("one", asList("one", "two", "four", "three"));
+        final Object instance6 = objectInstance(null, null);
+        final Object instance7 = objectInstance(null, singletonList(null));
+        final Object instance8 = objectInstance("", singletonList(""));
+
         service.doInTransaction(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                service.create(objectInstance("one", asList("one", "two")));
-                service.create(objectInstance("two", asList("two", "one", "four")));
-                service.create(objectInstance("four", asList("four", "four", "four")));
-                service.create(objectInstance("five", singletonList("five")));
-                service.create(objectInstance("one", asList("one", "two", "four", "three")));
-                service.create(objectInstance(null, null));
-                service.create(objectInstance(null, singletonList(null)));
-                service.create(objectInstance("", singletonList("")));
+                service.create(instance1);
+                service.create(instance2);
+                service.create(instance3);
+                service.create(instance4);
+                service.create(instance5);
+                service.create(instance6);
+                service.create(instance7);
+                service.create(instance8);
             }
         });
 
         assertEquals("There were issues creating test data", 8, service.count());
     }
 
-    private Object objectInstance(String singleValue, List<String> multiValues) {
-        Object obj = null;
-        try {
-            Class clazz = getEntityClass();
-            obj = clazz.newInstance();
-            PropertyUtil.setProperty(obj, CB_FIELD_SINGLE_NAME, singleValue);
-            if (multiValues != null) {
-                PropertyUtil.setProperty(obj, CB_FIELD_MULTI_NAME, new ArrayList<>(multiValues));
-            }
-        } catch (Exception e) {
-            LOGGER.error("Cannot create instance", e);
-            return null;
+    private Object objectInstance(String singleValue, List<String> multiValues) throws Exception {
+        Class clazz = getEntityClass();
+        Object obj = clazz.newInstance();
+        PropertyUtil.setProperty(obj, CB_FIELD_SINGLE_NAME, singleValue);
+        if (multiValues != null) {
+            PropertyUtil.setProperty(obj, CB_FIELD_MULTI_NAME, new ArrayList<>(multiValues));
         }
+
         return obj;
     }
 }

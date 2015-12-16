@@ -68,23 +68,19 @@ public abstract class BaseInstanceIT extends BaseIT {
     public void tearDown() throws Exception {
         super.clearDB();
 
-        try {
-            final Class<?> entityClass = getEntityClass();
-            final Class<?> historyClass = getHistoryClass();
-            final Class<?> trashClass = getTrashClass();
-            TransactionTemplate transactionTemplate = new TransactionTemplate(getDataTransactionManager());
-            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    getDataPersistenceManager().deletePersistentAll(getAll(entityClass, false));
-                    getDataPersistenceManager().deletePersistentAll(getAll(historyClass, false));
-                    getDataPersistenceManager().deletePersistentAll(getAll(trashClass, false));
-                }
-            });
+        final Class<?> entityClass = getEntityClass();
+        final Class<?> historyClass = getHistoryClass();
+        final Class<?> trashClass = getTrashClass();
 
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException(e);
-        }
+        TransactionTemplate transactionTemplate = new TransactionTemplate(getDataTransactionManager());
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                getDataPersistenceManager().deletePersistentAll(getAll(entityClass, false));
+                getDataPersistenceManager().deletePersistentAll(getAll(historyClass, false));
+                getDataPersistenceManager().deletePersistentAll(getAll(trashClass, false));
+            }
+        });
     }
 
     /**
@@ -223,7 +219,7 @@ public abstract class BaseInstanceIT extends BaseIT {
             public Collection<String> getEntitiesClassNames() {
                 List<String> classNames = new ArrayList<>();
                 classNames.add(entity.getClassName());
-                return null;
+                return classNames;
             }
 
             private EntityInfo buildEntityInfo() {
@@ -247,7 +243,6 @@ public abstract class BaseInstanceIT extends BaseIT {
         PropertyUtil.safeSetProperty(repository, "persistenceManagerFactory", getDataPersistenceManagerFactory());
         PropertyUtil.safeSetProperty(service, "transactionManager", getDataTransactionManager());
         PropertyUtil.safeSetProperty(service, "repository", repository);
-        //PropertyUtil.safeSetProperty(service, "allEntities", allEntities);
         PropertyUtil.safeSetProperty(service, "entityInfoReader", entityInfoReader);
         PropertyUtil.safeSetProperty(service, "historyService", getHistoryService());
         PropertyUtil.safeSetProperty(service, "trashService", getTrashService());

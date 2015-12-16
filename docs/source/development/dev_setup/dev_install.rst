@@ -202,11 +202,14 @@ The versions below may change, most likely the latest stable release will work f
 	.. note::
 
 	    Sometimes it is needed to set the proper database character encoding. For example, to create
-	    motechdata database with UTF-8 character encoding, change your sql query to:
+	    motechdata database and motechschema database with UTF-8 character encoding, change your sql query to:
 
             .. code-block:: sql
 
 	            sql> create database motechdata default character set utf8 collate utf8_general_ci;
+	            sql> create database motechschema default character set utf8 collate utf8_general_ci;
+
+
 
 
 #. Setup PostgreSQL (skip if you did not install PostgreSQL server)

@@ -478,7 +478,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     protected void verifySchemaVersion(Object record, Long recordId, boolean forTrash) {
         String schemaField;
         if (forTrash) {
-            schemaField = "schemaVersion";
+            schemaField = Constants.Util.SCHEMA_VERSION_FIELD_NAME;
         } else {
             schemaField = HistoryTrashClassHelper.historySchemaVersion(record.getClass());
         }

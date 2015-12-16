@@ -2,6 +2,7 @@ package org.motechproject.mds.service;
 
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.Constants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleWiring;
 
@@ -43,11 +44,11 @@ public final class HistoryTrashClassHelper {
     }
 
     public static String currentVersion(Class<?> historyClass) {
-        return uncapitalize(historyClass.getSimpleName() + "CurrentVersion");
+        return uncapitalize(historyClass.getSimpleName() + Constants.Util.CURRENT_VERSION);
     }
 
     public static String historySchemaVersion(Class<?> historyClass) {
-        return uncapitalize(historyClass.getSimpleName() + "SchemaVersion");
+        return uncapitalize(historyClass.getSimpleName() + Constants.Util.SCHEMA_VERSION);
     }
 
     private HistoryTrashClassHelper() {

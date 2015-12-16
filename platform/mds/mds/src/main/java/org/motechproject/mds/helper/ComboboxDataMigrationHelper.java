@@ -1,6 +1,5 @@
 package org.motechproject.mds.helper;
 
-import org.apache.commons.lang3.StringUtils;
 import org.motechproject.commons.sql.service.SqlDBManager;
 import org.motechproject.mds.config.DeleteMode;
 import org.motechproject.mds.config.MdsConfig;
@@ -9,7 +8,6 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.ex.entity.DataMigrationFailedException;
-import org.motechproject.mds.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,10 +108,7 @@ public class ComboboxDataMigrationHelper {
 
     private void migrateDataToSingleSelectTable(String dstTable, String field) throws DataMigrationFailedException {
         String srcTable = dstTable + "_" + field.toUpperCase();
-        String mdsDataBase = (String) mdsConfig.getDataNucleusProperties().get(Constants.Util.MDS_DATABASE_KEY);
-        if (StringUtils.isNotBlank(mdsDataBase)) {
-            mdsDataBase = Constants.Util.DEFAULT_DATA_DATABASE;
-        }
+        String mdsDataBase = mdsConfig.getDataDatabaseName();
 
         try {
 

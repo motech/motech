@@ -11,6 +11,7 @@ import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryTrashClassHelper;
 import org.motechproject.mds.service.MdsSchedulerService;
 import org.motechproject.mds.service.TrashService;
+import org.motechproject.mds.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,7 +103,7 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
         Long schemaVersion = getCurrentSchemaVersion(className);
 
         List<Property> properties = new ArrayList<>();
-        properties.add(PropertyBuilder.create("schemaVersion", schemaVersion, Long.class));
+        properties.add(PropertyBuilder.create(Constants.Util.SCHEMA_VERSION_FIELD_NAME, schemaVersion, Long.class));
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
 
@@ -122,7 +123,7 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
         Long schemaVersion = getCurrentSchemaVersion(className);
 
         List<Property> properties = new ArrayList<>();
-        properties.add(PropertyBuilder.create("schemaVersion", schemaVersion, Long.class));
+        properties.add(PropertyBuilder.create(Constants.Util.SCHEMA_VERSION_FIELD_NAME, schemaVersion, Long.class));
 
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
         Query query = manager.newQuery(trashClass);

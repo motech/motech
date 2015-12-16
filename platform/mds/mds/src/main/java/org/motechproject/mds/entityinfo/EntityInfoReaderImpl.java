@@ -58,11 +58,7 @@ public class EntityInfoReaderImpl implements EntityInfoReader {
     }
 
     public Collection<String> getEntitiesClassNames() {
-        if (idMapping != null) {
-            return idMapping.values();
-        }
-
-        return null;
+        return idMapping.values();
     }
 
     // TODO: MOTECH-1466 - use util/helper here after redoing MDS package structure

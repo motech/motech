@@ -195,9 +195,9 @@ public class MdsBundleIT extends BasePaxIT {
         //Prepare file with datanucleus configuration for later use to
         //turn off and on l2 cache
         configurationFile = new File(coreConfigurationService.getConfigLocation().getLocation()
-                .concat("/" + ConfigurationConstants.DATANUCLEUS_SETTINGS_FILE_NAME));
+                .concat("/" + ConfigurationConstants.DATANUCLEUS_DATA_SETTINGS_FILE_NAME));
         //Remember starting cache type. It will be restored after tests
-        startingCacheType = coreConfigurationService.loadDatanucleusConfig().getProperty("datanucleus.cache.level2.type");
+        startingCacheType = coreConfigurationService.loadDatanucleusDataConfig().getProperty("datanucleus.cache.level2.type");
     }
 
     @After
@@ -1146,7 +1146,7 @@ public class MdsBundleIT extends BasePaxIT {
 
     private void setCacheType(String type) throws IOException {
         try (FileOutputStream outputStream = new FileOutputStream(configurationFile)) {
-            Properties datanucleusProps = coreConfigurationService.loadDatanucleusConfig();
+            Properties datanucleusProps = coreConfigurationService.loadDatanucleusDataConfig();
 
             datanucleusProps.remove(PropertyNames.PROPERTY_VALIDATION_FACTORY);
 

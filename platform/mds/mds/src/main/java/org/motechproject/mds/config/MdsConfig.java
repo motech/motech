@@ -3,6 +3,7 @@ package org.motechproject.mds.config;
 import org.datanucleus.PropertyNames;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.sql.service.SqlDBManager;
+import org.motechproject.commons.sql.util.JdbcUrl;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.mds.util.Constants;
 import org.springframework.core.io.ClassPathResource;
@@ -111,21 +112,27 @@ public class MdsConfig {
     public Properties getDataNucleusPropertiesForInternalInfrastructure() {
         // this for the MDS bundle itself, as opposed to the entities bundle being generated
         Properties properties = new Properties();
-        properties.putAll(coreConfigurationService.loadDatanucleusConfig());
-        properties.remove("javax.jdo.option.Optimistic");
-        properties.remove("datanucleus.flush.mode");
+        properties.putAll(coreConfigurationService.loadDatanucleusSchemaConfig());
         addBeanValidationFactoryProperty(properties);
-        properties.put("javax.jdo.option.ConnectionURL", getSchemaConnectionURL(properties));
 
         return properties;
     }
 
     public Properties getDataNucleusProperties() {
         Properties properties = new Properties();
-        properties.putAll(coreConfigurationService.loadDatanucleusConfig());
-        properties.put("javax.jdo.option.ConnectionURL", getDataConnectionURL(properties));
+        properties.putAll(coreConfigurationService.loadDatanucleusDataConfig());
         addBeanValidationFactoryProperty(properties);
         return properties;
+    }
+
+    public String getDataDatabaseName() {
+        JdbcUrl jdbcUrl = sqlDBManager.prepareConnectionUri(coreConfigurationService.loadDatanucleusDataConfig().getProperty(CONNECTION_URL_KEY));
+        return jdbcUrl.getDbName();
+    }
+
+    public String getSchemaDatabaseName() {
+        JdbcUrl jdbcUrl = sqlDBManager.prepareConnectionUri(coreConfigurationService.loadDatanucleusSchemaConfig().getProperty(CONNECTION_URL_KEY));
+        return jdbcUrl.getDbName();
     }
 
     public String[] getFlywayLocations() {
@@ -146,17 +153,5 @@ public class MdsConfig {
         // Datanucleus expects the validator factory as the actual object, not just a string property
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         properties.put(PropertyNames.PROPERTY_VALIDATION_FACTORY, validatorFactory);
-    }
-
-    private String getSchemaConnectionURL(Properties properties) {
-        String databaseName = properties.get(Constants.Util.SCHEMA_DATABASE_KEY) == null ? Constants.Util.DEFAULT_SCHEMA_DATABASE
-                : (String) properties.get(Constants.Util.SCHEMA_DATABASE_KEY);
-        return properties.get(CONNECTION_URL_KEY) + databaseName;
-    }
-
-    private String getDataConnectionURL(Properties properties) {
-        String databaseName = properties.get(Constants.Util.MDS_DATABASE_KEY) == null ? Constants.Util.DEFAULT_DATA_DATABASE
-                : (String) properties.get(Constants.Util.MDS_DATABASE_KEY);
-        return properties.get(CONNECTION_URL_KEY) + databaseName;
     }
 }

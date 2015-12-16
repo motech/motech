@@ -172,34 +172,33 @@ public class FilterContextIT extends BaseInstanceIT {
 
         MotechDataService service = getService();
 
+        final Object instance1 = objectInstance(clazz, true, NOW.toDate(), NOW, "now");
+        final Object instance2 = objectInstance(clazz, true, threeDaysAgo.toDate(), threeDaysAgo, "threeDaysAgo");
+        final Object instance3 = objectInstance(clazz, false, eightDaysAgo.toDate(), eightDaysAgo, "eightDaysAgo");
+        final Object instance4  =objectInstance(clazz, false, notThisMonth.toDate(), notThisMonth, "notThisMonth");
+        final Object instance5 = objectInstance(clazz, false, notThisYear.toDate(), notThisYear, "notThisYear");
+
         service.doInTransaction(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                service.create(objectInstance(clazz, true, NOW.toDate(), NOW, "now"));
-                service.create(objectInstance(clazz, true, threeDaysAgo.toDate(), threeDaysAgo, "threeDaysAgo"));
-                service.create(objectInstance(clazz, false, eightDaysAgo.toDate(), eightDaysAgo, "eightDaysAgo"));
-                service.create(objectInstance(clazz, false, notThisMonth.toDate(), notThisMonth, "notThisMonth"));
-                service.create(objectInstance(clazz, false, notThisYear.toDate(), notThisYear, "notThisYear"));
+                service.create(instance1);
+                service.create(instance2);
+                service.create(instance3);
+                service.create(instance4);
+                service.create(instance5);
             }
         });
 
         assertEquals("There were issues creating test data", 5, service.count());
     }
 
-    private Object objectInstance(Class<?> clazz, Boolean bool, Date date, DateTime dateTime, String str) {
-        Object instance;
+    private Object objectInstance(Class<?> clazz, Boolean bool, Date date, DateTime dateTime, String str) throws Exception {
+        Object instance = clazz.newInstance();
+        PropertyUtils.setProperty(instance, BOOL_FIELD, bool);
+        PropertyUtils.setProperty(instance, DATE_FIELD, date);
+        PropertyUtils.setProperty(instance, DATETIME_FIELD, dateTime);
+        PropertyUtils.setProperty(instance, STRING_FIELD, str);
 
-        try {
-            instance = clazz.newInstance();
-            PropertyUtils.setProperty(instance, BOOL_FIELD, bool);
-            PropertyUtils.setProperty(instance, DATE_FIELD, date);
-            PropertyUtils.setProperty(instance, DATETIME_FIELD, dateTime);
-            PropertyUtils.setProperty(instance, STRING_FIELD, str);
-
-        } catch (Exception e) {
-            LOGGER.error("Cannot create instance", e);
-            return null;
-        }
         return instance;
     }
 

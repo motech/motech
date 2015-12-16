@@ -1453,7 +1453,8 @@
                                             <includes>
                                                 <include>bootstrap.properties</include>
                                                 <include>motech-settings.properties</include>
-                                                <include>datanucleus.properties</include>
+                                                <include>datanucleus_data.properties</include>
+                                                <include>datanucleus_schema.properties</include>
                                             </includes>
                                         </fileset>
                                     </filesets>
