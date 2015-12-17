@@ -1,82 +1,78 @@
 package org.motechproject.mds.service.impl.csv;
 
-import org.joda.time.DateTime;
-import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.FieldMetadata;
-import org.motechproject.mds.domain.FieldSetting;
-import org.motechproject.mds.domain.OneToManyRelationship;
-import org.motechproject.mds.domain.OneToOneRelationship;
-import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.domain.TypeSetting;
+import org.motechproject.mds.dto.AdvancedSettingsDto;
+import org.motechproject.mds.dto.BrowsingSettingsDto;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.MetadataDto;
+import org.motechproject.mds.dto.SettingDto;
+import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.entityinfo.EntityInfo;
 import org.motechproject.mds.testutil.records.Record2;
 import org.motechproject.mds.testutil.records.RecordEnum;
 import org.motechproject.mds.testutil.records.RelatedClass;
 import org.motechproject.mds.util.Constants;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.mockito.Mockito.when;
 
 public class CsvTestHelper {
 
-    public static void mockRecord2Fields(Entity mockEntity) {
-        List<Field> fields = new ArrayList<>();
+    public static void mockRecord2Fields(EntityInfo entityInfoMock, AdvancedSettingsDto advancedSettingsDtoMock, BrowsingSettingsDto browsingSettingsDtoMock) {
+        List<FieldDto> fieldDtos = new ArrayList<>();
 
-        fields.add(new Field(mockEntity, "id", "ID", new Type(Long.class)));
-        fields.add(new Field(mockEntity, "creator", "Creator", new Type(String.class)));
-        fields.add(new Field(mockEntity, "owner", "Owner", new Type(String.class)));
-        fields.add(new Field(mockEntity, "modifiedBy", "Modified By", new Type(String.class)));
-        fields.add(new Field(mockEntity, "creationDate", "Creation date", new Type(DateTime.class)));
-        fields.add(new Field(mockEntity, "modificationDate", "Modification date", new Type(DateTime.class)));
-        fields.add(withDisplayPosition(new Field(mockEntity, "value", "Value Disp", new Type(String.class)), 0));
-        fields.add(withDisplayPosition(new Field(mockEntity, "date", "Date disp", new Type(Date.class)), 1));
-        fields.add(new Field(mockEntity, "dateIgnoredByRest", "dateIgnoredByRest disp", new Type(Date.class)));
-        fields.add(comboboxField(mockEntity, "enumField", false));
-        fields.add(comboboxField(mockEntity, "enumListField", true));
-        fields.add(relationshipField(mockEntity, "singleRelationship", OneToOneRelationship.class));
-        fields.add(relationshipField(mockEntity, "multiRelationship", OneToManyRelationship.class, ArrayList.class));
+        fieldDtos.add(getFieldWithId(123l, "id", "ID", TypeDto.LONG));
+        fieldDtos.add(getFieldWithId(124l, "creator", "Creator", TypeDto.STRING));
+        fieldDtos.add(getFieldWithId(125l,"owner", "Owner", TypeDto.STRING));
+        fieldDtos.add(getFieldWithId(126l, "modifiedBy", "Modified By", TypeDto.STRING));
+        fieldDtos.add(getFieldWithId(127l, "creationDate", "Creation date", TypeDto.DATETIME));
+        fieldDtos.add(getFieldWithId(128l, "modificationDate", "Modification date", TypeDto.DATETIME));
+        fieldDtos.add(getFieldWithId(129l, "value", "Value Disp", TypeDto.STRING));
+        fieldDtos.add(getFieldWithId(130l, "date", "Date disp", TypeDto.DATE));
+        fieldDtos.add(getFieldWithId(131l, "dateIgnoredByRest", "dateIgnoredByRest disp", TypeDto.DATE));
+        fieldDtos.add(comboboxField(132l, "enumField", false));
+        fieldDtos.add(comboboxField(133l, "enumListField", true));
+        fieldDtos.add(relationshipField(134l, "singleRelationship", TypeDto.ONE_TO_ONE_RELATIONSHIP));
+        fieldDtos.add(relationshipField(135l, "multiRelationship", TypeDto.ONE_TO_MANY_RELATIONSHIP, ArrayList.class));
 
-        when(mockEntity.getFields()).thenReturn(fields);
-
-        when(mockEntity.getClassName()).thenReturn(Record2.class.getName());
+        when(entityInfoMock.getFieldDtos()).thenReturn(fieldDtos);
+        when(entityInfoMock.getClassName()).thenReturn(Record2.class.getName());
+        when(entityInfoMock.getAdvancedSettings()).thenReturn(advancedSettingsDtoMock);
+        when(advancedSettingsDtoMock.getBrowsing()).thenReturn(browsingSettingsDtoMock);
+        when(browsingSettingsDtoMock.getDisplayedFields()).thenReturn(asList(129l, 130l));
     }
 
+    private static FieldDto comboboxField(Long id, String name, boolean isList) {
+        FieldDto fieldDto = new FieldDto(name, name + " Disp", TypeDto.COLLECTION);
+        fieldDto.setId(id);
+        fieldDto.addMetadata(new MetadataDto(Constants.MetadataKeys.ENUM_CLASS_NAME, RecordEnum.class.getName()));
+        SettingDto settingDto = new SettingDto(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS, String.valueOf(isList), TypeDto.BOOLEAN);
+        fieldDto.addSetting(settingDto);
 
-    private static Field comboboxField(Entity mockEntity, String name, boolean isList) {
-        Field field = new Field(mockEntity, name, name + " Disp", new Type("mds.field.combobox", "desc", List.class));
-
-        field.addMetadata(new FieldMetadata(field, Constants.MetadataKeys.ENUM_CLASS_NAME, RecordEnum.class.getName()));
-
-        TypeSetting typeSetting = new TypeSetting(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS);
-        typeSetting.setValueType(new Type(Boolean.class));
-
-        FieldSetting fieldSetting = new FieldSetting(field, typeSetting);
-        fieldSetting.setValue(String.valueOf(isList));
-        field.addSetting(fieldSetting);
-
-        return field;
+        return fieldDto;
     }
 
-    private static Field relationshipField(Entity mockEntity, String name, Class relationshipType) {
-        return relationshipField(mockEntity, name, relationshipType, null);
+    private static FieldDto relationshipField(Long id, String name, TypeDto relationshipType) {
+        return relationshipField(id, name, relationshipType, null);
     }
 
-    private static Field relationshipField(Entity mockEntity, String name, Class relationshipType, Class collectionType) {
-        Field field = new Field(mockEntity, name, name + " Disp", new Type(relationshipType));
-        field.addMetadata(new FieldMetadata(field, Constants.MetadataKeys.RELATED_CLASS, RelatedClass.class.getName()));
+    private static FieldDto relationshipField(Long id,  String name, TypeDto relationshipType, Class collectionType) {
+        FieldDto fieldDto = new FieldDto(name, name + " Disp", relationshipType);
+        fieldDto.setId(id);
+        fieldDto.addMetadata(new MetadataDto(Constants.MetadataKeys.RELATED_CLASS, RelatedClass.class.getName()));
         if (collectionType != null) {
-            field.addMetadata(new FieldMetadata(field, Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE, collectionType.getName()));
+            fieldDto.addMetadata(new MetadataDto(Constants.MetadataKeys.RELATIONSHIP_COLLECTION_TYPE, collectionType.getName()));
         }
-        return field;
+
+        return fieldDto;
     }
 
-    private static Field withDisplayPosition(Field field, long displayPosition) {
-        field.setUIDisplayable(true);
-        field.setUIDisplayPosition(displayPosition);
-        return field;
+    private static FieldDto getFieldWithId(Long id, String name, String displayName, TypeDto typeDto) {
+        FieldDto fieldDto = new FieldDto(name, displayName, typeDto);
+        fieldDto.setId(id);
+        return fieldDto;
     }
 
     private CsvTestHelper() {

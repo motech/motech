@@ -7,7 +7,8 @@ import java.util.Properties;
  */
 public interface Environment {
 
-    String MOTECH_DATANUCLEUS_PROPERTIES = "MOTECH_DATANUCLEUS_PROPERTIES";
+    String MOTECH_DATANUCLEUS_DATA_ROPERTIES = "MOTECH_DATANUCLEUS_DATA_PROPERTIES";
+    String MOTECH_DATANUCLEUS_SCHEMA_PROPERTIES = "MOTECH_DATANUCLEUS_SCHEMA_PROPERTIES";
     String MOTECH_SQL_URL = "MOTECH_SQL_URL";
     String MOTECH_SQL_USERNAME = "MOTECH_SQL_USERNAME";
     String MOTECH_SQL_PASSWORD = "MOTECH_SQL_PASSWORD";
@@ -21,18 +22,25 @@ public interface Environment {
     /**
      * Returns the path to the Motech configuration directory specified by the MOTECH_CONFIG_DIR environment variable.
      * Used by {@link org.motechproject.config.core.bootstrap.BootstrapManager} and {@link org.motechproject.config.core.datanucleus.DatanucleusManager}
-     * to find bootstrap.properties and datanucleus.properties files.
+     * to find bootstrap.properties, datanucleus_schema.properties and datanucleus_data.properties files.
      *
      * @return the configuration directory path
      */
     String getConfigDir();
 
     /**
-     * Returns datanucleus properties from MOTECH_DATANUCLEUS_PROPERTIES environment variable.
+     * Returns datanucleus properties from MOTECH_DATANUCLEUS_DATA_ROPERTIES environment variable.
      *
-     * @return the datanucleus properties
+     * @return the datanucleus properties for data database
      */
-    Properties getDatanucleusProperties();
+    Properties getDatanucleusDataProperties();
+
+    /**
+     * Returns datanucleus properties from MOTECH_DATANUCLEUS_SCHEMA_PROPERTIES environment variable.
+     *
+     * @return the datanucleus properties for schema database
+     */
+    Properties getDatanucleusSchemaProperties();
 
     /**
      * Returns bootstrap properties from environment variables:

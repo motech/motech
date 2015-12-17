@@ -1,8 +1,7 @@
 package org.motechproject.mds.service.impl;
 
 import org.motechproject.bundle.extender.MotechOsgiConfigurableApplicationContext;
-import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.entityinfo.EntityInfoReader;
 import org.motechproject.mds.service.TrashService;
 import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.osgi.framework.BundleContext;
@@ -15,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  *  Job responsible for emptying MDS trash.
@@ -44,13 +43,15 @@ public class MdsScheduledJob implements Job {
             BundleContext bundleContext = ((MotechOsgiConfigurableApplicationContext) applicationContext).getBundleContext();
 
             TrashService trashService = OSGiServiceUtils.findService(bundleContext, TrashService.class);
+            EntityInfoReader entityInfoReader = OSGiServiceUtils.findService(bundleContext, EntityInfoReader.class);
 
             if (trashService != null) {
-
-                AllEntities allEntities = applicationContext.getBean(AllEntities.class);
-                List<Entity> entities = allEntities.getActualEntities();
-
-                trashService.emptyTrash(entities);
+                if (entityInfoReader != null) {
+                    Collection<String> entitiesClassNames = entityInfoReader.getEntitiesClassNames();
+                    trashService.emptyTrash(entitiesClassNames);
+                } else {
+                    LOGGER.warn("EntityInfoReader is unavailable, unable to empty trash");
+                }
             } else {
                 LOGGER.warn("TrashService is unavailable, unable to empty trash");
             }

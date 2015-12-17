@@ -1,6 +1,6 @@
 package org.motechproject.mds.service;
 
-import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.dto.FieldDto;
 
 import java.util.List;
 import java.util.Map;
@@ -50,9 +50,9 @@ public interface CsvImportCustomizer {
      * also cannot be found, it returns null.
      *
      * @param headerName the column display name from CSV file
-     * @param entityFields the list of entity fields
+     * @param fieldDtos the list of entity fields
      * @return entity field matching the implemented criteria
      */
-    Field findField(String headerName, List<Field> entityFields);
+    FieldDto findField(String headerName, List<FieldDto> fieldDtos);
 
 }

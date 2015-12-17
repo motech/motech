@@ -3706,6 +3706,9 @@
                $scope.selectedInstance = undefined;
                $scope.previousInstance = undefined;
                $scope.showTrashInstance = false;
+            }, function() {
+               unblockUI();
+               motechAlert('mds.error.cannotRestoreInstance', 'mds.error');
             });
         };
 
