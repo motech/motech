@@ -175,7 +175,7 @@ public class FilterContextIT extends BaseInstanceIT {
         final Object instance1 = objectInstance(clazz, true, NOW.toDate(), NOW, "now");
         final Object instance2 = objectInstance(clazz, true, threeDaysAgo.toDate(), threeDaysAgo, "threeDaysAgo");
         final Object instance3 = objectInstance(clazz, false, eightDaysAgo.toDate(), eightDaysAgo, "eightDaysAgo");
-        final Object instance4  =objectInstance(clazz, false, notThisMonth.toDate(), notThisMonth, "notThisMonth");
+        final Object instance4 = objectInstance(clazz, false, notThisMonth.toDate(), notThisMonth, "notThisMonth");
         final Object instance5 = objectInstance(clazz, false, notThisYear.toDate(), notThisYear, "notThisYear");
 
         service.doInTransaction(new TransactionCallbackWithoutResult() {

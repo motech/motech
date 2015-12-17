@@ -443,7 +443,6 @@ public final class Constants {
         public static final String MODIFIED_BY_DISPLAY_FIELD_NAME = "Modified By";
         public static final String MODIFICATION_DATE_DISPLAY_FIELD_NAME = "Modification Date";
         public static final String SCHEMA_VERSION_FIELD_NAME = "schemaVersion";
-        public static final String SCHEMA_VERSION = "SchemaVersion";
         public static final String CURRENT_VERSION = "CurrentVersion";
         public static final String DATANUCLEUS = "datanucleus";
         public static final String VALUE_GENERATOR = "object-value-generator";
