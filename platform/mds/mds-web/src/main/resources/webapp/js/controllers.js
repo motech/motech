@@ -346,10 +346,6 @@
             });
         };
 
-        $scope.closePeriodModal = function () {
-            $('body').children("#periodModal").modal('hide');
-        };
-
         /**
         * Convert string to map.
         */
