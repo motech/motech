@@ -103,6 +103,7 @@ public class EntityServiceImpl implements EntityService {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityServiceImpl.class);
 
     private static final String NAME_PATH = "basic.name";
+    private static final String UNIQUE_PATH = "basic.unique";
 
     private AllEntities allEntities;
     private AllTypes allTypes;
@@ -295,25 +296,22 @@ public class EntityServiceImpl implements EntityService {
 
                 //If field name was changed add this change to map
                 if (NAME_PATH.equals(path)) {
-                    Map<String, String> map = draft.getFieldNameChanges();
+                    draft.addFieldNameChange(field.getName(), value.get(0).toString());
 
-                    //Checking if field name was previously changed and updating new name in map or adding new entry
-                    if (map.containsValue(field.getName())) {
-                        for (String key : map.keySet()) {
-                            if (field.getName().equals(map.get(key))) {
-                                map.put(key, value.get(0).toString());
-                            }
-                        }
-                    } else {
-                        map.put(field.getName(), value.get(0).toString());
-                    }
-                    draft.setFieldNameChanges(map);
                     List<LookupDto> lookups = draft.advancedSettingsDto().getIndexes();
                     // Perform update
                     field.update(dto);
                     //we need update fields name in lookup fieldsOrder
                     draft.updateIndexes(lookups);
                     FieldHelper.addOrUpdateMetadataForCombobox(field);
+                } else if (UNIQUE_PATH.equals(path)) {
+                    // we will be dropping the unique constraint for this field
+                    boolean newVal = (boolean) value.get(0);
+                    if (field.isUnique() && !newVal) {
+                        draft.addUniqueToRemove(field.getName());
+                    }
+                    // Perform update
+                    field.update(dto);
                 } else {
                     // Perform update
                     field.update(dto);
@@ -435,6 +433,7 @@ public class EntityServiceImpl implements EntityService {
         String username = draft.getDraftOwnerUsername();
 
         mdsConstructor.updateFields(parent.getId(), draft.getFieldNameChanges());
+        mdsConstructor.removeUniqueIndexes(entityId, draft.getUniqueIndexesToDrop());
         comboboxDataMigrationHelper.migrateComboboxDataIfNecessary(parent, draft);
 
         List<UserPreferencesDto> oldEntityPreferences = userPreferencesService.getEntityPreferences(parent.getId());
@@ -598,7 +597,7 @@ public class EntityServiceImpl implements EntityService {
         String relatedClass = draftField.getEntity().getClassName();
 
         Set<Lookup> fieldLookups = new HashSet<>();
-        Field relatedField = new Field(entity, fieldName, fieldName, false, false, false, false, null, null, null, fieldLookups);
+        Field relatedField = new Field(entity, fieldName, fieldName, false, false, false, false, false, null, null, null, fieldLookups);
         Type type = allTypes.retrieveByClassName(TypeDto.MANY_TO_MANY_RELATIONSHIP.getTypeClass());
         relatedField.setType(type);
 
@@ -1145,7 +1144,7 @@ public class EntityServiceImpl implements EntityService {
 
         Type type = allTypes.retrieveByClassName(typeClass);
         Field field = new Field(
-                entity, basic.getName(), basic.getDisplayName(), basic.isRequired(), fieldDto.isReadOnly(), fieldDto.isNonEditable(),
+                entity, basic.getName(), basic.getDisplayName(), basic.isRequired(), basic.isUnique(), fieldDto.isReadOnly(), fieldDto.isNonEditable(),
                 fieldDto.isNonDisplayable(), (String) basic.getDefaultValue(), basic.getTooltip(), basic.getPlaceholder(), null
         );
         field.setType(type);

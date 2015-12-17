@@ -53,6 +53,7 @@ import javax.jdo.metadata.JoinMetadata;
 import javax.jdo.metadata.MapMetadata;
 import javax.jdo.metadata.MemberMetadata;
 import javax.jdo.metadata.PackageMetadata;
+import javax.jdo.metadata.UniqueMetadata;
 import javax.jdo.metadata.ValueMetadata;
 import java.util.Map;
 
@@ -243,11 +244,22 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                     fmd.setIndexed(true);
                 }
                 if (fmd != null) {
-                    setColumnParameters(fmd, field, definition);
-                    // Check whether the field is required and set appropriate metadata
-                    fmd.setNullValue(isFieldRequired(field, entityType) ? NullValue.EXCEPTION : NullValue.NONE);
+                    customizeFieldMd(fmd, entity, field, entityType, definition);
                 }
             }
+        }
+    }
+
+    private void customizeFieldMd(FieldMetadata fmd, Entity entity, Field field, EntityType entityType,
+                                  Class<?> definition) {
+        setColumnParameters(fmd, field, definition);
+        // Check whether the field is required and set appropriate metadata
+        fmd.setNullValue(isFieldRequired(field, entityType) ? NullValue.EXCEPTION : NullValue.NONE);
+        // Non DDE fields have controllable unique
+        if (!field.isReadOnly() && entityType == EntityType.STANDARD && field.isUnique()) {
+            UniqueMetadata umd = fmd.newUniqueMetadata();
+            // TODO: Move to KeyNames class (to be introduced in MOTECH-1991)
+            umd.setName(KeyNames.uniqueKeyName(entity.getName(), getNameForMetadata(field)));
         }
     }
 
