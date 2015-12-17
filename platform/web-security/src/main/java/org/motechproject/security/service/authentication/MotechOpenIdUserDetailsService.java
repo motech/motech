@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.openid.OpenIDAttribute;
 import org.springframework.security.openid.OpenIDAuthenticationToken;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class MotechOpenIdUserDetailsService implements AuthenticationUserDetails
      * @return details of added user
      */
     @Override
+    @Transactional
     public UserDetails loadUserDetails(OpenIDAuthenticationToken token) {
         MotechUser user = allMotechUsers.findUserByOpenId(token.getName());
         if (user == null) {

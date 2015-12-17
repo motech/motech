@@ -15,8 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -59,6 +58,7 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
     }
 
     @Override
+    @Transactional
     public void registerProvider(final String body) {
         byte[] bytes = body.getBytes(Charset.forName("UTF-8"));
         InputStream stream = new ByteArrayInputStream(bytes);
@@ -67,6 +67,7 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
     }
 
     @Override
+    @Transactional
     public void registerProvider(final InputStream stream) {
         final Type type = new TypeToken<TaskDataProvider>() { } .getType();
         final TaskDataProvider provider = (TaskDataProvider) motechJsonReader.readFromStream(stream, type);
@@ -83,21 +84,25 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
     }
 
     @Override
+    @Transactional
     public TaskDataProvider getProvider(String name) {
         return dataProviderDataService.findByName(name);
     }
 
     @Override
+    @Transactional
     public TaskDataProvider getProviderById(Long providerId) {
         return dataProviderDataService.findById(providerId);
     }
 
     @Override
+    @Transactional
     public List<TaskDataProvider> getProviders() {
         return dataProviderDataService.retrieveAll();
     }
 
     @Override
+    @Transactional
     public void bind(Object service, Map properties) {
         LOGGER.info("Data Service for task data providers registered, starting to register queued providers");
 
@@ -120,6 +125,7 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
     }
 
     @Override
+    @Transactional
     public void unregister(String providerName) {
         TaskDataProvider provider = dataProviderDataService.findByName(providerName);
         if (provider != null) {
@@ -150,13 +156,8 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
             if (existing != null && !existing.equals(provider)) {
                 LOGGER.debug("Updating a task data provider with name: {}", provider.getName());
 
-                dataProviderDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-                    @Override
-                    protected void doInTransactionWithoutResult(TransactionStatus status) {
-                        existing.setObjects(provider.getObjects());
-                        dataProviderDataService.update(existing);
-                    }
-                });
+                existing.setObjects(provider.getObjects());
+                dataProviderDataService.update(existing);
 
                 Map<String, Object> parameters = new HashMap<>();
                 parameters.put(DATA_PROVIDER_NAME, provider.getName());

@@ -1,6 +1,5 @@
 package org.motechproject.mds.validation;
 
-import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
@@ -9,6 +8,7 @@ import org.motechproject.mds.ex.UserSuppliedComboboxValuesUsedException;
 import org.motechproject.mds.ex.entity.IncompatibleComboboxFieldException;
 import org.motechproject.mds.ex.field.FieldUsedInLookupException;
 import org.motechproject.mds.ex.lookup.LookupReferencedException;
+import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.helper.ComboboxHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.MotechDataService;
