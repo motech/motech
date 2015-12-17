@@ -64,7 +64,7 @@ public class MBeanService {
     /**
      * Returns queue statistics for the JMS queues.
      *
-     * @return {@link List} of {@link QueueMBean}. One for qeach queue belonging.
+     * @return {@link List} of {@link QueueMBean}. One for each queue belonging.
      */
     @PreAuthorize(SecurityConstants.MANAGE_ACTIVEMQ)
     public List<QueueMBean> getQueueStatistics() {
