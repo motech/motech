@@ -3,6 +3,7 @@ package org.motechproject.mds.config;
 import org.datanucleus.PropertyNames;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.sql.service.SqlDBManager;
+import org.motechproject.commons.sql.util.JdbcUrl;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.mds.util.Constants;
 import org.springframework.core.io.ClassPathResource;
@@ -29,23 +30,32 @@ public class MdsConfig {
     private static final String FLYWAY_MYSQL_MIGRATION_PATH = "db/migration/mysql";
     private static final String FLYWAY_JAVA_MIGRATION_PATH = "org/motechproject/mdsmigration/java";
     private static final String FLYWAY_DEFAULT_MIGRATION_PATH = "db/migration/default";
+    private static final String CONNECTION_URL_KEY = "javax.jdo.option.ConnectionURL";
 
     private Map<String, Properties> config = new HashMap<>();
 
     private SqlDBManager sqlDBManager;
     private CoreConfigurationService coreConfigurationService;
-    private Properties mdsSqlProperties;
+    private Properties mdsDataSqlProperties;
+    private Properties mdsInternalSqlProperties;
 
     public MdsConfig() {}
 
     public void init() {
-        if (mdsSqlProperties == null) {
-            mdsSqlProperties = getDataNucleusProperties();
+        if (mdsDataSqlProperties == null) {
+            mdsDataSqlProperties = getDataNucleusProperties();
+        }
+
+        if (mdsInternalSqlProperties == null) {
+            mdsInternalSqlProperties = getDataNucleusPropertiesForInternalInfrastructure();
         }
 
         //Create database if it doesn't exists
         sqlDBManager.createDatabase(
-            mdsSqlProperties.getProperty("javax.jdo.option.ConnectionURL")
+                mdsDataSqlProperties.getProperty(CONNECTION_URL_KEY)
+        );
+        sqlDBManager.createDatabase(
+                mdsInternalSqlProperties.getProperty(CONNECTION_URL_KEY)
         );
     }
 
@@ -69,10 +79,6 @@ public class MdsConfig {
 
     public void setSqlDBManager(SqlDBManager sqlDBManager) {
         this.sqlDBManager = sqlDBManager;
-    }
-
-    public void setMdsSqlProperties(Properties mdsSqlProperties) {
-        this.mdsSqlProperties = mdsSqlProperties;
     }
 
     public  String getResourceFileName(Resource resource) {
@@ -106,17 +112,27 @@ public class MdsConfig {
     public Properties getDataNucleusPropertiesForInternalInfrastructure() {
         // this for the MDS bundle itself, as opposed to the entities bundle being generated
         Properties properties = new Properties();
-        properties.putAll(coreConfigurationService.loadDatanucleusConfig());
-        properties.remove("javax.jdo.option.Optimistic");
-        properties.remove("datanucleus.flush.mode");
+        properties.putAll(coreConfigurationService.loadDatanucleusSchemaConfig());
         addBeanValidationFactoryProperty(properties);
+
         return properties;
     }
 
     public Properties getDataNucleusProperties() {
-        Properties dnProperties = coreConfigurationService.loadDatanucleusConfig();
-        addBeanValidationFactoryProperty(dnProperties);
-        return dnProperties;
+        Properties properties = new Properties();
+        properties.putAll(coreConfigurationService.loadDatanucleusDataConfig());
+        addBeanValidationFactoryProperty(properties);
+        return properties;
+    }
+
+    public String getDataDatabaseName() {
+        JdbcUrl jdbcUrl = sqlDBManager.prepareConnectionUri(coreConfigurationService.loadDatanucleusDataConfig().getProperty(CONNECTION_URL_KEY));
+        return jdbcUrl.getDbName();
+    }
+
+    public String getSchemaDatabaseName() {
+        JdbcUrl jdbcUrl = sqlDBManager.prepareConnectionUri(coreConfigurationService.loadDatanucleusSchemaConfig().getProperty(CONNECTION_URL_KEY));
+        return jdbcUrl.getDbName();
     }
 
     public String[] getFlywayLocations() {

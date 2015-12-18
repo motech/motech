@@ -49,7 +49,7 @@ public class MdsDiskSpaceUsageIT extends LoggingPerformanceIT {
     private static final int LOOKUPS = 0;
 
     private static final String SQLQUERY = "select sum((data_length+index_length)/1024/1024) AS MB from information_schema.tables" +
-            " where table_schema = \"motech_data_services\";";
+            " where table_schema = \"%s\";";
 
     private MdsDummyDataGenerator generator;
     @Inject
@@ -94,13 +94,16 @@ public class MdsDiskSpaceUsageIT extends LoggingPerformanceIT {
         Connection nativeCon = (Connection) con.getNativeConnection();
 
         Statement stmt = nativeCon.createStatement();
-        ResultSet resultSet = stmt.executeQuery(SQLQUERY);
-        resultSet.absolute(1);
-        Double spaceUsage =  resultSet.getDouble("MB");
+        ResultSet dataResultSet = stmt.executeQuery(String.format(SQLQUERY, "motechdata"));
+        dataResultSet.absolute(1);
+        double spaceUsage = dataResultSet.getDouble("MB");
+
+        ResultSet schemaResultSet = stmt.executeQuery(String.format(SQLQUERY, "motechschema"));
+        schemaResultSet.absolute(1);
+        spaceUsage += schemaResultSet.getDouble("MB");
 
         LOGGER.info("Disk space usage of Motech Data Services database after creating {} instances is {} MB", INSTANCES, spaceUsage);
-        logToFile((long)resultSet.getDouble("MB"));
-
+        logToFile((long) spaceUsage);
 
         Bundle entitiesBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, MDS_ENTITIES_SYMBOLIC_NAME);
         MotechDataService service = generator.getService(entitiesBundle.getBundleContext(), entityDto.getClassName());

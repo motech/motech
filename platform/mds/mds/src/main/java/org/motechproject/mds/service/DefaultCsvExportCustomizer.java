@@ -1,9 +1,9 @@
 package org.motechproject.mds.service;
 
 import org.motechproject.mds.display.DisplayHelper;
-import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.UIDisplayFieldComparator;
+import org.motechproject.mds.dto.BrowsingSettingsDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.UIDisplayFieldComparator;
 import org.motechproject.mds.util.TypeHelper;
 
 import java.util.Comparator;
@@ -18,8 +18,8 @@ public class DefaultCsvExportCustomizer implements CsvExportCustomizer {
     private static final char COLL_JOIN_CHAR = ',';
 
     @Override
-    public String formatField(FieldDto field, Object object) {
-        Object displayValue = DisplayHelper.getDisplayValueForField(field, object);
+    public String formatField(FieldDto fieldDto, Object object) {
+        Object displayValue = DisplayHelper.getDisplayValueForField(fieldDto, object);
 
         if (displayValue == null) {
             displayValue = object;
@@ -34,13 +34,13 @@ public class DefaultCsvExportCustomizer implements CsvExportCustomizer {
     }
 
     @Override
-    public Comparator<Field> columnOrderComparator() {
-        return new UIDisplayFieldComparator();
+    public Comparator<FieldDto> columnOrderComparator(BrowsingSettingsDto browsingSettingsDto) {
+        return new UIDisplayFieldComparator(browsingSettingsDto.getDisplayedFields());
     }
 
     @Override
-    public String exportDisplayName(Field field) {
-        return field.getDisplayName();
+    public String exportDisplayName(FieldDto fieldDto) {
+        return fieldDto.getBasic().getDisplayName();
     }
 
 }

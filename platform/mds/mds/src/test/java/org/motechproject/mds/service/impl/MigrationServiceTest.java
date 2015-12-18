@@ -72,9 +72,9 @@ public class MigrationServiceTest {
     @Test
     public void shouldProcessBundleAndCopyMigrationFiles() throws IOException {
         String migrationsDirectory = System.getProperty("user.home") + Constants.EntitiesMigration.MIGRATION_DIRECTORY + "/mysql/";
-        File migrationFile1 = new File(migrationsDirectory + "M10013__Test1.sql");
-        File migrationFile2 = new File(migrationsDirectory + "M10014__Test2.sql");
-        File migrationFile3 = new File(migrationsDirectory + "M10015__Test3.sql");
+        File migrationFile1 = new File(migrationsDirectory + "M13__Test1.sql");
+        File migrationFile2 = new File(migrationsDirectory + "M14__Test2.sql");
+        File migrationFile3 = new File(migrationsDirectory + "M15__Test3.sql");
         deleteFiles(new File[] {migrationFile1, migrationFile2, migrationFile3});
 
         assertFalse(migrationFile1.exists());
