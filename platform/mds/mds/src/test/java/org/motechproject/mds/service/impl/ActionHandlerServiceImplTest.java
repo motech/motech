@@ -16,13 +16,13 @@ import org.motechproject.mds.util.Constants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
@@ -61,7 +61,7 @@ public class ActionHandlerServiceImplTest {
                 .thenReturn(TestEntity.class);
         when(allEntities.retrieveByClassName(TestEntity.class.getName()))
                 .thenReturn(testEntity);
-        when(testEntity.getFields()).thenReturn(Arrays.asList(
+        when(testEntity.getFields()).thenReturn(asList(
                 FieldTestHelper.field(TestEntity.PROPERTY_STRING, String.class),
                 FieldTestHelper.field(TestEntity.PROPERTY_INTEGER, Integer.class),
                 FieldTestHelper.field(TestEntity.PROPERTY_DATE, Date.class),
@@ -82,7 +82,7 @@ public class ActionHandlerServiceImplTest {
         Integer integer = 42;
         Date date = new Date(2014, 12, 1);
         Locale locale = Locale.US;
-        List list = Arrays.asList("pig", "cat");
+        List list = asList("pig", "cat");
         Map map = new HashMap(); map.put("dog", "good"); map.put("cat", "bad");
         Map<String, Object> parameters = createTestEntityParameters(string, integer, date, locale, list, map);
 
@@ -96,24 +96,58 @@ public class ActionHandlerServiceImplTest {
 
     @Test
     public void shouldUpdateEntity() throws ActionHandlerException {
-        ArgumentCaptor<TestEntity> testEntityCaptor = ArgumentCaptor.forClass(TestEntity.class);
-        String string = "hello";
-        Integer integer = 42;
-        Date date = new Date(2014, 12, 1);
-        Locale locale = Locale.US;
-        List list = Arrays.asList("pig", "cat");
-        Map map = new HashMap(); map.put("dog", "good"); map.put("cat", "bad");
-        Map<String, Object> parameters = createTestEntityParameters(string, integer, date, locale, list, map);
-        parameters.put(ENTITY_ID_KEY, 1L);
-        TestEntity testEntity = new TestEntity("before", 41, date, null, list, null);
+        Map<String, Object> parameters = updateTestParams();
+        TestEntity testEntity = preUpdateTestEntity();
+        testEntity.setId(1L);
 
         when(testEntityDataService.findById(eq(1L))).thenReturn(testEntity);
 
         actionHandlerService.update(parameters);
-        TestEntity expectedTestEntity = new TestEntity(string, integer, date, locale, list, map);
+        TestEntity expectedTestEntity = expectedPostUpdateTestEntity();
+        expectedTestEntity.setId(1L);
 
+        ArgumentCaptor<TestEntity> testEntityCaptor = ArgumentCaptor.forClass(TestEntity.class);
         verify(testEntityDataService).update(testEntityCaptor.capture());
         assertEquals(expectedTestEntity, testEntityCaptor.getValue());
+    }
+
+    @Test
+    public void shouldUpsertEntity() throws ActionHandlerException {
+        Map<String, Object> parameters = updateTestParams();
+
+        actionHandlerService.createOrUpdate(parameters);
+        TestEntity expectedTestEntity = expectedPostUpdateTestEntity();
+        expectedTestEntity.setId(1L);
+
+        ArgumentCaptor<TestEntity> testEntityCaptor = ArgumentCaptor.forClass(TestEntity.class);
+        verify(testEntityDataService).createOrUpdate(testEntityCaptor.capture());
+        assertEquals(expectedTestEntity, testEntityCaptor.getValue());
+    }
+
+    private Map<String, Object> updateTestParams() {
+        String string = "hello";
+        Integer integer = 42;
+        Date date = new Date(2014, 12, 1);
+        Locale locale = Locale.US;
+        List list = asList("pig", "cat");
+        Map map = new HashMap();
+        map.put("dog", "good");
+        map.put("cat", "bad");
+
+        Map<String, Object> parameters = createTestEntityParameters(string, integer, date, locale, list, map);
+        parameters.put(ENTITY_ID_KEY, 1L);
+        return parameters;
+    }
+
+    private TestEntity preUpdateTestEntity() {
+        return new TestEntity("before", 42, new Date(2014, 12, 1), null, asList("pig", "cat"), null);
+    }
+
+    private TestEntity expectedPostUpdateTestEntity() {
+        Map map = new HashMap();
+        map.put("dog", "good");
+        map.put("cat", "bad");
+        return new TestEntity("hello", 42, new Date(2014, 12, 1), Locale.US, asList("pig", "cat"), map);
     }
 
     private static Map<String, Object> createTestEntityParameters(String string, Integer integer, Date date, Locale locale, List list, Map map) {
@@ -143,6 +177,7 @@ public class ActionHandlerServiceImplTest {
         private Locale locale;
         private List list;
         private Map map;
+        private Long id;
 
         public TestEntity() {
         }
@@ -204,6 +239,14 @@ public class ActionHandlerServiceImplTest {
             this.map = map;
         }
 
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -217,6 +260,7 @@ public class ActionHandlerServiceImplTest {
             if (locale != null ? !locale.equals(that.locale) : that.locale != null) return false;
             if (map != null ? !map.equals(that.map) : that.map != null) return false;
             if (string != null ? !string.equals(that.string) : that.string != null) return false;
+            if (id != null ? !id.equals(that.id) : that.id!= null) return false;
 
             return true;
         }
@@ -229,6 +273,7 @@ public class ActionHandlerServiceImplTest {
             result = 31 * result + (locale != null ? locale.hashCode() : 0);
             result = 31 * result + (list != null ? list.hashCode() : 0);
             result = 31 * result + (map != null ? map.hashCode() : 0);
+            result = 31 * result + (id != null ? id.hashCode() : 0);
             return result;
         }
     }
