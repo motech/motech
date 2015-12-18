@@ -10,15 +10,16 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.UIDisplayFieldComparator;
+import org.motechproject.mds.dto.AdvancedSettingsDto;
+import org.motechproject.mds.dto.BrowsingSettingsDto;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.UIDisplayFieldComparator;
+import org.motechproject.mds.entityinfo.EntityInfo;
+import org.motechproject.mds.entityinfo.EntityInfoReader;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.query.QueryParams;
-import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.CsvImportCustomizer;
 import org.motechproject.mds.service.DefaultCsvExportCustomizer;
 import org.motechproject.mds.service.MDSLookupService;
@@ -73,10 +74,16 @@ public class CsvImporterExporterTest {
     private BundleContext bundleContext;
 
     @Mock
-    private AllEntities allEntities;
+    private EntityInfoReader entityInfoReader;
 
     @Mock
-    private Entity entity;
+    private EntityInfo entityInfo;
+
+    @Mock
+    private AdvancedSettingsDto advancedSettingsDto;
+
+    @Mock
+    private BrowsingSettingsDto browsingSettingsDto;
 
     @Mock
     private ServiceReference serviceRef;
@@ -117,18 +124,19 @@ public class CsvImporterExporterTest {
         when(relatedDataService.findById(0L)).thenReturn(new RelatedClass(0L));
         when(relatedDataService.findById(1L)).thenReturn(new RelatedClass(1L));
 
-        when(allEntities.retrieveById(ENTITY_ID)).thenReturn(entity);
+        when(entityInfoReader.getEntityInfo(ENTITY_CLASSNAME)).thenReturn(entityInfo);
+        when(entityInfoReader.getEntityInfo(ENTITY_ID)).thenReturn(entityInfo);
 
-        when(entity.toDto()).thenReturn(entityDto);
+        when(entityInfo.getEntity()).thenReturn(entityDto);
         when(entityDto.getClassName()).thenReturn(ENTITY_CLASSNAME);
         when(entityDto.getName()).thenReturn(ENTITY_NAME);
         when(entityDto.getModule()).thenReturn(ENTITY_MODULE);
         when(entityDto.getNamespace()).thenReturn(ENTITY_NAMESPACE);
 
-        when(csvExportCustomizer.columnOrderComparator()).thenReturn(new UIDisplayFieldComparator());
-        when(csvExportCustomizer.exportDisplayName(any(Field.class))).thenCallRealMethod();
+        when(csvExportCustomizer.columnOrderComparator(any(BrowsingSettingsDto.class))).thenReturn(new UIDisplayFieldComparator(new ArrayList<Number>()));
+        when(csvExportCustomizer.exportDisplayName(any(FieldDto.class))).thenCallRealMethod();
 
-        CsvTestHelper.mockRecord2Fields(entity);
+        CsvTestHelper.mockRecord2Fields(entityInfo, advancedSettingsDto, browsingSettingsDto);
     }
 
     @Test

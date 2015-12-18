@@ -56,7 +56,8 @@ public final class ConfigurationConstants {
     public static final String PASSWORD_REMINDER = "security.password.reminder.sendReminder";
     public static final String PASSWORD_REMINDER_DAYS = "security.password.reminder.daysBeforeExpiration";
 
-    public static final String DATANUCLEUS_SETTINGS_FILE_NAME = "datanucleus.properties";
+    public static final String DATANUCLEUS_DATA_SETTINGS_FILE_NAME = "datanucleus_data.properties";
+    public static final String DATANUCLEUS_SCHEMA_SETTINGS_FILE_NAME = "datanucleus_schema.properties";
 
     /**
      * This is an utility class and should not be instantiated.

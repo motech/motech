@@ -32,7 +32,7 @@ PostgreSQL multibyte characters support
 
 To create a new database with UTF-8 encoding you have to type the following line in terminal::
 
-    postgres=# create database motech_data_services with encoding='UTF-8' lc_collate='en_US.utf8' lc_ctype='en_US.utf8';
+    postgres=# create database motechdata with encoding='UTF-8' lc_collate='en_US.utf8' lc_ctype='en_US.utf8';
 
 However you can encounter the following error::
 

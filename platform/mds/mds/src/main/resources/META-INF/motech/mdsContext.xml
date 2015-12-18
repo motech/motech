@@ -21,6 +21,13 @@
         </constructor-arg>
     </bean>
 
+
+    <bean id="dataMdsSqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
+        <constructor-arg>
+            <bean factory-bean="mdsConfig" factory-method="getDataNucleusProperties" />
+        </constructor-arg>
+    </bean>
+
     <bean id="flyway" class="com.googlecode.flyway.core.Flyway" init-method="migrate">
         <property name="dataSource">
             <bean class="org.datanucleus.store.rdbms.datasource.dbcp.BasicDataSource">
@@ -63,6 +70,29 @@
         <property name="defaultEncoding" value="UTF-8"/>
         <property name="fallbackToSystemLocale" value="false"/>
     </bean>
+
+
+    <!-- Data Database -->
+
+    <bean id="dataPersistenceManagerFactoryBean" class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean">
+        <property name="jdoPropertyMap" ref="dataMdsSqlProperties"/>
+    </bean>
+
+    <bean id="dataPersistenceManagerFactory" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">
+        <property name="targetPersistenceManagerFactory" ref="dataPersistenceManagerFactoryBean"/>
+        <property name="allowCreate" value="false"/>
+    </bean>
+
+    <bean id="dataMdsJdoDialect" class="org.motechproject.mds.jdo.MdsJdoDialect">
+        <constructor-arg value="#{dataPersistenceManagerFactory.getConnectionFactory()}"/>
+    </bean>
+
+    <bean id="dataTransactionManager" class="org.motechproject.mds.jdo.MdsTransactionManager" depends-on="flyway">
+        <property name="persistenceManagerFactory" ref="dataPersistenceManagerFactoryBean"/>
+        <property name="jdoDialect" ref="dataMdsJdoDialect"/>
+    </bean>
+
+    <!-- Schema Database -->
 
     <bean id="persistenceManagerFactoryBean" class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean" depends-on="flyway" >
         <property name="jdoPropertyMap" ref="mdsSqlProperties"/>

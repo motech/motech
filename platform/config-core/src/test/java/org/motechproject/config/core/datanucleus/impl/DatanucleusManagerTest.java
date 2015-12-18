@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.datanucleus.DatanucleusManager;
-import org.motechproject.config.core.datanucleus.impl.DatanucleusManagerImpl;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.environment.Environment;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
@@ -57,18 +56,18 @@ public class DatanucleusManagerTest {
 
     @Test
     public void shouldCopyFileWhenLoadingPropertiesFromClassPath() throws IOException {
-        when(environment.getDatanucleusProperties()).thenReturn(new Properties());
+        when(environment.getDatanucleusDataProperties()).thenReturn(new Properties());
         when(environment.getConfigDir()).thenReturn("");
 
         tempDir = Files.createTempDir();
-        File file = new File(tempDir, ConfigurationConstants.DATANUCLEUS_SETTINGS_FILE_NAME);
+        File file = new File(tempDir, ConfigurationConstants.DATANUCLEUS_DATA_SETTINGS_FILE_NAME);
 
         List<ConfigLocation> configLocationList = new ArrayList<>();
 
         configLocationList.add(new ConfigLocation(tempDir.getAbsolutePath()));
         when(configLocationFileStore.getAll()).thenReturn(configLocationList);
 
-        datanucleusManager.getDatanucleusProperties();
+        datanucleusManager.getDatanucleusDataProperties();
 
         Properties properties = new Properties();
         try (FileInputStream is = new FileInputStream(file)) {
@@ -80,13 +79,13 @@ public class DatanucleusManagerTest {
 
     @Test
     public void shouldGetPropertiesFromEnvironmet() throws IOException {
-        when(environment.getDatanucleusProperties()).thenReturn(getCompleteProperties());
+        when(environment.getDatanucleusDataProperties()).thenReturn(getCompleteProperties());
         when(environment.getConfigDir()).thenReturn("");
 
         List<ConfigLocation> configLocationList = new ArrayList<>();
         when(configLocationFileStore.getAll()).thenReturn(configLocationList);
 
-        datanucleusManager.getDatanucleusProperties();
+        datanucleusManager.getDatanucleusDataProperties();
         verify(configLocationFileStore, times(0)).getAll();
     }
 
@@ -99,18 +98,18 @@ public class DatanucleusManagerTest {
 
         Properties properties = getCompleteProperties();
         Mockito.when(ConfigPropertiesUtils.getPropertiesFromFile(new File("file_location",
-                ConfigurationConstants.DATANUCLEUS_SETTINGS_FILE_NAME))).thenReturn(properties);
+                ConfigurationConstants.DATANUCLEUS_DATA_SETTINGS_FILE_NAME))).thenReturn(properties);
 
-        assertEquals(getCompleteProperties(), datanucleusManager.getDatanucleusProperties());
+        assertEquals(getCompleteProperties(), datanucleusManager.getDatanucleusDataProperties());
     }
 
     @Test
     public void shouldLoadPropertiesFromDefaultConfigLocation() throws IOException {
-        when(environment.getDatanucleusProperties()).thenReturn(new Properties());
+        when(environment.getDatanucleusDataProperties()).thenReturn(new Properties());
         when(environment.getConfigDir()).thenReturn("");
 
         tempDir = Files.createTempDir();
-        File file = new File(tempDir, ConfigurationConstants.DATANUCLEUS_SETTINGS_FILE_NAME);
+        File file = new File(tempDir, ConfigurationConstants.DATANUCLEUS_DATA_SETTINGS_FILE_NAME);
 
         List<ConfigLocation> configLocationList = new ArrayList<>();
 
@@ -122,14 +121,14 @@ public class DatanucleusManagerTest {
         configLocationList.add(new ConfigLocation(tempDir.getAbsolutePath()));
         when(configLocationFileStore.getAll()).thenReturn(configLocationList);
 
-        datanucleusManager.getDatanucleusProperties();
+        datanucleusManager.getDatanucleusDataProperties();
 
         assertEquals(getCompleteProperties(), properties);
     }
 
     private Properties getCompleteProperties() throws IOException {
         Properties properties = new Properties();
-        ClassPathResource resource = new ClassPathResource(ConfigurationConstants.DATANUCLEUS_SETTINGS_FILE_NAME);
+        ClassPathResource resource = new ClassPathResource(ConfigurationConstants.DATANUCLEUS_DATA_SETTINGS_FILE_NAME);
         try (InputStream is = resource.getInputStream()) {
             properties.load(is);
         }
