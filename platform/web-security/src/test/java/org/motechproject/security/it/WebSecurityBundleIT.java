@@ -80,7 +80,7 @@ public class WebSecurityBundleIT extends BaseIT {
 
     @Override
     protected Collection<String> getAdditionalTestDependencies() {
-        return Arrays.asList("org.motechproject:motech-osgi-integration-tests");
+        return Collections.singletonList("org.motechproject:motech-osgi-integration-tests");
     }
 
     @Test

@@ -2,6 +2,7 @@ package org.motechproject.email.service.impl;
 
 import org.motechproject.email.constants.SendEmailConstants;
 import org.motechproject.email.contract.Mail;
+import org.motechproject.email.exception.EmailSendException;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
@@ -19,15 +20,11 @@ public class SendEmailEventHandlerImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SendEmailEventHandlerImpl.class);
 
+    @Autowired
     private EmailSenderService emailSenderService;
 
-    @Autowired
-    public SendEmailEventHandlerImpl(EmailSenderService emailSenderService) {
-        this.emailSenderService = emailSenderService;
-    }
-
     @MotechListener (subjects = { SendEmailConstants.SEND_EMAIL_SUBJECT })
-    public void handle(MotechEvent event) {
+    public void handle(MotechEvent event) throws EmailSendException {
         String fromAddress = (String) event.getParameters().get(SendEmailConstants.FROM_ADDRESS);
         String toAddress = (String) event.getParameters().get(SendEmailConstants.TO_ADDRESS);
         String subject = (String) event.getParameters().get(SendEmailConstants.SUBJECT);
