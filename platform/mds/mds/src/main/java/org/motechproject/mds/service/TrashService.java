@@ -1,11 +1,8 @@
 package org.motechproject.mds.service;
 
-import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.query.QueryParams;
 
 import java.util.Collection;
-import java.util.List;
-
 /**
  * The <code>TrashService</code> provides methods related with the module trash mode (by default
  * the mode is active and it can be turned off by the user).
@@ -14,7 +11,7 @@ public interface TrashService {
 
     /**
      * Checks if trash mode is active. This method should be used before executing the
-     * {@link #moveToTrash(Object, Long, boolean)} method to resolve whether the given instance should be moved to
+     * {@link #moveToTrash(Object, Long)} method to resolve whether the given instance should be moved to
      * trash or removed permanently.
      *
      * @return true if delete mode is equal to
@@ -65,9 +62,9 @@ public interface TrashService {
      * <p/>
      * This method should only be executed by the job created in the
      * {@link #scheduleEmptyTrashJob()} method.
-     * @param entities the entities for which the trash should get cleared
+     * @param entitiesClassNames the list of class names for which the trash should get cleared
      */
-    void emptyTrash(List<Entity> entities);
+    void emptyTrash(Collection<String> entitiesClassNames);
 
     /**
      * Returns the collection of instances from trash of a certain entity.

@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.openid.OpenIDAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.Collection;
@@ -34,6 +35,7 @@ public class UserContextServiceImpl implements UserContextService {
     private AuthoritiesService authoritiesService;
 
     @Override
+    @Transactional
     public void refreshAllUsersContextIfActive() {
         Collection<HttpSession> sessions = sessionHandler.getAllSessions();
         MotechUser user;
@@ -64,6 +66,7 @@ public class UserContextServiceImpl implements UserContextService {
     }
 
     @Override
+    @Transactional
     public void refreshUserContextIfActive(String userName) {
         LOGGER.info("Refreshing context for user: {}", userName);
 

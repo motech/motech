@@ -20,9 +20,18 @@ public class MockCoreConfigurationService implements CoreConfigurationService {
     }
 
     @Override
-    public Properties loadDatanucleusConfig() {
+    public Properties loadDatanucleusDataConfig() {
+        return loadDatanucleusConfig(ConfigurationConstants.DATANUCLEUS_DATA_SETTINGS_FILE_NAME);
+    }
+
+    @Override
+    public Properties loadDatanucleusSchemaConfig() {
+        return loadDatanucleusConfig(ConfigurationConstants.DATANUCLEUS_SCHEMA_SETTINGS_FILE_NAME);
+    }
+
+    public Properties loadDatanucleusConfig(String fileName) {
         Properties properties = new Properties();
-        ClassPathResource resource = new ClassPathResource(ConfigurationConstants.DATANUCLEUS_SETTINGS_FILE_NAME);
+        ClassPathResource resource = new ClassPathResource(fileName);
         try {
             try (InputStream is = resource.getInputStream();) {
                 properties.load(is);

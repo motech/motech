@@ -4,6 +4,7 @@ import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.ex.EmailExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +26,7 @@ public class AllMotechUsers {
      * @param userName name of user
      * @return user with given name or null in case when userName == null
      */
+    @Transactional
     public MotechUser findByUserName(String userName) {
         return null == userName ? null : dataService.findByUserName(userName.toLowerCase());
     }
@@ -35,6 +37,7 @@ public class AllMotechUsers {
      * @param openId of user
      * @return user with given OpenId or null in case when openId == null
      */
+    @Transactional
     public MotechUser findUserByOpenId(String openId) {
         return null == openId ? null : dataService.findByOpenId(openId);
     }
@@ -45,6 +48,7 @@ public class AllMotechUsers {
      * @param email of user
      * @return user with given email or null in case when email == null
      */
+    @Transactional
     public MotechUser findUserByEmail(String email) {
         return null == email ? null : dataService.findByEmail(email);
     }
@@ -55,6 +59,7 @@ public class AllMotechUsers {
      * @param role of users
      * @return list that contains users with given role or null in case when role == null
      */
+    @Transactional
     public List<MotechUser> findByRole(String role) {
         return null == role ? null : dataService.findByRole(role);
     }
@@ -64,6 +69,7 @@ public class AllMotechUsers {
      *
      * @param user to be added
      */
+    @Transactional
     public void add(MotechUser user) {
         if (findByUserName(user.getUserName()) == null) {
             if (findUserByEmail(user.getEmail()) != null) {
@@ -79,6 +85,7 @@ public class AllMotechUsers {
      *
      * @param user to be added
      */
+    @Transactional
     public void addOpenIdUser(MotechUser user) {
         if (findUserByOpenId(user.getOpenId()) == null) {
             dataService.create(user);
@@ -90,6 +97,7 @@ public class AllMotechUsers {
      *
      * @param motechUser to be updated
      */
+    @Transactional
     public void update(MotechUser motechUser) {
         String email = motechUser.getEmail();
         MotechUser otherWithSameEmail = findUserByEmail(email);
@@ -106,6 +114,7 @@ public class AllMotechUsers {
      *
      * @param motechUser to be removed
      */
+    @Transactional
     public void remove(MotechUser motechUser) {
         dataService.delete(motechUser);
     }
@@ -116,6 +125,7 @@ public class AllMotechUsers {
      *
      * @return list that contains users
      */
+    @Transactional
     public List<MotechUser> getUsers() {
         List<MotechUser> users = dataService.retrieveAll();
         Iterator<MotechUser> iterator = users.iterator();
@@ -137,6 +147,7 @@ public class AllMotechUsers {
      *
      * @return list that contains users
      */
+    @Transactional
     public List<MotechUser> getOpenIdUsers() {
         List<MotechUser> users = dataService.retrieveAll();
         Iterator<MotechUser> iterator = users.iterator();

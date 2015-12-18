@@ -2,7 +2,6 @@ package org.motechproject.mds.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.entityinfo.EntityInfo;
 import org.motechproject.mds.entityinfo.EntityInfoReader;
@@ -19,7 +18,6 @@ import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.SqlQueryExecution;
-import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
@@ -42,6 +40,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
+import javax.jdo.JDOHelper;
+import javax.jdo.ObjectState;
 import javax.jdo.Query;
 import java.util.HashMap;
 import java.util.List;
@@ -79,7 +79,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private MotechDataRepository<T> repository;
     private TrashService trashService;
     private HistoryService historyService;
-    private AllEntities allEntities;
     private OsgiEventProxy osgiEventProxy;
     private JdoTransactionManager transactionManager;
     private ApplicationContext applicationContext;
@@ -171,21 +170,25 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Override
     @Transactional
     public T update(final T object) {
-        validateCredentials(object);
+        if (JDOHelper.getObjectState(object) == ObjectState.TRANSIENT) {
+            return updateFromTransient(object);
+        } else {
+            validateCredentials(object);
 
-        updateModificationData(object);
-        final T updatedInstance = repository.update(object);
+            updateModificationData(object);
+            final T updatedInstance = repository.update(object);
 
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-            @Override
-            public void afterCommit() {
-                if (allowUpdateEvent) {
-                    sendEvent((Long) getId(updatedInstance), UPDATE);
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                @Override
+                public void afterCommit() {
+                    if (allowUpdateEvent) {
+                        sendEvent((Long) getId(updatedInstance), UPDATE);
+                    }
                 }
-            }
-        });
+            });
 
-        return updatedInstance;
+            return updatedInstance;
+        }
     }
 
     @Override
@@ -247,6 +250,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
+    @Transactional
     public void delete(final T object) {
         if (object == null) {
             throw new IllegalArgumentException("Unable to delete null object");
@@ -274,11 +278,13 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
+    @Transactional
     public void deleteById(long id) {
         delete(Constants.Util.ID_FIELD_NAME, id);
     }
 
     @Override
+    @Transactional
     public void delete(String primaryKeyName, Object value) {
         T instance = retrieve(primaryKeyName, value);
         if (instance != null) {
@@ -303,7 +309,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         if (trashRecord == null) {
             throw new TrashInstanceNotFoundException(getClassType().getName(), trashId);
         }
-        verifySchemaVersion(trashRecord, trashId);
+        verifySchemaVersion(trashRecord, trashId, true);
 
         try {
             T newInstance = getClassType().newInstance();
@@ -330,7 +336,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         if (historyRecord == null) {
             throw new HistoryInstanceNotFoundException(getClassType().getName(), instanceId, historicalId);
         }
-        verifySchemaVersion(historyRecord, historicalId);
+        verifySchemaVersion(historyRecord, historicalId, false);
 
         copyValuesFromRecord(instance, historyRecord);
 
@@ -437,8 +443,8 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     protected void copyValuesFromRecord(T target, Object record) {
-        Entity entity = allEntities.retrieveByClassName(getClassType().getName());
-        RevertConverter revertConverter = new RevertConverter(entity, applicationContext);
+        EntityInfo entityInfo = entityInfoReader.getEntityInfo(getClassType().getName());
+        RevertConverter revertConverter = new RevertConverter(entityInfo, applicationContext);
 
         PropertyUtil.copyProperties(target, record, revertConverter);
         PropertyUtil.copyProperties(target, record, revertConverter, Constants.Util.RECORD_FIELDS_TO_COPY);
@@ -475,8 +481,13 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return restriction;
     }
 
-    protected void verifySchemaVersion(Object record, Long recordId) {
-        String schemaField = HistoryTrashClassHelper.schemaVersion(record.getClass());
+    protected void verifySchemaVersion(Object record, Long recordId, boolean forTrash) {
+        String schemaField;
+        if (forTrash) {
+            schemaField = Constants.Util.SCHEMA_VERSION_FIELD_NAME;
+        } else {
+            schemaField = HistoryTrashClassHelper.historySchemaVersion(record.getClass());
+        }
         Long recordSchemaVersion = (Long) PropertyUtil.safeGetProperty(record, schemaField);
         if (!schemaVersion.equals(recordSchemaVersion)) {
             throw new SchemaVersionException(schemaVersion, recordSchemaVersion, recordId, record.getClass().getName());
@@ -534,11 +545,6 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     public void setRepository(MotechDataRepository<T> repository) {
         this.repository = repository;
-    }
-
-    @Autowired
-    public void setAllEntities(AllEntities allEntities) {
-        this.allEntities = allEntities;
     }
 
     @Autowired

@@ -8,6 +8,8 @@ import org.junit.Test;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.SecurityUtil;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,32 +49,29 @@ public class AutoGenerationContextIT extends BaseInstanceIT {
     @After
     public void tearDown() throws Exception {
         super.tearDown();
-
-        try {
-            getPersistenceManager().deletePersistentAll(getAll(getEntityClass()));
-            getPersistenceManager().deletePersistentAll(getAll(getHistoryClass()));
-            getPersistenceManager().deletePersistentAll(getAll(getTrashClass()));
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException(e);
-        }
     }
 
     @Test
     public void shouldGenerateValues() throws Exception {
         Class<?> definition = getEntityClass();
-        Object instance = definition.newInstance();
+        final Object instance = definition.newInstance();
 
         String createUsername = StringUtils.defaultIfBlank(SecurityUtil.getUsername(), "");
         DateTime create = DateTime.now();
         double hour = 60 * 60 * 1000;
 
-        instance = getService().create(instance);
+        Object instanceFromDb = getService().doInTransaction(new TransactionCallback() {
+            @Override
+            public Object doInTransaction(TransactionStatus status) {
+                return getService().create(instance);
+            }
+        });
 
-        assertEquals(createUsername, PropertyUtil.safeGetProperty(instance, CREATOR_FIELD_NAME));
-        assertEquals(createUsername, PropertyUtil.safeGetProperty(instance, OWNER_FIELD_NAME));
-        assertEquals(createUsername, PropertyUtil.safeGetProperty(instance, MODIFIED_BY_FIELD_NAME));
-        assertEquals(create.getMillis(), ((DateTime) PropertyUtil.safeGetProperty(instance, CREATION_DATE_FIELD_NAME)).getMillis(), hour);
-        assertEquals(create.getMillis(), ((DateTime) PropertyUtil.safeGetProperty(instance, MODIFICATION_DATE_FIELD_NAME)).getMillis(), hour);
+        assertEquals(createUsername, PropertyUtil.safeGetProperty(instanceFromDb, CREATOR_FIELD_NAME));
+        assertEquals(createUsername, PropertyUtil.safeGetProperty(instanceFromDb, OWNER_FIELD_NAME));
+        assertEquals(createUsername, PropertyUtil.safeGetProperty(instanceFromDb, MODIFIED_BY_FIELD_NAME));
+        assertEquals(create.getMillis(), ((DateTime) PropertyUtil.safeGetProperty(instanceFromDb, CREATION_DATE_FIELD_NAME)).getMillis(), hour);
+        assertEquals(create.getMillis(), ((DateTime) PropertyUtil.safeGetProperty(instanceFromDb, MODIFICATION_DATE_FIELD_NAME)).getMillis(), hour);
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(15));
 
@@ -80,12 +79,17 @@ public class AutoGenerationContextIT extends BaseInstanceIT {
         DateTime update = DateTime.now();
         PropertyUtil.safeSetProperty(instance, VALUE_FIELD, "nukem");
 
-        instance = getService().update(instance);
+        instanceFromDb = getService().doInTransaction(new TransactionCallback() {
+            @Override
+            public Object doInTransaction(TransactionStatus status) {
+                return getService().update(instance);
+            }
+        });
 
-        assertEquals(createUsername, PropertyUtil.safeGetProperty(instance, CREATOR_FIELD_NAME));
-        assertEquals(createUsername, PropertyUtil.safeGetProperty(instance, OWNER_FIELD_NAME));
-        assertEquals(updateUsername, PropertyUtil.safeGetProperty(instance, MODIFIED_BY_FIELD_NAME));
-        assertEquals(create.getMillis(), ((DateTime) PropertyUtil.safeGetProperty(instance, CREATION_DATE_FIELD_NAME)).getMillis(), hour);
-        assertEquals(update.getMillis(), ((DateTime) PropertyUtil.safeGetProperty(instance, MODIFICATION_DATE_FIELD_NAME)).getMillis(), hour);
+        assertEquals(createUsername, PropertyUtil.safeGetProperty(instanceFromDb, CREATOR_FIELD_NAME));
+        assertEquals(createUsername, PropertyUtil.safeGetProperty(instanceFromDb, OWNER_FIELD_NAME));
+        assertEquals(updateUsername, PropertyUtil.safeGetProperty(instanceFromDb, MODIFIED_BY_FIELD_NAME));
+        assertEquals(create.getMillis(), ((DateTime) PropertyUtil.safeGetProperty(instanceFromDb, CREATION_DATE_FIELD_NAME)).getMillis(), hour);
+        assertEquals(update.getMillis(), ((DateTime) PropertyUtil.safeGetProperty(instanceFromDb, MODIFICATION_DATE_FIELD_NAME)).getMillis(), hour);
     }
 }

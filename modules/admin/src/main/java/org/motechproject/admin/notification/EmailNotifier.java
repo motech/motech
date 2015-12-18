@@ -6,6 +6,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.email.contract.Mail;
+import org.motechproject.email.exception.EmailSendException;
 import org.motechproject.email.service.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -43,7 +44,7 @@ public class EmailNotifier {
      * @param statusMessage The {@link StatusMessage} for which the notification should be generated.
      * @param recipient The recipient of the notification.
      */
-    public void send(StatusMessage statusMessage, String recipient) {
+    public void send(StatusMessage statusMessage, String recipient) throws EmailSendException {
         Map<String, Object> model = templateParams(statusMessage);
         String text = mergeTemplateIntoString(model);
         emailSender.send(new Mail(senderAddress(), recipient,

@@ -346,10 +346,6 @@
             });
         };
 
-        $scope.closePeriodModal = function () {
-            $('body').children("#periodModal").modal('hide');
-        };
-
         /**
         * Convert string to map.
         */
@@ -3710,6 +3706,9 @@
                $scope.selectedInstance = undefined;
                $scope.previousInstance = undefined;
                $scope.showTrashInstance = false;
+            }, function() {
+               unblockUI();
+               motechAlert('mds.error.cannotRestoreInstance', 'mds.error');
             });
         };
 

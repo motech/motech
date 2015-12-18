@@ -417,8 +417,11 @@
                                                 <div ui-if="i.type == 'UNICODE'" data="i">
                                                     <editable-content  index="{{$index}}" data="i" type="UNICODE"> </editable-content>
                                                 </div>
-                                                <div ui-if="i.type == 'TEXTAREA' || i.type == 'LIST' || i.type == 'PERIOD'" data="i" >
+                                                <div ui-if="i.type == 'TEXTAREA' || i.type == 'LIST'" data="i" >
                                                     <editable-content  data="i" index="{{$index}}" type="TEXTAREA" ></editable-content>
+                                                </div>
+                                                <div ui-if="i.type == 'PERIOD'" data="i" >
+                                                    <div ng-include="'../tasks/partials/widgets/content-editable-period.html'" data="i"></div>
                                                 </div>
                                                 <div ui-if=" i.type == 'MAP' " data="i">
                                                     <div ng-include="'../tasks/partials/widgets/content-editable-map.html'"></div>

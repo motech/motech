@@ -4,8 +4,7 @@ import org.motechproject.security.domain.MotechPermission;
 import org.motechproject.security.domain.MotechRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,6 +24,7 @@ public class AllMotechPermissions {
      *
      * @param permission to be added
      */
+    @Transactional
     public void add(final MotechPermission permission) {
         if (findByPermissionName(permission.getPermissionName()) != null) {
             return;
@@ -32,18 +32,13 @@ public class AllMotechPermissions {
 
         dataService.create(permission);
 
-        dataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                MotechRole adminRole = allMotechRoles.findByRoleName(MOTECH_ADMIN);
-                if (adminRole != null) {
-                    List<String> permissions = adminRole.getPermissionNames();
-                    permissions.add(permission.getPermissionName());
-                    adminRole.setPermissionNames(permissions);
-                    allMotechRoles.update(adminRole);
-                }
-            }
-        });
+        MotechRole adminRole = allMotechRoles.findByRoleName(MOTECH_ADMIN);
+        if (adminRole != null) {
+            List<String> permissions = adminRole.getPermissionNames();
+            permissions.add(permission.getPermissionName());
+            adminRole.setPermissionNames(permissions);
+            allMotechRoles.update(adminRole);
+        }
     }
 
     /**
@@ -52,6 +47,7 @@ public class AllMotechPermissions {
      * @param permissionName name of permission
      * @return MotechPermission
      */
+    @Transactional
     public MotechPermission findByPermissionName(String permissionName) {
         return null == permissionName ? null : dataService.findByPermissionName(permissionName);
     }
@@ -61,6 +57,7 @@ public class AllMotechPermissions {
      *
      * @return list that contains permissions
      */
+    @Transactional
     public List<MotechPermission> getPermissions() {
         return dataService.retrieveAll();
     }
@@ -70,6 +67,7 @@ public class AllMotechPermissions {
      *
      * @param permission to be removed
      */
+    @Transactional
     public void delete(MotechPermission permission) {
         dataService.delete(permission);
     }

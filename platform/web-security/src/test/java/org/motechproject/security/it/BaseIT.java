@@ -105,7 +105,7 @@ public abstract class BaseIT extends BasePaxIT {
             }
         }
 
-        assertNotNull(testBundle);
+        assertNotNull("Bundle not found: " + symbolicName, testBundle);
 
         return testBundle;
     }
