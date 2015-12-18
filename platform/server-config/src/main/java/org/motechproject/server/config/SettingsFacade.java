@@ -1,5 +1,8 @@
 package org.motechproject.server.config;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.core.MotechConfigurationException;
@@ -17,9 +20,11 @@ import org.springframework.core.io.Resource;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
@@ -151,6 +156,7 @@ public class SettingsFacade {
         return (result == null ? new Properties() : result);
     }
 
+
     public void setProperty(String key, String value) {
         String filename = findFilename(key);
 
@@ -212,6 +218,36 @@ public class SettingsFacade {
         } catch (IOException e) {
             throw new MotechException("Error saving file " + filename, e);
         }
+    }
+
+    public String propertiesToJson(Properties props) {
+        Gson gson = new GsonBuilder().create();
+        Map<String, String> map = new HashMap<String, String>();
+        for (Entry<Object, Object> prop : props.entrySet()) {
+            map.put((String) prop.getKey(), (String) prop.getValue());
+        }
+        return gson.toJson(map);
+    }
+
+    public Properties getPropertiesFromRawConfigFile(String filename) {
+        String json = new String();
+        try {
+            json = IOUtils.toString(getRawConfig(filename));
+        } catch (Exception ex) {
+            return new Properties();
+        }
+        Gson gson = new GsonBuilder().create();
+        Type typeOfHashMap = new TypeToken<Map<String, String>>() { } .getType();
+        Map<String, String> map = gson.fromJson(json, typeOfHashMap);
+        Properties props = new Properties();
+        if (map != null) {
+            for (Entry<String, String> entry : map.entrySet()) {
+                props.put(entry.getKey(), entry.getValue());
+            }
+        } else {
+            return new Properties();
+        }
+        return props;
     }
 
     /**

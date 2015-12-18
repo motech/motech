@@ -21,8 +21,11 @@ import java.io.IOException;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNumeric;
-import static org.motechproject.email.settings.SettingsDto.MAIL_PORT_PROPERTY;
 import static org.motechproject.email.settings.SettingsDto.MAIL_HOST_PROPERTY;
+import static org.motechproject.email.settings.SettingsDto.MAIL_PASSWORD_PROPERTY;
+import static org.motechproject.email.settings.SettingsDto.MAIL_USERNAME_PROPERTY;
+import static org.motechproject.email.settings.SettingsDto.MAIL_PORT_PROPERTY;
+import static org.motechproject.email.settings.SettingsDto.EMAIL_ADDITIONAL_PROPERTIES_FILE_NAME;
 import static org.motechproject.email.settings.SettingsDto.EMAIL_PROPERTIES_FILE_NAME;
 import static org.motechproject.email.settings.SettingsDto.MAIL_LOG_PURGE_TIME_PROPERY;
 
@@ -69,6 +72,8 @@ public class SettingsController {
     public void setSettings(@RequestBody SettingsDto settings) {
         String host = settings.getHost();
         String port = settings.getPort();
+        String username = settings.getUsername();
+        String password = settings.getPassword();
         String days = settings.getLogPurgeTime();
         String purgeEnabled = settings.getLogPurgeEnable();
         StringBuilder exceptionMessage = new StringBuilder();
@@ -89,6 +94,18 @@ public class SettingsController {
                     .append(NEW_LINE);
         }
 
+        if (isBlank(username)) {
+            exceptionMessage
+                    .append(String.format(REQUIRED_FORMAT, MAIL_USERNAME_PROPERTY))
+                    .append(NEW_LINE);
+        }
+
+        if (isBlank(password)) {
+            exceptionMessage
+                    .append(String.format(REQUIRED_FORMAT, MAIL_PASSWORD_PROPERTY))
+                    .append(NEW_LINE);
+        }
+
         if (TRUE.equals(purgeEnabled) && (!isNumeric(days))) {
             exceptionMessage
                     .append(String.format(NUMERIC_FORMAT, MAIL_LOG_PURGE_TIME_PROPERY))
@@ -100,6 +117,7 @@ public class SettingsController {
         }
 
         settingsFacade.saveConfigProperties(EMAIL_PROPERTIES_FILE_NAME, settings.toProperties());
+        settingsFacade.saveRawConfig(EMAIL_ADDITIONAL_PROPERTIES_FILE_NAME, settingsFacade.propertiesToJson(settings.getAdditionalProps()));
 
         if (emailPurger != null) {
             emailPurger.handleSettingsChange();
@@ -107,6 +125,9 @@ public class SettingsController {
 
         mailSender.setHost(host);
         mailSender.setPort(Integer.valueOf(port));
+        mailSender.setUsername(username);
+        mailSender.setPassword(password);
+        mailSender.setJavaMailProperties(settings.getAdditionalProps());
     }
 
     @ExceptionHandler(Exception.class)

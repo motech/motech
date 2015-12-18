@@ -1,14 +1,22 @@
 package org.motechproject.email.settings;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.server.config.SettingsFacade;
+import org.springframework.util.CollectionUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Properties;
 
 public class SettingsDto {
+    public static final String EMAIL_ADDITIONAL_PROPERTIES_FILE_NAME = "motech-email-additional.json";
     public static final String EMAIL_PROPERTIES_FILE_NAME = "motech-email.properties";
     public static final String MAIL_HOST_PROPERTY = "mail.host";
     public static final String MAIL_PORT_PROPERTY = "mail.port";
+    public static final String MAIL_USERNAME_PROPERTY = "mail.username";
+    public static final String MAIL_PASSWORD_PROPERTY = "mail.password";
     public static final String MAIL_LOG_ADDRESS_PROPERTY = "mail.log.address";
     public static final String MAIL_LOG_SUBJECT_PROPERTY = "mail.log.subject";
     public static final String MAIL_LOG_BODY_PROPERTY = "mail.log.body";
@@ -18,21 +26,27 @@ public class SettingsDto {
 
     private String host;
     private String port;
+    private String username;
+    private String password;
     private String logAddress;
     private String logSubject;
     private String logBody;
     private String logPurgeEnable;
     private String logPurgeTime;
     private String logPurgeTimeMultiplier;
+    private Map<String, String> additionalProperties;
 
     public SettingsDto() {
-        this(null, null, null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null, null, null);
     }
 
     public SettingsDto(SettingsFacade settingsFacade) {
         this(
                 settingsFacade.getProperty(MAIL_HOST_PROPERTY, EMAIL_PROPERTIES_FILE_NAME),
                 settingsFacade.getProperty(MAIL_PORT_PROPERTY, EMAIL_PROPERTIES_FILE_NAME),
+                settingsFacade.getProperty(MAIL_USERNAME_PROPERTY, EMAIL_PROPERTIES_FILE_NAME),
+                settingsFacade.getProperty(MAIL_PASSWORD_PROPERTY, EMAIL_PROPERTIES_FILE_NAME),
+                settingsFacade.getPropertiesFromRawConfigFile(EMAIL_ADDITIONAL_PROPERTIES_FILE_NAME),
                 settingsFacade.getProperty(MAIL_LOG_ADDRESS_PROPERTY, EMAIL_PROPERTIES_FILE_NAME),
                 settingsFacade.getProperty(MAIL_LOG_SUBJECT_PROPERTY, EMAIL_PROPERTIES_FILE_NAME),
                 settingsFacade.getProperty(MAIL_LOG_BODY_PROPERTY, EMAIL_PROPERTIES_FILE_NAME),
@@ -46,19 +60,43 @@ public class SettingsDto {
         Properties properties = new Properties();
         properties.put(MAIL_HOST_PROPERTY, host);
         properties.put(MAIL_PORT_PROPERTY, port);
+        properties.put(MAIL_USERNAME_PROPERTY, username);
+        properties.put(MAIL_PASSWORD_PROPERTY, password);
         properties.put(MAIL_LOG_ADDRESS_PROPERTY, logAddress);
         properties.put(MAIL_LOG_SUBJECT_PROPERTY, logSubject);
         properties.put(MAIL_LOG_BODY_PROPERTY, logBody);
         properties.put(MAIL_LOG_PURGE_ENABLE_PROPERTY, logPurgeEnable);
         properties.put(MAIL_LOG_PURGE_TIME_PROPERY, logPurgeTime);
         properties.put(MAIL_LOG_PURGE_TIME_MULTIPLIER_PROPERTY, logPurgeTimeMultiplier);
-
         return properties;
     }
 
-    public SettingsDto(String host, String port, String logAddress, String logSubject, String logBody, String logPurgeEnable) {
+    public SettingsDto(String host, String port, String user, String password, Properties additionalProperties, // NO CHECKSTYLE More than 7 parameters (found 8).
+                       String logAddress, String logSubject, String logBody, String logPurgeEnable,
+                       String logPurgeTime, String logPurgeTimeMultiplier) {
         this.host = host;
         this.port = port;
+        this.username = user;
+        this.password = password;
+        Map<String, String> props = new HashMap<>();
+        for (Entry<Object, Object> entry : additionalProperties.entrySet()) {
+            props.put((String) entry.getKey(), (String) entry.getValue());
+        }
+        this.additionalProperties = props;
+        this.logAddress = logAddress;
+        this.logSubject = logSubject;
+        this.logBody = logBody;
+        this.logPurgeEnable = logPurgeEnable;
+        this.logPurgeTime = logPurgeTime;
+        this.logPurgeTimeMultiplier = logPurgeTimeMultiplier;
+    }
+
+    public SettingsDto(String host, String port, String user, String password, Map<String, String> additionalProperties, String logAddress, String logSubject, String logBody, String logPurgeEnable) {
+        this.host = host;
+        this.port = port;
+        this.username = user;
+        this.password = password;
+        this.additionalProperties = CollectionUtils.isEmpty(additionalProperties) ? new HashMap<String, String>() : additionalProperties;
         this.logAddress = logAddress;
         this.logSubject = logSubject;
         this.logBody = logBody;
@@ -67,11 +105,14 @@ public class SettingsDto {
         this.logPurgeTimeMultiplier = "0";
     }
 
-    public SettingsDto(String host, String port, String logAddress, // NO CHECKSTYLE More than 7 parameters (found 8).
-                       String logSubject, String logBody, String logPurgeEnable, String logPurgeTime,
-                       String logPurgeTimeMultiplier) {
+    public SettingsDto(String host, String port, String user, String password, Map<String, String> additionalProperties, // NO CHECKSTYLE More than 7 parameters (found 8).
+                       String logAddress, String logSubject, String logBody, String logPurgeEnable,
+                       String logPurgeTime, String logPurgeTimeMultiplier) {
         this.host = host;
         this.port = port;
+        this.username = user;
+        this.password = password;
+        this.additionalProperties = CollectionUtils.isEmpty(additionalProperties) ? new HashMap<String, String>() : additionalProperties;
         this.logAddress = logAddress;
         this.logSubject = logSubject;
         this.logBody = logBody;
@@ -94,6 +135,37 @@ public class SettingsDto {
 
     public void setPort(String port) {
         this.port = port;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Map<String, String> getAdditionalProperties() {
+        if (this.additionalProperties == null) {
+            this.additionalProperties = new HashMap<>();
+        }
+        return this.additionalProperties;
+    }
+
+    public void setAdditionalProperties(Map<String, String> additionalProperties) {
+        if (additionalProperties == null) {
+            this.additionalProperties = new HashMap<String, String>();
+        } else {
+            this.additionalProperties = additionalProperties;
+        }
     }
 
     public String getLogAddress() {
@@ -144,9 +216,18 @@ public class SettingsDto {
         this.logPurgeTimeMultiplier = logPurgeTimeMultiplier;
     }
 
+    @JsonIgnore
+    public Properties getAdditionalProps() {
+        Properties props = new Properties();
+        for (Entry<String, String> prop : this.additionalProperties.entrySet()) {
+            props.put(prop.getKey(), prop.getValue());
+        }
+        return props;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(host, port, logAddress, logSubject, logBody, logPurgeEnable, logPurgeTime, logPurgeTimeMultiplier);
+        return Objects.hash(host, port, username, password, additionalProperties,  logAddress, logSubject, logBody, logPurgeEnable, logPurgeTime, logPurgeTimeMultiplier);
     }
 
     @Override
@@ -166,15 +247,28 @@ public class SettingsDto {
 
     @Override
     public String toString() {
+        boolean first = true;
+        String format = "SettingsDto{host='%s', port='%s', username='%s', password='%s', additionalProperties={";
+        for (Entry<String, String> prop : this.additionalProperties.entrySet()) {
+            if (!first) {
+                format += ", ";
+            } else {
+                first = false;
+            }
+            format += prop.getKey() + ": " + prop.getValue();
+        }
+        format += "}, logAddress='%s', logSubject='%s', logBody='%s', logPurgeEnable='%s', logPurgeTime='%s', logPurgeTimeMultiplier='%s'}";
         return String.format(
-                "SettingsDto{host='%s', port='%s', logAddress='%s', logSubject='%s', logBody='%s', logPurgeEnable='%s', logPurgeTime='%s', logPurgeTimeMultiplier='%s'}",
-                host, port, logAddress, logSubject, logBody, logPurgeEnable, logPurgeTime, logPurgeTimeMultiplier);
+                format,
+                host, port, username, password, logAddress, logSubject, logBody, logPurgeEnable, logPurgeTime, logPurgeTimeMultiplier);
     }
 
     private Boolean compareFields(SettingsDto other) {
         if (!Objects.equals(this.host, other.host)) {
             return false;
         } else if (!Objects.equals(this.port, other.port)) {
+            return false;
+        } else if (!Objects.equals(this.username, other.username)) {
             return false;
         } else if (!Objects.equals(this.logAddress, other.logAddress)) {
             return false;
@@ -189,7 +283,6 @@ public class SettingsDto {
         } else if (!Objects.equals(this.logPurgeTimeMultiplier, other.logPurgeTimeMultiplier)) {
             return false;
         }
-
         return true;
     }
 }

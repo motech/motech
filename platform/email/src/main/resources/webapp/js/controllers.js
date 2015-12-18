@@ -100,6 +100,29 @@
     controllers.controller('EmailSettingsCtrl', function ($scope, SettingsService) {
         $scope.settings = SettingsService.get();
 
+        $scope.add = function (property) {
+            if ($scope.settings.additionalProperties[property.name] === undefined) {
+                $scope.settings.additionalProperties[property.name] = property.value;
+                $scope.property = {};
+            } else {
+                motechAlert('email.header.error', 'email.settings.alreadyExist');
+            }
+            //console.log($scope.settings);
+        };
+
+        $scope.remove = function (name) {
+            delete $scope.settings.additionalProperties[name];
+        };
+
+        $scope.emptyFields = function (property) {
+            if (property === undefined) {
+                return true;
+            } else if (property.name === undefined || property.name === null || property.value === undefined || property.value === null) {
+                return true;
+            }
+            return false;
+        };
+
         $scope.timeMultipliers = {
             'hours': $scope.msg('email.settings.log.units.hours'),
             'days': $scope.msg('email.settings.log.units.days'),
@@ -115,6 +138,7 @@
                 $scope.settings,
                 function () {
                     motechAlert('email.header.success', 'email.settings.saved');
+
                     $scope.settings = SettingsService.get();
                 },
                 function (response) {
