@@ -11,7 +11,7 @@ import java.io.IOException;
 public interface JarGeneratorService {
 
     String MDS_COMMON_CONTEXT = "META-INF/motech/mdsCommonContext.xml";
-    String DATANUCLEUS_PROPERTIES = "datanucleus.properties";
+    String DATANUCLEUS_PROPERTIES = "datanucleus_data.properties";
     String MOTECH_MDS_PROPERTIES = "motech-mds.properties";
     String MDS_ENTITIES_CONTEXT = "META-INF/motech/mdsEntitiesContext.xml";
     String TASK_CHANNEL_JSON = "task-channel.json";

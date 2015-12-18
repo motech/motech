@@ -1497,7 +1497,7 @@ public class EntityServiceImpl implements EntityService {
             return Arrays.asList(cbHolder.getValues());
         } else {
             ComboboxValueService cbValueService = bundleContext.getService(ref);
-            return cbValueService.getAllValuesForCombobox(entity, field);
+            return cbValueService.getAllValuesForCombobox(entity.toDto(), field.toDto());
         }
     }
 

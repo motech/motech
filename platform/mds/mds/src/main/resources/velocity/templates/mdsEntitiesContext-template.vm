@@ -13,8 +13,6 @@
 
     <mvc:annotation-driven/>
 
-    <bean id="allEntities" class="org.motechproject.mds.repository.AllEntities" />
-
     <bean id="comboboxValueRepository" class="org.motechproject.mds.repository.ComboboxValueRepository" />
 
     <bean id="historyService" class="org.motechproject.mds.service.impl.history.HistoryServiceImpl" />
@@ -33,7 +31,15 @@
 
     <bean id="csvImportExportService" class="org.motechproject.mds.service.impl.csv.CsvImportExportServiceImpl" />
 
-    <bean id="entityInfoReader" class="org.motechproject.mds.entityinfo.EntityInfoReaderImpl" />
+    <bean id="entityInfoReader" class="org.motechproject.mds.entityinfo.EntityInfoReaderImpl">
+        <constructor-arg>
+            <map>
+                #foreach ( $entry in $list )
+                    <entry key="$entry.entity.id" value="$entry.entity.className"/>
+                #end
+            </map>
+        </constructor-arg>
+    </bean>
 
     #foreach ( $entry in $list )
         #if ( $StringUtils.isNotBlank( $entry.repository ) )
