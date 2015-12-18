@@ -512,6 +512,8 @@ public class EntityServiceImplTest {
         when(allEntities.retrieveById(1L)).thenReturn(entity);
         when(allEntityDrafts.retrieve(entity, "motech")).thenReturn(draft);
         when(draft.getField(2L)).thenReturn(field);
+        when(draft.getParentEntity()).thenReturn(entity);
+        when(entity.getField("fieldName")).thenReturn(field);
         when(field.getName()).thenReturn("fieldName");
         when(field.toDto()).thenReturn(fieldDto);
         when(fieldDto.getBasic()).thenReturn(basic);

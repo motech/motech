@@ -306,8 +306,14 @@ public class EntityServiceImpl implements EntityService {
                     FieldHelper.addOrUpdateMetadataForCombobox(field);
                 } else if (UNIQUE_PATH.equals(path)) {
                     // we will be dropping the unique constraint for this field
+                    boolean originalUnique = false;
+                    Field originalField = draft.getParentEntity().getField(field.getName());
+                    if (originalField != null) {
+                        originalUnique = originalField.isUnique();
+                    }
+
                     boolean newVal = (boolean) value.get(0);
-                    if (field.isUnique() && !newVal) {
+                    if (originalUnique && !newVal) {
                         draft.addUniqueToRemove(field.getName());
                     }
                     // Perform update
