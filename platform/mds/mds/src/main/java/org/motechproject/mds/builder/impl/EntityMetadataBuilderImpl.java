@@ -503,8 +503,9 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
             processOneToOneRelationship(fmd, holder);
         }
 
-        if (holder.isOneToOne() || holder.isManyToOne()) {
-            getOrCreateRelFkMetadata(fmd, entity, field);
+        if (shouldSetNullDelete(holder, field)) {
+            ForeignKeyMetadata fkmd = getOrCreateRelFkMetadata(fmd, entity, field);
+            fkmd.setDeleteAction(ForeignKeyAction.NULL);
         }
 
         if (holder.isManyToMany()) {
@@ -740,6 +741,15 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         if (holder.isCascadeDelete() || entityType == EntityType.TRASH) {
             return (holder.isOneToOne() || holder.isOneToMany()) && ( holder.getRelatedField() != null);
+        }
+
+        return false;
+    }
+
+    private boolean shouldSetNullDelete(RelationshipHolder holder, FieldDto field) {
+
+        if ((holder.isOneToOne() || holder.isManyToOne()) && !field.getBasic().isRequired()) {
+            return true;
         }
 
         return false;
