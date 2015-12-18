@@ -8,6 +8,5 @@ CREATE TABLE "EntityDraft_uniqueIndexesToDrop" (
   "id_OID" bigint NOT NULL,
   "fieldName" varchar(255) NOT NULL,
   PRIMARY KEY ("id_OID", "fieldName"),
-  KEY "EntityDraft_uniqueIndexesToDrop_key" ("id_OID"),
   CONSTRAINT "EntityDraft_uniqueIndexesToDrop_fk_Entity" FOREIGN KEY ("id_OID") REFERENCES "Entity" ("id")
 );
