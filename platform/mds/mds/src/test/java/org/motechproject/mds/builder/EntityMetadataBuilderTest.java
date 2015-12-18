@@ -37,6 +37,7 @@ import javax.jdo.metadata.FieldMetadata;
 import javax.jdo.metadata.InheritanceMetadata;
 import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.PackageMetadata;
+import javax.jdo.metadata.UniqueMetadata;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -335,11 +336,11 @@ public class EntityMetadataBuilderTest {
 
         List<Field> fields = new ArrayList<>();
         // for these fields the appropriate generator should be added
-        fields.add(new Field(entity, CREATOR_FIELD_NAME, CREATOR_DISPLAY_FIELD_NAME, string, true, true));
-        fields.add(new Field(entity, OWNER_FIELD_NAME, OWNER_DISPLAY_FIELD_NAME, string, true, true));
-        fields.add(new Field(entity, CREATION_DATE_FIELD_NAME, CREATION_DATE_DISPLAY_FIELD_NAME, dateTime, true, true));
-        fields.add(new Field(entity, MODIFIED_BY_FIELD_NAME, MODIFIED_BY_DISPLAY_FIELD_NAME, string, true, true));
-        fields.add(new Field(entity, MODIFICATION_DATE_FIELD_NAME, MODIFICATION_DATE_DISPLAY_FIELD_NAME, dateTime, true, true));
+        fields.add(new Field(entity, CREATOR_FIELD_NAME, CREATOR_DISPLAY_FIELD_NAME, string, true, false, true));
+        fields.add(new Field(entity, OWNER_FIELD_NAME, OWNER_DISPLAY_FIELD_NAME, string, true, false, true));
+        fields.add(new Field(entity, CREATION_DATE_FIELD_NAME, CREATION_DATE_DISPLAY_FIELD_NAME, dateTime, true, false, true));
+        fields.add(new Field(entity, MODIFIED_BY_FIELD_NAME, MODIFIED_BY_DISPLAY_FIELD_NAME, string, true, false, true));
+        fields.add(new Field(entity, MODIFICATION_DATE_FIELD_NAME, MODIFICATION_DATE_DISPLAY_FIELD_NAME, dateTime, true, false, true));
 
         doReturn(fields).when(entity).getFields();
 
@@ -410,6 +411,45 @@ public class EntityMetadataBuilderTest {
         entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
 
         verify(fmd, never()).setDefaultFetchGroup(anyBoolean());
+    }
+
+    @Test
+    public void shouldMarkEudeFieldsAsUnique() {
+        when(entity.getName()).thenReturn(ENTITY_NAME);
+        when(jdoMetadata.newPackageMetadata(anyString())).thenReturn(packageMetadata);
+        when(packageMetadata.newClassMetadata(anyString())).thenReturn(classMetadata);
+
+        Field eudeField = mock(Field.class);
+        when(eudeField.getName()).thenReturn("uniqueField");
+        when(eudeField.isReadOnly()).thenReturn(false);
+        when(eudeField.isUnique()).thenReturn(true);
+        when(eudeField.getType()).thenReturn(new Type(String.class));
+
+        Field ddeField = mock(Field.class);
+        when(ddeField.getName()).thenReturn("uniqueField2");
+        when(ddeField.isReadOnly()).thenReturn(true);
+        when(ddeField.isUnique()).thenReturn(true);
+        when(ddeField.getType()).thenReturn(new Type(String.class));
+
+        when(entity.getFields()).thenReturn(asList(ddeField, eudeField));
+
+        FieldMetadata fmdEude = mock(FieldMetadata.class);
+        when(fmdEude.getName()).thenReturn("uniqueField");
+        when(classMetadata.newFieldMetadata("uniqueField")).thenReturn(fmdEude);
+
+        FieldMetadata fmdDde = mock(FieldMetadata.class);
+        when(fmdDde.getName()).thenReturn("uniqueField2");
+        when(classMetadata.newFieldMetadata("uniqueField2")).thenReturn(fmdDde);
+
+        UniqueMetadata umd = mock(UniqueMetadata.class);
+        when(fmdEude.newUniqueMetadata()).thenReturn(umd);
+
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class);
+
+        verify(fmdDde, never()).newUniqueMetadata();
+        verify(fmdDde, never()).setUnique(anyBoolean());
+        verify(fmdEude).newUniqueMetadata();
+        verify(umd).setName("unq_Sample_uniqueField");
     }
 
     private void verifyCommonClassMetadata() {

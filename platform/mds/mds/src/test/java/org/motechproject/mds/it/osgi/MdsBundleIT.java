@@ -190,6 +190,8 @@ public class MdsBundleIT extends BasePaxIT {
         assertNotNull(entitiesBundle);
 
         service = (MotechDataService) ServiceRetriever.getService(bundleContext, serviceName);
+        service.deleteAll();
+
         Class<?> objectClass = entitiesBundle.loadClass(FOO_CLASS);
         getLogger().info("Loaded class: " + objectClass.getName());
 
@@ -208,6 +210,7 @@ public class MdsBundleIT extends BasePaxIT {
         verifyComboboxDataMigration();
         verifyInstanceDeleting();
         verifyRestDocumentation();
+        verifyUniqueConstraint();
     }
 
     @Test
@@ -808,10 +811,10 @@ public class MdsBundleIT extends BasePaxIT {
 
         assertNotNull(list);
         assertEquals(2, list.size());
-        assertInstance(list.get(0), false, "fromCsv", "Capital CSV", Collections.emptyList(), null, new LocalDate(2012, 10, 14),
+        assertInstance(list.get(0), false, "fromCsv2", "Capital CSV", Collections.emptyList(), null, new LocalDate(2012, 10, 14),
                 null, new Period(2, 0, 0, 0, 0, 0, 0, 0), null, new DateTime(2014, 12, 2, 16, 13, 40, 120, DateTimeZone.UTC).toDate(),
                 null, new Time(20, 20), null, null);
-        assertInstance(list.get(1), true, "fromCsv", "Capital CSV", Arrays.asList("one", "two"),
+        assertInstance(list.get(1), true, "fromCsv1", "Capital CSV", Arrays.asList("one", "two"),
                 new DateTime(2014, 12, 2, 13, 10, 40, 120, DateTimeZone.UTC).withZone(DateTimeZone.getDefault()),
                 new LocalDate(2012, 10, 15), null, new Period(1, 0, 0, 0, 0, 0, 0, 0), null,
                 new DateTime(2014, 12, 2, 13, 13, 40, 120, DateTimeZone.UTC).toDate(), null, new Time(10, 30), null, null);
@@ -849,6 +852,45 @@ public class MdsBundleIT extends BasePaxIT {
         assertNotSame("", docs);
     }
 
+    private void verifyUniqueConstraint() throws Exception {
+        Object instance = service.getClassType().newInstance();
+        PropertyUtils.setProperty(instance, "someString", "uniqueVal");
+
+        service.create(instance);
+
+        Object dupeInstance = service.getClassType().newInstance();
+        PropertyUtils.setProperty(dupeInstance, "someString", "uniqueVal");
+
+        // this should violate the unique constraint
+
+        boolean caught = false;
+        try {
+            service.create(dupeInstance);
+        } catch (RuntimeException e) {
+            caught = true;
+        }
+
+        assertTrue("Unique constraint had no effect!", caught);
+
+        // verify constraint removal
+        Long entityId = entityService.getEntityByClassName(FOO_CLASS).getId();
+        Long fieldId = getFieldIdByName(entityService.getFields(entityId), "someString");
+
+        DraftData draft = DraftBuilder.forFieldEdit(fieldId, "basic.unique", false);
+
+        entityService.saveDraftEntityChanges(entityId, draft);
+        entityService.commitChanges(entityId);
+
+        generator.regenerateMdsDataBundle(true);
+        service = (MotechDataService) ServiceRetriever.getService(bundleContext, ClassName.getInterfaceName(FOO_CLASS), true);
+
+        // should succeed now, no exception is enough for us at this point
+        dupeInstance = service.getClassType().newInstance();
+        PropertyUtils.setProperty(dupeInstance, "someString", "uniqueVal");
+
+        service.create(dupeInstance);
+    }
+
     private void prepareTestEntities() throws IOException {
         getLogger().info("Preparing entities for testing");
 
@@ -861,9 +903,10 @@ public class MdsBundleIT extends BasePaxIT {
                 TypeDto.BOOLEAN,
                 new FieldBasicDto("Some Boolean", "someBoolean"),
                 false, null));
+        // this field is unique
         fields.add(new FieldDto(null, entityDto.getId(),
                 TypeDto.STRING,
-                new FieldBasicDto("Some String", "someString"),
+                new FieldBasicDto("Some String", "someString", false, true),
                 false, null, null,
                 asList(
                         new SettingDto("mds.form.label.textarea", false, BOOLEAN)

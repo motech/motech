@@ -8,4 +8,4 @@ CREATE TABLE "BundleFailsReport" (
   PRIMARY KEY ("id")
 );
 
-ALTER TABLE "ConfigSettings" add "refreshModuleAfterTimeout" bit(1) DEFAULT '0';
+ALTER TABLE "ConfigSettings" add "refreshModuleAfterTimeout" boolean DEFAULT FALSE;

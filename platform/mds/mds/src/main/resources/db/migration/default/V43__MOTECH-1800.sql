@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS "ConfigSettings" (
   "afterTimeUnit" varchar(255) NOT NULL,
   "afterTimeValue" int,
   "deleteMode" varchar(255) NOT NULL,
-  "emptyTrash" bit(1),
+  "emptyTrash" boolean,
   PRIMARY KEY ("id")
 );
 

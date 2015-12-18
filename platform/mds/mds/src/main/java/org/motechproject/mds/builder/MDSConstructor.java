@@ -1,5 +1,6 @@
 package org.motechproject.mds.builder;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -21,8 +22,6 @@ public interface MDSConstructor {
      * An interface related with class definition should be created only for entities from outside
      * bundles and if the bundle does not define its own interface.
      *
-     * @param buildDDE {@code true} if class definitions for entities from outside bundles should
-     *                 also be created; otherwise {@code false}.
      * @return {@code true} if there were entities for which class definitions should be created;
      * otherwise {@code false}.
      */
@@ -37,4 +36,6 @@ public interface MDSConstructor {
      * @param fieldNameChanges A map, indexed by current field names and values being updated field names.
      */
     void updateFields(Long entityId, Map<String, String> fieldNameChanges);
+
+    void removeUniqueIndexes(Long entityId, Collection<String> fields);
 }

@@ -46,10 +46,6 @@ public class HistoryServiceContextIT extends BaseInstanceIT {
     @Autowired
     private TrashService trashService;
 
-    // TODO: fix problem with access to instance of InstanceService
-    // @Autowired
-    // private InstanceService instanceService;
-
     @Autowired
     private MockBundleContext bundleContext;
 
