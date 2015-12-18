@@ -314,7 +314,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     @Override
-    @Transactional
+    @Transactional("dataTransactionManager")
     public void removeUniqueIndexes(Entity entity, Collection<String> fields) {
         String tableName = ClassTableName.getTableName(entity.getClassName(), entity.getModule(),
                 entity.getNamespace(), entity.getTableName(), null);
