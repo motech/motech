@@ -38,6 +38,7 @@ import org.springframework.util.ReflectionUtils;
 
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.Unique;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.lang.annotation.Annotation;
@@ -180,6 +181,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
             basic.setDefaultValue(getDefaultValueForField(annotation, classType));
             basic.setRequired(isFieldRequired(annotation, classType));
+            basic.setUnique(isFieldUnique(ac));
 
             FieldDto field = new FieldDto();
 
@@ -575,7 +577,11 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     }
 
     private boolean isFieldRequired(Field fieldAnnotation, Class<?> fieldType) {
-        // primtives are always required
+        // primitives are always required
         return fieldType.isPrimitive() || (fieldAnnotation != null && fieldAnnotation.required());
+    }
+
+    private boolean isFieldUnique(AccessibleObject field) {
+        return ReflectionsUtil.getAnnotationSelfOrAccessor(field, Unique.class) != null;
     }
 }

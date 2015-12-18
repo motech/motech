@@ -3,6 +3,7 @@ package org.motechproject.mds.builder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.dto.SchemaHolder;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -38,4 +39,11 @@ public interface MDSConstructor {
      * @param fieldNameChanges A map, indexed by current field names and values being updated field names.
      */
     void updateFields(Entity entity, Map<String, String> fieldNameChanges);
+
+    /**
+     * Removes unique indexes from an entity table.
+     * @param entity the entity to process
+     * @param fields the names of fields that should lose uniques
+     */
+    void removeUniqueIndexes(Entity entity, Collection<String> fields);
 }

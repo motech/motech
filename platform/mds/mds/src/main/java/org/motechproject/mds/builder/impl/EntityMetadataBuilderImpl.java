@@ -55,6 +55,7 @@ import javax.jdo.metadata.JoinMetadata;
 import javax.jdo.metadata.MapMetadata;
 import javax.jdo.metadata.MemberMetadata;
 import javax.jdo.metadata.PackageMetadata;
+import javax.jdo.metadata.UniqueMetadata;
 import javax.jdo.metadata.ValueMetadata;
 import javax.jdo.metadata.VersionMetadata;
 import java.util.List;
@@ -301,15 +302,26 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                 fmd.setIndexed(true);
             }
             if (fmd != null) {
-                setColumnParameters(fmd, field, definition);
-                // Check whether the field is required and set appropriate metadata
-                fmd.setNullValue(isFieldRequired(field, entityType) ? NullValue.EXCEPTION : NullValue.NONE);
+                customizeFieldMd(fmd, entity, field, entityType, definition);
             }
         }
     }
 
     private boolean isFieldRequired(FieldDto field, EntityType entityType) {
         return field.getBasic().isRequired() && !(entityType.equals(EntityType.TRASH) && field.getType().isRelationship());
+    }
+
+    private void customizeFieldMd(FieldMetadata fmd, EntityDto entity, FieldDto field, EntityType entityType,
+                                  Class<?> definition) {
+        setColumnParameters(fmd, field, definition);
+        // Check whether the field is required and set appropriate metadata
+        fmd.setNullValue(isFieldRequired(field, entityType) ? NullValue.EXCEPTION : NullValue.NONE);
+        // Non DDE fields have controllable unique
+        if (!field.isReadOnly() && entityType == EntityType.STANDARD && field.getBasic().isUnique()) {
+            UniqueMetadata umd = fmd.newUniqueMetadata();
+            // TODO: Move to KeyNames class (to be introduced in MOTECH-1991)
+            umd.setName(KeyNames.uniqueKeyName(entity.getName(), getNameForMetadata(field)));
+        }
     }
 
     private boolean isFieldNotInherited(String fieldName, EntityDto entity, SchemaHolder schemaHolder) {
