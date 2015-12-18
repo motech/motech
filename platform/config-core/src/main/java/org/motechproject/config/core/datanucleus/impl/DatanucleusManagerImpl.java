@@ -34,15 +34,29 @@ public class DatanucleusManagerImpl implements DatanucleusManager {
     private ConfigLocationFileStore configLocationFileStore;
 
     @Override
-    public Properties getDatanucleusProperties() {
+    public Properties getDatanucleusDataProperties() {
+        return getDatanucleusProperties(ConfigurationConstants.DATANUCLEUS_DATA_SETTINGS_FILE_NAME);
+    }
+
+    @Override
+    public Properties getDatanucleusSchemaProperties() {
+        return getDatanucleusProperties(ConfigurationConstants.DATANUCLEUS_SCHEMA_SETTINGS_FILE_NAME);
+    }
+
+    private Properties getDatanucleusProperties(String fileName) {
         String configLocation = environment.getConfigDir();
         Properties datanucleusProperties;
 
         if (StringUtils.isNotBlank(configLocation)) {
-            return readDatanucleusPropertiesFromFile(new File(configLocation, ConfigurationConstants.DATANUCLEUS_SETTINGS_FILE_NAME));
+            return readDatanucleusPropertiesFromFile(new File(configLocation, fileName));
         }
 
-        datanucleusProperties = environment.getDatanucleusProperties();
+        if (ConfigurationConstants.DATANUCLEUS_DATA_SETTINGS_FILE_NAME.equals(fileName)) {
+            datanucleusProperties = environment.getDatanucleusDataProperties();
+        } else {
+            datanucleusProperties = environment.getDatanucleusSchemaProperties();
+        }
+
         if (datanucleusProperties != null && !datanucleusProperties.isEmpty()) {
             return datanucleusProperties;
         }
@@ -50,22 +64,22 @@ public class DatanucleusManagerImpl implements DatanucleusManager {
 
         try {
             LOGGER.debug("Loading datanucleus properties from default configuration directory");
-            datanucleusProperties = loadPropertiesFromDefaultLocation();
+            datanucleusProperties = loadPropertiesFromDefaultLocation(fileName);
         } catch(MotechConfigurationException e) {
             LOGGER.warn(e.getMessage());
         }
 
         LOGGER.debug("Loading datanucleus properties from classpath");
         if (datanucleusProperties == null || datanucleusProperties.isEmpty()) {
-            datanucleusProperties = loadPropertiesFromClasspath();
+            datanucleusProperties = loadPropertiesFromClasspath(fileName);
         }
 
         return datanucleusProperties;
     }
 
-    private Properties loadPropertiesFromDefaultLocation() {
+    private Properties loadPropertiesFromDefaultLocation(String fileName) {
         File file = ConfigPropertiesUtils.getDefaultPropertiesFile(ConfigLocation.FileAccessType.READABLE,
-                configLocationFileStore.getAll(), ConfigurationConstants.DATANUCLEUS_SETTINGS_FILE_NAME);
+                configLocationFileStore.getAll(), fileName);
 
         if (!file.exists()) {
             return null;
@@ -79,14 +93,14 @@ public class DatanucleusManagerImpl implements DatanucleusManager {
 
     }
 
-    private Properties loadPropertiesFromClasspath() {
+    private Properties loadPropertiesFromClasspath(String fileName) {
         Properties properties = new Properties();
-        ClassPathResource resource = new ClassPathResource(ConfigurationConstants.DATANUCLEUS_SETTINGS_FILE_NAME);
+        ClassPathResource resource = new ClassPathResource(fileName);
         try (InputStream inputStream = resource.getInputStream()) {
             properties.load(inputStream);
             //After loading properties from classpath we copy file to the default config location
             File file = ConfigPropertiesUtils.getDefaultPropertiesFile(ConfigLocation.FileAccessType.WRITABLE,
-                    configLocationFileStore.getAll(), ConfigurationConstants.DATANUCLEUS_SETTINGS_FILE_NAME);
+                    configLocationFileStore.getAll(), fileName);
             ConfigPropertiesUtils.saveConfig(file, properties);
         } catch (IOException e) {
             LOGGER.warn("Error occurred when loading datanucleus properties from classpath", e);

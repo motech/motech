@@ -1,7 +1,7 @@
 package org.motechproject.mds.repository;
 
-import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.util.Constants;
 
 import javax.jdo.PersistenceManager;
@@ -37,17 +37,17 @@ public class ComboboxValueRepository extends AbstractRepository {
 
     /**
      * Retrieves all values for a single-select combobox.
-     * @param entity the entity to which the combobox belongs to
-     * @param cbField the field representing the combobox
+     * @param entityDto the entity to which the combobox belongs to
+     * @param cbFieldDto the field representing the combobox
      * @return all values for the combobox currently in the database
      */
-    public List<String> getComboboxValuesForStringField(Entity entity, Field cbField) {
+    public List<String> getComboboxValuesForStringField(EntityDto entityDto, FieldDto cbFieldDto) {
         PersistenceManager pm = getPersistenceManager();
 
         // MDS must ensure that these are valid
         Query query = pm.newQuery(
                 String.format("SELECT DISTINCT %1$s FROM %2$s WHERE %1$s != null && %1$s.length() > 0 ORDER BY %1$s ASC",
-                cbField.getName(), entity.getClassName()));
+                        cbFieldDto.getBasic().getName(), entityDto.getClassName()));
 
         return (List<String>) query.execute();
     }

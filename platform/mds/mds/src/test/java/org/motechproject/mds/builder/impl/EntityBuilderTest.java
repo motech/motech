@@ -196,7 +196,7 @@ public class EntityBuilderTest {
         Class<?> clazz = mdsClassLoader.safeDefineClass(classData.getClassName(), classData.getBytecode());
 
         assertNotNull(clazz);
-        assertField(clazz, StringUtils.uncapitalize(clazz.getSimpleName()) + "CurrentVersion", Long.class);
+        assertField(clazz, StringUtils.uncapitalize(clazz.getSimpleName()) + Constants.Util.CURRENT_VERSION, Long.class);
         assertField(clazz, "id", Long.class);
         assertField(clazz, "count", Integer.class);
         assertField(clazz, "time", Time.class);

@@ -6,11 +6,11 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.FieldSetting;
-import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.domain.TypeSetting;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldBasicDto;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.SettingDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.repository.ComboboxValueRepository;
 import org.motechproject.mds.service.MetadataService;
 import org.motechproject.mds.util.Constants;
@@ -50,13 +50,16 @@ public class ComboboxValueServiceTest {
     private MetadataServiceImpl metadataService;
 
     @Mock
-    private Entity entity;
+    private EntityDto entityDto;
 
     @Mock
-    private Field field;
+    private FieldDto fieldDto;
 
     @Mock
-    private Type type;
+    private TypeDto typeDto;
+
+    @Mock
+    FieldBasicDto fieldBasicDto;
 
     @Mock
     private BundleContext bundleContext;
@@ -66,11 +69,11 @@ public class ComboboxValueServiceTest {
 
     @Before
     public void setUp() {
-        when(entity.getClassName()).thenReturn(ENTITY_CLASSNAME);
-        when(field.getName()).thenReturn(FIELD_NAME);
-        when(field.getEntity()).thenReturn(entity);
-        when(field.getType()).thenReturn(type);
-        when(type.isCombobox()).thenReturn(true);
+        when(entityDto.getClassName()).thenReturn(ENTITY_CLASSNAME);
+        when(fieldBasicDto.getName()).thenReturn(FIELD_NAME);
+        when(fieldDto.getBasic()).thenReturn(fieldBasicDto);
+        when(fieldDto.getType()).thenReturn(typeDto);
+        when(typeDto.isCombobox()).thenReturn(true);
         when(metadataService.getComboboxTableName(ENTITY_CLASSNAME, FIELD_NAME)).thenReturn(CB_TABLE_NAME);
 
         when(bundleContext.getServiceReference(MetadataService.class)).thenReturn(ref);
@@ -81,7 +84,7 @@ public class ComboboxValueServiceTest {
     public void shouldReturnValuesForCbSingleSelectNoUserSupplied() {
         setUpCb(false, false);
 
-        List<String> result = cbValueHelper.getAllValuesForCombobox(entity, field);
+        List<String> result = cbValueHelper.getAllValuesForCombobox(entityDto, fieldDto);
 
         assertEquals(PREDEFINED_VALUES, result);
         verifyZeroInteractions(cbValueRepository);
@@ -91,7 +94,7 @@ public class ComboboxValueServiceTest {
     public void shouldReturnValuesForCbMultiSelectNoUserSupplied() {
         setUpCb(true, false);
 
-        List<String> result = cbValueHelper.getAllValuesForCombobox(entity, field);
+        List<String> result = cbValueHelper.getAllValuesForCombobox(entityDto, fieldDto);
 
         assertEquals(PREDEFINED_VALUES, result);
         verifyZeroInteractions(cbValueRepository);
@@ -100,13 +103,13 @@ public class ComboboxValueServiceTest {
     @Test
     public void shouldReturnValuesForCbSingleSelectUserSupplied() {
         setUpCb(false, true);
-        when(cbValueRepository.getComboboxValuesForStringField(entity, field))
+        when(cbValueRepository.getComboboxValuesForStringField(entityDto, fieldDto))
                 .thenReturn(VALUES_FROM_REPOSITORY);
 
-        List<String> result = cbValueHelper.getAllValuesForCombobox(entity, field);
+        List<String> result = cbValueHelper.getAllValuesForCombobox(entityDto, fieldDto);
 
         assertEquals(MERGED_VALUES, result);
-        verify(cbValueRepository).getComboboxValuesForStringField(entity, field);
+        verify(cbValueRepository).getComboboxValuesForStringField(entityDto, fieldDto);
         verify(cbValueRepository, never()).getComboboxValuesForCollection(anyString());
     }
 
@@ -116,67 +119,61 @@ public class ComboboxValueServiceTest {
         when(cbValueRepository.getComboboxValuesForCollection(CB_TABLE_NAME))
                 .thenReturn(VALUES_FROM_REPOSITORY);
 
-        List<String> result = cbValueHelper.getAllValuesForCombobox(entity, field);
+        List<String> result = cbValueHelper.getAllValuesForCombobox(entityDto, fieldDto);
 
         assertEquals(MERGED_VALUES, result);
         verify(cbValueRepository).getComboboxValuesForCollection(CB_TABLE_NAME);
-        verify(cbValueRepository, never()).getComboboxValuesForStringField(any(Entity.class), any(Field.class));
+        verify(cbValueRepository, never()).getComboboxValuesForStringField(any(EntityDto.class), any(FieldDto.class));
     }
 
     @Test
-    public void shouldNotRethrowExceptionFromRepository() {
+    public void shouldNotReThrowExceptionFromRepository() {
         setUpCb(true, true);
         when(cbValueRepository.getComboboxValuesForCollection(CB_TABLE_NAME))
                 .thenThrow(new IllegalStateException("An exception from the database"));
 
-        List<String> result = cbValueHelper.getAllValuesForCombobox(entity, field);
+        List<String> result = cbValueHelper.getAllValuesForCombobox(entityDto, fieldDto);
 
         assertEquals(PREDEFINED_VALUES, result);
         verify(cbValueRepository).getComboboxValuesForCollection(CB_TABLE_NAME);
-        verify(cbValueRepository, never()).getComboboxValuesForStringField(any(Entity.class), any(Field.class));
+        verify(cbValueRepository, never()).getComboboxValuesForStringField(any(EntityDto.class), any(FieldDto.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionForNullField() {
-        cbValueHelper.getAllValuesForCombobox(entity, null);
+        cbValueHelper.getAllValuesForCombobox(entityDto, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionForNullEntity() {
-        cbValueHelper.getAllValuesForCombobox(null, field);
+        cbValueHelper.getAllValuesForCombobox(null, fieldDto);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionForNullEntityAndField() {
-        cbValueHelper.getAllValuesForCombobox((Entity) null, null);
+        cbValueHelper.getAllValuesForCombobox((EntityDto) null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionWhenFieldIsNotCb() {
-        when(type.isCombobox()).thenReturn(false);
-        cbValueHelper.getAllValuesForCombobox((Entity) null, null);
+        when(typeDto.isCombobox()).thenReturn(false);
+        cbValueHelper.getAllValuesForCombobox((EntityDto) null, null);
     }
 
     private void setUpCb(boolean allowMultiSelection, boolean allowUserSupplied) {
-        when(field.getSettings()).thenReturn(asList(predefinedValues(), allowMultiSelectionSetting(allowMultiSelection),
+        when(fieldDto.getSettings()).thenReturn(asList(predefinedValues(), allowMultiSelectionSetting(allowMultiSelection),
                 allowUserSuppliedSetting(allowUserSupplied)));
     }
 
-    private FieldSetting predefinedValues() {
-        FieldSetting fieldSetting = new FieldSetting(field, new TypeSetting(Constants.Settings.COMBOBOX_VALUES));
-        fieldSetting.setValue(TypeHelper.buildStringFromList(PREDEFINED_VALUES));
-        return fieldSetting;
+    private SettingDto predefinedValues() {
+        return new SettingDto(Constants.Settings.COMBOBOX_VALUES, TypeHelper.buildStringFromList(PREDEFINED_VALUES), typeDto);
     }
 
-    private FieldSetting allowUserSuppliedSetting(boolean allow) {
-        FieldSetting fieldSetting = new FieldSetting(field, new TypeSetting(Constants.Settings.ALLOW_USER_SUPPLIED));
-        fieldSetting.setValue(String.valueOf(allow));
-        return fieldSetting;
+    private SettingDto allowUserSuppliedSetting(boolean allow) {
+        return new SettingDto(Constants.Settings.ALLOW_USER_SUPPLIED, String.valueOf(allow), typeDto);
     }
 
-    private FieldSetting allowMultiSelectionSetting(boolean allow) {
-        FieldSetting fieldSetting = new FieldSetting(field, new TypeSetting(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS));
-        fieldSetting.setValue(String.valueOf(allow));
-        return fieldSetting;
+    private SettingDto allowMultiSelectionSetting(boolean allow) {
+        return new SettingDto(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS, String.valueOf(allow), typeDto);
     }
 }
