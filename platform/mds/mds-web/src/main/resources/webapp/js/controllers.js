@@ -1369,7 +1369,7 @@
             });
         };
 
-        $scope.isMetadataNotEditable= function (key) {
+        $scope.isMetadataNotEditable = function (key) {
             if (key === 'related.class' || key === 'related.collectionType'
                 || key === 'related.field' || key === 'related.owningSide' || key === 'enum.className') {
                 return true;
@@ -1534,6 +1534,14 @@
         };
 
         /* ~~~~~ FIELD FUNCTIONS ~~~~~ */
+
+        $scope.isUniqueEditable = function(field) {
+            return !field.readOnly
+                   && field.type.typeClass !== 'java.util.Map'
+                   && field.type.typeClass !== "org.motechproject.mds.domain.OneToManyRelationship"
+                   && field.type.typeClass !== "org.motechproject.mds.domain.ManyToManyRelationship"
+                   && field.type.typeClass !== "java.util.Collection";
+        };
 
         /**
         * Create new field and add it to an entity schema. If displayName, name or type was not

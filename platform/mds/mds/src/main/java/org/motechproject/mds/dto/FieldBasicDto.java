@@ -12,6 +12,7 @@ public class FieldBasicDto {
     private String displayName;
     private String name;
     private boolean required;
+    private boolean unique;
     private Object defaultValue;
     private String tooltip;
     private String placeholder;
@@ -21,18 +22,19 @@ public class FieldBasicDto {
     }
 
     public FieldBasicDto(String displayName, String name) {
-        this(displayName, name, false);
+        this(displayName, name, false, false);
     }
 
-    public FieldBasicDto(String displayName, String name, boolean required) {
-        this(displayName, name, required, "", "", "");
+    public FieldBasicDto(String displayName, String name, boolean required, boolean unique) {
+        this(displayName, name, required, unique, "", "", "");
     }
 
-    public FieldBasicDto(String displayName, String name, boolean required, Object defaultValue,
+    public FieldBasicDto(String displayName, String name, boolean required, boolean unique, Object defaultValue,
                          String tooltip, String placeholder) {
         this.displayName = displayName;
         this.name = name;
         this.required = required;
+        this.unique = unique;
         this.defaultValue = defaultValue;
         this.tooltip = tooltip;
         this.placeholder = placeholder;
@@ -60,6 +62,14 @@ public class FieldBasicDto {
 
     public void setRequired(boolean required) {
         this.required = required;
+    }
+
+    public boolean isUnique() {
+        return unique;
+    }
+
+    public void setUnique(boolean unique) {
+        this.unique = unique;
     }
 
     public Object getDefaultValue() {

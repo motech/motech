@@ -5,14 +5,18 @@ import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 
 import javax.jdo.annotations.Column;
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
+import javax.jdo.annotations.Join;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * This class represents user drafts of an Entity. A draft is user's work in progress from the
@@ -39,7 +43,12 @@ public class EntityDraft extends Entity {
     private boolean changesMade;
 
     @Persistent
-    private Map<String, String> fieldNameChanges;
+    private Map<String, String> fieldNameChanges = new HashMap<>();
+
+    @Persistent(table = "EntityDraft_uniqueIndexesToDrop")
+    @Join
+    @Element(column = "fieldName")
+    private Set<String> uniqueIndexesToDrop = new HashSet<>();
 
     @Override
     public void updateAdvancedSetting(AdvancedSettingsDto advancedSettings) {
@@ -100,6 +109,39 @@ public class EntityDraft extends Entity {
 
     public void setFieldNameChanges(Map<String, String> fieldNameChanges) {
         this.fieldNameChanges = fieldNameChanges;
+    }
+
+    public Set<String> getUniqueIndexesToDrop() {
+        return uniqueIndexesToDrop;
+    }
+
+    public void setUniqueIndexesToDrop(Set<String> uniqueIndexesToDrop) {
+        this.uniqueIndexesToDrop = uniqueIndexesToDrop;
+    }
+
+    public void addUniqueToRemove(String fieldName) {
+        String actualName = getFieldNameChanges().containsKey(fieldName) ?
+                getFieldNameChanges().get(fieldName) :
+                fieldName;
+        getUniqueIndexesToDrop().add(actualName);
+    }
+
+    public void addFieldNameChange(String originalName, String newName) {
+        if (getUniqueIndexesToDrop().contains(originalName)) {
+            getUniqueIndexesToDrop().remove(originalName);
+            getUniqueIndexesToDrop().add(newName);
+        }
+
+        //Checking if field name was previously changed and updating new name in map or adding new entry
+        if (getFieldNameChanges().containsValue(originalName)) {
+            for (String key : getFieldNameChanges().keySet()) {
+                if (originalName.equals(getFieldNameChanges().get(key))) {
+                    getFieldNameChanges().put(key, newName);
+                }
+            }
+        } else {
+            getFieldNameChanges().put(originalName, newName);
+        }
     }
 
     @Override

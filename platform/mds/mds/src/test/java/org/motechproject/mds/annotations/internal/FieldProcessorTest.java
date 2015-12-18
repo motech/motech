@@ -428,6 +428,19 @@ public class FieldProcessorTest {
         assertPrimitiveField(findFieldWithName(fields, "primitiveLong"), Long.class, "0");
     }
 
+    @Test
+    public void shouldRecognizeUniqueFields() throws NoSuchFieldException {
+        processor.process(Sample.class.getDeclaredField("unique"));
+
+        Collection<FieldDto> fields = processor.getElements();
+        assertEquals(1, fields.size());
+
+        FieldDto field = fields.iterator().next();
+        assertNotNull(field);
+        assertEquals("unique", field.getBasic().getName());
+        assertTrue(field.getBasic().isUnique());
+    }
+
     private void assertRelationshipField(FieldDto field, Class<?> relatedClass,
                                          Class<?> relationshipType, String relatedFieldName) {
         assertRelationshipField(field, relatedClass, relationshipType, relatedFieldName, null, null);
