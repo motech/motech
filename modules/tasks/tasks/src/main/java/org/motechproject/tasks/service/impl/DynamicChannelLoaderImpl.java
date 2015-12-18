@@ -24,10 +24,10 @@ public class DynamicChannelLoaderImpl implements DynamicChannelLoader {
     @Autowired
     private BundleContext bundleContext;
 
-    public List<TriggerEvent> getDynamicTriggers(String channelModule, int page, int pageSize) {
-        LOGGER.debug("Retrieving dynamic triggers for channel {}", channelModule);
+    public List<TriggerEvent> getDynamicTriggers(String moduleName, int page, int pageSize) {
+        LOGGER.debug("Retrieving dynamic triggers for channel {}", moduleName);
 
-        DynamicChannelProvider provider = getChannelProvider(channelModule);
+        DynamicChannelProvider provider = getChannelProvider(moduleName);
 
         if (provider != null) {
             return provider.getTriggers(page, pageSize);
@@ -36,7 +36,7 @@ public class DynamicChannelLoaderImpl implements DynamicChannelLoader {
         return new ArrayList<>();
     }
 
-    public boolean hasDynamicTriggers(String moduleName) {
+    public boolean providesDynamicTriggers(String moduleName) {
         LOGGER.debug("Retrieving dynamic triggers for channel {}", moduleName);
 
         DynamicChannelProvider provider = getChannelProvider(moduleName);
@@ -128,7 +128,7 @@ public class DynamicChannelLoaderImpl implements DynamicChannelLoader {
         return getChannelProvider(moduleName) != null;
     }
 
-    public boolean isValidTrigger(String moduleName, String subject) {
+    public boolean validateTrigger(String moduleName, String subject) {
         DynamicChannelProvider provider = getChannelProvider(moduleName);
         return provider.validateSubject(subject);
     }

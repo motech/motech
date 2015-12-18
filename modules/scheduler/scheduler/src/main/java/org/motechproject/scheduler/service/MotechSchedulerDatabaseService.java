@@ -1,12 +1,13 @@
 package org.motechproject.scheduler.service;
 
-import org.motechproject.scheduler.constants.SchedulerConstants;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
-import org.motechproject.scheduler.exception.MotechSchedulerJobRetrievalException;
 import org.motechproject.scheduler.contract.JobsSearchSettings;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.motechproject.scheduler.exception.MotechSchedulerJobRetrievalException;
+import org.motechproject.tasks.domain.TriggerEvent;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -14,7 +15,6 @@ import java.util.List;
  *  Scheduler. Also provides pagination to use with
  *  jqGrid.
  */
-@PreAuthorize(SchedulerConstants.VIEW_SCHEDULER_JOBS)
 public interface MotechSchedulerDatabaseService {
 
     /**
@@ -49,4 +49,28 @@ public interface MotechSchedulerDatabaseService {
      * @throws MotechSchedulerJobRetrievalException when the query fails.
      */
     int countJobs(JobsSearchSettings jobsSearchSettings) throws MotechSchedulerJobRetrievalException;
+
+    /**
+     * Returns a list of triggers based on the given {@code page} and {@code pageSize}.
+     *
+     * @param page  the number of the page
+     * @param pageSize  the size of the page
+     * @return the list of triggers
+     */
+    List<TriggerEvent> getTriggers(int page, int pageSize) throws SQLException, IOException, ClassNotFoundException;
+
+    /**
+     * Returns a trigger with the given subject.
+     *
+     * @param subject  the subject of the trigger
+     * @return the trigger with the given subject if it exists, null otherwise
+     */
+    TriggerEvent getTrigger(String subject) throws SQLException, IOException, ClassNotFoundException;
+
+    /**
+     * Returns the amount of triggers.
+     *
+     * @return the number of triggers
+     */
+    long countTriggers() throws SQLException;
 }

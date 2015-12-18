@@ -6,7 +6,6 @@ package org.motechproject.scheduler.constants;
 public final class SchedulerConstants {
     public static final String VIEW_SCHEDULER_JOBS = "hasRole('viewSchedulerJobs')";
     public static final String EVENT_TYPE_KEY_NAME = "eventType";
-    public static final String JOB_ID_KEY = "JobID";
 
     private SchedulerConstants() {
 

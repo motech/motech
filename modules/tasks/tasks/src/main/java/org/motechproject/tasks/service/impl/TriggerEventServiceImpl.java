@@ -18,13 +18,8 @@ import java.util.Set;
 @Service
 public class TriggerEventServiceImpl implements TriggerEventService {
 
-    @Autowired
     private TriggerEventsDataService triggerEventsDataService;
-
-    @Autowired
     private ChannelsDataService channelsDataService;
-
-    @Autowired
     private DynamicChannelLoader dynamicChannelLoader;
 
     @Override
@@ -51,8 +46,8 @@ public class TriggerEventServiceImpl implements TriggerEventService {
     }
 
     @Override
-    public boolean hasDynamicTriggers(String moduleName) {
-        return dynamicChannelLoader.hasDynamicTriggers(moduleName);
+    public boolean providesDynamicTriggers(String moduleName) {
+        return dynamicChannelLoader.providesDynamicTriggers(moduleName);
     }
 
     @Override
@@ -80,7 +75,7 @@ public class TriggerEventServiceImpl implements TriggerEventService {
 
         if (!validTrigger && dynamicChannelLoader.channelExists(moduleName)) {
             channelExists = true;
-            validTrigger = dynamicChannelLoader.isValidTrigger(moduleName, subject);
+            validTrigger = dynamicChannelLoader.validateTrigger(moduleName, subject);
         }
 
         if (channelExists) {
@@ -92,5 +87,20 @@ public class TriggerEventServiceImpl implements TriggerEventService {
         }
 
         return errors;
+    }
+
+    @Autowired
+    public void setTriggerEventsDataService(TriggerEventsDataService triggerEventsDataService) {
+        this.triggerEventsDataService = triggerEventsDataService;
+    }
+
+    @Autowired
+    public void setChannelsDataService(ChannelsDataService channelsDataService) {
+        this.channelsDataService = channelsDataService;
+    }
+
+    @Autowired
+    public void setDynamicChannelLoader(DynamicChannelLoader dynamicChannelLoader) {
+        this.dynamicChannelLoader = dynamicChannelLoader;
     }
 }

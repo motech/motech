@@ -79,7 +79,8 @@ public class ChannelController {
         staticTriggers.setHasNextPage(staticTriggersCount > staticTriggersPage * PAGE_SIE);
 
         TriggersList dynamicTriggers = new TriggersList();
-        if (triggerEventService.hasDynamicTriggers(moduleName)) {
+
+        if (triggerEventService.providesDynamicTriggers(moduleName)) {
             dynamicTriggers = new TriggersList();
             long dynamicTriggersCount = triggerEventService.countDynamicTriggers(moduleName);
             dynamicTriggers.addTriggers(triggerEventService.getDynamicTriggers(moduleName, dynamicTriggersPage, PAGE_SIE));

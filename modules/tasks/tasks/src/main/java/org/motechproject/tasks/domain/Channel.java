@@ -49,7 +49,6 @@ public class Channel {
     @Field
     private String moduleVersion;
 
-    @Field
     private boolean providesTriggers;
 
     /**

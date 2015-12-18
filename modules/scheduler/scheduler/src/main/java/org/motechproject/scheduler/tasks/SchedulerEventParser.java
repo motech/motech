@@ -1,7 +1,7 @@
 package org.motechproject.scheduler.tasks;
 
 import org.motechproject.commons.api.TasksEventParser;
-import org.motechproject.scheduler.constants.SchedulerConstants;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -18,7 +18,7 @@ public class SchedulerEventParser implements TasksEventParser {
 
     @Override
     public String parseEventSubject(String eventSubject, Map<String, Object> eventParameters) {
-        return (String) eventParameters.get(SchedulerConstants.JOB_ID_KEY);
+        return (String) eventParameters.get(MotechSchedulerService.JOB_ID_KEY);
     }
 
     @Override

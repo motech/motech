@@ -56,7 +56,7 @@ public interface TriggerEventService {
      * @param moduleName  the name of the module
      * @return true if the channel provides dynamic triggers, false otherwise
      */
-    boolean hasDynamicTriggers(String moduleName);
+    boolean providesDynamicTriggers(String moduleName);
 
     /**
      * Returns the amount of static triggers provided by the channel with the given {@code moduleName}.

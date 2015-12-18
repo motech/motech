@@ -81,7 +81,7 @@
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-tasks</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
