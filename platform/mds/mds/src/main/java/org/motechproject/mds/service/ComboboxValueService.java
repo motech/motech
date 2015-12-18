@@ -1,7 +1,7 @@
 package org.motechproject.mds.service;
 
-import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
 
 import java.util.List;
 
@@ -27,9 +27,9 @@ public interface ComboboxValueService {
     /**
      * Retrieves all values for a combobox. For string comboboxes a DISTINCT query on the instances will
      * be performed. For comboboxes that are enums, only their settings will used.
-     * @param entity the entity to which the combobox field belongs to
-     * @param field the combobox field
+     * @param entityDto the entity to which the combobox field belongs to
+     * @param fieldDto the combobox field
      * @return all values for the combobox, as a list of strings
      */
-    List<String> getAllValuesForCombobox(Entity entity, Field field);
+    List<String> getAllValuesForCombobox(EntityDto entityDto, FieldDto fieldDto);
 }

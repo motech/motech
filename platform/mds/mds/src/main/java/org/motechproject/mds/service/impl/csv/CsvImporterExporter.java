@@ -2,12 +2,13 @@ package org.motechproject.mds.service.impl.csv;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.domain.ComboboxHolder;
-import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.domain.FieldMetadata;
 import org.motechproject.mds.domain.RelationshipHolder;
-import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.dto.CsvImportResults;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.MetadataDto;
+import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.entityinfo.EntityInfo;
 import org.motechproject.mds.ex.csv.CsvImportException;
 import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.query.QueryParams;
@@ -58,8 +59,8 @@ public class CsvImporterExporter extends AbstractMdsExporter {
      */
     @Transactional
     public CsvImportResults importCsv(final long entityId, final Reader reader, boolean continueOnError) {
-        Entity entity = getEntity(entityId);
-        return importCsv(entity, reader, continueOnError);
+        EntityInfo entityInfo = getEntity(entityId);
+        return importCsv(entityInfo, reader, continueOnError);
     }
 
     /**
@@ -73,8 +74,8 @@ public class CsvImporterExporter extends AbstractMdsExporter {
      */
     @Transactional
     public CsvImportResults importCsv(final long entityId, final Reader reader, CsvImportCustomizer importCustomizer, boolean continueOnError) {
-        Entity entity = getEntity(entityId);
-        return importCsv(entity, reader, importCustomizer, continueOnError);
+        EntityInfo entityInfo = getEntity(entityId);
+        return importCsv(entityInfo, reader, importCustomizer, continueOnError);
     }
 
     /**
@@ -87,8 +88,8 @@ public class CsvImporterExporter extends AbstractMdsExporter {
      */
     @Transactional
     public CsvImportResults importCsv(final String entityClassName, final Reader reader, boolean continueOnError) {
-        Entity entity = getEntity(entityClassName);
-        return importCsv(entity, reader, continueOnError);
+        EntityInfo entityInfo = getEntity(entityClassName);
+        return importCsv(entityInfo, reader, continueOnError);
     }
 
     /**
@@ -99,9 +100,9 @@ public class CsvImporterExporter extends AbstractMdsExporter {
      */
     @Transactional
     public long exportCsv(final long entityId, final Writer writer) {
-        Entity entity = getEntity(entityId);
+        EntityInfo entityInfo = getEntity(entityId);
         try (CsvTableWriter tableWriter = new CsvTableWriter(writer)) {
-            return exportData(entity, tableWriter);
+            return exportData(entityInfo, tableWriter);
         }
     }
 
@@ -113,9 +114,9 @@ public class CsvImporterExporter extends AbstractMdsExporter {
      */
     @Transactional
     public long exportCsv(final String entityClassName, final Writer writer) {
-        Entity entity = getEntity(entityClassName);
+        EntityInfo entityInfo = getEntity(entityClassName);
         try (CsvTableWriter tableWriter = new CsvTableWriter(writer)) {
-            return exportData(entity, tableWriter);
+            return exportData(entityInfo, tableWriter);
         }
     }
 
@@ -128,9 +129,9 @@ public class CsvImporterExporter extends AbstractMdsExporter {
      */
     @Transactional
     public long exportCsv(final long entityId, final Writer writer, final CsvExportCustomizer exportCustomizer) {
-        Entity entity = getEntity(entityId);
+        EntityInfo entityInfo = getEntity(entityId);
         try (CsvTableWriter tableWriter = new CsvTableWriter(writer)) {
-            return exportData(entity, tableWriter, exportCustomizer);
+            return exportData(entityInfo, tableWriter, exportCustomizer);
         }
     }
 
@@ -143,9 +144,9 @@ public class CsvImporterExporter extends AbstractMdsExporter {
      */
     @Transactional
     public long exportCsv(final String entityClassName, final Writer writer, final CsvExportCustomizer exportCustomizer) {
-        Entity entity = getEntity(entityClassName);
+        EntityInfo entityInfo = getEntity(entityClassName);
         try (CsvTableWriter tableWriter = new CsvTableWriter(writer)) {
-            return exportData(entity, tableWriter, exportCustomizer);
+            return exportData(entityInfo, tableWriter, exportCustomizer);
         }
     }
 
@@ -197,9 +198,9 @@ public class CsvImporterExporter extends AbstractMdsExporter {
     @Transactional
     public long exportCsv(long entityId, Writer writer, String lookupName, QueryParams params, List<String> headers,
                           Map<String, Object> lookupFields, CsvExportCustomizer exportCustomizer) {
-        Entity entity = getEntity(entityId);
+        EntityInfo entityInfo = getEntity(entityId);
         try (CsvTableWriter tableWriter = new CsvTableWriter(writer)){
-            return exportData(entity, tableWriter, lookupName, params, headers, lookupFields,
+            return exportData(entityInfo, tableWriter, lookupName, params, headers, lookupFields,
                     exportCustomizer);
         }
     }
@@ -218,22 +219,22 @@ public class CsvImporterExporter extends AbstractMdsExporter {
     @Transactional
     public long exportCsv(String entityClassName, Writer writer, String lookupName, QueryParams params, List<String> headers,
                           Map<String, Object> lookupFields, CsvExportCustomizer exportCustomizer) {
-        Entity entity = getEntity(entityClassName);
+        EntityInfo entityInfo = getEntity(entityClassName);
         try (CsvTableWriter tableWriter = new CsvTableWriter(writer)){
-            return exportData(entity, tableWriter, lookupName, params, headers, lookupFields,
+            return exportData(entityInfo, tableWriter, lookupName, params, headers, lookupFields,
                     exportCustomizer);
         }
     }
 
-    private CsvImportResults importCsv(final Entity entity, final Reader reader, boolean continueOnError) {
-        return importCsv(entity, reader, new DefaultCsvImportCustomizer(), continueOnError);
+    private CsvImportResults importCsv(final EntityInfo entityInfo, final Reader reader, boolean continueOnError) {
+        return importCsv(entityInfo, reader, new DefaultCsvImportCustomizer(), continueOnError);
     }
 
-    private CsvImportResults importCsv(final Entity entity, final Reader reader, CsvImportCustomizer importCustomizer,
+    private CsvImportResults importCsv(final EntityInfo entityInfo, final Reader reader, CsvImportCustomizer importCustomizer,
                                        boolean continueOnError) {
-        final MotechDataService dataService = DataServiceHelper.getDataService(getBundleContext(), entity);
+        final MotechDataService dataService = DataServiceHelper.getDataService(getBundleContext(), entityInfo.getClassName());
 
-        Map<String, Field> fieldCacheMap = new HashMap<>();
+        Map<String, FieldDto> fieldCacheMap = new HashMap<>();
 
         try (CsvMapReader csvMapReader = new CsvMapReader(reader, CsvPreference.STANDARD_PREFERENCE)) {
 
@@ -251,7 +252,7 @@ public class CsvImporterExporter extends AbstractMdsExporter {
                 rowNum++;
                 try {
                     // import a row
-                    RowImportResult rowImportResult = importInstanceFromRow(row, headers, fieldCacheMap, entity.getFields(), dataService, importCustomizer);
+                    RowImportResult rowImportResult = importInstanceFromRow(entityInfo.getEntity(), row, headers, fieldCacheMap, entityInfo.getFieldDtos(), dataService, importCustomizer);
                     Long id = rowImportResult.getId();
 
                     // put its ID in the correct list
@@ -269,14 +270,14 @@ public class CsvImporterExporter extends AbstractMdsExporter {
                 }
             }
 
-            return new CsvImportResults(entity.toDto(), newInstanceIDs, updatedInstanceIDs, exceptions);
+            return new CsvImportResults(entityInfo.getEntity(), newInstanceIDs, updatedInstanceIDs, exceptions);
         } catch (IOException e) {
             throw new CsvImportException("IO Error when importing CSV", e);
         }
     }
 
-    private RowImportResult importInstanceFromRow(Map<String, String> row, String[] headers, Map<String, Field> fieldMap, List<Field> fields,
-                                              MotechDataService dataService, CsvImportCustomizer importCustomizer) {
+    private RowImportResult importInstanceFromRow(EntityDto entityDto, Map<String, String> row, String[] headers, Map<String, FieldDto> fieldMap, List<FieldDto> fields,
+                                                  MotechDataService dataService, CsvImportCustomizer importCustomizer) {
         Class entityClass = dataService.getClassType();
 
         boolean isNewInstance = true;
@@ -295,7 +296,7 @@ public class CsvImporterExporter extends AbstractMdsExporter {
         }
 
         for (String fieldName : headers) {
-            Field field = findField(fieldName, fields, fieldMap, importCustomizer);
+            FieldDto field = findField(fieldName, fields, fieldMap, importCustomizer);
 
             if (field == null) {
                 LOGGER.warn("No field with name {} in entity {}, however such row exists in CSV. Ignoring.",
@@ -306,10 +307,10 @@ public class CsvImporterExporter extends AbstractMdsExporter {
             if (row.containsKey(fieldName)) {
                 String csvValue = row.get(fieldName);
 
-                Object parsedValue = parseValue(csvValue, field, entityClass.getClassLoader());
+                Object parsedValue = parseValue(entityDto, csvValue, field, entityClass.getClassLoader());
 
                 try {
-                    PropertyUtil.setProperty(instance, StringUtils.uncapitalize(field.getName()), parsedValue);
+                    PropertyUtil.setProperty(instance, StringUtils.uncapitalize(field.getBasic().getName()), parsedValue);
                 } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     String msg = String.format("Error when processing field: %s, value in CSV file is %s",
                             fieldName, csvValue);
@@ -330,25 +331,25 @@ public class CsvImporterExporter extends AbstractMdsExporter {
         return new RowImportResult(importedId, isNewInstance);
     }
 
-    private Field findField(String fieldName, List<Field> fields, Map<String, Field> fieldMap, CsvImportCustomizer importCustomizer) {
+    private FieldDto findField(String fieldName, List<FieldDto> fields, Map<String, FieldDto> fieldMap, CsvImportCustomizer importCustomizer) {
         if (!fieldMap.containsKey(fieldName)) {
-            Field field = importCustomizer.findField(fieldName, fields);
+            FieldDto field = importCustomizer.findField(fieldName, fields);
             fieldMap.put(fieldName, field);
         }
         return fieldMap.get(fieldName);
     }
 
-    private Object parseValue(String csvValue, Field field, ClassLoader entityCl) {
-        final Type type = field.getType();
+    private Object parseValue(EntityDto entityDto, String csvValue, FieldDto field, ClassLoader entityCl) {
+        final TypeDto type = field.getType();
 
         Object value;
         if (type.isCombobox()) {
-            value = parseComboboxValue(csvValue, field, entityCl);
+            value = parseComboboxValue(entityDto, csvValue, field, entityCl);
         } else if (type.isRelationship()) {
             value = parseRelationshipValue(csvValue, field);
         } else if (type.isMap()) {
-            FieldMetadata keyMetadata = field.getMetadata(MAP_KEY_TYPE);
-            FieldMetadata valueMetadata = field.getMetadata(MAP_VALUE_TYPE);
+            MetadataDto keyMetadata = field.getMetadata(MAP_KEY_TYPE);
+            MetadataDto valueMetadata = field.getMetadata(MAP_VALUE_TYPE);
             String mapKeyType = keyMetadata != null ? keyMetadata.getValue() : String.class.getName();
             String mapValueType = valueMetadata != null ? valueMetadata.getValue() : String.class.getName();
 
@@ -365,8 +366,8 @@ public class CsvImporterExporter extends AbstractMdsExporter {
         return value;
     }
 
-    private Object parseComboboxValue(String csvValue, Field field, ClassLoader classLoader) {
-        ComboboxHolder comboboxHolder = new ComboboxHolder(field);
+    private Object parseComboboxValue(EntityDto entityDto, String csvValue, FieldDto field, ClassLoader classLoader) {
+        ComboboxHolder comboboxHolder = new ComboboxHolder(entityDto, field);
         if (comboboxHolder.isCollection()) {
             return TypeHelper.parse(csvValue, comboboxHolder.getTypeClassName(),
                     comboboxHolder.getUnderlyingType(), classLoader);
@@ -375,7 +376,7 @@ public class CsvImporterExporter extends AbstractMdsExporter {
         }
     }
 
-    private Object parseRelationshipValue(String csvValue, Field field) {
+    private Object parseRelationshipValue(String csvValue, FieldDto field) {
         RelationshipHolder relationshipHolder = new RelationshipHolder(field);
         if (relationshipHolder.isManyToMany() || relationshipHolder.isOneToMany()) {
             List<Long> ids = (List<Long>) TypeHelper.parse(csvValue, List.class.getName(), Long.class.getName());

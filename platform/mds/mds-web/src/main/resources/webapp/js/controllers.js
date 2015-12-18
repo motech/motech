@@ -25,7 +25,7 @@
         return found && _.isEqual(found.value, value);
     }
 
-    var controllers = angular.module('mds.controllers', []).filter('orderObj', function () {
+    var controllers = angular.module('data-services.controllers', []).filter('orderObj', function () {
             return function (obj) {
                 if (!obj) {
                     return obj;
@@ -344,10 +344,6 @@
                     });
                 }
             });
-        };
-
-        $scope.closePeriodModal = function () {
-            $('body').children("#periodModal").modal('hide');
         };
 
         /**
@@ -3710,6 +3706,9 @@
                $scope.selectedInstance = undefined;
                $scope.previousInstance = undefined;
                $scope.showTrashInstance = false;
+            }, function() {
+               unblockUI();
+               motechAlert('mds.error.cannotRestoreInstance', 'mds.error');
             });
         };
 

@@ -52,6 +52,7 @@ h1, h2, h3, h4, h5, h6 {
 
 label {
     font-weight: normal;
+    word-wrap: normal;
 }
 
 a {
@@ -2101,4 +2102,36 @@ body {
 .ta-editor h5,
 .ta-editor h6 {
     color: #333;
+}
+
+.period .slider-label {
+    clear: both;
+    float: left;
+    margin: 18px 15px 5px 0;
+    text-align: right;
+    width: 120px;
+    overflow: hidden;
+}
+
+#period-year, #period-month, #period-week,
+#period-day, #period-hour, #period-minute,
+#period-second {
+    clear: right;
+    float: left;
+    margin: 21px 10px 10px;
+    width: 330px;
+}
+
+#amount-period-year, #amount-period-month,
+#amount-period-week, #amount-period-day,
+#amount-period-hour, #amount-period-minute,
+#amount-period-second {
+    background: none;
+    border: 0;
+    color: #224477;
+    font-weight: bold;
+    margin: 16px 0 4px;
+    float: left;
+    width: 45px;
+    font-size: 18px;
 }

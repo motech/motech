@@ -644,7 +644,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         EntityRecord entityRecord = instanceToRecord(object, entity, entityService.getEntityFieldsForUI(entityId), service, EntityType.HISTORY);
         Long historyInstanceSchemaVersion = (Long) PropertyUtil.safeGetProperty(object,
-                HistoryTrashClassHelper.schemaVersion(object.getClass()));
+                HistoryTrashClassHelper.historySchemaVersion(object.getClass()));
         Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
 
         return new HistoryRecord(entityRecord.getId(), instanceId,

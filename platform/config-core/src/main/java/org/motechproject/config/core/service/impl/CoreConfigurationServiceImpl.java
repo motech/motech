@@ -65,8 +65,14 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
 
     @Override
     @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = "#root.methodName") })
-    public Properties loadDatanucleusConfig() {
-        return datanucleusManager.getDatanucleusProperties();
+    public Properties loadDatanucleusDataConfig() {
+        return datanucleusManager.getDatanucleusDataProperties();
+    }
+
+    @Override
+    @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = "#root.methodName") })
+    public Properties loadDatanucleusSchemaConfig() {
+        return datanucleusManager.getDatanucleusSchemaProperties();
     }
 
     /**

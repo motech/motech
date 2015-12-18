@@ -37,6 +37,7 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -297,7 +298,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     @Override
-    @Transactional
+    @Transactional("dataTransactionManager")
     public void updateFields(Entity entity, Map<String, String> fieldNameChanges) {
         for (String key : fieldNameChanges.keySet()) {
             String tableName = ClassTableName.getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace(), entity.getTableName(), null);
@@ -567,6 +568,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     @Autowired
+    @Qualifier("dataPersistenceManagerFactory")
     public void setPersistenceManagerFactory(PersistenceManagerFactory persistenceManagerFactory) {
         this.persistenceManagerFactory = persistenceManagerFactory;
     }
