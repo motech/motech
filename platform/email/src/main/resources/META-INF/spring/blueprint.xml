@@ -28,7 +28,7 @@
         </property>
         <property name="rawConfigFiles">
             <list>
-                <value>classpath:motech-email-additional.json</value>
+                <value>classpath:motech-email-additional.properties</value>
             </list>
         </property>
     </bean>
@@ -37,8 +37,11 @@
         <constructor-arg name="filename" value="motech-email.properties"/>
     </bean>
 
-    <bean id="motechEmailAdditionalProperties" factory-bean="emailSettings" factory-method="getPropertiesFromRawConfigFile">
-        <constructor-arg name="filename" value="motech-email-additional.properties"/>
+    <bean id="settingsDto" class="org.motechproject.email.settings.SettingsDto" autowire="byType">
+        <constructor-arg name="settingsFacade" value="#{emailSettings}" />
+    </bean>
+
+    <bean id="motechEmailAdditionalProperties" factory-bean="settingsDto" factory-method="getAdditionalProps">
     </bean>
 
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">

@@ -1,9 +1,13 @@
 package org.motechproject.email.settings;
 
+import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,7 +15,7 @@ import java.util.Objects;
 import java.util.Properties;
 
 public class SettingsDto {
-    public static final String EMAIL_ADDITIONAL_PROPERTIES_FILE_NAME = "motech-email-additional.json";
+    public static final String EMAIL_ADDITIONAL_PROPERTIES_FILE_NAME = "motech-email-additional.properties";
     public static final String EMAIL_PROPERTIES_FILE_NAME = "motech-email.properties";
     public static final String MAIL_HOST_PROPERTY = "mail.host";
     public static final String MAIL_PORT_PROPERTY = "mail.port";
@@ -46,7 +50,7 @@ public class SettingsDto {
                 settingsFacade.getProperty(MAIL_PORT_PROPERTY, EMAIL_PROPERTIES_FILE_NAME),
                 settingsFacade.getProperty(MAIL_USERNAME_PROPERTY, EMAIL_PROPERTIES_FILE_NAME),
                 settingsFacade.getProperty(MAIL_PASSWORD_PROPERTY, EMAIL_PROPERTIES_FILE_NAME),
-                settingsFacade.getPropertiesFromRawConfigFile(EMAIL_ADDITIONAL_PROPERTIES_FILE_NAME),
+                settingsFacade.getRawConfig(EMAIL_ADDITIONAL_PROPERTIES_FILE_NAME),
                 settingsFacade.getProperty(MAIL_LOG_ADDRESS_PROPERTY, EMAIL_PROPERTIES_FILE_NAME),
                 settingsFacade.getProperty(MAIL_LOG_SUBJECT_PROPERTY, EMAIL_PROPERTIES_FILE_NAME),
                 settingsFacade.getProperty(MAIL_LOG_BODY_PROPERTY, EMAIL_PROPERTIES_FILE_NAME),
@@ -69,6 +73,30 @@ public class SettingsDto {
         properties.put(MAIL_LOG_PURGE_TIME_PROPERY, logPurgeTime);
         properties.put(MAIL_LOG_PURGE_TIME_MULTIPLIER_PROPERTY, logPurgeTimeMultiplier);
         return properties;
+    }
+
+    public SettingsDto(String host, String port, String user, String password, InputStream additionalProperties, // NO CHECKSTYLE More than 7 parameters (found 8).
+                       String logAddress, String logSubject, String logBody, String logPurgeEnable,
+                       String logPurgeTime, String logPurgeTimeMultiplier) {
+        this(host, port, user, password, new HashMap<String, String>(), logAddress, logSubject, logBody, logPurgeEnable, logPurgeTime, logPurgeTimeMultiplier);
+        String data;
+        try {
+            data = IOUtils.toString(additionalProperties);
+            data = data.replaceAll("\\{", "");
+            data = data.replaceAll("}", "");
+            if (!"".equals(data)) {
+                for (String property : data.split(",")) {
+                    String[] p = property.replaceAll(" ", "").split("=");
+                    if (p.length == 2) {
+                        this.additionalProperties.put(p[0], p[1]);
+                    } else {
+                        throw new MotechException("Error loading raw file config to properties");
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new MotechException("Error loading raw file config to properties", e);
+        }
     }
 
     public SettingsDto(String host, String port, String user, String password, Properties additionalProperties, // NO CHECKSTYLE More than 7 parameters (found 8).
@@ -200,9 +228,7 @@ public class SettingsDto {
     @JsonIgnore
     public Properties getAdditionalProps() {
         Properties props = new Properties();
-        for (Entry<String, String> prop : this.additionalProperties.entrySet()) {
-            props.put(prop.getKey(), prop.getValue());
-        }
+        props.putAll(this.additionalProperties);
         return props;
     }
 
@@ -228,20 +254,9 @@ public class SettingsDto {
 
     @Override
     public String toString() {
-        boolean first = true;
-        String format = "SettingsDto{host='%s', port='%s', username='%s', password='%s', additionalProperties={";
-        for (Entry<String, String> prop : this.additionalProperties.entrySet()) {
-            if (!first) {
-                format += ", ";
-            } else {
-                first = false;
-            }
-            format += prop.getKey() + ": " + prop.getValue();
-        }
-        format += "}, logAddress='%s', logSubject='%s', logBody='%s', logPurgeEnable='%s', logPurgeTime='%s', logPurgeTimeMultiplier='%s'}";
         return String.format(
-                format,
-                host, port, username, password, logAddress, logSubject, logBody, logPurgeEnable, logPurgeTime, logPurgeTimeMultiplier);
+                "SettingsDto{host='%s', port='%s', username='%s', password='%s', additionalProperties='%s', logAddress='%s', logSubject='%s', logBody='%s', logPurgeEnable='%s', logPurgeTime='%s', logPurgeTimeMultiplier='%s'}",
+                host, port, username, password, additionalProperties, logAddress, logSubject, logBody, logPurgeEnable, logPurgeTime, logPurgeTimeMultiplier);
     }
 
     private Boolean compareFields(SettingsDto other) {

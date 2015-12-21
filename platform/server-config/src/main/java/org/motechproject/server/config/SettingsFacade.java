@@ -1,8 +1,5 @@
 package org.motechproject.server.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.core.MotechConfigurationException;
@@ -20,11 +17,9 @@ import org.springframework.core.io.Resource;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
@@ -218,53 +213,6 @@ public class SettingsFacade {
         } catch (IOException e) {
             throw new MotechException("Error saving file " + filename, e);
         }
-    }
-
-    /**
-     *  Allows persisting of raw JSON properties either in the database or file.
-     *
-     * @param filename json filename
-     * @param properties properties to persist
-     * @throws org.motechproject.commons.api.MotechException when I/O error occurs
-     */
-    public void saveRawConfig(String filename, Properties properties) {
-        Gson gson = new GsonBuilder().create();
-        Map<String, String> map = new HashMap<String, String>();
-        for (Entry<Object, Object> prop : properties.entrySet()) {
-            map.put((String) prop.getKey(), (String) prop.getValue());
-        }
-        saveRawConfig(filename, gson.toJson(map));
-    }
-
-    /**
-     * Allows to retrieve raw JSON data either from the database or file.
-     *
-     * @param filename Resource filename
-     * @return Raw JSON data as InputStream
-     * @throws org.motechproject.commons.api.MotechException when I/O error occurs
-     */
-    public Properties getPropertiesFromRawConfigFile(String filename) {
-        String json = new String();
-        try {
-            json = IOUtils.toString(getRawConfig(filename));
-        } catch (NullPointerException e) {
-            LOGGER.debug(e.getMessage());
-            return new Properties();
-        } catch (IOException e) {
-            LOGGER.debug(e.getMessage());
-            return new Properties();
-        }
-        Gson gson = new GsonBuilder().create();
-        Type typeOfHashMap = new TypeToken<Map<String, String>>() { } .getType();
-        Map<String, String> map = gson.fromJson(json, typeOfHashMap);
-        Properties props = new Properties();
-        if (map != null) {
-            for (Entry<String, String> entry : map.entrySet()) {
-                props.put(entry.getKey(), entry.getValue());
-            }
-            return props;
-        }
-        return new Properties();
     }
 
     /**

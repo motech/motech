@@ -13,6 +13,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.web.server.MockMvc;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
 
+import java.io.InputStream;
+import java.io.StringBufferInputStream;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -44,7 +46,7 @@ public class SettingsControllerTest {
     private static final String LOG_PURGE = "true";
     private static final String LOG_TIME = "1";
     private static final String LOG_MULTIPLIER = "weeks";
-    private static final Properties ADDITIONAL_PROPERTIES = new Properties();
+    private static final InputStream ADDITIONAL_PROPERTIES = new StringBufferInputStream("{mail.smtp.auth=true, mail.smtp.starttls.enable=true}");
 
     @Mock
     private SettingsFacade settingsFacade;
@@ -65,7 +67,7 @@ public class SettingsControllerTest {
         when(settingsFacade.getProperty(MAIL_PORT_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(PORT);
         when(settingsFacade.getProperty(MAIL_USERNAME_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(USERNAME);
         when(settingsFacade.getProperty(MAIL_PASSWORD_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(PASSWORD);
-        when(settingsFacade.getPropertiesFromRawConfigFile(EMAIL_ADDITIONAL_PROPERTIES_FILE_NAME)).thenReturn(ADDITIONAL_PROPERTIES);
+        when(settingsFacade.getRawConfig(EMAIL_ADDITIONAL_PROPERTIES_FILE_NAME)).thenReturn(ADDITIONAL_PROPERTIES);
         when(settingsFacade.getProperty(MAIL_LOG_ADDRESS_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(LOG_ADDRESS);
         when(settingsFacade.getProperty(MAIL_LOG_SUBJECT_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(LOG_SUBJECT);
         when(settingsFacade.getProperty(MAIL_LOG_BODY_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(LOG_BODY);
@@ -78,15 +80,16 @@ public class SettingsControllerTest {
 
     @Test
     public void shouldReturnSettingsDto() throws Exception {
-        ADDITIONAL_PROPERTIES.put("mail.smtp.auth", "true");
-        ADDITIONAL_PROPERTIES.put("mail.smtp.starttls.enable", "true");
+        Properties properties = new Properties();
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
         controller.perform(
                 get("/settings")
         ).andExpect(
                 status().is(HttpStatus.SC_OK)
         ).andExpect(
                 content().string(jsonMatcher(
-                        settingsJson(HOST, PORT, USERNAME, PASSWORD, ADDITIONAL_PROPERTIES, LOG_ADDRESS, LOG_SUBJECT, LOG_BODY, LOG_PURGE, LOG_TIME, LOG_MULTIPLIER)
+                        settingsJson(HOST, PORT, USERNAME, PASSWORD, properties, LOG_ADDRESS, LOG_SUBJECT, LOG_BODY, LOG_PURGE, LOG_TIME, LOG_MULTIPLIER)
                 ))
         );
     }
