@@ -107,7 +107,6 @@
             } else {
                 motechAlert('email.header.error', 'email.settings.alreadyExist');
             }
-            //console.log($scope.settings);
         };
 
         $scope.remove = function (name) {

@@ -117,7 +117,7 @@ public class SettingsController {
         }
 
         settingsFacade.saveConfigProperties(EMAIL_PROPERTIES_FILE_NAME, settings.toProperties());
-        settingsFacade.saveRawConfig(EMAIL_ADDITIONAL_PROPERTIES_FILE_NAME, settingsFacade.propertiesToJson(settings.getAdditionalProps()));
+        settingsFacade.saveRawConfig(EMAIL_ADDITIONAL_PROPERTIES_FILE_NAME, settings.getAdditionalProps());
 
         if (emailPurger != null) {
             emailPurger.handleSettingsChange();

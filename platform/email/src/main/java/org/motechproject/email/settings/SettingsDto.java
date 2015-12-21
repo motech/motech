@@ -74,35 +74,16 @@ public class SettingsDto {
     public SettingsDto(String host, String port, String user, String password, Properties additionalProperties, // NO CHECKSTYLE More than 7 parameters (found 8).
                        String logAddress, String logSubject, String logBody, String logPurgeEnable,
                        String logPurgeTime, String logPurgeTimeMultiplier) {
-        this.host = host;
-        this.port = port;
-        this.username = user;
-        this.password = password;
-        Map<String, String> props = new HashMap<>();
-        for (Entry<Object, Object> entry : additionalProperties.entrySet()) {
-            props.put((String) entry.getKey(), (String) entry.getValue());
+        this(host, port, user, password, new HashMap<String, String>(), logAddress, logSubject, logBody, logPurgeEnable, logPurgeTime, logPurgeTimeMultiplier);
+        if (additionalProperties != null) {
+            for (Entry<Object, Object> entry : additionalProperties.entrySet()) {
+                this.additionalProperties.put((String) entry.getKey(), (String) entry.getValue());
+            }
         }
-        this.additionalProperties = props;
-        this.logAddress = logAddress;
-        this.logSubject = logSubject;
-        this.logBody = logBody;
-        this.logPurgeEnable = logPurgeEnable;
-        this.logPurgeTime = logPurgeTime;
-        this.logPurgeTimeMultiplier = logPurgeTimeMultiplier;
     }
 
     public SettingsDto(String host, String port, String user, String password, Map<String, String> additionalProperties, String logAddress, String logSubject, String logBody, String logPurgeEnable) {
-        this.host = host;
-        this.port = port;
-        this.username = user;
-        this.password = password;
-        this.additionalProperties = CollectionUtils.isEmpty(additionalProperties) ? new HashMap<String, String>() : additionalProperties;
-        this.logAddress = logAddress;
-        this.logSubject = logSubject;
-        this.logBody = logBody;
-        this.logPurgeEnable = logPurgeEnable;
-        this.logPurgeTime = "0";
-        this.logPurgeTimeMultiplier = "0";
+        this(host, port, user, password, CollectionUtils.isEmpty(additionalProperties) ? new HashMap<String, String>() : additionalProperties, logAddress, logSubject, logBody, logPurgeEnable, "0", "0");
     }
 
     public SettingsDto(String host, String port, String user, String password, Map<String, String> additionalProperties, // NO CHECKSTYLE More than 7 parameters (found 8).

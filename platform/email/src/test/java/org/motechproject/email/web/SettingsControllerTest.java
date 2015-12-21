@@ -78,6 +78,8 @@ public class SettingsControllerTest {
 
     @Test
     public void shouldReturnSettingsDto() throws Exception {
+        ADDITIONAL_PROPERTIES.put("mail.smtp.auth", "true");
+        ADDITIONAL_PROPERTIES.put("mail.smtp.starttls.enable", "true");
         controller.perform(
                 get("/settings")
         ).andExpect(

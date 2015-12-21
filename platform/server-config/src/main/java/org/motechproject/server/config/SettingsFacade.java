@@ -220,20 +220,38 @@ public class SettingsFacade {
         }
     }
 
-    public String propertiesToJson(Properties props) {
+    /**
+     *  Allows persisting of raw JSON properties either in the database or file.
+     *
+     * @param filename json filename
+     * @param properties properties to persist
+     * @throws org.motechproject.commons.api.MotechException when I/O error occurs
+     */
+    public void saveRawConfig(String filename, Properties properties) {
         Gson gson = new GsonBuilder().create();
         Map<String, String> map = new HashMap<String, String>();
-        for (Entry<Object, Object> prop : props.entrySet()) {
+        for (Entry<Object, Object> prop : properties.entrySet()) {
             map.put((String) prop.getKey(), (String) prop.getValue());
         }
-        return gson.toJson(map);
+        saveRawConfig(filename, gson.toJson(map));
     }
 
+    /**
+     * Allows to retrieve raw JSON data either from the database or file.
+     *
+     * @param filename Resource filename
+     * @return Raw JSON data as InputStream
+     * @throws org.motechproject.commons.api.MotechException when I/O error occurs
+     */
     public Properties getPropertiesFromRawConfigFile(String filename) {
         String json = new String();
         try {
             json = IOUtils.toString(getRawConfig(filename));
-        } catch (Exception ex) {
+        } catch (NullPointerException e) {
+            LOGGER.debug(e.getMessage());
+            return new Properties();
+        } catch (IOException e) {
+            LOGGER.debug(e.getMessage());
             return new Properties();
         }
         Gson gson = new GsonBuilder().create();
@@ -244,10 +262,9 @@ public class SettingsFacade {
             for (Entry<String, String> entry : map.entrySet()) {
                 props.put(entry.getKey(), entry.getValue());
             }
-        } else {
-            return new Properties();
+            return props;
         }
-        return props;
+        return new Properties();
     }
 
     /**
