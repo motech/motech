@@ -1565,6 +1565,7 @@
                     gridId = attrs.id,
                     gridRecords = 0,
                     fieldId = attrs.fieldId,
+                    pagerHide = attrs.pagerHide,
                     selectedEntityId = scope.selectedEntity.id,
                     selectedInstance = (scope.selectedInstance !== undefined && angular.isNumber(parseInt(scope.selectedInstance, 10)))? parseInt(scope.selectedInstance, 10) : undefined;
 
@@ -1582,6 +1583,7 @@
                                 var colModel = [], i, spanText;
 
                                 if (scope.isNested) {
+                                    selectedInstance = scope.editedInstanceId;
                                     if (scope.currentRelationRecord !== undefined) {
                                         selectedEntityId = scope.currentRelationRecord.entitySchemaId;
                                     }
@@ -1628,9 +1630,13 @@
                                         } else if (!scope.field.nonEditable && e.target.tagName !=='I' && e.target.tagName !== 'BUTTON' && e.target.tagName ==='TD'
                                            && !(e.target.children[0] !== undefined && e.target.children[0].getAttribute('class').indexOf('removeRelatedInstance') >= 0)
                                            && scope.newRelatedFields === null && !scope.isNested) {
-
+                                            selectedInstance = parseInt(id, 10);
                                             scope.currentRelationRecord = {entitySchemaId: relatedEntityId};
-                                            scope.editRelatedInstanceOfEntity(parseInt(id, 10), relatedEntityId, scope.field);
+                                            if (scope.field.type.defaultName !== "manyToManyRelationship" && scope.field.type.defaultName !== "oneToManyRelationship") {
+                                                scope.editRelatedInstanceOfEntity(scope.relatedData.getRelatedId(scope.field), undefined, scope.field);
+                                            } else {
+                                                scope.editRelatedInstanceOfEntity(parseInt(id, 10), relatedEntityId, scope.field);
+                                            }
                                        }
                                     },
                                     ondblClickRow : function(id,iRow,iCol,e) {
@@ -1678,6 +1684,9 @@
                                         }, 250);
                                     }
                                 }).jqGrid('setFrozenColumns');
+                                if (pagerHide === "true") {
+                                    $('#' + attrs.entityRelationsGrid).addClass('hidden');
+                                }
                             }
                         });
                     }).error(function (response) {
@@ -1694,7 +1703,9 @@
                     postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
                     $.extend(postdata, { filters: angular.toJson(filter) });
                     $('#' + attrs.id).jqGrid('setGridParam', { search: true, postData: postdata });
-                    $('#' + attrs.id).jqGrid().trigger("reloadGrid");
+                    $timeout(function() {
+                        $('#' + attrs.id).jqGrid().trigger("reloadGrid");
+                    }, 300);
                 };
 
                 scope.$watch('field.value.removedIds', function (newValue) {
