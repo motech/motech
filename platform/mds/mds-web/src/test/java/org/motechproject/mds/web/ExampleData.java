@@ -81,7 +81,7 @@ public class ExampleData {
         fields.add(
                 new FieldDto(
                         1L, 9005L, STRING,
-                        new FieldBasicDto("ID", "ID", false, "pass", null, null),
+                        new FieldBasicDto("ID", "ID", false,false, "pass", null, null),
                         false, exampleMetadata1, FieldValidationDto.STRING, null, null
                 )
         );
@@ -89,7 +89,7 @@ public class ExampleData {
         fields.add(
                 new FieldDto(
                         2L, 9007L, STRING,
-                        new FieldBasicDto("ID", "ID", false, "pass", null, null),
+                        new FieldBasicDto("ID", "ID", false, false, "pass", null, null),
                         false, null,
                         FieldValidationDto.STRING, null, null
                 )
@@ -158,7 +158,7 @@ public class ExampleData {
         draftFields.add(
                 new FieldDto(
                         12L, 9007L, STRING,
-                        new FieldBasicDto("ID", "ID", false, "pass", null, null),
+                        new FieldBasicDto("ID", "ID", false, false, "pass", null, null),
                         false, null,
                         FieldValidationDto.STRING, null, null
                 )
@@ -167,7 +167,7 @@ public class ExampleData {
         draftFields.add(
                 new FieldDto(
                         13L, 9007L, STRING,
-                        new FieldBasicDto("Sample", "Sample", false, "pass", null, null),
+                        new FieldBasicDto("Sample", "Sample", false, false, "pass", null, null),
                         false, null,
                         FieldValidationDto.STRING, null, null
                 )
@@ -179,7 +179,7 @@ public class ExampleData {
         draftFields.add(
                 new FieldDto(
                         14L, 9005L, STRING,
-                        new FieldBasicDto("Other", "Other", false, "test", null, null),
+                        new FieldBasicDto("Other", "Other", false, false, "test", null, null),
                         false, exampleMetadata, FieldValidationDto.STRING, null, null
                 )
         );

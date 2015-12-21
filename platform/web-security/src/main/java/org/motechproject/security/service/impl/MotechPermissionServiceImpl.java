@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ public class MotechPermissionServiceImpl implements MotechPermissionService {
     private AllMotechRoles allMotechRoles;
 
     @Override
+    @Transactional
     public List<PermissionDto> getPermissions() {
         List<PermissionDto> permissions = new ArrayList<>();
         for (MotechPermission permission : allMotechPermissions.getPermissions()) {
@@ -37,6 +39,7 @@ public class MotechPermissionServiceImpl implements MotechPermissionService {
     }
 
     @Override
+    @Transactional
     public void addPermission(PermissionDto permission) {
         LOGGER.info("Adding permission: {} from bundle: {}", permission.getPermissionName(), permission.getBundleName());
 
@@ -50,6 +53,7 @@ public class MotechPermissionServiceImpl implements MotechPermissionService {
     }
 
     @Override
+    @Transactional
     public void deletePermission(String permissionName) {
         LOGGER.info("Deleting permission: {}", permissionName);
         MotechPermission permission = allMotechPermissions.findByPermissionName(permissionName);
@@ -61,6 +65,7 @@ public class MotechPermissionServiceImpl implements MotechPermissionService {
         LOGGER.info("Deleted permission: {}", permissionName);
     }
 
+    @Transactional
     private void removePermissionFromRoles(String permissionName) {
         LOGGER.info("Removing permission: {} from roles", permissionName);
         List<MotechRole> roles = allMotechRoles.getRoles();

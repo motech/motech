@@ -25,6 +25,8 @@
 
     <osgi:reference id="bundleWatcherSuspensionServiceOSGi" interface="org.motechproject.mds.service.BundleWatcherSuspensionService"/>
 
+    <osgi:reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager" context-class-loader="unmanaged"/>
+
     <osgi:service id="statusMessageServiceOsgi" auto-export="interfaces" ref="statusMessageService"/>
 
 </beans>

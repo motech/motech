@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ public class MotechRoleServiceImpl implements MotechRoleService {
     private UserContextService userContextsService;
 
     @Override
+    @Transactional
     public List<RoleDto> getRoles() {
         List<RoleDto> roles = new ArrayList<>();
         for (MotechRole role : allMotechRoles.getRoles()) {
@@ -41,12 +43,14 @@ public class MotechRoleServiceImpl implements MotechRoleService {
     }
 
     @Override
+    @Transactional
     public RoleDto getRole(String roleName) {
         MotechRole motechRole = allMotechRoles.findByRoleName(roleName);
         return motechRole != null ? new RoleDto(motechRole) : null;
     }
 
     @Override
+    @Transactional
     public void updateRole(RoleDto role) {
         LOGGER.info("Updating role: {}", role.getRoleName());
         MotechRole motechRole = allMotechRoles.findByRoleName(role.getOriginalRoleName());
@@ -72,6 +76,7 @@ public class MotechRoleServiceImpl implements MotechRoleService {
     }
 
     @Override
+    @Transactional
     public void deleteRole(RoleDto role) {
         LOGGER.info("Deleting role: {}", role.getRoleName());
         MotechRole motechRole = allMotechRoles.findByRoleName(role.getRoleName());
@@ -90,6 +95,7 @@ public class MotechRoleServiceImpl implements MotechRoleService {
     }
 
     @Override
+    @Transactional
     public void createRole(RoleDto role) {
         LOGGER.info("Creating role: {}", role.getRoleName());
         MotechRole motechRole = new MotechRole(role.getRoleName(), role.getPermissionNames(),

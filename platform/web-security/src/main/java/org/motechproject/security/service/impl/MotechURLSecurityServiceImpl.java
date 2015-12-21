@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,6 +35,7 @@ public class MotechURLSecurityServiceImpl implements MotechURLSecurityService {
     private MotechProxyManager proxyManager;
 
     @Override
+    @Transactional
     public List<SecurityRuleDto> findAllSecurityRules() {
         List<MotechURLSecurityRule> rules = allSecurityRules.getRules();
         Collections.sort(rules, new SecurityRuleComparator());
@@ -41,6 +43,7 @@ public class MotechURLSecurityServiceImpl implements MotechURLSecurityService {
     }
 
     @Override
+    @Transactional
     public void updateSecurityConfiguration(SecurityConfigDto configuration) {
         LOGGER.info("Updating security configuration");
 

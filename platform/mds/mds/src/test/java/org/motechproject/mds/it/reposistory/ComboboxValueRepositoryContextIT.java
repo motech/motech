@@ -54,13 +54,13 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
     @Override
     protected List<FieldDto> getEntityFields() {
         // combobox with multiple selection - string collection field
-        FieldDto cbFieldMulti = new FieldDto(CB_FIELD_MULTI_NAME, CB_FIELD_MULTI_NAME, TypeDto.COLLECTION, false,
+        FieldDto cbFieldMulti = new FieldDto(CB_FIELD_MULTI_NAME, CB_FIELD_MULTI_NAME, TypeDto.COLLECTION, false, false,
                 null, "tooltip", "placeholder");
         cbFieldMulti.addSetting(new SettingDto(Constants.Settings.ALLOW_USER_SUPPLIED, Constants.Util.TRUE));
         cbFieldMulti.addSetting(new SettingDto(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS, Constants.Util.TRUE));
 
         // combobox without multiple selection - string field
-        FieldDto cbFieldSingle = new FieldDto(CB_FIELD_SINGLE_NAME, CB_FIELD_SINGLE_NAME, TypeDto.COLLECTION, false,
+        FieldDto cbFieldSingle = new FieldDto(CB_FIELD_SINGLE_NAME, CB_FIELD_SINGLE_NAME, TypeDto.COLLECTION, false, false,
                 null, "tooltip2", "placeholder2");
         cbFieldSingle.addSetting(new SettingDto(Constants.Settings.ALLOW_USER_SUPPLIED, Constants.Util.TRUE));
         cbFieldSingle.addSetting(new SettingDto(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS, Constants.Util.FALSE));

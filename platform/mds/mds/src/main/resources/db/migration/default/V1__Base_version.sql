@@ -295,9 +295,9 @@ CREATE TABLE IF NOT EXISTS "ConfigSettings" (
   "afterTimeUnit" varchar(255) NOT NULL,
   "afterTimeValue" int,
   "deleteMode" varchar(255) NOT NULL,
-  "emptyTrash" bit(1),
+  "emptyTrash" boolean,
   "defaultGridSize" int DEFAULT 50,
-  "refreshModuleAfterTimeout" bit(1) DEFAULT '0',
+  "refreshModuleAfterTimeout" boolean DEFAULT FALSE,
   PRIMARY KEY ("id")
 );
 
