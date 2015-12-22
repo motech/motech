@@ -41,7 +41,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
+import javax.jdo.Query;
 import javax.jdo.datastore.JDOConnection;
 import javax.jdo.metadata.JDOMetadata;
 import java.io.IOException;
@@ -52,6 +54,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -307,6 +310,32 @@ public class MDSConstructorImpl implements MDSConstructor {
                 updateFieldName(key, fieldNameChanges.get(key), ClassTableName.getTableName(entity, EntityType.HISTORY));
             }
             updateFieldName(key, fieldNameChanges.get(key), ClassTableName.getTableName(entity, EntityType.TRASH));
+        }
+    }
+
+    @Override
+    @Transactional("dataTransactionManager")
+    public void removeUniqueIndexes(Entity entity, Collection<String> fields) {
+        String tableName = ClassTableName.getTableName(entity.getClassName(), entity.getModule(),
+                entity.getNamespace(), entity.getTableName(), null);
+
+        PersistenceManager pm = persistenceManagerFactory.getPersistenceManager();
+
+        boolean isMySql = sqlDBManager.getChosenSQLDriver().equals(Constants.Config.MYSQL_DRIVER_CLASSNAME);
+
+        for (String field : fields) {
+            String constraintName = KeyNames.uniqueKeyName(entity.getName(), field);
+
+            String sql;
+            if (isMySql) {
+                sql = "DROP INDEX " + constraintName + " ON " + tableName;
+            } else {
+                sql = "ALTER TABLE \"" + tableName + "\" DROP CONSTRAINT IF EXISTS \"" + constraintName + "\"";
+            }
+
+            Query query = pm.newQuery(Constants.Util.SQL_QUERY, sql);
+
+            query.execute();
         }
     }
 

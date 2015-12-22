@@ -377,7 +377,7 @@ public class MdsRestBundleIT extends BasePaxIT {
         EntityDto entityDto = new EntityDto(ENTITY_NAME);
         entityDto = entityService.createEntity(entityDto);
         FieldDto strField = new FieldDto(null, entityDto.getId(), TypeDto.STRING,
-                new FieldBasicDto("strFieldDisp", "strField", true), false, null);
+                new FieldBasicDto("strFieldDisp", "strField", true, false), false, null);
         FieldDto intField = new FieldDto(null, entityDto.getId(), TypeDto.INTEGER,
                 new FieldBasicDto("intFieldDisp", "intField"), false, null);
 
