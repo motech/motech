@@ -24,7 +24,7 @@ import java.util.List;
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
 public class Type {
 
-    @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
+    @Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
     @PrimaryKey
     private Long id;
 

@@ -20,7 +20,7 @@ public class SchemaChangeLock {
     public static final long LOCK_ID = 1L;
 
     @PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
+    @Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
     private Long id;
 
     @NotPersistent

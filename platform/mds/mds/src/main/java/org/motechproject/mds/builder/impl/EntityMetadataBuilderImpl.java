@@ -111,7 +111,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         addInheritanceMetadata(cmd, definition);
 
         if (!entity.isSubClassOfMdsEntity() && !entity.isSubClassOfMdsVersionedEntity()) {
-            addIdField(cmd, entity, schemaHolder);
+            addIdField(cmd, entity, schemaHolder, definition);
             //we add versioning metadata only for Standard class.
             addVersioningMetadata(cmd, definition);
         }
@@ -139,7 +139,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         InheritanceMetadata imd = cmd.newInheritanceMetadata();
         imd.setCustomStrategy("complete-table");
 
-        addIdField(cmd, classData.getClassName());
+        addIdField(cmd, classData.getClassName(), definition);
 
         if (entity != null) {
             addMetadataForFields(cmd, classData, entity, entityType, definition, schemaHolder);
@@ -647,19 +647,19 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         return jdoMetadata.newPackageMetadata(packageName);
     }
 
-    private void addIdField(ClassMetadata cmd, EntityDto entity, SchemaHolder schemaHolder) {
+    private void addIdField(ClassMetadata cmd, EntityDto entity, SchemaHolder schemaHolder, Class<?> definition) {
         boolean containsID = null != schemaHolder.getFieldByName(entity, ID_FIELD_NAME);
         boolean isBaseClass = entity.isBaseEntity();
 
         if (containsID && isBaseClass) {
             FieldMetadata metadata = cmd.newFieldMetadata(ID_FIELD_NAME);
-            metadata.setValueStrategy(IdGeneratorStrategy.INCREMENT);
+            metadata.setValueStrategy(getIdGeneratorStrategy(metadata, definition));
             metadata.setPrimaryKey(true);
             metadata.setIndexed(true);
         }
     }
 
-    private void addIdField(ClassMetadata cmd, String className) {
+    private void addIdField(ClassMetadata cmd, String className, Class<?> definition) {
         boolean containsID;
         boolean isBaseClass;
 
@@ -674,12 +674,24 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         if (containsID && isBaseClass) {
             FieldMetadata metadata = cmd.newFieldMetadata(ID_FIELD_NAME);
-            metadata.setValueStrategy(IdGeneratorStrategy.INCREMENT);
+            metadata.setValueStrategy(getIdGeneratorStrategy(metadata, definition));
             metadata.setPrimaryKey(true);
             metadata.setIndexed(true);
         }
     }
 
+    private IdGeneratorStrategy getIdGeneratorStrategy(FieldMetadata fmd, Class<?> definition) {
+        java.lang.reflect.Field field = FieldUtils.getField(definition, fmd.getName(), true);
+        if (field != null) {
+            Persistent persistentAnnotation = ReflectionsUtil.getAnnotationSelfOrAccessor(field, Persistent.class);
+            if (persistentAnnotation != null && persistentAnnotation.valueStrategy() != null
+                    && !persistentAnnotation.valueStrategy().equals(IdGeneratorStrategy.UNSPECIFIED)) {
+                return persistentAnnotation.valueStrategy();
+            }
+        }
+
+        return IdGeneratorStrategy.NATIVE;
+    }
     private CollectionMetadata getOrCreateCollectionMetadata(FieldMetadata fmd) {
         CollectionMetadata collMd = fmd.getCollectionMetadata();
         if (collMd == null) {
