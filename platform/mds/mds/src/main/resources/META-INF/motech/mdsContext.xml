@@ -45,6 +45,7 @@
         </property>
         <property name="sqlMigrationPrefix" value="V"/>
         <property name="outOfOrder" value="true"/>
+        <property name="placeholderPrefix" value="$flyway{"/>
         <property name="initOnMigrate" value="true"/>
     </bean>
 
