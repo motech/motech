@@ -42,6 +42,8 @@ public class SchemaGenerator implements InitializingBean {
 
     public  static final String CONNECTION_USER_PASSWORD_KEY = "javax.jdo.option.ConnectionPassword";
 
+    public static final String FLYWAY_PLACEHOLDER_PREFIX = "$flyway{";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SchemaGenerator.class);
 
     private JDOPersistenceManagerFactory persistenceManagerFactory;
@@ -97,6 +99,7 @@ public class SchemaGenerator implements InitializingBean {
         flyway.setSqlMigrationPrefix(Constants.EntitiesMigration.ENTITY_MIGRATIONS_PREFIX);
         flyway.setOutOfOrder(true);
         flyway.setInitOnMigrate(true);
+        flyway.setPlaceholderPrefix(FLYWAY_PLACEHOLDER_PREFIX);
 
         flyway.migrate();
         LOGGER.info("Modules migration completed.");
