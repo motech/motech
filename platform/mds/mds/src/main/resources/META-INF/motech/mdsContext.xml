@@ -39,6 +39,7 @@
         <property name="locations">
             <bean factory-bean="mdsConfig" factory-method="getFlywayLocations" />
         </property>
+        <property name="placeholderPrefix" value="$flyway{"/>
         <property name="initOnMigrate" value="true"/>
     </bean>
 
