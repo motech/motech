@@ -55,6 +55,9 @@ public class Field {
     private boolean required;
 
     @Persistent
+    private boolean unique;
+
+    @Persistent
     private String defaultValue;
 
     @Persistent
@@ -111,42 +114,44 @@ public class Field {
     }
 
     public Field(Entity entity, String name, String displayName) {
-        this(entity, name, displayName, false, false, false, false, null, null, null, null);
+        this(entity, name, displayName, false, false, false, false, false, null, null, null, null);
     }
 
     public Field(Entity entity, String name, String displayName, Type type) {
-        this(entity, name, displayName, type, false, false);
+        this(entity, name, displayName, type, false, false, false);
     }
 
     public Field(Entity entity, String name, String displayName, Set<Lookup> lookups) {
-        this(entity, name, displayName, false, false, false, false, null, null, null, lookups);
+        this(entity, name, displayName, false, false, false, false, false, null, null, null, lookups);
     }
 
-    public Field(Entity entity, String name, String displayName, Type type, boolean required, boolean readOnly) {
-        this(entity, name, displayName, required, readOnly, false, false, null, null, null, null);
+    public Field(Entity entity, String name, String displayName, Type type, boolean required, boolean unique, boolean readOnly) {
+        this(entity, name, displayName, required, unique, readOnly, false, false, null, null, null, null);
         this.type = type;
     }
 
-    public Field(Entity entity, String name, String displayName, boolean required,
-                 boolean readOnly, boolean nonEditable, boolean nonDisplayable, String defaultValue, String tooltip, String placeholder, Set<Lookup> lookups) {
-        this(entity, name, displayName, required, readOnly, nonEditable, nonDisplayable, false, defaultValue, tooltip,
+    public Field(Entity entity, String name, String displayName, boolean required, boolean unique,
+                 boolean readOnly, boolean nonEditable, boolean nonDisplayable, String defaultValue,
+                 String tooltip, String placeholder, Set<Lookup> lookups) {
+        this(entity, name, displayName, required, unique, readOnly, nonEditable, nonDisplayable, false, defaultValue, tooltip,
                 placeholder, lookups);
     }
 
-    public Field(Entity entity, String name, String displayName, boolean required,
+    public Field(Entity entity, String name, String displayName, boolean required, boolean unique,
                  boolean readOnly, boolean nonEditable, boolean nonDisplayable, boolean uiChanged, String defaultValue,
                  String tooltip, String placeholder, Set<Lookup> lookups) {
-        this(entity, name, displayName, required, readOnly, nonEditable, nonDisplayable, false, uiChanged, defaultValue,
+        this(entity, name, displayName, required, unique, readOnly, nonEditable, nonDisplayable, false, uiChanged, defaultValue,
                 tooltip, placeholder, lookups);
     }
 
-    public Field(Entity entity, String name, String displayName, boolean required,
+    public Field(Entity entity, String name, String displayName, boolean required, boolean unique,
                  boolean readOnly, boolean nonEditable, boolean nonDisplayable, boolean uiFilterable, boolean uiChanged,
                  String defaultValue, String tooltip, String placeholder, Set<Lookup> lookups) {
         this.entity = entity;
         this.displayName = displayName;
         setName(name);
         this.required = required;
+        this.unique = unique;
         this.readOnly = readOnly;
         this.nonEditable = nonEditable;
         this.nonDisplayable = nonDisplayable;
@@ -170,7 +175,7 @@ public class Field {
     }
 
     public FieldDto toDto() {
-        FieldBasicDto basic = new FieldBasicDto(displayName, name, required, parseDefaultValue(), tooltip, placeholder);
+        FieldBasicDto basic = new FieldBasicDto(displayName, name, required, unique, parseDefaultValue(), tooltip, placeholder);
         TypeDto typeDto = null;
 
         List<MetadataDto> metaDto = new ArrayList<>();
@@ -253,6 +258,14 @@ public class Field {
 
     public void setRequired(boolean required) {
         this.required = required;
+    }
+
+    public boolean isUnique() {
+        return unique;
+    }
+
+    public void setUnique(boolean unique) {
+        this.unique = unique;
     }
 
     public Entity getEntity() {
@@ -416,6 +429,7 @@ public class Field {
         copy.setDefaultValue(defaultValue);
         copy.setDisplayName(displayName);
         copy.setRequired(required);
+        copy.setUnique(unique);
         copy.setTooltip(tooltip);
         copy.setPlaceholder(placeholder);
         copy.setType(type);
@@ -487,6 +501,7 @@ public class Field {
         setDisplayName(field.getBasic().getDisplayName());
         setName(field.getBasic().getName());
         setRequired(field.getBasic().isRequired());
+        setUnique(field.getBasic().isUnique());
         setTooltip(field.getBasic().getTooltip());
         setPlaceholder(field.getBasic().getPlaceholder());
         setReadOnly(field.isReadOnly());

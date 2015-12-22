@@ -66,11 +66,28 @@ public class ActionHandlerServiceImpl implements ActionHandlerService {
         MotechDataService dataService = getEntityDataService(entityClassName);
         Entity entity = getEntity(entityClassName);
 
-        Long instanceId = getInstanceId(parameters);
+        Long instanceId = getInstanceId(parameters, true);
         Object instance = retrieveEntityInstance(dataService, instanceId);
         setInstanceProperties(instance, entity.getFields(), parameters);
 
         dataService.update(instance);
+    }
+
+    @Override
+    @Transactional
+    public void createOrUpdate(Map<String, Object> parameters) throws ActionHandlerException {
+        LOGGER.debug("Action CREATE OR UPDATE: params {}", parameters);
+
+        String entityClassName = getEntityClassName(parameters);
+        MotechDataService dataService = getEntityDataService(entityClassName);
+        Entity entity = getEntity(entityClassName);
+        Long instanceId = getInstanceId(parameters, false);
+
+        Object instance = createEntityInstance(dataService);
+        PropertyUtil.safeSetProperty(instance, Constants.Util.ID_FIELD_NAME, instanceId);
+        setInstanceProperties(instance, entity.getFields(), parameters);
+
+        dataService.createOrUpdate(instance);
     }
 
     @Override
@@ -80,7 +97,7 @@ public class ActionHandlerServiceImpl implements ActionHandlerService {
 
         String entityClassName = getEntityClassName(parameters);
         MotechDataService dataService = getEntityDataService(entityClassName);
-        Long instanceId = getInstanceId(parameters);
+        Long instanceId = getInstanceId(parameters, true);
         Object instance = retrieveEntityInstance(dataService, instanceId);
 
         dataService.delete(instance);
@@ -244,10 +261,10 @@ public class ActionHandlerServiceImpl implements ActionHandlerService {
         }
     }
 
-    private Long getInstanceId(Map<String, Object> parameters) throws ActionHandlerException {
+    private Long getInstanceId(Map<String, Object> parameters, boolean required) throws ActionHandlerException {
         try {
             Long instanceId = (Long) parameters.get(ENTITY_ID_KEY);
-            if (null == instanceId) {
+            if (required && null == instanceId) {
                 throw new ActionHandlerException("Missing instance id");
             }
             return instanceId;

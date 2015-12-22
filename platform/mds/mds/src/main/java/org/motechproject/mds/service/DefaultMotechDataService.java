@@ -40,6 +40,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
+import javax.jdo.JDOHelper;
+import javax.jdo.ObjectState;
 import javax.jdo.Query;
 import java.util.HashMap;
 import java.util.List;
@@ -168,21 +170,25 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Override
     @Transactional
     public T update(final T object) {
-        validateCredentials(object);
+        if (JDOHelper.getObjectState(object) == ObjectState.TRANSIENT) {
+            return updateFromTransient(object);
+        } else {
+            validateCredentials(object);
 
-        updateModificationData(object);
-        final T updatedInstance = repository.update(object);
+            updateModificationData(object);
+            final T updatedInstance = repository.update(object);
 
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-            @Override
-            public void afterCommit() {
-                if (allowUpdateEvent) {
-                    sendEvent((Long) getId(updatedInstance), UPDATE);
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                @Override
+                public void afterCommit() {
+                    if (allowUpdateEvent) {
+                        sendEvent((Long) getId(updatedInstance), UPDATE);
+                    }
                 }
-            }
-        });
+            });
 
-        return updatedInstance;
+            return updatedInstance;
+        }
     }
 
     @Override
