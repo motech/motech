@@ -1446,16 +1446,17 @@
     /**
     * Displays related instances data using jqGrid
     */
-    directives.directive('entityInstancesBrowserGrid', function ($timeout) {
+    directives.directive('entityInstancesBrowserGrid', function ($timeout, $http) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                var elem = angular.element(element), tableWidth, gridId = attrs.id;
-
-                if (scope.relatedEntity !== undefined) {
+                var tableWidth, relatedEntityId, relatedClass, selectedEntityNested,
+                elem = angular.element(element),
+                gridId = attrs.id,
+                showGrid = function () {
                     $.ajax({
                         type: "GET",
-                        url: "../mds/entities/" + scope.relatedEntity.id + "/entityFields",
+                        url: "../mds/entities/" + relatedEntityId + "/entityFields",
                         dataType: "json",
                         success: function (result) {
                             var colMd, colModel = [], i, spanText;
@@ -1463,7 +1464,7 @@
                             buildGridColModel(colModel, result, scope, false, true);
 
                             elem.jqGrid({
-                                url: "../mds/entities/" + scope.relatedEntity.id + "/instances",
+                                url: "../mds/entities/" + relatedEntityId + "/instances",
                                 headers: {
                                     'Accept': 'application/x-www-form-urlencoded',
                                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -1482,7 +1483,11 @@
                                    order: 'sortDirection'
                                 },
                                 onSelectRow: function (id) {
-                                    scope.addRelatedInstance(id, scope.relatedEntity, scope.editedField);
+                                    if (scope.relatedMode.isNested) {
+                                        scope.addRelatedInstance(id, selectedEntityNested, scope.editedField);
+                                    } else {
+                                        scope.addRelatedInstance(id, scope.selectedEntity, scope.editedField);
+                                    }
                                 },
                                 resizeStop: function (width, index) {
                                     var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
@@ -1531,16 +1536,35 @@
                             });
                         }
                     });
+                };
+
+                if (scope.relatedEntity !== undefined && scope.relatedMode.isNested !== true) {
+                    relatedEntityId = scope.relatedEntity.id;
+                    showGrid();
+                } else if (scope.relatedMode.isNested) {
+                    relatedClass = scope.getRelatedClass(scope.field);
+                    if (relatedClass !== undefined && scope.relatedMode.isNested) {
+                        blockUI();
+                        $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
+                            relatedEntityId = data.id;
+                            unblockUI();
+                            showGrid();
+                            if (scope.currentRelationRecord !== undefined) {
+                                selectedEntityNested = {id: scope.currentRelationRecord.entitySchemaId};
+                            }
+                        });
+                    }
                 }
+
                 scope.$watch("instanceBrowserRefresh", function () {
-                      $('#' + attrs.id).jqGrid('setGridParam', {
-                          page: 1,
-                          postData: {
-                              fields: JSON.stringify(scope.lookupBy),
-                              lookup: (scope.selectedLookup) ? scope.selectedLookup.lookupName : "",
-                              filter: (scope.filterBy) ? JSON.stringify(scope.filterBy) : ""
-                          }
-                      }).trigger('reloadGrid');
+                    elem.jqGrid('setGridParam', {
+                        page: 1,
+                        postData: {
+                            fields: JSON.stringify(scope.lookupBy),
+                            lookup: (scope.selectedLookup) ? scope.selectedLookup.lookupName : "",
+                            filter: (scope.filterBy) ? JSON.stringify(scope.filterBy) : ""
+                        }
+                    }).trigger('reloadGrid');
                 });
                 elem.on('jqGridSortCol', function (e, fieldName) {
                     // For correct sorting in jqgrid we need to convert back to the original name
@@ -1582,7 +1606,7 @@
                             success: function (result) {
                                 var colModel = [], i, spanText;
 
-                                if (scope.isNested) {
+                                if (scope.relatedMode.isNested) {
                                     selectedInstance = scope.editedInstanceId;
                                     if (scope.currentRelationRecord !== undefined) {
                                         selectedEntityId = scope.currentRelationRecord.entitySchemaId;
@@ -1629,7 +1653,7 @@
                                             scope.relatedData.removeNewAdded(scope.field, parseInt(id, 10));
                                         } else if (!scope.field.nonEditable && e.target.tagName !=='I' && e.target.tagName !== 'BUTTON' && e.target.tagName ==='TD'
                                            && !(e.target.children[0] !== undefined && e.target.children[0].getAttribute('class').indexOf('removeRelatedInstance') >= 0)
-                                           && scope.newRelatedFields === null && !scope.isNested) {
+                                           && scope.newRelatedFields === null && !scope.relatedMode.isNested) {
                                             selectedInstance = parseInt(id, 10);
                                             scope.currentRelationRecord = {entitySchemaId: relatedEntityId};
                                             if (scope.field.type.defaultName !== "manyToManyRelationship" && scope.field.type.defaultName !== "oneToManyRelationship") {

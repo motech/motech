@@ -3443,7 +3443,7 @@
         $scope.showDeleteInstanceButton = true;
         $scope.editRelatedFields = null;
         $scope.newRelatedFields = null;
-        $scope.isNested = false;
+        $scope.relatedMode = {isNested: false};
 
         $scope.customModals = [];
 
@@ -3498,13 +3498,13 @@
         };
 
         $scope.addNewRelatedInstance = function (field) {
-            $scope.isNested = true;
+            $scope.relatedMode.isNested = true;
             var relatedClass  = $scope.getRelatedClass(field);
             $scope.editedField = angular.copy(field);
             $('#new-related').modal('show');
             $scope.editedInstanceId = undefined;
             $('body #new-related').on('hidden.bs.modal', function () {
-                $scope.isNested = false;
+                $scope.relatedMode.isNested = false;
                 $scope.newRelatedFields = null;
                 $scope.editRelatedFields = null;
             });
@@ -3528,13 +3528,13 @@
 
         $scope.cancelAddRelatedForm = function () {
             $scope.newRelatedFields = null;
-            $scope.isNested = false;
+            $scope.relatedMode.isNested = false;
             $('body #new-related').modal('hide');
         };
 
         $scope.cancelEditRelatedForm = function () {
             $scope.editRelatedFields = null;
-            $scope.isNested = false;
+            $scope.relatedMode.isNested = false;
             $('body #edit-related').modal('hide');
         };
 
@@ -3577,7 +3577,7 @@
         * Sets the selected instance to edit
         */
         $scope.editRelatedInstanceOfEntity = function(instanceId, relatedEntityId, field) {
-            $scope.isNested = true;
+            $scope.relatedMode.isNested = true;
             instanceId = parseInt(instanceId, 10);
             $scope.editedInstanceId = instanceId;
             $('#edit-related').modal('show');
@@ -3645,13 +3645,13 @@
         };
 
         $scope.closeRelatedEntityModal = function() {
-            $("body #instanceBrowserModal").modal('hide');
+            $("body .instanceBrowserModal").modal('hide');
         };
 
         $scope.addRelatedInstance = function(id, entity, field) {
             blockUI();
             id = parseInt(id, 10);
-            $http.get('../mds/instances/' + $scope.selectedEntity.id + '/field/' + field.id + '/instance/' + id).success(function (data) {
+            $http.get('../mds/instances/' + entity.id + '/field/' + field.id + '/instance/' + id).success(function (data) {
                 var closeModal = false;
                 if ($scope.editedField.type.defaultName === "manyToManyRelationship"
                     || $scope.editedField.type.defaultName === "oneToManyRelationship") {
@@ -3732,7 +3732,7 @@
                         return;
                     }
                 });
-                if (field.value === null) {
+                if (field.value === null || field.value === "") {
                     $scope.relatedData.initValue(field);
                 }
                 $scope.safeApply(function () {
@@ -3745,7 +3745,7 @@
                 });
                 $('#new-related').modal('hide');
                 $scope.newRelatedFields = null;
-                $scope.isNested = false;
+                $scope.relatedMode.isNested = false;
             },
 
             addExisting: function (field, relatedDataId) {
@@ -3820,7 +3820,7 @@
                 $scope.editedInstanceId = undefined;
                 $scope.editRelatedFields = null;
                 $('#edit-related').modal('hide');
-                $scope.isNested = false;
+                $scope.relatedMode.isNested = false;
             },
 
             removeFromExisting: function (field, addedId) {
@@ -3921,7 +3921,7 @@
 
         $scope.setRelatedEntity = function(field) {
             var i, relatedClass;
-            $('#instanceBrowserModal').on('hide.bs.modal', function () {
+            $('.instanceBrowserModal').on('hide.bs.modal', function () {
                 $scope.relatedEntity = undefined;
                 $scope.filterBy = [];
             });
@@ -4832,6 +4832,8 @@
                 value = 'string-owner';
             } else if (value === 'oneToMany' && ($scope.newRelatedFields !== null || $scope.editRelatedFields !== null) && isNestedField === true) {
                 value = 'oneToManyRelated';
+            } else if (value === 'manyToMany' && ($scope.newRelatedFields !== null || $scope.editRelatedFields !== null) && isNestedField === true) {
+                value = 'manyToManyRelated';
             }
             return '../mds/resources/partials/widgets/field-edit-Value-{0}.html'
                           .format(value.substring(value.toLowerCase()));
@@ -4907,8 +4909,8 @@
         */
         $scope.showLookupRelatedInstancesDialog = function() {
             $("#lookup-related-instances-dialog")
-            .css({'top': ($("#instanceBrowserModal").offset().top + 50),
-            'left': ($("#instanceBrowserModal").offset().left) - 30})
+            .css({'top': ($(".instanceBrowserModal").offset().top + 50),
+            'left': ($(".instanceBrowserModal").offset().left) - 30})
             .toggle();
         };
 

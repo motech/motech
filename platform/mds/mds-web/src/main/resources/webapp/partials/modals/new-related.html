@@ -7,8 +7,8 @@
                 <h4 class="modal-title">{{msg('mds.dataBrowsing.newRelatedInstance')}} - {{field.displayName}}</h4>
             </div>
 
-            <div ui-if="isNested && newRelatedFields !== null && isRelationshipField(field)" class="modal-body clearfix">
-                <div class="clearfix" relatedfieldsform ng-model="newRelatedFields" parent-field="{{isNested}}"></div>
+            <div ui-if="relatedMode.isNested && newRelatedFields !== null && isRelationshipField(field)" class="modal-body clearfix">
+                <div class="clearfix" relatedfieldsform ng-model="newRelatedFields" parent-field="{{relatedMode.isNested}}"></div>
             </div>
 
             <div class="modal-footer">

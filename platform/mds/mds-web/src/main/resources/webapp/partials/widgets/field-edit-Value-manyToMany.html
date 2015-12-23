@@ -1,27 +1,33 @@
-<div class="relation-field">
-    <button class="btn btn-sm btn-default" target="_self" href="#instanceBrowserModal" data-toggle="modal" ng-disabled="field.nonEditable"
-            data-backdrop="static" ng-disabled="field.nonEditable" ng-click="setRelatedEntity(field)" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance"
-            ui-validate="{relationshipValidation: 'validateRelationshipPresence(field)'}" ui-validate-watch="'field.value.length'" ng-model="field.value">
-        <i class="fa fa-fw fa-plus"></i>
-        {{msg('mds.btn.addExisting')}} {{field.displayName}}
-    </button>
-    <br/>
-    <div ng-repeat="obj in [].concat(field.value)">
-        <div class="related-instances-block" ng-if="obj">
-            <div class="related-instance-display">
-                {{field.displayValue[relatedId(obj)]}}
-            </div>
-            <div class="pull-right" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance && !field.nonEditable">
-                <a class="btn btn-sm btn-primary" ng-click="editInstanceOfEntity(relatedId(obj), getMetadata(field, 'related.class'))"
-                   data-toggle="tooltip" data-placement="top" data-trigger="hover" bs-popover="{{msg('mds.dataBrowsing.editRelatedInstance')}}">
-                    <i class="fa fa-lg fa-cogs"></i>
-                    {{msg('mds.dataBrowsing.edit')}}
-                </a>
-                <a class="btn btn-sm btn-danger" ng-click="removeManyRelatedData(field, obj)" ng-disabled="field.nonEditable"
-                   data-toggle="tooltip" data-placement="top" data-trigger="hover" bs-popover="{{msg('mds.dataBrowsing.removeRelatedInstance')}}">
-                    <i class="fa fa-lg fa-minus"></i>
-                </a>
-            </div>
+<div class="relation-field" ng-init="relatedData.initValue(field)">
+    <div class="btn-toolbar" role="toolbar">
+        <div class="btn-group">
+            <span class="col-sm-1 form-control input-sm input-records" id="relationsTableTotalRecords_{{field.id}}">0</span>
+        </div>
+        <div class="btn-group">
+            <button ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance" class="btn btn-sm btn-default" target="_self"
+                    id="instanceGrid_hide" show-relations-grid="relationsTable_{{field.id}}">
+                <i class="fa fa-fw fa-lg fa-angle-double-up"></i>
+                {{msg('mds.btn.showHide')}}
+            </button>
+        </div>
+        <div class="btn-group">
+            <button ng-click="addNewRelatedInstance(field)" type="button" class="btn btn-sm btn-default" ng-disabled="field.nonEditable || (newRelatedFields !== null && isRelationshipField(field))"  ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
+                <i class="fa fa-lg fa-plus"></i> {{msg('mds.btn.addNew')}} {{field.displayName}}
+            </button>
+            <button class="btn btn-sm btn-default" target="_self" href="#instanceBrowserModal_{{field.id}}" data-toggle="modal"
+                    data-backdrop="static" ng-click="setRelatedEntity(field)" ng-disabled="field.nonEditable"  ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance"
+                    ui-validate="{relationshipValidation: 'validateRelationshipPresence(field)'}" ui-validate-watch="'field.value.length'" ng-model="field.value">
+                <i class="fa fa-lg fa-plus"></i>
+                {{msg('mds.btn.addExisting')}} {{field.displayName}}
+            </button>
         </div>
     </div>
+    <div id="instance_relationsTable_{{field.id}}" class="overrideJqgridTable margin-before">
+        <table id="relationsTable_{{field.id}}" field-id="{{field.id}}" entity-relations-grid="pageRelationsTable_{{field.id}}"></table>
+        <div id="pageRelationsTable_{{field.id}}"></div>
+    </div>
+    <div class="clearfix"></div>
+    <div ng-include="'../mds/resources/partials/modals/instance-browser.html'"></div>
+    <div ng-include="'../mds/resources/partials/modals/new-related.html'"></div>
+    <div ng-include="'../mds/resources/partials/modals/edit-related.html'"></div>
 </div>

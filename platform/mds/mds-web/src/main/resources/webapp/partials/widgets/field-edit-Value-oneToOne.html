@@ -5,7 +5,7 @@
                 <i class="fa fa-lg fa-plus"></i>
                 {{msg('mds.btn.addNew')}} {{field.displayName}}
             </button>
-            <button class="btn btn-sm btn-default" target="_self" href="#instanceBrowserModal" ng-disabled="field.nonEditable || field.value.id!==undefined && field.value !== null"
+            <button class="btn btn-sm btn-default" target="_self" href="#instanceBrowserModal_{{field.id}}" ng-disabled="field.nonEditable || field.value.id!==undefined && field.value !== null"
                 data-toggle="modal" data-backdrop="static"  ng-click="setRelatedEntity(field)" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance"
                 ui-validate="{relationshipValidation: 'validateRelationshipPresence(field)'}" ng-model="field.value">
                 <i class="fa fa-lg fa-plus"></i>
