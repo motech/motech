@@ -26,15 +26,30 @@
                 <value>classpath:motech-email.properties</value>
             </list>
         </property>
+        <property name="rawConfigFiles">
+            <list>
+                <value>classpath:motech-email-additional.properties</value>
+            </list>
+        </property>
     </bean>
 
     <bean id="motechEmailProperties" factory-bean="emailSettings" factory-method="getProperties">
         <constructor-arg name="filename" value="motech-email.properties"/>
     </bean>
 
+    <bean id="settingsDto" class="org.motechproject.email.settings.SettingsDto" autowire="byType">
+        <constructor-arg name="settingsFacade" value="#{emailSettings}" />
+    </bean>
+
+    <bean id="motechEmailAdditionalProperties" factory-bean="settingsDto" factory-method="getAdditionalProps">
+    </bean>
+
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="#{motechEmailProperties['mail.host']}" />
         <property name="port" value="#{motechEmailProperties['mail.port']}" />
+        <property name="username" value="#{motechEmailProperties['mail.username']}" />
+        <property name="password" value="#{motechEmailProperties['mail.password']}" />
+        <property name="javaMailProperties" value="#{motechEmailAdditionalProperties}" />
     </bean>
 
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
