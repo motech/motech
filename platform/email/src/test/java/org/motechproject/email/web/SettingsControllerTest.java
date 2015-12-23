@@ -46,7 +46,7 @@ public class SettingsControllerTest {
     private static final String LOG_PURGE = "true";
     private static final String LOG_TIME = "1";
     private static final String LOG_MULTIPLIER = "weeks";
-    private static final InputStream ADDITIONAL_PROPERTIES = new StringBufferInputStream("{mail.smtp.auth=true, mail.smtp.starttls.enable=true}");
+    private static final InputStream ADDITIONAL_PROPERTIES = new StringBufferInputStream("mail.smtp.starttls.enable=true\nmail.smtp.auth=true");
 
     @Mock
     private SettingsFacade settingsFacade;
@@ -81,8 +81,8 @@ public class SettingsControllerTest {
     @Test
     public void shouldReturnSettingsDto() throws Exception {
         Properties properties = new Properties();
-        properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.auth", "true");
         controller.perform(
                 get("/settings")
         ).andExpect(

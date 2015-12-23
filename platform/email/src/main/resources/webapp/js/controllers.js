@@ -131,13 +131,11 @@
         };
 
         $scope.submit = function () {
-
             SettingsService.save(
                 {},
                 $scope.settings,
                 function () {
                     motechAlert('email.header.success', 'email.settings.saved');
-
                     $scope.settings = SettingsService.get();
                 },
                 function (response) {

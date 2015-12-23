@@ -1,5 +1,6 @@
 package org.motechproject.email.web;
 
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.email.purging.EmailPurger;
 import org.motechproject.email.constants.EmailRolesConstants;
 import org.motechproject.email.settings.SettingsDto;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNumeric;
@@ -101,9 +104,14 @@ public class SettingsController {
         if (exceptionMessage.length() > 0) {
             throw new IllegalStateException(exceptionMessage.toString());
         }
-
+        OutputStream os = new ByteArrayOutputStream();
+        try {
+            settings.getAdditionalProps().store(os, "AdditionalEmailProperties");
+        } catch (IOException e) {
+            throw new MotechException("Error parsing additional email properties", e);
+        }
         settingsFacade.saveConfigProperties(EMAIL_PROPERTIES_FILE_NAME, settings.toProperties());
-        settingsFacade.saveRawConfig(EMAIL_ADDITIONAL_PROPERTIES_FILE_NAME, settings.getAdditionalProps().toString());
+        settingsFacade.saveRawConfig(EMAIL_ADDITIONAL_PROPERTIES_FILE_NAME, new String(os.toString()));
 
         if (emailPurger != null) {
             emailPurger.handleSettingsChange();

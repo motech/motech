@@ -1,6 +1,5 @@
 package org.motechproject.email.settings;
 
-import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.config.SettingsFacade;
@@ -79,19 +78,12 @@ public class SettingsDto {
                        String logAddress, String logSubject, String logBody, String logPurgeEnable,
                        String logPurgeTime, String logPurgeTimeMultiplier) {
         this(host, port, user, password, new HashMap<String, String>(), logAddress, logSubject, logBody, logPurgeEnable, logPurgeTime, logPurgeTimeMultiplier);
-        String data;
         try {
-            data = IOUtils.toString(additionalProperties);
-            data = data.replaceAll("\\{", "");
-            data = data.replaceAll("}", "");
-            if (!"".equals(data)) {
-                for (String property : data.split(",")) {
-                    String[] p = property.replaceAll(" ", "").split("=");
-                    if (p.length == 2) {
-                        this.additionalProperties.put(p[0], p[1]);
-                    } else {
-                        throw new MotechException("Error loading raw file config to properties");
-                    }
+            Properties props = new Properties();
+            props.load(additionalProperties);
+            if (props != null) {
+                for (Entry<Object, Object> entry : props.entrySet()) {
+                    this.additionalProperties.put((String) entry.getKey(), (String) entry.getValue());
                 }
             }
         } catch (IOException e) {

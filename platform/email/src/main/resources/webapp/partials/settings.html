@@ -77,10 +77,11 @@
                 <h5 class="margin-before2">{{msg('email.settings.log.title3')}}</h5>
 
                 <div ng-repeat="(key, value) in settings.additionalProperties">
-                    <div class="form-group form-inline">
-                        <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
-                            <input class="form-control input-auto" ng-model="key" type="text"/>
-                            <input class="form-control input-auto" ng-model="value" type="text"/>
+                    <div class="form-group">
+                        <label class="col-md-3 col-sm-4 control-label">{{key}}:</label>
+
+                        <div class="form-inline col-md-9 col-sm-8">
+                            <input class="form-control input-auto" ng-model="settings.additionalProperties[key]" type="text"/>
                             <a class="btn btn-sm btn-default btn-danger-hover" ng-click="remove(key)">
                                 <i class="fa fa-lg fa-trash-o"></i>
                             </a>
