@@ -13,6 +13,9 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.web.server.MockMvc;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
 
+import java.io.InputStream;
+import java.io.StringBufferInputStream;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import static org.mockito.Matchers.any;
@@ -35,12 +38,15 @@ public class SettingsControllerTest {
 
     private static final String HOST = "localhost";
     private static final String PORT = "8099";
+    private static final String USERNAME = "user";
+    private static final String PASSWORD = "8099";
     private static final String LOG_ADDRESS = "true";
     private static final String LOG_SUBJECT = "true";
     private static final String LOG_BODY = "true";
     private static final String LOG_PURGE = "true";
     private static final String LOG_TIME = "1";
     private static final String LOG_MULTIPLIER = "weeks";
+    private static final InputStream ADDITIONAL_PROPERTIES = new StringBufferInputStream("mail.smtp.starttls.enable=true\nmail.smtp.auth=true");
 
     @Mock
     private SettingsFacade settingsFacade;
@@ -59,6 +65,9 @@ public class SettingsControllerTest {
 
         when(settingsFacade.getProperty(MAIL_HOST_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(HOST);
         when(settingsFacade.getProperty(MAIL_PORT_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(PORT);
+        when(settingsFacade.getProperty(MAIL_USERNAME_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(USERNAME);
+        when(settingsFacade.getProperty(MAIL_PASSWORD_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(PASSWORD);
+        when(settingsFacade.getRawConfig(EMAIL_ADDITIONAL_PROPERTIES_FILE_NAME)).thenReturn(ADDITIONAL_PROPERTIES);
         when(settingsFacade.getProperty(MAIL_LOG_ADDRESS_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(LOG_ADDRESS);
         when(settingsFacade.getProperty(MAIL_LOG_SUBJECT_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(LOG_SUBJECT);
         when(settingsFacade.getProperty(MAIL_LOG_BODY_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(LOG_BODY);
@@ -71,13 +80,16 @@ public class SettingsControllerTest {
 
     @Test
     public void shouldReturnSettingsDto() throws Exception {
+        Properties properties = new Properties();
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.auth", "true");
         controller.perform(
                 get("/settings")
         ).andExpect(
                 status().is(HttpStatus.SC_OK)
         ).andExpect(
                 content().string(jsonMatcher(
-                        settingsJson(HOST, PORT, LOG_ADDRESS, LOG_SUBJECT, LOG_BODY, LOG_PURGE, LOG_TIME, LOG_MULTIPLIER)
+                        settingsJson(HOST, PORT, USERNAME, PASSWORD, properties, LOG_ADDRESS, LOG_SUBJECT, LOG_BODY, LOG_PURGE, LOG_TIME, LOG_MULTIPLIER)
                 ))
         );
     }
@@ -86,6 +98,9 @@ public class SettingsControllerTest {
     public void shouldChangeSettings() throws Exception {
         String remotehost = "remotehost";
         String port = "9999";
+        String username = "user";
+        String password = "pass";
+        Properties additionalProperties = new Properties();
         String logAddress = "false";
         String logSubject = "false";
         String logBody = "false";
@@ -96,7 +111,7 @@ public class SettingsControllerTest {
         controller.perform(
                 post("/settings").body(
                         settingsJson(
-                                remotehost, port, logAddress, logSubject, logBody, logPurge, logPurgeTime,
+                                remotehost, port, username, password, additionalProperties, logAddress, logSubject, logBody, logPurge, logPurgeTime,
                                 logPurgeMultiplier
                         ).getBytes()
                 ).contentType(APPLICATION_JSON)
@@ -105,7 +120,7 @@ public class SettingsControllerTest {
         );
 
         Properties properties = new SettingsDto(
-                remotehost, port, logAddress, logSubject, logBody, logPurge, logPurgeTime,logPurgeMultiplier
+                remotehost, port, username, password, additionalProperties, logAddress, logSubject, logBody, logPurge, logPurgeTime,logPurgeMultiplier
         ).toProperties();
 
         verify(settingsFacade).saveConfigProperties(EMAIL_PROPERTIES_FILE_NAME, properties);
@@ -116,6 +131,9 @@ public class SettingsControllerTest {
     @Test
     public void shouldNotChangeSettingsWhenHostIsBlank() throws Exception {
         String port = "9999";
+        String username = "user";
+        String password = "pass";
+        Properties additionalProperties = new Properties();
         String logAddress = "false";
         String logSubject = "false";
         String logBody = "false";
@@ -125,7 +143,7 @@ public class SettingsControllerTest {
 
         controller.perform(
                 post("/settings").body(settingsJson(
-                        "", port, logAddress, logSubject, logBody, logPurge, logPurgeTime,logPurgeMultiplier
+                        "", port, username, password, additionalProperties, logAddress, logSubject, logBody, logPurge, logPurgeTime,logPurgeMultiplier
                 ).getBytes()).contentType(APPLICATION_JSON)
         ).andExpect(
                 status().is(HttpStatus.SC_NOT_FOUND)
@@ -141,6 +159,9 @@ public class SettingsControllerTest {
     @Test
     public void shouldNotChangeSettingsWhenPortIsBlank() throws Exception {
         String remotehost = "remotehost";
+        String username = "user";
+        String password = "pass";
+        Properties additionalProps = new Properties();
         String logAddress = "false";
         String logSubject = "false";
         String logBody = "false";
@@ -150,7 +171,7 @@ public class SettingsControllerTest {
 
         controller.perform(
                 post("/settings").body(settingsJson(
-                        remotehost, "", logAddress, logSubject, logBody, logPurge, logPurgeTime,logPurgeMultiplier
+                        remotehost, "", username, password, additionalProps, logAddress, logSubject, logBody, logPurge, logPurgeTime,logPurgeMultiplier
                 ).getBytes()).contentType(APPLICATION_JSON)
         ).andExpect(
                 status().is(HttpStatus.SC_NOT_FOUND)
@@ -167,6 +188,9 @@ public class SettingsControllerTest {
     public void shouldNotChangeSettingsWhenPortIsNotNumeric() throws Exception {
         String remotehost = "remotehost";
         String port = "9999a";
+        String username = "user";
+        String password = "pass";
+        Properties additionalProps = new Properties();
         String logAddress = "false";
         String logSubject = "false";
         String logBody = "false";
@@ -176,7 +200,7 @@ public class SettingsControllerTest {
 
         controller.perform(
                 post("/settings").body(settingsJson(
-                        remotehost, port, logAddress, logSubject, logBody, logPurge, logPurgeTime,logPurgeMultiplier
+                        remotehost, port, username, password, additionalProps, logAddress, logSubject, logBody, logPurge, logPurgeTime,logPurgeMultiplier
                 ).getBytes()).contentType(APPLICATION_JSON)
         ).andExpect(
                 status().is(HttpStatus.SC_NOT_FOUND)
@@ -189,20 +213,27 @@ public class SettingsControllerTest {
         verify(javaMailSender, never()).setPort(anyInt());
     }
 
-    private String settingsJson(String host, String port, String logAddress, String logSubject, String logBody,
+    private String settingsJson(String host, String port, String username, String password, Properties props, String logAddress, String logSubject, String logBody,
                                 String logPurgeEnable, String logPurgeTime, String logPurgeTimeMultiplier) {
 
         ObjectNode jsonNode = new ObjectMapper().createObjectNode();
         jsonNode.put("host", host);
         jsonNode.put("port", port);
+        jsonNode.put("username", username);
+        jsonNode.put("password", password);
         jsonNode.put("logAddress", logAddress);
         jsonNode.put("logSubject", logSubject);
         jsonNode.put("logBody", logBody);
         jsonNode.put("logPurgeEnable", logPurgeEnable);
         jsonNode.put("logPurgeTime", logPurgeTime);
         jsonNode.put("logPurgeTimeMultiplier", logPurgeTimeMultiplier);
-
-
+        ObjectNode jsonProps = new ObjectMapper().createObjectNode();
+        if (props != null) {
+            for (Entry<Object, Object> entry : props.entrySet()) {
+                jsonProps.put((String) entry.getKey(), (String) entry.getValue());
+            }
+        }
+        jsonNode.put("additionalProperties",jsonProps);
         return jsonNode.toString();
     }
 }
