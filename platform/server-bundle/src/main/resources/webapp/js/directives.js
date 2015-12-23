@@ -258,6 +258,28 @@
         };
     });
 
+    widgetModule.directive('activemqActive', function ($http) {
+            return function (scope, element, attributes) {
+                var isActivemqActive = function() {
+                    $http.post('isActivemqActive').success( function(data, status) {
+                        if (status === 200) {
+                            var glyphicon = $('<span>').addClass('glyphicon').attr('aria-hidden', 'true');
+                            if (data === 'true') {
+                                glyphicon.addClass('glyphicon-ok');
+                            } else {
+                                glyphicon.addClass('glyphicon-remove');
+                            }
+                            glyphicon.appendTo(element);
+                        } else {
+                           $(element).text(scope.msg('server.error.unknown'));
+                        }
+                    });
+                };
+
+                isActivemqActive();
+            };
+        });
+
     widgetModule.directive('motechModules', function ($compile, $timeout, $http, $templateCache) {
         var templateLoader;
 

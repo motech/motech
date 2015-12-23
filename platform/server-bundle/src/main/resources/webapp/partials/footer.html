@@ -3,7 +3,8 @@
         <strong> {{msg('server.localTime')}}&#58; </strong> <span server-time> </span>&#59;
         <strong> {{msg('server.time')}}&#58; </strong><span server-up-time> </span>&#59;
         <strong> {{msg('server.projectVersion')}}&#58; </strong><span>{{msg('server.version')}}</span>&#59;
-        <strong> {{msg('server.node')}}&#58; </strong><span server-node-name></span>
+        <strong> {{msg('server.node')}}&#58; </strong><span server-node-name></span>&#59;
+        <strong> {{msg('server.node')}}&#58; </strong><span activemq-active></span>
         <span class="pull-right" ng-if="documentationUrl != undefined">
             <i class="fa fa-fw fa-question-circle"></i>
             <a ng-click="openInNewTab(documentationUrl)">{{msg('server.docsUrl')}}&nbsp;&nbsp;</a>
