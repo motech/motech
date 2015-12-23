@@ -13,12 +13,6 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.event"/>
 
-    <channel id="controlChannel"/>
-
-    <control-bus input-channel="controlChannel"/>
-
-    <gateway service-interface="org.motechproject.event.listener.ControlBusGateway" default-request-channel="controlChannel"/>
-
     <channel id="eventQueueChannel"/>
 
     <jms:message-driven-channel-adapter

@@ -7,6 +7,8 @@ import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.integration.jms.JmsMessageDrivenEndpoint;
 
 /**
  * Handles incoming events and starts ActiveMQ outbound channels.
@@ -14,12 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class EventConsumerStarter implements EventHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(EventConsumerStarter.class);
 
-    private ControlBusGateway controlBusGateway;
-
-    @Autowired
-    public EventConsumerStarter(ControlBusGateway controlBusGateway) {
-        this.controlBusGateway = controlBusGateway;
-    }
+    private JmsMessageDrivenEndpoint queue;
+    private JmsMessageDrivenEndpoint topic;
 
     /**
      * Receives an OSGi event with the proxy topic.
@@ -39,7 +37,30 @@ public class EventConsumerStarter implements EventHandler {
     }
 
     private void startActiveMQConsumers() {
-        controlBusGateway.sendCommand("@eventQueueJMSIn.start()");
-        controlBusGateway.sendCommand("@eventTopicJMSIn.start()");
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+
+            if (!queue.isRunning()) {
+                queue.start();
+            }
+            if (!topic.isRunning()) {
+                topic.start();
+            }
+        }finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
+        }
+    }
+
+    @Autowired
+    @Qualifier("eventQueueJMSIn")
+    public void setQueue(JmsMessageDrivenEndpoint queue) {
+        this.queue = queue;
+    }
+
+    @Autowired
+    @Qualifier("eventTopicJMSIn")
+    public void setTopic(JmsMessageDrivenEndpoint topic) {
+        this.topic = topic;
     }
 }
