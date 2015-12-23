@@ -19,7 +19,7 @@ import java.util.Objects;
 public class RestOptions {
 
     @PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
+    @Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
     private Long id;
 
     @Persistent

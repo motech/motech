@@ -204,7 +204,8 @@
                                 <configuration>
                                     <autocommit>true</autocommit>
                                     <sqlCommand>
-                                        DROP DATABASE IF EXISTS motech_data_services;
+                                        DROP DATABASE IF EXISTS motechdata;
+                                        DROP DATABASE IF EXISTS motechschema;
                                     </sqlCommand>
                                     <onError>continue</onError>
                                 </configuration>
@@ -219,7 +220,8 @@
                                     <autocommit>true</autocommit>
                                     <orderFile>ascending</orderFile>
                                     <sqlCommand>
-                                        CREATE DATABASE motech_data_services;
+                                        CREATE DATABASE motechdata;
+                                        CREATE DATABASE motechschema;
                                     </sqlCommand>
                                 </configuration>
                             </execution>

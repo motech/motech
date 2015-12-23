@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +29,7 @@ public class SecurityRuleLoaderServiceImpl implements SecurityRuleLoaderService 
     private AllMotechSecurityRules allSecurityRules;
     private MotechProxyManager proxyManager;
 
+    @Transactional
     public synchronized void loadRules(ApplicationContext applicationContext) {
         LOGGER.debug("Loading rules from {}", applicationContext.getDisplayName());
         Resource securityResource = applicationContext.getResource(CONFIG_LOCATION);

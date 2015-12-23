@@ -21,6 +21,7 @@ import org.motechproject.mds.event.CrudEventType;
 
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.Unique;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Max;
@@ -36,7 +37,7 @@ import java.util.Set;
 @CrudEvents(CrudEventType.CREATE)
 public class Sample {
     // if you added a new field (and it has no @Ignore annotation) please increase this number.
-    public static final long FIELD_COUNT = 22;
+    public static final long FIELD_COUNT = 23;
     public static final long UI_DISPLAYABLE_FIELD_COUNT = 1;
     public static final long UI_FILTERABLE_FIELD_COUNT = 3;
 
@@ -144,6 +145,10 @@ public class Sample {
 
     @Field
     private Set<String> stringSet;
+
+    @Field
+    @Unique
+    private String unique;
 
     @Lookup
     public void lookupTest() {
@@ -258,6 +263,14 @@ public class Sample {
 
     public void setPrimitiveLong(long primitiveLong) {
         this.primitiveLong = primitiveLong;
+    }
+
+    public String getUnique() {
+        return unique;
+    }
+
+    public void setUnique(String unique) {
+        this.unique = unique;
     }
 
     @Ignore

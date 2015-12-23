@@ -3,6 +3,7 @@ package org.motechproject.mds.config;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.motechproject.mds.config.ModuleSettings.DEFAULT_BUNDLE_RESTART;
 import static org.motechproject.mds.config.ModuleSettings.DEFAULT_DELETE_MODE;
 import static org.motechproject.mds.config.ModuleSettings.DEFAULT_EMPTY_TRASH;
 import static org.motechproject.mds.config.ModuleSettings.DEFAULT_GRID_SIZE;
@@ -24,8 +25,9 @@ public class ModuleSettingsTest {
         settings.setTimeValue(10);
         settings.setTimeUnit(TimeUnit.WEEKS);
         settings.setGridSize(100);
+        settings.setRestartModuleAfterTimeout(true);
 
-        assertValues(DeleteMode.DELETE, true, 10, TimeUnit.WEEKS, 100);
+        assertValues(DeleteMode.DELETE, true, 10, TimeUnit.WEEKS, 100, true);
     }
 
     @Test
@@ -35,6 +37,7 @@ public class ModuleSettingsTest {
         settings.setTimeValue(null);
         settings.setTimeUnit(null);
         settings.setGridSize(null);
+        settings.setRestartModuleAfterTimeout(null);
 
         assertDefaultValues();
 
@@ -44,16 +47,17 @@ public class ModuleSettingsTest {
 
     private void assertDefaultValues() {
         assertValues(
-                DEFAULT_DELETE_MODE, DEFAULT_EMPTY_TRASH, DEFAULT_TIME_VALUE, DEFAULT_TIME_UNIT, DEFAULT_GRID_SIZE
+                DEFAULT_DELETE_MODE, DEFAULT_EMPTY_TRASH, DEFAULT_TIME_VALUE, DEFAULT_TIME_UNIT, DEFAULT_GRID_SIZE, DEFAULT_BUNDLE_RESTART
         );
     }
 
     private void assertValues(DeleteMode deleteMode, boolean emptyTrash, Integer timeValue,
-                              TimeUnit timeUnit, Integer gridSize) {
+                              TimeUnit timeUnit, Integer gridSize, boolean restartBundle) {
         assertEquals(deleteMode, settings.getDeleteMode());
         assertEquals(emptyTrash, settings.isEmptyTrash());
         assertEquals(timeValue, settings.getTimeValue());
         assertEquals(timeUnit, settings.getTimeUnit());
         assertEquals(gridSize, settings.getGridSize());
+        assertEquals(restartBundle, settings.isRestartModuleAfterTimeout());
     }
 }

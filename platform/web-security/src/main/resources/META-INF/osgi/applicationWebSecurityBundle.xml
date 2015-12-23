@@ -45,6 +45,8 @@
 
     <osgi:service ref="lowerUpperCaseDigitSpecialValidator" interface="org.motechproject.security.validator.PasswordValidator"/>
 
+    <osgi:reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager" context-class-loader="unmanaged"/>
+
     <osgi:reference id="motechPermissionsDataService" interface="org.motechproject.security.repository.MotechPermissionsDataService"/>
 
     <osgi:reference id="motechRolesDataService" interface="org.motechproject.security.repository.MotechRolesDataService"/>

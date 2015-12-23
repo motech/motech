@@ -6,7 +6,7 @@
 
     var controllers = angular.module('tasks.controllers', []);
 
-    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope) {
+    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope, $http, ManageTaskUtils) {
         var tasks, activities = [],
             searchMatch = function (item, method, searchQuery) {
                 var result;
@@ -50,6 +50,7 @@
         $scope.itemsPerPage = 10;
         $scope.currentFilter = 'allItems';
         $scope.formatInput = [];
+        $scope.util = ManageTaskUtils;
 
         innerLayout({
             spacing_closed: 30,
@@ -106,10 +107,12 @@
         $scope.enableTask = function (item, enabled) {
             item.task.enabled = enabled;
 
-            item.task.$save(dummyHandler, function (response) {
-                item.task.enabled = !enabled;
-                handleResponse('task.error.actionNotChangeTitle', 'task.error.actionNotChange', response);
-            });
+            $http.post('../tasks/api/task/' + item.task.id, item.task)
+                .success(dummyHandler)
+                .error(function (response) {
+                    item.task.enabled = !enabled;
+                    jAlert($scope.util.createErrorMessage($scope, response, false), $scope.msg('task.error.actionNotChangeTitle'));
+                });
         };
 
         $scope.deleteTask = function (item) {
@@ -1064,10 +1067,15 @@
         };
 
         $scope.save = function (enabled) {
-            var success = function () {
-                    var msg = enabled ? 'task.success.savedAndEnabled' : 'task.success.saved', loc, indexOf;
+            var success = function (response) {
+                    var alertMessage = enabled ? $scope.msg('task.success.savedAndEnabled') : $scope.msg('task.success.saved'),
+                    loc, indexOf, errors = response.validationErrors || response;
 
-                    motechAlert(msg, 'task.header.saved', [], function () {
+                    if (errors.length > 0) {
+                        alertMessage = $scope.util.createErrorMessage($scope, errors, true);
+                    }
+
+                    jAlert(alertMessage, $scope.msg('task.header.saved'), function () {
                         unblockUI();
                         loc = window.location.toString();
                         indexOf = loc.indexOf('#');
@@ -1093,7 +1101,7 @@
                     delete $scope.task.enabled;
 
                     unblockUI();
-                    jAlert($scope.util.createErrorMessage($scope, data), $scope.msg('task.header.error'));
+                    jAlert($scope.util.createErrorMessage($scope, data, false), $scope.msg('task.header.error'));
                 };
 
             $scope.task.enabled = enabled;
@@ -1133,7 +1141,7 @@
             if (!$routeParams.taskId) {
                 $http.post('../tasks/api/task/save', $scope.task).success(success).error(error);
             } else {
-                $scope.task.$save(success, error);
+                $http.post('../tasks/api/task/' + $routeParams.taskId, $scope.task).success(success).error(error);
             }
         };
 

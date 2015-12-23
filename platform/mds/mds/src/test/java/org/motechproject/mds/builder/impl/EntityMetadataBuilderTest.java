@@ -16,17 +16,20 @@ import org.mockito.stubbing.Answer;
 import org.motechproject.mds.annotations.internal.samples.AnotherSample;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
 import org.motechproject.mds.builder.Sample;
+import org.motechproject.mds.builder.SampleWithIncrementStrategy;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SchemaHolder;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -42,9 +45,11 @@ import javax.jdo.metadata.FieldMetadata;
 import javax.jdo.metadata.InheritanceMetadata;
 import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.PackageMetadata;
+import javax.jdo.metadata.UniqueMetadata;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
@@ -120,6 +125,7 @@ public class EntityMetadataBuilderTest {
 
         when(entity.getClassName()).thenReturn(CLASS_NAME);
         when(classMetadata.newFieldMetadata("id")).thenReturn(idMetadata);
+        when(idMetadata.getName()).thenReturn("id");
         when(classMetadata.newInheritanceMetadata()).thenReturn(inheritanceMetadata);
         when(schemaHolder.getFieldByName(entity, "id")).thenReturn(idField);
         when(entity.isBaseEntity()).thenReturn(true);
@@ -386,12 +392,76 @@ public class EntityMetadataBuilderTest {
         verify(fmd, never()).setDefaultFetchGroup(anyBoolean());
     }
 
+    @Test
+    public void shouldMarkEudeFieldsAsUnique() {
+        when(entity.getName()).thenReturn(ENTITY_NAME);
+        when(jdoMetadata.newPackageMetadata(anyString())).thenReturn(packageMetadata);
+        when(packageMetadata.newClassMetadata(anyString())).thenReturn(classMetadata);
+
+        FieldDto eudeField = mock(FieldDto.class);
+        FieldBasicDto eudeBasic = mock(FieldBasicDto.class);
+        when(eudeField.getBasic()).thenReturn(eudeBasic);
+        when(eudeBasic.getName()).thenReturn("uniqueField");
+        when(eudeField.isReadOnly()).thenReturn(false);
+        when(eudeBasic.isUnique()).thenReturn(true);
+        when(eudeField.getType()).thenReturn(TypeDto.STRING);
+
+        FieldDto ddeField = mock(FieldDto.class);
+        FieldBasicDto ddeBasic = mock(FieldBasicDto.class);
+        when(ddeField.getBasic()).thenReturn(ddeBasic);
+        when(ddeBasic.getName()).thenReturn("uniqueField2");
+        when(ddeField.isReadOnly()).thenReturn(true);
+        when(ddeBasic.isUnique()).thenReturn(true);
+        when(ddeField.getType()).thenReturn(TypeDto.STRING);
+
+        when(schemaHolder.getFields(entity)).thenReturn(asList(ddeField, eudeField));
+
+        FieldMetadata fmdEude = mock(FieldMetadata.class);
+        when(fmdEude.getName()).thenReturn("uniqueField");
+        when(classMetadata.newFieldMetadata("uniqueField")).thenReturn(fmdEude);
+
+        FieldMetadata fmdDde = mock(FieldMetadata.class);
+        when(fmdDde.getName()).thenReturn("uniqueField2");
+        when(classMetadata.newFieldMetadata("uniqueField2")).thenReturn(fmdDde);
+
+        UniqueMetadata umd = mock(UniqueMetadata.class);
+        when(fmdEude.newUniqueMetadata()).thenReturn(umd);
+
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class, schemaHolder);
+
+        verify(fmdDde, never()).newUniqueMetadata();
+        verify(fmdDde, never()).setUnique(anyBoolean());
+        verify(fmdEude).newUniqueMetadata();
+        verify(umd).setName("unq_Sample_uniqueField");
+    }
+
+    @Test
+    public void shouldSetIncrementStrategy() {
+        when(entity.getName()).thenReturn(ENTITY_NAME);
+        when(entity.getModule()).thenReturn(MODULE);
+        when(entity.getNamespace()).thenReturn(NAMESPACE);
+        when(entity.getTableName()).thenReturn(TABLE_NAME);
+        when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
+        when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
+
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, SampleWithIncrementStrategy.class, schemaHolder);
+
+        verify(jdoMetadata).newPackageMetadata(PACKAGE);
+        verify(packageMetadata).newClassMetadata(ENTITY_NAME);
+        verify(classMetadata).setTable(TABLE_NAME_3);
+        verifyCommonClassMetadata(IdGeneratorStrategy.INCREMENT);
+    }
+
     private void verifyCommonClassMetadata() {
+        verifyCommonClassMetadata(IdGeneratorStrategy.NATIVE);
+    }
+
+    private void verifyCommonClassMetadata(IdGeneratorStrategy expextedStrategy) {
         verify(classMetadata).setDetachable(true);
         verify(classMetadata).setIdentityType(IdentityType.APPLICATION);
         verify(classMetadata).setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
         verify(idMetadata).setPrimaryKey(true);
-        verify(idMetadata).setValueStrategy(IdGeneratorStrategy.INCREMENT);
+        verify(idMetadata).setValueStrategy(expextedStrategy);
         verify(inheritanceMetadata).setCustomStrategy("complete-table");
     }
 }

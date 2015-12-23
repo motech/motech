@@ -9,9 +9,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.dto.AdvancedSettingsDto;
+import org.motechproject.mds.dto.BrowsingSettingsDto;
+import org.motechproject.mds.entityinfo.EntityInfo;
+import org.motechproject.mds.entityinfo.EntityInfoReader;
 import org.motechproject.mds.javassist.MotechClassPool;
-import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.records.Record2;
 import org.osgi.framework.BundleContext;
@@ -41,12 +43,6 @@ public class PdfCsvExporterTest {
     private PdfCsvExporter pdfCsvExporter = new PdfCsvExporter();
 
     @Mock
-    private AllEntities allEntities;
-
-    @Mock
-    private Entity entity;
-
-    @Mock
     private MotechDataService<Record2> dataService;
 
     @Mock
@@ -55,19 +51,31 @@ public class PdfCsvExporterTest {
     @Mock
     private ServiceReference serviceReference;
 
+    @Mock
+    private EntityInfoReader entityInfoReader;
+
+    @Mock
+    private EntityInfo entityInfo;
+
+    @Mock
+    private AdvancedSettingsDto advancedSettingsDto;
+
+    @Mock
+    private BrowsingSettingsDto browsingSettingsDto;
+
     private ByteArrayOutputStream output = new ByteArrayOutputStream();
 
     @Before
     public void setUp() {
         MotechClassPool.registerServiceInterface(ENTITY_CLASSNAME, DATA_SERVICE_CLASSNAME);
 
-        when(allEntities.retrieveByClassName(ENTITY_CLASSNAME)).thenReturn(entity);
-        when(allEntities.retrieveById(ENTITY_ID)).thenReturn(entity);
+        when(entityInfoReader.getEntityInfo(ENTITY_CLASSNAME)).thenReturn(entityInfo);
+        when(entityInfoReader.getEntityInfo(ENTITY_ID)).thenReturn(entityInfo);
 
         when(bundleContext.getServiceReference(DATA_SERVICE_CLASSNAME)).thenReturn(serviceReference);
         when(bundleContext.getService(serviceReference)).thenReturn(dataService);
 
-        CsvTestHelper.mockRecord2Fields(entity);
+        CsvTestHelper.mockRecord2Fields(entityInfo, advancedSettingsDto, browsingSettingsDto);
     }
 
     // Uncomment the writePdfToFile() calls to write a temp file with the pdf content

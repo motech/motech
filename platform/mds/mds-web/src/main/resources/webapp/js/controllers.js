@@ -25,7 +25,7 @@
         return found && _.isEqual(found.value, value);
     }
 
-    var controllers = angular.module('mds.controllers', []).filter('orderObj', function () {
+    var controllers = angular.module('data-services.controllers', []).filter('orderObj', function () {
             return function (obj) {
                 if (!obj) {
                     return obj;
@@ -344,10 +344,6 @@
                     });
                 }
             });
-        };
-
-        $scope.closePeriodModal = function () {
-            $('body').children("#periodModal").modal('hide');
         };
 
         /**
@@ -1377,7 +1373,7 @@
             });
         };
 
-        $scope.isMetadataNotEditable= function (key) {
+        $scope.isMetadataNotEditable = function (key) {
             if (key === 'related.class' || key === 'related.collectionType'
                 || key === 'related.field' || key === 'related.owningSide' || key === 'enum.className') {
                 return true;
@@ -1542,6 +1538,14 @@
         };
 
         /* ~~~~~ FIELD FUNCTIONS ~~~~~ */
+
+        $scope.isUniqueEditable = function(field) {
+            return !field.readOnly
+                   && field.type.typeClass !== 'java.util.Map'
+                   && field.type.typeClass !== "org.motechproject.mds.domain.OneToManyRelationship"
+                   && field.type.typeClass !== "org.motechproject.mds.domain.ManyToManyRelationship"
+                   && field.type.typeClass !== "java.util.Collection";
+        };
 
         /**
         * Create new field and add it to an entity schema. If displayName, name or type was not
@@ -4035,6 +4039,9 @@
                $scope.selectedInstance = undefined;
                $scope.previousInstance = undefined;
                $scope.showTrashInstance = false;
+            }, function() {
+               unblockUI();
+               motechAlert('mds.error.cannotRestoreInstance', 'mds.error');
             });
         };
 

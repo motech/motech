@@ -1,6 +1,6 @@
 package org.motechproject.mds.service.impl.csv;
 
-import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.entityinfo.EntityInfo;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvExportCustomizer;
 import org.motechproject.mds.service.DefaultCsvExportCustomizer;
@@ -47,9 +47,9 @@ public class PdfCsvExporter extends AbstractMdsExporter {
      */
     @Transactional
     public long exportPdf(final long entityId, OutputStream outputStream, final CsvExportCustomizer exportCustomizer) {
-        Entity entity = getEntity(entityId);
+        EntityInfo entityInfo = getEntity(entityId);
         try (PdfTableWriter tableWriter = new PdfTableWriter(outputStream)) {
-            return exportData(entity, tableWriter, exportCustomizer);
+            return exportData(entityInfo, tableWriter, exportCustomizer);
         }
     }
 
@@ -62,9 +62,9 @@ public class PdfCsvExporter extends AbstractMdsExporter {
      */
     @Transactional
     public long exportPdf(final String entityClassName, OutputStream outputStream, final CsvExportCustomizer exportCustomizer) {
-        Entity entity = getEntity(entityClassName);
+        EntityInfo entityInfo = getEntity(entityClassName);
         try (PdfTableWriter tableWriter = new PdfTableWriter(outputStream)) {
-            return exportData(entity, tableWriter, exportCustomizer);
+            return exportData(entityInfo, tableWriter, exportCustomizer);
         }
     }
 
@@ -116,9 +116,9 @@ public class PdfCsvExporter extends AbstractMdsExporter {
     @Transactional
     public long exportPdf(long entityId, OutputStream outputStream, String lookupName, QueryParams params,
                           List<String> headers, Map<String, Object> lookupFields, CsvExportCustomizer exportCustomizer) {
-        Entity entity = getEntity(entityId);
+        EntityInfo entityInfo = getEntity(entityId);
         try (PdfTableWriter tableWriter = new PdfTableWriter(outputStream)){
-            return exportData(entity, tableWriter, lookupName, params, headers, lookupFields,
+            return exportData(entityInfo, tableWriter, lookupName, params, headers, lookupFields,
                     exportCustomizer);
         }
     }
@@ -137,9 +137,9 @@ public class PdfCsvExporter extends AbstractMdsExporter {
     @Transactional
     public long exportPdf(String entityClassName, OutputStream outputStream, String lookupName, QueryParams params,
                           List<String> headers, Map<String, Object> lookupFields, CsvExportCustomizer exportCustomizer) {
-        Entity entity = getEntity(entityClassName);
+        EntityInfo entityInfo = getEntity(entityClassName);
         try (PdfTableWriter tableWriter = new PdfTableWriter(outputStream)){
-            return exportData(entity, tableWriter, lookupName, params, headers, lookupFields,
+            return exportData(entityInfo, tableWriter, lookupName, params, headers, lookupFields,
                     exportCustomizer);
         }
     }

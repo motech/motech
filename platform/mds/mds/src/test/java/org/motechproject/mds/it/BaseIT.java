@@ -3,6 +3,7 @@ package org.motechproject.mds.it;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.motechproject.mds.domain.BundleFailureReport;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityAudit;
 import org.motechproject.mds.domain.EntityDraft;
@@ -29,8 +30,12 @@ import java.util.List;
 @TransactionConfiguration(defaultRollback = true)
 @Transactional
 public abstract class BaseIT {
+    // motechschema
     private PersistenceManagerFactory persistenceManagerFactory;
     private JdoTransactionManager transactionManager;
+    // motechdata
+    private PersistenceManagerFactory dataPersistenceManagerFactory;
+    private JdoTransactionManager dataTransactionManager;
 
     @Before
     public void setUp() throws Exception {
@@ -64,6 +69,33 @@ public abstract class BaseIT {
         this.transactionManager = transactionManager;
     }
 
+
+    public PersistenceManagerFactory getDataPersistenceManagerFactory() {
+        return dataPersistenceManagerFactory;
+    }
+
+    @Autowired
+    @Qualifier("dataPersistenceManagerFactory")
+    public void setDataPersistenceManagerFactory(PersistenceManagerFactory dataPersistenceManagerFactory) {
+        this.dataPersistenceManagerFactory = dataPersistenceManagerFactory;
+    }
+
+    public JdoTransactionManager getDataTransactionManager() {
+        return dataTransactionManager;
+    }
+
+    public PersistenceManager getDataPersistenceManager() {
+        return null != dataPersistenceManagerFactory
+                ? dataPersistenceManagerFactory.getPersistenceManager()
+                : null;
+    }
+
+    @Autowired
+    @Qualifier("dataTransactionManager")
+    public void setDataTransactionManager(JdoTransactionManager dataTransactionManager) {
+        this.dataTransactionManager = dataTransactionManager;
+    }
+
     public JdoTransactionManager getTransactionManager() {
         return transactionManager;
     }
@@ -89,31 +121,35 @@ public abstract class BaseIT {
     }
 
     protected List<Entity> getEntities() {
-        return getAll(Entity.class);
+        return getAll(Entity.class, true);
     }
 
     protected List<EntityAudit> getEntitiesAudits() {
-        return getAll(EntityAudit.class);
+        return getAll(EntityAudit.class, true);
     }
 
     protected List<EntityDraft> getEntitiesDrafts() {
-        return getAll(EntityDraft.class);
+        return getAll(EntityDraft.class, true);
     }
 
     protected List<UserPreferences> getUserPreferences() {
-        return getAll(UserPreferences.class);
+        return getAll(UserPreferences.class, true);
     }
 
     protected List<EntityDraft> getEntityDrafts() {
-        return getAll(EntityDraft.class);
+        return getAll(EntityDraft.class, true);
     }
 
     protected List<Field> getFields() {
-        return getAll(Field.class);
+        return getAll(Field.class, true);
     }
 
     protected List<Lookup> getLookups() {
-        return getAll(Lookup.class);
+        return getAll(Lookup.class, true);
+    }
+
+    protected List<BundleFailureReport> getBundleFailsReports() {
+        return getAll(BundleFailureReport.class, true);
     }
 
     protected void clearDB() {
@@ -124,6 +160,7 @@ public abstract class BaseIT {
         getPersistenceManager().deletePersistentAll(getEntitiesAudits());
         getPersistenceManager().deletePersistentAll(getEntitiesDrafts());
         getPersistenceManager().deletePersistentAll(getUserPreferences());
+        getPersistenceManager().deletePersistentAll(getBundleFailsReports());
     }
 
     protected <T> List<T> cast(Class<T> clazz, Collection collection) {
@@ -150,8 +187,8 @@ public abstract class BaseIT {
         }
     }
 
-    protected <T> List<T> getAll(Class<T> clazz) {
-        PersistenceManager persistenceManager = getPersistenceManager();
+    protected <T> List<T> getAll(Class<T> clazz, boolean forSchema) {
+        PersistenceManager persistenceManager = forSchema ? getPersistenceManager() : getDataPersistenceManager();
         Query query = persistenceManager.newQuery(clazz);
 
         return cast(clazz, (Collection) query.execute());

@@ -104,7 +104,7 @@ public class StartupManager {
 
         if (canLaunchBundles()) {
             // send an OSGI event indicating that the modules can be started
-            eventAdmin.postEvent(new Event(PlatformConstants.STARTUP_TOPIC, new HashMap<String, Object>()));
+            eventAdmin.postEvent(new Event(PlatformConstants.STARTUP_TOPIC, new HashMap<>()));
         }
     }
 
