@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS "Entity";
 CREATE TABLE "Entity" (
-  "id" bigint NOT NULL,
+  "id" serial,
   "className" varchar(255) DEFAULT NULL,
   "entityVersion" bigint DEFAULT NULL,
   "module" varchar(255) DEFAULT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE "Entity" (
 
 DROP TABLE IF EXISTS "Type";
 CREATE TABLE "Type" (
-  "id" bigint NOT NULL,
+  "id" serial,
   "description" varchar(255) DEFAULT NULL,
   "displayName" varchar(255) DEFAULT NULL,
   "defaultName" varchar(255) DEFAULT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE "Type" (
 
 DROP TABLE IF EXISTS "TypeSetting";
 CREATE TABLE "TypeSetting" (
-  "id" bigint NOT NULL,
+  "id" serial,
   "defaultValue" varchar(255) DEFAULT NULL,
   "name" varchar(255) DEFAULT NULL,
   "TYPE_ID" bigint DEFAULT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE "TypeSetting" (
 
 DROP TABLE IF EXISTS "TypeValidation";
 CREATE TABLE "TypeValidation" (
-  "id" bigint NOT NULL,
+  "id" serial,
   "displayName" varchar(255) DEFAULT NULL,
   "TYPE_ID" bigint DEFAULT NULL,
   PRIMARY KEY ("id"),
@@ -56,14 +56,14 @@ CREATE TABLE "TypeValidation" (
 
 DROP TABLE IF EXISTS "TypeSettingOption";
 CREATE TABLE "TypeSettingOption" (
-  "id" bigint NOT NULL,
+  "id" serial,
   "name" varchar(255) DEFAULT NULL,
   PRIMARY KEY ("id")
 );
 
 DROP TABLE IF EXISTS "EntityAudit";
 CREATE TABLE "EntityAudit" (
-  "id" bigint NOT NULL,
+  "id" serial,
   "modificationDate" timestamp NULL,
   "ownerUsername" varchar(255) NOT NULL,
   "version" bigint DEFAULT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE "Entity_securityMembers" (
 
 DROP TABLE IF EXISTS "Field";
 CREATE TABLE "Field" (
-  "id" bigint NOT NULL,
+  "id" serial,
   "defaultValue" varchar(255) DEFAULT NULL,
   "displayName" varchar(255) DEFAULT NULL,
   "entity_id_OID" bigint DEFAULT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE "Field" (
 
 DROP TABLE IF EXISTS "FieldMetadata";
 CREATE TABLE "FieldMetadata" (
-  "id" bigint NOT NULL,
+  "id" serial,
   "field_id_OID" bigint DEFAULT NULL,
   "key" varchar(255) DEFAULT NULL,
   "value" varchar(255) DEFAULT NULL,
@@ -117,7 +117,7 @@ CREATE TABLE "FieldMetadata" (
 
 DROP TABLE IF EXISTS "FieldSetting";
 CREATE TABLE "FieldSetting" (
-  "id" bigint NOT NULL,
+  "id" serial,
   "DETAILS_ID" bigint DEFAULT NULL,
   "field_id_OID" bigint DEFAULT NULL,
   "value" TEXT DEFAULT NULL,
@@ -129,7 +129,7 @@ CREATE TABLE "FieldSetting" (
 
 DROP TABLE IF EXISTS "FieldValidation";
 CREATE TABLE "FieldValidation" (
-  "id" bigint NOT NULL,
+  "id" serial,
   "DETAILS_ID" bigint DEFAULT NULL,
   "enabled" boolean NOT NULL,
   "field_id_OID" bigint DEFAULT NULL,
@@ -142,7 +142,7 @@ CREATE TABLE "FieldValidation" (
 
 DROP TABLE IF EXISTS "Lookup";
 CREATE TABLE "Lookup" (
-  "id" bigint NOT NULL,
+  "id" serial,
   "entity_id_OID" bigint DEFAULT NULL,
   "exposedViaRest" boolean NOT NULL,
   "lookupName" varchar(255) DEFAULT NULL,
@@ -167,7 +167,7 @@ CREATE TABLE "LookupFields" (
 
 DROP TABLE IF EXISTS "RestOptions";
 CREATE TABLE "RestOptions" (
-  "id" bigint NOT NULL,
+  "id" serial,
   "allowCreate" boolean NOT NULL,
   "allowDelete" boolean NOT NULL,
   "allowRead" boolean NOT NULL,
@@ -217,7 +217,7 @@ CREATE TABLE "TYPE_TYPE_VALIDATION" (
 
 DROP TABLE IF EXISTS "Tracking";
 CREATE TABLE "Tracking" (
-  "id" bigint NOT NULL,
+  "id" serial,
   "entity_id_OID" bigint DEFAULT NULL,
   "allowCreateEvent" boolean NOT NULL DEFAULT true,
   "allowDeleteEvent" boolean NOT NULL DEFAULT true,
@@ -239,7 +239,7 @@ CREATE TABLE "TypeValidation_annotations" (
 
 DROP TABLE IF EXISTS "SchemaChangeLock";
 CREATE TABLE "SchemaChangeLock" (
-    "id" bigint PRIMARY KEY,
+    "id" serial,
     "lockId" int UNIQUE
 );
 
@@ -291,7 +291,7 @@ CREATE TABLE IF NOT EXISTS "UserPreferences_unselectedFields" (
 
 DROP TABLE IF EXISTS "ConfigSettings";
 CREATE TABLE IF NOT EXISTS "ConfigSettings" (
-  "id" bigint,
+  "id" serial,
   "afterTimeUnit" varchar(255) NOT NULL,
   "afterTimeValue" int,
   "deleteMode" varchar(255) NOT NULL,
@@ -303,7 +303,7 @@ CREATE TABLE IF NOT EXISTS "ConfigSettings" (
 
 DROP TABLE IF EXISTS "BundleFailsReport";
 CREATE TABLE "BundleFailsReport" (
-  "id" bigint,
+  "id" serial,
   "bundleRestartStatus" varchar(255) NOT NULL,
   "bundleSymbolicName" varchar(255) NOT NULL,
   "errorMessage" text NOT NULL,
@@ -560,11 +560,3 @@ SELECT "id" + 1, 'mds.field.description.localDate','mds.field.date8','localDate'
 FROM "Type"
 ORDER BY "id" DESC
 LIMIT 1;
-
-INSERT INTO "SEQUENCE_TABLE" VALUES ('org.motechproject.mds.domain.Type', (SELECT "id" + 1 FROM "Type" ORDER BY "id" DESC LIMIT 1));
-
-INSERT INTO "SEQUENCE_TABLE" VALUES ('org.motechproject.mds.domain.TypeSetting', (SELECT "id" + 1 FROM "Type" ORDER BY "id" DESC LIMIT 1));
-
-INSERT INTO "SEQUENCE_TABLE" VALUES ('org.motechproject.mds.domain.TypeSettingOption', (SELECT "id" + 1 FROM "Type" ORDER BY "id" DESC LIMIT 1));
-
-INSERT INTO "SEQUENCE_TABLE" VALUES ('org.motechproject.mds.domain.TypeValidation', (SELECT "id" + 1 FROM "Type" ORDER BY "id" DESC LIMIT 1));

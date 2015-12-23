@@ -16,6 +16,7 @@ import org.mockito.stubbing.Answer;
 import org.motechproject.mds.annotations.internal.samples.AnotherSample;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
 import org.motechproject.mds.builder.Sample;
+import org.motechproject.mds.builder.SampleWithIncrementStrategy;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.OneToManyRelationship;
@@ -124,6 +125,7 @@ public class EntityMetadataBuilderTest {
 
         when(entity.getClassName()).thenReturn(CLASS_NAME);
         when(classMetadata.newFieldMetadata("id")).thenReturn(idMetadata);
+        when(idMetadata.getName()).thenReturn("id");
         when(classMetadata.newInheritanceMetadata()).thenReturn(inheritanceMetadata);
         when(schemaHolder.getFieldByName(entity, "id")).thenReturn(idField);
         when(entity.isBaseEntity()).thenReturn(true);
@@ -433,12 +435,33 @@ public class EntityMetadataBuilderTest {
         verify(umd).setName("unq_Sample_uniqueField");
     }
 
+    @Test
+    public void shouldSetIncrementStrategy() {
+        when(entity.getName()).thenReturn(ENTITY_NAME);
+        when(entity.getModule()).thenReturn(MODULE);
+        when(entity.getNamespace()).thenReturn(NAMESPACE);
+        when(entity.getTableName()).thenReturn(TABLE_NAME);
+        when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
+        when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
+
+        entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, SampleWithIncrementStrategy.class, schemaHolder);
+
+        verify(jdoMetadata).newPackageMetadata(PACKAGE);
+        verify(packageMetadata).newClassMetadata(ENTITY_NAME);
+        verify(classMetadata).setTable(TABLE_NAME_3);
+        verifyCommonClassMetadata(IdGeneratorStrategy.INCREMENT);
+    }
+
     private void verifyCommonClassMetadata() {
+        verifyCommonClassMetadata(IdGeneratorStrategy.NATIVE);
+    }
+
+    private void verifyCommonClassMetadata(IdGeneratorStrategy expextedStrategy) {
         verify(classMetadata).setDetachable(true);
         verify(classMetadata).setIdentityType(IdentityType.APPLICATION);
         verify(classMetadata).setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
         verify(idMetadata).setPrimaryKey(true);
-        verify(idMetadata).setValueStrategy(IdGeneratorStrategy.INCREMENT);
+        verify(idMetadata).setValueStrategy(expextedStrategy);
         verify(inheritanceMetadata).setCustomStrategy("complete-table");
     }
 }

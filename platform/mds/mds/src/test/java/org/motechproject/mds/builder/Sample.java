@@ -5,11 +5,20 @@ import java.util.Set;
 
 public class Sample {
 
+    private Long id;
     private Set<Sample> oneToManyName;
     private Sample oneToOneName;
 
     @Persistent(defaultFetchGroup = "false")
     private Sample notInDefFg;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Set<Sample> getOneToManyName() {
         return oneToManyName;
