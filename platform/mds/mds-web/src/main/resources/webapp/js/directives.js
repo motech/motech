@@ -3684,13 +3684,4 @@
         };
     });
 
-    directives.directive('modalInstanceBrowser', function($http, $templateCache, $compile) {
-        return function(scope, element, attrs) {
-            $http.get('../mds/resources/partials/modals/instance-browser.html', { cache: $templateCache }).success(function(response) {
-                var contents = element.html(response).contents();
-                $compile(contents)(scope);
-            });
-        };
-    });
-
 }());
