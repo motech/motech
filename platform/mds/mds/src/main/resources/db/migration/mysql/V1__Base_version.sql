@@ -5,7 +5,7 @@
 
 DROP TABLE IF EXISTS "Entity";
 CREATE TABLE "Entity" (
-  "id" bigint(20) NOT NULL,
+  "id" bigint(20) NOT NULL AUTO_INCREMENT,
   "className" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "entityVersion" bigint(20) DEFAULT NULL,
   "module" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE "Entity" (
 
 DROP TABLE IF EXISTS "EntityAudit";
 CREATE TABLE "EntityAudit" (
-  "id" bigint(20) NOT NULL,
+  "id" bigint(20) NOT NULL AUTO_INCREMENT,
   "modificationDate" datetime DEFAULT NULL,
   "ownerUsername" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   "version" bigint(20) DEFAULT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE "Entity_securityMembers" (
 
 DROP TABLE IF EXISTS "Field";
 CREATE TABLE "Field" (
-  "id" bigint(20) NOT NULL,
+  "id" bigint(20) NOT NULL AUTO_INCREMENT,
   "defaultValue" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "displayName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "entity_id_OID" bigint(20) DEFAULT NULL,
@@ -78,7 +78,7 @@ CREATE TABLE "Field" (
 
 DROP TABLE IF EXISTS "FieldMetadata";
 CREATE TABLE "FieldMetadata" (
-  "id" bigint(20) NOT NULL,
+  "id" bigint(20) NOT NULL AUTO_INCREMENT,
   "field_id_OID" bigint(20) DEFAULT NULL,
   "key" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "value" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE "FieldMetadata" (
 
 DROP TABLE IF EXISTS "FieldSetting";
 CREATE TABLE "FieldSetting" (
-  "id" bigint(20) NOT NULL,
+  "id" bigint(20) NOT NULL AUTO_INCREMENT,
   "DETAILS_ID" bigint(20) DEFAULT NULL,
   "field_id_OID" bigint(20) DEFAULT NULL,
   "value" TEXT CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
@@ -104,7 +104,7 @@ CREATE TABLE "FieldSetting" (
 
 DROP TABLE IF EXISTS "FieldValidation";
 CREATE TABLE "FieldValidation" (
-  "id" bigint(20) NOT NULL,
+  "id" bigint(20) NOT NULL AUTO_INCREMENT,
   "DETAILS_ID" bigint(20) DEFAULT NULL,
   "enabled" bit(1) NOT NULL,
   "field_id_OID" bigint(20) DEFAULT NULL,
@@ -119,7 +119,7 @@ CREATE TABLE "FieldValidation" (
 
 DROP TABLE IF EXISTS "Lookup";
 CREATE TABLE "Lookup" (
-  "id" bigint(20) NOT NULL,
+  "id" bigint(20) NOT NULL AUTO_INCREMENT,
   "entity_id_OID" bigint(20) DEFAULT NULL,
   "exposedViaRest" bit(1) NOT NULL,
   "lookupName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
@@ -146,7 +146,7 @@ CREATE TABLE "LookupFields" (
 
 DROP TABLE IF EXISTS "RestOptions";
 CREATE TABLE "RestOptions" (
-  "id" bigint(20) NOT NULL,
+  "id" bigint(20) NOT NULL AUTO_INCREMENT,
   "allowCreate" bit(1) NOT NULL,
   "allowDelete" bit(1) NOT NULL,
   "allowRead" bit(1) NOT NULL,
@@ -203,7 +203,7 @@ CREATE TABLE "TYPE_TYPE_VALIDATION" (
 
 DROP TABLE IF EXISTS "Tracking";
 CREATE TABLE "Tracking" (
-  "id" bigint(20) NOT NULL,
+  "id" bigint(20) NOT NULL AUTO_INCREMENT,
   "entity_id_OID" bigint(20) DEFAULT NULL,
   "recordHistory" bit(1) NOT NULL,
   "allowCreateEvent" bit(1) NOT NULL default 1,
@@ -218,7 +218,7 @@ CREATE TABLE "Tracking" (
 
 DROP TABLE IF EXISTS "Type";
 CREATE TABLE "Type" (
-  "id" bigint(20) NOT NULL,
+  "id" bigint(20) NOT NULL AUTO_INCREMENT,
   "description" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "displayName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "defaultName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
@@ -228,7 +228,7 @@ CREATE TABLE "Type" (
 
 DROP TABLE IF EXISTS "TypeSetting";
 CREATE TABLE "TypeSetting" (
-  "id" bigint(20) NOT NULL,
+  "id" bigint(20) NOT NULL AUTO_INCREMENT,
   "defaultValue" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "name" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "TYPE_ID" bigint(20) DEFAULT NULL,
@@ -239,14 +239,14 @@ CREATE TABLE "TypeSetting" (
 
 DROP TABLE IF EXISTS "TypeSettingOption";
 CREATE TABLE "TypeSettingOption" (
-  "id" bigint(20) NOT NULL,
+  "id" bigint(20) NOT NULL AUTO_INCREMENT,
   "name" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   PRIMARY KEY ("id")
 );
 
 DROP TABLE IF EXISTS "TypeValidation";
 CREATE TABLE "TypeValidation" (
-  "id" bigint(20) NOT NULL,
+  "id" bigint(20) NOT NULL AUTO_INCREMENT,
   "displayName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "TYPE_ID" bigint(20) DEFAULT NULL,
   PRIMARY KEY ("id"),
@@ -266,7 +266,7 @@ CREATE TABLE "TypeValidation_annotations" (
 
 DROP TABLE IF EXISTS "SchemaChangeLock";
 CREATE TABLE "SchemaChangeLock" (
-    "id" bigint(20) PRIMARY KEY,
+    "id" bigint(20) PRIMARY KEY AUTO_INCREMENT,
     "lockId" int(1) UNIQUE
 );
 
@@ -323,7 +323,7 @@ CREATE TABLE "UserPreferences_unselectedFields" (
 
 DROP TABLE IF EXISTS "ConfigSettings";
 CREATE TABLE "ConfigSettings" (
-  "id" bigint(20),
+  "id" bigint(20) AUTO_INCREMENT,
   "afterTimeUnit" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   "afterTimeValue" int(11),
   "deleteMode" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
@@ -335,7 +335,7 @@ CREATE TABLE "ConfigSettings" (
 
 DROP TABLE IF EXISTS "BundleFailsReport";
 CREATE TABLE "BundleFailsReport" (
-  "id" bigint(20),
+  "id" bigint(20) AUTO_INCREMENT,
   "bundleRestartStatus" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   "bundleSymbolicName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   "errorMessage" mediumtext NOT NULL,
@@ -594,11 +594,3 @@ SELECT id + 1, 'mds.field.description.localDate','mds.field.date8','localDate','
 FROM Type
 ORDER BY id DESC
 LIMIT 1;
-
-INSERT INTO SEQUENCE_TABLE VALUES ('org.motechproject.mds.domain.Type', (SELECT id + 1 FROM Type ORDER BY id DESC LIMIT 1));
-
-INSERT INTO SEQUENCE_TABLE VALUES ('org.motechproject.mds.domain.TypeSetting', (SELECT id + 1 FROM Type ORDER BY id DESC LIMIT 1));
-
-INSERT INTO SEQUENCE_TABLE VALUES ('org.motechproject.mds.domain.TypeSettingOption', (SELECT id + 1 FROM Type ORDER BY id DESC LIMIT 1));
-
-INSERT INTO SEQUENCE_TABLE VALUES ('org.motechproject.mds.domain.TypeValidation', (SELECT id + 1 FROM Type ORDER BY id DESC LIMIT 1));
