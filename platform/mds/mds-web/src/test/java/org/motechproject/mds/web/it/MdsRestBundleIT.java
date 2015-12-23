@@ -19,7 +19,6 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.JavaType;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.mds.dto.EntityDto;
@@ -41,6 +40,7 @@ import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.osgi.web.util.OSGiServiceUtils;
+import org.motechproject.security.service.MotechUserService;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.utils.TestContext;
@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -92,19 +93,12 @@ public class MdsRestBundleIT extends BasePaxIT {
     @Inject
     private BundleContext bundleContext;
 
+    @Inject
+    private MotechUserService userService;
+
     @Override
     protected Collection<String> getAdditionalTestDependencies() {
         return asList("org.motechproject:motech-scheduler");
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws IOException, InterruptedException {
-        createAdminUser();
-
-        getHttpClient().getCredentialsProvider().setCredentials(
-                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthPolicy.BASIC),
-                new UsernamePasswordCredentials("motech", "motech")
-        );
     }
 
     @Before
@@ -120,12 +114,20 @@ public class MdsRestBundleIT extends BasePaxIT {
 
         getDataService().deleteAll();
         getDataServiceForFilteredEntity().deleteAll();
+
+        if (!userService.hasActiveMotechAdmin()) {
+            userService.registerMotechAdmin("motech", "motech", "motech@motechsuite.org", Locale.ENGLISH);
+        }
+
+        getHttpClient().getCredentialsProvider().setCredentials(
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthPolicy.BASIC),
+                new UsernamePasswordCredentials("motech", "motech")
+        );
     }
 
     @Test
     public void testBasicCrud() throws Exception {
         final MotechDataService dataService = getDataService();
-        final Class<?> entityClass = dataService.getClassType();
 
         // CREATE
         // create 11 records using REST
@@ -235,8 +237,9 @@ public class MdsRestBundleIT extends BasePaxIT {
 
     @Test
     public void testLookups() throws Exception {
+        getLogger().info("Testing lookups via REST");
+
         final MotechDataService dataService = getDataService();
-        final Class<?> entityClass = dataService.getClassType();
 
         // create some records
         // make sure to use spaces
@@ -272,8 +275,9 @@ public class MdsRestBundleIT extends BasePaxIT {
 
     @Test
     public void testRestExposedFields() throws Exception {
+        getLogger().info("Testing REST exposed fields");
+
         final JavaType mapType = OBJECT_MAPPER.getTypeFactory().constructMapType(Map.class, String.class, Object.class);
-        final JavaType listType = OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, mapType);
 
         // CREATE
         HttpPost post = new HttpPost(FILTERED_ENTITY_URL);
