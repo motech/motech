@@ -23,7 +23,7 @@ public class RoleDto {
     }
 
     public RoleDto(MotechRole motechRole) {
-        this(motechRole.getRoleName(), motechRole.getPermissionNames(), motechRole.isDeletable());
+        this(motechRole.getRoleName(), new ArrayList<>(motechRole.getPermissionNames()), motechRole.isDeletable());
     }
 
     public RoleDto(String roleName, List<String> permissionNames) {

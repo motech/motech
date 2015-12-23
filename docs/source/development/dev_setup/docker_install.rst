@@ -3,17 +3,17 @@ Installing MOTECH Using Docker ("Beta")
 =======================================
 
 .. note::
-    These instructions assume you're running on Ubuntu. This setup is also possible on Mac OSX but the steps are slightly different. We hope to provide OSX instructions in future. Docker Compose isn't currently supported in Boot2Docker because it uses Tiny Core Linux. The Docker team is working on native Windows support and `will integrate Docker Compose <https://github.com/docker/compose/issues/1085>`_ in the future. If using Windows, it's best to setup an Ubuntu virtual machine using `Vagrant <http://www.vagrantup.com>`_ and installing it to the Vagrant virtual machine. Make sure to dedicate at least 2GB of RAM to this virtual machine.
+    These instructions assume you're running on Ubuntu. If you are using MAC OSX or Windows, consider using `Docker Toolbox <https://www.docker.com/docker-toolbox>`_ for running Docker and Docker Compose. After installing and running the Docker Toolbox, the steps for running MOTECH containers shouldn't be much different.
 
 This document provides instructions for creating a MOTECH environment using `Docker <http://www.docker.io>`_ containers. These instructions are "in beta" (the *official* installation guide is still the one :doc:`here <dev_install>`), but many members of the MOTECH dev team have been following this approach with success. This installation method is much faster than the official route.
 
 There are two supported ways to install MOTECH with Docker:
 
 1. As an implementer - follow this approach if you want to install a released version of MOTECH.
-2. As a developer - follow this approach if you will be developing MOTECH and want to build the platform and modules from source code.
+2. As a developer - follow this approach if you will be developing MOTECH and want to build the platform and modules from source code. If you install as developer, only the development environment will be set up for you - you will have to build and deploy MOTECH yourself.
 
 Get Docker, Docker-Compose and motech-docker
-=================================
+============================================
 
 Whether you're installing as an implementer or a developer, you'll need Docker and Docker-Compose:
 
@@ -105,7 +105,7 @@ Assuming the latter, and that you never built MOTECH before, you'd run the follo
 
 If you built MOTECH before, you can just delete the bundles directory and create the symlink using the command above.
 
-Build, deploy and run MOTECH: see :doc:dev_install.
+Build, deploy and run MOTECH: see the :doc:`Developer Installation Guide <dev_install>`:.
 
 .. note::
 

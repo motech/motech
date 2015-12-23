@@ -16,7 +16,6 @@ import org.motechproject.tasks.domain.TaskDataProviderObject;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.DataProviderDataService;
 import org.motechproject.tasks.service.TaskDataProviderService;
-import org.springframework.transaction.support.TransactionCallback;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -168,9 +167,9 @@ public class TaskDataProviderServiceImplTest {
         ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
         taskDataProviderService.registerProvider(inputStream);
 
-        ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
-        verify(dataProviderDataService).doInTransaction(transactionCaptor.capture());
-        transactionCaptor.getValue().doInTransaction(null);
+        ArgumentCaptor<TaskDataProvider> taskDataProviderArgumentCaptor = ArgumentCaptor.forClass(TaskDataProvider.class);
+        verify(dataProviderDataService).update(taskDataProviderArgumentCaptor.capture());
+        assertEquals(PROVIDER_NAME, taskDataProviderArgumentCaptor.getValue().getName());
 
         verify(dataProviderDataService).update(provider);
 

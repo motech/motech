@@ -19,6 +19,7 @@ import java.util.Properties;
 import static org.motechproject.mds.util.Constants.Config.MDS_DEFAULT_GRID_SIZE;
 import static org.motechproject.mds.util.Constants.Config.MDS_DELETE_MODE;
 import static org.motechproject.mds.util.Constants.Config.MDS_EMPTY_TRASH;
+import static org.motechproject.mds.util.Constants.Config.MDS_RESTART_BUNDLE_AFTER_TIMEOUT;
 import static org.motechproject.mds.util.Constants.Config.MDS_TIME_UNIT;
 import static org.motechproject.mds.util.Constants.Config.MDS_TIME_VALUE;
 import static org.motechproject.mds.util.Constants.Config.MODULE_FILE;
@@ -59,6 +60,11 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
+    public Boolean isRefreshModuleAfterTimeout() {
+        return getModuleSettings().isRestartModuleAfterTimeout();
+    }
+
+    @Override
     @Transactional
     public void saveModuleSettings(ModuleSettings settings) {
         ConfigSettings configSetting = new ConfigSettings();
@@ -67,6 +73,7 @@ public class SettingsServiceImpl implements SettingsService {
         configSetting.setDeleteMode(settings.getDeleteMode());
         configSetting.setDefaultGridSize(settings.getGridSize());
         configSetting.setAfterTimeValue(settings.getTimeValue());
+        configSetting.setRefreshModuleAfterTimeout(settings.isRestartModuleAfterTimeout());
 
         allConfigSettings.addOrUpdate(configSetting);
 
@@ -88,6 +95,7 @@ public class SettingsServiceImpl implements SettingsService {
             moduleSettings.setTimeValue(configSettings.getAfterTimeValue());
             moduleSettings.setTimeUnit(configSettings.getAfterTimeUnit());
             moduleSettings.setGridSize(configSettings.getDefaultGridSize());
+            moduleSettings.setRestartModuleAfterTimeout(configSettings.isRefreshModuleAfterTimeout());
         } else {
             moduleSettings = getSettingsFromFile();
         }
@@ -112,6 +120,7 @@ public class SettingsServiceImpl implements SettingsService {
         moduleSettings.setTimeValue(StringUtils.isNotBlank(props.getProperty(MDS_TIME_VALUE)) ? Integer.parseInt(props.getProperty(MDS_TIME_VALUE)) : null);
         moduleSettings.setTimeUnit(StringUtils.isNotBlank(props.getProperty(MDS_TIME_UNIT)) ? TimeUnit.fromString(props.getProperty(MDS_TIME_UNIT)) : null);
         moduleSettings.setGridSize(StringUtils.isNotBlank(props.getProperty(MDS_DEFAULT_GRID_SIZE)) ? Integer.parseInt(props.getProperty(MDS_DEFAULT_GRID_SIZE)) : null);
+        moduleSettings.setRestartModuleAfterTimeout(StringUtils.isNotBlank(props.getProperty(MDS_RESTART_BUNDLE_AFTER_TIMEOUT)) ? Boolean.parseBoolean(props.getProperty(MDS_RESTART_BUNDLE_AFTER_TIMEOUT)) : null);
 
         return moduleSettings;
     }

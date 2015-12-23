@@ -24,13 +24,18 @@ public class SuggestionHelper {
         Connection connection = null;
         boolean found = false;
 
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         try {
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+
             ConnectionFactory factory = new ActiveMQConnectionFactory(DEFAULT_ACTIVEMQ_URL);
             connection = factory.createConnection();
             connection.start();
         } catch (JMSException e) {
             found = false;
         } finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
+
             if (connection != null) {
                 try {
                     connection.close();

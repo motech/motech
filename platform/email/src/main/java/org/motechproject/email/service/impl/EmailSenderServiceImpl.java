@@ -1,18 +1,20 @@
 package org.motechproject.email.service.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.motechproject.email.contract.Mail;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
-import org.motechproject.email.contract.Mail;
+import org.motechproject.email.exception.EmailSendException;
 import org.motechproject.email.service.EmailRecordService;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.server.config.SettingsFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.motechproject.commons.date.util.DateUtil.now;
 
@@ -42,7 +44,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailSenderServiceImpl.class);
 
     @Override
-    public void send(final Mail mail) {
+    @Transactional
+    public void send(final Mail mail) throws EmailSendException {
         LOGGER.info(String.format("Sending message [%s] from [%s] to [%s] with subject [%s].",
                 mail.getMessage(), mail.getFromAddress(), mail.getToAddress(), mail.getSubject()));
         try {
@@ -52,7 +55,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         } catch (MailException e) {
             log(new EmailRecord(mail.getFromAddress(), mail.getToAddress(), mail.getSubject(), mail.getMessage(),
                     now(), DeliveryStatus.ERROR));
-            throw e;
+            throw new EmailSendException("Unable to send an email to " + mail.getToAddress(), e);
         }
     }
 

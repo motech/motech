@@ -1,17 +1,18 @@
 package org.motechproject.mds.it;
 
 import javassist.CtClass;
+import org.junit.After;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
-import org.motechproject.mds.entityinfo.EntityInfo;
-import org.motechproject.mds.entityinfo.EntityInfoReader;
 import org.motechproject.mds.dto.FieldDto;
-import org.motechproject.mds.entityinfo.FieldInfo;
 import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.TrackingDto;
+import org.motechproject.mds.entityinfo.EntityInfo;
+import org.motechproject.mds.entityinfo.EntityInfoReader;
+import org.motechproject.mds.entityinfo.FieldInfo;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MetadataHolder;
@@ -23,10 +24,15 @@ import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.PropertyUtil;
+import org.motechproject.server.osgi.event.OsgiEventProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.jdo.PersistenceManagerFactory;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -52,8 +58,30 @@ public abstract class BaseInstanceIT extends BaseIT {
     @Mock
     private HistoryService historyServiceMock;
 
+    @Mock
+    private OsgiEventProxy osgiEventProxy;
+
     private MotechDataService service;
     private EntityDto entity;
+
+    @After
+    public void tearDown() throws Exception {
+        super.clearDB();
+
+        final Class<?> entityClass = getEntityClass();
+        final Class<?> historyClass = getHistoryClass();
+        final Class<?> trashClass = getTrashClass();
+
+        TransactionTemplate transactionTemplate = new TransactionTemplate(getDataTransactionManager());
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                getDataPersistenceManager().deletePersistentAll(getAll(entityClass, false));
+                getDataPersistenceManager().deletePersistentAll(getAll(historyClass, false));
+                getDataPersistenceManager().deletePersistentAll(getAll(trashClass, false));
+            }
+        });
+    }
 
     /**
      * This method should return the name of the entity used in tests.
@@ -144,6 +172,16 @@ public abstract class BaseInstanceIT extends BaseIT {
         return trashServiceMock;
     }
 
+
+    /**
+     * Override this to inject an actual implementation of the osgi event proxy into the instance service.
+     *
+     * @return the osgi event proxy that will be used, a mock by default
+     */
+    protected OsgiEventProxy getOsgiEventProxy() {
+        return osgiEventProxy;
+    }
+
     /**
      * This should be called in the set up method for the test.
      *
@@ -169,6 +207,22 @@ public abstract class BaseInstanceIT extends BaseIT {
         EntityInfoReader entityInfoReader = new EntityInfoReader() {
             @Override
             public EntityInfo getEntityInfo(String entityClassName) {
+                return buildEntityInfo();
+            }
+
+            @Override
+            public EntityInfo getEntityInfo(Long entityId) {
+                return buildEntityInfo();
+            }
+
+            @Override
+            public Collection<String> getEntitiesClassNames() {
+                List<String> classNames = new ArrayList<>();
+                classNames.add(entity.getClassName());
+                return classNames;
+            }
+
+            private EntityInfo buildEntityInfo() {
                 EntityInfo info = new EntityInfo();
                 info.setEntity(entity);
                 info.setAdvancedSettings(new AdvancedSettingsDto());
@@ -186,13 +240,13 @@ public abstract class BaseInstanceIT extends BaseIT {
             }
         };
 
-        PropertyUtil.safeSetProperty(repository, "persistenceManagerFactory", getPersistenceManagerFactory());
-        PropertyUtil.safeSetProperty(service, "transactionManager", getTransactionManager());
+        PropertyUtil.safeSetProperty(repository, "persistenceManagerFactory", getDataPersistenceManagerFactory());
+        PropertyUtil.safeSetProperty(service, "transactionManager", getDataTransactionManager());
         PropertyUtil.safeSetProperty(service, "repository", repository);
-        PropertyUtil.safeSetProperty(service, "allEntities", allEntities);
         PropertyUtil.safeSetProperty(service, "entityInfoReader", entityInfoReader);
         PropertyUtil.safeSetProperty(service, "historyService", getHistoryService());
         PropertyUtil.safeSetProperty(service, "trashService", getTrashService());
+        PropertyUtil.safeSetProperty(service, "osgiEventProxy", getOsgiEventProxy());
 
         MotechDataService mds = (MotechDataService) service;
         ((DefaultMotechDataService) mds).init();
@@ -217,7 +271,7 @@ public abstract class BaseInstanceIT extends BaseIT {
         SchemaHolder schemaHolder = entityService.getSchema();
         mdsConstructor.constructEntities(schemaHolder);
 
-        PersistenceManagerFactory factory = getPersistenceManagerFactory();
+        PersistenceManagerFactory factory = getDataPersistenceManagerFactory();
 
         if (null == factory.getMetadata(entityClass)) {
             factory.registerMetadata(metadataHolder.getJdoMetadata());

@@ -170,6 +170,36 @@
     margin: 0px 5px 5px 0;
 }
 
+.tasks .actionField.period-input {
+    height: auto;
+    min-height: 36px;
+    border: 2px dotted #AAAAAA;
+    background-color: #FFFFFF;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+}
+
+.tasks .actionField.in-period-input{
+    float: left;
+    padding: 6px 12px;
+    width: 100%;
+    height: auto;
+    min-height: 36px;
+}
+
+.tasks .actionField.in-period-input:focus {
+    border-color: rgba(82, 168, 236, 0.8);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 11px rgba(82, 168, 236, 1)
+    outline: 0 none;
+}
+
+.tasks .period-field {
+    width: 100%;
+    float: left;
+    margin: 0px 5px 5px 0;
+}
+
 .tasks editable-content .actionField.input-block-level:focus {
     border-color: rgba(82, 168, 236, 0.8);
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);
@@ -1000,4 +1030,36 @@ editable-content .popover .inner-popover, nonEditable, .no-margin-bottom input[t
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+.tasks .slider-label {
+    clear: both;
+    float: left;
+    margin: 18px 15px 5px 0;
+    text-align: right;
+    width: 120px;
+    overflow: hidden;
+}
+
+#period-year, #period-month, #period-week,
+#period-day, #period-hour, #period-minute,
+#period-second {
+    clear: right;
+    float: left;
+    margin: 21px 10px 10px;
+    width: 330px;
+}
+
+#amount-period-year, #amount-period-month,
+#amount-period-week, #amount-period-day,
+#amount-period-hour, #amount-period-minute,
+#amount-period-second {
+    background: none;
+    border: 0;
+    color: #224477;
+    font-weight: bold;
+    margin: 16px 0 4px;
+    float: left;
+    width: 45px;
+    font-size: 18px;
 }

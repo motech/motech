@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.email.contract.Mail;
+import org.motechproject.email.exception.EmailSendException;
 import org.motechproject.email.service.EmailRecordService;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.testing.osgi.BasePaxIT;
@@ -50,7 +51,7 @@ public class EmailBundleIT extends BasePaxIT {
     }
 
     @Test
-    public void testEmailService() throws MessagingException, IOException {
+    public void testEmailService() throws MessagingException, IOException, EmailSendException {
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());

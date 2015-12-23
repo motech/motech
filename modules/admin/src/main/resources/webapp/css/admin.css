@@ -96,6 +96,12 @@ h4.settings-section {
 .action-stop:hover {
     background-position: -31px -25px;
 }
+.action-pause {
+    background-position: -248px 0px;
+}
+.action-pause:hover {
+    background-position: -248px -25px;
+}
 .action-restart {
     background-position: -124px 0;
 }

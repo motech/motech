@@ -1,5 +1,7 @@
 package org.motechproject.commons.sql.service;
 
+import org.motechproject.commons.sql.util.JdbcUrl;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -63,4 +65,12 @@ public interface SqlDBManager {
      * @throws SQLException  when incorrect data was given
      */
     boolean hasColumn(String database, String table, String column) throws SQLException;
+
+    /**
+     * Builds jdbc URL from the given connection URL.
+     *
+     * @param connectionUrl the database connection URL
+     * @return the jdbc URL from the given connection URL
+     */
+    JdbcUrl prepareConnectionUri(String connectionUrl);
 }
