@@ -14,7 +14,7 @@ public class ObjectUpdateException extends MdsException {
     private static final long serialVersionUID = -6214111291407582493L;
 
     public ObjectUpdateException(String entityName, Long id, Throwable cause) {
-        super("Unable to object of entity " + entityName + " with id " + id + ". " + getMessageFromCause(cause),
+        super("Unable to update object of entity " + entityName + " with id " + id + ". " + getMessageFromCause(cause),
                 cause, "mds.error.objectUpdateError");
     }
 

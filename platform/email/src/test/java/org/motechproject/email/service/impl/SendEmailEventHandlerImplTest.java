@@ -1,12 +1,13 @@
 package org.motechproject.email.service.impl;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.email.contract.Mail;
+import org.motechproject.email.exception.EmailSendException;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
@@ -19,31 +20,31 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.Mockito.verify;
-import static org.motechproject.email.constants.SendEmailConstants.*;
+import static org.motechproject.email.constants.SendEmailConstants.FROM_ADDRESS;
+import static org.motechproject.email.constants.SendEmailConstants.MESSAGE;
+import static org.motechproject.email.constants.SendEmailConstants.SEND_EMAIL_SUBJECT;
+import static org.motechproject.email.constants.SendEmailConstants.SUBJECT;
+import static org.motechproject.email.constants.SendEmailConstants.TO_ADDRESS;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SendEmailEventHandlerImplTest {
 
     @Mock
-    EmailSenderService emailSenderService;
+    private EmailSenderService emailSenderService;
 
     @InjectMocks
-    SendEmailEventHandlerImpl emailEventHandler = new SendEmailEventHandlerImpl(emailSenderService);
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
+    private SendEmailEventHandlerImpl emailEventHandler = new SendEmailEventHandlerImpl();
 
     @Test
     public void testIfThereIsHandlerMethodForSendEmailEvent() throws NoSuchMethodException {
-        Method handleMethod = emailEventHandler.getClass().getDeclaredMethod("handle", new Class[]{MotechEvent.class});
+        Method handleMethod = emailEventHandler.getClass().getDeclaredMethod("handle", MotechEvent.class);
         assertTrue("MotechListener annotation missing", handleMethod.isAnnotationPresent(MotechListener.class));
         MotechListener annotation = handleMethod.getAnnotation(MotechListener.class);
         assertArrayEquals(new String[]{SEND_EMAIL_SUBJECT}, annotation.subjects());
     }
 
     @Test
-    public void testIfEmailSenderServiceIsCalledWithEventValues(){
+    public void testIfEmailSenderServiceIsCalledWithEventValues() throws EmailSendException {
 
         String from = "testfromaddress";
         String to = "testtoaddress";

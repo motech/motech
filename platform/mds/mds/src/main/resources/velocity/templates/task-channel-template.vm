@@ -1,3 +1,30 @@
+#macro( updateActionParams $entity $idRequired )
+            "actionParameters": [
+                {
+                    "displayName": "Entity Class",
+                    "key": "@ENTITY",
+                    "value": "$entity.className",
+                    "type": "UNICODE",
+                    "required": true,
+                    "hidden": true
+                },
+                {
+                    "key": "id",
+                    "displayName": "Id",
+                    "type": "LONG",
+                    "required": $idRequired
+                }
+                #foreach ( $field in $entity.nonAutoFieldInfos ),
+                {
+                    "key": "$field.name",
+                    "displayName": "$field.displayName",
+                    "type": "$field.taskType",
+                    "required": #if( "id" == $field.name ) true #else false #end
+                }
+                #end
+            ]
+#end
+
 #set( $triggerParams = '"eventParameters": [
       {
           "displayName": "Entity Name",
@@ -75,30 +102,15 @@
             "serviceInterface": "org.motechproject.mds.service.ActionHandlerService",
             "serviceMethod": "update",
             "serviceMethodCallManner": "MAP",
-            "actionParameters": [
-                {
-                    "displayName": "Entity Class",
-                    "key": "@ENTITY",
-                    "value": "$entity.className",
-                    "type": "UNICODE",
-                    "required": true,
-                    "hidden": true
-                },
-                {
-                    "key": "id",
-                    "displayName": "Id",
-                    "type": "LONG",
-                    "required": true
-                }
-                #foreach ( $field in $entity.nonAutoFieldInfos ),
-                {
-                    "key": "$field.name",
-                    "displayName": "$field.displayName",
-                    "type": "$field.taskType",
-                    "required": #if( "id" == $field.name ) true #else false #end
-                }
-                #end
-            ]
+            #updateActionParams( $entity true )
+        },
+        {
+            "name": "${entity.className}.createOrUpdate",
+            "displayName": "CREATE / UPDATE $entity.entityName",
+            "serviceInterface": "org.motechproject.mds.service.ActionHandlerService",
+            "serviceMethod": "createOrUpdate",
+            "serviceMethodCallManner": "MAP",
+            #updateActionParams( $entity false )
         },
         {
             "name": "${entity.className}.delete",

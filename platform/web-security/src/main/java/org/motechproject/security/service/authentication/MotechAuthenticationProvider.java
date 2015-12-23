@@ -18,6 +18,7 @@ import org.springframework.security.authentication.dao.AbstractUserDetailsAuthen
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Extends Spring's @AbstractUserDetailsAuthenticationProvider to provide implementation for the API retrieve user
@@ -70,6 +71,7 @@ public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticat
      * @return the user information
      */
     @Override
+    @Transactional
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) {
         MotechUser user = allMotechUsers.findByUserName(username);
         if (user == null) {

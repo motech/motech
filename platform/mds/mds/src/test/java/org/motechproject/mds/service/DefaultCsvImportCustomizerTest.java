@@ -3,7 +3,8 @@ package org.motechproject.mds.service;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.TypeDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,20 +13,19 @@ public class DefaultCsvImportCustomizerTest {
 
     private DefaultCsvImportCustomizer importCustomizer = new DefaultCsvImportCustomizer();
 
-    private Field field1;
-    private Field field2;
-    private Field field3;
-    private Field field4;
-    private List<Field> fields;
+    private FieldDto field1;
+    private FieldDto field2;
+    private FieldDto field3;
+    private FieldDto field4;
+    private List<FieldDto> fields;
 
     @Before
     public void setUp() {
         fields = new ArrayList<>();
-        field1 = new Field(null, "name", "Display Name");
-        field2 = new Field(null, "name2", "Display Name 2");
-        field3 = new Field(null, "name3", "Display Name 3");
-        field4 = new Field(null, "DisplayName", "Display Name 4");
-
+        field1 = new FieldDto("name", "Display Name", TypeDto.STRING);
+        field2 = new FieldDto("name2", "Display Name 2", TypeDto.STRING);
+        field3 = new FieldDto("name3", "Display Name 3", TypeDto.STRING);
+        field4 = new FieldDto("DisplayName", "Display Name 4", TypeDto.STRING);
         fields.add(field1);
         fields.add(field2);
         fields.add(field3);

@@ -159,7 +159,7 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
         // add current entity schema version
         Long schemaVersion = getCurrentSchemaVersion(realCurrentObj.getClass().getName());
         PropertyUtil.safeSetProperty(newHistoryObj,
-                HistoryTrashClassHelper.schemaVersion(newHistoryObj.getClass()), schemaVersion);
+                HistoryTrashClassHelper.historySchemaVersion(newHistoryObj.getClass()), schemaVersion);
     }
 
     private Object getLatestRevision(Class<?> historyClass, Long instanceId) {

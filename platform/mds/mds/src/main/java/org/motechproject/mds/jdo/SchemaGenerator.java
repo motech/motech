@@ -42,6 +42,8 @@ public class SchemaGenerator implements InitializingBean {
 
     public static final String CONNECTION_USER_PASSWORD_KEY = "javax.jdo.option.ConnectionPassword";
 
+    public static final String FLYWAY_PLACEHOLDER_PREFIX = "$flyway{";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SchemaGenerator.class);
 
     private JDOPersistenceManagerFactory persistenceManagerFactory;
@@ -83,23 +85,31 @@ public class SchemaGenerator implements InitializingBean {
             LOGGER.debug("The migration directory doesn't exist. Skipping migration.");
             return;
         }
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
 
-        BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(mdsSqlProperties.getProperty(CONNECTION_DRIVER_KEY));
-        dataSource.setUrl(mdsSqlProperties.getProperty(CONNECTION_URL_KEY));
-        dataSource.setUsername(mdsSqlProperties.getProperty(CONNECTION_USER_NAME_KEY));
-        dataSource.setPassword(mdsSqlProperties.getProperty(CONNECTION_USER_PASSWORD_KEY));
+            BasicDataSource dataSource = new BasicDataSource();
+            dataSource.setDriverClassName(mdsSqlProperties.getProperty(CONNECTION_DRIVER_KEY));
+            dataSource.setUrl(mdsSqlProperties.getProperty(CONNECTION_URL_KEY));
+            dataSource.setUsername(mdsSqlProperties.getProperty(CONNECTION_USER_NAME_KEY));
+            dataSource.setPassword(mdsSqlProperties.getProperty(CONNECTION_USER_PASSWORD_KEY));
 
-        Flyway flyway = new Flyway();
-        flyway.setDataSource(dataSource);
+            Flyway flyway = new Flyway();
+            flyway.setDataSource(dataSource);
 
-        flyway.setLocations(Constants.EntitiesMigration.FILESYSTEM_PREFIX + migrationDirectory.getAbsolutePath());
-        flyway.setSqlMigrationPrefix(Constants.EntitiesMigration.ENTITY_MIGRATIONS_PREFIX);
-        flyway.setOutOfOrder(true);
-        flyway.setInitOnMigrate(true);
+            flyway.setLocations(Constants.EntitiesMigration.FILESYSTEM_PREFIX + migrationDirectory.getAbsolutePath());
+            flyway.setSqlMigrationPrefix(Constants.EntitiesMigration.ENTITY_MIGRATIONS_PREFIX);
+            flyway.setOutOfOrder(true);
+            flyway.setInitOnMigrate(true);
+            flyway.setPlaceholderPrefix(FLYWAY_PLACEHOLDER_PREFIX);
 
-        flyway.migrate();
-        LOGGER.info("Modules migration completed.");
+            flyway.migrate();
+        } finally {
+            Thread.currentThread().setContextClassLoader(cl);
+            LOGGER.info("Modules migration completed.");
+        }
+
     }
 
     private Set<String> classNames() throws IOException {

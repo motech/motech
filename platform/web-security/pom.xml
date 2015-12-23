@@ -179,6 +179,7 @@
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
+                            org.springframework.transaction,
                             org.eclipse.gemini.blueprint.config,
                             org.springframework.security.core,
                             org.springframework.security.config,

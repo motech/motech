@@ -2,8 +2,8 @@ package org.motechproject.mds.service;
 
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.ex.csv.CsvImportException;
-import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.util.Constants;
 
 import java.util.List;
@@ -41,15 +41,15 @@ public class DefaultCsvImportCustomizer implements CsvImportCustomizer {
     }
 
     @Override
-    public Field findField(String headerName, List<Field> entityFields) {
-        Field matchingDisplayNameField = null;
-        Field matchingNameField = null;
+    public FieldDto findField(String headerName, List<FieldDto> fieldDtos) {
+        FieldDto matchingDisplayNameField = null;
+        FieldDto matchingNameField = null;
 
-        for (Field field :  entityFields) {
-            if (headerName.equals(field.getDisplayName())) {
+        for (FieldDto field : fieldDtos) {
+            if (headerName.equals(field.getBasic().getDisplayName())) {
                 matchingDisplayNameField = field;
                 break;
-            } else if (headerName.equals(field.getName())) {
+            } else if (headerName.equals(field.getBasic().getName())) {
                 matchingNameField = field;
             }
         }

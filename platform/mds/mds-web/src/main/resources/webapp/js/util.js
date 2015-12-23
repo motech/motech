@@ -2,7 +2,7 @@
 
     'use strict';
 
-    var utils = angular.module('mds.utils', []);
+    var utils = angular.module('data-services.utils', []);
 
     utils.factory('MDSUtils', function () {
         return {

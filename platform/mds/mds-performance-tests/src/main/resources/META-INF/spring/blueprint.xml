@@ -12,4 +12,5 @@
 
     <osgi:reference id="sampleServiceOSGi" interface="org.motechproject.mds.performance.service.SampleService"/>
 
+    <osgi:reference id="sampleServiceOSGi" interface="org.motechproject.mds.performance.service.SampleService"/>
 </beans>

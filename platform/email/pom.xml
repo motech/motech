@@ -160,10 +160,11 @@
                         <Resource-Path>email/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
-                            org.motechproject.email.domain;version=${project.version},
-                            org.motechproject.email.service;version=${project.version},
                             org.motechproject.email.builder;version=${project.version},
-                            org.motechproject.email.contract;version=${project.version}
+                            org.motechproject.email.contract;version=${project.version},
+                            org.motechproject.email.domain;version=${project.version},
+                            org.motechproject.email.exception;version=${project.version},
+                            org.motechproject.email.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             net.sf.cglib.proxy,
@@ -173,6 +174,7 @@
                             org.motechproject.config.service,
                             org.springframework.aop,
                             org.springframework.aop.framework,
+                            org.springframework.transaction,
                             org.motechproject.scheduler.contract;resolution:=optional,
                             org.motechproject.scheduler.service;resolution:=optional,
                             *

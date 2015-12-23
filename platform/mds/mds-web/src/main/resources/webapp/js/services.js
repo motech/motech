@@ -2,7 +2,7 @@
 
     'use strict';
 
-    var services = angular.module('mds.services', ['ngResource']);
+    var services = angular.module('data-services.services', ['ngResource']);
 
     /**
     * Creates the entity service that will connect to the server and execute appropriate

@@ -35,6 +35,8 @@ public class SqlDBManagerImpl implements SqlDBManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SqlDBManagerImpl.class);
     private static final String MYSQL_DRIVER_CLASSNAME = "com.mysql.jdbc.Driver";
+    private static final String CONNECTION_URL_KEY = "javax.jdo.option.ConnectionURL";
+    private static final String SQL_VARIABLE = "${sql.url}";
 
     private Properties sqlProperties;
     private CoreConfigurationService coreConfigurationService;
@@ -142,11 +144,24 @@ public class SqlDBManagerImpl implements SqlDBManager {
         return hasColumn;
     }
 
+    @Override
+    public JdbcUrl prepareConnectionUri(String connectionUrl) {
+        String parsedConnection = StrSubstitutor.replace(parseConnectionString(connectionUrl), sqlProperties);
+        try {
+            return new JdbcUrl(parsedConnection);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Invalid connection url " + connectionUrl, e);
+        }
+    }
+
     private void loadSqlProperties() {
         sqlProperties = new Properties();
-
         SQLDBConfig sqlConfig = coreConfigurationService.loadBootstrapConfig().getSqlConfig();
+
         String sqlUrl = sqlConfig.getUrl();
+        if (!sqlUrl.endsWith("/")) {
+            sqlUrl.concat("/");
+        }
         sqlProperties.setProperty(SQL_URL, sqlUrl);
 
         String sqlUser = sqlConfig.getUsername();
@@ -176,8 +191,24 @@ public class SqlDBManagerImpl implements SqlDBManager {
         }
     }
 
+    private String parseConnectionString(String connectionString) {
+        if (connectionString.startsWith(SQL_VARIABLE) && connectionString.length() > SQL_VARIABLE.length()
+                && connectionString.charAt(SQL_VARIABLE.length()) == '/') {
+            return connectionString.replaceFirst("/", "");
+        }
+
+        return connectionString;
+    }
+
     private void replaceProperties(Properties props) {
         StrSubstitutor substitutor = new StrSubstitutor(sqlProperties);
+
+        // we must delete slash(it is added to the ${sql.url}) from connection string -> ${sql.url}/database
+        if (props.getProperty(CONNECTION_URL_KEY) != null) {
+            String connectionUrl = parseConnectionString(props.getProperty(CONNECTION_URL_KEY));
+            props.put(CONNECTION_URL_KEY, connectionUrl);
+        }
+
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
             if (entry.getValue() instanceof String) {
                 String substituted = substitutor.replace(entry.getValue());
@@ -191,15 +222,6 @@ public class SqlDBManagerImpl implements SqlDBManager {
             return Drivers.QUARTZ_POSTGRESQL_DELEGATE;
         } else {
             return Drivers.QUARTZ_STD_JDBC_DELEGATE;
-        }
-    }
-
-    private JdbcUrl prepareConnectionUri(String connectionUrl) {
-        String parsedConnection = StrSubstitutor.replace(connectionUrl, sqlProperties);
-        try {
-            return new JdbcUrl(parsedConnection);
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Invalid connection url " + connectionUrl, e);
         }
     }
 

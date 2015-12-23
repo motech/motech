@@ -2,6 +2,7 @@ package org.motechproject.email.service;
 
 
 import org.motechproject.email.contract.Mail;
+import org.motechproject.email.exception.EmailSendException;
 
 /**
  *  The <code>EmailSenderService</code> interface provides a method for sending email.
@@ -14,5 +15,5 @@ public interface EmailSenderService {
      *
      * @param message  the message to send
      */
-    void send(Mail message);
+    void send(Mail message) throws EmailSendException;
 }

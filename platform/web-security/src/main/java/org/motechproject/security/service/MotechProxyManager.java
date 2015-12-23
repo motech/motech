@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,6 +52,7 @@ public class MotechProxyManager {
      * to create a new FilterChainProxy. The order of the rules in the
      * list matters for filtering purposes.
      */
+    @Transactional
     public synchronized void rebuildProxyChain() {
         LOGGER.info("Rebuilding proxy chain");
         updateSecurityChain(securityRulesDAO.getRules());
@@ -62,6 +64,7 @@ public class MotechProxyManager {
      * any kind of security authentication so it should only ever be used by the activator,
      * which does not have an authentication object.
      */
+    @Transactional
     public void initializeProxyChain() {
         LOGGER.info("Initializing proxy chain");
 
@@ -97,6 +100,7 @@ public class MotechProxyManager {
      *
      * @return MotechSecurityConfiguration default security rules
      */
+    @Transactional
     public MotechSecurityConfiguration getDefaultSecurityConfiguration() {
         return loadedDefaultSecurityConfiguration
                 ? new MotechSecurityConfiguration(securityRulesDAO.getRulesByOrigin(SYSTEM_ORIGIN))

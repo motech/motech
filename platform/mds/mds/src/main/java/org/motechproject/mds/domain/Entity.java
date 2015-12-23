@@ -49,7 +49,7 @@ import static org.motechproject.mds.util.Constants.Util.TRUE;
 public class Entity {
 
     @PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
+    @Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
     private Long id;
 
     @Persistent
