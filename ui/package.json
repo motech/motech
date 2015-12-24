@@ -10,18 +10,18 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "bower": "~1.6.8",
-    "gulp": "~3.9.0",
+    "gulp": "^3.9.0",
     "gulp-concat": "~2.6.0",
     "gulp-rename": "~1.2.2",
     "gulp-sequence": "~0.4.1",
     "gulp-sourcemaps": "~1.6.0",
     "gulp-uglify": "~1.5.1",
     "gulp-watch": "^4.3.5",
+    "mkdirp": "~0.5.1",
+    "nunjucks": "~2.2.0",
     "path": "~0.12.7",
     "require-dir": "~0.3.0",
-    "yargs": "~3.31.0",
-    "mkdirp": "~0.5.1",
-    "nunjucks": "~2.2.0"
+    "yargs": "~3.31.0"
   },
   "devDependencies": {
     "bower-files": "~3.11.3"
