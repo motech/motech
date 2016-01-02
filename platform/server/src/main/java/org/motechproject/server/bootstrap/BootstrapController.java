@@ -29,6 +29,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +63,9 @@ public class BootstrapController {
 
     @Autowired
     private LocaleResolver localeResolver;
+
+    @Autowired
+    private MessageBrokerPingService messageBrokerPingService;
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
@@ -97,6 +101,16 @@ public class BootstrapController {
         if (result.hasErrors()) {
             ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
             bootstrapView.addObject("errors", getErrors(result));
+            addCommonBootstrapViewObjects(bootstrapView);
+            return bootstrapView;
+        }
+
+        String queueUrl = form.getQueueUrl();
+        boolean reachable = messageBrokerPingService.pingBroker(queueUrl);
+
+        if (!reachable) {
+            ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
+            bootstrapView.addObject(ERRORS, Arrays.asList(String.format(getMessage("server.bootstrap.verify.amq.warning", request), queueUrl)));
             addCommonBootstrapViewObjects(bootstrapView);
             return bootstrapView;
         }
@@ -162,6 +176,27 @@ public class BootstrapController {
                         LOGGER.error("Error while closing SQL connection", e);
                     }
                 }
+            }
+        }
+        return response;
+    }
+
+    @RequestMapping(value = "/verifyAmq", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, ?> verifyAmqConnection(@ModelAttribute(BOOTSTRAP_CONFIG) @Valid BootstrapConfigForm form,
+                                              BindingResult result, HttpServletRequest request) {
+        Map<String, Object> response = new HashMap<>();
+        if (result.hasErrors()) {
+            response.put(WARNINGS, Arrays.asList(getMessage("server.bootstrap.verify.amq.error", request)));
+            response.put(SUCCESS, false);
+        } else {
+            String queueUrl = form.getQueueUrl();
+            boolean reachable = messageBrokerPingService.pingBroker(queueUrl);
+            if (reachable) {
+                response.put(SUCCESS, reachable);
+            } else {
+                response.put(WARNINGS, Arrays.asList(String.format(getMessage("server.bootstrap.verify.amq.warning", request), queueUrl)));
+                response.put(SUCCESS, false);
             }
         }
         return response;

@@ -49,6 +49,8 @@ public class BootstrapControllerTest {
     private LocaleResolver localeResolver;
     @Mock
     private HttpServletRequest request;
+    @Mock
+    private MessageBrokerPingService messageBrokerTestService;
 
     @InjectMocks
     private BootstrapController bootstrapController = new BootstrapController();
@@ -83,6 +85,8 @@ public class BootstrapControllerTest {
 
     @Test
     public void shouldSaveBootstrapConfig() throws Exception {
+        PowerMockito.when(messageBrokerTestService.pingBroker("tcp://localhost:61616"))
+                .thenReturn(true);
         mockMvc.perform(MockMvcRequestBuilders.post("/")
                 .param("sqlUrl", "jdbc:mysql://www.someurl.com:3306/")
                 .param("sqlDriver", "com.mysql.jdbc.Driver")
@@ -101,6 +105,8 @@ public class BootstrapControllerTest {
 
     @Test
     public void shouldAddErrorOnSaveAndReturnTheSameBootstrapStartupView() throws Exception {
+        PowerMockito.when(messageBrokerTestService.pingBroker("tcp://localhost:61616"))
+                .thenReturn(true);
         when(localeResolver.resolveLocale(any(HttpServletRequest.class))).thenReturn(Locale.ENGLISH);
         when(messageSource.getMessage("server.error.bootstrap.save", null, Locale.ENGLISH)).thenReturn("errMsg");
         doThrow(new MotechConfigurationException("Test Exception")).when(OsgiListener.class);
@@ -122,6 +128,8 @@ public class BootstrapControllerTest {
 
     @Test
     public void shouldAddErrorsOnValidationFailure() throws Exception {
+        PowerMockito.when(messageBrokerTestService.pingBroker("tcp://localhost:61616"))
+                .thenReturn(true);
         BindingResult bindingResult = mock(BindingResult.class);
         when(bindingResult.hasErrors()).thenReturn(true);
         when(bindingResult.getAllErrors()).thenReturn(Arrays.asList(new ObjectError("sqlUrl", new String[]{"server.dbUrl.error"}, null, null)));

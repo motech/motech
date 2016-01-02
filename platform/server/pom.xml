@@ -197,6 +197,12 @@
             <groupId>org.postgresql</groupId>
             <artifactId>org.motechproject.org.postgresql</artifactId>
         </dependency>
+        <!-- Active MQ Version -->
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-all</artifactId>
+            <version>5.11.0</version>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>org.springframework</groupId>
