@@ -196,7 +196,6 @@
 
         $scope.resetItemsPagination();
         $scope.getTasks();
-
     });
 
     controllers.controller('TasksRecentActivityCtrl', function ($scope, Tasks, Activities) {
@@ -1392,7 +1391,7 @@
         };
     });
 
-    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $routeParams, $filter) {
+    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $routeParams, $filter, $http) {
         var data, task;
 
         $scope.taskId = $routeParams.taskId;
@@ -1460,6 +1459,11 @@
                      handleResponse('task.header.error', 'task.history.deleteError', response);
                  });
             });
+        };
+
+        $scope.retryTask = function (activityId) {
+            motechAlert('task.retry.info', 'task.retry.header');
+            $http.post('../tasks/api/activity/retry/' + activityId);
         };
     });
 

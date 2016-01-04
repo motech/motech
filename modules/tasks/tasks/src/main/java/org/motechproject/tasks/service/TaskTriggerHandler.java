@@ -123,31 +123,37 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         List<Task> tasks = taskService.findActiveTasksForTrigger(trigger);
 
+        // Handle all tasks one by one
         for (Task task : tasks) {
-            TaskContext taskContext = new TaskContext(task, parameters, activityService);
-            TaskInitializer initializer = new TaskInitializer(taskContext);
+            handleTask(task, parameters);
+        }
+    }
 
-            try {
-                LOGGER.info("Executing all actions from task: {}", task.getName());
-                if (initializer.evalConfigSteps(dataProviders)) {
-                    for (TaskActionInformation action : task.getActions()) {
-                        executor.execute(task, action, taskContext);
-                    }
-                    handleSuccess(parameters, task);
+    public void handleTask(Task task, Map<String, Object> parameters) {
+
+        TaskContext taskContext = new TaskContext(task, parameters, activityService);
+        TaskInitializer initializer = new TaskInitializer(taskContext);
+
+        try {
+            LOGGER.info("Executing all actions from task: {}", task.getName());
+            if (initializer.evalConfigSteps(dataProviders)) {
+                for (TaskActionInformation action : task.getActions()) {
+                    executor.execute(task, action, taskContext);
                 }
-                LOGGER.warn("Actions from task: {} weren't executed, because config steps didn't pass the evaluation", task.getName());
-            } catch (TaskHandlerException e) {
-                handleError(parameters, task, e);
-            } catch (RuntimeException e) {
-                handleError(parameters, task, new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e));
+                handleSuccess(parameters, task);
             }
+            LOGGER.warn("Actions from task: {} weren't executed, because config steps didn't pass the evaluation", task.getName());
+        } catch (TaskHandlerException e) {
+            handleError(parameters, task, e);
+        } catch (RuntimeException e) {
+            handleError(parameters, task, new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e));
         }
     }
 
     private void handleError(Map<String, Object> params, Task task, TaskHandlerException e) {
         LOGGER.warn("Omitted task: {} with ID: {} because: {}", task.getName(), task.getId(), e);
 
-        activityService.addError(task, e);
+        activityService.addError(task, e, params);
         task.incrementFailuresInRow();
 
         LOGGER.warn("The number of failures for task: {} is: {}", task.getName(), task.getFailuresInRow());

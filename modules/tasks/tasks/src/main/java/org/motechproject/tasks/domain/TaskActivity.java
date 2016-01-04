@@ -15,6 +15,7 @@ import javax.jdo.annotations.Column;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -41,8 +42,11 @@ public class TaskActivity implements Comparable<TaskActivity> {
     private TaskActivityType activityType;
 
     @Field(displayName = "StackTrace element")
-    @Column(length = 8096)
+    @Column(length = 16192)
     private String stackTraceElement;
+
+    @Field(displayName = "Parameters")
+    private Map<String, Object> parameters;
 
     /**
      * Constructor.
@@ -83,7 +87,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
      * @param activityType  the activity type
      */
     public TaskActivity(String message, List<String> fields, Long task, TaskActivityType activityType) {
-        this(message, fields, task, activityType, null);
+        this(message, fields, task, activityType, null, null);
     }
 
     /**
@@ -96,12 +100,28 @@ public class TaskActivity implements Comparable<TaskActivity> {
      * @param stackTraceElement  the stack trace that caused the task failure
      */
     public TaskActivity(String message, List<String> fields, Long task, TaskActivityType activityType, String stackTraceElement) {
+        this(message, fields, task, activityType, stackTraceElement, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param message  the activity message
+     * @param fields  the field names
+     * @param task  the activity ID
+     * @param activityType  the activity type
+     * @param stackTraceElement  the stack trace that caused the task failure
+     * @param parameters the parameters used by the task in this execution
+     */
+    public TaskActivity(String message, List<String> fields, Long task, TaskActivityType activityType, String stackTraceElement,
+                        Map<String, Object> parameters) {
         this.message = message;
         this.fields = fields;
         this.task = task;
         this.date = DateTimeSourceUtil.now();
         this.activityType = activityType;
         this.stackTraceElement = stackTraceElement;
+        this.parameters = parameters;
     }
 
     public String getMessage() {
@@ -160,6 +180,14 @@ public class TaskActivity implements Comparable<TaskActivity> {
 
     public void setStackTraceElement(String stackTraceElement) {
         this.stackTraceElement = stackTraceElement;
+    }
+
+    public Map<String, Object> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Map<String, Object> parameters) {
+        this.parameters = parameters;
     }
 
     @Override
