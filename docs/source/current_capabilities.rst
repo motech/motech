@@ -17,9 +17,9 @@ Below is a list of features currently available in MOTECH:
     - Push program stage events
     - Send aggregate data values and value sets
 - SMS Integration
-    - Send and receive SMS from MOTECH through integration with an SMS aggregater with predefined configurations for popular systems like Clickatell, Plivo, Twilio and Voto
+    - Send and receive SMS from MOTECH through integration with an SMS aggregator with predefined configurations for popular systems like Clickatell, Plivo, Twilio and Voto
 - IVR Integration
-    - Initiate outgoing calls from MOTECH by integrating with a mobile network operator
+    - Act on inbound and initiate outgoing calls from MOTECH by integrating with a mobile network operator
 - Perform Message Campaigns
     - MOTECH is able to perform SMS, voice and email message campaigns directly to communities and front line workers
 - Pill Reminder System
@@ -74,7 +74,7 @@ Scheduler
 
 Tasks
 """""
-- Create and manage tasks (note: one task can perform one action)
+- Create and manage tasks
 - View task activity and troubleshoot failed tasks
 
 REST API Tab
