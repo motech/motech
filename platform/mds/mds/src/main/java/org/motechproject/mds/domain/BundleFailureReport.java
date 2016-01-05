@@ -16,7 +16,7 @@ import javax.jdo.annotations.PrimaryKey;
 public class BundleFailureReport {
 
     @PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
+    @Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
     private Long id;
 
     @Persistent

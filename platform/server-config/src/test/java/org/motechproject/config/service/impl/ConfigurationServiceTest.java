@@ -12,8 +12,8 @@ import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.domain.ModulePropertiesRecord;
-import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.config.service.BundlePropertiesService;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.SettingService;
@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import static java.util.Collections.singletonList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -190,7 +191,7 @@ public class ConfigurationServiceTest {
     public void shouldUpdateMotechSettings() {
         when(configLoader.loadMotechSettings()).thenReturn(new SettingsRecord());
         final SettingsRecord settingsRecord = new SettingsRecord();
-        when(settingService.retrieve("id", 1)).thenReturn(settingsRecord);
+        when(settingService.retrieveAll()).thenReturn(singletonList(settingsRecord));
         configurationService.addOrUpdate(FileHelper.getResourceFile("config/motech-settings.properties"));
         verify(settingService).update(settingsRecord);
     }

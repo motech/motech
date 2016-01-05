@@ -24,6 +24,11 @@ public final class KeyNames {
         return join("cb_fk", entityType.getName(entityName), fieldName, entityId);
     }
 
+    public static String uniqueKeyName(String entityName, String fieldName) {
+        // unique keys are only used for standard tables, history and trash don't use them
+        return join("unq", entityName, fieldName);
+    }
+
     private static String join(Object... parts) {
         return StringUtils.join(parts, '_');
     }

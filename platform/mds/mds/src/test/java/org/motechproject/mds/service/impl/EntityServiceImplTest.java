@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
@@ -95,6 +96,12 @@ public class EntityServiceImplTest {
 
     @Mock
     private Field field;
+
+    @Mock
+    private FieldDto fieldDto;
+
+    @Mock
+    private FieldBasicDto basic;
 
     @Mock
     private Field fieldSecond;
@@ -493,6 +500,37 @@ public class EntityServiceImplTest {
                 verify(field).setUIDisplayPosition(null);
             }
         }
+    }
+
+    @Test
+    public void shouldMarkUniqueChangesInDraft() {
+        DraftData dd = new DraftData();
+        dd.setEdit(true);
+        dd.getValues().put(DraftData.VALUE, singletonList(true));
+        dd.getValues().put(DraftData.PATH, "basic.unique");
+        dd.getValues().put(DraftData.FIELD_ID, 2L);
+        when(allEntities.retrieveById(1L)).thenReturn(entity);
+        when(allEntityDrafts.retrieve(entity, "motech")).thenReturn(draft);
+        when(draft.getField(2L)).thenReturn(field);
+        when(draft.getParentEntity()).thenReturn(entity);
+        when(entity.getField("fieldName")).thenReturn(field);
+        when(field.getName()).thenReturn("fieldName");
+        when(field.toDto()).thenReturn(fieldDto);
+        when(fieldDto.getBasic()).thenReturn(basic);
+        when(field.isUnique()).thenReturn(true);
+
+        entityService.saveDraftEntityChanges(1L, dd);
+
+        verify(field).update(any(FieldDto.class));
+        verify(draft, never()).addUniqueToRemove(anyString());
+
+        // test marking for removal
+
+        dd.getValues().put(DraftData.VALUE, singletonList(false));
+
+        entityService.saveDraftEntityChanges(1L, dd);
+
+        verify(draft).addUniqueToRemove("fieldName");
     }
 
     @Test(expected = FieldUsedInLookupException.class)

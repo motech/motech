@@ -15,6 +15,7 @@ import org.motechproject.admin.messages.Level;
 import org.motechproject.admin.notification.EmailNotifier;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.commons.api.Range;
+import org.motechproject.email.exception.EmailSendException;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
@@ -212,7 +213,7 @@ public class StatusMessageServiceTest {
     }
 
     @Test
-    public void shouldSendNotifications() {
+    public void shouldSendNotifications() throws EmailSendException {
         NotificationRule notificationRuleEmail1 = new NotificationRule("e@ma.il", ActionType.EMAIL, Level.CRITICAL, null);
         NotificationRule notificationRuleEmail2 = new NotificationRule("e2@ma.il", ActionType.EMAIL, Level.DEBUG, "module");
         NotificationRule notificationRuleSms1 = new NotificationRule("1111", ActionType.SMS, Level.CRITICAL, "module");

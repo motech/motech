@@ -27,6 +27,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,12 +55,14 @@ public class MotechUserServiceImpl implements MotechUserService {
     private PasswordRecoveryService passwordRecoveryService;
 
     @Override
+    @Transactional
     public void register(String username, String password, String email, String externalId, List<String> roles,
                          Locale locale) {
         this.register(username, password, email, externalId, roles, locale, UserStatus.ACTIVE , null);
     }
 
     @Override
+    @Transactional
     public void register(String username, String password, // NO CHECKSTYLE More than 7 parameters (found 8).
                          String email, String externalId, List<String> roles, Locale locale, UserStatus userStatus,
                          String openId) {
@@ -79,6 +82,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    @Transactional
     public void registerMotechAdmin(String username, String password, String email, Locale locale) {
         if (!hasActiveMotechAdmin()) {
             List<String> roles = Arrays.asList(MOTECH_ADMIN);
@@ -92,6 +96,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    @Transactional
     public void activateUser(String username) {
         LOGGER.info("Activating user: {}", username);
         MotechUser motechUser = allMotechUsers.findByUserName(username);
@@ -103,6 +108,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    @Transactional
     public MotechUserProfile retrieveUserByCredentials(String username, String password) {
         MotechUser user = allMotechUsers.findByUserName(username);
         if (user != null && passwordEncoder.isPasswordValid(user.getPassword(), password)) {
@@ -125,6 +131,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    @Transactional
     public MotechUserProfile changeExpiredPassword(String userName, String oldPassword, String newPassword) {
         MotechUser motechUser = allMotechUsers.findByUserName(userName);
 
@@ -149,6 +156,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    @Transactional
     public MotechUserProfile changePassword(String userName, String oldPassword, String newPassword) {
         MotechUser motechUser = allMotechUsers.findByUserName(userName);
 
@@ -163,17 +171,20 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    @Transactional
     public boolean hasUser(String username) {
         return allMotechUsers.findByUserName(username) != null;
     }
 
     @Override
+    @Transactional
     public boolean hasEmail(String email) {
         MotechUser user = allMotechUsers.findUserByEmail(email);
         return user != null;
     }
 
     @Override
+    @Transactional
     public List<MotechUserProfile> getUsers() {
         List<MotechUserProfile> users = new ArrayList<>();
         for (MotechUser user : allMotechUsers.getUsers()) {
@@ -183,18 +194,21 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    @Transactional
     public UserDto getUser(String userName) {
         MotechUser user = allMotechUsers.findByUserName(userName);
         return new UserDto(user);
     }
 
     @Override
+    @Transactional
     public UserDto getUserByEmail(String email) {
         MotechUser user = allMotechUsers.findUserByEmail(email);
         return user == null ? null : new UserDto(user);
     }
 
     @Override
+    @Transactional
     public UserDto getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userInSession = (authentication == null) ? null : (User) authentication.getPrincipal();
@@ -208,11 +222,13 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    @Transactional
     public Locale getLocale(String userName) {
         return allMotechUsers.findByUserName(userName).getLocale();
     }
 
     @Override
+    @Transactional
     public List<MotechUserProfile> getOpenIdUsers() {
         List<MotechUserProfile> users = new ArrayList<>();
         for (MotechUser user : allMotechUsers.getOpenIdUsers()) {
@@ -222,6 +238,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    @Transactional
     public void updateUserDetailsWithoutPassword(UserDto user) {
         MotechUser motechUser = allMotechUsers.findByUserName(user.getUserName());
         motechUser.setEmail(user.getEmail());
@@ -233,6 +250,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    @Transactional
     public void updateUserDetailsWithPassword(UserDto user) {
         if (!StringUtils.isEmpty(user.getPassword())) {
             validatePassword(user.getPassword());
@@ -254,6 +272,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(UserDto user) {
         LOGGER.info("Deleting user: {}", user.getUserName());
 
@@ -266,6 +285,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    @Transactional
     public void sendLoginInformation(String userName) throws UserNotFoundException, NonAdminUserException {
         String token;
         MotechUser user = allMotechUsers.findByUserName(userName);
@@ -280,6 +300,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    @Transactional
     public void setLocale(Locale locale) {
         UserDto currentUser = getCurrentUser();
         MotechUser user = allMotechUsers.findByUserName(currentUser.getUserName());
@@ -288,12 +309,14 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    @Transactional
     public List<String> getRoles(String userName) {
         MotechUser user = allMotechUsers.findByUserName(userName);
         return (user == null) ? Collections.<String>emptyList() : user.getRoles();
     }
 
     @Override
+    @Transactional
     public boolean hasActiveMotechAdmin() {
         List<MotechUserProfile> users = getUsers();
         MotechUserProfile motechUser = (MotechUserProfile) CollectionUtils.find(users, new Predicate() {

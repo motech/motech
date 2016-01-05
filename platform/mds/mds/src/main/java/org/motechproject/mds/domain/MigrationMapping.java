@@ -14,7 +14,7 @@ import javax.jdo.annotations.PrimaryKey;
 public class MigrationMapping {
 
     @PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
+    @Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
     private Integer flywayMigrationVersion;
 
     @Persistent

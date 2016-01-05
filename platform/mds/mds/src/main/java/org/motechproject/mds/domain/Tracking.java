@@ -7,7 +7,6 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-
 import java.util.Objects;
 
 import static org.motechproject.mds.util.Constants.Util;
@@ -21,7 +20,7 @@ import static org.motechproject.mds.util.Constants.Util;
 public class Tracking {
 
     @PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
+    @Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
     private Long id;
 
     @Persistent
