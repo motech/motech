@@ -52,10 +52,17 @@ public class MotechCachingConnectionFactory extends CachingConnectionFactory {
      */
     @Override
     protected Connection doCreateConnection() throws JMSException {
-        if (StringUtils.isBlank(username) && StringUtils.isBlank(password)) {
-            return getTargetConnectionFactory().createConnection();
-        } else {
-            return getTargetConnectionFactory().createConnection(username, password);
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+
+            if (StringUtils.isBlank(username) && StringUtils.isBlank(password)) {
+                return getTargetConnectionFactory().createConnection();
+            } else {
+                return getTargetConnectionFactory().createConnection(username, password);
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
     }
 }
