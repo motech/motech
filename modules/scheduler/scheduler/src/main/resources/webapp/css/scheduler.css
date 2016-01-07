@@ -1,39 +1,60 @@
 /*---------- scheduler ----------*/
 
-.scheduler .ui-jqgrid tr.jqgrow td.finished {
-    color: #fff;
-    background: #0D800B;
-    font-weight: bold;
+.scheduler .inbox-header {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #B2D8F8;
+    margin-bottom: 2px;
 }
 
-.scheduler .ui-jqgrid tr.jqgrow td.stopped {
-    color: #fff;
-    background: #dc1c0d;
-    font-weight: bold;
+.scheduler .inbox-header hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-top: 1px solid #B2D8F8;
 }
 
-.scheduler .ui-jqgrid tr.jqgrow td.active {
-    color: #fff;
-    background: #549edb;
-    font-weight: bold;
+.scheduler .inbox-header a {
+    color: #224477;
 }
 
-.scheduler .ui-jqgrid tr.jqgrow td.notstarted {
-    color: #fff;
-    background: #aea884;
-    font-weight: bold;
+.scheduler .align-right {
+    text-align: right;
 }
 
-.scheduler .ui-jqgrid tr.jqgrow .parameters {
-    border-bottom: 1px solid #D4DDEE;
-    margin: 0 -6px;
-    padding: 4px 6px;
+.scheduler .align-left {
+    text-align: left;
 }
 
-.scheduler .ui-jqgrid tr.jqgrow .parameters:first-child {
-    margin: -4px -6px 0;
+.scheduler .align-center {
+    text-align: center;
 }
 
-.scheduler .ui-jqgrid tr.jqgrow .parameters:last-child {
-    margin: 0 -6px -4px;
+.scheduler .col {
+    max-width: 50%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.scheduler .col.subject {
+    margin-right: 50px;
+}
+
+.scheduler .divider {
+    width: 20px;
+    display: inline-block;
+    text-align: center
+}
+
+.scheduler .vertical-divider {
+    border-left: 1px solid #A9CAE6;
+    border-right: 1px solid #CEE3F7;
+    margin: 5px;
+}
+
+.scheduler .label {
+    cursor: default !important;
+}
+
+.scheduler .popover {
+   color: black;
 }

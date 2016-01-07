@@ -2,12 +2,24 @@ package org.motechproject.scheduler.contract;
 
 import org.motechproject.event.MotechEvent;
 
+import java.io.Serializable;
+
 /**
  * Represents Job that can be scheduled
  */
-public interface SchedulableJob {
+public abstract class SchedulableJob implements Serializable {
 
-    MotechEvent getMotechEvent();
+    private boolean programmed;
 
-    boolean isIgnorePastFiresAtStart();
+    public abstract MotechEvent getMotechEvent();
+
+    public abstract boolean isIgnorePastFiresAtStart();
+
+    public boolean isProgrammed() {
+        return programmed;
+    }
+
+    public void setProgrammed(boolean programmed) {
+        this.programmed = programmed;
+    }
 }

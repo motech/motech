@@ -58,6 +58,7 @@ import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
 public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
 
     private static final int CURRENT_YEAR = DateTime.now().getYear();
+    private static final String DEFAULT_GROUP = "default-group";
 
     @Inject
     private BundleContext context;
@@ -158,29 +159,32 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                     new JobBasicInfo(
                             JobBasicInfo.ACTIVITY_NOTSTARTED, JobBasicInfo.STATUS_PAUSED,
                             "test_event_2-job_id",
+                            DEFAULT_GROUP,
                             format("%s-07-15 10:00:00", CURRENT_YEAR + 6),
                             format("%s-07-15 12:00:00", CURRENT_YEAR + 6),
-                            "-", JobBasicInfo.JOBTYPE_CRON, ""
+                            "-", JobBasicInfo.JOBTYPE_CRON, "", false
                     )
             );
             expectedJobBasicInfos.add(
                     new JobBasicInfo(
                             JobBasicInfo.ACTIVITY_NOTSTARTED, JobBasicInfo.STATUS_OK,
                             "test_event_2-job_id-runonce",
+                            DEFAULT_GROUP,
                             format("%s-07-15 12:00:00", CURRENT_YEAR + 6),
                             format("%s-07-15 12:00:00", CURRENT_YEAR + 6),
                             format("%s-07-15 12:00:00", CURRENT_YEAR + 6),
-                            JobBasicInfo.JOBTYPE_RUNONCE, ""
+                            JobBasicInfo.JOBTYPE_RUNONCE, "", false
                     )
             );
             expectedJobBasicInfos.add(
                     new JobBasicInfo(
                             JobBasicInfo.ACTIVITY_NOTSTARTED, JobBasicInfo.STATUS_OK,
                             "test_event_2-job_id-repeat",
+                            DEFAULT_GROUP,
                             format("%s-07-15 12:00:00", CURRENT_YEAR +6),
                             format("%s-07-15 12:00:00", CURRENT_YEAR +6),
                             format("%s-07-18 12:00:00", CURRENT_YEAR +6),
-                            JobBasicInfo.JOBTYPE_REPEATING, ""
+                            JobBasicInfo.JOBTYPE_REPEATING, "", false
                     )
             );
 
@@ -244,9 +248,10 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             JobBasicInfo expected = new JobBasicInfo(
                     JobBasicInfo.ACTIVITY_NOTSTARTED, JobBasicInfo.STATUS_OK,
                     "test_event_2a-job_id",
+                    DEFAULT_GROUP,
                     format("%s-07-15 10:00:00", CURRENT_YEAR + 6),
                     format("%s-07-15 12:00:00", CURRENT_YEAR + 6),
-                    "-", JobBasicInfo.JOBTYPE_CRON, ""
+                    "-", JobBasicInfo.JOBTYPE_CRON, "", false
             );
 
             List<JobBasicInfo> jobBasicInfos;
@@ -289,7 +294,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
 
             assertNotNull(jobDetailedInfo);
             assertEquals("test_event_2", jobDetailedInfo.getEventInfoList().get(0).getSubject());
-            assertEquals(3, jobDetailedInfo.getEventInfoList().get(0).getParameters().size());
+            assertEquals(4, jobDetailedInfo.getEventInfoList().get(0).getParameters().size());
         } finally {
             stopFakingTime();
         }
