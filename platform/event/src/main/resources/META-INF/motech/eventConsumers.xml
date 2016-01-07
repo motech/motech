@@ -20,6 +20,7 @@
             connection-factory="connectionFactory"
             destination="eventQueue"
             channel="eventQueueChannel"
+            auto-startup="false"
             acknowledge="transacted"
             concurrent-consumers="${concurrentConsumers:1}"
             max-concurrent-consumers="${maxConcurrentConsumers:10}"/>
@@ -37,6 +38,7 @@
             connection-factory="connectionFactory"
             destination="eventTopic"
             channel="eventTopicChannel"
+            auto-startup="false"
             acknowledge="transacted"
             concurrent-consumers="1"
             max-concurrent-consumers="1"/>
