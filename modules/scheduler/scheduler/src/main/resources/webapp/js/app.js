@@ -4,7 +4,7 @@
     /* App Module */
 
     var scheduler = angular.module('scheduler', [ 'motech-dashboard', 'scheduler.services',
-        'scheduler.controllers', 'scheduler.directives', 'ngCookies', 'motech-widgets'
+        'scheduler.controllers', 'scheduler.directives', 'ngCookies'
     ]);
 
     scheduler.config( function ($routeProvider) {
