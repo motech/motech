@@ -2335,6 +2335,38 @@
         };
     });
 
+    directives.directive('shortValidity', function() {
+        var INTEGER_REGEXP = new RegExp('^([-][1-9])?(\\d)*$'),
+        TWOZERO_REGEXP = new RegExp('^(0+\\d+)$');
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                var elm = angular.element(element), originalValue;
+                ctrl.$parsers.unshift(function(viewValue) {
+                    if (viewValue === '' || INTEGER_REGEXP.test(viewValue)) {
+                        // it is valid
+                        ctrl.$setValidity('short', true);
+                        originalValue = viewValue;
+                        viewValue = parseFloat(viewValue);
+                        if (isNaN(viewValue)) {
+                            viewValue = '';
+                        }
+                        if (TWOZERO_REGEXP.test(originalValue)) {
+                            setTimeout(function () {
+                                elm.val(viewValue);
+                            }, 1000);
+                        }
+                        return viewValue;
+                    } else {
+                        // it is invalid, return undefined (no model update)
+                        ctrl.$setValidity('short', false);
+                        return viewValue;
+                    }
+                });
+            }
+        };
+    });
+    
     directives.directive('decimalValidity', function() {
         var DECIMAL_REGEXP = new RegExp('^[-]?\\d+(\\.\\d+)?$'),
         TWOZERO_REGEXP = new RegExp('^[-]?0+\\d+(\\.\\d+)?$');

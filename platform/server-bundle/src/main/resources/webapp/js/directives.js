@@ -402,13 +402,6 @@
             }
         };
     });
-<<<<<<< HEAD
-<<<<<<< HEAD
-    
-    /* code for date-picker*/   
-=======
-=======
->>>>>>> upstream/master
 
     widgetModule.directive('periodAmount', function() {
             return {
@@ -652,7 +645,6 @@
 
     // code for date-picker
     
->>>>>>> upstream/master
     widgetModule.directive('datePicker', function() {
         return {
             restrict: 'A',
