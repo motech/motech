@@ -38,6 +38,13 @@
             }
             return val;
         },
+        idFormatter = function (cellValue, options, rowObject) {
+            var val = cellValue;
+            if (cellValue !== undefined && !isNaN(cellValue) && parseInt(cellValue, 10) < 0) {
+                val = '';
+            }
+            return val;
+        },
         stringEscapeFormatter = function (cellValue, options, rowObject) {
             var val = '';
                 val = _.escape(cellValue);
@@ -219,6 +226,10 @@
                     // append a formatter for relationships
                     cmd.formatter = relationshipFormatter;
                     cmd.sortable = false;
+                }
+
+                if (field.basic.name === 'id') {
+                    cmd.formatter = idFormatter;
                 }
 
                 if (scope.isTextArea(field.settings)) {
@@ -1656,10 +1667,12 @@
                                            && scope.newRelatedFields === null && !scope.relatedMode.isNested) {
                                             selectedInstance = parseInt(id, 10);
                                             scope.currentRelationRecord = {entitySchemaId: relatedEntityId};
-                                            if (scope.field.type.defaultName !== "manyToManyRelationship" && scope.field.type.defaultName !== "oneToManyRelationship") {
+                                            if (scope.field.type.defaultName !== "manyToManyRelationship" && scope.field.type.defaultName !== "oneToManyRelationship" && selectedInstance > 0) {
                                                 scope.editRelatedInstanceOfEntity(scope.relatedData.getRelatedId(scope.field), undefined, scope.field);
+                                            } else if (scope.field.type.defaultName !== "manyToManyRelationship" && scope.field.type.defaultName !== "oneToManyRelationship" && selectedInstance < 0) {
+                                                scope.editRelatedInstanceOfEntity(selectedInstance, undefined, scope.field);
                                             } else {
-                                                scope.editRelatedInstanceOfEntity(parseInt(id, 10), relatedEntityId, scope.field);
+                                                scope.editRelatedInstanceOfEntity(selectedInstance, relatedEntityId, scope.field);
                                             }
                                        }
                                     },
@@ -3396,14 +3409,14 @@
         };
     });
 
-    directives.directive('mdsVisitedInputs', function () {
+    directives.directive('mdsVisitedInput', function () {
         return {
             restrict: 'A',
             require: 'ngModel',
             link: function (scope, element, attrs, ctrl) {
                 var elm = angular.element(element),
                 fieldId = attrs.mdsFieldId,
-                fieldName = scope.field.name,
+                fieldName = attrs.mdsFieldName,
                 typingTimer;
 
                 elm.on('keyup', function () {
@@ -3415,7 +3428,9 @@
                     typingTimer = setTimeout( function() {
                         elm.siblings('#visited-hint-' + fieldId).removeClass('hidden');
                         scope.$apply(function () {
-                            scope[fieldName].$dirty = true;
+                            if (scope[fieldName] !== undefined) {
+                                scope[fieldName].$dirty = true;
+                            }
                         });
                     }, 1500);
                 });
@@ -3423,7 +3438,9 @@
                 elm.on("blur", function() {
                     scope.$apply(function () {
                         elm.siblings('#visited-hint-' + fieldId).removeClass('hidden');
-                        scope[fieldName].$dirty = true;
+                        if (scope[fieldName] !== undefined) {
+                            scope[fieldName].$dirty = true;
+                        }
                     });
                 });
             }

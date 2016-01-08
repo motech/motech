@@ -3505,9 +3505,9 @@
             $scope.relatedMode.isNested = true;
             var relatedClass  = $scope.getRelatedClass(field);
             $scope.editedField = angular.copy(field);
-            $('#new-related').modal('show');
+            $('ng-form[name=' + field.name + '] #new-related').modal({backdrop:'static', keyboard: false, show: true});
             $scope.editedInstanceId = undefined;
-            $('body #new-related').on('hidden.bs.modal', function () {
+            $('body > .modal').on('hide.bs.modal', function () {
                 $scope.relatedMode.isNested = false;
                 $scope.newRelatedFields = null;
                 $scope.editRelatedFields = null;
@@ -3533,13 +3533,13 @@
         $scope.cancelAddRelatedForm = function () {
             $scope.newRelatedFields = null;
             $scope.relatedMode.isNested = false;
-            $('body #new-related').modal('hide');
+            $('body > #new-related').modal('hide');
         };
 
         $scope.cancelEditRelatedForm = function () {
             $scope.editRelatedFields = null;
             $scope.relatedMode.isNested = false;
-            $('body #edit-related').modal('hide');
+            $('body > #edit-related').modal('hide');
         };
 
         /**
@@ -3584,7 +3584,7 @@
             $scope.relatedMode.isNested = true;
             instanceId = parseInt(instanceId, 10);
             $scope.editedInstanceId = instanceId;
-            $('#edit-related').modal('show');
+            $('ng-form[name=' + field.name + '] #edit-related').modal({backdrop:'static', keyboard: false, show: true});
             var addedNewRecords,
                 editExisting = true,
                 setExisting = function () {
@@ -3747,7 +3747,7 @@
                     }
                     field.value.addedNewRecords.push({id: null, entitySchemaId: $scope.currentRelationRecord.entitySchemaId, fields: relatedData} );
                 });
-                $('#new-related').modal('hide');
+                $('body > #new-related').modal('hide');
                 $scope.newRelatedFields = null;
                 $scope.relatedMode.isNested = false;
             },
@@ -3823,7 +3823,7 @@
                 }
                 $scope.editedInstanceId = undefined;
                 $scope.editRelatedFields = null;
-                $('#edit-related').modal('hide');
+                $('body > #edit-related').modal('hide');
                 $scope.relatedMode.isNested = false;
             },
 
