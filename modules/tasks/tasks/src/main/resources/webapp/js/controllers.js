@@ -297,6 +297,10 @@
                 function(data) {
                     $scope.dynamicTriggers = data.dynamicTriggersList;
                     $scope.staticTriggers = data.staticTriggersList;
+                    $scope.staticTriggersPage = $scope.staticTriggers.page;
+                    $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
+                    $("#staticTriggersPager").val($scope.staticTriggersPage);
+                    $("#dynamicTriggersPager").val($scope.dynamicTriggersPage);
                     $scope.hasDynamicTriggers = $scope.dynamicTriggers.triggers.length > 0;
                     $scope.hasStaticTriggers = $scope.staticTriggers.triggers.length > 0;
                     if ($scope.hasStaticTriggers && $scope.hasDynamicTriggers) {
@@ -310,25 +314,46 @@
             );
         };
 
-        $scope.reloadLists = function() {
-            blockUI();
-            Triggers.get(
-                {
-                    moduleName: $scope.selectedChannel.moduleName,
-                    staticTriggersPage: $scope.staticTriggersPager,
-                    dynamicTriggersPage: $scope.dynamicTriggersPager
-                },
-                function(data) {
-                    $scope.dynamicTriggers = data.dynamicTriggersList;
-                    $scope.staticTriggers = data.staticTriggersList;
-                    unblockUI();
+        $scope.validatePages = function(staticTriggersPage, dynamicTriggersPage){
+            var valid = true;
+
+            if ($scope.hasStaticTriggers) {
+                if (staticTriggersPage === null ||
+                    staticTriggersPage === undefined) {
+                    valid = false;
                 }
-            );
+            }
+
+            if ($scope.hasDynamicTriggers) {
+                if (dynamicTriggersPage === null ||
+                    dynamicTriggersPage === undefined) {
+                    valid = false;
+                }
+            }
+
+            return valid;
         };
 
-        $scope.updatePager = function(pager, number) {
-            $scope[pager] += number;
-            $scope.reloadLists();
+        $scope.reloadLists = function(staticTriggersPage, dynamicTriggersPage) {
+            if ($scope.validatePages(staticTriggersPage, dynamicTriggersPage)) {
+                blockUI();
+                Triggers.get(
+                    {
+                        moduleName: $scope.selectedChannel.moduleName,
+                        staticTriggersPage: staticTriggersPage,
+                        dynamicTriggersPage: dynamicTriggersPage
+                    },
+                    function(data) {
+                        $scope.dynamicTriggers = data.dynamicTriggersList;
+                        $scope.staticTriggers = data.staticTriggersList;
+                        $scope.staticTriggersPage = $scope.staticTriggers.page;
+                        $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
+                        $("#staticTriggersPager").val($scope.staticTriggersPage);
+                        $("#dynamicTriggersPager").val($scope.dynamicTriggersPage);
+                        unblockUI();
+                    }
+                );
+            }
         };
 
         innerLayout({

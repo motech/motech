@@ -75,8 +75,14 @@ public class ChannelController {
                                      @RequestParam int dynamicTriggersPage) {
         TriggersList staticTriggers = new TriggersList();
         long staticTriggersCount = triggerEventService.countStaticTriggers(moduleName);
-        staticTriggers.setTriggers(triggerEventService.getStaticTriggers(moduleName, staticTriggersPage, PAGE_SIE));
-        staticTriggers.setHasNextPage(staticTriggersCount > staticTriggersPage * PAGE_SIE);
+        staticTriggers.addTriggers(triggerEventService.getStaticTriggers(moduleName, staticTriggersPage, PAGE_SIE));
+        staticTriggers.setPage(staticTriggersPage);
+
+        int staticTriggersPages = (int) staticTriggersCount / PAGE_SIE;
+        if (staticTriggersCount % PAGE_SIE > 0) {
+            staticTriggersPages++;
+        }
+        staticTriggers.setTotal(staticTriggersPages);
 
         TriggersList dynamicTriggers = new TriggersList();
 
@@ -84,7 +90,13 @@ public class ChannelController {
             dynamicTriggers = new TriggersList();
             long dynamicTriggersCount = triggerEventService.countDynamicTriggers(moduleName);
             dynamicTriggers.addTriggers(triggerEventService.getDynamicTriggers(moduleName, dynamicTriggersPage, PAGE_SIE));
-            dynamicTriggers.setHasNextPage(dynamicTriggersCount > dynamicTriggersPage * PAGE_SIE);
+            dynamicTriggers.setPage(dynamicTriggersPage);
+
+            int dynamicTriggersPages = (int) dynamicTriggersCount / PAGE_SIE;
+            if (dynamicTriggersCount % PAGE_SIE > 0) {
+                dynamicTriggersPages++;
+            }
+            dynamicTriggers.setTotal(dynamicTriggersPages);
         }
 
         return new TriggersLists(staticTriggers, dynamicTriggers);

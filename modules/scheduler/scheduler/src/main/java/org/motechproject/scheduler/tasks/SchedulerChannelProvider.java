@@ -2,6 +2,7 @@ package org.motechproject.scheduler.tasks;
 
 import org.motechproject.scheduler.service.MotechSchedulerDatabaseService;
 import org.motechproject.tasks.domain.DynamicChannelProvider;
+import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.TriggerRetrievalException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +31,9 @@ public class SchedulerChannelProvider implements DynamicChannelProvider {
     }
 
     @Override
-    public TriggerEvent getTrigger(String subject) {
+    public TriggerEvent getTrigger(TaskTriggerInformation info) {
         try {
-            return motechSchedulerDatabaseService.getTrigger(subject);
+            return motechSchedulerDatabaseService.getTrigger(info.getSubject());
         } catch (SQLException|IOException|ClassNotFoundException e) {
             throw new TriggerRetrievalException("Couldn't retrieve trigger for Scheduler channel", e);
         }

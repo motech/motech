@@ -58,7 +58,7 @@ public class DynamicChannelLoaderImpl implements DynamicChannelLoader {
         DynamicChannelProvider provider = getChannelProvider(triggerInformation.getModuleName());
 
         if (provider != null) {
-            return provider.getTrigger(triggerInformation.getTriggerListenerSubject());
+            return provider.getTrigger(triggerInformation);
         }
 
         return null;
@@ -100,27 +100,6 @@ public class DynamicChannelLoaderImpl implements DynamicChannelLoader {
                 }
             }
         }
-        return null;
-    }
-
-    public TriggerEvent getTriggerBySubject(String subject) {
-        try {
-            ServiceReference[] allRefs = bundleContext.getServiceReferences(DynamicChannelProvider.class.getName(), null);
-
-            for (ServiceReference ref : allRefs) {
-                Object service = bundleContext.getService(ref);
-                if (service instanceof DynamicChannelProvider) {
-                    DynamicChannelProvider provider = (DynamicChannelProvider) service;
-                    TriggerEvent triggerEvent = provider.getTrigger(subject);
-                    if (triggerEvent != null) {
-                        return triggerEvent;
-                    }
-                }
-            }
-        } catch (InvalidSyntaxException e) {
-            LOGGER.error("Error while retrieving provider references", e);
-        }
-
         return null;
     }
 

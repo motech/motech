@@ -17,12 +17,12 @@ public interface DynamicChannelProvider {
     List<TriggerEvent> getTriggers(int page, int pageSize);
 
     /**
-     * Returns a trigger with the given subject.
+     * Returns a trigger based on the given {@code info}.
      *
-     * @param triggerListenerSubject  the subject of the trigger
+     * @param info  the information about the trigger
      * @return the trigger with the given subject if it exists, null otherwise
      */
-    TriggerEvent getTrigger(String triggerListenerSubject);
+    TriggerEvent getTrigger(TaskTriggerInformation info);
 
     /**
      * Checks whether this provider provides trigger with the given subject.

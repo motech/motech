@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.scheduler.service.MotechSchedulerDatabaseService;
+import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.TriggerRetrievalException;
 
@@ -59,22 +61,37 @@ public class SchedulerChannelProviderTest {
     public void shouldGetTrigger() throws Exception {
 
         TriggerEvent expectedTrigger = createTrigger();
+        TaskTriggerInformation info = new TaskTriggerInformation(
+                expectedTrigger.getDisplayName(),
+                expectedTrigger.getChannel().getDisplayName(),
+                expectedTrigger.getChannel().getModuleName(),
+                expectedTrigger.getChannel().getModuleVersion(),
+                expectedTrigger.getSubject(),
+                expectedTrigger.getTriggerListenerSubject()
+        );
 
         when(databaseService.getTrigger(expectedTrigger.getSubject())).thenReturn(expectedTrigger);
 
-        TriggerEvent trigger = provider.getTrigger(expectedTrigger.getSubject());
+        TriggerEvent trigger = provider.getTrigger(info);
 
         assertEquals(expectedTrigger, trigger);
     }
 
     @Test(expected = TriggerRetrievalException.class)
-    public void shouldThrowTriggerRetrievalExceptionIfRetrievalFromDatabaseFailedWHenGettingTrigger() throws Exception {
+    public void shouldThrowTriggerRetrievalExceptionIfRetrievalFromDatabaseFailedWhenGettingTrigger() throws Exception {
 
-        String subject = "some-subject";
+        TaskTriggerInformation info = new TaskTriggerInformation(
+                "displayName",
+                "channelName",
+                "moduleName",
+                "moduleVersion",
+                "subject",
+                "triggerListener"
+        );
 
-        when(databaseService.getTrigger(subject)).thenThrow(new SQLException());
+        when(databaseService.getTrigger(info.getSubject())).thenThrow(new SQLException());
 
-        provider.getTrigger(subject);
+        provider.getTrigger(info);
     }
 
     @Test
@@ -169,12 +186,21 @@ public class SchedulerChannelProviderTest {
     }
 
     private TriggerEvent createTrigger() {
-        return new TriggerEvent(
+
+        TriggerEvent event = new TriggerEvent(
                 "Job: test_event_4-job_id4",
                 "test_event_4-job_id4",
                 null,
                 new ArrayList<>(),
                 "test_event_4"
         );
+
+        Channel channel = new Channel();
+        channel.setDisplayName("test-channel");
+        channel.setModuleName("some.test.channel.module");
+        channel.setModuleVersion("module.version");
+        event.setChannel(channel);
+
+        return event;
     }
 }

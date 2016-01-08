@@ -15,6 +15,8 @@ import org.motechproject.scheduler.contract.RunOnceJobId;
 import org.motechproject.scheduler.exception.MotechSchedulerJobRetrievalException;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.motechproject.scheduler.service.MotechSchedulerDatabaseService;
+import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.quartz.CalendarIntervalTrigger;
 import org.quartz.CronScheduleBuilder;
@@ -203,11 +205,14 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
                      ObjectInputStream ois = new ObjectInputStream(is)) {
                     JobDataMap dataMap = (JobDataMap) ois.readObject();
 
+                    List<EventParameter> parameters = new ArrayList<>();
+                    parameters.add(new EventParameter("scheduler.jobId", MotechSchedulerService.JOB_ID_KEY));
+
                     triggers.add(new TriggerEvent(
                             "Job: " + rs.getString(JOB_NAME),
                             rs.getString(JOB_NAME),
                             rs.getString(JOB_DESCRIPTION),
-                            new ArrayList<>(),
+                            parameters,
                             dataMap.getString(SchedulerConstants.EVENT_TYPE_KEY_NAME)
                     ));
                 }

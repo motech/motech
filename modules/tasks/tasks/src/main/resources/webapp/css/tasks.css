@@ -1057,6 +1057,17 @@ editable-content .popover .inner-popover, nonEditable, .no-margin-bottom input[t
     overflow: hidden;
 }
 
+.tasks .triggers-pager span {
+    margin: 0px 6px;
+}
+
+.tasks .triggers-pager input {
+    border-radius: 5px;
+    outline: none;
+    border-style: groove;
+    text-align: center;
+}
+
 #period-year, #period-month, #period-week,
 #period-day, #period-hour, #period-minute,
 #period-second {
