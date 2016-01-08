@@ -12,6 +12,7 @@ import org.motechproject.admin.notification.EmailNotifier;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.commons.api.Range;
 import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.email.exception.EmailSendException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.osgi.web.UIFrameworkService;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import java.util.ArrayList;
@@ -45,6 +47,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
     private EmailNotifier emailNotifier;
 
     @Override
+    @Transactional
     public List<StatusMessage> getActiveMessages() {
         Range<DateTime> timeout = new Range<>(DateTime.now(), null);
         List<StatusMessage> result = statusMessagesDataService.findByTimeout(timeout);
@@ -60,6 +63,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
     }
 
     @Override
+    @Transactional
     public List<StatusMessage> getAllMessages() {
         List<StatusMessage> statusMessages = new ArrayList<>();
         if (getStatusMessagesDataService() == null) {
@@ -73,6 +77,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
     }
 
     @Override
+    @Transactional
     public void postMessage(StatusMessage message) {
         validateMessage(message);
         if (getStatusMessagesDataService() != null) {
@@ -88,73 +93,87 @@ public class StatusMessageServiceImpl implements StatusMessageService {
     }
 
     @Override
+    @Transactional
     public void postMessage(String text, String moduleName, Level level) {
         StatusMessage message = new StatusMessage(text, moduleName, level, defaultTimeout());
         postMessage(message);
     }
 
     @Override
+    @Transactional
     public void postMessage(String text, String moduleName, Level level, DateTime timeout) {
         StatusMessage message = new StatusMessage(text, moduleName, level, timeout);
         postMessage(message);
     }
 
     @Override
+    @Transactional
     public void info(String text, String moduleName) {
         postMessage(text, moduleName, Level.INFO, defaultTimeout());
     }
 
     @Override
+    @Transactional
     public void info(String text, String moduleName, DateTime timeout) {
         postMessage(text, moduleName, Level.INFO, timeout);
     }
 
     @Override
+    @Transactional
     public void error(String text, String moduleName) {
         postMessage(text, moduleName, Level.ERROR);
     }
 
     @Override
+    @Transactional
     public void error(String text, String moduleName, DateTime timeout) {
         postMessage(text, moduleName, Level.ERROR, timeout);
     }
 
     @Override
+    @Transactional
     public void debug(String text, String moduleName) {
         postMessage(text, moduleName, Level.DEBUG);
     }
 
     @Override
+    @Transactional
     public void debug(String text, String moduleName, DateTime timeout) {
         postMessage(text, moduleName, Level.DEBUG, timeout);
     }
 
     @Override
+    @Transactional
     public void warn(String text, String moduleName) {
         postMessage(text, moduleName, Level.WARN);
     }
 
     @Override
+    @Transactional
     public void warn(String text, String moduleName, DateTime timeout) {
         postMessage(text, moduleName, Level.WARN, timeout);
     }
 
     @Override
+    @Transactional
     public void critical(String text, String moduleName) {
         postMessage(text, moduleName, Level.CRITICAL);
     }
 
     @Override
+    @Transactional
     public void critical(String text, String moduleName, DateTime timeout) {
         postMessage(text, moduleName, Level.CRITICAL, timeout);
     }
 
     @Override
+    @Transactional
     public void removeMessage(StatusMessage message) {
         statusMessagesDataService.delete(message);
     }
 
     @Override
+    @Transactional
     public void saveRule(NotificationRule notificationRule) {
         NotificationRule existing = (notificationRule.getId() == null) ? null :
                 notificationRulesDataService.findById(notificationRule.getId());
@@ -167,6 +186,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
     }
 
     @Override
+    @Transactional
     public void removeNotificationRule(String id) {
         Long idAsLong = StringUtils.isNumeric(id) ? Long.parseLong(id) : null;
 
@@ -176,6 +196,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
     }
 
     @Override
+    @Transactional
     public void removeNotificationRule(Long id) {
         NotificationRule notificationRule = notificationRulesDataService.findById(id);
         if (notificationRule != null) {
@@ -184,11 +205,13 @@ public class StatusMessageServiceImpl implements StatusMessageService {
     }
 
     @Override
+    @Transactional
     public List<NotificationRule> getNotificationRules() {
         return notificationRulesDataService.retrieveAll();
     }
 
     @Override
+    @Transactional
     public void saveNotificationRules(List<NotificationRule> notificationRules) {
         for (final NotificationRule notificationRule : notificationRules) {
             notificationRulesDataService.doInTransaction(new TransactionCallbackWithoutResult() {
@@ -246,7 +269,12 @@ public class StatusMessageServiceImpl implements StatusMessageService {
                 if (notificationRule.getActionType() == ActionType.SMS) {
                     smsRecipients.add(notificationRule.getRecipient());
                 } else if (notificationRule.getActionType() == ActionType.EMAIL) {
-                    emailNotifier.send(message, notificationRule.getRecipient());
+                    try {
+                        emailNotifier.send(message, notificationRule.getRecipient());
+                    } catch (EmailSendException e) {
+                        LOGGER.error("Error while sending notification email to {}",
+                                notificationRule.getRecipient(), e);
+                    }
                 }
             }
         }

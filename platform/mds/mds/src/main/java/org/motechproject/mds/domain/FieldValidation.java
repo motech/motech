@@ -19,7 +19,7 @@ import static org.motechproject.mds.util.Constants.Util.TRUE;
 public class FieldValidation {
 
     @PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
+    @Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
     private Long id;
 
     @Persistent

@@ -36,7 +36,7 @@
         <constructor-arg name="moduleName" value="data-services"/>
         <constructor-arg name="angularModules">
             <list>
-                <value>mds</value>
+                <value>data-services</value>
             </list>
         </constructor-arg>
         <constructor-arg name="i18n">

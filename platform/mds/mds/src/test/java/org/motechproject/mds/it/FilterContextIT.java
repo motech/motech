@@ -5,6 +5,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -20,7 +21,11 @@ import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.testing.utils.TimeFaker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,13 +43,12 @@ import static org.junit.Assert.assertThat;
  */
 public class FilterContextIT extends BaseInstanceIT {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(FilterContextIT.class);
     private static final String ENTITY_NAME = "TestForFilter";
-
     private static final String BOOL_FIELD = "boolField";
     private static final String DATE_FIELD = "dateField";
     private static final String DATETIME_FIELD = "dateTimeField";
     private static final String STRING_FIELD = "strField";
-
     private static final List<String> STR_VALUES =
             asList("now", "threeDaysAgo", "eightDaysAgo", "notThisMonth", "notThisYear");
 
@@ -86,6 +90,11 @@ public class FilterContextIT extends BaseInstanceIT {
 
         setUpForInstanceTesting();
         setUpTestData();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 
     @Test
@@ -163,18 +172,28 @@ public class FilterContextIT extends BaseInstanceIT {
 
         MotechDataService service = getService();
 
-        service.create(objectInstance(clazz, true, NOW.toDate(), NOW, "now"));
-        service.create(objectInstance(clazz, true, threeDaysAgo.toDate(), threeDaysAgo, "threeDaysAgo"));
-        service.create(objectInstance(clazz, false, eightDaysAgo.toDate(), eightDaysAgo, "eightDaysAgo"));
-        service.create(objectInstance(clazz, false, notThisMonth.toDate(), notThisMonth, "notThisMonth"));
-        service.create(objectInstance(clazz, false, notThisYear.toDate(), notThisYear, "notThisYear"));
+        final Object instance1 = objectInstance(clazz, true, NOW.toDate(), NOW, "now");
+        final Object instance2 = objectInstance(clazz, true, threeDaysAgo.toDate(), threeDaysAgo, "threeDaysAgo");
+        final Object instance3 = objectInstance(clazz, false, eightDaysAgo.toDate(), eightDaysAgo, "eightDaysAgo");
+        final Object instance4 = objectInstance(clazz, false, notThisMonth.toDate(), notThisMonth, "notThisMonth");
+        final Object instance5 = objectInstance(clazz, false, notThisYear.toDate(), notThisYear, "notThisYear");
+
+        service.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                service.create(instance1);
+                service.create(instance2);
+                service.create(instance3);
+                service.create(instance4);
+                service.create(instance5);
+            }
+        });
 
         assertEquals("There were issues creating test data", 5, service.count());
     }
 
     private Object objectInstance(Class<?> clazz, Boolean bool, Date date, DateTime dateTime, String str) throws Exception {
         Object instance = clazz.newInstance();
-
         PropertyUtils.setProperty(instance, BOOL_FIELD, bool);
         PropertyUtils.setProperty(instance, DATE_FIELD, date);
         PropertyUtils.setProperty(instance, DATETIME_FIELD, dateTime);

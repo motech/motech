@@ -1,5 +1,6 @@
 package org.motechproject.mds.it.reposistory;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.domain.Entity;
@@ -15,8 +16,13 @@ import org.motechproject.mds.service.impl.MetadataServiceImpl;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.PropertyUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import javax.jdo.PersistenceManagerFactory;
 import java.util.ArrayList;
@@ -32,10 +38,12 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
     private static final String ENTITY_NAME = "TestForCbValues";
     private static final String CB_FIELD_MULTI_NAME = "cbFieldMulti";
     private static final String CB_FIELD_SINGLE_NAME = "cbFieldSingle";
+    private final Logger LOGGER = LoggerFactory.getLogger(ComboboxValueRepositoryContextIT.class);
 
     private ComboboxValueRepository cbValueRepository;
 
     @Autowired
+    @Qualifier("dataPersistenceManagerFactory")
     private PersistenceManagerFactory persistenceManagerFactory;
 
     @Override
@@ -46,13 +54,13 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
     @Override
     protected List<FieldDto> getEntityFields() {
         // combobox with multiple selection - string collection field
-        FieldDto cbFieldMulti = new FieldDto(CB_FIELD_MULTI_NAME, CB_FIELD_MULTI_NAME, TypeDto.COLLECTION, false,
+        FieldDto cbFieldMulti = new FieldDto(CB_FIELD_MULTI_NAME, CB_FIELD_MULTI_NAME, TypeDto.COLLECTION, false, false,
                 null, "tooltip", "placeholder");
         cbFieldMulti.addSetting(new SettingDto(Constants.Settings.ALLOW_USER_SUPPLIED, Constants.Util.TRUE));
         cbFieldMulti.addSetting(new SettingDto(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS, Constants.Util.TRUE));
 
         // combobox without multiple selection - string field
-        FieldDto cbFieldSingle = new FieldDto(CB_FIELD_SINGLE_NAME, CB_FIELD_SINGLE_NAME, TypeDto.COLLECTION, false,
+        FieldDto cbFieldSingle = new FieldDto(CB_FIELD_SINGLE_NAME, CB_FIELD_SINGLE_NAME, TypeDto.COLLECTION, false, false,
                 null, "tooltip2", "placeholder2");
         cbFieldSingle.addSetting(new SettingDto(Constants.Settings.ALLOW_USER_SUPPLIED, Constants.Util.TRUE));
         cbFieldSingle.addSetting(new SettingDto(Constants.Settings.ALLOW_MULTIPLE_SELECTIONS, Constants.Util.FALSE));
@@ -70,6 +78,11 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
         // normally this lives in the entities bundle
         cbValueRepository = new ComboboxValueRepository();
         cbValueRepository.setPersistenceManagerFactory(persistenceManagerFactory);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 
     @Test
@@ -91,7 +104,7 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
         Entity entity = getAllEntities().retrieveByClassName(ClassName.getEntityClassName(ENTITY_NAME));
         Field cbField = entity.getField(CB_FIELD_SINGLE_NAME);
 
-        List<String> values = cbValueRepository.getComboboxValuesForStringField(entity, cbField);
+        List<String> values = cbValueRepository.getComboboxValuesForStringField(entity.toDto(), cbField.toDto());
 
         assertNotNull(values);
         assertEquals(asList("five", "four", "one", "two"), values);
@@ -100,21 +113,34 @@ public class ComboboxValueRepositoryContextIT extends BaseInstanceIT {
     private void setUpTestData() throws Exception {
         MotechDataService service = getService();
 
-        service.create(objectInstance("one", asList("one", "two")));
-        service.create(objectInstance("two", asList("two", "one", "four")));
-        service.create(objectInstance("four", asList("four", "four", "four")));
-        service.create(objectInstance("five", singletonList("five")));
-        service.create(objectInstance("one", asList("one", "two", "four", "three")));
-        service.create(objectInstance(null, null));
-        service.create(objectInstance(null, singletonList(null)));
-        service.create(objectInstance("", singletonList("")));
+        final Object instance1 = objectInstance("one", asList("one", "two"));
+        final Object instance2 = objectInstance("two", asList("two", "one", "four"));
+        final Object instance3 = objectInstance("four", asList("four", "four", "four"));
+        final Object instance4 = objectInstance("five", singletonList("five"));
+        final Object instance5 = objectInstance("one", asList("one", "two", "four", "three"));
+        final Object instance6 = objectInstance(null, null);
+        final Object instance7 = objectInstance(null, singletonList(null));
+        final Object instance8 = objectInstance("", singletonList(""));
+
+        service.doInTransaction(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                service.create(instance1);
+                service.create(instance2);
+                service.create(instance3);
+                service.create(instance4);
+                service.create(instance5);
+                service.create(instance6);
+                service.create(instance7);
+                service.create(instance8);
+            }
+        });
 
         assertEquals("There were issues creating test data", 8, service.count());
     }
 
     private Object objectInstance(String singleValue, List<String> multiValues) throws Exception {
         Class clazz = getEntityClass();
-
         Object obj = clazz.newInstance();
         PropertyUtil.setProperty(obj, CB_FIELD_SINGLE_NAME, singleValue);
         if (multiValues != null) {

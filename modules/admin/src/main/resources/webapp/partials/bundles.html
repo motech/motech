@@ -117,7 +117,7 @@
                     </a>
                 </span>
                 <span ng-show="bundle.isActive()">
-                    <a ng-click="stopBundle(bundle)">
+                    <a ng-click="stopBundleModal(bundle)">
                         <img src="../admin/img/trans.gif" alt="{{msg('admin.bundles.stop')}}" title="{{msg('admin.bundles.stop')}}"
                              class="action action-stop"/>
                     </a>
@@ -133,7 +133,7 @@
                              class="action action-settings"/>
                     </a>
                 </span>
-                    <a role="button" data-toggle="modal" data-target="#removeBundleModal" data-backdrop="static" ng-click="selectBundle(bundle)">
+                    <a role="button" ng-click="uninstallBundleModal(bundle)">
                         <img src="../admin/img/trans.gif" alt="{{msg('admin.bundles.uninstall')}}"
                              title="{{msg('admin.bundles.uninstall')}}"
                              class="action action-remove"/>
@@ -147,5 +147,6 @@
         </tbody>
     </table>
     <div ng-include="'../admin/partials/widgets/remove-bundle-modal.html'"></div>
+    <div ng-include="'../admin/partials/widgets/stop-bundle-modal.html'"></div>
 </div>
 

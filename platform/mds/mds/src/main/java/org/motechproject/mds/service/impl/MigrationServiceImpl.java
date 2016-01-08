@@ -61,8 +61,7 @@ public class MigrationServiceImpl implements MigrationService {
 
     private String generateFlywayMigrationFileName(MigrationMapping migrationMapping, String originalFileName) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(Constants.EntitiesMigration.ENTITY_MIGRATIONS_PREFIX).append(migrationMapping.getFlywayMigrationVersion()
-                + Constants.EntitiesMigration.MIGRATION_VERSION_OFFSET);
+        stringBuilder.append(Constants.EntitiesMigration.ENTITY_MIGRATIONS_PREFIX).append(migrationMapping.getFlywayMigrationVersion());
         stringBuilder.append("__");
         stringBuilder.append(originalFileName.substring(originalFileName.indexOf('_') + 2));
         return stringBuilder.toString();

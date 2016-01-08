@@ -224,6 +224,7 @@ public final class EntitySchemaBuilder {
         private String name;
         private String displayName;
         private boolean required;
+        private boolean unique;
         private boolean readOnly;
         private Type type;
         private String defaultValue;
@@ -244,7 +245,7 @@ public final class EntitySchemaBuilder {
         }
 
         public Field build() {
-            Field field = new Field(null, name, displayName, type, required, readOnly);
+            Field field = new Field(null, name, displayName, type, required, unique, readOnly);
             field.setDefaultValue(defaultValue);
             field.setTooltip(tooltip);
             field.setPlaceholder(placeholder);
@@ -262,6 +263,11 @@ public final class EntitySchemaBuilder {
 
         public FieldSchemaBuilder required(boolean required) {
             this.required = required;
+            return this;
+        }
+
+        public FieldSchemaBuilder unique(boolean unique) {
+            this.unique = unique;
             return this;
         }
 

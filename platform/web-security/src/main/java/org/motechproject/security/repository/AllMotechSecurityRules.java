@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,6 +39,7 @@ public class AllMotechSecurityRules {
      *
      * @param config
      */
+    @Transactional
     public void addOrUpdate(MotechSecurityConfiguration config) {
         List<MotechURLSecurityRule> newRules = config.getSecurityRules();
         List<MotechURLSecurityRule> oldRules = dataService.retrieveAll();
@@ -91,6 +93,7 @@ public class AllMotechSecurityRules {
      *
      * @return list that contains rules
      */
+    @Transactional
     public List<MotechURLSecurityRule> getRules() {
         List<MotechURLSecurityRule> rules = dataService.retrieveAll();
         Iterator<MotechURLSecurityRule> iterator = rules.iterator();
@@ -111,6 +114,7 @@ public class AllMotechSecurityRules {
      *
      * @return configuration
      */
+    @Transactional
     public MotechSecurityConfiguration getMotechSecurityConfiguration() {
         return new MotechSecurityConfiguration(dataService.retrieveAll());
     }
@@ -121,6 +125,7 @@ public class AllMotechSecurityRules {
      * @param origin of security rules
      * @return list that contains rules or null in case origin is null
      */
+    @Transactional
     public List<MotechURLSecurityRule> getRulesByOrigin(String origin) {
         return null == origin ? null : dataService.findByOrigin(origin);
     }
@@ -132,6 +137,7 @@ public class AllMotechSecurityRules {
      * @param version of security rules
      * @return list that contains rules or empty list in case origin or version is null
      */
+    @Transactional
     public List<MotechURLSecurityRule> getRulesByOriginAndVersion(String origin, String version) {
         return null == origin || null == version ? Collections.<MotechURLSecurityRule>emptyList() : dataService.findByOriginAndVersion(origin, version);
     }
@@ -142,6 +148,7 @@ public class AllMotechSecurityRules {
      * @param id of security rule
      * @return rule with given id or null in case when id == null
      */
+    @Transactional
     public MotechURLSecurityRule getRuleById(Long id) {
         return null == id ? null : dataService.retrieve("id", id);
     }
@@ -151,6 +158,7 @@ public class AllMotechSecurityRules {
      *
      * @param config with rules to be removed
      */
+    @Transactional
     public void remove(MotechSecurityConfiguration config) {
         for (MotechURLSecurityRule rule : config.getSecurityRules()) {
             dataService.delete(rule);
