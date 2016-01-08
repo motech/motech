@@ -1,6 +1,7 @@
 package org.motechproject.mds.jdo;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.felix.framework.BundleWiringImpl;
 import org.datanucleus.api.jdo.metadata.JDOAnnotationReader;
 import org.datanucleus.metadata.MetaDataManager;
 import org.datanucleus.metadata.annotations.AnnotationObject;
@@ -37,7 +38,9 @@ public class MdsJdoAnnotationReader extends JDOAnnotationReader {
         AnnotationObject annotationObject = super.isClassPersistable(cls);
 
         // if super does not recognize this object as PC, then try looking for the Entity annotation
-        if (annotationObject == null && ReflectionsUtil.hasAnnotation(cls, Entity.class)) {
+        // only when class is not loaded by BundleClassLoader
+        if (annotationObject == null && ReflectionsUtil.hasAnnotation(cls, Entity.class) &&
+                !(cls.getClassLoader() instanceof BundleWiringImpl.BundleClassLoader)) {
             // default params
             HashMap<String, Object> annotationParams = new HashMap<>();
             annotationParams.put("identityType", IdentityType.DATASTORE);
