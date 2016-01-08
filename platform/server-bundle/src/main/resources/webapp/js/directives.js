@@ -403,9 +403,12 @@
         };
     });
 <<<<<<< HEAD
+<<<<<<< HEAD
     
     /* code for date-picker*/   
 =======
+=======
+>>>>>>> upstream/master
 
     widgetModule.directive('periodAmount', function() {
             return {
