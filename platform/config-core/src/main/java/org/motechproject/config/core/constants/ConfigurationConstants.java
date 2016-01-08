@@ -58,6 +58,8 @@ public final class ConfigurationConstants {
 
     public static final String DATANUCLEUS_DATA_SETTINGS_FILE_NAME = "datanucleus_data.properties";
     public static final String DATANUCLEUS_SCHEMA_SETTINGS_FILE_NAME = "datanucleus_schema.properties";
+    public static final String FLYWAY_DATA_SETTINGS_FILE_NAME = "flyway_data.properties";
+    public static final String FLYWAY_SCHEMA_SETTINGS_FILE_NAME = "flyway_schema.properties";
 
     /**
      * This is an utility class and should not be instantiated.

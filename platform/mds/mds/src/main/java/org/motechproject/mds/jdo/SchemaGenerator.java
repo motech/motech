@@ -79,15 +79,18 @@ public class SchemaGenerator implements InitializingBean {
     }
 
     public void runMigrations(File migrationDirectory) {
-        LOGGER.debug("Starting the flyway modules migrations from {}.", migrationDirectory.getAbsolutePath());
-        //No migration directory
-        if (!migrationDirectory.exists()) {
-            LOGGER.debug("The migration directory doesn't exist. Skipping migration.");
-            return;
-        }
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+
+            Properties flywayConfig = mdsConfig.getFlywayDataProperties();
+
+            LOGGER.debug("Starting the flyway modules migrations from {}.", migrationDirectory.getAbsolutePath());
+            //No migration directory
+            if (!migrationDirectory.exists()) {
+                LOGGER.debug("The migration directory doesn't exist. Skipping migration.");
+                return;
+            }
 
             BasicDataSource dataSource = new BasicDataSource();
             dataSource.setDriverClassName(mdsSqlProperties.getProperty(CONNECTION_DRIVER_KEY));
@@ -96,13 +99,11 @@ public class SchemaGenerator implements InitializingBean {
             dataSource.setPassword(mdsSqlProperties.getProperty(CONNECTION_USER_PASSWORD_KEY));
 
             Flyway flyway = new Flyway();
-            flyway.setDataSource(dataSource);
 
+            flyway.setDataSource(dataSource);
             flyway.setLocations(Constants.EntitiesMigration.FILESYSTEM_PREFIX + migrationDirectory.getAbsolutePath());
-            flyway.setSqlMigrationPrefix(Constants.EntitiesMigration.ENTITY_MIGRATIONS_PREFIX);
-            flyway.setOutOfOrder(true);
-            flyway.setInitOnMigrate(true);
-            flyway.setPlaceholderPrefix(FLYWAY_PLACEHOLDER_PREFIX);
+
+            flyway.configure(flywayConfig);
 
             flyway.migrate();
         } finally {
