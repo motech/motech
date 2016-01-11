@@ -78,9 +78,6 @@ mkdir -p motech-base/var/lib/motech/motech-default/data/config
 mkdir -p motech-base/var/log/motech/motech-default
 mkdir -p motech-base/usr/share/motech/motech-default
 
-# copy manage-tenant script
-cp $MOTECH_BASE/packaging/motech-manage-tenants motech-base/usr/share/motech/
-
 # copy motech-base
 cp -R $CONTENT_DIR/motech-base .
 mv $WARNAME ./motech-base/var/lib/motech/motech-default/webapps/ROOT.war
@@ -95,13 +92,6 @@ gzip --best ./motech-base/usr/share/doc/motech-base/changelog.Debian
 # Update version
 perl -p -i -e "s/\\$\\{version\\}/$MOTECH_VERSION/g" ./motech-base/DEBIAN/control
 
-# Platofrm bundles
-cp -R $ARTIFACT_DIR/motech-platform-*.jar ./motech-base/var/lib/motech/motech-default/data/bundles
-# Include motech-admin
-cp -R $ARTIFACT_DIR/motech-admin*.jar ./motech-base/var/lib/motech/motech-default/data/bundles
-# Include scheduler
-cp -R $ARTIFACT_DIR/motech-scheduler*.jar ./motech-base/var/lib/motech/motech-default/data/bundles
-
 # Include dependencies
 cp -R $DEPENDENCY_DIR/* ./motech-base/var/lib/motech/motech-default/data/bundles
 
@@ -114,7 +104,6 @@ chmod 755 ./motech-base/DEBIAN/prerm
 chmod 755 ./motech-base/DEBIAN/postrm
 chmod 755 ./motech-base/DEBIAN/control
 chmod 755 ./motech-base/etc/init.d/motech
-chmod 755 ./motech-base/usr/share/motech/motech-manage-tenants
 
 # Build package
 echo "Building package"

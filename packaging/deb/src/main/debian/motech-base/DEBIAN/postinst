@@ -19,8 +19,6 @@ if [ -d /var/lib/motech/motech-default ]; then
     chown -R motech-default:motech-default /var/lib/motech/motech-default
 fi
 
-chmod 755 /usr/share/motech/motech-manage-tenants
-
 # Register motech service with udpate-rc.d
 update-rc.d motech defaults 1>/dev/null
 
