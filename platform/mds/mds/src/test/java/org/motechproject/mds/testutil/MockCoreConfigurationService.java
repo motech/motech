@@ -21,23 +21,33 @@ public class MockCoreConfigurationService implements CoreConfigurationService {
 
     @Override
     public Properties loadDatanucleusDataConfig() {
-        return loadDatanucleusConfig(ConfigurationConstants.DATANUCLEUS_DATA_SETTINGS_FILE_NAME);
+        return loadConfig(ConfigurationConstants.DATANUCLEUS_DATA_SETTINGS_FILE_NAME);
     }
 
     @Override
     public Properties loadDatanucleusSchemaConfig() {
-        return loadDatanucleusConfig(ConfigurationConstants.DATANUCLEUS_SCHEMA_SETTINGS_FILE_NAME);
+        return loadConfig(ConfigurationConstants.DATANUCLEUS_SCHEMA_SETTINGS_FILE_NAME);
     }
 
-    public Properties loadDatanucleusConfig(String fileName) {
+    @Override
+    public Properties loadFlywayDataConfig() {
+        return loadConfig(ConfigurationConstants.FLYWAY_DATA_SETTINGS_FILE_NAME);
+    }
+
+    @Override
+    public Properties loadFlywaySchemaConfig() {
+        return loadConfig(ConfigurationConstants.FLYWAY_SCHEMA_SETTINGS_FILE_NAME);
+    }
+
+    public Properties loadConfig(String fileName) {
         Properties properties = new Properties();
         ClassPathResource resource = new ClassPathResource(fileName);
         try {
-            try (InputStream is = resource.getInputStream();) {
+            try (InputStream is = resource.getInputStream()) {
                 properties.load(is);
             }
         } catch (IOException e) {
-            throw new MotechConfigurationException("Error when loading datanucleus properties");
+            throw new MotechConfigurationException("Error when loading properties: " + fileName);
         }
 
         return properties;
