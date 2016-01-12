@@ -11,7 +11,6 @@ import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
 
-import javax.jdo.annotations.Column;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,8 +40,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
     @Field(displayName = "Activity Type")
     private TaskActivityType activityType;
 
-    @Field(displayName = "StackTrace element")
-    @Column(length = 16192)
+    @Field(displayName = "StackTrace element", type = "text")
     private String stackTraceElement;
 
     @Field(displayName = "Parameters")

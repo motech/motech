@@ -8,7 +8,6 @@ import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
 import org.motechproject.tasks.service.TaskActivityService;
-import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TaskTriggerHandler;
 
 import java.util.ArrayList;
@@ -41,9 +40,6 @@ public class ActivityControllerTest {
     @Mock
     TaskTriggerHandler taskTriggerHandler;
 
-    @Mock
-    TaskService taskService;
-
     ActivityController controller;
 
     Task task;
@@ -59,7 +55,7 @@ public class ActivityControllerTest {
     public void setup() throws Exception {
         initMocks(this);
 
-        controller = new ActivityController(activityService, taskTriggerHandler, taskService);
+        controller = new ActivityController(activityService, taskTriggerHandler);
 
         params = new HashMap<String, Object>();
         params.put("errorKey", "errorValue");
@@ -110,14 +106,10 @@ public class ActivityControllerTest {
     }
 
     @Test
-    public void shouldRetryTask() {
-        when(activityService.getTaskActivityById(ACTIVITY_ID)).thenReturn(expected.get(3));
-        when(taskService.getTask(TASK_ID)).thenReturn(task);
-
+    public void shouldRetryTask() throws InterruptedException {
         controller.retryTask(ACTIVITY_ID);
-
-        verify(activityService).getTaskActivityById(ACTIVITY_ID);
-        verify(taskService).getTask(TASK_ID);
-        verify(taskTriggerHandler).handleTask(task, params);
+        //Wait for start of the new thread in which retry is run
+        Thread.sleep(1000);
+        verify(taskTriggerHandler).retryTask(ACTIVITY_ID);
     }
 }

@@ -1462,8 +1462,13 @@
         };
 
         $scope.retryTask = function (activityId) {
-            motechAlert('task.retry.info', 'task.retry.header');
-            $http.post('../tasks/api/activity/retry/' + activityId);
+            $http.post('../tasks/api/activity/retry/' + activityId)
+                .success(function () {
+                    motechAlert('task.retry.info', 'task.retry.header');
+                })
+                .error(function() {
+                    motechAlert('task.retry.failed', 'task.retry.header');
+                });
         };
     });
 

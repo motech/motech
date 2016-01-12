@@ -5,8 +5,7 @@ import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
 import org.motechproject.tasks.service.TaskActivityService;
-import org.motechproject.tasks.service.TaskService;
-import org.motechproject.tasks.service.TaskTriggerHandler;
+import org.motechproject.tasks.service.TriggerHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -26,8 +25,7 @@ import java.util.Set;
 public class ActivityController {
 
     private TaskActivityService activityService;
-    private TaskService taskService;
-    private TaskTriggerHandler taskTriggerHandler;
+    private TriggerHandler taskTriggerHandler;
 
     /**
      * Controller constructor.
@@ -35,10 +33,9 @@ public class ActivityController {
      * @param activityService  the activity service, not null
      */
     @Autowired
-    public ActivityController(final TaskActivityService activityService, TaskTriggerHandler taskTriggerHandler, TaskService taskService) {
+    public ActivityController(final TaskActivityService activityService, TriggerHandler taskTriggerHandler) {
         this.activityService = activityService;
         this.taskTriggerHandler = taskTriggerHandler;
-        this.taskService = taskService;
     }
 
     /**
@@ -108,7 +105,12 @@ public class ActivityController {
     @RequestMapping(value = "/activity/retry/{activityId}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void retryTask(@PathVariable Long activityId) {
-        TaskActivity activity = activityService.getTaskActivityById(activityId);
-        taskTriggerHandler.handleTask(taskService.getTask(activity.getTask()), activity.getParameters());
+        Thread retryThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                taskTriggerHandler.retryTask(activityId);
+            }
+        });
+        retryThread.start();
     }
 }
