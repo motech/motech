@@ -384,6 +384,7 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         addEntry(output, LISTENER_LIST_FILE, entityWithListenersNames.getBytes());
         addEntry(output, MDS_COMMON_CONTEXT);
         addEntry(output, DATANUCLEUS_PROPERTIES);
+        addEntry(output, FLYWAY_PROPERTIES);
         addEntry(output, MOTECH_MDS_PROPERTIES);
         addEntry(output, VALIDATION_PROVIDER);
     }

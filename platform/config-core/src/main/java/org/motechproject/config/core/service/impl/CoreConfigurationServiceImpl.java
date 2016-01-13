@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.bootstrap.BootstrapManager;
 import org.motechproject.config.core.constants.ConfigurationConstants;
-import org.motechproject.config.core.datanucleus.DatanucleusManager;
+import org.motechproject.config.core.datanucleus.DbConfigManager;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
@@ -29,15 +29,17 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
 
     private static final Logger LOGGER = Logger.getLogger(CoreConfigurationServiceImpl.class);
 
+    private static final String ROOT_METHOD_NAME = "#root.methodName";
+
     private ConfigLocationFileStore configLocationFileStore;
     private BootstrapManager bootstrapManager;
-    private DatanucleusManager datanucleusManager;
+    private DbConfigManager dbConfigManager;
 
     @Autowired
-    public CoreConfigurationServiceImpl(BootstrapManager bootstrapManager, DatanucleusManager datanucleusManager, ConfigLocationFileStore configLocationFileStore) {
+    public CoreConfigurationServiceImpl(BootstrapManager bootstrapManager, DbConfigManager dbConfigManager, ConfigLocationFileStore configLocationFileStore) {
         this.configLocationFileStore = configLocationFileStore;
         this.bootstrapManager = bootstrapManager;
-        this.datanucleusManager = datanucleusManager;
+        this.dbConfigManager = dbConfigManager;
     }
 
     /**
@@ -58,21 +60,33 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
      * @throws MotechConfigurationException if there is no bootstrap.properties file found.
      */
     @Override
-    @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = "#root.methodName") })
+    @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = ROOT_METHOD_NAME) })
     public BootstrapConfig loadBootstrapConfig() {
         return bootstrapManager.loadBootstrapConfig();
     }
 
     @Override
-    @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = "#root.methodName") })
+    @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = ROOT_METHOD_NAME) })
     public Properties loadDatanucleusDataConfig() {
-        return datanucleusManager.getDatanucleusDataProperties();
+        return dbConfigManager.getDatanucleusDataProperties();
     }
 
     @Override
-    @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = "#root.methodName") })
+    @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = ROOT_METHOD_NAME) })
     public Properties loadDatanucleusSchemaConfig() {
-        return datanucleusManager.getDatanucleusSchemaProperties();
+        return dbConfigManager.getDatanucleusSchemaProperties();
+    }
+
+    @Override
+    @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = ROOT_METHOD_NAME) })
+    public Properties loadFlywayDataConfig() {
+        return dbConfigManager.getFlywayDataProperties();
+    }
+
+    @Override
+    @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = ROOT_METHOD_NAME) })
+    public Properties loadFlywaySchemaConfig() {
+        return dbConfigManager.getFlywaySchemaProperties();
     }
 
     /**

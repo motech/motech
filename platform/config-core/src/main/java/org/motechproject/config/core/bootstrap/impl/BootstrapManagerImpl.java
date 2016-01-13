@@ -111,7 +111,7 @@ public class BootstrapManagerImpl implements BootstrapManager {
     }
 
     private BootstrapConfig readBootstrapConfigFromEnvironment() {
-        Properties bootstrapProperties = environment.getBootstrapPropperties();
+        Properties bootstrapProperties = environment.getBootstrapProperties();
         String sqlUrl = bootstrapProperties.getProperty(BootstrapConfig.SQL_URL);
         String sqlUsername = bootstrapProperties.getProperty(BootstrapConfig.SQL_USER);
         String sqlPassword = bootstrapProperties.getProperty(BootstrapConfig.SQL_PASSWORD);

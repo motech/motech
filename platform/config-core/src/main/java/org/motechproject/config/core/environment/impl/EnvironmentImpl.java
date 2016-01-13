@@ -20,17 +20,22 @@ public class EnvironmentImpl implements Environment {
     }
 
     @Override
+    public Properties getProperties(String varName) {
+        return ConfigPropertiesUtils.getPropertiesFromSystemVarString(getValue(varName));
+    }
+
+    @Override
     public Properties getDatanucleusDataProperties() {
-        return ConfigPropertiesUtils.getPropertiesFromSystemVarString(getValue(MOTECH_DATANUCLEUS_DATA_ROPERTIES));
+        return getProperties(MOTECH_DATANUCLEUS_DATA_ROPERTIES);
     }
 
     @Override
     public Properties getDatanucleusSchemaProperties() {
-        return ConfigPropertiesUtils.getPropertiesFromSystemVarString(getValue(MOTECH_DATANUCLEUS_SCHEMA_PROPERTIES));
+        return getProperties(MOTECH_DATANUCLEUS_SCHEMA_PROPERTIES);
     }
 
     @Override
-    public Properties getBootstrapPropperties() {
+    public Properties getBootstrapProperties() {
         Properties bootstrapProperties = new Properties();
         bootstrapProperties.put(BootstrapConfig.SQL_URL, getValue(MOTECH_SQL_URL));
         bootstrapProperties.put(BootstrapConfig.SQL_USER, getValue(MOTECH_SQL_USERNAME));
