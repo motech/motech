@@ -4,9 +4,11 @@
         <meta charset="UTF-8">
         <title>MOTECH - Mobile Technology for Community Health</title>
 
-        <%@ include file="faviconPage.jsp" %>
+        <%@ include file="header.jsp" %>
 
-        ${mainHeader}
+        <script type="text/javascript" src="resources/js/app.js"></script>
+        <script type="text/javascript" src="resources/js/services.js"></script>
+        <script type="text/javascript" src="resources/js/controllers.js"></script>
 
     </head>
 
@@ -16,7 +18,7 @@
                 <div class="container">
                     <a href=".">
                         <div class="dashboard-logo" ng-cloak>
-                            <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="./../../static/img/motech-logo.gif">
+                            <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="./../../static/common/img/motech-logo.gif">
                         </div>
                     </a>
                     <div class="hidden-xs" ng-cloak>
