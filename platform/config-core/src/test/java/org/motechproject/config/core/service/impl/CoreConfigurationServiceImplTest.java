@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.bootstrap.BootstrapManager;
-import org.motechproject.config.core.datanucleus.DatanucleusManager;
+import org.motechproject.config.core.datanucleus.DbConfigManager;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.environment.Environment;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
@@ -33,7 +33,7 @@ public class CoreConfigurationServiceImplTest {
     private ConfigLocationFileStore configLocationFileStoreMock;
 
     @Mock
-    private DatanucleusManager datanucleusManagerMock;
+    private DbConfigManager dbConfigManagerMock;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -43,7 +43,7 @@ public class CoreConfigurationServiceImplTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        coreConfigurationService = new CoreConfigurationServiceImpl(bootstrapManagerMock, datanucleusManagerMock, configLocationFileStoreMock);
+        coreConfigurationService = new CoreConfigurationServiceImpl(bootstrapManagerMock, dbConfigManagerMock, configLocationFileStoreMock);
     }
 
     @Test
