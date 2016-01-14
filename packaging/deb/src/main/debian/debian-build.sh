@@ -68,19 +68,19 @@ cp $MOTECH_WAR $TMP_DIR
 cd $TMP_DIR
 
 # Create empty dirs if missing
-mkdir -p motech-base/var/cache/motech/motech/work/Catalina/localhost
-mkdir -p motech-base/var/cache/motech/motech/temp
-mkdir -p motech-base/var/cache/motech/motech/felix-cache
-mkdir -p motech-base/var/lib/motech/motech/webapps
-mkdir -p motech-base/var/lib/motech/motech/data/bundles
-mkdir -p motech-base/var/lib/motech/motech/data/rules
-mkdir -p motech-base/var/lib/motech/motech/data/config
-mkdir -p motech-base/var/log/motech/motech
-mkdir -p motech-base/usr/share/motech/motech
+mkdir -p motech-base/var/cache/motech/work/Catalina/localhost
+mkdir -p motech-base/var/cache/motech/temp
+mkdir -p motech-base/var/cache/motech/felix-cache
+mkdir -p motech-base/var/lib/motech/webapps
+mkdir -p motech-base/var/lib/motech/data/bundles
+mkdir -p motech-base/var/lib/motech/data/rules
+mkdir -p motech-base/var/lib/motech/data/config
+mkdir -p motech-base/var/log/motech
+mkdir -p motech-base/usr/share/motech
 
 # copy motech-base
 cp -R $CONTENT_DIR/motech-base .
-mv $WARNAME ./motech-base/var/lib/motech/motech/webapps/ROOT.war
+mv $WARNAME ./motech-base/var/lib/motech/webapps/ROOT.war
 
 # handle changelogs
 perl -p -i -e "s/\\$\\{version\\}/$MOTECH_VERSION/g" ./motech-base/usr/share/doc/motech-base/changelog
@@ -93,7 +93,7 @@ gzip --best ./motech-base/usr/share/doc/motech-base/changelog.Debian
 perl -p -i -e "s/\\$\\{version\\}/$MOTECH_VERSION/g" ./motech-base/DEBIAN/control
 
 # Include dependencies
-cp -R $DEPENDENCY_DIR/* ./motech-base/var/lib/motech/motech/data/bundles
+cp -R $DEPENDENCY_DIR/* ./motech-base/var/lib/motech/data/bundles
 
 # set up permissions
 find ./motech-base -type d | xargs chmod 755  # for directories

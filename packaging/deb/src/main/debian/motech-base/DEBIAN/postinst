@@ -5,18 +5,18 @@ set -e
 
 # Create the motech user, if he doesn't exist
 if [ `grep -c motech: /etc/passwd` -eq 0 ]; then
-    useradd -r -c "Motech user" -d /usr/share/motech/motech motech
+    useradd -r -c "Motech user" -d /usr/share/motech motech
 fi
 
 # Make motech the owner of relevant directories
-if [ -d /var/log/motech/motech ]; then
-    chown -R motech:motech /var/log/motech/motech
+if [ -d /var/log/motech ]; then
+    chown -R motech:motech /var/log/motech
 fi
-if [ -d /var/cache/motech/motech ]; then
-    chown -R motech:motech /var/cache/motech/motech
+if [ -d /var/cache/motech ]; then
+    chown -R motech:motech /var/cache/motech
 fi
-if [ -d /var/lib/motech/motech ]; then
-    chown -R motech:motech /var/lib/motech/motech
+if [ -d /var/lib/motech ]; then
+    chown -R motech:motech /var/lib/motech
 fi
 
 # Register motech service with udpate-rc.d
