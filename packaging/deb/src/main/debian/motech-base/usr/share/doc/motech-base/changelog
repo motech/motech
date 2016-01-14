@@ -1,4 +1,4 @@
-motech-base (${version}) UNRELEASED; urgency=low
+motech-base (0.13) UNRELEASED; urgency=low
 
   * Initial release.
 
