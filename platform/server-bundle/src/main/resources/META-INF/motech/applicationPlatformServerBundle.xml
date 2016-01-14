@@ -20,6 +20,10 @@
     <context:component-scan base-package="org.motechproject.server.web"/>
     <context:component-scan base-package="org.motechproject.server.commons"/>
 
+    <mvc:interceptors>
+        <bean class="org.motechproject.server.web.DevelopmentModeInterceptor"/>
+    </mvc:interceptors>
+
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.motechproject.osgi.web.BundledJspView"/>
         <property name="prefix" value="/webapp/WEB-INF/jsp/"/>

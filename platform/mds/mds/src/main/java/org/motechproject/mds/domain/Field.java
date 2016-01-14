@@ -587,6 +587,11 @@ public class Field {
         return false;
     }
 
+    public String getSettingValue(String key) {
+        FieldSetting fieldSetting = getSettingByName(key);
+        return fieldSetting == null ? null : fieldSetting.getValue();
+    }
+
     private void updateSettings(List<SettingDto> settingsList) {
         if (settingsList != null) {
             for (SettingDto settingDto : settingsList) {

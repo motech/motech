@@ -3,6 +3,8 @@ package org.motechproject.config.core.service;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 
 import java.nio.file.FileSystemException;
 import java.util.Properties;
@@ -36,6 +38,20 @@ public interface CoreConfigurationService {
      */
     @CacheEvict(value = CORE_SETTINGS_CACHE_NAME, allEntries = true)
     Properties loadDatanucleusSchemaConfig();
+
+    /**
+     * Loads the Flyway configuration for the data database.
+     * @return Flyway configuration for the data database
+     */
+    @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = "#root.methodName") })
+    Properties loadFlywayDataConfig();
+
+    /**
+     * Loads the Flyway configuration for the schema database.
+     * @return Flyway configuration for the schema database
+     */
+    @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = "#root.methodName") })
+    Properties loadFlywaySchemaConfig();
 
     /**
      * Saves the bootstrap configuration

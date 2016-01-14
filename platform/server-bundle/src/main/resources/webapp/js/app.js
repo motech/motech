@@ -32,7 +32,7 @@
 
         }];
 
-        $httpProvider.responseInterceptors.push(interceptor);
+        $httpProvider.interceptors.push(interceptor);
     }]);
 
     serverModule.config(['$loadOnDemandProvider', function ($loadOnDemandProvider) {

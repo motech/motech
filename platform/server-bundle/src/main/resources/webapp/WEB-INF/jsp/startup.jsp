@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <title>MOTECH - Mobile Technology for Community Health</title>
 
-    <%@ include file="faviconPage.jsp" %>
+    <%@ include file="header.jsp" %>
+    
+    <script type="text/javascript" src="resources/js/app.js"></script>
+    <script type="text/javascript" src="resources/js/services.js"></script>
+    <script type="text/javascript" src="resources/js/controllers.js"></script>
+    <script type="text/javascript" src="resources/js/startup.js"></script>
 
-    ${mainHeader}
 </head>
 <body ng-controller="MotechMasterCtrl" class="body-startup">
 <div class="bodywrap">
@@ -17,7 +21,7 @@
     <div class="startup" ng-show="ready">
         <a href=".">
             <div class="startup-logo" ng-cloak>
-                <img src="./../../static/img/motech-logo.gif" alt="motech-logo">
+                <img src="./../../static/common/img/motech-logo.gif" alt="motech-logo">
             </div>
         </a>
         <div class="clearfix"></div>

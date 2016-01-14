@@ -53,11 +53,11 @@ public class RelationshipHolder extends FieldHolder {
     }
 
     public String getRelatedClass() {
-        return entityType.getName(getMetadata(RELATED_CLASS));
+        return entityType.getClassName(getMetadata(RELATED_CLASS));
     }
 
     public String getRelatedField() {
-        return entityType.getName(getMetadata(RELATED_FIELD));
+        return entityType.getClassName(getMetadata(RELATED_FIELD));
     }
 
     public boolean isOwningSide() {
