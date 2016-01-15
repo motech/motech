@@ -42,7 +42,7 @@ public class ConfigLocationFileStoreIT {
         assertNotNull(configLocationsIterable);
         Iterator<ConfigLocation> configLocationIterator = configLocationsIterable.iterator();
         assertTrue(configLocationIterator.hasNext());
-        ConfigLocation expected = new ConfigLocation(String.format("%s/.motech/configtest/", System.getProperty("user.home")));
+        ConfigLocation expected = new ConfigLocation(String.format("%s/.motech/configtest/config/", System.getProperty("user.home")));
         assertThat(configLocationIterator.next(), IsEqual.equalTo(expected));
     }
 }
