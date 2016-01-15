@@ -80,7 +80,7 @@
                             <excludeDefaultDirectories>true</excludeDefaultDirectories>
                             <filesets>
                                 <fileset>
-                                    <directory>${user.home}/.motech/config/org.motechproject.motech-tasks-bundle</directory>
+                                    <directory>${motech.dir}/config/org.motechproject.motech-tasks-bundle</directory>
                                     <includes>
                                         <include>**/*</include>
                                     </includes>
@@ -177,7 +177,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                            <outputDirectory>${motech.dir}/bundles</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>target</directory>

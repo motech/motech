@@ -8,7 +8,9 @@ import org.motechproject.config.core.domain.ConfigLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -24,6 +26,7 @@ public class ConfigLocationFileStore {
     private PropertiesConfiguration propertiesConfiguration;
     public static final String CONFIG_LOCATION_PROPERTY_KEY = "config.location";
 
+
     @Autowired
     public ConfigLocationFileStore(PropertiesConfiguration propertiesConfiguration) {
         this.propertiesConfiguration = propertiesConfiguration;
@@ -35,9 +38,23 @@ public class ConfigLocationFileStore {
      * @return the list of configuration locations
      */
     public Iterable<ConfigLocation> getAll() {
+        String defaultPath = new File(System.getProperty("user.home"), ".motech").getAbsolutePath();
         List<String> configLocations = loadAll();
-
-        return map(configLocations);
+        List<String> locations = new ArrayList<>();
+        int i = 0;
+        if (configLocations != null && configLocations.size() > 0) {
+            for (String location : configLocations) {
+                if (location.equals(defaultPath)) {
+                    Collections.swap(configLocations, i, configLocations.size() - 1);
+                    break;
+                }
+                i++;
+            }
+            for (String location : configLocations) {
+                locations.add(new String(location + "/config/"));
+            }
+        }
+        return map(locations);
     }
 
     private Iterable<ConfigLocation> map(List<String> configPaths) {

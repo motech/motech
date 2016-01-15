@@ -62,6 +62,8 @@ public class BootstrapManagerImpl implements BootstrapManager {
 
     @Override
     public void saveBootstrapConfig(BootstrapConfig bootstrapConfig) {
+        configLocationFileStore.add(bootstrapConfig.getMotechDir());
+
         File defaultBootstrapFile = ConfigPropertiesUtils.getDefaultPropertiesFile(ConfigLocation.FileAccessType.WRITABLE,
                 configLocationFileStore.getAll(), BOOTSTRAP_PROPERTIES);
         ConfigPropertiesUtils.saveConfig(defaultBootstrapFile, BootstrapConfigPropertyMapper.toProperties(bootstrapConfig));
@@ -103,6 +105,7 @@ public class BootstrapManagerImpl implements BootstrapManager {
     private BootstrapConfig readBootstrapConfigFromDefaultLocation() {
         File bootstrapFile = ConfigPropertiesUtils.getDefaultPropertiesFile(ConfigLocation.FileAccessType.READABLE,
                     configLocationFileStore.getAll(), BOOTSTRAP_PROPERTIES);
+
         return readBootstrapConfigFromFile(bootstrapFile, StringUtils.EMPTY);
     }
 
@@ -118,10 +121,11 @@ public class BootstrapManagerImpl implements BootstrapManager {
         String configSource = bootstrapProperties.getProperty(BootstrapConfig.CONFIG_SOURCE);
         String sqlDriver = bootstrapProperties.getProperty(BootstrapConfig.SQL_DRIVER);
         String osgiStorage = bootstrapProperties.getProperty(BootstrapConfig.OSGI_FRAMEWORK_STORAGE);
+        String motechDir = bootstrapProperties.getProperty(BootstrapConfig.MOTECH_DIR);
         String queueURL = bootstrapProperties.getProperty(BootstrapConfig.QUEUE_URL);
 
         Properties activeMqProperties = environment.getActiveMqProperties();
-        return new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), ConfigSource.valueOf(configSource), osgiStorage, queueURL, activeMqProperties);
+        return new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), ConfigSource.valueOf(configSource), osgiStorage, motechDir, queueURL, activeMqProperties);
     }
 
     private BootstrapConfig readBootstrapConfigFromFile(File configFile, String errorMessage) {

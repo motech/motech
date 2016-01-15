@@ -209,7 +209,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                            <outputDirectory>${motech.dir}/bundles</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>target</directory>
@@ -236,7 +236,7 @@
                             <includeScope>runtime</includeScope>
                             <overWriteIfNewer>true</overWriteIfNewer>
                             <excludeArtifactIds>org.apache.felix.framework</excludeArtifactIds>
-                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                            <outputDirectory>${motech.dir}/bundles</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -270,7 +270,7 @@
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${user.home}/.motech/config</outputDirectory>
+                                    <outputDirectory>${motech.dir}/config</outputDirectory>
                                     <resources>
                                         <resource>
                                             <directory>${basedir}/src/test/resources/</directory>

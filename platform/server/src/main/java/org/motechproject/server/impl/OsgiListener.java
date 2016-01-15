@@ -104,6 +104,7 @@ public class OsgiListener implements ServletContextListener {
 
     private static ConfigLocationFileStore buildConfigLocationFileStore() {
         PropertiesConfiguration propertiesConfiguration = new PropertiesConfiguration();
+
         propertiesConfiguration.setBasePath(System.getProperty("user.home") + "/.motech");
         propertiesConfiguration.setFileName("config-locations.properties");
         try {

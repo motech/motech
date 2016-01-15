@@ -228,7 +228,7 @@
                             <overWriteIfNewer>true</overWriteIfNewer>
                             <overWriteReleases>false</overWriteReleases>
                             <outputDirectory>
-                                ${user.home}/.motech/bundles
+                                ${motech.dir}/bundles
                             </outputDirectory>
                         </configuration>
                     </execution>
@@ -300,7 +300,7 @@
                         <configuration>
                             <filesets>
                                 <fileset>
-                                    <directory>${user.home}/.motech/bundles</directory>
+                                    <directory>${motech.dir}/bundles</directory>
                                     <includes>
                                         <include>**/*.jar</include>
                                     </includes>
@@ -319,7 +319,7 @@
                             <excludeDefaultDirectories>true</excludeDefaultDirectories>
                             <filesets>
                                 <fileset>
-                                    <directory>${user.home}/.motech/config</directory>
+                                    <directory>${motech.dir}/config</directory>
                                     <includes>
                                         <include>*.properties</include>
                                         <include>*.conf</include>

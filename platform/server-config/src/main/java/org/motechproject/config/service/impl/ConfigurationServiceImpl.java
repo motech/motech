@@ -588,7 +588,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         if (defaultSettings != null) {
             settingsRecord = loadSettingsFromStream(defaultSettings);
         }
-
         return settingsRecord;
     }
 

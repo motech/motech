@@ -161,6 +161,19 @@
                                     <span ng-show="bcform.OsgiFrameworkStorage.$error.required && !bcform.OsgiFrameworkStorage.$pristine""" class="form-hint"><spring:message code="server.bootstrap.form.required"/></span>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.motechPath"/></label>
+                                 <c:set var="search" value="\\"/>
+                                 <c:set var="replace" value="\\\\" />
+                                 <c:set var="motechPathReplace" value="${fn:replace(motechPath, search, replace)}" />
+
+                                <div class="col-sm-6" ng-class="{ 'has-error' : bcform.motechDir.$invalid }" >
+                                    <input type="text"  class="form-control" name="motechDir" ng-model="config.motechDir" ng-init="config.motechDir='${motechPathReplace}'" />
+                                </div>
+                                <div class="col-sm-3">
+                                    <span ng-show="bcform.motechDir.$error.required && !bcform.motechDir.$pristine""" class="form-hint"><spring:message code="server.bootstrap.form.required"/></span>
+                                </div>
+                            </div>
                             <div class="form-group primary-bg">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.configSource"/></label>
                                 <div class="col-sm-9">
@@ -178,7 +191,7 @@
                                 <label class="col-sm-3 control-label"><img id="loader" alt="loading" src="../../static/common/img/load.gif" style="display:none"/></label>
                                 <div class="col-sm-9">
                                     <input class="btn btn-primary" type="button" name="VERIFYSQL" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required" value="<spring:message code="server.bootstrap.verifySql"/>" onclick="verifyDbConnection()"/>
-                                    <input class="btn btn-success" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required || bcform.OsgiFrameworkStorage.$error.required || bcform.queueUrl.$error.required" value="<spring:message code="server.bootstrap.submit"/>"/>
+                                    <input class="btn btn-success" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required || bcform.OsgiFrameworkStorage.$error.required || bcform.motechDir.$error.required || bcform.queueUrl.$error.required" value="<spring:message code="server.bootstrap.submit"/>"/>
                                 </div>
                             </div>
                             <div class="alerts-container">
