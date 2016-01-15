@@ -8,9 +8,12 @@
     <meta charset="UTF-8">
     <title>MOTECH - Mobile Technology for Community Health</title>
 
-    <%@ include file="faviconPage.jsp" %>
+    <%@ include file="header.jsp" %>
 
-    ${mainHeader}
+    <script type="text/javascript" src="resources/js/app.js"></script>
+    <script type="text/javascript" src="resources/js/services.js"></script>
+    <script type="text/javascript" src="resources/js/controllers.js"></script>
+    <script type="text/javascript" src="resources/js/dashboard.js"></script>
 </head>
 
 <body ng-controller="MotechMasterCtrl" id="container" ng-class="showDashboardLogo.backgroundUpDown()" class="custom ui-layout-container" layout state="bodyState" ng-init="bodyState = true">
@@ -41,11 +44,11 @@
                     <c:otherwise>
                     <div class="splash" ng-hide="ready">
                         <div class="splash-logo">
-                            <img src="./../../static/img/motech-logo.gif" alt="motech-logo">
+                            <img src="./../../static/common/img/motech-logo.gif" alt="motech-logo">
                         </div>
                         <div class="clearfix"></div>
                         <div class="splash-loader">
-                            <img src="./../../static/img/loadingbar.gif" alt="loading">
+                            <img src="./../../static/common/img/loadingbar.gif" alt="loading">
                         </div>
                         <div class="clearfix"></div>
                         <div class="splash-msg"></div>

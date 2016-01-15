@@ -31,7 +31,7 @@ public class LocaleController {
     @RequestMapping(value = "/lang", method = RequestMethod.GET)
     @ResponseBody
     public String getUserLang(HttpServletRequest request) {
-        return localeService.getUserLocale(request).getLanguage();
+        return '"' + localeService.getUserLocale(request).getLanguage() + '"';
     }
 
     @ResponseStatus(HttpStatus.OK)
