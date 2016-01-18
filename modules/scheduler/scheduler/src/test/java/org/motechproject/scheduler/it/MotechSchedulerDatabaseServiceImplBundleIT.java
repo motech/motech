@@ -20,6 +20,7 @@ import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.motechproject.scheduler.service.MotechSchedulerDatabaseService;
 import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
@@ -563,11 +564,14 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
     private List<TriggerEvent> createTriggers() {
         List<TriggerEvent> triggers = new ArrayList<>();
 
+        List<EventParameter> params = new ArrayList<>();
+        params.add(new EventParameter("scheduler.jobId", MotechSchedulerService.JOB_ID_KEY));
+
         triggers.add(new TriggerEvent(
                 "Job: test_event_1-job_id1",
                 "test_event_1-job_id1",
                 null,
-                new ArrayList<>(),
+                params,
                 "test_event_1"
         ));
 
@@ -575,7 +579,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                 "Job: test_event_2-job_id2",
                 "test_event_2-job_id2",
                 null,
-                new ArrayList<>(),
+                params,
                 "test_event_2"
         ));
 
@@ -583,7 +587,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                 "Job: test_event_3-job_id3",
                 "test_event_3-job_id3",
                 null,
-                new ArrayList<>(),
+                params,
                 "test_event_3"
         ));
 
@@ -591,7 +595,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                 "Job: test_event_4-job_id4",
                 "test_event_4-job_id4",
                 null,
-                new ArrayList<>(),
+                params,
                 "test_event_4"
         ));
 
@@ -599,7 +603,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                 "Job: test_event_5-job_id5-runonce",
                 "test_event_5-job_id5-runonce",
                 null,
-                new ArrayList<>(),
+                params,
                 "test_event_5"
         ));
 
@@ -607,7 +611,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                 "Job: test_event_6-job_id6-repeat",
                 "test_event_6-job_id6-repeat",
                 null,
-                new ArrayList<>(),
+                params,
                 "test_event_6"
         ));
 
@@ -615,11 +619,15 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
     }
 
     private TriggerEvent createTrigger() {
+
+        List<EventParameter> params = new ArrayList<>();
+        params.add(new EventParameter("scheduler.jobId", MotechSchedulerService.JOB_ID_KEY));
+
         return new TriggerEvent(
                 "Job: test_event_4-job_id4",
                 "test_event_4-job_id4",
                 null,
-                new ArrayList<>(),
+                params,
                 "test_event_4"
         );
     }

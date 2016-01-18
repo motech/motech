@@ -232,14 +232,16 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
             if (rs.next()) {
                 try (InputStream is = new ByteArrayInputStream(rs.getBytes(JOB_DATA));
                      ObjectInputStream ois = new ObjectInputStream(is)) {
-
                     JobDataMap dataMap = (JobDataMap) ois.readObject();
+
+                    List<EventParameter> parameters = new ArrayList<>();
+                    parameters.add(new EventParameter("scheduler.jobId", MotechSchedulerService.JOB_ID_KEY));
 
                     return new TriggerEvent(
                             "Job: " + rs.getString(JOB_NAME),
                             rs.getString(JOB_NAME),
                             rs.getString(JOB_DESCRIPTION),
-                            new ArrayList<>(),
+                            parameters,
                             dataMap.getString(SchedulerConstants.EVENT_TYPE_KEY_NAME)
                     );
                 }
