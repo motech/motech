@@ -105,6 +105,9 @@ public class ActivityController {
     @RequestMapping(value = "/activity/retry/{activityId}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void retryTask(@PathVariable Long activityId) {
+        //Retry of the task is run in new thread to avoid blocking UI, so user will be able
+        //to continue using MOTECH while retry is running in background. It also allow us to inform
+        //user immediately about request successfuly reaching controller.
         Thread retryThread = new Thread(new Runnable() {
             @Override
             public void run() {
