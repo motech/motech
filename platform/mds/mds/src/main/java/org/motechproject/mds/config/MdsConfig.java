@@ -143,10 +143,12 @@ public class MdsConfig {
 
     public File getFlywayMigrationDirectory() {
         String flywayLocation = getFlywayLocations()[0];
-        File migrationDirectory = new File(coreConfigurationService.getConfigLocation().getLocation(), Constants.EntitiesMigration.MIGRATION_DIRECTORY);
-        migrationDirectory = new File(migrationDirectory, flywayLocation.substring(flywayLocation.lastIndexOf('/') + 1));
-
-        return migrationDirectory;
+        if (coreConfigurationService != null) {
+            File migrationDirectory = new File(coreConfigurationService.getConfigLocation().getLocation(), Constants.EntitiesMigration.MIGRATION_DIRECTORY);
+            migrationDirectory = new File(migrationDirectory, flywayLocation.substring(flywayLocation.lastIndexOf('/') + 1));
+            return migrationDirectory;
+        }
+        return null;
     }
 
     public Properties getFlywayDataProperties() {
