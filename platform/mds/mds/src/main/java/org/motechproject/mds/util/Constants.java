@@ -639,6 +639,16 @@ public final class Constants {
         }
     }
 
+    /**
+     * Constants related to history and trash classes.
+     */
+    public static final class HistoryTrash {
+
+        public static final String HISTORY_SUFFIX = "__History";
+
+        public static final String TRASH_SUFFIX = "__Trash";
+    }
+
     private Constants() {
     }
 }

@@ -1,5 +1,7 @@
 package org.motechproject.config.core.environment;
 
+import org.motechproject.config.core.datanucleus.DbConfigManager;
+
 import java.util.Properties;
 
 /**
@@ -9,6 +11,8 @@ public interface Environment {
 
     String MOTECH_DATANUCLEUS_DATA_ROPERTIES = "MOTECH_DATANUCLEUS_DATA_PROPERTIES";
     String MOTECH_DATANUCLEUS_SCHEMA_PROPERTIES = "MOTECH_DATANUCLEUS_SCHEMA_PROPERTIES";
+    String MOTECH_FLYWAY_DATA_PROPERTIES = "MOTECH_FLYWAY_DATA_PROPERTIES";
+    String MOTECH_FLYWAY_SCHEMA_PROPERTIES = "MOTECH_FLYWAY_SCHEMA_PROPERTIES";
     String MOTECH_SQL_URL = "MOTECH_SQL_URL";
     String MOTECH_SQL_USERNAME = "MOTECH_SQL_USERNAME";
     String MOTECH_SQL_PASSWORD = "MOTECH_SQL_PASSWORD";
@@ -21,12 +25,19 @@ public interface Environment {
 
     /**
      * Returns the path to the Motech configuration directory specified by the MOTECH_CONFIG_DIR environment variable.
-     * Used by {@link org.motechproject.config.core.bootstrap.BootstrapManager} and {@link org.motechproject.config.core.datanucleus.DatanucleusManager}
+     * Used by {@link org.motechproject.config.core.bootstrap.BootstrapManager} and {@link DbConfigManager}
      * to find bootstrap.properties, datanucleus_schema.properties and datanucleus_data.properties files.
      *
      * @return the configuration directory path
      */
     String getConfigDir();
+
+    /**
+     * Returns the properties from the given environment variable.
+     * @param varName the name of the variable
+     * @return the variable value parsed to properties
+     */
+    Properties getProperties(String varName);
 
     /**
      * Returns datanucleus properties from MOTECH_DATANUCLEUS_DATA_ROPERTIES environment variable.
@@ -49,7 +60,7 @@ public interface Environment {
      *
      * @return the bootstrap properties
      */
-    Properties getBootstrapPropperties();
+    Properties getBootstrapProperties();
 
     /**
      * Returns ActiveMq properties from MOTECH_ACTIVEMQ_PROPERTIES environment variable.
