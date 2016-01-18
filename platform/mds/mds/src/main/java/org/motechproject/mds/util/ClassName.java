@@ -55,7 +55,8 @@ public final class ClassName {
      * @return fully qualified history class name
      */
     public static String getHistoryClassName(String className) {
-        return String.format("%s.history.%s__History", getPackage(className), getSimpleName(className));
+        return String.format("%s.history.%s%s", getPackage(className), getSimpleName(className),
+                Constants.HistoryTrash.HISTORY_SUFFIX);
     }
 
     /**
@@ -65,7 +66,8 @@ public final class ClassName {
      * @return fully qualified trash class name
      */
     public static String getTrashClassName(String className) {
-        return String.format("%s.history.%s__Trash", getPackage(className), getSimpleName(className));
+        return String.format("%s.history.%s%s", getPackage(className), getSimpleName(className),
+                Constants.HistoryTrash.TRASH_SUFFIX);
     }
 
     /**
@@ -166,9 +168,9 @@ public final class ClassName {
         String suffix = EMPTY;
         if (StringUtils.isNotBlank(name)) {
             if (name.matches("\\.history\\.(.+)__History$")) {
-                suffix = "__History";
+                suffix = Constants.HistoryTrash.HISTORY_SUFFIX;
             } else if (name.matches("\\.history\\.(.+)__Trash$")) {
-                suffix = "__Trash";
+                suffix = Constants.HistoryTrash.TRASH_SUFFIX;
             }
         }
         return suffix;
@@ -181,7 +183,7 @@ public final class ClassName {
      * @return true, if given class matches trash class naming pattern; false otherwise
      */
     public static boolean isTrashClassName(String className) {
-        return StringUtils.endsWith(className, "__Trash");
+        return StringUtils.endsWith(className, Constants.HistoryTrash.TRASH_SUFFIX);
     }
 
     /**
@@ -191,7 +193,7 @@ public final class ClassName {
      * @return true, if given class matches history class naming pattern; false otherwise
      */
     public static boolean isHistoryClassName(String className) {
-        return StringUtils.endsWith(className, "__History");
+        return StringUtils.endsWith(className, Constants.HistoryTrash.HISTORY_SUFFIX);
     }
 
     /**

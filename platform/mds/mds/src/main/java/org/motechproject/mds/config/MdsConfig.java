@@ -149,6 +149,14 @@ public class MdsConfig {
         return migrationDirectory;
     }
 
+    public Properties getFlywayDataProperties() {
+        return coreConfigurationService.loadFlywayDataConfig();
+    }
+
+    public Properties getFlywaySchemaProperties() {
+        return coreConfigurationService.loadFlywaySchemaConfig();
+    }
+
     private void addBeanValidationFactoryProperty(Properties properties) {
         // Datanucleus expects the validator factory as the actual object, not just a string property
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();

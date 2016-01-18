@@ -25,9 +25,9 @@
 set -e
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
-NAME=motech-default
+NAME=motech
 DESC="Tomcat servlet engine"
-DEFAULT=/etc/motech/motech-default/motech.conf
+DEFAULT=/etc/motech/motech.conf
 JVM_TMP=/tmp/motech-tomcat7-tmp
 
 if [ `id -u` -ne 0 ]; then
@@ -51,12 +51,12 @@ fi
 # The following variables can be overwritten in $DEFAULT
 
 # Run Tomcat 7 as this user ID and group ID
-TOMCAT7_USER=motech-default
-TOMCAT7_GROUP=motech-default
+TOMCAT7_USER=motech
+TOMCAT7_GROUP=motech
 
 # The first existing directory is used for JAVA_HOME (if JAVA_HOME is not
 # defined in $DEFAULT)
-JDK_DIRS="/usr/lib/jvm/default-java /usr/lib/jvm/java-7-openjdk /usr/lib/jvm/java-7-openjdk-i386 /usr/lib/jvm/java-1.7.0-openjdk-amd64 /usr/lib/jvm/java-7-openjdk-amd64 /usr/lib/jvm/java-7-oracle /usr/lib/jvm/java-1.7.0-oracle /usr/lib/j2sdk1.7-oracle /usr/lib/j2sdk1.7-ibm /usr/lib/jvm/java-7-sun"
+JDK_DIRS="/usr/lib/jvm/java-8-oracle /usr/lib/jvm/default-java /usr/lib/jvm/java-7-openjdk /usr/lib/jvm/java-7-openjdk-i386 /usr/lib/jvm/java-1.7.0-openjdk-amd64 /usr/lib/jvm/java-7-openjdk-amd64 /usr/lib/jvm/java-7-oracle /usr/lib/jvm/java-1.7.0-oracle /usr/lib/j2sdk1.7-oracle /usr/lib/j2sdk1.7-ibm /usr/lib/jvm/java-7-sun"
 
 # Look for the right JVM to use
 for jdir in $JDK_DIRS; do
@@ -70,7 +70,7 @@ export JAVA_HOME
 CATALINA_HOME=/usr/share/tomcat7
 
 # Directory for per-instance configuration files and webapps
-CATALINA_BASE=/usr/share/motech/motech-default
+CATALINA_BASE=/usr/share/motech
 
 # Use the Java security manager? (yes/no)
 TOMCAT7_SECURITY=no
