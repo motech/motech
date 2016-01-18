@@ -21,7 +21,9 @@ The versions below may change, most likely the latest stable release will work f
 
 		.. code-block:: bash
 
-			sudo apt-get install curl git maven activemq nodejs npm
+			sudo apt-get install curl git maven activemq npm
+			curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
+			sudo apt-get install -y nodejs
 			npm install -g bower gulp
 
 	#. The two datastores officially supported by MOTECH are MySQL and PostgreSQL. It is not required to install both of them to run MOTECH, but provided you intend to introduce some changes to the code, it may be required that you test the outcome on both databases.
