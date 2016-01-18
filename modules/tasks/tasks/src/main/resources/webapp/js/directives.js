@@ -18,7 +18,8 @@
                     return;
                 }
 
-                var elem = angular.element(element), k, rows, activity, message, date, stackTraceElement, fields, messageToShow;
+                var elem = angular.element(element), k, rows, activity, message, date, stackTraceElement, fields, messageToShow,
+                activityId;
 
                 elem.jqGrid({
                     url: '../tasks/api/activity/' + scope.taskId,
@@ -30,7 +31,8 @@
                         name: 'activityType',
                         index: 'activityType',
                         sortable: false,
-                        width: 50
+                        width: 50,
+                        title: false
                     }, {
                         name: 'message',
                         index: 'message',
@@ -52,6 +54,11 @@
                     }, {
                        name: 'fields',
                        index: 'fields',
+                       sortable: false,
+                       hidden: true
+                    }, {
+                       name: 'id',
+                       index: 'id',
                        sortable: false,
                        hidden: true
                     }],
@@ -86,7 +93,11 @@
                                 } else if (activity === 'warning') {
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-question.png" class="recent-activity-task-img"/>','ok',{ },'');
                                 } else if (activity === 'error') {
-                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-exclamation.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                    activityId = $("#taskHistoryTable").getCell(rows[k],"id");
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType',
+                                        '<img src="../tasks/img/icon-exclamation.png" class="recent-activity-task-img"/>' +
+                                        '&nbsp;&nbsp;<span class="label label-danger pointer grid-ng-clickable" ng-click="retryTask(' + activityId + ')">Retry</span>',
+                                        'ok',{ },'');
                                 }
                             }
 
@@ -104,6 +115,9 @@
                                 $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',scope.msg(message),'ok',{ },'');
                             }
                         }
+                    },
+                    loadComplete: function() {
+                        $compile($('.grid-ng-clickable'))(scope);
                     }
                 });
             }
