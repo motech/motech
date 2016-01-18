@@ -144,7 +144,7 @@ public class MdsConfig {
     public File getFlywayMigrationDirectory() {
         String flywayLocation = getFlywayLocations()[0];
         File migrationDirectory;
-        if (coreConfigurationService.getConfigLocation().getLocation() != null) {
+        if (coreConfigurationService != null && coreConfigurationService.getConfigLocation() != null && coreConfigurationService.getConfigLocation().getLocation() != null) {
             migrationDirectory = new File(coreConfigurationService.getConfigLocation().getLocation(), Constants.EntitiesMigration.MIGRATION_DIRECTORY);
         } else {
             migrationDirectory = new File(System.getProperty("user.home"), Constants.EntitiesMigration.MIGRATION_DIRECTORY);
