@@ -329,7 +329,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
         T instance = findById(instanceId);
         if (instance == null) {
-            throw new ObjectNotFoundException(EntityType.HISTORY.getName(getClassType().getName()), historicalId);
+            throw new ObjectNotFoundException(EntityType.HISTORY.getClassName(getClassType().getName()), historicalId);
         }
 
         Object historyRecord = historyService.getSingleHistoryInstance(instance, historicalId);
