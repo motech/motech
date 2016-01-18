@@ -3,13 +3,13 @@
     <div class="clearfix">
         <div ng-repeat="job in jobs.rows" class="inbox-header">
             <div class="row">
-                <div class="col-md-10">
-                    <a class="collapser: '#job' + $index;" ng-click="getDetails(job)">
+                <div class="col-sm-4 col-md-6 col-lg-8">
+                    <a class="auto-wrap header collapser: '#job' + $index;" ng-click="getDetails(job)">
                         <i class="fa fa-fw fa-lg fa-caret-right header-caret"></i>
                         {{job.name}}
                     </a>
                 </div>
-                <div class="col-md-2 align-right">
+                <div class="col-sm-8 col-md-6 col-lg-4 align-right">
                     <span class="label label-primary" bs-popover="Status: {{job.status}}" data-toggle="popover" data-placement="left" data-trigger="hover">Status: <i class="fa fa-lg fa-{{getStatusIcon(job.status)}}"></i></span>
                     <span class="label label-primary" bs-popover="Activity: {{job.activity}}" data-toggle="popover" data-placement="left" data-trigger="hover">Activity: <i class="fa fa-lg fa-{{getActivityIcon(job.activity)}}"></i></span>
                 </div>
@@ -47,17 +47,17 @@
                         </a>
                         <div id="job{{$index}}-details" class="collapse">
                             <div class="row inside" ng-repeat="items in jobDetails[job.name].eventInfoList">
-                                <div class="clearfix col subject">
+                                <div class="clearfix col subject auto-wrap">
                                     Subject: {{items.subject}}
                                 </div>
-                                <div class="col">
+                                <div class="col auto-wrap">
                                     <div>Key</div>
                                     <div ng-repeat="(key, value) in items.parameters">
                                         {{key}}
                                     </div>
                                 </div>
                                 <div class="divider"></div>
-                                <div class="col">
+                                <div class="col auto-wrap">
                                     <div>Value</div>
                                     <div ng-repeat="(key, value) in items.parameters">
                                         {{value}}

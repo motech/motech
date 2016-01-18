@@ -829,7 +829,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         JobDataMap map = detail.getJobDataMap();
 
-        if (map != null && map.getBooleanValue("programmed")) {
+        if (map != null && map.getBooleanValue(PROGRAMMED)) {
             throw new MotechSchedulerException(String.format("Job is not user defined:\n %s\n %s", key.getName(),
                     key.getGroup()));
         }
