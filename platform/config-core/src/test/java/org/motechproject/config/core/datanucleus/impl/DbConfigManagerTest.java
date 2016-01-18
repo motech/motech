@@ -85,7 +85,7 @@ public class DbConfigManagerTest {
         List<ConfigLocation> configLocationList = new ArrayList<>();
 
         configLocationList.add(new ConfigLocation(tempDir.getAbsolutePath()));
-        when(configLocationFileStore.getAll()).thenReturn(configLocationList);
+        when(configLocationFileStore.getAll(true)).thenReturn(configLocationList);
 
         useDbManagerToGetCorrectFile(filename);
 
@@ -125,11 +125,11 @@ public class DbConfigManagerTest {
         when(environment.getConfigDir()).thenReturn("");
 
         List<ConfigLocation> configLocationList = new ArrayList<>();
-        when(configLocationFileStore.getAll()).thenReturn(configLocationList);
+        when(configLocationFileStore.getAll(true)).thenReturn(configLocationList);
 
         useDbManagerToGetCorrectFile(fileName);
 
-        verify(configLocationFileStore, times(0)).getAll();
+        verify(configLocationFileStore, times(0)).getAll(true);
     }
 
     @PrepareForTest(ConfigPropertiesUtils.class)
@@ -180,7 +180,7 @@ public class DbConfigManagerTest {
         }
 
         configLocationList.add(new ConfigLocation(tempDir.getAbsolutePath()));
-        when(configLocationFileStore.getAll()).thenReturn(configLocationList);
+        when(configLocationFileStore.getAll(true)).thenReturn(configLocationList);
 
         properties = useDbManagerToGetCorrectFile(filename);
 

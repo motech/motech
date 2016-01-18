@@ -35,9 +35,10 @@ public class ConfigLocationFileStore {
     /**
      * Returns all the configuration locations stored by this object.
      *
+     * @param configFolder determines if procedure returns config folder or whole motech directory
      * @return the list of configuration locations
      */
-    public Iterable<ConfigLocation> getAll() {
+    public Iterable<ConfigLocation> getAll(boolean configFolder) {
         String defaultPath = new File(System.getProperty("user.home"), ".motech").getAbsolutePath();
         List<String> configLocations = loadAll();
         List<String> locations = new ArrayList<>();
@@ -50,8 +51,10 @@ public class ConfigLocationFileStore {
                 }
                 i++;
             }
-            for (String location : configLocations) {
-                locations.add(new String(location + "/config/"));
+            if (configFolder) {
+                for (String location : configLocations) {
+                    locations.add(new String(location + "/config/"));
+                }
             }
         }
         return map(locations);

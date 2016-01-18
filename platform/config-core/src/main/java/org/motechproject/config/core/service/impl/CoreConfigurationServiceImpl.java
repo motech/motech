@@ -101,10 +101,10 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
 
     @Override
     public ConfigLocation getConfigLocation() {
-        Iterable<ConfigLocation> configLocations = configLocationFileStore.getAll();
+        Iterable<ConfigLocation> configLocations = configLocationFileStore.getAll(false);
         StringBuilder sb = new StringBuilder("");
         for (ConfigLocation configLocation : configLocations) {
-            sb.append(configLocation.getLocation()).append(' ');
+            sb.append(configLocation.getLocation()).append("config/ ");
             Resource configLocationResource = configLocation.toResource();
             try {
                 Resource motechSettings = configLocationResource.createRelative(ConfigurationConstants.SETTINGS_FILE_NAME);

@@ -92,7 +92,7 @@ public class DbConfigManagerImpl implements DbConfigManager {
 
     private Properties loadPropertiesFromDefaultLocation(String fileName, String descForLogs) {
         File file = ConfigPropertiesUtils.getDefaultPropertiesFile(ConfigLocation.FileAccessType.READABLE,
-                configLocationFileStore.getAll(), fileName);
+                configLocationFileStore.getAll(true), fileName);
 
         if (!file.exists()) {
             return null;
@@ -113,7 +113,7 @@ public class DbConfigManagerImpl implements DbConfigManager {
             properties.load(inputStream);
             // After loading properties from classpath we copy file to the default config location
             File file = ConfigPropertiesUtils.getDefaultPropertiesFile(ConfigLocation.FileAccessType.WRITABLE,
-                    configLocationFileStore.getAll(), fileName);
+                    configLocationFileStore.getAll(true), fileName);
             ConfigPropertiesUtils.saveConfig(file, properties);
         } catch (IOException e) {
             LOGGER.warn("Error occurred when loading {} properties from classpath", descForLogs, e);

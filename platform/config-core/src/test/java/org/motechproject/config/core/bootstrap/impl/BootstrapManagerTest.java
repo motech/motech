@@ -143,7 +143,7 @@ public class BootstrapManagerTest {
         List<ConfigLocation> configLocationList = new ArrayList<>();
         ConfigLocation configLocationMock = Mockito.mock(ConfigLocation.class);
         configLocationList.add(configLocationMock);
-        when(configLocationFileStore.getAll()).thenReturn(configLocationList);
+        when(configLocationFileStore.getAll(true)).thenReturn(configLocationList);
         when(configLocationMock.getFile(BootstrapManager.BOOTSTRAP_PROPERTIES, READABLE)).thenReturn(bootstrapConfigFile);
         when(ConfigPropertiesUtils.getDefaultPropertiesFile(ConfigLocation.FileAccessType.READABLE, configLocationList, BootstrapManager.BOOTSTRAP_PROPERTIES))
                 .thenReturn(bootstrapConfigFile);
@@ -161,7 +161,7 @@ public class BootstrapManagerTest {
 
         when(environment.getConfigDir()).thenReturn(null);
         when(environment.getBootstrapProperties()).thenReturn(properties);
-        when(configLocationFileStore.getAll()).thenReturn(configLocations);
+        when(configLocationFileStore.getAll(true)).thenReturn(configLocations);
         when(ConfigPropertiesUtils.getDefaultPropertiesFile(ConfigLocation.FileAccessType.READABLE, configLocations, BootstrapManager.BOOTSTRAP_PROPERTIES))
                 .thenThrow(new MotechConfigurationException("Error loading file from config locations"));
 
@@ -175,7 +175,7 @@ public class BootstrapManagerTest {
 
         inOrder.verify(environment).getConfigDir();
         inOrder.verify(environment).getBootstrapProperties();
-        inOrder.verify(configLocationFileStore).getAll();
+        inOrder.verify(configLocationFileStore).getAll(true);
     }
 
     @PrepareForTest(ConfigPropertiesUtils.class)
@@ -200,7 +200,7 @@ public class BootstrapManagerTest {
         configLocationList.add(new ConfigLocation(tempDir));
         File file = new File(tempDir, BootstrapManager.BOOTSTRAP_PROPERTIES);
 
-        when(configLocationFileStore.getAll()).thenReturn(configLocationList);
+        when(configLocationFileStore.getAll(true)).thenReturn(configLocationList);
 
         bootstrapManager.saveBootstrapConfig(bootstrapConfig);
 
