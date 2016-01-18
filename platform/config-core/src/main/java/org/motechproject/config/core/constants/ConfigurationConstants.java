@@ -5,6 +5,7 @@ package org.motechproject.config.core.constants;
  */
 public final class ConfigurationConstants {
     public static final String CONFIG_MODULE_DIR_PREFIX = "org.motechproject.";
+    public static final String SETTINGS_FILE_NAME_WITH_PREFIX = "config/motech-settings.properties";
     public static final String SETTINGS_FILE_NAME = "motech-settings.properties";
 
     public static final String AMQ_QUEUE_EVENTS = "jms.queue.for.events";

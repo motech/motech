@@ -55,9 +55,10 @@ public class ConfigLocationFileStore {
                 for (String location : configLocations) {
                     locations.add(new String(location + "/config/"));
                 }
+                return map(locations);
             }
         }
-        return map(locations);
+        return map(configLocations);
     }
 
     private Iterable<ConfigLocation> map(List<String> configPaths) {

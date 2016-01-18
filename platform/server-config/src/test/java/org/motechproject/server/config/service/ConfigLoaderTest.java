@@ -48,7 +48,8 @@ public class ConfigLoaderTest {
 
     @Test
     public void testMotechSettingsLoading() {
-        ConfigLocation configLocation = new ConfigLocation("config/");
+        final String dirPath = FileHelper.getResourceFile("").getAbsolutePath();
+        ConfigLocation configLocation = new ConfigLocation(dirPath);
         when(coreConfigurationService.getConfigLocation()).thenReturn(configLocation);
 
         MotechSettings settings = configLoader.loadMotechSettings();
@@ -63,7 +64,7 @@ public class ConfigLoaderTest {
         UrlResource resource = mock(UrlResource.class);
         when(coreConfigurationService.getConfigLocation()).thenReturn(configLocation);
         when(configLocation.toResource()).thenReturn(resource);
-        when(resource.createRelative(ConfigurationConstants.SETTINGS_FILE_NAME)).thenThrow(new MalformedURLException());
+        when(resource.createRelative(ConfigurationConstants.SETTINGS_FILE_NAME_WITH_PREFIX)).thenThrow(new MalformedURLException());
 
         configLoader.loadMotechSettings();
     }

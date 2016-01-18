@@ -101,14 +101,14 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
 
     @Override
     public ConfigLocation getConfigLocation() {
-        Iterable<ConfigLocation> configLocations = configLocationFileStore.getAll(false);
+        Iterable<ConfigLocation> locations = configLocationFileStore.getAll(false);
         StringBuilder sb = new StringBuilder("");
-        for (ConfigLocation configLocation : configLocations) {
-            sb.append(configLocation.getLocation()).append("config/ ");
+        for (ConfigLocation configLocation : locations) {
+            sb.append(configLocation.getLocation()).append(' ');
             Resource configLocationResource = configLocation.toResource();
             try {
-                Resource motechSettings = configLocationResource.createRelative(ConfigurationConstants.SETTINGS_FILE_NAME);
-                if (motechSettings.isReadable()) {
+                Resource motechSettings = configLocationResource.createRelative(ConfigurationConstants.SETTINGS_FILE_NAME_WITH_PREFIX);
+                if (motechSettings.isReadable() && locations != null) {
                     return configLocation;
                 }
                 LOGGER.warn("Could not read motech-settings.properties from: " + configLocationResource.toString());
