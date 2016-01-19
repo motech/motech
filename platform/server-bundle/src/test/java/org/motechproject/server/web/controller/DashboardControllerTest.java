@@ -13,10 +13,7 @@ import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.server.web.form.UserInfo;
-import org.motechproject.server.web.helper.Header;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,7 +31,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({StartupManager.class, Header.class})
+@PrepareForTest({StartupManager.class})
 public class DashboardControllerTest {
     private static final String LANG = ENGLISH.getLanguage();
     private static final String USER_NAME = "testUser";
@@ -85,9 +82,6 @@ public class DashboardControllerTest {
         when(request.getSession()).thenReturn(session);
         when(session.getServletContext()).thenReturn(context);
         when(context.getContextPath()).thenReturn("/");
-
-        PowerMockito.mockStatic(Header.class);
-        PowerMockito.when(Header.generateHeader(any(Bundle.class))).thenReturn("");
     }
 
     @Test

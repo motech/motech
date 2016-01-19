@@ -15,13 +15,16 @@ The versions below may change, most likely the latest stable release will work f
 
 	.. _Installation instructions: http://www.ubuntu.com/download/desktop/install-ubuntu-desktop
 
-#. Install Maven, Git, Curl, ActiveMQ, and a database of your choice
+#. Install Maven, Git, Curl, ActiveMQ, NodeJS, NPM, Bower, Gulp and a database of your choice
 
 	#. In terminal, type
 
 		.. code-block:: bash
 
-			sudo apt-get install curl git maven activemq
+			sudo apt-get install curl git maven activemq npm
+			curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
+			sudo apt-get install -y nodejs
+			npm install -g bower gulp
 
 	#. The two datastores officially supported by MOTECH are MySQL and PostgreSQL. It is not required to install both of them to run MOTECH, but provided you intend to introduce some changes to the code, it may be required that you test the outcome on both databases.
 
@@ -29,7 +32,6 @@ The versions below may change, most likely the latest stable release will work f
 
 			sudo apt-get install mysql-server
 			sudo apt-get install postgresql
-
 
 	#. On a fresh Ubuntu installation, you may need to run the following first
 	
@@ -286,20 +288,26 @@ Installing on a Macintosh
 			ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 
-	#. Use Homebrew to install git, erlang, ActiveMQ, and Apache Tomcat:
+	#. Use Homebrew to install git, erlang, ActiveMQ, NodeJS and Apache Tomcat:
 		.. code-block:: bash
 
 			brew install git
 			brew install activemq
 			brew install tomcat
 			brew install maven
+			brew install node
 
 	#. Homebrew installations are located ``in /usr/local/Cellar` with symlinks in ``/usr/local/bin``, which should already be part of your $PATH environment variable.
 
 		.. note:: 
 
 			Homebrew provides instructions about how to run these applications, as well as how to have launchd start them automatically on system startup.
-	
+
+	#. Use NPM (installed with NodeJS) to install Bower and Gulp.
+		.. code-block:: bash
+
+		npm install -g bower gulp
+
 	#. Configuring Tomcat
 
 	    #. Edit the ``tomcat-users.xml`` file to add an admin user. Insert a line similar to the following before the closing ``</tomcat-users>`` tag::

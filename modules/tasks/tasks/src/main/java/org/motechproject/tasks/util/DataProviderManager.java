@@ -3,7 +3,7 @@ package org.motechproject.tasks.util;
 import org.eclipse.gemini.blueprint.service.importer.OsgiServiceLifecycleListener;
 import org.motechproject.commons.api.DataProvider;
 import org.motechproject.tasks.service.TaskDataProviderService;
-import org.motechproject.tasks.service.TaskTriggerHandler;
+import org.motechproject.tasks.service.TriggerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import java.util.Map;
 @Component("dataProviderManager")
 public class DataProviderManager implements OsgiServiceLifecycleListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataProviderManager.class);
-    private TaskTriggerHandler handler;
+    private TriggerHandler handler;
     private TaskDataProviderService taskDataProviderService;
 
     public DataProviderManager(TaskDataProviderService taskDataProviderService) {
@@ -31,7 +31,7 @@ public class DataProviderManager implements OsgiServiceLifecycleListener {
      * @param taskDataProviderService  the task data provider service, not null
      */
     @Autowired
-    public DataProviderManager(TaskTriggerHandler handler, TaskDataProviderService taskDataProviderService) {
+    public DataProviderManager(TriggerHandler handler, TaskDataProviderService taskDataProviderService) {
         this.handler = handler;
         this.taskDataProviderService = taskDataProviderService;
     }
