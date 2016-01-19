@@ -18,7 +18,7 @@
   ],
   "dependencies": {
     "jquery": "1.11.3",
-    "angular": "~1.4.8",
+    "angular": "~1",
     "bootstrap": "~3.3.6",
     "highlight": "~9.0.0",
     "jquery-cron": "~0.1.4",
@@ -59,7 +59,7 @@
   },
   "resolutions": {
     "jquery": "1.11.3",
-    "angular": "1.2.1",
+    "angular": "1.2.29",
     "angular-bootstrap": "0.6.0"
   },
   "overrides": {

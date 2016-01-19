@@ -58,21 +58,21 @@ function verifyDbConnection() {
             loader.hide();
         }
     });
-}
+};
 
-const TIMEOUT = 5000;
+var TIMEOUT = 5000;
 
-const SERVER_BUNDLE = 'org.motechproject.motech-platform-server-bundle';
-const MDS = 'org.motechproject.motech-platform-dataservices';
-const WEB_SECURITY = 'org.motechproject.motech-platform-web-security';
-const OSGI_WEB_UTIL = 'org.motechproject.motech-platform-osgi-web-util';
-const CONFIG_CORE = 'org.motechproject.motech-platform-config-core';
-const COMMONS_SQL = 'org.motechproject.motech-platform-commons-sql';
-const EVENT = 'org.motechproject.motech-platform-event';
-const EMAIL = 'org.motechproject.motech-platform-email';
-const SERVER_CONFIG = 'org.motechproject.motech-platform-server-config';
+var SERVER_BUNDLE = 'org.motechproject.motech-platform-server-bundle';
+var MDS = 'org.motechproject.motech-platform-dataservices';
+var WEB_SECURITY = 'org.motechproject.motech-platform-web-security';
+var OSGI_WEB_UTIL = 'org.motechproject.motech-platform-osgi-web-util';
+var CONFIG_CORE = 'org.motechproject.motech-platform-config-core';
+var COMMONS_SQL = 'org.motechproject.motech-platform-commons-sql';
+var EVENT = 'org.motechproject.motech-platform-event';
+var EMAIL = 'org.motechproject.motech-platform-email';
+var SERVER_CONFIG = 'org.motechproject.motech-platform-server-config';
 
-const TRACKED_BUNDLES = [ OSGI_WEB_UTIL, CONFIG_CORE, COMMONS_SQL, EVENT, EMAIL, SERVER_BUNDLE, MDS, WEB_SECURITY, SERVER_CONFIG];
+var TRACKED_BUNDLES = [ OSGI_WEB_UTIL, CONFIG_CORE, COMMONS_SQL, EVENT, EMAIL, SERVER_BUNDLE, MDS, WEB_SECURITY, SERVER_CONFIG];
 
 var timer;
 
