@@ -23,10 +23,11 @@ import org.motechproject.mds.ex.field.FieldNotFoundException;
 import org.motechproject.mds.ex.field.FieldReadOnlyException;
 import org.motechproject.mds.ex.lookup.LookupExecutionException;
 import org.motechproject.mds.ex.lookup.LookupNotFoundException;
+import org.motechproject.mds.ex.object.DuplicateEntryException;
 import org.motechproject.mds.ex.object.ObjectCreateException;
+import org.motechproject.mds.ex.object.ObjectUpdateException;
 import org.motechproject.mds.ex.object.ObjectNotFoundException;
 import org.motechproject.mds.ex.object.ObjectReadException;
-import org.motechproject.mds.ex.object.ObjectUpdateException;
 import org.motechproject.mds.ex.object.SecurityException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.helper.DataServiceHelper;
@@ -67,6 +68,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.jdo.JDODataStoreException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -154,6 +156,8 @@ public class InstanceServiceImpl implements InstanceService {
             } else {
                 return service.update(instance);
             }
+        } catch (JDODataStoreException e) {
+            throw new DuplicateEntryException(entity.getName(), e);
         } catch (Exception e) {
             if (entityRecord.getId() == null) {
                 throw new ObjectCreateException(entity.getName(), e);
@@ -939,7 +943,7 @@ public class InstanceServiceImpl implements InstanceService {
     private void validateCredentials(EntityDto entity) {
         boolean authorized;
         SecurityMode securityMode = entity.getSecurityMode();
-        if(securityMode != null) {
+        if (securityMode != null) {
             Set<String> securityMembers = entity.getSecurityMembers();
             authorized = entity.hasAccessToEntityFromSecurityMode(securityMode, securityMembers);
             if (!authorized && !securityMode.isInstanceRestriction()) {
@@ -953,10 +957,10 @@ public class InstanceServiceImpl implements InstanceService {
         SecurityMode securityMode = entity.getSecurityMode();
         SecurityMode readOnlySecurityMode = entity.getReadOnlySecurityMode();
 
-        if(securityMode != null) {
+        if (securityMode != null) {
             Set<String> securityMembers = entity.getSecurityMembers();
             authorized = entity.hasAccessToEntityFromSecurityMode(securityMode, securityMembers);
-            if(!authorized) {
+            if (!authorized) {
                 if (readOnlySecurityMode != null) {
                     Set<String> readOnlySecurityMembers = entity.getReadOnlySecurityMembers();
                     authorized = entity.hasAccessToEntityFromSecurityMode(readOnlySecurityMode, readOnlySecurityMembers);
@@ -986,7 +990,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         // We need to check if read only field value isn't changed
         // in some unexpected way. If so then throw exception
-        if(fieldRecord.isNonEditable()
+        if (fieldRecord.isNonEditable()
                 // There is need to use Objects.equals as values - one or both - can be null
                 // which would cause NullPointerException when just .equals() on null value
                 && !Objects.equals(fieldOldValue, parsedValue)) {
