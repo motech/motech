@@ -1,60 +1,33 @@
 =======
 Roadmap
 =======
+This page describes the high-level roadmap for the MOTECH 1.0 release. For more granular and up-to-date information about release plans, click on the issue tracker links for each of the releases below.
 
-This page describes the high-level roadmap for the next few MOTECH Platform releases. The specific features that comprise the releases listed below may be rescheduled as additional information comes to light. For more granular and up-to-date information about release plans, click on the issue tracker links for each of the releases below.
-
-Version 0.25 - Early 2015
-=========================
-
-`Issue Tracker <https://applab.atlassian.net/browse/MOTECH/fixforversion/16840/?selectedTab=com.atlassian.jira.jira-projects-plugin:version-issues-panel>`_
-
-MOTECH Data Services Performance
---------------------------------
-
-The goal of this effort will be to ensure that MDS performance is as good as (or better than) MOTECH running on CouchDB. We will begin by conducting performance testing and benchmarking of MDS against CouchDB to find performance bottlenecks. These will be prioritized, and the most important ones will be fixed for this release (others may be postponed to future releases).
-
-MOTECH Scale Testing
---------------------
-
-A test environment will be created to simulate MOTECH running at scale. Once this environtment is created, we will test performance of MOTECH under various configurations including clustering. Through this process, we expect to identify, document, and/or fix specific issues discovered, including making clustered mode operational and performant, as well as providing configuration recommendations for ActiveMQ at scale.
-
-IVR Support
------------
-
-The legacy MOTECH IVR modules were deprecated in the 0.24 release. Starting with version 0.25, there will be one IVR module that supports VXML/CCXML as well as Verboice.
-
-MDS REST API Generation
------------------------
-
-MOTECH will automatically generate REST APIs for CRUD operations on entities defined in MOTECH Data Services.
-
-Version 1.0 - mid-late 2015
-===========================
+Version 1.0 - Release date: Q1 2016
+===================================
 
 `Issue Tracker <https://applab.atlassian.net/browse/MOTECH/fixforversion/15741/?selectedTab=com.atlassian.jira.jira-projects-plugin:version-issues-panel>`_
 
-DHIS2 Module
-------------
-
-A new module will be created to support pushing individual level anonymous data (DHIS2 Event Capture) to DHIS2. DHIS2 data push will be exposed as a new Action through MOTECH Tasks. Support for additional DHIS2 use cases will likely come in future releases.
-
 Stable Semantic Versioning
 --------------------------
+We will apply the `open semantic version scheme <http://semver.org/>`_ to the MOTECH Platform and all modules thus making it easier to determine backward compatibility. We will stabilize our core system and API providing implementers with a level of confidence that their system will be compatible with future releases of MOTECH. (`MOTECH-585 <https://applab.atlassian.net/browse/MOTECH-585>`_)
 
-We will apply a semantic version scheme to MOTECH Platform and all modules thus making it easier to determine backward compatibility. We will stabilize our core system and API providing implementers with a level of confidence that their system will be compatible with future releases of MOTECH.
+Platform and Module API Standardization and Documentation
+---------------------------------------------------------
+Every public API will be standardized and documented with standard javadoc that is published with each release. (`MOTECH-1466 <https://applab.atlassian.net/browse/MOTECH-1466>`_)
 
-End User Install
-----------------
+Consistent User Interface Elements
+------------------------------------
+Developers across the globe have contributed UI code to MOTECH. We will make UI elements consistent across the platform to ease implementation and prepare for UI improvements after the MOTECH 1.0 release. (`MOTECH-2008 <https://applab.atlassian.net/browse/MOTECH-2008>`_)
 
-End users should be able to install MOTECH without compiling. Install should be scriptable and unattended. We will provide an example install script that operations engineers may reuse or modify as desired for their purposes.
+Standardized Interoperability
+-----------------------------
+We are working to integrate MOTECH with the `Open eHealth Integration platform <http://80.86.91.51/display/ipf2/Home>`_, opening up new standardized workflows that support the majority of IHE profiles and, therefore, OpenHIE workflows.(`MOTECH-1242 <https://applab.atlassian.net/browse/MOTECH-1242>`_)
 
-Platform API Documentation
---------------------------
+Post 1.0 - Release date: TBD
+============================
+We are currently focusing on our MOTECH 1.0 release and will reevaluate the post 1.0 issues at a later time. Below are our issue trackers for Post 1.0
 
-Every public API will be documented with standard javadoc that is published with each release.
+`MOTECH Post 1.0 <https://applab.atlassian.net/projects/MOTECH/versions/16242/?selectedTab=com.atlassian.jira.jira-projects-plugin:version-issues-panel#release-report-tab-body>`_
 
-API Sanitization
-----------------
-
-The process of cleaning up MOTECH's public API - which was started in v0.24 - will be completed, resulting in a stable public API for MOTECH.
+`Backlog <https://applab.atlassian.net/projects/MOTECH/versions/15740>`_
