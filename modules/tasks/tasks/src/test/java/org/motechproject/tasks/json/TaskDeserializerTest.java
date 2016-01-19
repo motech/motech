@@ -63,6 +63,8 @@ public class TaskDeserializerTest {
         EXPECTED_TASK.setActions(asList(actionInformation));
         EXPECTED_TASK.setTrigger(triggerInformation);
         EXPECTED_TASK.setValidationErrors(validationErrors);
+        EXPECTED_TASK.setNumberOfRetries(3);
+        EXPECTED_TASK.setRetryIntervalInMilliseconds(1000);
     }
 
     public TaskDeserializerTest(String path) throws IOException {

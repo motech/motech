@@ -126,6 +126,7 @@
                         </Bundle-Activator>
                         <Export-Package>
                             org.motechproject.event;version=${project.version},
+                            org.motechproject.event.utils;version=${project.version},
                             org.motechproject.event.listener;version=${project.version},
                             org.motechproject.event.listener.annotations;version=${project.version},
                             org.motechproject.event.messaging;version=${project.version}

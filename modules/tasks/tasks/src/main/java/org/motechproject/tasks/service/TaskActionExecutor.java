@@ -10,6 +10,8 @@ import org.motechproject.tasks.domain.KeyInformation;
 import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
+import org.motechproject.tasks.events.constants.EventDataKeys;
+import org.motechproject.tasks.events.constants.EventSubjects;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TaskHandlerException;
 import org.osgi.framework.BundleContext;
@@ -71,7 +73,7 @@ public class TaskActionExecutor {
         LOGGER.debug("Parameters created: {} for task action: {}", parameters.toString(), action.getName());
 
         if (action.hasService() && bundleContext != null) {
-            if (callActionServiceMethod(action, parameters)) {
+            if (callActionServiceMethod(action, parameters, task)) {
                 LOGGER.info("Action: {} from task: {} was executed through an OSGi service call", actionInformation.getName(), task.getName());
                 return;
             }
@@ -83,7 +85,13 @@ public class TaskActionExecutor {
             throw new TaskHandlerException(ACTION, "task.error.cantExecuteAction");
         } else {
             LOGGER.info("Event: {} was sent", action.getSubject());
-            eventRelay.sendEventMessage(new MotechEvent(action.getSubject(), parameters));
+
+            parameters.put(EventDataKeys.TASK_ID, task.getId());
+            MotechEvent event = new MotechEvent(action.getSubject(), parameters);
+            event.setRetryHandlerSubject(EventSubjects.ACTION_RETRY_HANDLER);
+            event.setCustomRetryHandling(true);
+
+            eventRelay.sendEventMessage(event);
         }
     }
 
@@ -216,7 +224,7 @@ public class TaskActionExecutor {
         return result;
     }
 
-    private boolean callActionServiceMethod(ActionEvent action, Map<String, Object> parameters)
+    private boolean callActionServiceMethod(ActionEvent action, Map<String, Object> parameters, Task task)
             throws TaskHandlerException {
         ServiceReference reference = bundleContext.getServiceReference(
                 action.getServiceInterface()
@@ -231,17 +239,45 @@ public class TaskActionExecutor {
             try {
                 Method method = service.getClass().getMethod(serviceMethod, methodHandler.getClasses());
 
-                try {
-                    method.invoke(service, methodHandler.getObjects());
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new TaskHandlerException(
-                            ACTION, "task.error.serviceMethodInvokeError", e,
-                            serviceMethod, action.getServiceInterface()
-                    );
+                int numberOfRetries = task.getNumberOfRetries();
+                int retryIntervalTime = task.getRetryIntervalInMilliseconds();
+                boolean success;
+
+                for (int i = 0; i <= numberOfRetries; i++) {
+                    success = true;
+                    try {
+                        method.invoke(service, methodHandler.getObjects());
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        success = false;
+                        if (i == numberOfRetries) {
+                            if (numberOfRetries == 0) {
+                                LOGGER.info("Failed action {} in {} not retry, because number of retries for task {} is 0",
+                                        serviceMethod, action.getServiceInterface(), task.getName());
+                            } else {
+                                LOGGER.info("Max retry count = {} reached for {} in {}", numberOfRetries, serviceMethod,
+                                        action.getServiceInterface());
+                            }
+                            throw new TaskHandlerException(
+                                    ACTION, "task.error.serviceMethodInvokeError", e,
+                                    serviceMethod, action.getServiceInterface()
+                            );
+                        } else if (retryIntervalTime != 0) {
+                            Thread.sleep(retryIntervalTime);
+                        }
+                    }
+
+                    if (success) {
+                        break;
+                    }
                 }
             } catch (NoSuchMethodException e) {
                 throw new TaskHandlerException(
                         ACTION, "task.error.notFoundMethodForService", e,
+                        serviceMethod, action.getServiceInterface()
+                );
+            } catch (InterruptedException e) {
+                throw new TaskHandlerException(
+                        ACTION, "task.error.serviceMethodThreadInterruptedException", e,
                         serviceMethod, action.getServiceInterface()
                 );
             }

@@ -68,5 +68,7 @@
             ],
             "message": "task.validation.error.providerObjectLookupNotExist"
         }
-    ]
+    ],
+    "numberOfRetries": 3,
+    "retryIntervalInMilliseconds": 1000
 }

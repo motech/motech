@@ -156,6 +156,22 @@ public class TaskServiceImplTest {
     }
 
     @Test(expected = ValidationException.class)
+    public void shouldNotSaveTaskWithInvalidRetryNumberValue() {
+        Task t = new Task("name", trigger, asList(action));
+        t.setNumberOfRetries(-3);
+
+        taskService.save(t);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void shouldNotSaveTaskWithInvalidRetryIntervalValue() {
+        Task t = new Task("name", trigger, asList(action));
+        t.setRetryIntervalInMilliseconds(-10);
+
+        taskService.save(t);
+    }
+
+    @Test(expected = ValidationException.class)
     public void shouldNotSaveTaskWithoutName() {
         Task t = new Task(null, trigger, asList(action));
 

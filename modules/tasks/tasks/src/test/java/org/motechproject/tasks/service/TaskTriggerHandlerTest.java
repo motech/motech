@@ -35,6 +35,8 @@ import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.events.constants.EventDataKeys;
+import org.motechproject.tasks.events.constants.EventSubjects;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TaskHandlerException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
@@ -531,15 +533,18 @@ public class TaskTriggerHandlerTest {
         });
 
         assertEquals(ACTION_SUBJECT, motechEvent.getSubject());
+        assertEquals(EventSubjects.ACTION_RETRY_HANDLER, motechEvent.getRetryHandlerSubject());
+        assertTrue(motechEvent.isCustomRetryHandling());
 
         Map<String, Object> motechEventParameters = motechEvent.getParameters();
 
         assertNotNull(motechEventParameters);
 
         assertEquals(task.getActions().get(0).getValues().get("phone"), motechEventParameters.get("phone").toString());
-        assertEquals(4, motechEventParameters.size());
+        assertEquals(5, motechEventParameters.size());
         assertNotNull(motechEventParameters.get("date1"));
         assertNotNull(motechEventParameters.get("date2"));
+        assertNotNull(motechEventParameters.get(EventDataKeys.TASK_ID));
     }
 
     @Test
@@ -1114,11 +1119,13 @@ public class TaskTriggerHandlerTest {
         });
 
         assertEquals(ACTION_SUBJECT, motechEvent.getSubject());
+        assertEquals(EventSubjects.ACTION_RETRY_HANDLER, motechEvent.getRetryHandlerSubject());
+        assertTrue(motechEvent.isCustomRetryHandling());
 
         Map<String, Object> motechEventParameters = motechEvent.getParameters();
 
         assertNotNull(motechEventParameters);
-        assertEquals(13, motechEventParameters.size());
+        assertEquals(14, motechEventParameters.size());
         assertEquals(task.getActions().get(0).getValues().get("phone"), motechEventParameters.get("phone").toString());
         assertEquals("Hello 123456789, You have an appointment on 2012-11-20", motechEventParameters.get("message"));
         assertEquals("String manipulation: Event-Name, Date manipulation: 20121120", motechEventParameters.get("manipulations"));
@@ -1131,6 +1138,7 @@ public class TaskTriggerHandlerTest {
         assertEquals(getExpectedList(), motechEventParameters.get("list"));
         assertEquals(getExpectedMap(), motechEventParameters.get("map"));
         assertNull(motechEventParameters.get("delivery_time"));
+        assertNotNull(motechEventParameters.get(EventDataKeys.TASK_ID));
     }
 
     @Test
@@ -1426,18 +1434,24 @@ public class TaskTriggerHandlerTest {
         MotechEvent motechEventAction1 = events.get(0);
 
         assertEquals(ACTION_SUBJECT, motechEventAction1.getSubject());
+        assertEquals(EventSubjects.ACTION_RETRY_HANDLER, motechEventAction1.getRetryHandlerSubject());
+        assertTrue(motechEventAction1.isCustomRetryHandling());
         assertNotNull(motechEventAction1.getParameters());
-        assertEquals(2, motechEventAction1.getParameters().size());
+        assertEquals(3, motechEventAction1.getParameters().size());
         assertEquals(task.getActions().get(0).getValues().get("phone"), motechEventAction1.getParameters().get("phone").toString());
         assertEquals("Hello 123456789, You have an appointment on 2012-11-20", motechEventAction1.getParameters().get("message"));
+        assertNotNull(motechEventAction1.getParameters().get(EventDataKeys.TASK_ID));
 
         MotechEvent motechEventAction2 = events.get(1);
 
         assertEquals(ACTION_SUBJECT, motechEventAction2.getSubject());
+        assertEquals(EventSubjects.ACTION_RETRY_HANDLER, motechEventAction2.getRetryHandlerSubject());
+        assertTrue(motechEventAction2.isCustomRetryHandling());
         assertNotNull(motechEventAction2.getParameters());
-        assertEquals(2, motechEventAction2.getParameters().size());
+        assertEquals(3, motechEventAction2.getParameters().size());
         assertEquals(task.getActions().get(0).getValues().get("phone"), motechEventAction2.getParameters().get("phone").toString());
         assertEquals("Hello, world! I'm second action", motechEventAction2.getParameters().get("message"));
+        assertNotNull(motechEventAction2.getParameters().get(EventDataKeys.TASK_ID));
     }
 
     @Test

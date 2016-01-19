@@ -21,10 +21,13 @@ public class MotechEvent implements Serializable {
     private boolean invalid;
     private boolean discarded;
     private boolean broadcast;
+    private boolean customRetryHandling;
     private int redeliveryCount;
     private String subject;
     private String messageDestination;
     private Map<String, Object> parameters;
+    private String retryHandlerSubject;
+    private RuntimeException exceptionFromListener;
 
     public MotechEvent() {
     }
@@ -124,6 +127,14 @@ public class MotechEvent implements Serializable {
         broadcast = value;
     }
 
+    public boolean isCustomRetryHandling() {
+        return customRetryHandling;
+    }
+
+    public void setCustomRetryHandling(boolean customRetryHandling) {
+        this.customRetryHandling = customRetryHandling;
+    }
+
     /**
      * Returns the name of the subject.
      *
@@ -164,7 +175,23 @@ public class MotechEvent implements Serializable {
         return parameters;
     }
 
-    @Override
+    public String getRetryHandlerSubject() {
+        return retryHandlerSubject;
+    }
+
+    public void setRetryHandlerSubject(String retryHandlerSubject) {
+        this.retryHandlerSubject = retryHandlerSubject;
+    }
+
+    public RuntimeException getExceptionFromListener() {
+        return exceptionFromListener;
+    }
+
+    public void setExceptionFromListener(RuntimeException exceptionFromListener) {
+        this.exceptionFromListener = exceptionFromListener;
+    }
+
+    @Override // NO CHECKSTYLE Cyclomatic Complexity is 12 (max allowed is 10).
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -178,10 +205,12 @@ public class MotechEvent implements Serializable {
         return Objects.equals(invalid, that.invalid) &&
                 Objects.equals(discarded, that.discarded) &&
                 Objects.equals(broadcast, that.broadcast) &&
+                Objects.equals(customRetryHandling, that.customRetryHandling) &&
                 Objects.equals(redeliveryCount, that.redeliveryCount) &&
                 Objects.equals(subject, that.subject) &&
                 Objects.equals(messageDestination, that.messageDestination) &&
-                Objects.equals(parameters, that.parameters);
+                Objects.equals(parameters, that.parameters) &&
+                Objects.equals(retryHandlerSubject, that.retryHandlerSubject);
     }
 
     @Override
@@ -189,10 +218,12 @@ public class MotechEvent implements Serializable {
         return Objects.hash(invalid,
                 discarded,
                 broadcast,
+                customRetryHandling,
                 redeliveryCount,
                 subject,
                 messageDestination,
-                parameters);
+                parameters,
+                retryHandlerSubject);
     }
 
     @Override
@@ -205,8 +236,10 @@ public class MotechEvent implements Serializable {
         sb.append(", invalid=").append(invalid);
         sb.append(", discarded=").append(discarded);
         sb.append(", broadcast=").append(broadcast);
+        sb.append(", customRetryHandling=").append(customRetryHandling);
         sb.append(", destination='").append(messageDestination).append('\'');
         sb.append(", parameters=").append(parameters);
+        sb.append(", retryHandlerSubject=").append(retryHandlerSubject);
         sb.append('}');
         return sb.toString();
     }

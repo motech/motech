@@ -678,6 +678,8 @@ public class TaskServiceImpl implements TaskService {
                     existing.setTrigger(task.getTrigger());
                     existing.setName(task.getName());
                     existing.setValidationErrors(task.getValidationErrors());
+                    existing.setNumberOfRetries(task.getNumberOfRetries());
+                    existing.setRetryIntervalInMilliseconds(task.getRetryIntervalInMilliseconds());
 
                     checkChannelAvailableInTask(existing);
 

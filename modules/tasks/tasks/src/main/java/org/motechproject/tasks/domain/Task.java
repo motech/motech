@@ -30,6 +30,9 @@ import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 @Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class Task {
 
+    private static final int DEFAULT_NUMBER_FOR_TASK_RETRIES = 0;
+    private static final int DEFAULT_TIME_FOR_RETRY_INTERVAL = 0;
+
     @Field
     private Long id;
 
@@ -64,6 +67,12 @@ public class Task {
 
     @Field
     private boolean hasRegisteredChannel;
+
+    @Field
+    private int numberOfRetries;
+
+    @Field
+    private int retryIntervalInMilliseconds;
 
     /**
      * Constructor.
@@ -103,6 +112,8 @@ public class Task {
         this.taskConfig = taskConfig == null ? new TaskConfig() : taskConfig;
         this.validationErrors = new HashSet<>();
         this.failuresInRow = 0;
+        this.numberOfRetries = DEFAULT_NUMBER_FOR_TASK_RETRIES;
+        this.retryIntervalInMilliseconds = DEFAULT_TIME_FOR_RETRY_INTERVAL;
     }
 
     /**
@@ -228,6 +239,22 @@ public class Task {
 
     public void setTaskConfig(TaskConfig taskConfig) {
         this.taskConfig = taskConfig;
+    }
+
+    public int getNumberOfRetries() {
+        return numberOfRetries;
+    }
+
+    public void setNumberOfRetries(int numberOfRetries) {
+        this.numberOfRetries = numberOfRetries;
+    }
+
+    public int getRetryIntervalInMilliseconds() {
+        return retryIntervalInMilliseconds;
+    }
+
+    public void setRetryIntervalInMilliseconds(int retryIntervalInMilliseconds) {
+        this.retryIntervalInMilliseconds = retryIntervalInMilliseconds;
     }
 
     @Override
