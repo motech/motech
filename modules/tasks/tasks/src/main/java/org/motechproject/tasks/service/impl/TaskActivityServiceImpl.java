@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -29,9 +30,9 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     }
 
     @Override
-    public void addError(Task task, TaskHandlerException e) {
+    public void addError(Task task, TaskHandlerException e, Map<String, Object> parameters) {
         taskActivitiesDataService.create(new TaskActivity(e.getMessage(), e.getArgs(), task.getId(),
-                TaskActivityType.ERROR, ExceptionUtils.getStackTrace(e)));
+                TaskActivityType.ERROR, ExceptionUtils.getStackTrace(e), parameters));
     }
 
     @Override
@@ -63,6 +64,11 @@ public class TaskActivityServiceImpl implements TaskActivityService {
         for (TaskActivity msg : taskActivitiesDataService.byTask(taskId)) {
             taskActivitiesDataService.delete(msg);
         }
+    }
+
+    @Override
+    public TaskActivity getTaskActivityById(Long activityId) {
+        return taskActivitiesDataService.findById(activityId);
     }
 
     @Override

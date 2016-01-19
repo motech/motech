@@ -1,5 +1,6 @@
 package org.motechproject.tasks.service;
 
+import org.motechproject.commons.api.DataProvider;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
 
@@ -28,4 +29,24 @@ public interface TriggerHandler {
      */
     void handle(MotechEvent event) throws TriggerNotFoundException;
 
+    /**
+     * Retries task execution for activity with the given ID.
+     *
+     * @param activityId the ID of activity for which task should be retried
+     */
+    void retryTask(Long activityId);
+
+    /**
+     * Adds {@link org.motechproject.commons.api.DataProvider} for this handler.
+     *
+     * @param provider DataProvider to be added
+     */
+    void addDataProvider(DataProvider provider);
+
+    /**
+     * Removes {@link org.motechproject.commons.api.DataProvider} from this handler.
+     *
+     * @param taskDataProviderId ID of the DataProvider to be removed, passed as a String
+     */
+    void removeDataProvider(String taskDataProviderId);
 }

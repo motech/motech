@@ -16,8 +16,10 @@ import org.motechproject.tasks.service.TaskActivityService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
@@ -65,14 +67,16 @@ public class TaskActivityServiceImplTest {
     public void shouldAddErrorActivityWithTaskException() {
         String messageKey = "error.notFoundTrigger";
         TaskHandlerException exception = new TaskHandlerException(TRIGGER, messageKey, ERROR_FIELD.get(0));
+        Map<String, Object> errorParameters = new HashMap<>();
+        errorParameters.put("errorKey", "errorValue");
 
         ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
 
-        activityService.addError(task, exception);
+        activityService.addError(task, exception, errorParameters);
 
         verify(taskActivitiesDataService).create(captor.capture());
 
-        assertActivity(messageKey, ERROR_FIELD, TASK_ID, TaskActivityType.ERROR, getStackTrace(exception), captor.getValue());
+        assertActivity(messageKey, ERROR_FIELD, TASK_ID, TaskActivityType.ERROR, getStackTrace(exception), errorParameters, captor.getValue());
     }
 
     @Test
@@ -86,7 +90,7 @@ public class TaskActivityServiceImplTest {
         verify(taskActivitiesDataService).create(captor.capture());
 
         assertActivity(messageKey, Collections.<String>emptyList(), TASK_ID,
-                TaskActivityType.SUCCESS, null, captor.getValue());
+                TaskActivityType.SUCCESS, null, null, captor.getValue());
     }
 
     @Test
@@ -100,7 +104,7 @@ public class TaskActivityServiceImplTest {
         verify(taskActivitiesDataService).create(captor.capture());
 
         assertActivity(messageKey, Collections.<String>emptyList(), TASK_ID,
-                TaskActivityType.WARNING, null, captor.getValue());
+                TaskActivityType.WARNING, null, null, captor.getValue());
     }
 
     @Test
@@ -113,7 +117,7 @@ public class TaskActivityServiceImplTest {
 
         verify(taskActivitiesDataService).create(captor.capture());
 
-        assertActivity(messageKey, ERROR_FIELD, TASK_ID, TaskActivityType.WARNING, null, captor.getValue());
+        assertActivity(messageKey, ERROR_FIELD, TASK_ID, TaskActivityType.WARNING, null, null, captor.getValue());
     }
 
     @Test
@@ -127,7 +131,7 @@ public class TaskActivityServiceImplTest {
 
         verify(taskActivitiesDataService).create(captor.capture());
 
-        assertActivity(messageKey, ERROR_FIELD, TASK_ID, TaskActivityType.WARNING, getStackTrace(exception.getCause()), captor.getValue());
+        assertActivity(messageKey, ERROR_FIELD, TASK_ID, TaskActivityType.WARNING, getStackTrace(exception.getCause()), null, captor.getValue());
     }
 
     @Test
@@ -162,13 +166,14 @@ public class TaskActivityServiceImplTest {
     }
 
     private void assertActivity(String messageKey, List<String> field, Long taskId, TaskActivityType activityType,
-                                String stackTraceElement, TaskActivity activity) {
+                                String stackTraceElement, Map<String, Object> errorParams, TaskActivity activity) {
         assertNotNull(activity);
 
         assertEquals(messageKey, activity.getMessage());
         assertEquals(taskId, activity.getTask());
         assertEquals(activityType, activity.getActivityType());
         assertEquals(stackTraceElement, activity.getStackTraceElement());
+        assertEquals(errorParams, activity.getParameters());
 
         assertEquals(field, activity.getFields());
     }
