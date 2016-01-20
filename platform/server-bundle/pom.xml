@@ -293,7 +293,7 @@
                         <id>exec-npm-install</id>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <executable>npm</executable>
+                            <executable>${npm.cmd}</executable>
                             <arguments>
                                 <argument>install</argument>
                             </arguments>
@@ -306,7 +306,7 @@
                         <id>exec-gulp-header</id>
                         <phase>process-resources</phase>
                         <configuration>
-                            <executable>gulp</executable>
+                            <executable>${gulp.cmd}</executable>
                             <arguments>
                                 <argument>header</argument>
                                 <argument>--jsp</argument>
