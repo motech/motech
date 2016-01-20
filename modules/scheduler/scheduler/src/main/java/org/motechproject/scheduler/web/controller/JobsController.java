@@ -3,13 +3,15 @@ package org.motechproject.scheduler.web.controller;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
 import org.motechproject.scheduler.contract.JobsSearchSettings;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.web.domain.JobsRecords;
 import org.motechproject.scheduler.service.MotechSchedulerDatabaseService;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.sql.SQLException;
@@ -32,6 +34,9 @@ public class JobsController {
     @Autowired
     private MotechSchedulerDatabaseService motechSchedulerDatabaseService;
 
+    @Autowired
+    private MotechSchedulerService motechSchedulerService;
+
     private JobsRecords previousJobsRecords;
 
     /**
@@ -40,7 +45,7 @@ public class JobsController {
      * @param jobsSearchSettings  the setting by which returned records are sorted and filtered
      * @return sorted and filtered job records
      */
-    @RequestMapping({ "/jobs" })
+    @RequestMapping(value = "/jobs", method = RequestMethod.GET)
     @ResponseBody
     public JobsRecords retrieveJobInfo(JobsSearchSettings jobsSearchSettings) throws SchedulerException, SQLException {
         List<JobBasicInfo> jobs = motechSchedulerDatabaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
@@ -58,13 +63,44 @@ public class JobsController {
      * @param jobid  the jobs ID, not null
      * @return retailed information about job, null if {@code jobid} was null
      */
-    @RequestMapping({ "/jobs/{jobid}" })
+    @RequestMapping(value = "/job/details", method = RequestMethod.POST)
     @ResponseBody
-    public JobDetailedInfo retrieveJobDetailedInfo(@PathVariable int jobid) throws SchedulerException {
-        if (previousJobsRecords != null) {
-            return motechSchedulerDatabaseService.getScheduledJobDetailedInfo(previousJobsRecords.getRows().get(jobid - 1));
-        } else {
-            return null;
-        }
+    public JobDetailedInfo retrieveJobDetailedInfo(@RequestBody JobBasicInfo jobInfo) throws SchedulerException {
+        return motechSchedulerDatabaseService.getScheduledJobDetailedInfo(jobInfo);
+    }
+
+    /**
+     * Pauses the job based on the given {@code jobInfo}.
+     *
+     * @param jobInfo  the information about a job
+     * @return the updated job
+     */
+    @RequestMapping(value = "/job/pause", method = RequestMethod.POST)
+    @ResponseBody
+    public JobBasicInfo pauseJob(@RequestBody JobBasicInfo jobInfo) throws SchedulerException {
+        return motechSchedulerService.pauseJob(jobInfo);
+    }
+
+    /**
+     * Resumes the job based on the given {@code jobInfo}.
+     *
+     * @param jobInfo  the information about a job
+     * @return the updated job
+     */
+    @RequestMapping(value = "/job/resume", method = RequestMethod.POST)
+    @ResponseBody
+    public JobBasicInfo resumeJob(@RequestBody JobBasicInfo jobInfo) throws SchedulerException {
+        return motechSchedulerService.resumeJob(jobInfo);
+    }
+
+    /**
+     * Deletes the job based on the given {@code jobInfo}.
+     *
+     * @param jobInfo  the information about a job
+     */
+    @RequestMapping(value = "/job/delete", method = RequestMethod.POST)
+    @ResponseBody
+    public void deleteJob(@RequestBody JobBasicInfo jobInfo) throws SchedulerException {
+        motechSchedulerService.deleteJob(jobInfo);
     }
 }
