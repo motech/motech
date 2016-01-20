@@ -5,6 +5,7 @@ import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
 import org.motechproject.tasks.service.TaskActivityService;
+import org.motechproject.tasks.service.TriggerHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,7 @@ import java.util.Set;
 public class ActivityController {
 
     private TaskActivityService activityService;
+    private TriggerHandler taskTriggerHandler;
 
     /**
      * Controller constructor.
@@ -31,8 +33,9 @@ public class ActivityController {
      * @param activityService  the activity service, not null
      */
     @Autowired
-    public ActivityController(final TaskActivityService activityService) {
+    public ActivityController(final TaskActivityService activityService, TriggerHandler taskTriggerHandler) {
         this.activityService = activityService;
+        this.taskTriggerHandler = taskTriggerHandler;
     }
 
     /**
@@ -92,5 +95,25 @@ public class ActivityController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteActivitiesForTask(@PathVariable Long taskId) {
         activityService.deleteActivitiesForTask(taskId);
+    }
+
+    /**
+     * Retries task execution for activity with the given ID.
+     *
+     * @param activityId the ID of activity for which task should be retried
+     */
+    @RequestMapping(value = "/activity/retry/{activityId}", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void retryTask(@PathVariable Long activityId) {
+        //Retry of the task is run in new thread to avoid blocking UI, so user will be able
+        //to continue using MOTECH while retry is running in background. It also allow us to inform
+        //user immediately about request successfuly reaching controller.
+        Thread retryThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                taskTriggerHandler.retryTask(activityId);
+            }
+        });
+        retryThread.start();
     }
 }

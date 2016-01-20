@@ -14,6 +14,7 @@ import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
+import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.TaskHandlerException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
@@ -23,8 +24,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ReflectionUtils;
 
+import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -54,34 +57,36 @@ public class TaskTriggerHandler implements TriggerHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskTriggerHandler.class);
 
+    @Autowired
     private TaskService taskService;
-    private TaskActivityService activityService;
-    private EventListenerRegistryService registryService;
-    private EventRelay eventRelay;
-    private SettingsFacade settings;
-    private Map<String, DataProvider> dataProviders;
-
-    private TaskActionExecutor executor;
 
     @Autowired
-    public TaskTriggerHandler(TaskService taskService, TaskActivityService activityService,
-                              EventListenerRegistryService registryService, EventRelay eventRelay,
-                              TaskActionExecutor taskActionExecutor,
-                              @Qualifier("tasksSettings") SettingsFacade settings) {
-        this.taskService = taskService;
-        this.activityService = activityService;
-        this.registryService = registryService;
-        this.eventRelay = eventRelay;
-        this.settings = settings;
-        this.executor = taskActionExecutor;
+    private TaskActivityService activityService;
 
+    @Autowired
+    private EventListenerRegistryService registryService;
+
+    @Autowired
+    private EventRelay eventRelay;
+
+    @Autowired
+    @Qualifier("tasksSettings")
+    private SettingsFacade settings;
+
+    @Autowired
+    private TaskActionExecutor executor;
+
+    private Map<String, DataProvider> dataProviders;
+
+    @PostConstruct
+    public void init() {
         for (Task task : taskService.getAllTasks()) {
             registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
         }
     }
 
     @Override
-    public final void registerHandlerFor(String subject) {
+    public void registerHandlerFor(String subject) {
         LOGGER.info("Registering handler for {}", subject);
 
         String serviceName = "taskTriggerHandler";
@@ -123,31 +128,44 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         List<Task> tasks = taskService.findActiveTasksForTrigger(trigger);
 
+        // Handle all tasks one by one
         for (Task task : tasks) {
-            TaskContext taskContext = new TaskContext(task, parameters, activityService);
-            TaskInitializer initializer = new TaskInitializer(taskContext);
+            handleTask(task, parameters);
+        }
+    }
 
-            try {
-                LOGGER.info("Executing all actions from task: {}", task.getName());
-                if (initializer.evalConfigSteps(dataProviders)) {
-                    for (TaskActionInformation action : task.getActions()) {
-                        executor.execute(task, action, taskContext);
-                    }
-                    handleSuccess(parameters, task);
+    @Override
+    @Transactional
+    public void retryTask(Long activityId) {
+        TaskActivity activity = activityService.getTaskActivityById(activityId);
+        handleTask(taskService.getTask(activity.getTask()), activity.getParameters());
+    }
+
+    private void handleTask(Task task, Map<String, Object> parameters) {
+
+        TaskContext taskContext = new TaskContext(task, parameters, activityService);
+        TaskInitializer initializer = new TaskInitializer(taskContext);
+
+        try {
+            LOGGER.info("Executing all actions from task: {}", task.getName());
+            if (initializer.evalConfigSteps(dataProviders)) {
+                for (TaskActionInformation action : task.getActions()) {
+                    executor.execute(task, action, taskContext);
                 }
-                LOGGER.warn("Actions from task: {} weren't executed, because config steps didn't pass the evaluation", task.getName());
-            } catch (TaskHandlerException e) {
-                handleError(parameters, task, e);
-            } catch (RuntimeException e) {
-                handleError(parameters, task, new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e));
+                handleSuccess(parameters, task);
             }
+            LOGGER.warn("Actions from task: {} weren't executed, because config steps didn't pass the evaluation", task.getName());
+        } catch (TaskHandlerException e) {
+            handleError(parameters, task, e);
+        } catch (RuntimeException e) {
+            handleError(parameters, task, new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e));
         }
     }
 
     private void handleError(Map<String, Object> params, Task task, TaskHandlerException e) {
         LOGGER.warn("Omitted task: {} with ID: {} because: {}", task.getName(), task.getId(), e);
 
-        activityService.addError(task, e);
+        activityService.addError(task, e, params);
         task.incrementFailuresInRow();
 
         LOGGER.warn("The number of failures for task: {} is: {}", task.getName(), task.getFailuresInRow());
@@ -173,11 +191,13 @@ public class TaskTriggerHandler implements TriggerHandler {
         errorParam.put(TASK_FAIL_TASK_ID, task.getId());
         errorParam.put(TASK_FAIL_TASK_NAME, task.getName());
 
-        params.put(HANDLER_ERROR_PARAM, errorParam);
+        Map<String, Object> errorEventParam = new HashMap<>();
+        errorEventParam.putAll(params);
+        errorEventParam.put(HANDLER_ERROR_PARAM, errorParam);
 
         eventRelay.sendEventMessage(new MotechEvent(
             createHandlerFailureSubject(task.getName(), e.getFailureCause()),
-            params
+            errorEventParam
         ));
     }
 
@@ -194,6 +214,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         ));
     }
 
+    @Override
     public void addDataProvider(DataProvider provider) {
         if (dataProviders == null) {
             dataProviders = new HashMap<>();
@@ -202,11 +223,13 @@ public class TaskTriggerHandler implements TriggerHandler {
         dataProviders.put(provider.getName(), provider);
     }
 
+    @Override
     public void removeDataProvider(String taskDataProviderId) {
         if (MapUtils.isNotEmpty(dataProviders)) {
             dataProviders.remove(taskDataProviderId);
         }
     }
+
 
     void setDataProviders(Map<String, DataProvider> dataProviders) {
         this.dataProviders = dataProviders;
@@ -242,5 +265,4 @@ public class TaskTriggerHandler implements TriggerHandler {
     public void setBundleContext(BundleContext bundleContext) {
         this.executor.setBundleContext(bundleContext);
     }
-
 }
