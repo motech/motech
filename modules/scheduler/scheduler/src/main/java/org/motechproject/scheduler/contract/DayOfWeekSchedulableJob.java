@@ -5,7 +5,6 @@ import org.motechproject.commons.date.model.DayOfWeek;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.event.MotechEvent;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +13,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 /**
  * Job that is scheduled on particular days of week
  */
-public final class DayOfWeekSchedulableJob implements SchedulableJob, Serializable {
+public final class DayOfWeekSchedulableJob extends SchedulableJob {
 
     private static final long serialVersionUID = 1L;
 

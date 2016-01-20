@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
+import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobId;
 import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
@@ -227,4 +228,26 @@ public interface MotechSchedulerService {
      */
     List<Date> getScheduledJobTimingsWithPrefix(String subject, String externalJobIdPrefix, Date startDate, Date endDate);
 
+    /**
+     * Pauses the job based on the given {@code info}.
+     *
+     * @param info  the information about a job
+     * @return the updated job
+     */
+    JobBasicInfo pauseJob(JobBasicInfo info);
+
+    /**
+     * Resumes the job based on the given {@code info}.
+     *
+     * @param info  the information about a job
+     * @return the updated job
+     */
+    JobBasicInfo resumeJob(JobBasicInfo info);
+
+    /**
+     * Deletes the job based on the given {@code info}.
+     *
+     * @param info  the information about a job
+     */
+    void deleteJob(JobBasicInfo info);
 }
