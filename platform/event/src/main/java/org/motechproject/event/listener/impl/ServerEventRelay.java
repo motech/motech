@@ -47,7 +47,7 @@ public class ServerEventRelay implements EventRelay, EventHandler {
     @Override
     public void sendEventMessage(MotechEvent event) {
         verifyEventNotNull(event);
-        Set<EventListener> listeners = getEventListeners(event);
+        Set<EventListener> listeners = getEventListeners(event.getSubject());
 
         if (!listeners.isEmpty()) {
             // We need to split the message for each listener to ensure the work units
@@ -60,7 +60,7 @@ public class ServerEventRelay implements EventRelay, EventHandler {
     @Override
     public void broadcastEventMessage(MotechEvent event) {
         verifyEventNotNull(event);
-        Set<EventListener> listeners = getEventListeners(event);
+        Set<EventListener> listeners = getEventListeners(event.getSubject());
 
         // broadcast the event if there are listeners for it, or if it should get proxied as an OSGi event,
         // since we don't keep track of OSGi listeners
@@ -98,7 +98,7 @@ public class ServerEventRelay implements EventRelay, EventHandler {
      */
     public void relayTopicEvent(MotechEvent event) {
         verifyEventNotNull(event);
-        Set<EventListener> listeners = getEventListeners(event);
+        Set<EventListener> listeners = getEventListeners(event.getSubject());
         for (EventListener listener : listeners) {
             handleTopicEvent(listener, event);
         }
@@ -149,22 +149,36 @@ public class ServerEventRelay implements EventRelay, EventHandler {
         try {
             Object target = MotechProxyUtils.getTargetIfProxied(listener);
             Thread.currentThread().setContextClassLoader(target.getClass().getClassLoader());
-            listener.handle(event);
 
+            listener.handle(event);
         } catch (RuntimeException e) {
             LOGGER.error("Handling error for event with subject {}", event.getSubject(), e);
 
-            event.setInvalid(true);
-            event.setMessageDestination(listener.getIdentifier());
+            if (event.isCustomRetryHandling()) {
+                event.setExceptionFromListener(e);
 
-            if (event.getMessageRedeliveryCount() == motechEventConfig.getMessageMaxRedeliveryCount()) {
-                event.setDiscarded(true);
-                LOGGER.error("Discarding Motech event {}. Max retry count reached.", event);
-                throw e;
+                Set<EventListener> retryHandlers = getEventListeners(event.getRetryHandlerSubject());
+                if (retryHandlers.isEmpty()) {
+                    LOGGER.error("There is no custom retry handler for event with subject {}", event.getSubject());
+                    throw e;
+                }
+
+                for (EventListener retryHandler : retryHandlers) {
+                    retryHandler.handle(event);
+                }
+            } else {
+                event.setInvalid(true);
+                event.setMessageDestination(listener.getIdentifier());
+
+                if (event.getMessageRedeliveryCount() == motechEventConfig.getMessageMaxRedeliveryCount()) {
+                    event.setDiscarded(true);
+                    LOGGER.error("Discarding Motech event {}. Max retry count reached.", event);
+                    throw e;
+                }
+
+                event.incrementMessageRedeliveryCount();
+                outboundEventGateway.sendEventMessage(event);
             }
-
-            event.incrementMessageRedeliveryCount();
-            outboundEventGateway.sendEventMessage(event);
         } finally {
             Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
@@ -206,19 +220,17 @@ public class ServerEventRelay implements EventRelay, EventHandler {
      */
     private void splitEvent(MotechEvent event, Set<EventListener> listeners) {
         MotechEvent enrichedEventMessage;
-        Map<String, Object> parameters;
 
         for (EventListener listener : listeners) {
-            parameters = new HashMap<>();
-            parameters.putAll(event.getParameters());
-            enrichedEventMessage = new MotechEvent(event.getSubject(), parameters);
+            enrichedEventMessage = copyMotechEvent(event);
             enrichedEventMessage.setMessageDestination(listener.getIdentifier());
+
             outboundEventGateway.sendEventMessage(enrichedEventMessage);
         }
     }
 
     private EventListener getEventListener(MotechEvent event, String identifier) {
-        Set<EventListener> listeners = getEventListeners(event);
+        Set<EventListener> listeners = getEventListeners(event.getSubject());
         for (EventListener listener : listeners) {
             if (listener.getIdentifier().equals(identifier)) {
                 return listener;
@@ -227,14 +239,14 @@ public class ServerEventRelay implements EventRelay, EventHandler {
         return null;
     }
 
-    private Set<EventListener> getEventListeners(MotechEvent event) {
+    private Set<EventListener> getEventListeners(String eventSubject) {
         if (eventListenerRegistry == null) {
             throw new IllegalStateException("eventListenerRegistry is null");
         }
 
-        Set<EventListener> listeners = eventListenerRegistry.getListeners(event.getSubject());
+        Set<EventListener> listeners = eventListenerRegistry.getListeners(eventSubject);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("found {} event listeners for {} in {}", listeners.size(), event.getSubject(), eventListenerRegistry);
+            LOGGER.debug("found {} event listeners for {} in {}", listeners.size(), eventSubject, eventListenerRegistry);
         }
         return listeners;
     }
@@ -256,7 +268,9 @@ public class ServerEventRelay implements EventRelay, EventHandler {
         copy.setInvalid(event.isInvalid());
         copy.setDiscarded(event.isDiscarded());
         copy.setBroadcast(event.isBroadcast());
+        copy.setCustomRetryHandling(event.isCustomRetryHandling());
         copy.setMessageDestination(event.getMessageDestination());
+        copy.setRetryHandlerSubject(event.getRetryHandlerSubject());
         return copy;
     }
 
