@@ -36,129 +36,9 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-testing-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-        </dependency>
-        <!-- web listener and proxy -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.http.proxy</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.framework</artifactId>
-        </dependency>
-        <!-- server web app dependencies -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-digester</groupId>
-            <artifactId>commons-digester</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-validator</groupId>
-            <artifactId>commons-validator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>com.springsource.javax.servlet</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-        </dependency>
-        <!-- Felix bundles needed at runtime -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.http.bridge</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.shell</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.eventadmin</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Core bundles needed at runtime -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-event</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-config</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-web-security</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-osgi-web-util</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-bundle</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-commons-api</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-admin</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
         </dependency>
     </dependencies>
 
@@ -197,7 +77,7 @@
                                     <goal>copy-dependencies</goal>
                                 </goals>
                                 <configuration>
-                                    <excludeArtifactIds>motech-platform-server,org.osgi.core,jstl,servlet-api,org.apache.felix.framework,org.apache.felix.http.proxy</excludeArtifactIds>
+                                    <excludeArtifactIds>motech-platform-server</excludeArtifactIds>
                                     <includeScope>provided</includeScope>
                                     <includeScope>compile</includeScope>
                                     <stripVersion>false</stripVersion>
@@ -232,30 +112,30 @@
                             </defineStatements>
 
                             <requires>
-                                <require>tomcat7 &gt;= 7.0</require>
-                                <require>java7</require>
+                                <require>tomcat &gt;= 7.0</require>
+                                <require>jre &gt;= 1.8</require>
                             </requires>
 
                             <mappings>
                                 <mapping>
-                                    <directory>/var/log/motech/motech-default</directory>
-                                    <username>motech-default</username>
-                                    <groupname>motech-default</groupname>
+                                    <directory>/var/log/motech</directory>
+                                    <username>motech</username>
+                                    <groupname>motech</groupname>
                                 </mapping>
                                 <mapping>
-                                    <directory>/var/cache/motech/motech-default</directory>
-                                    <username>motech-default</username>
-                                    <groupname>motech-default</groupname>
+                                    <directory>/var/cache/motech</directory>
+                                    <username>motech</username>
+                                    <groupname>motech</groupname>
                                 </mapping>
                                 <mapping>
-                                    <directory>/var/lib/motech/motech-default</directory>
-                                    <username>motech-default</username>
-                                    <groupname>motech-default</groupname>
+                                    <directory>/var/lib/motech</directory>
+                                    <username>motech</username>
+                                    <groupname>motech</groupname>
                                 </mapping>
                                 <mapping>
-                                    <directory>/var/lib/motech/motech-default/webapps</directory>
-                                    <username>motech-default</username>
-                                    <groupname>motech-default</groupname>
+                                    <directory>/var/lib/motech/webapps</directory>
+                                    <username>motech</username>
+                                    <groupname>motech</groupname>
                                     <sources>
                                         <source>
                                             <location>${project.build.directory}/content/war/</location>
@@ -263,9 +143,9 @@
                                     </sources>
                                 </mapping>
                                 <mapping>
-                                    <directory>/var/lib/motech/motech-default/data/bundles</directory>
-                                    <username>motech-default</username>
-                                    <groupname>motech-default</groupname>
+                                    <directory>/var/lib/motech/data/bundles</directory>
+                                    <username>motech</username>
+                                    <groupname>motech</groupname>
                                     <sources>
                                         <source>
                                             <location>${project.build.directory}/content/bundles/</location>
@@ -273,27 +153,27 @@
                                     </sources>
                                 </mapping>
                                 <mapping>
-                                    <directory>/var/lib/motech/motech-default/data/config</directory>
-                                    <username>motech-default</username>
-                                    <groupname>motech-default</groupname>
+                                    <directory>/var/lib/motech/data/config</directory>
+                                    <username>motech</username>
+                                    <groupname>motech</groupname>
                                 </mapping>
                                 <mapping>
-                                    <directory>/var/cache/motech/motech-default/temp</directory>
-                                    <username>motech-default</username>
-                                    <groupname>motech-default</groupname>
+                                    <directory>/var/cache/motech/temp</directory>
+                                    <username>motech</username>
+                                    <groupname>motech</groupname>
                                 </mapping>
                                 <mapping>
-                                    <directory>/var/cache/motech/motech-default/felix-cache</directory>
-                                    <username>motech-default</username>
-                                    <groupname>motech-default</groupname>
+                                    <directory>/var/cache/motech/felix-cache</directory>
+                                    <username>motech</username>
+                                    <groupname>motech</groupname>
                                 </mapping>
                                 <mapping>
-                                    <directory>/var/cache/motech/motech-default/work</directory>
-                                    <username>motech-default</username>
-                                    <groupname>motech-default</groupname>
+                                    <directory>/var/cache/motech/work</directory>
+                                    <username>motech</username>
+                                    <groupname>motech</groupname>
                                 </mapping>
                                 <mapping>
-                                    <directory>/etc/motech/motech-default</directory>
+                                    <directory>/etc/motech</directory>
                                     <username>root</username>
                                     <groupname>root</groupname>
                                     <sources>
@@ -314,17 +194,7 @@
                                     </sources>
                                 </mapping>
                                 <mapping>
-                                    <directory>/usr/share/motech/</directory>
-                                    <username>root</username>
-                                    <groupname>root</groupname>
-                                    <sources>
-                                        <source>
-                                            <location>${project.parent.relativePath}/packaging/motech-manage-tenants</location>
-                                        </source>
-                                    </sources>
-                                </mapping>
-                                <mapping>
-                                    <directory>/usr/share/motech/motech-default</directory>
+                                    <directory>/usr/share/motech</directory>
                                     <username>root</username>
                                     <groupname>root</groupname>
                                     <sources>
