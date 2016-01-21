@@ -1,9 +1,8 @@
 package org.motechproject.scheduler.contract;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
-
-import java.util.Date;
 
 /**
  * Schedulable Job - a data carrier class for a scheduled job that can be fired set number of times
@@ -16,8 +15,8 @@ public class RepeatingSchedulableJob extends SchedulableJob {
     private MotechEvent motechEvent;
     private Integer repeatCount;
     private Integer repeatIntervalInSeconds;
-    private Date startTime;
-    private Date endTime;
+    private DateTime startTime;
+    private DateTime endTime;
     private boolean ignorePastFiresAtStart;
     private boolean useOriginalFireTimeAfterMisfire;
 
@@ -37,11 +36,12 @@ public class RepeatingSchedulableJob extends SchedulableJob {
      * @param motechEvent  the {@code MotechEvent} which will be fired when the job triggers, not null
      * @param repeatCount  the number of times job should be repeated, null treated as infinite
      * @param repeatIntervalInSeconds  the interval(in seconds) between job fires
-     * @param startTime  the {@code Date} at which job should become ACTIVE, not null
-     * @param endTime  the {@code Date} at which job should be stopped, null treated as never end
+     * @param startTime  the {@code DateTime} at which job should become ACTIVE, not null
+     * @param endTime  the {@code DateTime} at which job should be stopped, null treated as never end
      * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not
      */
-    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Integer repeatCount, final Integer repeatIntervalInSeconds, final Date startTime, final Date endTime, boolean ignorePastFiresAtStart) {
+    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Integer repeatCount, final Integer repeatIntervalInSeconds,
+                                   final DateTime startTime, final DateTime endTime, boolean ignorePastFiresAtStart) {
         this.motechEvent = motechEvent;
         this.repeatCount = repeatCount;
         this.repeatIntervalInSeconds = repeatIntervalInSeconds;
@@ -56,11 +56,12 @@ public class RepeatingSchedulableJob extends SchedulableJob {
      *
      * @param motechEvent  the {@code MotechEvent} which will be fired when the job triggers, not null
      * @param repeatIntervalInSeconds  the interval(in seconds) between job fires
-     * @param startTime  the {@code Date} at which job should become ACTIVE, not null
-     * @param endTime  the {@code Date} at which job should be stopped, null treated as never end
+     * @param startTime  the {@code DateTime} at which job should become ACTIVE, not null
+     * @param endTime  the {@code DateTime} at which job should be stopped, null treated as never end
      * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not
      */
-    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Integer repeatIntervalInSeconds, final Date startTime, final Date endTime, boolean ignorePastFiresAtStart) {
+    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Integer repeatIntervalInSeconds,
+                                   final DateTime startTime, final DateTime endTime, boolean ignorePastFiresAtStart) {
         this(motechEvent, null, repeatIntervalInSeconds, startTime, endTime, ignorePastFiresAtStart);
     }
 
@@ -73,20 +74,20 @@ public class RepeatingSchedulableJob extends SchedulableJob {
         return this;
     }
 
-    public Date getStartTime() {
+    public DateTime getStartTime() {
         return startTime;
     }
 
-    public RepeatingSchedulableJob setStartTime(final Date startTime) {
+    public RepeatingSchedulableJob setStartTime(final DateTime startTime) {
         this.startTime = startTime;
         return this;
     }
 
-    public Date getEndTime() {
+    public DateTime getEndTime() {
         return endTime;
     }
 
-    public RepeatingSchedulableJob setEndTime(final Date endTime) {
+    public RepeatingSchedulableJob setEndTime(final DateTime endTime) {
         this.endTime = endTime;
         return this;
     }
