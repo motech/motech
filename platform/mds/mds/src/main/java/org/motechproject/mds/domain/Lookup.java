@@ -7,12 +7,15 @@ import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.ValidationUtil;
 
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.Join;
+import javax.jdo.annotations.Key;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.Value;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,19 +58,26 @@ public class Lookup {
     @Join
     private List<Field> fields;
 
-    @Persistent(defaultFetchGroup = TRUE)
+    @Join
+    @Element(column = "fieldName")
     private List<String> fieldsOrder;
 
-    @Persistent(defaultFetchGroup = TRUE)
+    @Join
+    @Element(column = "fieldName")
     private List<String> rangeLookupFields;
 
-    @Persistent(defaultFetchGroup = TRUE)
+    @Join
+    @Element(column = "fieldName")
     private List<String> setLookupFields;
 
-    @Persistent(defaultFetchGroup = TRUE)
+    @Join
+    @Key(column = "key")
+    @Value(column = "value")
     private Map<String, String> customOperators;
 
-    @Persistent(defaultFetchGroup = TRUE)
+    @Join
+    @Key(column = "key")
+    @Value(column = "value")
     private Map<String, Boolean> useGenericParams;
 
     public Lookup() {

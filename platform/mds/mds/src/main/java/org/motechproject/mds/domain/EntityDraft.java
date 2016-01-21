@@ -5,11 +5,15 @@ import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 
 import javax.jdo.annotations.Column;
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
+import javax.jdo.annotations.Join;
+import javax.jdo.annotations.Key;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.Value;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -40,10 +44,13 @@ public class EntityDraft extends Entity {
     @Persistent
     private boolean changesMade;
 
-    @Persistent
+    @Join
+    @Key(column = "key")
+    @Value(column = "value")
     private Map<String, String> fieldNameChanges = new HashMap<>();
 
-    @Persistent
+    @Join
+    @Element(column = "fieldName")
     private Set<String> uniqueIndexesToDrop = new HashSet<>();
 
     @Override
