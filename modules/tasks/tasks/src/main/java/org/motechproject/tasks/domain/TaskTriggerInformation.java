@@ -73,4 +73,15 @@ public class TaskTriggerInformation extends TaskEventInformation {
     public String getEffectiveListenerSubject() {
         return StringUtils.isEmpty(triggerListenerSubject) ? super.getSubject() : triggerListenerSubject;
     }
+
+    /**
+     * Convenient method for determining effective listener subject for task retries.
+     *
+     * @return the listener retry subject
+     */
+    @Ignore
+    @JsonIgnore
+    public String getEffectiveListenerRetrySubject() {
+        return getEffectiveListenerSubject() + ".handleRetries";
+    }
 }

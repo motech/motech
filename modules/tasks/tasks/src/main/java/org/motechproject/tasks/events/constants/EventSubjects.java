@@ -21,6 +21,9 @@ public final class EventSubjects {
     public static final String DATA_PROVIDER_SUBJECT = BASE_SUBJECT + "dataProvider.";
     public static final String DATA_PROVIDER_UPDATE_SUBJECT = DATA_PROVIDER_SUBJECT + "update";
 
+    public static final String SCHEDULE_JOB = "scheduleJob";
+    public static final String UNSCHEDULE_JOB = "unscheduleJob";
+
     /**
      * Creates a subject used by the task trigger handler to send an event notifying about successful task execution.
      *

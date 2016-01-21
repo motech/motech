@@ -128,7 +128,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         addOrUpdate(task);
-        registerHandler(task.getTrigger().getEffectiveListenerSubject());
+        registerHandler(task);
         LOGGER.info("Saved task: {} with ID: {}", task.getName(), task.getId());
         return errors;
     }
@@ -678,6 +678,8 @@ public class TaskServiceImpl implements TaskService {
                     existing.setTrigger(task.getTrigger());
                     existing.setName(task.getName());
                     existing.setValidationErrors(task.getValidationErrors());
+                    existing.setNumberOfRetries(task.getNumberOfRetries());
+                    existing.setRetryIntervalInMilliseconds(task.getRetryIntervalInMilliseconds());
 
                     checkChannelAvailableInTask(existing);
 
@@ -694,13 +696,17 @@ public class TaskServiceImpl implements TaskService {
         LOGGER.info("Saved task: {}", task.getName());
     }
 
-    private void registerHandler(String effectiveListenerSubject) {
+    private void registerHandler(Task task) {
         // We cannot simply autowire trigger handler bean, since that would create
         // circular dependency between TaskService and TriggerHandler
         ServiceReference<TriggerHandler> serviceReference = bundleContext.getServiceReference(TriggerHandler.class);
         if (serviceReference != null) {
             TriggerHandler triggerHandler = bundleContext.getService(serviceReference);
-            triggerHandler.registerHandlerFor(effectiveListenerSubject);
+            triggerHandler.registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
+
+            if (task.retryTaskOnFailure()) {
+                triggerHandler.registerHandlerFor(task.getTrigger().getEffectiveListenerRetrySubject(), true);
+            }
         }
     }
 

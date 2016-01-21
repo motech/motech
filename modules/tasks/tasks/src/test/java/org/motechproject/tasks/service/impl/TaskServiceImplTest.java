@@ -156,6 +156,22 @@ public class TaskServiceImplTest {
     }
 
     @Test(expected = ValidationException.class)
+    public void shouldNotSaveTaskWithInvalidRetryNumberValue() {
+        Task t = new Task("name", trigger, asList(action));
+        t.setNumberOfRetries(-3);
+
+        taskService.save(t);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void shouldNotSaveTaskWithInvalidRetryIntervalValue() {
+        Task t = new Task("name", trigger, asList(action));
+        t.setRetryIntervalInMilliseconds(-10);
+
+        taskService.save(t);
+    }
+
+    @Test(expected = ValidationException.class)
     public void shouldNotSaveTaskWithoutName() {
         Task t = new Task(null, trigger, asList(action));
 
@@ -226,6 +242,8 @@ public class TaskServiceImplTest {
 
         taskService.save(task);
         verify(triggerHandler).registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
+        // When task has not set number of retries, it should not register handler for retries
+        verifyNoMoreInteractions(triggerHandler);
 
         verifyCreateAndCaptureTask();
     }
@@ -240,6 +258,7 @@ public class TaskServiceImplTest {
         action.setValues(map);
 
         Task task = new Task("name", trigger, asList(action), config, true, false);
+        task.setNumberOfRetries(5);
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")), "")), null);
 
         ActionEvent actionEvent = new ActionEventBuilder().setDisplayName("receive").setSubject("RECEIVE")
@@ -257,6 +276,8 @@ public class TaskServiceImplTest {
 
         taskService.save(task);
         verify(triggerHandler).registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
+        // Because task has set number of retries to 5, it should register retries handler for this task
+        verify(triggerHandler).registerHandlerFor(task.getTrigger().getEffectiveListenerRetrySubject(), true);
 
         verifyCreateAndCaptureTask();
     }

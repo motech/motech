@@ -14,11 +14,21 @@ public interface TriggerHandler {
     /**
      * Registers this handler to listen for events with the given subject. This handler will now act as a MotechEvent
      * listener for the given subject and will get called by the event system when an event with the given subject is
-     * fired.
+     * fired. By default handler is for task trigger.
      *
      * @param subject  the event subject, not null
      */
     void registerHandlerFor(String subject);
+
+    /**
+     * Registers this handler to listen for events with the given subject. This handler will now act as a MotechEvent
+     * listener for the given subject and will get called by the event system when an event with the given subject is
+     * fired.
+     *
+     * @param subject  the event subject, not null
+     * @param isRetryHandler true if handler is for task retries system; false otherwise
+     */
+    void registerHandlerFor(String subject, boolean isRetryHandler);
 
     /**
      * Handles the given event. This method is responsible for retrieving active tasks with triggers corresponding to
@@ -28,6 +38,13 @@ public interface TriggerHandler {
      * @throws TriggerNotFoundException if the trigger for the given event wasn't found
      */
     void handle(MotechEvent event) throws TriggerNotFoundException;
+
+    /**
+     * Handles the given event. This method is responsible for handling task retries.
+     *
+     * @param event  the event, not null
+     */
+    void handleRetry(MotechEvent event);
 
     /**
      * Retries task execution for activity with the given ID.
