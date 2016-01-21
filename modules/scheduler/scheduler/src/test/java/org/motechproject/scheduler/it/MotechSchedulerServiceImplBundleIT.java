@@ -53,7 +53,7 @@ import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.testing.utils.IdGenerator.id;
 import static org.motechproject.testing.utils.TimeFaker.fakeNow;
 import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
-import static org.quartz.Trigger.TriggerState.*;
+import static org.quartz.Trigger.TriggerState.NORMAL;
 import static org.quartz.Trigger.TriggerState.PAUSED;
 import static org.quartz.TriggerKey.triggerKey;
 
@@ -608,14 +608,17 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
     }
 
     @Test
-    public void shouldPauseJobIfItIsNotProgrammed() throws Exception {
+    public void shouldPauseJobIfItIsUiDefined() throws Exception {
         Map<String, Object> params = new HashMap<>();
         params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
 
         JobBasicInfo info = new JobBasicInfo(JobBasicInfo.ACTIVITY_ACTIVE, JobBasicInfo.STATUS_OK, "test_event-job_id",
                 "default", "start-time", "nex-fire-time", "end-time", JobBasicInfo.JOBTYPE_CRON, "test-info", false);
 
-        schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?"));
+        CronSchedulableJob job = new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?");
+        job.setUiDefined(true);
+
+        schedulerService.scheduleJob(job);
 
         assertEquals(NORMAL, scheduler.getTriggerState(triggerKey("test_event-job_id", "default")));
 
@@ -625,7 +628,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
     }
 
     @Test(expected = MotechSchedulerException.class)
-    public void shouldNotPauseJobIfItIsProgrammed() throws Exception {
+    public void shouldNotPauseJobIfItIsNotUiDefined() throws Exception {
         try {
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
@@ -634,10 +637,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
                     "test_event-job_id", "default", "start-time", "nex-fire-time", "end-time",
                     JobBasicInfo.JOBTYPE_CRON, "test-info", true);
 
-            CronSchedulableJob job = new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?");
-            job.setProgrammed(true);
-
-            schedulerService.scheduleJob(job);
+            schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?"));
 
             assertEquals(NORMAL, scheduler.getTriggerState(triggerKey("test_event-job_id", "default")));
 
@@ -659,15 +659,18 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
     }
 
     @Test
-    public void shouldResumeJobIfItIsNotProgrammed() throws Exception {
+    public void shouldResumeJobIfItIsUiDefined() throws Exception {
         Map<String, Object> params = new HashMap<>();
         params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
 
         JobBasicInfo info = new JobBasicInfo(JobBasicInfo.ACTIVITY_ACTIVE, JobBasicInfo.STATUS_PAUSED,
                 "test_event-job_id", "default", "start-time", "nex-fire-time", "end-time", JobBasicInfo.JOBTYPE_CRON,
-                "test-info", false);
+                "test-info", true);
 
-        schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?"));
+        CronSchedulableJob job = new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?");
+        job.setUiDefined(true);
+
+        schedulerService.scheduleJob(job);
         scheduler.pauseJob(new JobKey(info.getName(), info.getGroup()));
 
         assertEquals(PAUSED, scheduler.getTriggerState(triggerKey("test_event-job_id", "default")));
@@ -678,7 +681,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
     }
 
     @Test(expected = MotechSchedulerException.class)
-    public void shouldNotResumeJobIfItIsProgrammed() throws Exception {
+    public void shouldNotResumeJobIfItIsNotUiDefined() throws Exception {
         try {
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
@@ -687,10 +690,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
                     "test_event-job_id", "default", "start-time", "nex-fire-time", "end-time",
                     JobBasicInfo.JOBTYPE_CRON, "test-info", false);
 
-            CronSchedulableJob job = new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?");
-            job.setProgrammed(true);
-
-            schedulerService.scheduleJob(job);
+            schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?"));
             scheduler.pauseJob(new JobKey(info.getName(), info.getGroup()));
 
             assertEquals(PAUSED, scheduler.getTriggerState(triggerKey("test_event-job_id", "default")));
@@ -713,14 +713,17 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
     }
 
     @Test
-    public void shouldDeleteJobIfItIsNotProgrammed() throws Exception {
+    public void shouldDeleteJobIfItIsUiDefined() throws Exception {
         Map<String, Object> params = new HashMap<>();
         params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
 
         JobBasicInfo info = new JobBasicInfo(JobBasicInfo.ACTIVITY_ACTIVE, JobBasicInfo.STATUS_OK, "test_event-job_id",
                 "default", "start-time", "nex-fire-time", "end-time", JobBasicInfo.JOBTYPE_CRON, "test-info", false);
 
-        schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?"));
+        CronSchedulableJob job = new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?");
+        job.setUiDefined(true);
+
+        schedulerService.scheduleJob(job);
 
         schedulerService.deleteJob(info);
 
@@ -728,7 +731,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
     }
 
     @Test(expected = MotechSchedulerException.class)
-    public void shouldNotDeleteJobIfItIsProgrammed() throws Exception {
+    public void shouldNotDeleteJobIfItIsNotUiDefined() throws Exception {
         try {
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
@@ -737,10 +740,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
                     "test_event-job_id", "default", "start-time", "nex-fire-time", "end-time",
                     JobBasicInfo.JOBTYPE_CRON, "test-info", true);
 
-            CronSchedulableJob job = new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?");
-            job.setProgrammed(true);
-
-            schedulerService.scheduleJob(job);
+            schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?"));
 
             schedulerService.deleteJob(info);
         } finally {
