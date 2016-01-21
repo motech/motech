@@ -44,12 +44,12 @@ public class EntityDraft extends Entity {
     @Persistent
     private boolean changesMade;
 
-    @Join
+    @Join(table = "EntityDraft_fieldNameChanges", column = "id_OID")
     @Key(column = "key")
     @Value(column = "value")
     private Map<String, String> fieldNameChanges = new HashMap<>();
 
-    @Join
+    @Join(table = "EntityDraft_uniqueIndexesToDropV2", column = "id_OID")
     @Element(column = "fieldName")
     private Set<String> uniqueIndexesToDrop = new HashSet<>();
 

@@ -31,6 +31,7 @@ import static org.motechproject.mds.util.Constants.Util.TRUE;
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 public class Lookup {
+    private static final String LOOKUP_ID = "id_OID";
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
@@ -58,24 +59,24 @@ public class Lookup {
     @Join
     private List<Field> fields;
 
-    @Join
+    @Join(table = "Lookup_fieldsOrder", column = LOOKUP_ID)
     @Element(column = "fieldName")
     private List<String> fieldsOrder;
 
-    @Join
+    @Join(table = "Lookup_rangeLookupFields", column = LOOKUP_ID)
     @Element(column = "fieldName")
     private List<String> rangeLookupFields;
 
-    @Join
+    @Join(table = "Lookup_setLookupFields", column = LOOKUP_ID)
     @Element(column = "fieldName")
     private List<String> setLookupFields;
 
-    @Join
+    @Join(table = "Lookup_customOperators", column = LOOKUP_ID)
     @Key(column = "key")
     @Value(column = "value")
     private Map<String, String> customOperators;
 
-    @Join
+    @Join(table = "Lookup_userGenericParams", column = LOOKUP_ID)
     @Key(column = "key")
     @Value(column = "value")
     private Map<String, Boolean> useGenericParams;
