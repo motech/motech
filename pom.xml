@@ -51,6 +51,10 @@
         <scm.connection>scm:git:https://github.com/motech/motech.git</scm.connection>
         <scm.developerConnection>scm:git:https://github.com/motech/motech.git</scm.developerConnection>
         <scm.url>https://github.com/motech/motech.git</scm.url>
+
+        <npm.cmd>npm</npm.cmd>
+        <gulp.cmd>gulp</gulp.cmd>
+        <bower.cmd>bower</bower.cmd>
     </properties>
 
     <dependencies>
@@ -1612,6 +1616,19 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <npm.cmd>npm.cmd</npm.cmd>
+                <gulp.cmd>gulp.cmd</gulp.cmd>
+                <bower.cmd>bower.cmd</bower.cmd>
+            </properties>
         </profile>
     </profiles>
 

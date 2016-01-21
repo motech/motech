@@ -3,13 +3,12 @@ package org.motechproject.scheduler.contract;
 import org.apache.commons.lang.ObjectUtils;
 import org.motechproject.event.MotechEvent;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Schedulable Job - a data carrier class for a scheduled job that can be fired set number of times
  */
-public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
+public class RepeatingSchedulableJob extends SchedulableJob {
 
     private static final long serialVersionUID = 1L;
 

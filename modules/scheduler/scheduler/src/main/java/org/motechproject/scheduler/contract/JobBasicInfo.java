@@ -20,11 +20,13 @@ public class JobBasicInfo {
     private String activity;
     private String status;
     private String name;
+    private String group;
     private String startDate;
     private String nextFireDate;
     private String endDate;
     private String jobType;
     private String info;
+    private boolean programmed;
 
     public JobBasicInfo() {
 
@@ -43,15 +45,18 @@ public class JobBasicInfo {
      * @param info  the information about job, different for each type of Job
      */
     public JobBasicInfo(String activity, String status, String name, // NO CHECKSTYLE More than 7 parameters (found 8).
-                        String startDate, String nextFireDate, String endDate, String jobType, String info) {
+                        String group, String startDate, String nextFireDate, String endDate, String jobType,
+                        String info, boolean programmed) {
         this.activity = activity;
         this.status = status;
         this.name = name;
+        this.group = group;
         this.startDate = startDate;
         this.nextFireDate = nextFireDate;
         this.endDate = endDate;
         this.jobType = jobType;
         this.info = info;
+        this.programmed = programmed;
     }
 
     public String getActivity() {
@@ -76,6 +81,14 @@ public class JobBasicInfo {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 
     public String getStartDate() {
@@ -116,5 +129,13 @@ public class JobBasicInfo {
 
     public void setInfo(String info) {
         this.info = info;
+    }
+
+    public boolean isProgrammed() {
+        return programmed;
+    }
+
+    public void setProgrammed(boolean programmed) {
+        this.programmed = programmed;
     }
 }

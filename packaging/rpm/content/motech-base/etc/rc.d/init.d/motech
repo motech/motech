@@ -23,15 +23,15 @@
 # Source LSB function library.
 if [ -r /lib/lsb/init-functions ]; then
     . /lib/lsb/init-functions
-else
-    exit 1
+    LOG_FAILURE_MSG=log_failure_msg
+    LOG_SUCCESS_MSG=log_success_msg
 fi
 
 DISTRIB_ID=`lsb_release -i -s 2>/dev/null`
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
-NAME=motech-default
-CATALINA_TMPDIR=/var/cache/motech/motech-default/temp/
+NAME=motech
+CATALINA_TMPDIR=/var/cache/motech/temp/
 
 # For SELinux we need to use 'runuser' not 'su'
 if [ -x "/sbin/runuser" ]; then
@@ -41,7 +41,7 @@ else
 fi
 
 # Get the tomcat config (use this for environment specific settings)
-TOMCAT_CFG="/etc/motech/motech-default/motech.conf"
+TOMCAT_CFG="/etc/motech/motech.conf"
 
 # Get instance specific config file
 if [ -r "/etc/sysconfig/${NAME}" ]; then
@@ -52,25 +52,25 @@ fi
 #CONNECTOR_PORT="${CONNECTOR_PORT:-8080}"
 
 # Path to the tomcat launch script
-TOMCAT_SCRIPT="/usr/sbin/dtomcat7"
+TOMCAT_SCRIPT="/usr/sbin/tomcat"
 
 # Tomcat program name
 TOMCAT_PROG="${NAME}"
         
 # Define the tomcat username
-TOMCAT_USER=motech-default
+TOMCAT_USER=motech
 
 # Define the tomcat log file
-TOMCAT_LOG=/var/log/motech/motech-default/catalina.out
+TOMCAT_LOG=/var/log/motech/catalina.out
 
 # Define motech log file
-MOTECH_LOG=/var/log/motech/motech-default/
+MOTECH_LOG=/var/log/motech/
 
 # Directory where the Tomcat 7 binary distribution resides
-CATALINA_HOME=/usr/share/tomcat7
+CATALINA_HOME=/usr/share/tomcat
 
 # Directory for per-instance configuration files and webapps
-CATALINA_BASE=/usr/share/motech/motech-default
+CATALINA_BASE=/usr/share/motech
 
 # Time to wait in seconds, before killing process
 SHUTDOWN_WAIT="10"
@@ -133,7 +133,7 @@ function start() {
             read kpid < /var/run/${NAME}.pid
 
             if [ -d "/proc/${kpid}" ]; then
-                log_success_msg
+                $LOG_SUCCESS_MSG
                 if [ "$DISTRIB_ID" = "MandrivaLinux" ]; then
                     echo
                 fi
@@ -157,10 +157,10 @@ function start() {
     fi
     RETVAL="$?"
     if [ "$RETVAL" -eq 0 ]; then 
-        log_success_msg
+        $LOG_SUCCESS_MSG
         touch /var/lock/subsys/${NAME}
     else
-        log_failure_msg
+        $LOG_FAILURE_MSG
     fi
     if [ "$DISTRIB_ID" = "MandrivaLinux" ]; then
         echo
@@ -193,14 +193,14 @@ function stop() {
                     fi
                     kill -9 $kpid
                 fi
-                log_success_msg
+                $LOG_SUCCESS_MSG
             fi
             rm -f /var/lock/subsys/${NAME} /var/run/${NAME}.pid
         else
-            log_failure_msg
+            $LOG_FAILURE_MSG
         fi
     else
-        log_success_msg
+        $LOG_SUCCESS_MSG
     fi
     if [ "$DISTRIB_ID" = "MandrivaLinux" ]; then
         echo

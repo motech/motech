@@ -2,7 +2,6 @@ package org.motechproject.scheduler.contract;
 
 import org.motechproject.event.MotechEvent;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
@@ -14,7 +13,7 @@ import java.util.Objects;
  *         Date: 16/02/11
  *         Time: 1:43 PM
  */
-public class CronSchedulableJob implements SchedulableJob, Serializable {
+public class CronSchedulableJob extends SchedulableJob {
 
     private static final long serialVersionUID = 1L;
 
