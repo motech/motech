@@ -98,9 +98,9 @@ public class DashboardController {
         return ip.getHostName();
     }
 
-    @RequestMapping(value = "/isActivemqActive", method = RequestMethod.POST)
+    @RequestMapping(value = "/isInboundChannelActive", method = RequestMethod.POST)
     @ResponseBody
-    public boolean isActivemqActive() throws UnknownHostException {
+    public boolean isInboundChannelActive() throws UnknownHostException {
         return eventConsumerInfo.isRunning();
     }
 

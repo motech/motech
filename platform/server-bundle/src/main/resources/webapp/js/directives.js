@@ -258,10 +258,10 @@
         };
     });
 
-    widgetModule.directive('activemqActive', function ($http) {
+    widgetModule.directive('inboundChannelActive', function ($http) {
             return function (scope, element, attributes) {
                 var isActivemqActive = function() {
-                    $http.post('isActivemqActive').success( function(data, status) {
+                    $http.post('isInboundChannelActive').success( function(data, status) {
                         if (status === 200) {
                             var glyphicon = $('<span>').addClass('glyphicon').attr('aria-hidden', 'true');
                             if (data === 'true') {
