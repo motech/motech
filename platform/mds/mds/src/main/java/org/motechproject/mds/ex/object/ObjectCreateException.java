@@ -2,8 +2,10 @@ package org.motechproject.mds.ex.object;
 
 import org.motechproject.mds.ex.MdsException;
 
+import javax.jdo.JDODataStoreException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Set;
 
 /**
@@ -22,7 +24,13 @@ public class ObjectCreateException extends MdsException {
         if (cause instanceof ConstraintViolationException) {
             Set<ConstraintViolation<?>> violations = ((ConstraintViolationException) cause).getConstraintViolations();
             for (ConstraintViolation violation : violations) {
-                message += String.format("Field %s %s\n", violation.getPropertyPath(), violation.getMessage() );
+                message += String.format("Field %s %s\n", violation.getPropertyPath(), violation.getMessage());
+            }
+        } else if (cause instanceof JDODataStoreException) {
+            for (Throwable exception : ((JDODataStoreException) cause).getNestedExceptions()) {
+                if (exception instanceof SQLIntegrityConstraintViolationException) {
+                    message += exception.getMessage();
+                }
             }
         }
         return message;

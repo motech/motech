@@ -3784,7 +3784,11 @@
             $scope.currentRecord.$save(function() {
                 $scope.unselectInstance();
                 unblockUI();
-            }, angularHandler('mds.error', 'mds.error.cannotAddInstance'));
+            },
+            function failure(response) {
+                motechAlert('mds.error.param', 'mds.error.cannotAddInstance', response.data);
+                unblockUI();
+            });
         };
 
         /**

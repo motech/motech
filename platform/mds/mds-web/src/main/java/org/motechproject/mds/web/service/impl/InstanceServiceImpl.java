@@ -23,10 +23,9 @@ import org.motechproject.mds.ex.field.FieldNotFoundException;
 import org.motechproject.mds.ex.field.FieldReadOnlyException;
 import org.motechproject.mds.ex.lookup.LookupExecutionException;
 import org.motechproject.mds.ex.lookup.LookupNotFoundException;
-import org.motechproject.mds.ex.object.DuplicateEntryException;
 import org.motechproject.mds.ex.object.ObjectCreateException;
-import org.motechproject.mds.ex.object.ObjectUpdateException;
 import org.motechproject.mds.ex.object.ObjectNotFoundException;
+import org.motechproject.mds.ex.object.ObjectUpdateException;
 import org.motechproject.mds.ex.object.ObjectReadException;
 import org.motechproject.mds.ex.object.SecurityException;
 import org.motechproject.mds.filter.Filters;
@@ -68,7 +67,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.jdo.JDODataStoreException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -156,8 +154,6 @@ public class InstanceServiceImpl implements InstanceService {
             } else {
                 return service.update(instance);
             }
-        } catch (JDODataStoreException e) {
-            throw new DuplicateEntryException(entity.getName(), e);
         } catch (Exception e) {
             if (entityRecord.getId() == null) {
                 throw new ObjectCreateException(entity.getName(), e);
