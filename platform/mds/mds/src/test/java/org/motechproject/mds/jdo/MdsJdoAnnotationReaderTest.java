@@ -1,5 +1,6 @@
 package org.motechproject.mds.jdo;
 
+import org.datanucleus.metadata.FileMetaData;
 import org.datanucleus.metadata.MetaDataManager;
 import org.datanucleus.metadata.annotations.AnnotationManager;
 import org.datanucleus.metadata.annotations.AnnotationObject;
@@ -20,6 +21,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -58,12 +60,20 @@ public class MdsJdoAnnotationReaderTest {
 
     @Test
     public void shouldRecognizeEntityAnnotation() {
+        when(metaDataManager.getFileMetaData()).thenReturn(new FileMetaData[1]);
         AnnotationObject result = mdsJdoAnnotationReader.isClassPersistable(Record.class);
 
         assertEquals(PersistenceCapable.class.getName(), result.getName());
         assertNotNull(result.getNameValueMap());
         assertEquals(IdentityType.DATASTORE, result.getNameValueMap().get("identityType"));
         assertEquals("true", result.getNameValueMap().get("detachable"));
+    }
+
+    @Test
+    public void shouldNotRecognizeEntityAnnotationWhenFileMetadataIsEmpty() {
+        AnnotationObject result = mdsJdoAnnotationReader.isClassPersistable(Record.class);
+
+        assertNull(result);
     }
 
     @Test

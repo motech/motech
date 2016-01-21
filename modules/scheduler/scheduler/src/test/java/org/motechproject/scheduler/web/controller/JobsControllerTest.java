@@ -22,6 +22,9 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 
 public class JobsControllerTest {
+
+    private static final String DEFAULT_GROUP = "default-group";
+
     @InjectMocks
     JobsController jobsController = new JobsController();
 
@@ -43,22 +46,25 @@ public class JobsControllerTest {
 
         testJobBasicInfo1 = new JobBasicInfo(
                 JobBasicInfo.ACTIVITY_ACTIVE, JobBasicInfo.STATUS_OK, "myCronJobEvent-myJobIdKey_CronJob",
-                "2002-01-01 00:00:00", "2010-01-01 00:00:00", "-", "Cron", "0 0 10 * * ?"
+                DEFAULT_GROUP, "2002-01-01 00:00:00", "2010-01-01 00:00:00", "-", "Cron", "0 0 10 * * ?", false
         );
 
         testJobBasicInfo2 = new JobBasicInfo(
                 JobBasicInfo.ACTIVITY_FINISHED, JobBasicInfo.STATUS_PAUSED, "myDayOfWeekEvent-myJobIdKey_DayOfWeek",
-                "2001-01-01 00:00:00", "2010-01-01 00:00:00", "2011-01-01 00:00:00", "Cron", "0 10 12 ? * 4,5"
+                DEFAULT_GROUP, "2001-01-01 00:00:00", "2010-01-01 00:00:00", "2011-01-01 00:00:00",
+                "Cron", "0 10 12 ? * 4,5", false
         );
 
         testJobBasicInfo3 = new JobBasicInfo(
                 JobBasicInfo.ACTIVITY_NOTSTARTED, JobBasicInfo.STATUS_BLOCKED, "myRepeatingJobEvent-myJobIdKey_RepeatingJob-repeat",
-                "2003-01-01 00:00:00", "2010-01-01 00:00:00", "2010-01-01 00:00:00", JobBasicInfo.JOBTYPE_REPEATING, "2 / 12"
+                DEFAULT_GROUP, "2003-01-01 00:00:00", "2010-01-01 00:00:00", "2010-01-01 00:00:00",
+                JobBasicInfo.JOBTYPE_REPEATING, "2 / 12", false
         );
 
         testJobBasicInfo4 = new JobBasicInfo(
                 JobBasicInfo.ACTIVITY_NOTSTARTED, JobBasicInfo.STATUS_ERROR, "myRunOnceEvent-myJobIdKey_RunOnce-runonce",
-                "2004-01-01 00:00:00", "2010-01-01 00:00:00", "-", JobBasicInfo.JOBTYPE_RUNONCE, "-"
+                DEFAULT_GROUP, "2004-01-01 00:00:00", "2010-01-01 00:00:00", "-", JobBasicInfo.JOBTYPE_RUNONCE, "-",
+                false
         );
     }
 
@@ -82,7 +88,7 @@ public class JobsControllerTest {
         when(motechSchedulerDatabaseService.getScheduledJobsBasicInfo(jobsSearchSettings)).thenReturn(jobBasicInfos);
 
         jobsController.retrieveJobInfo(jobsSearchSettings);
-        jobsController.retrieveJobDetailedInfo(3);
+        jobsController.retrieveJobDetailedInfo(testJobBasicInfo3);
 
         verify(motechSchedulerDatabaseService).getScheduledJobDetailedInfo(testJobBasicInfo3);
     }
