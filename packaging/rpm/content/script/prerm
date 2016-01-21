@@ -7,7 +7,7 @@ set -e
 chkconfig --del motech
 
 # Remove fragment dir if empty
-FRAGMENT_DIR=/usr/share/motech/motech-default/.motech/bundles/fragments
+FRAGMENT_DIR=/usr/share/motech/.motech/bundles/fragments
 
 if [ -d $FRAGMENT_DIR ] && [ ! "$(ls -A $FRAGMENT_DIR)" ]; then
     rm -rf $FRAGMENT_DIR
@@ -16,8 +16,8 @@ fi
 #if this is not update
 if [ "$1" = 0 ]; then
     # Delete the motech user, if he exists
-    if [ ! `grep -c motech-default: /etc/passwd` -eq 0 ]; then
-        skill -KILL -u motech-default
-        userdel motech-default
+    if [ ! `grep -c motech: /etc/passwd` -eq 0 ]; then
+        skill -KILL -u motech
+        userdel motech
     fi
 fi

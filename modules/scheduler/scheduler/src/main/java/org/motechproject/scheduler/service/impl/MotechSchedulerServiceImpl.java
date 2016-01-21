@@ -11,6 +11,7 @@ import org.motechproject.scheduler.constants.SchedulerConstants;
 import org.motechproject.scheduler.contract.CronJobId;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
+import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobId;
 import org.motechproject.scheduler.contract.RepeatingJobId;
 import org.motechproject.scheduler.contract.RepeatingPeriodJobId;
@@ -29,6 +30,7 @@ import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.ScheduleBuilder;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -74,6 +76,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     private static final int MAX_REPEAT_COUNT = 999999;
     private static final int MILLISECOND = 1000;
     private static final String LOG_SUBJECT_EXTERNALID = "subject: %s, externalId: %s";
+    private static final String PROGRAMMED = "programmed";
 
     private SettingsFacade schedulerSettings;
 
@@ -117,6 +120,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         JobDetail jobDetail = newJob(MotechScheduledJob.class)
                 .withIdentity(jobKey(jobId.value(), JOB_GROUP_NAME))
                 .build();
+
+        jobDetail.getJobDataMap().put(PROGRAMMED, cronSchedulableJob.isProgrammed());
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
@@ -320,6 +325,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 .build();
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
+        jobDetail.getJobDataMap().put(PROGRAMMED, repeatingSchedulableJob.isProgrammed());
 
         ScheduleBuilder scheduleBuilder;
         if (!repeatingSchedulableJob.isUseOriginalFireTimeAfterMisfire()) {
@@ -363,6 +369,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 .build();
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
+        jobDetail.getJobDataMap().put(PROGRAMMED, repeatingPeriodSchedulableJob.isProgrammed());
 
         ScheduleBuilder scheduleBuilder = PeriodIntervalScheduleBuilder.periodIntervalSchedule()
             .withRepeatPeriod(repeatPeriod)
@@ -497,6 +504,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 .build();
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
+        jobDetail.getJobDataMap().put(PROGRAMMED, schedulableJob.isProgrammed());
 
         SimpleScheduleBuilder simpleSchedule = simpleSchedule()
                 .withRepeatCount(0)
@@ -769,6 +777,62 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
 
         return messageTimings;
+    }
+
+    @Override
+    public JobBasicInfo pauseJob(JobBasicInfo info) {
+        try {
+            JobKey key = new JobKey(info.getName(), info.getGroup());
+            validateJob(key);
+            scheduler.pauseJob(key);
+            info.setStatus(JobBasicInfo.STATUS_PAUSED);
+            return info;
+        } catch (MotechSchedulerException | SchedulerException e) {
+            throw new MotechSchedulerException(String.format("Can not pause the job:\n %s\n%s\n%s",
+                    info.getName(), info.getGroup(), e.getMessage()), e);
+        }
+    }
+
+    @Override
+    public JobBasicInfo resumeJob(JobBasicInfo info) {
+        try {
+            JobKey key = new JobKey(info.getName(), info.getGroup());
+            validateJob(key);
+            scheduler.resumeJob(key);
+            info.setStatus(JobBasicInfo.STATUS_OK);
+            return info;
+        } catch (MotechSchedulerException | SchedulerException e) {
+            throw new MotechSchedulerException(String.format("Can not resume the job:\n %s\n%s\n%s",
+                    info.getName(), info.getGroup(), e.getMessage()), e);
+        }
+    }
+
+    @Override
+    public void deleteJob(JobBasicInfo info) {
+        try {
+            JobKey key = new JobKey(info.getName(), info.getGroup());
+            validateJob(key);
+            scheduler.deleteJob(key);
+        } catch (MotechSchedulerException | SchedulerException e) {
+            throw new MotechSchedulerException(String.format("Can not delete the job:\n %s\n%s\n%s",
+                    info.getName(), info.getGroup(), e.getMessage()), e);
+        }
+    }
+
+    private void validateJob(JobKey key) throws SchedulerException {
+        JobDetail detail = scheduler.getJobDetail(key);
+
+        if (detail == null) {
+            throw new MotechSchedulerException(String.format("Job doesn't exist:\n %s\n %s", key.getName(),
+                    key.getGroup()));
+        }
+
+        JobDataMap map = detail.getJobDataMap();
+
+        if (map != null && map.getBooleanValue(PROGRAMMED)) {
+            throw new MotechSchedulerException(String.format("Job is not user defined:\n %s\n %s", key.getName(),
+                    key.getGroup()));
+        }
     }
 
     private void scheduleJob(JobDetail jobDetail, Trigger trigger) {

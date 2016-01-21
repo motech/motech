@@ -64,10 +64,10 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechSchedulerDatabaseServiceImpl.class);
     private static final String JOB_DESCRIPTION = "DESCRIPTION";
     private static final String DB_DRIVER = "org.quartz.dataSource.motechDS.driver";
-    private static final String JOB_DATA = "JOB_DATA";
     private static final String QRTZ_JOB_DETAILS = "QRTZ_JOB_DETAILS";
     private static final String DATE_FORMAT_PATTERN = "Y-MM-dd HH:mm:ss";
     private static final String DATA_SOURCE = "org.quartz.jobStore.dataSource";
+    private static final String PROGRAMMED = "programmed";
     private static final String START_TIME = "START_TIME";
     private static final String END_TIME = "END_TIME";
     private static final String TRIGGER_NAME = "TRIGGER_NAME";
@@ -77,6 +77,8 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     private static final String WAITING = "WAITING";
     private static final String JOB_NAME = "JOB_NAME";
     private static final String TRIGGERS = "TRIGGERS";
+    private static final String JOB_DETAILS = "JOB_DETAILS";
+    private static final String JOB_DATA = "JOB_DATA";
     private static final String OR = " OR ";
     private static final String AND = " AND ";
 
@@ -119,6 +121,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         List<String> columnNames = new LinkedList<>();
         columnNames.add(TRIGGER_NAME);
         columnNames.add(TRIGGER_GROUP);
+        columnNames.add(JOB_DATA);
         List<List<Object>> objects;
 
         try {
@@ -128,6 +131,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
                 JobKey jobKey = new JobKey(row.get(0).toString(), row.get(1).toString());
                 Trigger trigger = scheduler.getTriggersOfJob(jobKey).get(0);
                 String jobName = jobKey.getName();
+                String jobGroup = jobKey.getGroup();
                 String jobType = getJobType(jobKey);
                 String activity = getJobActivity(trigger);
                 String info = getJobInfo(trigger, jobType);
@@ -138,21 +142,24 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
                     nextFireDate = DateTimeFormat.forPattern(DATE_FORMAT_PATTERN).print(trigger.getNextFireTime().getTime());
                 }
                 String endDate = getEndDate(trigger, jobType);
+                boolean programmed = isProgrammed((byte[]) row.get(2));
 
                 jobBasicInfos.add(new JobBasicInfo(
                         activity,
                         status,
                         jobName,
+                        jobGroup,
                         startDate,
                         nextFireDate,
                         endDate,
                         jobType,
-                        info
+                        info,
+                        programmed
                 ));
             }
 
             return jobBasicInfos;
-        } catch (SQLException | SchedulerException e) {
+        } catch (SQLException | SchedulerException | ClassNotFoundException | IOException e) {
             throw new MotechSchedulerJobRetrievalException("Retrieval of scheduled jobs failed.", e);
         }
     }
@@ -319,7 +326,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
             dateTo = DateTimeFormat.forPattern(DATE_FORMAT_PATTERN)
                     .parseDateTime(jobsSearchSettings.getTimeTo());
             checkAndAddElement(dateRangeSb, AND, addAnd);
-            dateRangeSb.append(enquoteIfPostgres(END_TIME, isPostgres)).append(" <= ").append(dateTo.getMillis());
+            dateRangeSb.append(enquoteIfPostgres(START_TIME, isPostgres)).append(" <= ").append(dateTo.getMillis());
         }
         return dateRangeSb.toString();
     }
@@ -334,12 +341,14 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
                 if (JobBasicInfo.ACTIVITY_NOTSTARTED.equals(element)) {
                     activitySb.append(enquoteIfPostgres(START_TIME, isPostgres)).append(" > ").append(DateTime.now().getMillis());
                 } else if (JobBasicInfo.ACTIVITY_FINISHED.equals(element)) {
-                    activitySb.append(enquoteIfPostgres(END_TIME, isPostgres)).append(" < ").append(DateTime.now().getMillis());
+                    activitySb.append(enquoteIfPostgres(END_TIME, isPostgres)).append(" < ").append(DateTime.now().getMillis())
+                            .append(AND).append(enquoteIfPostgres(END_TIME, isPostgres)).append(" != 0");
                 } else {
-                    activitySb.append(" (").append(enquoteIfPostgres(START_TIME, isPostgres)).append(" <= ").append(DateTime.now().getMillis());
-                    checkAndAddElement(activitySb, AND, true);
-                    activitySb.append(enquoteIfPostgres(END_TIME, isPostgres)).append(" >= ").append(DateTime.now().getMillis())
-                            .append(")");
+                    activitySb.append(" (").append(enquoteIfPostgres(START_TIME, isPostgres)).append(" <= ")
+                            .append(DateTime.now().getMillis()).append(" AND (")
+                            .append(enquoteIfPostgres(END_TIME, isPostgres)).append(" >= ")
+                            .append(DateTime.now().getMillis()).append(OR)
+                            .append(enquoteIfPostgres(END_TIME, isPostgres)).append(" = 0))");
                 }
                 addOr = true;
             }
@@ -389,21 +398,21 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         }
         StringBuilder nameSb = new StringBuilder();
         if (isNotBlank(jobsSearchSettings.getName())) {
-            nameSb.append(enquoteIfPostgres(JOB_NAME, isPostgres)).append(" LIKE ").append("\'%").append(jobsSearchSettings.getName())
-                    .append("%\'");
+            nameSb.append(enquoteIfPostgres(TRIGGER_NAME, isPostgres)).append(" LIKE ").append("\'%")
+                    .append(jobsSearchSettings.getName()).append("%\'");
             filters.add(nameSb.toString());
         }
 
         return filters;
     }
 
-    private String buildWhereCondition(JobsSearchSettings jobsSearchSettings, boolean isPostgres) {
+    private String buildWhereCondition(JobsSearchSettings jobsSearchSettings, boolean isPostgres, String preKeyword) {
         List<String> filters = buildFilters(jobsSearchSettings, isPostgres);
 
         StringBuilder sb = new StringBuilder();
         boolean addAnd = false;
         if (filters.size() > 0) {
-            sb.append(" WHERE ");
+            sb.append(" " + preKeyword + " ");
         }
         for (String filter : filters) {
             if (filter.length() > 0) {
@@ -416,12 +425,21 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     }
 
     private String buildJobsBasicInfoSqlQuery(JobsSearchSettings jobsSearchSettings, boolean isPostgres) {
-        StringBuilder sb = new StringBuilder("SELECT * FROM ");
-        sb = sb.append(enquoteIfPostgres(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + TRIGGERS, isPostgres));
-        sb = sb.append(buildWhereCondition(jobsSearchSettings, isPostgres));
+
+        StringBuilder sb = new StringBuilder("SELECT A.TRIGGER_NAME, A.TRIGGER_GROUP, B.JOB_DATA FROM ")
+                .append(enquoteIfPostgres(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + TRIGGERS, isPostgres))
+                .append(" AS A JOIN ")
+                .append(enquoteIfPostgres(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + JOB_DETAILS, isPostgres))
+                .append(" AS B")
+                .append(" WHERE A.TRIGGER_NAME = B.JOB_NAME AND A.TRIGGER_GROUP = B.JOB_GROUP")
+                .append(buildWhereCondition(jobsSearchSettings, isPostgres, "AND"));
+
         if (isNotBlank(jobsSearchSettings.getSortColumn()) && isNotBlank(jobsSearchSettings.getSortDirection())) {
-            sb = sb.append(" ORDER BY ").append(enquoteIfPostgres(getSortColumn(jobsSearchSettings.getSortColumn()), isPostgres))
-                    .append(" ").append(jobsSearchSettings.getSortDirection().toUpperCase());
+            sb.append(" ORDER BY ")
+                    .append("A.")
+                    .append(enquoteIfPostgres(getSortColumn(jobsSearchSettings.getSortColumn()), isPostgres))
+                    .append(" ")
+                    .append(jobsSearchSettings.getSortDirection().toUpperCase());
         }
         if (jobsSearchSettings.getRows() != null && jobsSearchSettings.getPage() != null) {
             int offset = (jobsSearchSettings.getPage() == 0) ? 0 : (jobsSearchSettings.getPage() - 1) * jobsSearchSettings.getRows();
@@ -434,7 +452,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     private String buildJobsCountSqlQuery(JobsSearchSettings jobsSearchSettings, boolean isPostgres) {
         StringBuilder sb = new StringBuilder("SELECT COUNT(*) FROM ");
         sb = sb.append(enquoteIfPostgres(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + TRIGGERS, isPostgres));
-        sb = sb.append(buildWhereCondition(jobsSearchSettings, isPostgres));
+        sb = sb.append(buildWhereCondition(jobsSearchSettings, isPostgres, "WHERE"));
         return sb.toString();
     }
 
@@ -450,7 +468,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         } else if (column.equalsIgnoreCase("jobType")) {
             sortColumn = TRIGGER_TYPE;
         } else {
-            sortColumn = JOB_NAME;
+            sortColumn = TRIGGER_NAME;
         }
 
         return sortColumn;
@@ -611,5 +629,13 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
 
     private String enquoteIfPostgres(String string, boolean isPostgres) {
         return isPostgres ? "\"" + string + "\"" : string;
+    }
+
+    private boolean isProgrammed(byte[] bytes) throws IOException, ClassNotFoundException {
+        try (InputStream is = new ByteArrayInputStream(bytes);
+             ObjectInputStream ois = new ObjectInputStream(is)) {
+            JobDataMap dataMap = (JobDataMap) ois.readObject();
+            return dataMap.getBoolean(PROGRAMMED);
+        }
     }
 }

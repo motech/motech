@@ -18,6 +18,7 @@ Contents
    :maxdepth: 1
 
    intro
+   current_capabilities
    get_started/index
    architecture/index
    modules/index

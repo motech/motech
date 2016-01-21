@@ -26,6 +26,7 @@ public class PasswordExpirationSchedulerInternal {
      */
     public void schedulePasswordReminderJob() {
         CronSchedulableJob job = new CronSchedulableJob(new MotechEvent(PASSWORD_EXPIRATION_CHECK_EVENT), "0 0 0 * * ? *");
+        job.setProgrammed(true);
         schedulerService.safeScheduleJob(job);
     }
 }
