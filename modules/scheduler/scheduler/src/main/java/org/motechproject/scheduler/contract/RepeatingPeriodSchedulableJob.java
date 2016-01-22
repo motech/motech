@@ -19,13 +19,17 @@ public class RepeatingPeriodSchedulableJob extends SchedulableJob {
     private boolean useOriginalFireTimeAfterMisfire;
 
     /**
-     * Constructor. It will create a job, which will never end, won't ignore past fires at start and will use original fire time after misfire.
-     * Start time, {@code MotechEvent} and repeat period are not assigned, which means that further usage, without setting them, can cause exceptions.
+     * Constructor.
+     *
+     * @param motechEvent  the {@code MotechEvent} which will be fired when the job triggers, not null
+     * @param startTime  the {@code Date} at which job should become ACTIVE, not null
+     * @param endTime  the {@code Date} at which job should be stopped, null treated as never end
+     * @param repeatPeriod the {@code Period} between job fires, not null
+     * @param ignorePastFiresAtStart the flag defining whether job should ignore past fires at start or not
      */
-    public RepeatingPeriodSchedulableJob() {
-        endTime = null;
-        ignorePastFiresAtStart = false;
-        useOriginalFireTimeAfterMisfire = true;
+    public RepeatingPeriodSchedulableJob(final MotechEvent motechEvent, final DateTime startTime, final DateTime endTime,
+                                         final Period repeatPeriod, boolean ignorePastFiresAtStart) {
+        this(motechEvent, startTime, endTime, repeatPeriod, ignorePastFiresAtStart, false);
     }
 
     /**
@@ -36,8 +40,11 @@ public class RepeatingPeriodSchedulableJob extends SchedulableJob {
      * @param endTime  the {@code DateTime} at which job should be stopped, null treated as never end
      * @param repeatPeriod the {@code Period} between job fires, not null
      * @param ignorePastFiresAtStart the flag defining whether job should ignore past fires at start or not
+     * @param uiDefined  the flag defining, whether job has been created through the UI
      */
-    public RepeatingPeriodSchedulableJob(final MotechEvent motechEvent, final DateTime startTime, final DateTime endTime, final Period repeatPeriod, boolean ignorePastFiresAtStart) {
+    public RepeatingPeriodSchedulableJob(final MotechEvent motechEvent, final DateTime startTime, final DateTime endTime,
+                                         final Period repeatPeriod, boolean ignorePastFiresAtStart, boolean uiDefined) {
+        super(uiDefined);
         this.motechEvent = motechEvent;
         this.startTime = startTime;
         this.endTime = endTime;

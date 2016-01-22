@@ -76,7 +76,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     private static final int MAX_REPEAT_COUNT = 999999;
     private static final int MILLISECOND = 1000;
     private static final String LOG_SUBJECT_EXTERNALID = "subject: %s, externalId: %s";
-    private static final String PROGRAMMED = "programmed";
+    private static final String UI_DEFINED = "uiDefined";
 
     private SettingsFacade schedulerSettings;
 
@@ -121,7 +121,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 .withIdentity(jobKey(jobId.value(), JOB_GROUP_NAME))
                 .build();
 
-        jobDetail.getJobDataMap().put(PROGRAMMED, cronSchedulableJob.isProgrammed());
+        jobDetail.getJobDataMap().put(UI_DEFINED, cronSchedulableJob.isUiDefined());
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
@@ -325,7 +325,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 .build();
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
-        jobDetail.getJobDataMap().put(PROGRAMMED, repeatingSchedulableJob.isProgrammed());
+        jobDetail.getJobDataMap().put(UI_DEFINED, repeatingSchedulableJob.isUiDefined());
 
         ScheduleBuilder scheduleBuilder;
         if (!repeatingSchedulableJob.isUseOriginalFireTimeAfterMisfire()) {
@@ -370,7 +370,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 .build();
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
-        jobDetail.getJobDataMap().put(PROGRAMMED, repeatingPeriodSchedulableJob.isProgrammed());
+        jobDetail.getJobDataMap().put(UI_DEFINED, repeatingPeriodSchedulableJob.isUiDefined());
 
         ScheduleBuilder scheduleBuilder = PeriodIntervalScheduleBuilder.periodIntervalSchedule()
             .withRepeatPeriod(repeatPeriod)
@@ -505,7 +505,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 .build();
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
-        jobDetail.getJobDataMap().put(PROGRAMMED, schedulableJob.isProgrammed());
+        jobDetail.getJobDataMap().put(UI_DEFINED, schedulableJob.isUiDefined());
 
         SimpleScheduleBuilder simpleSchedule = simpleSchedule()
                 .withRepeatCount(0)
@@ -832,8 +832,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         JobDataMap map = detail.getJobDataMap();
 
-        if (map != null && map.getBooleanValue(PROGRAMMED)) {
-            throw new MotechSchedulerException(String.format("Job is not user defined:\n %s\n %s", key.getName(),
+        if (map != null && !map.getBooleanValue(UI_DEFINED)) {
+            throw new MotechSchedulerException(String.format("Job is not ui defined:\n %s\n %s", key.getName(),
                     key.getGroup()));
         }
     }

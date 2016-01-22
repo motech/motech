@@ -27,6 +27,20 @@ public final class RunOnceSchedulableJob extends SchedulableJob {
      * @throws IllegalArgumentException if motechEvent or startDate is null or startDate is in past
      */
     public RunOnceSchedulableJob(MotechEvent motechEvent, DateTime startDate) {
+        this(motechEvent, startDate, false);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param motechEvent - event data message that will be send by Motech Scheduler when this job is fired
+     * @param startDate   - date and time when the job fill be fired
+     * @throws IllegalArgumentException if motechEvent or startDate is null or startDate is in past
+     * @param uiDefined  the flag defining, whether job has been created through the UI
+     */
+    public RunOnceSchedulableJob(MotechEvent motechEvent, DateTime startDate, boolean uiDefined) {
+
+        super(uiDefined);
 
         if (motechEvent == null) {
             throw new IllegalArgumentException("MotechEvent can not be null");
