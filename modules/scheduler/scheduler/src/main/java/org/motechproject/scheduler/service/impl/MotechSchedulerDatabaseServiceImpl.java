@@ -8,16 +8,17 @@ import org.motechproject.scheduler.constants.SchedulerConstants;
 import org.motechproject.scheduler.contract.EventInfo;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
+import org.motechproject.scheduler.contract.JobsSearchSettings;
 import org.motechproject.scheduler.contract.RepeatingJobId;
 import org.motechproject.scheduler.contract.RepeatingPeriodJobId;
 import org.motechproject.scheduler.contract.RunOnceJobId;
 import org.motechproject.scheduler.exception.MotechSchedulerJobRetrievalException;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.motechproject.scheduler.service.MotechSchedulerDatabaseService;
-import org.motechproject.scheduler.contract.JobsSearchSettings;
 import org.quartz.CalendarIntervalTrigger;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
+import org.quartz.JobDataMap;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -34,6 +35,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -56,6 +61,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechSchedulerDatabaseServiceImpl.class);
     private static final String DATE_FORMAT_PATTERN = "Y-MM-dd HH:mm:ss";
     private static final String DATA_SOURCE = "org.quartz.jobStore.dataSource";
+    private static final String UI_DEFINED = "uiDefined";
     private static final String START_TIME = "START_TIME";
     private static final String END_TIME = "END_TIME";
     private static final String TRIGGER_NAME = "TRIGGER_NAME";
@@ -63,8 +69,9 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     private static final String TRIGGER_STATE = "TRIGGER_STATE";
     private static final String TRIGGER_TYPE = "TRIGGER_TYPE";
     private static final String WAITING = "WAITING";
-    private static final String JOB_NAME = "JOB_NAME";
     private static final String TRIGGERS = "TRIGGERS";
+    private static final String JOB_DETAILS = "JOB_DETAILS";
+    private static final String JOB_DATA = "JOB_DATA";
     private static final String OR = " OR ";
     private static final String AND = " AND ";
 
@@ -107,6 +114,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         List<String> columnNames = new LinkedList<>();
         columnNames.add(TRIGGER_NAME);
         columnNames.add(TRIGGER_GROUP);
+        columnNames.add(JOB_DATA);
         List<List<Object>> objects;
 
         try {
@@ -116,6 +124,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
                 JobKey jobKey = new JobKey(row.get(0).toString(), row.get(1).toString());
                 Trigger trigger = scheduler.getTriggersOfJob(jobKey).get(0);
                 String jobName = jobKey.getName();
+                String jobGroup = jobKey.getGroup();
                 String jobType = getJobType(jobKey);
                 String activity = getJobActivity(trigger);
                 String info = getJobInfo(trigger, jobType);
@@ -126,21 +135,24 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
                     nextFireDate = DateTimeFormat.forPattern(DATE_FORMAT_PATTERN).print(trigger.getNextFireTime().getTime());
                 }
                 String endDate = getEndDate(trigger, jobType);
+                boolean uiDefined = isUiDefined((byte[]) row.get(2));
 
                 jobBasicInfos.add(new JobBasicInfo(
                         activity,
                         status,
                         jobName,
+                        jobGroup,
                         startDate,
                         nextFireDate,
                         endDate,
                         jobType,
-                        info
+                        info,
+                        uiDefined
                 ));
             }
 
             return jobBasicInfos;
-        } catch (SQLException | SchedulerException e) {
+        } catch (SQLException | SchedulerException | ClassNotFoundException | IOException e) {
             throw new MotechSchedulerJobRetrievalException("Retrieval of scheduled jobs failed.", e);
         }
     }
@@ -234,7 +246,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
             dateTo = DateTimeFormat.forPattern(DATE_FORMAT_PATTERN)
                     .parseDateTime(jobsSearchSettings.getTimeTo());
             checkAndAddElement(dateRangeSb, AND, addAnd);
-            dateRangeSb.append(getCorrectNameRepresentation(END_TIME)).append(" <= ").append(dateTo.getMillis());
+            dateRangeSb.append(getCorrectNameRepresentation(START_TIME)).append(" <= ").append(dateTo.getMillis());
         }
         return dateRangeSb.toString();
     }
@@ -249,12 +261,14 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
                 if (JobBasicInfo.ACTIVITY_NOTSTARTED.equals(element)) {
                     activitySb.append(getCorrectNameRepresentation(START_TIME)).append(" > ").append(DateTime.now().getMillis());
                 } else if (JobBasicInfo.ACTIVITY_FINISHED.equals(element)) {
-                    activitySb.append(getCorrectNameRepresentation(END_TIME)).append(" < ").append(DateTime.now().getMillis());
+                    activitySb.append(getCorrectNameRepresentation(END_TIME)).append(" < ").append(DateTime.now().getMillis())
+                            .append(AND).append(getCorrectNameRepresentation(END_TIME)).append(" != 0");
                 } else {
-                    activitySb.append(" (").append(getCorrectNameRepresentation(START_TIME)).append(" <= ").append(DateTime.now().getMillis());
-                    checkAndAddElement(activitySb, AND, true);
-                    activitySb.append(getCorrectNameRepresentation(END_TIME)).append(" >= ").append(DateTime.now().getMillis())
-                            .append(")");
+                    activitySb.append(" (").append(getCorrectNameRepresentation(START_TIME)).append(" <= ")
+                            .append(DateTime.now().getMillis()).append(" AND (")
+                            .append(getCorrectNameRepresentation(END_TIME)).append(" >= ")
+                            .append(DateTime.now().getMillis()).append(OR)
+                            .append(getCorrectNameRepresentation(END_TIME)).append(" = 0))");
                 }
                 addOr = true;
             }
@@ -304,8 +318,8 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         }
         StringBuilder nameSb = new StringBuilder();
         if (isNotBlank(jobsSearchSettings.getName())) {
-            nameSb.append(getCorrectNameRepresentation(JOB_NAME)).append(" LIKE ").append("\'%").append(jobsSearchSettings.getName())
-                    .append("%\'");
+            nameSb.append(getCorrectNameRepresentation(TRIGGER_NAME)).append(" LIKE ").append("\'%")
+                    .append(jobsSearchSettings.getName()).append("%\'");
             filters.add(nameSb.toString());
         }
 
@@ -316,13 +330,13 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         return sqlProperties.get("org.quartz.dataSource.motechDS.driver").equals(Drivers.MYSQL_DRIVER) ? name : "\"" + name.toLowerCase() + "\"";
     }
 
-    private String buildWhereCondition(JobsSearchSettings jobsSearchSettings) {
+    private String buildWhereCondition(JobsSearchSettings jobsSearchSettings, String preKeyword) {
         List<String> filters = buildFilters(jobsSearchSettings);
 
         StringBuilder sb = new StringBuilder();
         boolean addAnd = false;
         if (filters.size() > 0) {
-            sb.append(" WHERE ");
+            sb.append(" " + preKeyword + " ");
         }
         for (String filter : filters) {
             if (filter.length() > 0) {
@@ -335,12 +349,21 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     }
 
     private String buildJobsBasicInfoSqlQuery(JobsSearchSettings jobsSearchSettings) {
-        StringBuilder sb = new StringBuilder("SELECT * FROM ");
-        sb = sb.append(getCorrectNameRepresentation(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + TRIGGERS));
-        sb = sb.append(buildWhereCondition(jobsSearchSettings));
+
+        StringBuilder sb = new StringBuilder("SELECT A.TRIGGER_NAME, A.TRIGGER_GROUP, B.JOB_DATA FROM ")
+                .append(getCorrectNameRepresentation(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + TRIGGERS))
+                .append(" AS A JOIN ")
+                .append(getCorrectNameRepresentation(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + JOB_DETAILS))
+                .append(" AS B")
+                .append(" WHERE A.TRIGGER_NAME = B.JOB_NAME AND A.TRIGGER_GROUP = B.JOB_GROUP")
+                .append(buildWhereCondition(jobsSearchSettings, "AND"));
+
         if (isNotBlank(jobsSearchSettings.getSortColumn()) && isNotBlank(jobsSearchSettings.getSortDirection())) {
-            sb = sb.append(" ORDER BY ").append(getCorrectNameRepresentation(getSortColumn(jobsSearchSettings.getSortColumn())))
-                    .append(" ").append(jobsSearchSettings.getSortDirection().toUpperCase());
+            sb.append(" ORDER BY ")
+                    .append("A.")
+                    .append(getCorrectNameRepresentation(getSortColumn(jobsSearchSettings.getSortColumn())))
+                    .append(" ")
+                    .append(jobsSearchSettings.getSortDirection().toUpperCase());
         }
         if (jobsSearchSettings.getRows() != null && jobsSearchSettings.getPage() != null) {
             int offset = (jobsSearchSettings.getPage() == 0) ? 0 : (jobsSearchSettings.getPage() - 1) * jobsSearchSettings.getRows();
@@ -353,7 +376,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     private String buildJobsCountSqlQuery(JobsSearchSettings jobsSearchSettings) {
         StringBuilder sb = new StringBuilder("SELECT COUNT(*) FROM ");
         sb = sb.append(getCorrectNameRepresentation(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + TRIGGERS));
-        sb = sb.append(buildWhereCondition(jobsSearchSettings));
+        sb = sb.append(buildWhereCondition(jobsSearchSettings, "WHERE"));
         return sb.toString();
     }
 
@@ -369,7 +392,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         } else if (column.equalsIgnoreCase("jobType")) {
             sortColumn = TRIGGER_TYPE;
         } else {
-            sortColumn = JOB_NAME;
+            sortColumn = TRIGGER_NAME;
         }
 
         return sortColumn;
@@ -465,6 +488,14 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
             return JobBasicInfo.STATUS_PAUSED;
         } else {
             return JobBasicInfo.STATUS_OK;
+        }
+    }
+
+    private boolean isUiDefined(byte[] bytes) throws IOException, ClassNotFoundException {
+        try (InputStream is = new ByteArrayInputStream(bytes);
+             ObjectInputStream ois = new ObjectInputStream(is)) {
+            JobDataMap dataMap = (JobDataMap) ois.readObject();
+            return dataMap.getBoolean(UI_DEFINED);
         }
     }
 }

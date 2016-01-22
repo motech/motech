@@ -3,13 +3,12 @@ package org.motechproject.scheduler.contract;
 import org.apache.commons.lang.ObjectUtils;
 import org.motechproject.event.MotechEvent;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Schedulable Job - a data carrier class for a scheduled job that can be fired set number of times
  */
-public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
+public class RepeatingSchedulableJob extends SchedulableJob {
 
     private static final long serialVersionUID = 1L;
 
@@ -27,6 +26,7 @@ public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
      * Start time, {@code MotechEvent}, repeat count and repeat interval are not assigned, which means that further usage, without setting them, can cause exceptions.
      */
     public RepeatingSchedulableJob() {
+        super(false);
         endTime = null;
         ignorePastFiresAtStart = false;
         useOriginalFireTimeAfterMisfire = true;
@@ -43,6 +43,24 @@ public class RepeatingSchedulableJob implements SchedulableJob, Serializable {
      * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not
      */
     public RepeatingSchedulableJob(final MotechEvent motechEvent, final Integer repeatCount, final Integer repeatIntervalInSeconds, final Date startTime, final Date endTime, boolean ignorePastFiresAtStart) {
+        this(motechEvent, repeatCount, repeatIntervalInSeconds, startTime, endTime, ignorePastFiresAtStart, false);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param motechEvent  the {@code MotechEvent} which will be fired when the job triggers, not null
+     * @param repeatCount  the number of times job should be repeated, null treated as infinite
+     * @param repeatIntervalInSeconds  the interval(in seconds) between job fires
+     * @param startTime  the {@code Date} at which job should become ACTIVE, not null
+     * @param endTime  the {@code Date} at which job should be stopped, null treated as never end
+     * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not
+     * @param uiDefined  the flag defining, whether job has been created through the UI
+     */
+    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Integer repeatCount,
+                                   final Integer repeatIntervalInSeconds, final Date startTime, final Date endTime,
+                                   boolean ignorePastFiresAtStart, boolean uiDefined) {
+        super(uiDefined);
         this.motechEvent = motechEvent;
         this.repeatCount = repeatCount;
         this.repeatIntervalInSeconds = repeatIntervalInSeconds;

@@ -5,7 +5,6 @@ import org.motechproject.commons.date.model.DayOfWeek;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.event.MotechEvent;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +13,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 /**
  * Job that is scheduled on particular days of week
  */
-public final class DayOfWeekSchedulableJob implements SchedulableJob, Serializable {
+public final class DayOfWeekSchedulableJob extends SchedulableJob {
 
     private static final long serialVersionUID = 1L;
 
@@ -36,6 +35,24 @@ public final class DayOfWeekSchedulableJob implements SchedulableJob, Serializab
      * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not
      */
     public DayOfWeekSchedulableJob(MotechEvent motechEvent, LocalDate start, LocalDate end, List<DayOfWeek> days, Time time, boolean ignorePastFiresAtStart) {
+        this(motechEvent, start, end, days, time, ignorePastFiresAtStart, false);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param motechEvent  the {@code MotechEvent} fired, when job triggers, not null
+     * @param start  the {@code Date} at which job should become ACTIVE, not null
+     * @param end  the {@code Date} at which job should be stopped, null treated as never end
+     * @param days  the list of days at which job should be fired, not null
+     * @param time  the time at which job should be fired, not null
+     * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not
+     * @param uiDefined  the flag defining, whether job has been created through the UI
+     */
+    public DayOfWeekSchedulableJob(MotechEvent motechEvent, LocalDate start, LocalDate end, List<DayOfWeek> days,
+                                   Time time, boolean ignorePastFiresAtStart, boolean uiDefined) {
+        super(uiDefined);
+
         if (motechEvent == null || start == null || isEmpty(days)) {
             throw new IllegalArgumentException("null/empty arguments");
         }
