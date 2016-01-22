@@ -39,7 +39,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,13 +102,13 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                     ));
 
 
-            List<Date> eventTimes = schedulerService.getScheduledJobTimings("test_event", "job_id",
-                    newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate(),
-                    newDateTime(CURRENT_YEAR + 6, 7, 17, 12, 0, 0).toDate());
+            List<DateTime> eventTimes = schedulerService.getScheduledJobTimings("test_event", "job_id",
+                    newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0),
+                    newDateTime(CURRENT_YEAR + 6, 7, 17, 12, 0, 0));
             assertEquals(asList(
-                    newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate(),
-                    newDateTime(CURRENT_YEAR + 6, 7, 16, 12, 0, 0).toDate(),
-                    newDateTime(CURRENT_YEAR + 6, 7, 17, 12, 0, 0).toDate()),
+                    newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0),
+                    newDateTime(CURRENT_YEAR + 6, 7, 16, 12, 0, 0),
+                    newDateTime(CURRENT_YEAR + 6, 7, 17, 12, 0, 0)),
                     eventTimes);
         } finally {
             stopFakingTime();
@@ -134,7 +133,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             schedulerService.scheduleRunOnceJob(
                     new RunOnceSchedulableJob(
                             new MotechEvent("test_event_2", params),
-                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate()
+                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0)
                     )
             );
 
@@ -142,8 +141,8 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                     new RepeatingSchedulableJob(
                             new MotechEvent("test_event_2", params),
                             DateTimeConstants.SECONDS_PER_DAY,
-                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate(),
-                            newDateTime(CURRENT_YEAR + 6, 7, 18, 12, 0, 0).toDate(),
+                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0),
+                            newDateTime(CURRENT_YEAR + 6, 7, 18, 12, 0, 0),
                             false
                     )
             );
@@ -234,7 +233,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             schedulerService.scheduleRunOnceJob(
                     new RunOnceSchedulableJob(
                             new MotechEvent("test_event_2b", params),
-                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate()
+                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0)
                     )
             );
 
@@ -242,8 +241,8 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                     new RepeatingSchedulableJob(
                             new MotechEvent("test_event_2c", params),
                             DateTimeConstants.SECONDS_PER_DAY,
-                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate(),
-                            newDateTime(CURRENT_YEAR + 6, 7, 18, 12, 0, 0).toDate(),
+                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0),
+                            newDateTime(CURRENT_YEAR + 6, 7, 18, 12, 0, 0),
                             false
                     )
             );
@@ -285,7 +284,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             schedulerService.scheduleRunOnceJob(
                     new RunOnceSchedulableJob(
                             new MotechEvent("test_event_2", params),
-                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate()
+                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0)
                     ));
 
             JobsSearchSettings jobsSearchSettings = getGridSettings(0, 10, "name", "asc");
@@ -520,7 +519,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
         schedulerService.scheduleRunOnceJob(
                 new RunOnceSchedulableJob(
                         new MotechEvent("test_event_5", params),
-                        newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate()
+                        newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0)
                 )
         );
         params = new HashMap<>();
@@ -529,8 +528,8 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                 new RepeatingSchedulableJob(
                         new MotechEvent("test_event_6", params),
                         DateTimeConstants.SECONDS_PER_DAY,
-                        newDateTime(CURRENT_YEAR + 4, 7, 15, 12, 0, 0).toDate(),
-                        newDateTime(CURRENT_YEAR + 4, 7, 18, 12, 0, 0).toDate(),
+                        newDateTime(CURRENT_YEAR + 4, 7, 15, 12, 0, 0),
+                        newDateTime(CURRENT_YEAR + 4, 7, 18, 12, 0, 0),
                         false
                 )
         );

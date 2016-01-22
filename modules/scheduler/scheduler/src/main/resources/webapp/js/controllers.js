@@ -37,7 +37,7 @@
         $scope.getDetails = function(job) {
             if ($scope.jobDetails[job.name] !== undefined) {
             } else {
-                if (job.programmed) {
+                if (!job.uiDefined) {
                     JobsService.getDetails(job, function(data) {
                         $scope.jobDetails[job.name] = data;
                     });
@@ -55,7 +55,7 @@
             job.endDate = updated.endDate;
             job.jobType = updated.jobType;
             job.info = updated.info;
-            job.programmed = updated.programmed;
+            job.uiDefined = updated.uiDefined;
         };
 
         $scope.pauseJob = function(job) {
