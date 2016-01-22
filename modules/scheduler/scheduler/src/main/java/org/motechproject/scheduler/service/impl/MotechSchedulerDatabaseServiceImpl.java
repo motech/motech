@@ -406,13 +406,13 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         return filters;
     }
 
-    private String buildWhereCondition(JobsSearchSettings jobsSearchSettings, boolean isPostgres, String preKeyword) {
+    private String buildWhereCondition(JobsSearchSettings jobsSearchSettings, boolean isPostgres) {
         List<String> filters = buildFilters(jobsSearchSettings, isPostgres);
 
         StringBuilder sb = new StringBuilder();
         boolean addAnd = false;
         if (filters.size() > 0) {
-            sb.append(" " + preKeyword + " ");
+            sb.append(" WHERE ");
         }
         for (String filter : filters) {
             if (filter.length() > 0) {
@@ -431,8 +431,8 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
                 .append(" AS A JOIN ")
                 .append(enquoteIfPostgres(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + JOB_DETAILS, isPostgres))
                 .append(" AS B")
-                .append(" WHERE A.TRIGGER_NAME = B.JOB_NAME AND A.TRIGGER_GROUP = B.JOB_GROUP")
-                .append(buildWhereCondition(jobsSearchSettings, isPostgres, "AND"));
+                .append(" ON A.TRIGGER_NAME = B.JOB_NAME AND A.TRIGGER_GROUP = B.JOB_GROUP")
+                .append(buildWhereCondition(jobsSearchSettings, isPostgres));
 
         if (isNotBlank(jobsSearchSettings.getSortColumn()) && isNotBlank(jobsSearchSettings.getSortDirection())) {
             sb.append(" ORDER BY ")
@@ -452,7 +452,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     private String buildJobsCountSqlQuery(JobsSearchSettings jobsSearchSettings, boolean isPostgres) {
         StringBuilder sb = new StringBuilder("SELECT COUNT(*) FROM ");
         sb = sb.append(enquoteIfPostgres(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + TRIGGERS, isPostgres));
-        sb = sb.append(buildWhereCondition(jobsSearchSettings, isPostgres, "WHERE"));
+        sb = sb.append(buildWhereCondition(jobsSearchSettings, isPostgres));
         return sb.toString();
     }
 
