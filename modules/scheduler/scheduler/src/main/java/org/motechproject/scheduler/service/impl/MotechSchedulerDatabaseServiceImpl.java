@@ -318,7 +318,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         if (StringUtils.isNotBlank(jobsSearchSettings.getTimeFrom())) {
             dateFrom = DateTimeFormat.forPattern(DATE_FORMAT_PATTERN)
                     .parseDateTime(jobsSearchSettings.getTimeFrom());
-            dateRangeSb.append(enquoteIfPostgres(START_TIME, isPostgres)).append(" >= ").append(dateFrom.getMillis());
+            dateRangeSb.append(getCorrectName(START_TIME, isPostgres)).append(" >= ").append(dateFrom.getMillis());
             addAnd = true;
         }
 
@@ -326,7 +326,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
             dateTo = DateTimeFormat.forPattern(DATE_FORMAT_PATTERN)
                     .parseDateTime(jobsSearchSettings.getTimeTo());
             checkAndAddElement(dateRangeSb, AND, addAnd);
-            dateRangeSb.append(enquoteIfPostgres(START_TIME, isPostgres)).append(" <= ").append(dateTo.getMillis());
+            dateRangeSb.append(getCorrectName(START_TIME, isPostgres)).append(" <= ").append(dateTo.getMillis());
         }
         return dateRangeSb.toString();
     }
@@ -339,16 +339,16 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
             for(String element : activityElements) {
                 checkAndAddElement(activitySb, OR, addOr);
                 if (JobBasicInfo.ACTIVITY_NOTSTARTED.equals(element)) {
-                    activitySb.append(enquoteIfPostgres(START_TIME, isPostgres)).append(" > ").append(DateTime.now().getMillis());
+                    activitySb.append(getCorrectName(START_TIME, isPostgres)).append(" > ").append(DateTime.now().getMillis());
                 } else if (JobBasicInfo.ACTIVITY_FINISHED.equals(element)) {
-                    activitySb.append(enquoteIfPostgres(END_TIME, isPostgres)).append(" < ").append(DateTime.now().getMillis())
-                            .append(AND).append(enquoteIfPostgres(END_TIME, isPostgres)).append(" != 0");
+                    activitySb.append(getCorrectName(END_TIME, isPostgres)).append(" < ").append(DateTime.now().getMillis())
+                            .append(AND).append(getCorrectName(END_TIME, isPostgres)).append(" != 0");
                 } else {
-                    activitySb.append(" (").append(enquoteIfPostgres(START_TIME, isPostgres)).append(" <= ")
+                    activitySb.append(" (").append(getCorrectName(START_TIME, isPostgres)).append(" <= ")
                             .append(DateTime.now().getMillis()).append(" AND (")
-                            .append(enquoteIfPostgres(END_TIME, isPostgres)).append(" >= ")
+                            .append(getCorrectName(END_TIME, isPostgres)).append(" >= ")
                             .append(DateTime.now().getMillis()).append(OR)
-                            .append(enquoteIfPostgres(END_TIME, isPostgres)).append(" = 0))");
+                            .append(getCorrectName(END_TIME, isPostgres)).append(" = 0))");
                 }
                 addOr = true;
             }
@@ -362,7 +362,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         boolean addOr = false; if (statusElements.length < 4) {
             for(String element : statusElements) {
                 checkAndAddElement(statusSb, OR, addOr);
-                statusSb.append(enquoteIfPostgres(TRIGGER_STATE, isPostgress)).append(" = ");
+                statusSb.append(getCorrectName(TRIGGER_STATE, isPostgress)).append(" = ");
                 if (Trigger.TriggerState.ERROR.toString().equals(element)) {
                     statusSb.append("\'").append(Trigger.TriggerState.ERROR.toString()).append("\'");
                 } else if (Trigger.TriggerState.BLOCKED.toString().equals(element)) {
@@ -371,9 +371,9 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
                     statusSb.append("\'").append(Trigger.TriggerState.PAUSED.toString()).append("\'");
                 } else {
                     statusSb.append("\'").append(Trigger.TriggerState.NORMAL.toString()).append("\'");
-                    statusSb.append(OR).append(enquoteIfPostgres(TRIGGER_STATE, isPostgress)).append(" = ");
+                    statusSb.append(OR).append(getCorrectName(TRIGGER_STATE, isPostgress)).append(" = ");
                     statusSb.append("\'").append(Trigger.TriggerState.COMPLETE.toString()).append("\'");
-                    statusSb.append(OR).append(enquoteIfPostgres(TRIGGER_STATE, isPostgress)).append(" = ");
+                    statusSb.append(OR).append(getCorrectName(TRIGGER_STATE, isPostgress)).append(" = ");
                     statusSb.append("\'").append(WAITING).append("\'");
                 }
                 addOr = true;
@@ -398,7 +398,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         }
         StringBuilder nameSb = new StringBuilder();
         if (isNotBlank(jobsSearchSettings.getName())) {
-            nameSb.append(enquoteIfPostgres(TRIGGER_NAME, isPostgres)).append(" LIKE ").append("\'%")
+            nameSb.append(getCorrectName(TRIGGER_NAME, isPostgres)).append(" LIKE ").append("\'%")
                     .append(jobsSearchSettings.getName()).append("%\'");
             filters.add(nameSb.toString());
         }
@@ -427,9 +427,9 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     private String buildJobsBasicInfoSqlQuery(JobsSearchSettings jobsSearchSettings, boolean isPostgres) {
 
         StringBuilder sb = new StringBuilder("SELECT A.TRIGGER_NAME, A.TRIGGER_GROUP, B.JOB_DATA FROM ")
-                .append(enquoteIfPostgres(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + TRIGGERS, isPostgres))
+                .append(getCorrectName(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + TRIGGERS, isPostgres))
                 .append(" AS A JOIN ")
-                .append(enquoteIfPostgres(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + JOB_DETAILS, isPostgres))
+                .append(getCorrectName(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + JOB_DETAILS, isPostgres))
                 .append(" AS B")
                 .append(" ON A.TRIGGER_NAME = B.JOB_NAME AND A.TRIGGER_GROUP = B.JOB_GROUP")
                 .append(buildWhereCondition(jobsSearchSettings, isPostgres));
@@ -437,7 +437,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         if (isNotBlank(jobsSearchSettings.getSortColumn()) && isNotBlank(jobsSearchSettings.getSortDirection())) {
             sb.append(" ORDER BY ")
                     .append("A.")
-                    .append(enquoteIfPostgres(getSortColumn(jobsSearchSettings.getSortColumn()), isPostgres))
+                    .append(getCorrectName(getSortColumn(jobsSearchSettings.getSortColumn()), isPostgres))
                     .append(" ")
                     .append(jobsSearchSettings.getSortDirection().toUpperCase());
         }
@@ -451,7 +451,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
 
     private String buildJobsCountSqlQuery(JobsSearchSettings jobsSearchSettings, boolean isPostgres) {
         StringBuilder sb = new StringBuilder("SELECT COUNT(*) FROM ");
-        sb = sb.append(enquoteIfPostgres(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + TRIGGERS, isPostgres));
+        sb = sb.append(getCorrectName(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + TRIGGERS, isPostgres));
         sb = sb.append(buildWhereCondition(jobsSearchSettings, isPostgres));
         return sb.toString();
     }
@@ -575,13 +575,13 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         StringBuilder sb = new StringBuilder();
 
         sb.append("SELECT ");
-        sb.append(enquoteIfPostgres(JOB_NAME, isPostgres));
+        sb.append(getCorrectName(JOB_NAME, isPostgres));
         sb.append(", ");
-        sb.append(enquoteIfPostgres(JOB_DESCRIPTION, isPostgres));
+        sb.append(getCorrectName(JOB_DESCRIPTION, isPostgres));
         sb.append(", ");
-        sb.append(enquoteIfPostgres(JOB_DATA, isPostgres));
+        sb.append(getCorrectName(JOB_DATA, isPostgres));
         sb.append(" FROM ");
-        sb.append(enquoteIfPostgres(QRTZ_JOB_DETAILS, isPostgres));
+        sb.append(getCorrectName(QRTZ_JOB_DETAILS, isPostgres));
         sb.append(" LIMIT ");
         sb.append(pageSize);
         sb.append(" OFFSET ");
@@ -598,15 +598,15 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         StringBuilder sb = new StringBuilder();
 
         sb.append("SELECT ");
-        sb.append(enquoteIfPostgres(JOB_NAME, isPostgres));
+        sb.append(getCorrectName(JOB_NAME, isPostgres));
         sb.append(", ");
-        sb.append(enquoteIfPostgres(JOB_DESCRIPTION, isPostgres));
+        sb.append(getCorrectName(JOB_DESCRIPTION, isPostgres));
         sb.append(", ");
-        sb.append(enquoteIfPostgres(JOB_DATA, isPostgres));
+        sb.append(getCorrectName(JOB_DATA, isPostgres));
         sb.append(" FROM ");
-        sb.append(enquoteIfPostgres(QRTZ_JOB_DETAILS, isPostgres));
+        sb.append(getCorrectName(QRTZ_JOB_DETAILS, isPostgres));
         sb.append(" WHERE ");
-        sb.append(enquoteIfPostgres(JOB_NAME, isPostgres));
+        sb.append(getCorrectName(JOB_NAME, isPostgres));
         sb.append(" = \'");
         sb.append(subject);
         sb.append("\'");
@@ -622,13 +622,13 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         StringBuilder sb = new StringBuilder();
 
         sb.append("SELECT COUNT(*) FROM ");
-        sb.append(enquoteIfPostgres(QRTZ_JOB_DETAILS, isPostgres));
+        sb.append(getCorrectName(QRTZ_JOB_DETAILS, isPostgres));
 
         return sb.toString();
     }
 
-    private String enquoteIfPostgres(String string, boolean isPostgres) {
-        return isPostgres ? "\"" + string + "\"" : string;
+    private String getCorrectName(String string, boolean isPostgres) {
+        return isPostgres ? "\"" + string.toLowerCase() + "\"" : string;
     }
 
     private boolean isUiDefined(byte[] bytes) throws IOException, ClassNotFoundException {
