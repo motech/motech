@@ -1,10 +1,9 @@
 package org.motechproject.scheduler.contract;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.motechproject.event.MotechEvent;
-
-import java.util.Date;
 
 /**
  * Job that will be fired every {@link org.joda.time.Period} of time
@@ -13,8 +12,8 @@ public class RepeatingPeriodSchedulableJob extends SchedulableJob {
     private static final long serialVersionUID = 1L;
 
     private MotechEvent motechEvent;
-    private Date startTime;
-    private Date endTime;
+    private DateTime startTime;
+    private DateTime endTime;
     private Period repeatPeriod;
     private boolean ignorePastFiresAtStart;
     private boolean useOriginalFireTimeAfterMisfire;
@@ -28,7 +27,8 @@ public class RepeatingPeriodSchedulableJob extends SchedulableJob {
      * @param repeatPeriod the {@code Period} between job fires, not null
      * @param ignorePastFiresAtStart the flag defining whether job should ignore past fires at start or not
      */
-    public RepeatingPeriodSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime, final Period repeatPeriod, boolean ignorePastFiresAtStart) {
+    public RepeatingPeriodSchedulableJob(final MotechEvent motechEvent, final DateTime startTime, final DateTime endTime,
+                                         final Period repeatPeriod, boolean ignorePastFiresAtStart) {
         this(motechEvent, startTime, endTime, repeatPeriod, ignorePastFiresAtStart, false);
     }
 
@@ -36,13 +36,13 @@ public class RepeatingPeriodSchedulableJob extends SchedulableJob {
      * Constructor.
      *
      * @param motechEvent  the {@code MotechEvent} which will be fired when the job triggers, not null
-     * @param startTime  the {@code Date} at which job should become ACTIVE, not null
-     * @param endTime  the {@code Date} at which job should be stopped, null treated as never end
+     * @param startTime  the {@code DateTime} at which job should become ACTIVE, not null
+     * @param endTime  the {@code DateTime} at which job should be stopped, null treated as never end
      * @param repeatPeriod the {@code Period} between job fires, not null
      * @param ignorePastFiresAtStart the flag defining whether job should ignore past fires at start or not
      * @param uiDefined  the flag defining, whether job has been created through the UI
      */
-    public RepeatingPeriodSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime,
+    public RepeatingPeriodSchedulableJob(final MotechEvent motechEvent, final DateTime startTime, final DateTime endTime,
                                          final Period repeatPeriod, boolean ignorePastFiresAtStart, boolean uiDefined) {
         super(uiDefined);
         this.motechEvent = motechEvent;
@@ -62,20 +62,20 @@ public class RepeatingPeriodSchedulableJob extends SchedulableJob {
         return this;
     }
 
-    public Date getStartTime() {
+    public DateTime getStartTime() {
         return startTime;
     }
 
-    public RepeatingPeriodSchedulableJob setStartTime(final Date startTime) {
+    public RepeatingPeriodSchedulableJob setStartTime(final DateTime startTime) {
         this.startTime = startTime;
         return this;
     }
 
-    public Date getEndTime() {
+    public DateTime getEndTime() {
         return endTime;
     }
 
-    public RepeatingPeriodSchedulableJob setEndTime(final Date endTime) {
+    public RepeatingPeriodSchedulableJob setEndTime(final DateTime endTime) {
         this.endTime = endTime;
         return this;
     }

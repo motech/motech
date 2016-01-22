@@ -76,13 +76,14 @@ public class JobStorePerformanceAssessment {
 
             DateTime startTime = now().plusSeconds(0);
             Integer repeatInterval = 1;
-            System.out.println("startTime: " + startTime.toDate());
+            System.out.println("startTime: " + startTime);
 
             MotechSchedulerServiceImpl schedulerService = new MotechSchedulerServiceImpl(schedulerFactoryBean, settings);
             NanoStopWatch timeToSchedule = new NanoStopWatch().start();
             for (int i = 0; i < maxJobs; i++) {
                 params.put(MotechSchedulerService.JOB_ID_KEY, "test_job_" + String.valueOf(i));
-                RepeatingSchedulableJob repeatingJob = new RepeatingSchedulableJob(motechEvent,repeatCount, repeatInterval, startTime.toDate(), null, false);
+                RepeatingSchedulableJob repeatingJob = new RepeatingSchedulableJob(motechEvent, repeatCount, repeatInterval,
+                        startTime, null, false);
                 repeatingJob.setUseOriginalFireTimeAfterMisfire(false);
                 schedulerService.scheduleRepeatingJob(repeatingJob);
             }
