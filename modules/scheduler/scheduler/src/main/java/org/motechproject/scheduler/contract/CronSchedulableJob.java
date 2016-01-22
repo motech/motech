@@ -1,8 +1,8 @@
 package org.motechproject.scheduler.contract;
 
+import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -19,8 +19,8 @@ public class CronSchedulableJob extends SchedulableJob {
 
     private MotechEvent motechEvent;
     private String cronExpression;
-    private Date startTime;
-    private Date endTime;
+    private DateTime startTime;
+    private DateTime endTime;
     private boolean ignorePastFiresAtStart;
 
     /**
@@ -28,10 +28,10 @@ public class CronSchedulableJob extends SchedulableJob {
      *
      * @param motechEvent  the {@code MotechEvent} fired, when job triggers, not null
      * @param cronExpression  the cron expression, which defines when job should be fired, not null
-     * @param startTime  the {@code Date} at which job should become ACTIVE, not null
-     * @param endTime  the {@code Date} at which job should be stopped, null treated as never end
+     * @param startTime  the {@code DateTime} at which job should become ACTIVE, not null
+     * @param endTime  the {@code DateTime} at which job should be stopped, null treated as never end
      */
-    public CronSchedulableJob(MotechEvent motechEvent, String cronExpression, Date startTime, Date endTime) {
+    public CronSchedulableJob(MotechEvent motechEvent, String cronExpression, DateTime startTime, DateTime endTime) {
         this(motechEvent, cronExpression, startTime, endTime, false);
     }
 
@@ -50,11 +50,11 @@ public class CronSchedulableJob extends SchedulableJob {
      *
      * @param motechEvent  the {@code MotechEvent} fired, when job triggers, not null
      * @param cronExpression  the cron expression, which defines when job should be fired, not null
-     * @param startTime  the {@code Date} at which job should become ACTIVE, not null
-     * @param endTime  the {@code Date} at which job should be stopped, null treated as never end
+     * @param startTime  the {@code DateTime} at which job should become ACTIVE, not null
+     * @param endTime  the {@code DateTime} at which job should be stopped, null treated as never end
      * @param ignorePastFiresAtStart  the flag defining, whether job should ignore past fires at start or not
      */
-    public CronSchedulableJob(MotechEvent motechEvent, String cronExpression, Date startTime, Date endTime, boolean ignorePastFiresAtStart) {
+    public CronSchedulableJob(MotechEvent motechEvent, String cronExpression, DateTime startTime, DateTime endTime, boolean ignorePastFiresAtStart) {
         this(motechEvent, cronExpression, startTime, endTime, ignorePastFiresAtStart, false);
     }
 
@@ -68,7 +68,7 @@ public class CronSchedulableJob extends SchedulableJob {
      * @param ignorePastFiresAtStart  the flag defining, whether job should ignore past fires at start or not
      * @param uiDefined  the flag defining, whether job has been created through the UI
      */
-    public CronSchedulableJob(MotechEvent motechEvent, String cronExpression, Date startTime, Date endTime,
+    public CronSchedulableJob(MotechEvent motechEvent, String cronExpression, DateTime startTime, DateTime endTime,
                               boolean ignorePastFiresAtStart, boolean uiDefined) {
         super(uiDefined);
 
@@ -86,11 +86,11 @@ public class CronSchedulableJob extends SchedulableJob {
         this.ignorePastFiresAtStart = ignorePastFiresAtStart;
     }
 
-    public Date getStartTime() {
+    public DateTime getStartTime() {
         return startTime;
     }
 
-    public Date getEndTime() {
+    public DateTime getEndTime() {
         return endTime;
     }
 
