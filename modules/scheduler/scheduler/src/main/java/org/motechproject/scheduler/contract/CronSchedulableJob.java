@@ -55,6 +55,23 @@ public class CronSchedulableJob extends SchedulableJob {
      * @param ignorePastFiresAtStart  the flag defining, whether job should ignore past fires at start or not
      */
     public CronSchedulableJob(MotechEvent motechEvent, String cronExpression, Date startTime, Date endTime, boolean ignorePastFiresAtStart) {
+        this(motechEvent, cronExpression, startTime, endTime, ignorePastFiresAtStart, false);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param motechEvent  the {@code MotechEvent} fired, when job triggers, not null
+     * @param cronExpression  the cron expression, which defines when job should be fired, not null
+     * @param startTime  the {@code Date} at which job should become ACTIVE, not null
+     * @param endTime  the {@code Date} at which job should be stopped, null treated as never end
+     * @param ignorePastFiresAtStart  the flag defining, whether job should ignore past fires at start or not
+     * @param uiDefined  the flag defining, whether job has been created through the UI
+     */
+    public CronSchedulableJob(MotechEvent motechEvent, String cronExpression, Date startTime, Date endTime,
+                              boolean ignorePastFiresAtStart, boolean uiDefined) {
+        super(uiDefined);
+
         if (motechEvent == null) {
             throw new IllegalArgumentException("MotechEvent can not be null");
         }
