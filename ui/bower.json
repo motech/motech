@@ -30,8 +30,8 @@
     "tagmanager": "~3.0.2",
     "bootstrap-tagsinput": "tagsinput#~0.7.1",
     "jQuery-Timepicker-Addon": "git://github.com/trentrichardson/jQuery-Timepicker-Addon",
-    "swagger-ui": "git://github.com/swagger-api/swagger-ui",
-    "swagger-js": "git://github.com/swagger-api/swagger-js",
+    "swagger-ui": "git://github.com/swagger-api/swagger-ui.git#2.1.1-M1",
+    "swagger-js": "git://github.com/swagger-api/swagger-js.git#2.1.1-M1",
     "blockUI": "jquery.blockUI#*",
     "jquery.caret": "~1.5.2",
     "jquery.cookie": "~1.4.1",
@@ -115,6 +115,16 @@
       ],
       "dependencies": {
         "jquery": "~1"
+      }
+    },
+    "swagger-js": {
+      "main": [
+        "./lib/swagger-client.js",
+        "./lib/shred.bundle.js"
+      ],
+      "dependencies": {
+        "jquery": "~1",
+        "jquery.browser": "latest"
       }
     },
     "swagger-ui": {
