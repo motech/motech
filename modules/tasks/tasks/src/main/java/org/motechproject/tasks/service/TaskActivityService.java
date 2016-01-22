@@ -7,6 +7,7 @@ import org.motechproject.tasks.domain.TaskActivityType;
 import org.motechproject.tasks.ex.TaskHandlerException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -19,8 +20,9 @@ public interface TaskActivityService {
      *
      * @param task  the failed task, not null
      * @param e  the cause of the error, not null
+     * @param parameters the parameters used by the task when it failed
      */
-    void addError(Task task, TaskHandlerException e);
+    void addError(Task task, TaskHandlerException e, Map<String, Object> parameters);
 
     /**
      * Logs an execution success for the given task.
@@ -61,6 +63,14 @@ public interface TaskActivityService {
      * @param taskId  the task ID, not null
      */
     void deleteActivitiesForTask(Long taskId);
+
+    /**
+     * Returns single TaskActivity with given activity ID.
+     *
+     * @param activityId the ID of activity instance to be retrieved
+     * @return TaskActivity with the given ID
+     */
+    TaskActivity getTaskActivityById(Long activityId);
 
     /**
      * Returns 10 most recent activities as a list, ordered by date.

@@ -4,13 +4,12 @@ import org.apache.commons.lang.ObjectUtils;
 import org.joda.time.Period;
 import org.motechproject.event.MotechEvent;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Job that will be fired every {@link org.joda.time.Period} of time
  */
-public class RepeatingPeriodSchedulableJob implements SchedulableJob, Serializable {
+public class RepeatingPeriodSchedulableJob extends SchedulableJob {
     private static final long serialVersionUID = 1L;
 
     private MotechEvent motechEvent;

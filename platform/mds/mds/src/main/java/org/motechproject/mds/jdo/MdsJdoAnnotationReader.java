@@ -37,7 +37,9 @@ public class MdsJdoAnnotationReader extends JDOAnnotationReader {
         AnnotationObject annotationObject = super.isClassPersistable(cls);
 
         // if super does not recognize this object as PC, then try looking for the Entity annotation
-        if (annotationObject == null && ReflectionsUtil.hasAnnotation(cls, Entity.class)) {
+        // only when FileMetadata has been already loaded
+        if (annotationObject == null && ReflectionsUtil.hasAnnotation(cls, Entity.class) &&
+                 !ArrayUtils.isEmpty(mgr.getFileMetaData())) {
             // default params
             HashMap<String, Object> annotationParams = new HashMap<>();
             annotationParams.put("identityType", IdentityType.DATASTORE);

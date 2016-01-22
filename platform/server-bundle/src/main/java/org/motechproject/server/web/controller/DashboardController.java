@@ -6,8 +6,6 @@ import org.motechproject.event.listener.EventConsumerInfo;
 import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.web.form.UserInfo;
-import org.motechproject.server.web.helper.Header;
-import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -33,7 +31,6 @@ public class DashboardController {
 
     private StartupManager startupManager;
     private LocaleService localeService;
-    private BundleContext bundleContext;
     private EventConsumerInfo eventConsumerInfo;
 
     @RequestMapping({"/index", "/", "/home"})
@@ -47,7 +44,6 @@ public class DashboardController {
             mav = new ModelAndView("index");
             mav.addObject("isAccessDenied", false);
             mav.addObject("loginPage", false);
-            mav.addObject("mainHeader", Header.generateHeader(bundleContext.getBundle()));
             String contextPath = request.getSession().getServletContext().getContextPath();
 
             if (StringUtils.isNotBlank(contextPath) && !"/".equals(contextPath)) {
@@ -95,7 +91,7 @@ public class DashboardController {
     public String getNodeName() throws UnknownHostException {
         InetAddress ip = InetAddress.getLocalHost();
 
-        return ip.getHostName();
+        return '"' + ip.getHostName() + '"';
     }
 
     @RequestMapping(value = "/isInboundChannelActive", method = RequestMethod.POST)
@@ -113,12 +109,7 @@ public class DashboardController {
     public void setLocaleService(LocaleService localeService) {
         this.localeService = localeService;
     }
-
-    @Autowired
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-    }
-
+    
     @Autowired
     public void setEventConsumerInfo(EventConsumerInfo eventConsumerInfo) {
         this.eventConsumerInfo = eventConsumerInfo;

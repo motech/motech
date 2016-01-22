@@ -10,10 +10,8 @@ import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.server.web.dto.StartupViewData;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
-import org.motechproject.server.web.helper.Header;
 import org.motechproject.server.web.validator.StartupFormValidator;
 import org.motechproject.server.web.validator.StartupFormValidatorFactory;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +47,6 @@ public class StartupController {
 
     @Autowired
     private MotechUserService userService;
-
-    @Autowired
-    private BundleContext bundleContext;
 
     @Autowired
     private StartupFormValidatorFactory startupFormValidatorFactory;
@@ -94,8 +89,6 @@ public class StartupController {
 
         if (startupManager.canLaunchBundles()) {
             view.setViewName(REDIRECT_HOME);
-        } else {
-            view.addObject("mainHeader", Header.generateHeader(bundleContext.getBundle()));
         }
 
         return view;

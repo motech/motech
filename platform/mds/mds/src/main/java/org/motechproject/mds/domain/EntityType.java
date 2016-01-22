@@ -1,6 +1,7 @@
 package org.motechproject.mds.domain;
 
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.Constants;
 
 /**
  * Represents the type of an entity and their associated class names.
@@ -11,8 +12,13 @@ public enum EntityType {
      */
     STANDARD {
         @Override
-        public String getName(String className) {
+        public String getClassName(String className) {
             return className;
+        }
+
+        @Override
+        public String getName(String name) {
+            return name;
         }
     },
     /**
@@ -20,8 +26,13 @@ public enum EntityType {
      */
     HISTORY {
         @Override
-        public String getName(String className) {
+        public String getClassName(String className) {
             return ClassName.getHistoryClassName(className);
+        }
+
+        @Override
+        public String getName(String name) {
+            return name + Constants.HistoryTrash.HISTORY_SUFFIX;
         }
     },
     /**
@@ -29,12 +40,19 @@ public enum EntityType {
      */
     TRASH {
         @Override
-        public String getName(String className) {
+        public String getClassName(String className) {
             return ClassName.getTrashClassName(className);
+        }
+
+        @Override
+        public String getName(String name) {
+            return name + Constants.HistoryTrash.TRASH_SUFFIX;
         }
     };
 
-    public abstract String getName(String className);
+    public abstract String getClassName(String className);
+
+    public abstract String getName(String name);
 
     /**
      * Returns the type of an entity, based on the class name.

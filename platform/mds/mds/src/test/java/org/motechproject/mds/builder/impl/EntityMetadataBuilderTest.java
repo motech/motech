@@ -42,6 +42,8 @@ import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
 import javax.jdo.metadata.CollectionMetadata;
 import javax.jdo.metadata.FieldMetadata;
+import javax.jdo.metadata.ForeignKeyMetadata;
+import javax.jdo.metadata.IndexMetadata;
 import javax.jdo.metadata.InheritanceMetadata;
 import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.PackageMetadata;
@@ -82,6 +84,7 @@ import static org.motechproject.mds.util.Constants.Util.VALUE_GENERATOR;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({MotechClassPool.class, FieldUtils.class})
 public class EntityMetadataBuilderTest {
+
     private static final String PACKAGE = "org.motechproject.mds.entity";
     private static final String ENTITY_NAME = "Sample";
     private static final String MODULE = "MrS";
@@ -115,6 +118,9 @@ public class EntityMetadataBuilderTest {
 
     @Mock
     private InheritanceMetadata inheritanceMetadata;
+
+    @Mock
+    private IndexMetadata indexMetadata;
 
     @Mock
     private SchemaHolder schemaHolder;
@@ -223,6 +229,7 @@ public class EntityMetadataBuilderTest {
         CollectionMetadata collMd = mock(CollectionMetadata.class);
 
         when(entity.getName()).thenReturn(ENTITY_NAME);
+        when(entity.getId()).thenReturn(2L);
         when(schemaHolder.getFields(entity)).thenReturn(singletonList(oneToManyField));
         when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
@@ -252,12 +259,16 @@ public class EntityMetadataBuilderTest {
         FieldMetadata fmd = mock(FieldMetadata.class);
         when(fmd.getName()).thenReturn("oneToOneName");
 
+        ForeignKeyMetadata fkmd = mock(ForeignKeyMetadata.class);
+
         when(entity.getName()).thenReturn(ENTITY_NAME);
+        when(entity.getId()).thenReturn(3L);
         when(schemaHolder.getFields(entity)).thenReturn(singletonList(oneToOneField));
         when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
         when(classMetadata.newFieldMetadata("oneToOneName")).thenReturn(fmd);
+        when(fmd.newForeignKeyMetadata()).thenReturn(fkmd);
 
         /* We simulate configuration for the bi-directional relationship (the related class has got
            a field that links back to the main class) */
@@ -280,6 +291,7 @@ public class EntityMetadataBuilderTest {
         verifyCommonClassMetadata();
         verify(fmd).setDefaultFetchGroup(true);
         verify(fmd).setPersistenceModifier(PersistenceModifier.PERSISTENT);
+        verify(fkmd).setName("fk_Sample_oneToOneName_3");
     }
 
     @Test
@@ -294,18 +306,22 @@ public class EntityMetadataBuilderTest {
         FieldMetadata fmd = mock(FieldMetadata.class);
 
         when(entity.getName()).thenReturn(ENTITY_NAME);
+        when(entity.getId()).thenReturn(14L);
         when(schemaHolder.getFields(entity)).thenReturn(singletonList(lookupField));
         when(entity.getTableName()).thenReturn(TABLE_NAME);
         when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
         when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
         when(classMetadata.newFieldMetadata("lookupField")).thenReturn(fmd);
+        when(fmd.newIndexMetadata()).thenReturn(indexMetadata);
+
         PowerMockito.mockStatic(FieldUtils.class);
         when(FieldUtils.getDeclaredField(eq(Sample.class), anyString(), eq(true))).thenReturn(Sample.class.getDeclaredField("notInDefFg"));
 
         entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity, Sample.class, schemaHolder);
 
         verifyCommonClassMetadata();
-        verify(fmd).setIndexed(true);
+        verify(fmd).newIndexMetadata();
+        verify(indexMetadata).setName("lkp_idx_" + ENTITY_NAME + "_lookupField_14");
     }
 
     @Test

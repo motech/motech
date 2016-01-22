@@ -360,7 +360,7 @@
             })
         ]).then(function () {
             $scope.userLang = $scope.getLanguage(toLocale($scope.user.lang));
-            moment.lang($scope.user.lang);
+            moment.locale($scope.user.lang);
             $scope.loadI18n($scope.i18n);
         });
 
@@ -604,7 +604,7 @@
         ]).then(function () {
             if ($scope.user.lang) {
                 $scope.userLang = $scope.getLanguage(toLocale($scope.user.lang));
-                moment.lang($scope.user.lang);
+                moment.locale($scope.user.lang);
             }
         });
 
