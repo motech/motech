@@ -1576,7 +1576,7 @@
                             if (optionElement) {
                                 optionElement.removeAttr('selected');
                                 if (checked) {
-                                    optionElement.attr('selected', 'selected');
+                                    optionElement.prop('selected', true);
                                 }
                             }
 
@@ -2088,7 +2088,7 @@
                     onChange: function (optionElement, checked) {
                         optionElement.removeAttr('selected');
                         if (checked) {
-                            optionElement.attr('selected', 'selected');
+                            optionElement.prop('selected', true);
                         }
                         element.change();
                     }
@@ -2162,7 +2162,7 @@
                     onChange: function (optionElement, checked) {
                         optionElement.removeAttr('selected');
                         if (checked) {
-                            optionElement.attr('selected', 'selected');
+                            optionElement.prop('selected', true);
                         }
 
                         if (fieldPath === undefined) {
@@ -2321,7 +2321,7 @@
                     onChange: function (optionElement, checked) {
                         optionElement.removeAttr('selected');
                         if (checked) {
-                            optionElement.attr('selected', 'selected');
+                            optionElement.prop('selected', true);
                         }
 
                         element.change();
