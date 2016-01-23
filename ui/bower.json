@@ -132,12 +132,12 @@
         "./dist/lib/underscore-min.js",
         "./dist/lib/backbone-min.js",
         "./dist/lib/handlebars-2.0.0.js",
+        "./dist/lib/highlight.7.3.pack.js",
         "./dist/lib/jquery.ba-bbq.min.js",
         "./dist/lib/jquery.slideto.min.js",
         "./dist/lib/jquery.wiggle.min.js",
         "./dist/lib/marked.js",
-        "./dist/swagger-ui.js",
-        "./dist/css/screen.css"
+        "./dist/swagger-ui.js"
       ],
       "dependencies": {
         "jquery": "~1",
