@@ -272,6 +272,10 @@ form.inside {
     margin-left: 10px;
 }
 
+.multiselect-container.dropdown-menu > li > a {
+    padding: 3px 0;
+}
+
 .nav-tabs {
     border-bottom: 1px solid #0088cc;
 }

@@ -1,12 +1,12 @@
 package org.motechproject.scheduler.domain;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -21,21 +21,20 @@ public class TestRunOnceSchedulableJob {
     private MotechEvent motechEvent1;
     private MotechEvent motechEvent2;
 
-    private Date currentDate;
+    private DateTime currentDate;
 
     @Before
     public void setUp() {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("JobID", uuidStr);
         motechEvent1 = new MotechEvent("TestEvent", params);
 
-        params = new HashMap<String, Object>();
+        params = new HashMap<>();
         params.put("JobID", uuidStr2);
         motechEvent2 = new MotechEvent("TestEvent", params);
 
-        Calendar cal = Calendar.getInstance();
-        currentDate = cal.getTime();
-        cal.add(Calendar.DATE, -1);
+        currentDate = DateUtil.now();
+        currentDate = currentDate.minusDays(1);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -50,12 +49,9 @@ public class TestRunOnceSchedulableJob {
 
     @Test
     public void equalsTest() throws Exception {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, +1);
-        Date date = cal.getTime();
-
-        cal.add(Calendar.DATE, +1);
-        Date date2 = cal.getTime();
+        DateTime now = DateUtil.now();
+        DateTime date = now.plusDays(1);
+        DateTime date2 = now.plusDays(2);
 
         RunOnceSchedulableJob job1 = new RunOnceSchedulableJob(motechEvent1, date);
         RunOnceSchedulableJob job1Same = new RunOnceSchedulableJob(motechEvent1, date);
