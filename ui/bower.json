@@ -137,7 +137,8 @@
         "./dist/lib/jquery.slideto.min.js",
         "./dist/lib/jquery.wiggle.min.js",
         "./dist/lib/marked.js",
-        "./dist/swagger-ui.js"
+        "./dist/swagger-ui.js",
+        "./dist/css/screen.css"
       ],
       "dependencies": {
         "jquery": "~1",
