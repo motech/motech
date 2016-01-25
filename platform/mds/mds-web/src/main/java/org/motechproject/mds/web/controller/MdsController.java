@@ -2,8 +2,6 @@ package org.motechproject.mds.web.controller;
 
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.MdsException;
-import org.motechproject.mds.ex.object.ObjectCreateException;
-import org.motechproject.mds.ex.object.ObjectUpdateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

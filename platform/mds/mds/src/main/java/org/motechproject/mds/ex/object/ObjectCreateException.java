@@ -1,13 +1,5 @@
 package org.motechproject.mds.ex.object;
 
-import org.motechproject.mds.ex.MdsException;
-
-import javax.jdo.JDODataStoreException;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.Set;
-
 /**
  * Signals that it was not possible to update object instance from the provided data.
  */
