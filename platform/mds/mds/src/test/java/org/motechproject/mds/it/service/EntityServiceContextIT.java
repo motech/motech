@@ -584,17 +584,26 @@ public class EntityServiceContextIT extends BaseIT {
         userPreferencesService.unselectField(entityId, "motech", "owner");
 
         UserPreferencesDto userPreferencesDto = userPreferencesService.getUserPreferences(entityId, "motech");
-        assertEquals(asList( "f1name", "creator", "modifiedBy", "creationDate", "modificationDate"),
-                userPreferencesDto.getVisibleFields());
+        assertEquals(5, userPreferencesDto.getVisibleFields().size());
+        assertTrue(userPreferencesDto.getVisibleFields().contains("f1name"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("creator"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("modifiedBy"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("creationDate"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("modificationDate"));
 
         entityService.commitChanges(entityId);
 
         userPreferencesDto = userPreferencesService.getUserPreferences(entityId, "motech");
-        assertEquals(asList("newName", "creator", "modifiedBy", "creationDate", "modificationDate"),
-                userPreferencesDto.getVisibleFields());
+        assertEquals(5, userPreferencesDto.getVisibleFields().size());
+        assertTrue(userPreferencesDto.getVisibleFields().contains("newName"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("creator"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("modifiedBy"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("creationDate"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("modificationDate"));
 
-        assertEquals(asList("id", "owner"),
-                userPreferencesDto.getUnselectedFields());
+        assertEquals(2, userPreferencesDto.getUnselectedFields().size());
+        assertTrue(userPreferencesDto.getUnselectedFields().contains("id"));
+        assertTrue(userPreferencesDto.getUnselectedFields().contains("owner"));
     }
 
     private void assertRelatedField(EntityDto relatedEntity, FieldDto relatedField, String collection) {
