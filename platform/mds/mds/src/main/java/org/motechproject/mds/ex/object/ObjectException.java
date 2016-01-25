@@ -9,31 +9,27 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Set;
 
 /**
- * Created by mateusz on 25.01.16.
+ * Signals that it was not possible to insert object data into database.
  */
 public abstract class ObjectException extends MdsException {
 
-    public ObjectException(String message, String keyError, Throwable cause) {
-        super(message, cause, keyError, getCauseMessage(cause));
+    protected ObjectException(String message, String keyError, Throwable cause) {
+        super(message, cause, keyError, getMessageFromCause(cause));
     }
 
     protected static String getMessageFromCause(Throwable cause) {
-        String message = "";
+        String message = "Persistence error";
         if (cause instanceof ConstraintViolationException) {
             Set<ConstraintViolation<?>> violations = ((ConstraintViolationException) cause).getConstraintViolations();
+            message = "";
             for (ConstraintViolation violation : violations) {
-                message += String.format("Field %s %s\n", violation.getPropertyPath(), violation.getMessage());
+                message += (String.format("Field %s %s\n", violation.getPropertyPath(), violation.getMessage()));
             }
-        }
-        return message;
-    }
-
-    protected static String getCauseMessage(Throwable cause) {
-        String message = "";
-        if (cause instanceof JDODataStoreException) {
+        } else if (cause instanceof JDODataStoreException) {
             for (Throwable exception : ((JDODataStoreException) cause).getNestedExceptions()) {
                 if (exception instanceof SQLIntegrityConstraintViolationException) {
-                    message += exception.getMessage();
+                    message = exception.getMessage();
+                    break;
                 }
             }
         }
