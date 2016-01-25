@@ -3785,10 +3785,7 @@
                 $scope.unselectInstance();
                 unblockUI();
             },
-            function failure(response) {
-                motechAlert('mds.error.param', 'mds.error.cannotAddInstance', response.data);
-                unblockUI();
-            });
+            angularHandler('mds.error', 'mds.error.cannotAddInstance'));
         };
 
         /**
