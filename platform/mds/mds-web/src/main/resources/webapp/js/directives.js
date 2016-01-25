@@ -559,6 +559,48 @@
     });
 
     /**
+    * Add a date picker to an element.
+    */
+    directives.directive('mdsDatePicker', function () {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function (scope, element, attr, ngModel) {
+                var isReadOnly = scope.$eval(attr.ngReadonly);
+                if(!isReadOnly) {
+                    angular.element(element).datepicker({
+                        changeYear: true,
+                        showButtonPanel: true,
+                        dateFormat: 'yy-mm-dd',
+                        onSelect: function (dateTex) {
+                            scope.safeApply(function () {
+                                ngModel.$setViewValue(dateTex);
+                            });
+                        },
+                        onClose: function (year, month, inst) {
+                            var viewValue = $(this).val();
+                            scope.safeApply(function () {
+                                ngModel.$setViewValue(viewValue);
+                            });
+                        },
+                        onChangeMonthYear: function (year, month, inst) {
+                            var curDate = $(this).datepicker("getDate");
+                            if (curDate === null) {
+                                return;
+                            }
+                            if (curDate.getFullYear() !== year || curDate.getMonth() !== month - 1) {
+                                curDate.setYear(year);
+                                curDate.setMonth(month - 1);
+                                $(this).datepicker("setDate", curDate);
+                            }
+                        }
+                    });
+                }
+            }
+        };
+    });
+
+    /**
     * Add "Item" functionality of "Connected Lists" control to the element. "Connected Lists Group"
     * is passed as a value of the attribute. If item is selected '.connected-list-item-selected-{group}
     * class is added.
