@@ -417,6 +417,43 @@ public final class DateUtil {
     }
 
     /**
+     * Converts a list of {@link Date} to a list of {@link DateTime}.
+     * @param dates the input dates
+     * @return the dates converted to Joda DateTimes
+     */
+    public static List<DateTime> datesToDateTimes(List<Date> dates) {
+        List<DateTime> dateTimes = new ArrayList<>();
+        for (Date date : dates) {
+            if (date == null) {
+                dateTimes.add(null);
+            } else {
+                dateTimes.add(new DateTime(date));
+            }
+        }
+        return dateTimes;
+    }
+
+    /**
+     * Converts the provided {@link DateTime} to a {@link Date} using the {@link DateTime#toDate()} method.
+     * This method is null safe and will return null for a null datetime.
+     * @param dateTime the datetime to convert
+     * @return the datetime converted to a date, or null if null was passed
+     */
+    public static Date toDate(DateTime dateTime) {
+        return dateTime == null ? null : dateTime.toDate();
+    }
+
+    /**
+     * Converts the provided {@link LocalDate} to a {@link DateTime} using the {@link LocalDate#toDateTimeAtStartOfDay()} method.
+     * This method is null safe and will return null for a null datetime.
+     * @param localDate the local date to convert
+     * @return the local date converted to a datetime, or null if null was passed
+     */
+    public static DateTime toDateTimeAtStartOfDay(LocalDate localDate) {
+        return localDate == null ? null : localDate.toDateTimeAtStartOfDay();
+    }
+
+    /**
      * This is a utility class and should not be instantiated
      */
     private DateUtil() {

@@ -179,10 +179,10 @@
                             *
                         </Import-Package>
                         <Export-Package>
-                            org.motechproject.admin.service;version=${project.version},
                             org.motechproject.admin.domain;version=${project.version},
                             org.motechproject.admin.mds;version=${project.version},
-                            org.motechproject.admin.messages;version=${project.version}
+                            org.motechproject.admin.messages;version=${project.version},
+                            org.motechproject.admin.service;version=${project.version}
                         </Export-Package>
                         <Bundle-DocURL>
                             http://docs.motechproject.org
