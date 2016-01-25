@@ -666,7 +666,7 @@
         });
 
     // code for date-picker
-    
+
     widgetModule.directive('datePicker', function() {
         return {
             restrict: 'A',
