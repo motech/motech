@@ -614,7 +614,7 @@ public class Field {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(name, displayName);
     }
 
     @Override
@@ -630,6 +630,7 @@ public class Field {
         Field other = (Field) obj;
 
         return Objects.equals(this.id, other.id) &&
-                Objects.equals(this.name, other.name);
+                Objects.equals(this.name, other.name) &&
+                Objects.equals(this.displayName, other.displayName);
     }
 }
