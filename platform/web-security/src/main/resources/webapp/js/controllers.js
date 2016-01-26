@@ -539,7 +539,7 @@
                 function () {
                     $("#dynamicURLSaveButtonTop").button('reset');
                     $("#dynamicURLSaveButtonBottom").button('reset');
-                    $scope.config = $scope.loadDynamicURLs();
+                    $scope.loadDynamicURLs();
                     $scope.savingDynamicURL = false;
                     $("#dynamicURLSaveSuccessMsg").css('display', 'block').fadeOut(5000);
                 },
