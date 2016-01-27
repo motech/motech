@@ -99,7 +99,7 @@ public class MigrationServiceTest {
         newMigrationInfo2.setFlywayMigrationVersion(14);
         newMigrationInfo3.setFlywayMigrationVersion(15);
 
-        when(mdsConfig.getFlywayLocations()).thenReturn(new String[]{"db/migration/mysql"});
+        when(mdsConfig.getFlywayLocations()).thenReturn("db/migration/mysql");
         when(mdsConfig.getFlywayMigrationDirectory()).thenReturn(new File(migrationsDirectory));
         when(bundle.getEntryPaths(anyString())).thenReturn(enumeration);
         when(bundle.getSymbolicName()).thenReturn("testModule");

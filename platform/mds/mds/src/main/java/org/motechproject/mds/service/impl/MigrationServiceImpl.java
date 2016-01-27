@@ -74,6 +74,7 @@ public class MigrationServiceImpl implements MigrationService {
                     try (InputStream inputStream = bundle.getResource(resourcePath).openStream()) {
                         LOGGER.debug("Creating new migration file with name {}, for {} bundle", newFileName, bundle.getSymbolicName());
                         File migrationFile = new File(migrationDirectory.getAbsolutePath(), newFileName);
+                        Files.createDirectories(migrationDirectory.toPath());
                         Files.copy(inputStream, migrationFile.toPath());
                     }
                 }
