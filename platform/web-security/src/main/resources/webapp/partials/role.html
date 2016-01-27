@@ -87,22 +87,22 @@
                 <input ng-show="role.deletable" ng-disabled="roleForm.$invalid" class="btn btn-primary" type="submit" value="{{msg('security.save')}}" ng-click="saveRole()"/>
                 <input class="btn btn-default" type="submit" value="{{msg('security.cancel')}}" ng-click="cancelRole()"/>
             </div>
-            <div ng-show="role.deletable && addOrEdit =='edit'" class="form-group">
+            <div ng-show="role.deletable && isEdit == true" class="form-group">
                 <h4>{{msg('security.deleteRole')}}</h4>
             </div>
-            <div ng-show="role.deletable && addOrEdit =='edit'"  class="form-group">
+            <div ng-show="role.deletable && isEdit == true"  class="form-group">
                 <div class="controls">
                     <p>{{msg('security.deletingRoleInfo')}}</p>
                 </div>
             </div>
-            <div ng-show="role.deletable && addOrEdit =='edit'" class="form-group">
+            <div ng-show="role.deletable && isEdit == true" class="form-group">
                 <div class="controls checkbox">
                     <label>
                         <input type="checkbox" ng-model="deleteR"> {{msg('security.deletingRoleCheckMsg')}}
                     </label>
                 </div>
             </div>
-            <div ng-show="role.deletable && deleteR && addOrEdit == 'edit'" class="form-group">
+            <div ng-show="role.deletable && deleteR && isEdit == true" class="form-group">
                 <div class="controls">
                     <span>
                         <input class="btn btn-primary" type="button" value="{{msg('security.delete')}}" ng-click="deleteRole()" />
