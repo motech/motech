@@ -10,6 +10,7 @@ import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.repository.SchemaChangeLockManager;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
+import org.motechproject.mds.service.MigrationService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -24,6 +25,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,6 +45,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
 
     private MDSAnnotationProcessor processor;
     private JarGeneratorService jarGeneratorService;
+    private MigrationService migrationService;
     private BundleContext bundleContext;
     private EntitiesBundleMonitor monitor;
     private EntityService entityService;
@@ -99,6 +102,11 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
                 outputs.add(output);
 
                 bundlesToRefresh.add(bundle);
+                try {
+                    migrationService.processBundle(bundle);
+                } catch (IOException e) {
+                    LOGGER.error("An error occurred while copying the migrations from bundle: {}", bundle.getSymbolicName(), e);
+                }
             }
         }
 
@@ -143,6 +151,21 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
                     }
                 });
 
+                tmpl = new TransactionTemplate(transactionManager);
+                tmpl.execute(new TransactionCallbackWithoutResult() {
+                    @Override
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
+                        schemaChangeLockManager.acquireLock(MdsBundleWatcher.class.getName() + " - searching for flyway migrations");
+
+                        try {
+                            migrationService.processBundle(bundle);
+                        } catch (IOException e) {
+                            LOGGER.error("An error occurred while copying the migrations from bundle: {}", bundle.getSymbolicName(), e);
+                        }
+
+                        schemaChangeLockManager.releaseLock(MdsBundleWatcher.class.getName() + " - searching for flyway migrations");
+                    }
+                 });
                 // if we found annotations, we will refresh the bundle in order to start weaving the
                 // classes it exposes
                 tmpl = new TransactionTemplate(transactionManager);
@@ -274,6 +297,11 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
     @Autowired
     public void setJarGeneratorService(JarGeneratorService jarGeneratorService) {
         this.jarGeneratorService = jarGeneratorService;
+    }
+
+    @Autowired
+    public void setMigrationService(MigrationService migrationService) {
+        this.migrationService = migrationService;
     }
 
     @Autowired

@@ -1,5 +1,7 @@
 package org.motechproject.mds;
 
+import org.apache.commons.io.FileUtils;
+import org.motechproject.mds.config.MdsConfig;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.osgi.MdsBundleWatcher;
 import org.motechproject.mds.osgi.MdsWeavingHook;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -33,10 +36,18 @@ public class MDSInitializer {
     private MdsWeavingHook mdsWeavingHook;
     private EntitiesBundleMonitor monitor;
     private EventAdmin eventAdmin;
+    private MdsConfig mdsConfig;
 
     @PostConstruct
     public void initMDS() throws IOException {
         LOGGER.info("Initializing MOTECH Data Services");
+
+        //we must delete old migration files
+        File migrationDirectory = mdsConfig.getFlywayMigrationDirectory();
+        if (migrationDirectory.exists()) {
+            FileUtils.cleanDirectory(migrationDirectory);
+        }
+        LOGGER.info("Migration directory cleared");
 
         // First register the weaving hook
         bundleContext.registerService(WeavingHook.class.getName(), mdsWeavingHook, null);
@@ -88,4 +99,10 @@ public class MDSInitializer {
     public void setMonitor(EntitiesBundleMonitor monitor) {
         this.monitor = monitor;
     }
+
+    @Autowired
+    public void setMdsConfig(MdsConfig mdsConfig) {
+        this.mdsConfig = mdsConfig;
+    }
+
 }
