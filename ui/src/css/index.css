@@ -120,17 +120,6 @@ a:active, a:hover, a:focus {
     vertical-align:bottom;
 }
 
-.header-nav {
-    display: block;
-    margin: 0 0 10px 0;
-    padding: 0;
-    color: #fff;
-    line-height: 20px;
-    font-size: 15px;
-    background: #073863;
-    border: none;
-}
-
 .dropdown ul li a,.dropdown ul li {
     font-size: 13px;
 }
