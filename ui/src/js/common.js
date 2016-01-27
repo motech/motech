@@ -17,6 +17,7 @@ function motechAlertStackTrace(msg, title, response, callback) {
 
 function blockUI() {
     'use strict';
+    $.blockUI.defaults.css.border = "0px";
     $.blockUI({theme: false, message :
         '<div class="splash">' +
             '<div class="splash-logo"><img src="./../../static/common/img/motech-logo.gif" alt="motech-logo"></div>' +
