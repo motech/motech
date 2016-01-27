@@ -3,7 +3,6 @@ package org.motechproject.mds.service.impl;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.motechproject.mds.config.MdsConfig;
 import org.motechproject.mds.domain.MigrationMapping;
 import org.motechproject.mds.repository.AllMigrationMappings;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -74,7 +74,7 @@ public class MigrationServiceImpl implements MigrationService {
                     try (InputStream inputStream = bundle.getResource(resourcePath).openStream()) {
                         LOGGER.debug("Creating new migration file with name {}, for {} bundle", newFileName, bundle.getSymbolicName());
                         File migrationFile = new File(migrationDirectory.getAbsolutePath(), newFileName);
-                        FileUtils.copyInputStreamToFile(inputStream, migrationFile);
+                        Files.copy(inputStream, migrationFile.toPath());
                     }
                 }
             }
