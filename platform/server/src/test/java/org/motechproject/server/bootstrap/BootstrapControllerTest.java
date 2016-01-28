@@ -68,7 +68,7 @@ public class BootstrapControllerTest {
     @Test
     public void shouldReturnViewWithBootstrapFlagSet() throws Exception {
         when(OsgiListener.isBootstrapPresent()).thenReturn(false);
-        mockMvc.perform(MockMvcRequestBuilders.get("/"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/bootstrap/"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("bootstrapconfig")).andReturn();
     }
@@ -77,13 +77,13 @@ public class BootstrapControllerTest {
     public void shouldRedirectToHomePageIfBootstrapConfigIsAlreadyLoaded() throws Exception {
         when(OsgiListener.isBootstrapPresent()).thenReturn(true);
         when(OsgiListener.isServerBundleActive()).thenReturn(true);
-        mockMvc.perform(MockMvcRequestBuilders.get("/"))
-                .andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("redirect:.."));
+        mockMvc.perform(MockMvcRequestBuilders.get("/bootstrap/"))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("redirect:../../"));
     }
 
     @Test
     public void shouldSaveBootstrapConfig() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/")
+        mockMvc.perform(MockMvcRequestBuilders.post("/bootstrap/")
                 .param("sqlUrl", "jdbc:mysql://www.someurl.com:3306/")
                 .param("sqlDriver", "com.mysql.jdbc.Driver")
                 .param("sqlUsername", "some_username")
@@ -106,7 +106,7 @@ public class BootstrapControllerTest {
         doThrow(new MotechConfigurationException("Test Exception")).when(OsgiListener.class);
         OsgiListener.saveBootstrapConfig(any(BootstrapConfig.class));
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/")
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/bootstrap/")
                 .param("sqlUrl", "jdbc:mysql://www.someurl.com:3306/")
                 .param("sqlDriver", "com.mysql.jdbc.Driver")
                 .param("sqlUsername", "some_username")

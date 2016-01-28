@@ -12,6 +12,7 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 public class TimeTest {
+
     @Test
     public void parseTime() {
         assertEquals(new Time(10, 12), Time.parseTime("10:12", ":"));
@@ -24,7 +25,7 @@ public class TimeTest {
 
     @Test
     public void compareTo() {
-        List<Time> times = new ArrayList<Time>();
+        List<Time> times = new ArrayList<>();
         times.add(new Time(12, 25));
         times.add(new Time(10, 10));
         times.add(new Time(11, 20));
@@ -37,18 +38,14 @@ public class TimeTest {
 
     @Test
     public void shouldTestIfCurrentTimeLessThanGivenTime() {
-
-        assertFalse(new Time(5, 0).lt(new Time(4, 59)));
-        assertTrue(new Time(5, 0).lt(new Time(5, 0)));
-        assertTrue(new Time(5, 0).lt(new Time(5, 1)));
+        assertFalse(new Time(5, 0).isBefore(new Time(4, 59)));
+        assertTrue(new Time(5, 0).isBefore(new Time(5, 1)));
     }
     
     @Test
     public void shouldTestIfCurrentTimeGreaterThanGivenTime() {
-
-        assertTrue(new Time(5, 0).gt(new Time(4, 59)));
-        assertTrue(new Time(5, 0).gt(new Time(5, 0)));
-        assertFalse(new Time(4, 0).gt(new Time(5, 0)));
+        assertTrue(new Time(5, 0).isAfter(new Time(4, 59)));
+        assertFalse(new Time(4, 0).isAfter(new Time(5, 0)));
     }
 
     @Test

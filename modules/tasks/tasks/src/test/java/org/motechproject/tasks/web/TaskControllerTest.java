@@ -13,11 +13,8 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
-import org.motechproject.tasks.service.TaskActionExecutor;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
-import org.motechproject.tasks.service.TaskTriggerHandler;
-import org.motechproject.tasks.service.TriggerHandler;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -73,15 +70,9 @@ public class TaskControllerTest {
     @Mock
     Task task;
 
-    TaskActionExecutor taskActionExecutor;
-
-    TriggerHandler triggerHandler;
-
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        taskActionExecutor = new TaskActionExecutor(taskService, null, null);
-        triggerHandler = new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, taskActionExecutor, null);
     }
 
     @Test
@@ -98,7 +89,7 @@ public class TaskControllerTest {
 
         List<Task> actual = controller.getAllTasks();
 
-        verify(taskService, times(2)).getAllTasks();
+        verify(taskService, times(1)).getAllTasks();
 
         assertNotNull(actual);
         assertEquals(expected, actual);

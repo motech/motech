@@ -1,9 +1,7 @@
 package org.motechproject.scheduler.contract;
 
+import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
-
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * Run Once Schedulable Job - a data carrier class for a job scheduled in the future that can be fired only once
@@ -14,12 +12,12 @@ import java.util.Date;
  * Date: 16/02/11
  * Time: 1:43 PM
  */
-public final class RunOnceSchedulableJob implements SchedulableJob, Serializable {
+public final class RunOnceSchedulableJob extends SchedulableJob {
 
     private static final long serialVersionUID = 1L;
 
     private MotechEvent motechEvent;
-    private Date startDate;
+    private DateTime startDate;
 
     /**
      * Constructor
@@ -28,7 +26,21 @@ public final class RunOnceSchedulableJob implements SchedulableJob, Serializable
      * @param startDate   - date and time when the job fill be fired
      * @throws IllegalArgumentException if motechEvent or startDate is null or startDate is in past
      */
-    public RunOnceSchedulableJob(MotechEvent motechEvent, Date startDate) {
+    public RunOnceSchedulableJob(MotechEvent motechEvent, DateTime startDate) {
+        this(motechEvent, startDate, false);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param motechEvent - event data message that will be send by Motech Scheduler when this job is fired
+     * @param startDate   - date and time when the job fill be fired
+     * @throws IllegalArgumentException if motechEvent or startDate is null or startDate is in past
+     * @param uiDefined  the flag defining, whether job has been created through the UI
+     */
+    public RunOnceSchedulableJob(MotechEvent motechEvent, DateTime startDate, boolean uiDefined) {
+
+        super(uiDefined);
 
         if (motechEvent == null) {
             throw new IllegalArgumentException("MotechEvent can not be null");
@@ -51,7 +63,7 @@ public final class RunOnceSchedulableJob implements SchedulableJob, Serializable
         return true;
     }
 
-    public Date getStartDate() {
+    public DateTime getStartDate() {
         return startDate;
     }
 

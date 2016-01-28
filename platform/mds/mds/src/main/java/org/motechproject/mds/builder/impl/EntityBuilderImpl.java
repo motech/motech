@@ -113,7 +113,7 @@ public class EntityBuilderImpl implements EntityBuilder {
 
             switch (type) {
                 case HISTORY:
-                    String className = type.getName(entity.getClassName());
+                    String className = type.getClassName(entity.getClassName());
                     String simpleName = ClassName.getSimpleName(className);
                     TypeDto idType = TypeDto.LONG;
 
@@ -234,7 +234,7 @@ public class EntityBuilderImpl implements EntityBuilder {
 
     private CtClass getDeclaringClass(EntityDto entity, EntityType type, Bundle bundle)
             throws NotFoundException {
-        String className = type.getName(entity.getClassName());
+        String className = type.getClassName(entity.getClassName());
         boolean isDDE = null != bundle;
 
         CtClass declaring = classPool.getOrNull(className);
@@ -254,8 +254,7 @@ public class EntityBuilderImpl implements EntityBuilder {
     }
 
     private void addProperty(CtClass declaring, String typeClassName, String propertyName,
-                             String defaultValue)
-            throws PropertyCreationException {
+                             String defaultValue) {
         try {
             String name = uncapitalize(propertyName);
             JavassistUtil.removeFieldIfExists(declaring, propertyName);

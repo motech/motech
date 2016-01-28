@@ -12,6 +12,7 @@ import org.motechproject.commons.date.util.datetime.DateTimeSource;
 import org.motechproject.commons.date.util.datetime.DefaultDateTimeSource;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -19,6 +20,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.motechproject.commons.date.model.DayOfWeek.Monday;
@@ -148,6 +150,31 @@ public class DateUtilTest {
             Assert.fail("expected invalid argument exception");
         } catch (IllegalArgumentException iae) {
         }
+    }
+
+    @Test
+    public void shouldConvertListOfDatesToDateTimes() {
+        List<Date> dates = asList(new Date(115, 9, 10, 8, 10, 10), null, new Date(116, 10, 23, 20, 22, 33));
+
+        List<DateTime> dateTimes = DateUtil.datesToDateTimes(dates);
+
+        assertEquals(asList(new DateTime(2015, 10, 10, 8, 10, 10), null, new DateTime(2016, 11, 23, 20, 22,33)), dateTimes);
+    }
+
+    @Test
+    public void shouldConvertDtToDateNullSafe() {
+        DateTime dt = DateUtil.now();
+
+        assertEquals(dt.toDate(), DateUtil.toDate(dt));
+        assertNull(DateUtil.toDate(null));
+    }
+
+    @Test
+    public void shouldConvertLocalDateToDateNullSafe() {
+        LocalDate ld = new LocalDate(2015, 10, 23);
+
+        assertEquals(new DateTime(2015, 10, 23, 0, 0), DateUtil.toDateTimeAtStartOfDay(ld));
+        assertEquals(null, DateUtil.toDateTimeAtStartOfDay(null));
     }
 
     private void mockCurrentDate(final DateTime currentDate) {

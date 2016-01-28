@@ -10,8 +10,6 @@ import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.osgi.web.LocaleService;
-import org.motechproject.server.web.helper.Header;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -31,7 +29,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({StartupManager.class, Header.class})
+@PrepareForTest({StartupManager.class})
 public class LoginControllerTest {
 
     private String BOOTSTRAP_VIEW_NAME = "redirect:bootstrap.do";
@@ -62,9 +60,6 @@ public class LoginControllerTest {
         initMocks(this);
 
         controller = MockMvcBuilders.standaloneSetup(loginController).build();
-
-        PowerMockito.mockStatic(Header.class);
-        PowerMockito.when(Header.generateHeader(any(Bundle.class))).thenReturn("");
     }
 
     @Test

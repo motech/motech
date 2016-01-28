@@ -4,12 +4,12 @@ import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
+import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobId;
 import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -214,7 +214,7 @@ public interface MotechSchedulerService {
      * @param endDate  the {@code Date} before which dates should be added, not null
      * @return the list of dates, null if exception was thrown
      */
-    List<Date> getScheduledJobTimings(String subject, String externalJobId, Date startDate, Date endDate);
+    List<DateTime> getScheduledJobTimings(String subject, String externalJobId, DateTime startDate, DateTime endDate);
 
     /**
      * Returns list of dates at which jobs will be triggered.
@@ -225,6 +225,28 @@ public interface MotechSchedulerService {
      * @param endDate  the {@code Date} before which dates should be added, not null
      * @return the list of dates
      */
-    List<Date> getScheduledJobTimingsWithPrefix(String subject, String externalJobIdPrefix, Date startDate, Date endDate);
+    List<DateTime> getScheduledJobTimingsWithPrefix(String subject, String externalJobIdPrefix, DateTime startDate, DateTime endDate);
 
+    /**
+     * Pauses the job based on the given {@code info}.
+     *
+     * @param info  the information about a job
+     * @return the updated job
+     */
+    JobBasicInfo pauseJob(JobBasicInfo info);
+
+    /**
+     * Resumes the job based on the given {@code info}.
+     *
+     * @param info  the information about a job
+     * @return the updated job
+     */
+    JobBasicInfo resumeJob(JobBasicInfo info);
+
+    /**
+     * Deletes the job based on the given {@code info}.
+     *
+     * @param info  the information about a job
+     */
+    void deleteJob(JobBasicInfo info);
 }

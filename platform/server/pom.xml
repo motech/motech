@@ -275,6 +275,14 @@
                             </directory>
                             <targetPath>WEB-INF/bundles</targetPath>
                         </resource>
+                        <resource>
+                            <directory>${modules.root.dir}/ui/build/assets</directory>
+                            <targetPath>static/common</targetPath>
+                        </resource>
+                        <resource>
+                            <directory>${project.build.directory}/generated-pages</directory>
+                            <targetPath>WEB-INF/jsp</targetPath>
+                        </resource>
                     </webResources>
                 </configuration>
             </plugin>
@@ -319,6 +327,14 @@
                                     </includes>
                                     <followSymlinks>false</followSymlinks>
                                 </fileset>
+                                <fileset>
+                                    <directory>${modules.root.dir}/ui</directory>
+                                    <includes>
+                                        <include>bower_components/**/*</include>
+                                        <include>build/**/*</include>
+                                        <include>node_modules/**/*</include>
+                                    </includes>
+                                </fileset>
                             </filesets>
                         </configuration>
                     </execution>
@@ -328,6 +344,71 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <workingDirectory>${modules.root.dir}/ui</workingDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>exec-npm-install</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <executable>${npm.cmd}</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>exec-bower-install</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <executable>${bower.cmd}</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>exec-gulp-header</id>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <executable>${gulp.cmd}</executable>
+                            <arguments>
+                                <argument>header</argument>
+                                <argument>--jsp</argument>
+                                <argument>--staticPath=request.getContextPath/static/common/</argument>
+                                <argument>--destPath=${project.build.directory}/generated-pages</argument>
+                                <argument>--fileName=header.jsp</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>exec-gulp</id>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <executable>${gulp.cmd}</executable>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
     <profiles>

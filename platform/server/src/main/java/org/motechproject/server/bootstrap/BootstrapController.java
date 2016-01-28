@@ -39,6 +39,7 @@ import static java.util.Collections.singletonList;
  * controller for capturing bootstrap configuration from UI
  */
 @Controller
+@RequestMapping("bootstrap")
 public class BootstrapController {
 
     public static final String BOOTSTRAP_CONFIG_VIEW = "bootstrapconfig";
@@ -55,7 +56,7 @@ public class BootstrapController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BootstrapController.class);
 
-    public static final String REDIRECT_HOME = "redirect:..";
+    public static final String REDIRECT_HOME = "redirect:../../";
 
     @Autowired
     private MessageSource messageSource;
