@@ -89,7 +89,11 @@
       "main": [
         "./dist/css/bootstrap.css",
         "./dist/js/bootstrap.js"
-      ]
+      ],
+      "dependencies": {
+        "jquery": "~1",
+        "jquery-ui": "~1"
+      }
     },
     "jquery.alerts-1.1": {
       "main": [
