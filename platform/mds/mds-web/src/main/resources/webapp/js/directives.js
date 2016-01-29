@@ -1895,7 +1895,7 @@
                             if (optionElement) {
                                 optionElement.removeAttr('selected');
                                 if (checked) {
-                                    optionElement.attr('selected', 'selected');
+                                    optionElement.prop('selected', true);
                                 }
                             }
 
@@ -2387,11 +2387,11 @@
                     numberDisplayed: 3,
                     buttonText : function(options) {
                         if (options.length === 0) {
-                            return scope.msg('mds.form.label.select') + ' <b class="caret"></b>';
+                            return scope.msg('mds.form.label.select');
                         }
                         else {
                             if (options.length > this.numberDisplayed) {
-                                return options.length + ' ' + scope.msg('mds.form.label.selected') + ' <b class="caret"></b>';
+                                return options.length + ' ' + scope.msg('mds.form.label.selected');
                             }
                             else {
                                 var selected = '';
@@ -2400,14 +2400,14 @@
                                     selected += label + ', ';
                                 });
                                 selected = selected.substr(0, selected.length - 2);
-                                return (selected === '') ? scope.msg('mds.form.label.select') + ' <b class="caret"></b>' : selected + ' <b class="caret"></b>';
+                                return (selected === '') ? scope.msg('mds.form.label.select'): selected;
                             }
                         }
                     },
                     onChange: function (optionElement, checked) {
                         optionElement.removeAttr('selected');
                         if (checked) {
-                            optionElement.attr('selected', 'selected');
+                            optionElement.prop('selected', true);
                         }
                         element.change();
                     }
@@ -2461,11 +2461,11 @@
                     numberDisplayed: 3,
                     buttonText : function(options) {
                         if (options.length === 0) {
-                            return scope.msg('mds.form.label.select') + ' <b class="caret"></b>';
+                            return scope.msg('mds.form.label.select');
                         }
                         else {
                             if (options.length > this.numberDisplayed) {
-                                return options.length + ' ' + scope.msg('mds.form.label.selected') + ' <b class="caret"></b>';
+                                return options.length + ' ' + scope.msg('mds.form.label.selected');
                             }
                             else {
                                 var selected = '';
@@ -2474,14 +2474,14 @@
                                     selected += label + ', ';
                                 });
                                 selected = selected.substr(0, selected.length - 2);
-                                return (selected === '') ? scope.msg('mds.form.label.select') + ' <b class="caret"></b>' : selected + ' <b class="caret"></b>';
+                                return (selected === '') ? scope.msg('mds.form.label.select')  : selected;
                             }
                         }
                     },
                     onChange: function (optionElement, checked) {
                         optionElement.removeAttr('selected');
                         if (checked) {
-                            optionElement.attr('selected', 'selected');
+                            optionElement.prop('selected', true);
                         }
 
                         if (fieldPath === undefined) {
@@ -2621,11 +2621,11 @@
                     numberDisplayed: 3,
                     buttonText : function(options) {
                         if (options.length === 0) {
-                            return scope.msg('mds.form.label.select') + ' <b class="caret"></b>';
+                            return scope.msg('mds.form.label.select');
                         }
                         else {
                             if (options.length > this.numberDisplayed) {
-                                return options.length + ' ' + scope.msg('mds.form.label.selected') + ' <b class="caret"></b>';
+                                return options.length + ' ' + scope.msg('mds.form.label.selected');
                             }
                             else {
                                 var selected = '';
@@ -2633,14 +2633,14 @@
                                     var label = ($(this).attr('label') !== undefined) ? $(this).attr('label') : $(this).html();
                                     selected += label + ', ';
                                 });
-                                return selected.substr(0, selected.length - 2) + ' <b class="caret"></b>';
+                                return selected.substr(0, selected.length - 2);
                             }
                         }
                     },
                     onChange: function (optionElement, checked) {
                         optionElement.removeAttr('selected');
                         if (checked) {
-                            optionElement.attr('selected', 'selected');
+                            optionElement.prop('selected', true);
                         }
 
                         element.change();

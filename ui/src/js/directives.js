@@ -258,6 +258,28 @@
         };
     }]);
 
+    widgetModule.directive('inboundChannelActive', ['$http', function ($http) {
+        return function (scope, element, attributes) {
+            var isActivemqActive = function() {
+                $http.post('isInboundChannelActive').success( function(data, status) {
+                    if (status === 200) {
+                        var glyphicon = $('<span>').addClass('glyphicon').attr('aria-hidden', 'true');
+                        if (data === 'true') {
+                            glyphicon.addClass('glyphicon-ok');
+                        } else {
+                            glyphicon.addClass('glyphicon-remove');
+                        }
+                        glyphicon.appendTo(element);
+                    } else {
+                       $(element).text(scope.msg('server.error.unknown'));
+                    }
+                });
+            };
+
+            isActivemqActive();
+        };
+    }]);
+
     widgetModule.directive('motechModules', ['$compile', '$timeout', '$http', '$templateCache', function ($compile, $timeout, $http, $templateCache) {
         var templateLoader;
 

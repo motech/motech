@@ -2,6 +2,7 @@ package org.motechproject.server.web.controller;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.motechproject.event.listener.EventConsumerInfo;
 import org.motechproject.osgi.web.LocaleService;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.web.form.UserInfo;
@@ -30,6 +31,7 @@ public class DashboardController {
 
     private StartupManager startupManager;
     private LocaleService localeService;
+    private EventConsumerInfo eventConsumerInfo;
 
     @RequestMapping({"/index", "/", "/home"})
     public ModelAndView index(final HttpServletRequest request) {
@@ -92,6 +94,12 @@ public class DashboardController {
         return '"' + ip.getHostName() + '"';
     }
 
+    @RequestMapping(value = "/isInboundChannelActive", method = RequestMethod.POST)
+    @ResponseBody
+    public boolean isInboundChannelActive() throws UnknownHostException {
+        return eventConsumerInfo.isRunning();
+    }
+
     @Autowired
     public void setStartupManager(StartupManager startupManager) {
         this.startupManager = startupManager;
@@ -100,5 +108,10 @@ public class DashboardController {
     @Autowired
     public void setLocaleService(LocaleService localeService) {
         this.localeService = localeService;
+    }
+    
+    @Autowired
+    public void setEventConsumerInfo(EventConsumerInfo eventConsumerInfo) {
+        this.eventConsumerInfo = eventConsumerInfo;
     }
 }

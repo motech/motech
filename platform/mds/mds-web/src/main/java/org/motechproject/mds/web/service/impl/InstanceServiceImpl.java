@@ -26,8 +26,8 @@ import org.motechproject.mds.ex.lookup.LookupExecutionException;
 import org.motechproject.mds.ex.lookup.LookupNotFoundException;
 import org.motechproject.mds.ex.object.ObjectCreateException;
 import org.motechproject.mds.ex.object.ObjectNotFoundException;
-import org.motechproject.mds.ex.object.ObjectReadException;
 import org.motechproject.mds.ex.object.ObjectUpdateException;
+import org.motechproject.mds.ex.object.ObjectReadException;
 import org.motechproject.mds.ex.object.SecurityException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.helper.DataServiceHelper;
@@ -994,7 +994,7 @@ public class InstanceServiceImpl implements InstanceService {
     private void validateCredentials(EntityDto entity) {
         boolean authorized;
         SecurityMode securityMode = entity.getSecurityMode();
-        if(securityMode != null) {
+        if (securityMode != null) {
             Set<String> securityMembers = entity.getSecurityMembers();
             authorized = entity.hasAccessToEntityFromSecurityMode(securityMode, securityMembers);
             if (!authorized && !securityMode.isInstanceRestriction()) {
@@ -1008,10 +1008,10 @@ public class InstanceServiceImpl implements InstanceService {
         SecurityMode securityMode = entity.getSecurityMode();
         SecurityMode readOnlySecurityMode = entity.getReadOnlySecurityMode();
 
-        if(securityMode != null) {
+        if (securityMode != null) {
             Set<String> securityMembers = entity.getSecurityMembers();
             authorized = entity.hasAccessToEntityFromSecurityMode(securityMode, securityMembers);
-            if(!authorized) {
+            if (!authorized) {
                 if (readOnlySecurityMode != null) {
                     Set<String> readOnlySecurityMembers = entity.getReadOnlySecurityMembers();
                     authorized = entity.hasAccessToEntityFromSecurityMode(readOnlySecurityMode, readOnlySecurityMembers);
@@ -1041,7 +1041,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         // We need to check if read only field value isn't changed
         // in some unexpected way. If so then throw exception
-        if(fieldRecord.isNonEditable()
+        if (fieldRecord.isNonEditable()
                 // There is need to use Objects.equals as values - one or both - can be null
                 // which would cause NullPointerException when just .equals() on null value
                 && !Objects.equals(fieldOldValue, parsedValue)) {
