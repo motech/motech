@@ -8,6 +8,9 @@ var paths = {
 }
 
 gulp.task('fonts', function () {
-    gulp.src(paths.src)
-        .pipe(gulp.dest(paths.dest));
+    gulp.src([
+        paths.src,
+        './bower_components/bootstrap/fonts/*',
+        './bower_components/font-awesome/fonts/*'
+    ]).pipe(gulp.dest(paths.dest));
 })
