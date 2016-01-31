@@ -519,7 +519,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         wait2s();
         testMdsEntityService.create(new TestMdsEntity("string"));
-        wait2s();
+        waitForLock(60000);
 
         assertEquals(1, receivedEvents.size());
         assertEquals(subject, receivedEvents.get(0));
@@ -2039,8 +2039,12 @@ public class MdsDdeBundleIT extends BasePaxIT {
     }
 
     private void wait2s() throws InterruptedException {
+        waitForLock(2000);
+    }
+
+    private void waitForLock(long timeout) throws InterruptedException {
         synchronized (waitLock) {
-            waitLock.wait(2000);
+            waitLock.wait(timeout);
         }
     }
 
