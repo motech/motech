@@ -1089,7 +1089,6 @@ public class MdsBundleIT extends BasePaxIT {
                 singletonList("someString")));
 
         entityService.addLookups(entityDto.getId(), lookups);
-        entityService.commitChanges(entityDto.getId());
 
         schemaHolder = entityService.getSchema();
         generator.regenerateMdsDataBundle(schemaHolder);

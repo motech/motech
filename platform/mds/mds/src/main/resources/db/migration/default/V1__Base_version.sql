@@ -79,6 +79,15 @@ CREATE TABLE "Entity_securityMembers" (
   CONSTRAINT "Entity_securityMembers_FK1" FOREIGN KEY ("Entity_OID") REFERENCES "Entity" ("id")
 );
 
+DROP TABLE IF EXISTS "EntityDraft_fieldNameChanges";
+CREATE TABLE "EntityDraft_fieldNameChanges" (
+  "id_OID" bigint NOT NULL,
+  "key" varchar(255) NOT NULL,
+  "value" varchar(255) DEFAULT NULL,
+  PRIMARY KEY ("id_OID", "key"),
+  CONSTRAINT "EntityDraft_fieldNameChanges_FK1" FOREIGN KEY ("id_OID") REFERENCES "Entity" ("id")
+);
+
 DROP TABLE IF EXISTS "Field";
 CREATE TABLE "Field" (
   "id" serial,
@@ -149,7 +158,6 @@ CREATE TABLE "Lookup" (
   "singleObjectReturn" boolean NOT NULL,
   "lookups_INTEGER_IDX" bigint DEFAULT NULL,
   "readOnly" boolean NOT NULL,
-  "fieldsOrder" BYTEA DEFAULT NULL,
   PRIMARY KEY ("id"),
   CONSTRAINT "Lookup_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
@@ -164,6 +172,50 @@ CREATE TABLE "LookupFields" (
   CONSTRAINT "LookupFields_FK2" FOREIGN KEY ("id_EID") REFERENCES "Field" ("id")
 );
 
+DROP TABLE IF EXISTS "Lookup_fieldsOrder";
+CREATE TABLE "Lookup_fieldsOrder" (
+  "id_OID" bigint NOT NULL,
+  "fieldName" varchar(255) NOT NULL,
+  "IDX" bigint NOT NULL,
+  PRIMARY KEY ("id_OID", "IDX"),
+  CONSTRAINT "Lookup_fieldsOrder_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
+);
+
+DROP TABLE IF EXISTS "Lookup_rangeLookupFields";
+CREATE TABLE "Lookup_rangeLookupFields" (
+  "id_OID" bigint NOT NULL,
+  "fieldName" varchar(255) NOT NULL,
+  "IDX" bigint NOT NULL,
+  PRIMARY KEY ("id_OID", "IDX"),
+  CONSTRAINT "Lookup_rangeLookupFields_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
+);
+
+DROP TABLE IF EXISTS "Lookup_setLookupFields";
+CREATE TABLE "Lookup_setLookupFields" (
+  "id_OID" bigint NOT NULL,
+  "fieldName" varchar(255) NOT NULL,
+  "IDX" bigint NOT NULL,
+  PRIMARY KEY ("id_OID", "IDX"),
+  CONSTRAINT "Lookup_setLookupFields_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
+);
+
+DROP TABLE IF EXISTS "Lookup_customOperators";
+CREATE TABLE "Lookup_customOperators" (
+  "id_OID" bigint NOT NULL,
+  "key" varchar(255) NOT NULL,
+  "value" varchar(255) DEFAULT NULL,
+  PRIMARY KEY ("id_OID", "key"),
+  CONSTRAINT "Lookup_customOperators_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
+);
+
+DROP TABLE IF EXISTS "Lookup_useGenericParams";
+CREATE TABLE "Lookup_useGenericParams" (
+  "id_OID" bigint NOT NULL,
+  "key" varchar(255) NOT NULL,
+  "value" boolean DEFAULT FALSE,
+  PRIMARY KEY ("id_OID", "key"),
+  CONSTRAINT "Lookup_useGenericParams_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
+);
 
 DROP TABLE IF EXISTS "RestOptions";
 CREATE TABLE "RestOptions" (

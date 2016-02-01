@@ -7,12 +7,15 @@ import org.motechproject.mds.dto.LookupFieldType;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.ValidationUtil;
 
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.Join;
+import javax.jdo.annotations.Key;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.Value;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,6 +31,7 @@ import static org.motechproject.mds.util.Constants.Util.TRUE;
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 public class Lookup {
+    private static final String LOOKUP_ID = "id_OID";
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
@@ -55,19 +59,26 @@ public class Lookup {
     @Join
     private List<Field> fields;
 
-    @Persistent(defaultFetchGroup = TRUE)
+    @Join(table = "Lookup_fieldsOrder", column = LOOKUP_ID)
+    @Element(column = "fieldName")
     private List<String> fieldsOrder;
 
-    @Persistent(defaultFetchGroup = TRUE)
+    @Join(table = "Lookup_rangeLookupFields", column = LOOKUP_ID)
+    @Element(column = "fieldName")
     private List<String> rangeLookupFields;
 
-    @Persistent(defaultFetchGroup = TRUE)
+    @Join(table = "Lookup_setLookupFields", column = LOOKUP_ID)
+    @Element(column = "fieldName")
     private List<String> setLookupFields;
 
-    @Persistent(defaultFetchGroup = TRUE)
+    @Join(table = "Lookup_customOperators", column = LOOKUP_ID)
+    @Key(column = "key")
+    @Value(column = "value")
     private Map<String, String> customOperators;
 
-    @Persistent(defaultFetchGroup = TRUE)
+    @Join(table = "Lookup_userGenericParams", column = LOOKUP_ID)
+    @Key(column = "key")
+    @Value(column = "value")
     private Map<String, Boolean> useGenericParams;
 
     public Lookup() {
@@ -290,8 +301,14 @@ public class Lookup {
             }
         }
 
+        List<String> fieldsOrderCopy = new ArrayList<>(getFieldsOrder());
+        List<String> rangeLookupFieldsCopy = new ArrayList<>(getRangeLookupFields());
+        List<String> setLookupFieldsCopy = new ArrayList<>(getSetLookupFields());
+        Map<String, String> customOperatorsCopy = new HashMap<>(getCustomOperators());
+        Map<String, Boolean> useGenericParamsCopy = new HashMap<>(getUseGenericParams());
+
         return new Lookup(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly, methodName,
-                getRangeLookupFields(), getSetLookupFields(), customOperators, useGenericParams, getFieldsOrder());
+                rangeLookupFieldsCopy, setLookupFieldsCopy, customOperatorsCopy, useGenericParamsCopy, fieldsOrderCopy);
     }
 
     public final void update(LookupDto lookupDto, List<Field> lookupFields) {
