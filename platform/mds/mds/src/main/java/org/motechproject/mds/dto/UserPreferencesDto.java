@@ -1,6 +1,6 @@
 package org.motechproject.mds.dto;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * The <code>UserPreferencesDto</code> contains information about user preferences of an entity.
@@ -23,22 +23,22 @@ public class UserPreferencesDto {
     private Integer gridRowsNumber;
 
     /**
-     * The list of the fields which will be displayed on the UI. It is constructed from selected fields, unselected fields
+     * The set of the fields which will be displayed on the UI. It is constructed from selected fields, unselected fields
      * and advance settings of the entity.
      */
-    private List<String> visibleFields;
+    private Set<String> visibleFields;
 
     /**
-     * The list of the selected fields.
+     * The set of the selected fields.
      */
-    private List<String> selectedFields;
+    private Set<String> selectedFields;
 
     /**
-     * The list of the unselected fields.
+     * The set of the unselected fields.
      */
-    private List<String> unselectedFields;
+    private Set<String> unselectedFields;
 
-    public UserPreferencesDto(String className, String username, Integer gridRowsNumber, List<String> visibleFields, List<String> selectedFields, List<String> unselectedFields) {
+    public UserPreferencesDto(String className, String username, Integer gridRowsNumber, Set<String> visibleFields, Set<String> selectedFields, Set<String> unselectedFields) {
         this.className = className;
         this.username = username;
         this.gridRowsNumber = gridRowsNumber;
@@ -55,11 +55,11 @@ public class UserPreferencesDto {
         this.gridRowsNumber = gridRowsNumber;
     }
 
-    public List<String> getVisibleFields() {
+    public Set<String> getVisibleFields() {
         return visibleFields;
     }
 
-    public void setVisibleFields(List<String> visibleFields) {
+    public void setVisibleFields(Set<String> visibleFields) {
         this.visibleFields = visibleFields;
     }
 
@@ -79,19 +79,19 @@ public class UserPreferencesDto {
         this.className = className;
     }
 
-    public List<String> getSelectedFields() {
+    public Set<String> getSelectedFields() {
         return selectedFields;
     }
 
-    public void setSelectedFields(List<String> selectedFields) {
+    public void setSelectedFields(Set<String> selectedFields) {
         this.selectedFields = selectedFields;
     }
 
-    public List<String> getUnselectedFields() {
+    public Set<String> getUnselectedFields() {
         return unselectedFields;
     }
 
-    public void setUnselectedFields(List<String> unselectedFields) {
+    public void setUnselectedFields(Set<String> unselectedFields) {
         this.unselectedFields = unselectedFields;
     }
 }

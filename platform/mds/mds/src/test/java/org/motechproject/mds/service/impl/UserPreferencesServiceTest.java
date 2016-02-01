@@ -21,10 +21,11 @@ import org.motechproject.mds.service.UserPreferencesService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -53,10 +54,10 @@ public class UserPreferencesServiceTest {
     ArgumentCaptor<UserPreferences> userPreferencesCaptor;
 
     @Captor
-    ArgumentCaptor<List<Field>> selectedFieldsCaptor;
+    ArgumentCaptor<Set<Field>> selectedFieldsCaptor;
 
     @Captor
-    ArgumentCaptor<List<Field>> unselectedFieldsCaptor;
+    ArgumentCaptor<Set<Field>> unselectedFieldsCaptor;
 
     @Captor
     ArgumentCaptor<Field> fieldCaptor;
@@ -67,7 +68,7 @@ public class UserPreferencesServiceTest {
     @Before
     public void setUp() {
         when(settingsService.getGridSize()).thenReturn(20);
-        when(entity.getFields()).thenReturn(createFields());
+        when(entity.getFields()).thenReturn(new ArrayList<>(createFields()));
         when(entity.getClassName()).thenReturn(CLASS_NAME);
         when(allEntities.retrieveById(15l)).thenReturn(entity);
     }
@@ -90,9 +91,9 @@ public class UserPreferencesServiceTest {
 
     @Test
     public void shouldMergeFieldsInformation() {
-        List<Field> selectedFields = new ArrayList<>();
+        Set<Field> selectedFields = new HashSet<>();
         selectedFields.add(getField3());
-        List<Field> unselectedFields = new ArrayList<>();
+        Set<Field> unselectedFields = new HashSet<>();
         unselectedFields.add(getField2());
 
         UserPreferences preferences = new UserPreferences(USERNAME, CLASS_NAME, 20, selectedFields, unselectedFields);
@@ -105,11 +106,10 @@ public class UserPreferencesServiceTest {
         assertEquals(1, userPreferencesDto.getUnselectedFields().size());
         assertEquals(2, userPreferencesDto.getVisibleFields().size());
 
-        assertEquals("sampleField3", userPreferencesDto.getSelectedFields().get(0));
-        assertEquals("sampleField2", userPreferencesDto.getUnselectedFields().get(0));
-        assertEquals("sampleField1", userPreferencesDto.getVisibleFields().get(0));
-        assertEquals("sampleField3", userPreferencesDto.getVisibleFields().get(1));
-
+        assertTrue(userPreferencesDto.getSelectedFields().contains("sampleField3"));
+        assertTrue(userPreferencesDto.getUnselectedFields().contains("sampleField2"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("sampleField1"));
+        assertTrue(userPreferencesDto.getVisibleFields().contains("sampleField3"));
     }
 
     @Test
@@ -190,7 +190,7 @@ public class UserPreferencesServiceTest {
     public void shouldSelectFields() {
         when(allUserPreferences.retrieveByClassNameAndUsername(CLASS_NAME, USERNAME)).thenReturn(userPreferences);
         when(entity.getField("sampleField1")).thenReturn(getField1());
-        when(userPreferences.getSelectedFields()).thenReturn(new ArrayList<Field>());
+        when(userPreferences.getSelectedFields()).thenReturn(new HashSet<Field>());
 
         userPreferencesService.selectFields(15l, USERNAME);
 
@@ -198,13 +198,13 @@ public class UserPreferencesServiceTest {
         verify(userPreferences).setUnselectedFields(unselectedFieldsCaptor.capture());
         verify(allUserPreferences).update(userPreferences);
 
-        List<Field> fields = selectedFieldsCaptor.getValue();
+        Set<Field> fields = selectedFieldsCaptor.getValue();
         assertNotNull(fields);
         assertEquals(4, fields.size());
-        assertEquals("sampleField1", fields.get(0).getName());
-        assertEquals("sampleField2", fields.get(1).getName());
-        assertEquals("sampleField3", fields.get(2).getName());
-        assertEquals("sampleField4", fields.get(3).getName());
+        assertTrue(fields.contains(getField1()));
+        assertTrue(fields.contains(getField2()));
+        assertTrue(fields.contains(getField3()));
+        assertTrue(fields.contains(getField4()));
 
         fields = unselectedFieldsCaptor.getValue();
         assertNotNull(fields);
@@ -223,21 +223,21 @@ public class UserPreferencesServiceTest {
         verify(userPreferences).setSelectedFields(selectedFieldsCaptor.capture());
         verify(allUserPreferences).update(userPreferences);
 
-        List<Field> fields = unselectedFieldsCaptor.getValue();
+        Set<Field> fields = unselectedFieldsCaptor.getValue();
         assertNotNull(fields);
         assertEquals(4, fields.size());
-        assertEquals("sampleField1", fields.get(0).getName());
-        assertEquals("sampleField2", fields.get(1).getName());
-        assertEquals("sampleField3", fields.get(2).getName());
-        assertEquals("sampleField4", fields.get(3).getName());
+        assertTrue(fields.contains(getField1()));
+        assertTrue(fields.contains(getField2()));
+        assertTrue(fields.contains(getField3()));
+        assertTrue(fields.contains(getField4()));
 
         fields = selectedFieldsCaptor.getValue();
         assertNotNull(fields);
         assertEquals(0, fields.size());
     }
 
-    private List<Field> createFields() {
-        List<Field> fields = new ArrayList<>();
+    private Set<Field> createFields() {
+        Set<Field> fields = new HashSet<>();
         fields.add(getField1());
         fields.add(getField2());
         fields.add(getField3());
