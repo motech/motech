@@ -226,6 +226,8 @@ public final class EntitySchemaBuilder {
         private boolean required;
         private boolean unique;
         private boolean readOnly;
+        private boolean nonEditable;
+        private boolean nonDisplayable;
         private Type type;
         private String defaultValue;
         private String tooltip;
@@ -245,7 +247,7 @@ public final class EntitySchemaBuilder {
         }
 
         public Field build() {
-            Field field = new Field(null, name, displayName, type, required, unique, readOnly);
+            Field field = new Field(null, name, displayName, type, required, unique, readOnly, nonEditable, nonDisplayable);
             field.setDefaultValue(defaultValue);
             field.setTooltip(tooltip);
             field.setPlaceholder(placeholder);
@@ -273,6 +275,16 @@ public final class EntitySchemaBuilder {
 
         public FieldSchemaBuilder readOnly(boolean readOnly) {
             this.readOnly = readOnly;
+            return this;
+        }
+
+        public FieldSchemaBuilder nonEditable(boolean nonEditable) {
+            this.nonEditable = nonEditable;
+            return this;
+        }
+
+        public FieldSchemaBuilder nonDisplayable(boolean nonDisplayable) {
+            this.nonDisplayable = nonDisplayable;
             return this;
         }
 
