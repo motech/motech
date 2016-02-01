@@ -44,7 +44,11 @@ public class SettingsOption {
     }
 
     public SettingsOption(Map.Entry<Object, Object> entry) {
-        this.value = entry.getValue();
-        this.key = String.valueOf(entry.getKey());
+        this(String.valueOf(entry.getKey()), entry.getValue());
+    }
+
+    public SettingsOption(String key, Object value) {
+        this.value = value;
+        this.key = key;
     }
 }

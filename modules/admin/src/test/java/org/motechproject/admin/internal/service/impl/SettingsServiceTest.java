@@ -19,7 +19,6 @@ import org.springframework.security.web.savedrequest.Enumerator;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +26,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -117,9 +117,9 @@ public class SettingsServiceTest {
 
     @Test
     public void testSaveBundleSettings() throws IOException {
-        SettingsOption option = new SettingsOption(new AbstractMap.SimpleEntry<Object, Object>(OPTION_KEY, OPTION_VALUE));
+        SettingsOption option = new SettingsOption(OPTION_KEY, OPTION_VALUE);
 
-        Settings settings = new Settings(BUNDLE_FILENAME, asList(option));
+        Settings settings = new Settings(BUNDLE_FILENAME, singletonList(option));
         settingsService.saveBundleSettings(settings, BUNDLE_ID);
 
         verify(configurationService).addOrUpdateProperties(BUNDLE_SYMBOLIC_NAME, "", BUNDLE_FILENAME, bundleProperty, null);
@@ -132,6 +132,16 @@ public class SettingsServiceTest {
         InOrder inOrder = inOrder(configurationService, configFileMonitor);
         inOrder.verify(configurationService).updateConfigLocation(path);
         inOrder.verify(configFileMonitor).updateFileMonitor();
+    }
+
+    @Test
+    public void shouldSaveNullSettingAsNullValue() {
+        SettingsOption option = new SettingsOption(OPTION_KEY, null);
+        Settings settings = new Settings("section", singletonList(option));
+
+        settingsService.savePlatformSettings(settings);
+
+        verify(configurationService).setPlatformSetting(OPTION_KEY, null);
     }
 
     private void initConfigService() throws IOException {
