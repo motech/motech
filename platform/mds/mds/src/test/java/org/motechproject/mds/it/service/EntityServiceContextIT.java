@@ -211,7 +211,7 @@ public class EntityServiceContextIT extends BaseIT {
         entityService.saveDraftEntityChanges(entityDto.getId(), draftData);
         entityService.commitChanges(entityDto.getId());
 
-        assertTrue(containsLookup("Lookup 1"));
+        assertTrue(containsLookup("Lookup 1", entityDto.getId()));
     }
 
     @Test

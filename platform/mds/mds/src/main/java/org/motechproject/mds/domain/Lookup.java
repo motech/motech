@@ -301,8 +301,14 @@ public class Lookup {
             }
         }
 
+        List<String> fieldsOrderCopy = new ArrayList<>(getFieldsOrder());
+        List<String> rangeLookupFieldsCopy = new ArrayList<>(getRangeLookupFields());
+        List<String> setLookupFieldsCopy = new ArrayList<>(getSetLookupFields());
+        Map<String, String> customOperatorsCopy = new HashMap<>(getCustomOperators());
+        Map<String, Boolean> useGenericParamsCopy = new HashMap<>(getUseGenericParams());
+
         return new Lookup(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly, methodName,
-                getRangeLookupFields(), getSetLookupFields(), customOperators, useGenericParams, getFieldsOrder());
+                rangeLookupFieldsCopy, setLookupFieldsCopy, customOperatorsCopy, useGenericParamsCopy, fieldsOrderCopy);
     }
 
     public final void update(LookupDto lookupDto, List<Field> lookupFields) {
