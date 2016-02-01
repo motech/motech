@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.motechproject.mds.util.Constants.Util.TRUE;
@@ -609,5 +610,27 @@ public class Field {
 
     public void setUiChanged(boolean uiChanged) {
         this.uiChanged = uiChanged;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, displayName);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Field other = (Field) obj;
+
+        return Objects.equals(this.id, other.id) &&
+                Objects.equals(this.name, other.name) &&
+                Objects.equals(this.displayName, other.displayName);
     }
 }

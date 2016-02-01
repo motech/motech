@@ -9,8 +9,8 @@ import javax.jdo.annotations.Join;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The <code>UserPreferences</code> class contains information about an entity user preferences. For example grid size
@@ -33,17 +33,17 @@ public class UserPreferences {
     @Persistent(defaultFetchGroup = "true")
     @Join
     @Element(column = "selectedField",  deleteAction = ForeignKeyAction.CASCADE)
-    private List<Field> selectedFields;
+    private Set<Field> selectedFields;
 
     @Persistent(defaultFetchGroup = "true")
     @Join
     @Element(column = "unselectedField",  deleteAction = ForeignKeyAction.CASCADE)
-    private List<Field> unselectedFields;
+    private Set<Field> unselectedFields;
 
     public UserPreferences() {
     }
 
-    public UserPreferences(String username, String className, Integer gridRowsNumber, List<Field> selectedFields, List<Field> unselectedFields) {
+    public UserPreferences(String username, String className, Integer gridRowsNumber, Set<Field> selectedFields, Set<Field> unselectedFields) {
         this.username = username;
         this.className = className;
         this.gridRowsNumber = gridRowsNumber;
@@ -75,33 +75,32 @@ public class UserPreferences {
         this.gridRowsNumber = gridRowsNumber;
     }
 
-    public List<Field> getSelectedFields() {
+    public Set<Field> getSelectedFields() {
         if (selectedFields == null) {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
         return selectedFields;
     }
 
-    public void setSelectedFields(List<Field> selectedFields) {
+    public void setSelectedFields(Set<Field> selectedFields) {
         this.selectedFields = selectedFields;
     }
 
-
-    public List<Field> getUnselectedFields() {
+    public Set<Field> getUnselectedFields() {
         if (unselectedFields == null) {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
         return unselectedFields;
     }
 
-    public void setUnselectedFields(List<Field> unselectedFields) {
+    public void setUnselectedFields(Set<Field> unselectedFields) {
         this.unselectedFields = unselectedFields;
     }
 
-    public UserPreferencesDto toDto(List<String> displayableFields) {
-        List<String> mergedFields = new ArrayList<>(displayableFields);
-        List<String> selected = new ArrayList<>();
-        List<String> unselected = new ArrayList<>();
+    public UserPreferencesDto toDto(Set<String> displayableFields) {
+        Set<String> mergedFields = new HashSet<>(displayableFields);
+        Set<String> selected = new HashSet<>();
+        Set<String> unselected = new HashSet<>();
 
         for (Field field : getUnselectedFields()) {
             if (mergedFields.contains(field.getName())) {
@@ -122,11 +121,11 @@ public class UserPreferences {
 
     public void selectField(Field field) {
         if (selectedFields == null) {
-            selectedFields = new ArrayList<>();
+            selectedFields = new HashSet<>();
         }
         selectedFields.add(field);
 
-        // if field is selected then we must remove it from unselected list
+        // if field is selected then we must remove it from unselected
         if (unselectedFields != null && unselectedFields.contains(field)) {
             unselectedFields.remove(field);
         }
@@ -134,11 +133,11 @@ public class UserPreferences {
 
     public void unselectField(Field field) {
         if (unselectedFields == null) {
-            unselectedFields = new ArrayList<>();
+            unselectedFields = new HashSet<>();
         }
         unselectedFields.add(field);
 
-        // if field is unselected then we must remove it from selected list
+        // if field is unselected then we must remove it from selected
         if (selectedFields != null && selectedFields.contains(field)) {
             selectedFields.remove(field);
         }
