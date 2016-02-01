@@ -108,35 +108,21 @@
             <td><span ng-show="bundleStable(bundle)">{{bundle.printVersion()}}</span></td>
             <td><span ng-show="bundleStable(bundle)">{{msg('admin.bundle.state.' + bundle.state.toLowerCase())}}</span></td>
             <td>
-                <div id="commandLinks" ng-show="bundleStable(bundle)">
-                <span ng-hide="bundle.isActive()">
-                    <a ng-click="startBundle(bundle)">
-                        <img src='../admin/img/trans.gif' alt="{{msg('admin.bundles.start')}}"
-                             title="{{msg('admin.bundles.start')}}"
-                             class="action action-start"/>
+                <div id="commandLinks" class="bundle-actions actions-list" ng-show="bundleStable(bundle)">
+                    <a ng-hide="bundle.isActive()" class="action action-start" ng-click="startBundle(bundle)">
+                        {{msg('admin.bundles.start')}}
                     </a>
-                </span>
-                <span ng-show="bundle.isActive()">
-                    <a ng-click="stopBundleModal(bundle)">
-                        <img src="../admin/img/trans.gif" alt="{{msg('admin.bundles.stop')}}" title="{{msg('admin.bundles.stop')}}"
-                             class="action action-stop"/>
+                    <a ng-show="bundle.isActive()" class="action action-button action-stop" ng-click="stopBundleModal(bundle)">
+                        {{msg('admin.bundles.stop')}}
                     </a>
-                    <a ng-click="restartBundle(bundle)">
-                        <img src="../admin/img/trans.gif" alt="{{msg('admin.bundles.restart')}}"
-                             title="{{msg('admin.bundles.restart')}}"
-                             class="action action-restart"/>
+                    <a ng-show="bundle.isActive()" class="action action-button action-restart" ng-click="restartBundle(bundle)">
+                        {{msg('admin.bundles.restart')}}
                     </a>
-                </span>
-                <span ng-show="showSettings(bundle)">
-                    <a ng-click="loadSettingPage(bundle)">
-                        <img src="../admin/img/trans.gif" alt="{{msg('admin.settings')}}" title="{{msg('admin.settings')}}"
-                             class="action action-settings"/>
+                    <a ng-show="showSettings(bundle)" class="action action-button action-settings" ng-click="loadSettingPage(bundle)">
+                        {{msg('admin.settings')}}
                     </a>
-                </span>
-                    <a role="button" ng-click="uninstallBundleModal(bundle)">
-                        <img src="../admin/img/trans.gif" alt="{{msg('admin.bundles.uninstall')}}"
-                             title="{{msg('admin.bundles.uninstall')}}"
-                             class="action action-remove"/>
+                    <a class="action action-remove" role="button" ng-click="uninstallBundleModal(bundle)">
+                        {{msg('admin.bundles.uninstall')}}
                     </a>
                 </div>
                 <div class="loader.wrapper" ng-hide="bundleStable(bundle)">
