@@ -18,7 +18,7 @@ public enum DayOfWeek {
     private int value;
     private String shortName;
 
-    private DayOfWeek(int value, String shortName) {
+    DayOfWeek(int value, String shortName) {
         this.value = value;
         this.shortName = shortName;
     }
@@ -62,6 +62,11 @@ public enum DayOfWeek {
         return DayOfWeek.getDayOfWeek(date.dayOfWeek().get());
     }
 
+    /**
+     * Returns the short name of the week day. The short name consist of the first three 3 letters
+     * of the day name, capitalized.
+     * @return the short name for this week day
+     */
     public String getShortName() {
         return shortName;
     }

@@ -44,7 +44,7 @@
                             org.motechproject.commons.date.exception;version=${project.version},
                             org.motechproject.commons.date.model;version=${project.version},
                             org.motechproject.commons.date.util;version=${project.version},
-                            org.motechproject.commons.date.util.datetime;version=${project.version},
+                            org.motechproject.commons.date.util.datetime;version=${project.version}
                         </Export-Package>
                     </instructions>
                 </configuration>

@@ -170,9 +170,12 @@ public class EntityWriterTest {
     private void buildExtraFields(EntitySchemaBuilder builder) {
         builder.field(EXTRA_BOOL, EXTRA_BOOL_DISPLAY_NAME, MDS_FIELD_BOOLEAN)
                 .required(true)
+                .unique(true)
                 .defaultValue("true")
                 .tooltip("Cupcake?")
                 .placeholder("yes")
+                .nonEditable(true)
+                .nonDisplayable(true)
                 .metadata("superBoolean", "absolutely");
 
         builder.field(EXTRA_STR, EXTRA_STR_DISPLAY_NAME, MDS_FIELD_STRING)

@@ -33,6 +33,8 @@ import static org.motechproject.mds.util.Constants.Util.TRUE;
 
 /**
  * The <code>Field</code> class contains information about a single field.
+ *
+ * Remember to update FieldWriter/FieldReader after making changes
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 @Unique(name = "ENTITY_FIELDNAME_IDX", members = { "entity", "name" })
@@ -127,6 +129,11 @@ public class Field {
 
     public Field(Entity entity, String name, String displayName, Type type, boolean required, boolean unique, boolean readOnly) {
         this(entity, name, displayName, required, unique, readOnly, false, false, null, null, null, null);
+        this.type = type;
+    }
+
+    public Field(Entity entity, String name, String displayName, Type type, boolean required, boolean unique, boolean readOnly, boolean nonEditable, boolean nonDisplayable) {
+        this(entity, name, displayName, required, unique, readOnly, nonEditable, nonDisplayable, null, null, null, null);
         this.type = type;
     }
 
