@@ -16,7 +16,7 @@
     <properties>
         <jasmine.server.port>8234</jasmine.server.port>
 
-        <external.dependency.release.tag>r030</external.dependency.release.tag>
+        <external.dependency.release.tag>r031</external.dependency.release.tag>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <modules.root.dir>${basedir}</modules.root.dir>
         <jdk.version>1.8</jdk.version>
@@ -558,17 +558,17 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.2</version>
+                <version>1.7.7</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
-                <version>1.7.2</version>
+                <version>1.7.7</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
-                <version>1.7.2</version>
+                <version>1.7.7</version>
             </dependency>
             <!-- Log4J -->
             <dependency>
@@ -741,7 +741,7 @@
             <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
-                <version>2.0</version>
+                <version>2.9.1</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
