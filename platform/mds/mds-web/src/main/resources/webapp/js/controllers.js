@@ -3505,9 +3505,9 @@
             $scope.relatedMode.isNested = true;
             var relatedClass  = $scope.getRelatedClass(field);
             $scope.editedField = angular.copy(field);
-            $('ng-form[name=' + field.name + '] #new-related').modal({backdrop:'static', keyboard: false, show: true});
+            $('ng-form[name=' + field.name + '] #new-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
             $scope.editedInstanceId = undefined;
-            $('body > .modal').on('hide.bs.modal', function () {
+            $('body > #new-related_' + field.id).on('hide.bs.modal', function () {
                 $scope.relatedMode.isNested = false;
                 $scope.newRelatedFields = null;
                 $scope.editRelatedFields = null;
@@ -3530,16 +3530,16 @@
 
         };
 
-        $scope.cancelAddRelatedForm = function () {
+        $scope.cancelAddRelatedForm = function (fieldId) {
             $scope.newRelatedFields = null;
             $scope.relatedMode.isNested = false;
-            $('body > #new-related').modal('hide');
+            $('body > #new-related_' + fieldId).modal('hide');
         };
 
-        $scope.cancelEditRelatedForm = function () {
+        $scope.cancelEditRelatedForm = function (fieldId) {
             $scope.editRelatedFields = null;
             $scope.relatedMode.isNested = false;
-            $('body > #edit-related').modal('hide');
+            $('body > #edit-related_' + fieldId).modal('hide');
         };
 
         /**
@@ -3584,7 +3584,7 @@
             $scope.relatedMode.isNested = true;
             instanceId = parseInt(instanceId, 10);
             $scope.editedInstanceId = instanceId;
-            $('ng-form[name=' + field.name + '] #edit-related').modal({backdrop:'static', keyboard: false, show: true});
+            $('ng-form[name=' + field.name + '] #edit-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
             var addedNewRecords,
                 editExisting = true,
                 setExisting = function () {
@@ -3648,8 +3648,8 @@
             return $scope.selectedEntity && ($scope.selectedEntity.nonEditable || $scope.selectedEntity.readOnlyAccess);
         };
 
-        $scope.closeRelatedEntityModal = function() {
-            $("body .instanceBrowserModal").modal('hide');
+        $scope.closeRelatedEntityModal = function(fieldId) {
+            $("body > #instanceBrowserModal_" + fieldId).modal('hide');
         };
 
         $scope.addRelatedInstance = function(id, entity, field) {
@@ -3691,7 +3691,7 @@
                 }
                 unblockUI();
                 if (closeModal === true) {
-                    $scope.closeRelatedEntityModal();
+                    $scope.closeRelatedEntityModal(field.id);
                 }
             }).error(function (response) {
                 handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
@@ -3747,7 +3747,7 @@
                     }
                     field.value.addedNewRecords.push({id: null, entitySchemaId: $scope.currentRelationRecord.entitySchemaId, fields: relatedData} );
                 });
-                $('body > #new-related').modal('hide');
+                $('body > #new-related_' + field.id).modal('hide');
                 $scope.newRelatedFields = null;
                 $scope.relatedMode.isNested = false;
             },
@@ -3823,7 +3823,7 @@
                 }
                 $scope.editedInstanceId = undefined;
                 $scope.editRelatedFields = null;
-                $('body > #edit-related').modal('hide');
+                $('body > #edit-related_' + field.id).modal('hide');
                 $scope.relatedMode.isNested = false;
             },
 
@@ -3925,7 +3925,7 @@
 
         $scope.setRelatedEntity = function(field) {
             var i, relatedClass;
-            $('.instanceBrowserModal').on('hide.bs.modal', function () {
+            $('body > #instanceBrowserModal_' + field.id).on('hide.bs.modal', function () {
                 $scope.relatedEntity = undefined;
                 $scope.filterBy = [];
             });
@@ -4091,7 +4091,8 @@
                 $scope.loadedFields = undefined;
                 $scope.removeIdFromUrl();
             }
-            $scope.newRelatedFields = null;
+            $scope.cancelAddRelatedForm();
+            $scope.cancelEditRelatedForm();
             resizeLayout();
         };
 
@@ -4755,8 +4756,6 @@
             });
         };
 
-
-
         /*
         *  Gets field from FieldRecord to set field-edit value
         */
@@ -4820,8 +4819,7 @@
         * Construct appropriate url according with a field type for form used to set correct
         * value of edit value property.
         */
-        $scope.loadEditValueForm = function (field, isNestedField) {
-            var value = angular.copy($scope.getTypeSingleClassName(field.type));
+        $scope.loadEditValueForm = function (value, field, isNestedField) {
 
             if (value === 'boolean') {
 
@@ -4841,6 +4839,10 @@
                 value = 'oneToManyRelated';
             } else if (value === 'manyToMany' && ($scope.newRelatedFields !== null || $scope.editRelatedFields !== null) && isNestedField === true) {
                 value = 'manyToManyRelated';
+            } else if (value === 'manyToOne' && ($scope.newRelatedFields !== null || $scope.editRelatedFields !== null) && isNestedField === true) {
+                value = 'manyToOneRelated';
+            } else if (value === 'oneToone' && ($scope.newRelatedFields !== null || $scope.editRelatedFields !== null) && isNestedField === true) {
+                value = 'oneToOneRelated';
             }
             return '../mds/resources/partials/widgets/field-edit-Value-{0}.html'
                           .format(value.substring(value.toLowerCase()));

@@ -1392,13 +1392,13 @@
                                 if ($('#instancesTable').getGridParam('records') > 0) {
                                     $('#pageInstancesTable_center').show();
                                     $('#entityInstancesTable .ui-jqgrid-hdiv').show();
-                                    $('.jqgfirstrow').css('height','0');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','0');
                                 } else {
                                     if (noSelectedFields) {
                                         $('#pageInstancesTable_center').hide();
                                         $('#entityInstancesTable .ui-jqgrid-hdiv').hide();
                                     }
-                                    $('.jqgfirstrow').css('height','1px');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','1px');
                                 }
                                 $('#entityInstancesTable .ui-jqgrid-hdiv').addClass("table-lightblue");
                                 $('#entityInstancesTable .ui-jqgrid-btable').addClass("table-lightblue");
@@ -1528,9 +1528,9 @@
                                     $('#' + attrs.entityInstancesBrowserGrid + '_center').addClass('page_instancesTable_center');
                                     if ($('#' + gridId).getGridParam('records') > 0) {
                                         $('#' + attrs.entityInstancesBrowserGrid + '_center').show();
-                                        $('.jqgfirstrow').css('height','0');
+                                        $('#gbox_' + gridId + ' .jqgfirstrow').css('height','0');
                                     } else {
-                                        $('.jqgfirstrow').css('height','1px');
+                                        $('#gbox_' + gridId + ' .jqgfirstrow').css('height','1px');
                                     }
                                     tableWidth = $('#instanceBrowserTable').width();
                                     $('#gbox_' + gridId).css('width','100%');
@@ -1594,12 +1594,13 @@
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                var tableWidth, isHiddenGrid, eventResize, eventChange, relatedClass, relatedEntityId, updatePostData,
+                var tableWidth, isHiddenGrid, eventResize, eventChange, relatedClass, relatedEntityId, updatePostData, postdata,
                     filter = {removedIds: [], addedIds: [], addedNewRecords: []},
                     elem = angular.element(element),
                     gridId = attrs.id,
                     gridRecords = 0,
                     fieldId = attrs.fieldId,
+                    gridHide = attrs.gridHide,
                     pagerHide = attrs.pagerHide,
                     selectedEntityId = scope.selectedEntity.id,
                     selectedInstance = (scope.selectedInstance !== undefined && angular.isNumber(parseInt(scope.selectedInstance, 10)))? parseInt(scope.selectedInstance, 10) : undefined;
@@ -1667,7 +1668,7 @@
                                            && scope.newRelatedFields === null && !scope.relatedMode.isNested) {
                                             selectedInstance = parseInt(id, 10);
                                             scope.currentRelationRecord = {entitySchemaId: relatedEntityId};
-                                            if (scope.field.type.defaultName !== "manyToManyRelationship" && scope.field.type.defaultName !== "oneToManyRelationship" && selectedInstance > 0) {
+                                            if (scope.field.type.defaultName !== "manyToManyRelationship" && scope.field.type.defaultName !== "oneToManyRelationship" && scope.field.type.defaultName !== "oneToOneRelationship" && selectedInstance > 0) {
                                                 scope.editRelatedInstanceOfEntity(scope.relatedData.getRelatedId(scope.field), undefined, scope.field);
                                             } else if (scope.field.type.defaultName !== "manyToManyRelationship" && scope.field.type.defaultName !== "oneToManyRelationship" && selectedInstance < 0) {
                                                 scope.editRelatedInstanceOfEntity(selectedInstance, undefined, scope.field);
@@ -1699,19 +1700,25 @@
                                     pager: '#' + attrs.entityRelationsGrid,
                                     viewrecords: true,
                                     autowidth: true,
-                                    loadui: 'block',
+                                    loadui: 'disable',
                                     shrinkToFit: false,
                                     gridComplete: function () {
                                         $('#' + attrs.entityRelationsGrid + '_center').addClass('page_' + gridId + '_center');
                                         gridRecords = $('#' + gridId).getGridParam('records');
                                         if (gridRecords > 0) {
+                                            if (gridHide !== undefined && gridHide === "true") {
+                                                $('body #instance_' + gridId).removeClass('hiddengrid');
+                                            }
                                             $('#relationsTableTotalRecords_' + fieldId).text(gridRecords + '  ' + scope.msg('mds.field.items'));
                                             $('#' + attrs.entityRelationsGrid + '_center').show();
-                                            $(".jqgfirstrow").css("height","0");
+                                            $('#gbox_' + gridId + ' .jqgfirstrow').css("height","0");
                                         } else {
                                             $('#relationsTableTotalRecords_' + fieldId).text('0  ' + scope.msg('mds.field.items'));
                                             $('#' + attrs.entityRelationsGrid + '_center').hide();
-                                            $(".jqgfirstrow").css("height","1px");
+                                            $('#gbox_' + gridId + ' .jqgfirstrow').css("height","1px");
+                                            if (gridHide !== undefined && gridHide === "true") {
+                                                $('body #instance_' + gridId).addClass('hiddengrid');
+                                            }
                                         }
                                         $('#gview_' + gridId + ' .ui-jqgrid-hdiv').show();
                                         $('#gview_' + gridId + ' .ui-jqgrid-hdiv').addClass("table-lightblue");
@@ -1723,6 +1730,9 @@
                                 }).jqGrid('setFrozenColumns');
                                 if (pagerHide === "true") {
                                     $('#' + attrs.entityRelationsGrid).addClass('hidden');
+                                }
+                                if (gridHide !== undefined && gridHide === "true") {
+                                    $('body #instance_' + gridId).addClass('hiddengrid');
                                 }
                             }
                         });
@@ -1746,7 +1756,7 @@
                 };
 
                 scope.$watch('field.value.removedIds', function (newValue) {
-                    var postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+                    postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
 
                     if (postdata !== undefined) {
                         if (postdata.filters !== undefined) {
@@ -1760,7 +1770,7 @@
                 }, true);
 
                 scope.$watch('field.value.addedIds', function (newValue) {
-                    var postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+                    postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
 
                     if (postdata !== undefined) {
                         if (postdata.filters !== undefined) {
@@ -1774,7 +1784,7 @@
                 }, true);
 
                 scope.$watch('field.value.addedNewRecords', function (newValue) {
-                    var postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+                    postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
 
                     if (postdata !== undefined) {
                         if (postdata.filters !== undefined) {
@@ -1848,23 +1858,52 @@
             link: function (scope, element, attrs) {
                 var isHiddenGrid,
                 elem = angular.element(element),
-                gridId = attrs.showRelationsGrid;
+                gridId = attrs.showRelationsGrid,
+                gridHide = attrs.gridHide,
+                setHiddenGrid = function () {
+                    elem.children().removeClass('fa-angle-double-up');
+                    elem.children().addClass('fa-angle-double-down');
+                    $('#' + gridId).jqGrid('setGridState','hidden');
+                    $('body #instance_' + gridId).addClass('hiddengrid');
+                },
+                setVisibleGrid = function () {
+                    elem.children().removeClass('fa-angle-double-down');
+                    elem.children().addClass('fa-angle-double-up');
+                    $('#' + gridId).jqGrid('setGridState','visible');
+                    $('body #instance_' + gridId).removeClass('hiddengrid').delay(500).fadeIn("slow");
+                };
 
                 elem.on('click', function () {
                     isHiddenGrid = $('#' + gridId).jqGrid('getGridParam','hiddengrid');
                     $('#' + gridId).jqGrid('setGridParam', { hiddengrid: !isHiddenGrid });
                     if (isHiddenGrid) {
-                        $(this).children().removeClass('fa-angle-double-down');
-                        $(this).children().addClass('fa-angle-double-up');
-                        $('#' + gridId).jqGrid('setGridState','visible');
-                        $('#gbox_' + gridId).removeClass('hidden').delay(500).fadeIn("slow");
+                        setVisibleGrid();
                     } else {
-                        $(this).children().removeClass('fa-angle-double-up');
-                        $(this).children().addClass('fa-angle-double-down');
-                        $('#' + gridId).jqGrid('setGridState','hidden');
-                        $('#gbox_' + gridId).addClass('hidden');
+                        setHiddenGrid();
                     }
                 });
+            }
+        };
+    });
+
+    directives.directive('templateForm', function($http, $templateCache, $compile) {
+        return {
+            restrict: "A", require: 'ngModel', priority: 1000,
+            compile: function (element, attrs, transclude, ngModel) {
+                return function (scope, $element, $attr, ngModel) {
+                    function updateTemplate() {
+                        var isNestedField;
+                        if ($attr.nestedField === 'true') {isNestedField = true;} else {isNestedField = false;}
+                        $http.get(scope.loadEditValueForm(scope.getTypeSingleClassName(ngModel.$modelValue.type), ngModel.$modelValue, isNestedField), { cache: $templateCache })
+                        .success(function(response) {
+                            var contents = $element.html(response).contents();
+                            $compile(contents)(scope);
+                        });
+                    }
+                    if (ngModel.$modelValue !== undefined) {
+                        scope.$watch(ngModel.$modelValue, updateTemplate);
+                    }
+                };
             }
         };
     });
@@ -2027,13 +2066,13 @@
                                 if ($('#historyTable').getGridParam('records') > 0) {
                                     $('#pageInstanceHistoryTable_center').show();
                                     $('#instanceHistoryTable .ui-jqgrid-hdiv').show();
-                                    $('.jqgfirstrow').css('height','0');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','0');
                                 } else {
                                     if (noSelectedFields) {
                                         $('#pageInstanceHistoryTable_center').hide();
                                         $('#instanceHistoryTable .ui-jqgrid-hdiv').hide();
                                     }
-                                    $('.jqgfirstrow').css('height','1px');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','1px');
                                 }
                                 $('#instanceHistoryTable .ui-jqgrid-hdiv').addClass('table-lightblue');
                                 $('#instanceHistoryTable .ui-jqgrid-btable').addClass("table-lightblue");
@@ -2144,13 +2183,13 @@
                                 if ($('#trashTable').getGridParam('records') > 0) {
                                     $('#pageInstanceTrashTable_center').show();
                                     $('#instanceTrashTable .ui-jqgrid-hdiv').show();
-                                    $('.jqgfirstrow').css('height','0');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','0');
                                 } else {
                                     if (noSelectedFields) {
                                         $('#pageInstanceTrashTable_center').hide();
                                         $('#instanceTrashTable .ui-jqgrid-hdiv').hide();
                                     }
-                                    $('.jqgfirstrow').css('height','1px');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','1px');
                                 }
                                 $('#instanceTrashTable .ui-jqgrid-hdiv').addClass("table-lightblue");
                                 $('#instanceTrashTable .ui-jqgrid-btable').addClass("table-lightblue");
