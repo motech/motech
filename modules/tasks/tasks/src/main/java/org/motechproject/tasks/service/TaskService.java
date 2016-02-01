@@ -7,7 +7,6 @@ import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
-import org.motechproject.tasks.ex.TriggerNotFoundException;
 
 import java.io.IOException;
 import java.util.List;
@@ -76,15 +75,6 @@ public interface TaskService {
      * @return  the list of tasks
      */
     List<Task> findTasksDependentOnModule(String moduleName);
-
-    /**
-     * Returns a trigger with the given subject.
-     *
-     * @param subject  the trigger subject, not null
-     * @return  the trigger with the given subject
-     * @throws TriggerNotFoundException if the trigger for the given subject wasn't found
-     */
-    TriggerEvent findTrigger(String subject) throws TriggerNotFoundException;
 
     /**
      * Looks for implementations of the {@link org.motechproject.commons.api.TasksEventParser} that have

@@ -17,6 +17,7 @@ import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.json.ActionEventRequestDeserializer;
 import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.service.ChannelService;
+import org.motechproject.tasks.service.TriggerEventService;
 import org.motechproject.tasks.validation.ChannelValidator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -57,6 +58,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     private static Map<Type, Object> typeAdapters = new HashMap<>();
 
+    private TriggerEventService triggerEventService;
     private ChannelsDataService channelsDataService;
     private MotechJsonReader motechJsonReader;
     private ResourceLoader resourceLoader;
@@ -69,8 +71,9 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Autowired
-    public ChannelServiceImpl(ChannelsDataService channelsDataService, ResourceLoader resourceLoader,
-                              EventRelay eventRelay, IconLoader iconLoader) {
+    public ChannelServiceImpl(TriggerEventService triggerEventService, ChannelsDataService channelsDataService,
+                              ResourceLoader resourceLoader, EventRelay eventRelay, IconLoader iconLoader) {
+        this.triggerEventService = triggerEventService;
         this.channelsDataService = channelsDataService;
         this.eventRelay = eventRelay;
         this.resourceLoader = resourceLoader;
@@ -164,7 +167,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public List<Channel> getAllChannels() {
-        return channelsDataService.executeQuery(new QueryExecution<List<Channel>>() {
+        List<Channel> channels = channelsDataService.executeQuery(new QueryExecution<List<Channel>>() {
             @Override
             public List<Channel> execute(Query query, InstanceSecurityRestriction restriction) {
                 List<String> param = WebBundleUtil.getSymbolicNames(bundleContext);
@@ -175,6 +178,14 @@ public class ChannelServiceImpl implements ChannelService {
                 return (List<Channel>) query.execute(param);
             }
         });
+
+        for (Channel channel : channels) {
+            if (triggerEventService.providesDynamicTriggers(channel.getModuleName())) {
+                channel.setProvidesTriggers(true);
+            }
+        }
+
+        return channels;
     }
 
     @Override
@@ -209,6 +220,11 @@ public class ChannelServiceImpl implements ChannelService {
         }
 
         return bundleIcon;
+    }
+
+    @Override
+    public boolean channelExists(String moduleName) {
+        return channelsDataService.countFindByModuleName(moduleName) > 0;
     }
 
     @Autowired(required = false)

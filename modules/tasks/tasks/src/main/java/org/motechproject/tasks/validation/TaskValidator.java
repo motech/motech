@@ -21,6 +21,9 @@ import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.service.TriggerEventService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,17 +39,14 @@ import static org.motechproject.tasks.domain.KeyInformation.parse;
 /**
  * Utility class for validating tasks.
  */
-public final class TaskValidator extends GeneralValidator {
+@Service
+public class TaskValidator extends GeneralValidator {
 
     public static final String TASK = "task";
 
     private static final String MODULE_VERSION = "moduleVersion";
 
-    /**
-     * Utility class, should not be instantiated.
-     */
-    private TaskValidator() {
-    }
+    private TriggerEventService triggerEventService;
 
     /**
      * Validates the given task by checking if all necessary data is set. Returns the set of TaskError containing
@@ -55,7 +55,7 @@ public final class TaskValidator extends GeneralValidator {
      * @param task  the task to be validated, not null
      * @return  the set of encountered errors
      */
-    public static Set<TaskError> validate(Task task) {
+    public Set<TaskError> validate(Task task) {
         Set<TaskError> errors = new HashSet<>();
 
         checkBlankValue(errors, TASK, "name", task.getName());
@@ -77,19 +77,17 @@ public final class TaskValidator extends GeneralValidator {
      * Validates the trigger of the given task by checking if it is specified in the given channel.
      *
      * @param task  the task for which the trigger should be validated, not null
-     * @param channel  the channel to be checked for containing the specific trigger. not null
      * @return  the set of encountered errors
      */
-    public static Set<TaskError> validateTrigger(Task task, Channel channel) {
+    public Set<TaskError> validateTrigger(Task task) {
         Set<TaskError> errors = new HashSet<>();
         TaskTriggerInformation triggerInformation = task.getTrigger();
-        boolean exists = channel.containsTrigger(triggerInformation);
+        boolean exists = triggerEventService.triggerExists(triggerInformation);
 
         if (!exists) {
             errors.add(new TaskError(
                     "task.validation.error.triggerNotExist",
-                    triggerInformation.getDisplayName(),
-                    channel.getDisplayName()
+                    triggerInformation.getDisplayName()
             ));
         }
 
@@ -103,7 +101,7 @@ public final class TaskValidator extends GeneralValidator {
      * @param channel  the channel to be checked, not null
      * @return  the set of encountered errors
      */
-    public static Set<TaskError> validateAction(TaskActionInformation actionInformation, Channel channel) {
+    public Set<TaskError> validateAction(TaskActionInformation actionInformation, Channel channel) {
         Set<TaskError> errors = new HashSet<>();
         boolean exists = channel.containsAction(actionInformation);
 
@@ -128,7 +126,7 @@ public final class TaskValidator extends GeneralValidator {
      * @param availableProviders  the map of the IDs and the providers, not null
      * @return  the set of encountered errors
      */
-    public static Set<TaskError> validateProvider(TaskDataProvider provider, DataSource dataSource, TriggerEvent trigger,
+    public Set<TaskError> validateProvider(TaskDataProvider provider, DataSource dataSource, TriggerEvent trigger,
                                                   Map<Long, TaskDataProvider> availableProviders) {
         Set<TaskError> errors = new HashSet<>();
         Map<String, String> fields = new HashMap<>();
@@ -169,7 +167,7 @@ public final class TaskValidator extends GeneralValidator {
      * @param providers  the map of IDs and providers, not null
      * @return  the set of encountered errors
      */
-    public static Set<TaskError> validateActionFields(TaskActionInformation action, ActionEvent actionEvent, TriggerEvent trigger, Map<Long, TaskDataProvider> providers) {
+    public Set<TaskError> validateActionFields(TaskActionInformation action, ActionEvent actionEvent, TriggerEvent trigger, Map<Long, TaskDataProvider> providers) {
         Map<String, String> fields = action.getValues();
         Map<String, ParameterType> fieldsTypes = new HashMap<>();
 
@@ -180,7 +178,7 @@ public final class TaskValidator extends GeneralValidator {
         return validateFieldsParameter(fields, fieldsTypes, trigger, providers);
     }
 
-    private static Set<TaskError> validateFieldsParameter(Map<String, String> fields, Map<String, ParameterType> fieldsTypes, TriggerEvent trigger, Map<Long, TaskDataProvider> providers) {
+    private Set<TaskError> validateFieldsParameter(Map<String, String> fields, Map<String, ParameterType> fieldsTypes, TriggerEvent trigger, Map<Long, TaskDataProvider> providers) {
         Set<TaskError> errors = new HashSet<>();
 
         for (Map.Entry<String, String> entry : fields.entrySet()) {
@@ -194,7 +192,7 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static Set<TaskError> validateDateFormat(Map<String, String> actionInputFields) {
+    private Set<TaskError> validateDateFormat(Map<String, String> actionInputFields) {
         Set<TaskError> errors = new HashSet<>();
 
         for (Map.Entry<String, String> entry : actionInputFields.entrySet()) {
@@ -225,7 +223,7 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static Set<TaskError> validateAction(int idx, TaskActionInformation action) {
+    private Set<TaskError> validateAction(int idx, TaskActionInformation action) {
         Set<TaskError> errors = new HashSet<>();
 
         checkNullValue(errors, TASK, String.format("actions[%d]", idx), action);
@@ -258,7 +256,7 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static Set<TaskError> validateTrigger(TaskTriggerInformation trigger) {
+    private Set<TaskError> validateTrigger(TaskTriggerInformation trigger) {
         Set<TaskError> errors = new HashSet<>();
 
         checkNullValue(errors, TASK, "action", trigger);
@@ -277,7 +275,7 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static Set<TaskError> validateFilter(Integer setOrder, int index, Filter filter,
+    private Set<TaskError> validateFilter(Integer setOrder, int index, Filter filter,
                                                  TaskConfig config) {
         Set<TaskError> errors = new HashSet<>();
         String field = String.format("taskConfig.filterSet[%d].filters[%d]", setOrder, index);
@@ -312,7 +310,7 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static Set<TaskError> validateKeyInformation(KeyInformation key, ParameterType fieldType, TriggerEvent trigger, Map<Long, TaskDataProvider> providers) {
+    private Set<TaskError> validateKeyInformation(KeyInformation key, ParameterType fieldType, TriggerEvent trigger, Map<Long, TaskDataProvider> providers) {
         Set<TaskError> errors = new HashSet<>();
 
         if (key.fromTrigger() && trigger.containsParameter(key.getKey()) && key.hasManipulations()) {
@@ -336,7 +334,7 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static Set<TaskError> validateManipulations(String manipulation, KeyInformation key, ParameterType parameterType, ParameterType fieldType) {
+    private Set<TaskError> validateManipulations(String manipulation, KeyInformation key, ParameterType parameterType, ParameterType fieldType) {
         Set<TaskError> errors = new HashSet<>();
         TaskError error;
         String at = key.getKey() + "?" + manipulation;
@@ -364,7 +362,7 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static TaskError validateStringManipulation(String manipulation, String foundAt) {
+    private TaskError validateStringManipulation(String manipulation, String foundAt) {
         TaskError error = null;
         ManipulationType type = ManipulationType.fromString(manipulation.replaceAll("\\((.*?)\\)", ""));
 
@@ -387,7 +385,7 @@ public final class TaskValidator extends GeneralValidator {
         return error;
     }
 
-    private static TaskError validateDateManipulation(String manipulation, ParameterType fieldType, String foundAt) {
+    private TaskError validateDateManipulation(String manipulation, ParameterType fieldType, String foundAt) {
         TaskError error = null;
         ManipulationType type = ManipulationType.fromString(manipulation.replaceAll("\\((.*?)\\)", ""));
 
@@ -416,7 +414,7 @@ public final class TaskValidator extends GeneralValidator {
         return error;
     }
 
-    private static Set<TaskError> validateDataSource(DataSource dataSource) {
+    private Set<TaskError> validateDataSource(DataSource dataSource) {
         Set<TaskError> errors = new HashSet<>();
         String field = "taskConfig.dataSource[" + dataSource.getOrder() + "]";
         for (Lookup lookup : dataSource.getLookup()) {
@@ -434,7 +432,7 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static Set<TaskError> validateTaskConfig(TaskConfig config) {
+    private Set<TaskError> validateTaskConfig(TaskConfig config) {
         Set<TaskError> errors = new HashSet<>();
 
         for (FilterSet filterSet : config.getFilters()) {
@@ -452,4 +450,8 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
+    @Autowired
+    public void setTriggerEventService(TriggerEventService triggerEventService) {
+        this.triggerEventService = triggerEventService;
+    }
 }

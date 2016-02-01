@@ -20,6 +20,8 @@ import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.motechproject.scheduler.service.MotechSchedulerDatabaseService;
 import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.tasks.domain.EventParameter;
+import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.ops4j.pax.exam.ExamFactory;
@@ -47,6 +49,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.testing.utils.TimeFaker.fakeNow;
 import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
@@ -435,6 +438,39 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
         }
     }
 
+    @Test
+    public void shouldGetTriggers() throws Exception {
+
+        addTestJobs();
+
+        List<TriggerEvent> expectedTriggers = createTriggers();
+
+        List<TriggerEvent> triggers = databaseService.getTriggers(1, 50);
+
+        assertTrue(triggers.size() >= 6);
+        assertTrue(triggers.containsAll(expectedTriggers));
+    }
+
+    @Test
+    public void shouldGetTrigger() throws Exception {
+
+        addTestJobs();
+
+        TriggerEvent expectedTrigger = createTrigger();
+
+        TriggerEvent trigger = databaseService.getTrigger(expectedTrigger.getSubject());
+
+        assertEquals(expectedTrigger, trigger);
+    }
+
+    @Test
+    public void shouldCountTriggers() throws Exception {
+
+        addTestJobs();
+
+        assertTrue(databaseService.countTriggers() >= 6);
+    }
+
     private void addTestJobs() {
         Map<String, Object> params = new HashMap<>();
         params.put(MotechSchedulerService.JOB_ID_KEY, "job_id1");
@@ -527,5 +563,76 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
 
     private String printJobNames(Collection<JobBasicInfo> jobs) {
         return "Job names: " + extract(jobs, on(JobBasicInfo.class).getName());
+    }
+
+    private List<TriggerEvent> createTriggers() {
+        List<TriggerEvent> triggers = new ArrayList<>();
+
+        List<EventParameter> params = new ArrayList<>();
+        params.add(new EventParameter("scheduler.jobId", MotechSchedulerService.JOB_ID_KEY));
+
+        triggers.add(new TriggerEvent(
+                "Job: test_event_1-job_id1",
+                "test_event_1-job_id1",
+                null,
+                params,
+                "test_event_1"
+        ));
+
+        triggers.add(new TriggerEvent(
+                "Job: test_event_2-job_id2",
+                "test_event_2-job_id2",
+                null,
+                params,
+                "test_event_2"
+        ));
+
+        triggers.add(new TriggerEvent(
+                "Job: test_event_3-job_id3",
+                "test_event_3-job_id3",
+                null,
+                params,
+                "test_event_3"
+        ));
+
+        triggers.add(new TriggerEvent(
+                "Job: test_event_4-job_id4",
+                "test_event_4-job_id4",
+                null,
+                params,
+                "test_event_4"
+        ));
+
+        triggers.add(new TriggerEvent(
+                "Job: test_event_5-job_id5-runonce",
+                "test_event_5-job_id5-runonce",
+                null,
+                params,
+                "test_event_5"
+        ));
+
+        triggers.add(new TriggerEvent(
+                "Job: test_event_6-job_id6-repeat",
+                "test_event_6-job_id6-repeat",
+                null,
+                params,
+                "test_event_6"
+        ));
+
+        return triggers;
+    }
+
+    private TriggerEvent createTrigger() {
+
+        List<EventParameter> params = new ArrayList<>();
+        params.add(new EventParameter("scheduler.jobId", MotechSchedulerService.JOB_ID_KEY));
+
+        return new TriggerEvent(
+                "Job: test_event_4-job_id4",
+                "test_event_4-job_id4",
+                null,
+                params,
+                "test_event_4"
+        );
     }
 }
