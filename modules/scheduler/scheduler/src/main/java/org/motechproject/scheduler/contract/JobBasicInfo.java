@@ -26,7 +26,7 @@ public class JobBasicInfo {
     private String endDate;
     private String jobType;
     private String info;
-    private boolean programmed;
+    private boolean uiDefined;
 
     public JobBasicInfo() {
 
@@ -46,7 +46,7 @@ public class JobBasicInfo {
      */
     public JobBasicInfo(String activity, String status, String name, // NO CHECKSTYLE More than 7 parameters (found 8).
                         String group, String startDate, String nextFireDate, String endDate, String jobType,
-                        String info, boolean programmed) {
+                        String info, boolean uiDefined) {
         this.activity = activity;
         this.status = status;
         this.name = name;
@@ -56,7 +56,7 @@ public class JobBasicInfo {
         this.endDate = endDate;
         this.jobType = jobType;
         this.info = info;
-        this.programmed = programmed;
+        this.uiDefined = uiDefined;
     }
 
     public String getActivity() {
@@ -131,11 +131,11 @@ public class JobBasicInfo {
         this.info = info;
     }
 
-    public boolean isProgrammed() {
-        return programmed;
+    public boolean isUiDefined() {
+        return uiDefined;
     }
 
-    public void setProgrammed(boolean programmed) {
-        this.programmed = programmed;
+    public void setUiDefined(boolean uiDefined) {
+        this.uiDefined = uiDefined;
     }
 }

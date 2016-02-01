@@ -32,8 +32,7 @@ public class MotechSchedulerActionProxyServiceImpl implements MotechSchedulerAct
     @Override
     public void scheduleCronJob(String subject, Map<Object, Object> parameters, String cronExpression, DateTime startTime, DateTime endTime, Boolean ignorePastFiresAtStart) {
         MotechEvent motechEvent = new MotechEvent(subject, createMotechEventParameters(parameters));
-        CronSchedulableJob job = new CronSchedulableJob(motechEvent, cronExpression, startTime.toDate(),
-                endTime != null ? endTime.toDate() : null, ignorePastFiresAtStart);
+        CronSchedulableJob job = new CronSchedulableJob(motechEvent, cronExpression, startTime, endTime, ignorePastFiresAtStart);
 
         scheduler.scheduleJob(job);
     }
@@ -46,8 +45,8 @@ public class MotechSchedulerActionProxyServiceImpl implements MotechSchedulerAct
         MotechEvent motechEvent = new MotechEvent(subject, createMotechEventParameters(parameters));
         RepeatingSchedulableJob job = new RepeatingSchedulableJob()
                 .setMotechEvent(motechEvent)
-                .setStartTime(startTime.toDate())
-                .setEndTime(endTime != null ? endTime.toDate() : null)
+                .setStartTime(startTime)
+                .setEndTime(endTime)
                 .setRepeatCount(repeatCount)
                 .setRepeatIntervalInSeconds(repeatIntervalInSeconds)
                 .setIgnorePastFiresAtStart(ignorePastFiresAtStart)
@@ -59,7 +58,7 @@ public class MotechSchedulerActionProxyServiceImpl implements MotechSchedulerAct
     @Override
     public void scheduleRunOnceJob(String subject, Map<Object, Object> parameters, DateTime startDate) {
         MotechEvent motechEvent = new MotechEvent(subject, createMotechEventParameters(parameters));
-        RunOnceSchedulableJob job = new RunOnceSchedulableJob(motechEvent, startDate.toDate());
+        RunOnceSchedulableJob job = new RunOnceSchedulableJob(motechEvent, startDate);
 
         scheduler.scheduleRunOnceJob(job);
     }
@@ -81,7 +80,7 @@ public class MotechSchedulerActionProxyServiceImpl implements MotechSchedulerAct
                                      Period repeatPeriod, Boolean ignorePastFiresAtStart, Boolean useOriginalFireTimeAfterMisfire) {
         MotechEvent motechEvent = new MotechEvent(subject, createMotechEventParameters(parameters));
         RepeatingPeriodSchedulableJob job = new RepeatingPeriodSchedulableJob(motechEvent,
-                startTime.toDate(), endTime != null ? endTime.toDate() : null, repeatPeriod, ignorePastFiresAtStart);
+                startTime, endTime, repeatPeriod, ignorePastFiresAtStart);
                 job.setUseOriginalFireTimeAfterMisfire(useOriginalFireTimeAfterMisfire);
 
         scheduler.scheduleRepeatingPeriodJob(job);

@@ -9,17 +9,21 @@ import java.io.Serializable;
  */
 public abstract class SchedulableJob implements Serializable {
 
-    private boolean programmed;
+    private boolean uiDefined;
+
+    protected SchedulableJob(boolean uiDefined) {
+        this.uiDefined = uiDefined;
+    }
 
     public abstract MotechEvent getMotechEvent();
 
     public abstract boolean isIgnorePastFiresAtStart();
 
-    public boolean isProgrammed() {
-        return programmed;
+    public boolean isUiDefined() {
+        return uiDefined;
     }
 
-    public void setProgrammed(boolean programmed) {
-        this.programmed = programmed;
+    public void setUiDefined(boolean uiDefined) {
+        this.uiDefined = uiDefined;
     }
 }

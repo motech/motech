@@ -207,7 +207,7 @@
            $scope.successfulMessage='';
            $scope.currentPage=0;
            $scope.pageSize=15;
-           $scope.addOrEdit="";
+           $scope.isEdit=true;
            $scope.roleList = Roles.query();
            $scope.permissionList = [];
 
@@ -255,7 +255,7 @@
            };
 
             $scope.saveRole = function() {
-                if ($scope.addOrEdit==="add") {
+                if ($scope.isEdit===false) {
                     $scope.role.deletable = true;
                     $http.post('../websecurity/api/web-api/roles/create', $scope.role).
                        success(function() {
@@ -277,7 +277,7 @@
             };
 
             $scope.getRole = function (role) {
-                $scope.addOrEdit = "edit";
+                $scope.isEdit = true;
                 $http.get('../websecurity/api/web-api/roles/role/' + role.roleName).success(function (data) {
                     $scope.role = data;
                     $scope.role.originalRoleName = role.roleName;
@@ -304,7 +304,7 @@
                         permissionNames : [],
                         deletable : true
                 };
-                $scope.addOrEdit = "add";
+                $scope.isEdit = false;
                 $scope.addRoleView=!$scope.addRoleView;
             };
 
@@ -539,7 +539,7 @@
                 function () {
                     $("#dynamicURLSaveButtonTop").button('reset');
                     $("#dynamicURLSaveButtonBottom").button('reset');
-                    $scope.config = $scope.loadDynamicURLs();
+                    $scope.loadDynamicURLs();
                     $scope.savingDynamicURL = false;
                     $("#dynamicURLSaveSuccessMsg").css('display', 'block').fadeOut(5000);
                 },

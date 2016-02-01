@@ -22,6 +22,8 @@
         </osgi:service-properties>
     </osgi:service>
 
+    <osgi:service ref="eventConsumerInfo" interface="org.motechproject.event.listener.EventConsumerInfo"/>
+
     <osgi:service ref="eventListenerRegistry" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
     <osgi:service id="reloadBrokerConfigHandlerService" ref="reloadBrokerConfigHandler" interface="org.osgi.service.event.EventHandler">
         <osgi:service-properties>
@@ -36,4 +38,6 @@
     <bean id="eventConsumerStarter" class="org.motechproject.event.listener.EventConsumerStarter"/>
 
     <bean id="reloadBrokerConfigHandler" class="org.motechproject.event.config.ReloadBrokerConfigHandler"/>
+
+    <bean id="eventConsumerInfo" class="org.motechproject.event.listener.impl.EventConsumerInfoImpl"/>
 </beans>
