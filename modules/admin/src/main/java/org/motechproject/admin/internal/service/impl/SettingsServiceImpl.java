@@ -154,7 +154,8 @@ public class SettingsServiceImpl implements SettingsService {
     @Override
     public void savePlatformSettings(Settings settings) {
         for (SettingsOption option : settings.getSettings()) {
-            configurationService.setPlatformSetting(option.getKey(), String.valueOf(option.getValue()));
+            Object val = option.getValue();
+            configurationService.setPlatformSetting(option.getKey(), val == null ? null : String.valueOf(val));
         }
 
         Map<String, Object> params = new HashMap<>();

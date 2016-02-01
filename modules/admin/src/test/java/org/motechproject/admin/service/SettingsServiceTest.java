@@ -5,9 +5,9 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.admin.settings.AdminSettings;
 import org.motechproject.admin.internal.service.SettingsService;
 import org.motechproject.admin.internal.service.impl.SettingsServiceImpl;
+import org.motechproject.admin.settings.AdminSettings;
 import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.config.monitor.ConfigFileMonitor;
@@ -20,8 +20,8 @@ import org.springframework.security.web.savedrequest.Enumerator;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,12 +118,22 @@ public class SettingsServiceTest {
 
     @Test
     public void testSaveBundleSettings() throws IOException {
-        SettingsOption option = new SettingsOption(new AbstractMap.SimpleEntry<Object, Object>(OPTION_KEY, OPTION_VALUE));
+        SettingsOption option = new SettingsOption(OPTION_KEY, OPTION_VALUE);
 
-        Settings settings = new Settings(BUNDLE_FILENAME, asList(option));
+        Settings settings = new Settings(BUNDLE_FILENAME, Collections.singletonList(option));
         settingsService.saveBundleSettings(settings, BUNDLE_ID);
 
         verify(configurationService).addOrUpdateProperties(BUNDLE_SYMBOLIC_NAME, "", BUNDLE_FILENAME, bundleProperty, null);
+    }
+
+    @Test
+    public void shouldSaveNullSettingAsNullValue() {
+        SettingsOption option = new SettingsOption(OPTION_KEY, null);
+        Settings settings = new Settings("section", Collections.singletonList(option));
+
+        settingsService.savePlatformSettings(settings);
+
+        verify(configurationService).setPlatformSetting(OPTION_KEY, null);
     }
 
     @Test
