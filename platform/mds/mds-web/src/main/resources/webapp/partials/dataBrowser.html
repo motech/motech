@@ -5,6 +5,7 @@
                 <input type="text" ng-model="searchText" class="form-control input-sm input-large-fluid search-query" placeholder="{{msg('mds.form.searchByModuleEntity')}}">
             </div>
             <div class="btn-group offset-05">
+                <div ng-click="showModal()" class="btn btn-default btn-sm">showModal</div>
                 <button ng-click="expandAll()" type="button" class="btn btn-default btn-sm"><i class="fa fa-fw fa-lg fa-angle-double-down"></i> {{msg('mds.btn.expandAll')}}</button>
                 <button ng-click="collapseAll()" type="button" class="btn btn-default btn-sm"><i class="fa fa-fw fa-lg fa-angle-double-up"></i> {{msg('mds.btn.collapseAll')}}</button>
             </div>

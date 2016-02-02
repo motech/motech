@@ -230,7 +230,7 @@
                             <predefinedVars>
                                 _, $, angular, angularHandler, isBlank, handleResponse, blockUI, FileReader,
                                 motechAlert, unblockUI, motechConfirm, cloneArray, arraysEqual, resizeLayout,
-                                cloneObj, alertHandler, window, defaultLayout, innerLayout, moment, FormData
+                                cloneObj, alertHandler, window, defaultLayout, innerLayout, moment, FormData, BootstrapDialog
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>
