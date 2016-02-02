@@ -16,12 +16,12 @@
             </div>
             <div id="job{{$index}}" class="collapse">
                 <hr/>
-                <span ng-if="!job.programmed">
+                <span ng-if="job.uiDefined">
                     <button ng-if="job.status === 'OK'" ng-click="pauseJob(job)" type="button" class="btn btn-sm btn-primary"><i class="fa fa-1 fa-pause"></i> Pause</button>
                     <button ng-if="job.status === 'PAUSED'" ng-click="resumeJob(job)" type="button" class="btn btn-sm btn-primary"><i class="fa fa-1 fa-play"></i> Resume</button>
                     <button ng-click="deleteJob(job)" class="btn btn-sm btn-primary"><i class="fa fa-1 fa-trash"></i> Delete</button>
                 </span>
-                <span ng-if="job.programmed">
+                <span ng-if="!job.uiDefined">
                     <div class="row inside">
                         <div class="row">
                             <div class="col-md-2">{{msg('scheduler.startDate')}}</div>

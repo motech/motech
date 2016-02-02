@@ -19,9 +19,12 @@ import java.util.List;
  *     "name": {{field name}},
  *     "displayName": {{field display name}},
  *     "required": {{true if field is required, false otherwise}},
+ *     "unique": {{true if field is unique, false otherwise}},
  *     "defaultValue": {{field default value}},
  *     "tooltip": {{field tooltip}},
  *     "placeholder": {{field placeholder}},
+ *     "nonEditable": {{true if field is editable, false otherwise}},
+ *     "nonDisplayable": {{true if field is displayable, false otherwise}}
  *     "type": {{field type symbolic name}},
  *     "metadata": [ {{field metadata formatted as:}}
  *       {
@@ -66,9 +69,12 @@ public class FieldWriter {
         jsonWriter.name("name").value(field.getName());
         jsonWriter.name("displayName").value(field.getDisplayName());
         jsonWriter.name("required").value(field.isRequired());
+        jsonWriter.name("unique").value(field.isUnique());
         jsonWriter.name("defaultValue").value(field.getDefaultValue());
         jsonWriter.name("tooltip").value(field.getTooltip());
         jsonWriter.name("placeholder").value(field.getPlaceholder());
+        jsonWriter.name("nonEditable").value(field.isNonEditable());
+        jsonWriter.name("nonDisplayable").value(field.isNonDisplayable());
         jsonWriter.name("type").value(field.getType().getDisplayName());
 
         writeMetadata(field.getMetadata());

@@ -12,7 +12,7 @@
                     for (i=0; i<scope.roleList.length; i+=1) {
                         names.push(scope.roleList[i].roleName);
                     }
-                    if(scope.addOrEdit === "edit"){
+                    if(scope.isEdit === true){
                         names.removeObject(scope.role.originalRoleName);
                     }
                     if(names.indexOf(viewValue)===-1) {

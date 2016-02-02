@@ -61,7 +61,7 @@ public class SchedulerBundleIT extends BasePaxIT {
         final MotechEvent motechEvent = new MotechEvent(TEST_SUBJECT);
         motechEvent.getParameters().put(MotechSchedulerService.JOB_ID_KEY, "jobId");
         schedulerService.unscheduleAllJobs("SchedulerBundleIT");
-        schedulerService.scheduleRunOnceJob(new RunOnceSchedulableJob(motechEvent, DateTime.now().plusSeconds(5).toDate()));
+        schedulerService.scheduleRunOnceJob(new RunOnceSchedulableJob(motechEvent, DateTime.now().plusSeconds(5)));
         synchronized (receivedEvents) {
             System.out.print("\nEvent waiting " + new Date() + "\n");
             receivedEvents.wait(15000);

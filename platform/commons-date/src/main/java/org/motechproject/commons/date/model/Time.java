@@ -73,40 +73,36 @@ public class Time implements Comparable<Time>, Serializable {
         return String.format("%02d:%02d", hour, minute);
     }
 
+    /**
+     * Returns the hour of day for this time instance.
+     * @return the hour of day
+     */
     public Integer getHour() {
         return hour;
     }
 
+    /**
+     * Sets the hour of day for this time instance.
+     * @param hour the hour of day
+     */
     public void setHour(Integer hour) {
         this.hour = hour;
     }
 
+    /**
+     * Returns the minute of hour for this time instance.
+     * @return the minute of hour
+     */
     public Integer getMinute() {
         return minute;
     }
 
+    /**
+     * Sets the minute of hour for this time instance.
+     * @param minute the minute of hour
+     */
     public void setMinute(Integer minute) {
         this.minute = minute;
-    }
-
-    /**
-     * Checks if given object is after this object or both objects represents the same time.
-     *
-     * @param toCompare  the object to be compared with this object
-     * @return false if given {@code Time} is before this, true otherwise
-     */
-    public boolean lt(Time toCompare) {
-        return (this.getHour() < toCompare.getHour() || (this.getHour().intValue() == toCompare.getHour() && this.getMinute() <= toCompare.getMinute()));
-    }
-
-    /**
-     * Checks if given object is before this object or both objects represents the same time.
-     *
-     * @param toCompare  the object to be compared with this object
-     * @return false if given {@code Time} is after this, true otherwise
-     */
-    public boolean gt(Time toCompare) {
-        return (this.getHour() > toCompare.getHour() || (this.getHour().intValue() == toCompare.getHour() && this.getMinute() >= toCompare.getMinute()));
     }
 
     /**

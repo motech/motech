@@ -490,6 +490,7 @@
         };
 
         $scope.submitStartupConfig = function() {
+             blockUI();
              $scope.startupViewData.startupSettings.loginMode = $scope.securityMode;
              $http({
                 method: "POST",
@@ -499,8 +500,13 @@
              .success(function(data) {
                 if (data.length === 0) {
                     window.location.assign("../server/");
+                } else {
+                    unblockUI();
                 }
                 $scope.errors = data;
+             })
+             .error(function(data) {
+                unblockUI();
              });
         };
 
