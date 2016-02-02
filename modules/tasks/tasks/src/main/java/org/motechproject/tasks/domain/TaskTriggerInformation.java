@@ -75,13 +75,13 @@ public class TaskTriggerInformation extends TaskEventInformation {
     }
 
     /**
-     * Convenient method for determining effective listener subject for task retries.
+     * Convenient method for determining effective listener subject for task retry.
      *
      * @return the listener retry subject
      */
     @Ignore
     @JsonIgnore
     public String getEffectiveListenerRetrySubject() {
-        return getEffectiveListenerSubject() + ".handleRetries";
+        return getEffectiveListenerSubject() + ".handleRetry";
     }
 }

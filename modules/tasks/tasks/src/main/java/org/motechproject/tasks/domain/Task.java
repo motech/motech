@@ -7,7 +7,6 @@ import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.json.TaskDeserializer;
@@ -250,7 +249,6 @@ public class Task {
         this.numberOfRetries = numberOfRetries;
     }
 
-    @Ignore
     public boolean retryTaskOnFailure() {
         return getNumberOfRetries() > 0;
     }

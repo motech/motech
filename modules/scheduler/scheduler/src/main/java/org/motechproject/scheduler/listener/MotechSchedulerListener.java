@@ -1,4 +1,4 @@
-package org.motechproject.scheduler.service;
+package org.motechproject.scheduler.listener;
 
 import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
@@ -6,19 +6,20 @@ import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.scheduler.contract.JobId;
 import org.motechproject.scheduler.contract.RepeatingJobId;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 /**
- * This service is used to schedule/unschedule jobs through the motech event.
+ * This component is used to schedule/unschedule jobs through the motech event.
  */
-@Service
+@Component
 public class MotechSchedulerListener {
 
-    private static final String SCHEDULE_JOB = "scheduleJob";
-    private static final String UNSCHEDULE_JOB = "unscheduleJob";
+    private static final String SCHEDULE_REPEATING_JOB = "scheduleRepeatingJob";
+    private static final String UNSCHEDULE_REPEATING_JOB = "unscheduleRepeatingJob";
 
     private static final String REPEAT_COUNT = "repeatCount";
     private static final String REPEAT_INTERVAL_TIME = "repeatIntervalInSeconds";
@@ -27,12 +28,12 @@ public class MotechSchedulerListener {
     private MotechSchedulerService schedulerService;
 
     /**
-     * Handles the motech event scheduling new job.
+     * Handles the motech event scheduling a new repeating job.
      *
      * @param event the event to be handled
      */
-    @MotechListener(subjects = { SCHEDULE_JOB })
-    public void handleScheduleJobEvent(MotechEvent event) {
+    @MotechListener(subjects = {SCHEDULE_REPEATING_JOB})
+    public void handleScheduleRepeatingJobEvent(MotechEvent event) {
         Map<String, Object> parameters = event.getParameters();
         String jobSubject = (String) parameters.get(JOB_SUBJECT);
         MotechEvent jobEvent = new MotechEvent(jobSubject, parameters);
@@ -46,12 +47,12 @@ public class MotechSchedulerListener {
     }
 
     /**
-     * Handles the motech event unscheduling existing job.
+     * Handles the motech event unscheduling an existing repeating job.
      *
      * @param event the event to be handled
      */
-    @MotechListener(subjects = { UNSCHEDULE_JOB })
-    public void handleUnscheduleJobEvent(MotechEvent event) {
+    @MotechListener(subjects = {UNSCHEDULE_REPEATING_JOB})
+    public void handleUnscheduleRepeatingJobEvent(MotechEvent event) {
         Map<String, Object> parameters = event.getParameters();
         String jobSubject = (String) parameters.get(JOB_SUBJECT);
         MotechEvent jobEvent = new MotechEvent(jobSubject, null);

@@ -92,8 +92,8 @@ import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
 import static org.motechproject.tasks.domain.ParameterType.TIME;
 import static org.motechproject.tasks.domain.ParameterType.UNICODE;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
-import static org.motechproject.tasks.events.constants.EventSubjects.SCHEDULE_JOB;
-import static org.motechproject.tasks.events.constants.EventSubjects.UNSCHEDULE_JOB;
+import static org.motechproject.tasks.events.constants.EventSubjects.SCHEDULE_REPEATING_JOB;
+import static org.motechproject.tasks.events.constants.EventSubjects.UNSCHEDULE_REPEATING_JOB;
 import static org.motechproject.tasks.events.constants.EventSubjects.createHandlerFailureSubject;
 import static org.motechproject.tasks.events.constants.EventSubjects.createHandlerSuccessSubject;
 import static org.motechproject.tasks.events.constants.TaskFailureCause.ACTION;
@@ -1558,7 +1558,7 @@ public class TaskTriggerHandlerTest {
         verify(eventRelay, times(2)).sendEventMessage(captorEvent.capture());
 
         MotechEvent scheduleJobEvent = captorEvent.getAllValues().get(1);
-        assertEquals(SCHEDULE_JOB, scheduleJobEvent.getSubject());
+        assertEquals(SCHEDULE_REPEATING_JOB, scheduleJobEvent.getSubject());
 
         Map<String, Object> parameters = scheduleJobEvent.getParameters();
         assertEquals(5, parameters.get(EventDataKeys.REPEAT_COUNT));
@@ -1595,7 +1595,7 @@ public class TaskTriggerHandlerTest {
     }
 
     @Test
-    public void shouldNotScheduleTaskRetries() throws Exception {
+    public void shouldNotScheduleTaskRetryWhenNumberOfRetriesIsZero() throws Exception {
         setTriggerEvent();
         setActionEvent();
 
@@ -1644,7 +1644,7 @@ public class TaskTriggerHandlerTest {
         verify(eventRelay, times(3)).sendEventMessage(captorEvent.capture());
 
         MotechEvent scheduleJobEvent = captorEvent.getAllValues().get(2);
-        assertEquals(UNSCHEDULE_JOB, scheduleJobEvent.getSubject());
+        assertEquals(UNSCHEDULE_REPEATING_JOB, scheduleJobEvent.getSubject());
 
         Map<String, Object> parameters = scheduleJobEvent.getParameters();
         assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), parameters.get(EventDataKeys.JOB_SUBJECT));
@@ -1674,7 +1674,7 @@ public class TaskTriggerHandlerTest {
         verify(eventRelay).sendEventMessage(captorEvent.capture());
 
         MotechEvent scheduleJobEvent = captorEvent.getValue();
-        assertEquals(UNSCHEDULE_JOB, scheduleJobEvent.getSubject());
+        assertEquals(UNSCHEDULE_REPEATING_JOB, scheduleJobEvent.getSubject());
 
         Map<String, Object> parameters = scheduleJobEvent.getParameters();
         assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), parameters.get(EventDataKeys.JOB_SUBJECT));

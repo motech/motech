@@ -77,6 +77,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.tasks.domain.ParameterType.UNICODE;
@@ -160,7 +161,11 @@ public class TaskServiceImplTest {
         Task t = new Task("name", trigger, asList(action));
         t.setNumberOfRetries(-3);
 
-        taskService.save(t);
+        try {
+            taskService.save(t);
+        } finally {
+            verifyZeroInteractions(tasksDataService);
+        }
     }
 
     @Test(expected = ValidationException.class)
@@ -168,7 +173,11 @@ public class TaskServiceImplTest {
         Task t = new Task("name", trigger, asList(action));
         t.setRetryIntervalInMilliseconds(-10);
 
-        taskService.save(t);
+        try {
+            taskService.save(t);
+        } finally {
+            verifyZeroInteractions(tasksDataService);
+        }
     }
 
     @Test(expected = ValidationException.class)
