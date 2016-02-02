@@ -41,7 +41,7 @@ public class MotechSchedulerListener {
         Integer repeatCount = (Integer) parameters.get(REPEAT_COUNT);
         Integer repeatIntervalInSeconds = (Integer) parameters.get(REPEAT_INTERVAL_TIME);
 
-        RepeatingSchedulableJob repeatingJob = new RepeatingSchedulableJob(jobEvent, repeatCount, repeatIntervalInSeconds, DateTime.now().toDate(), null, false);
+        RepeatingSchedulableJob repeatingJob = new RepeatingSchedulableJob(jobEvent, repeatCount, repeatIntervalInSeconds, DateTime.now(), null, false);
 
         schedulerService.scheduleRepeatingJob(repeatingJob);
     }
