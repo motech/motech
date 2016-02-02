@@ -284,6 +284,10 @@
         $scope.getMapLength = function (obj) {
             return Object.keys(obj).length;
         };
+
+        $scope.getMdsEntityCsvImportPath = function(selectedEntityId) {
+            return '../mds/instances/' + selectedEntityId + '/csvimport';
+        };
     });
 
     controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, $controller, Entities, MDSUtils) {
