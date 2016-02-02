@@ -2,7 +2,7 @@
 MOTECH Code Repositories
 ========================
 
-We use GitHub to host our source code. Our core platform is available on the motech repository and our modules are hosted on the modules repository. Use the following comands to clone these repos.
+We use GitHub to host our source code. Our core platform is available on the `motech repository<https://github.com/motech/motech>`_ and our modules are hosted on the `modules repository<https://github.com/motech/modules>`_. Use the following comands to clone these repos.
 
 MOTECH Platform
 ===============
