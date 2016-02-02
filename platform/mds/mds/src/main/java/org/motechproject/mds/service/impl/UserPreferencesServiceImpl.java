@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Implementation of the {@link org.motechproject.mds.service.UserPreferencesService}.
@@ -34,7 +36,7 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
         Entity entity = getEntity(id);
         List<UserPreferences> userPreferences =  allUserPreferences.retrieveByClassName(entity.getClassName());
         List<UserPreferencesDto> dtos = new ArrayList<>();
-        List<String> displayableFields = getDisplayableFields(entity);
+        Set<String> displayableFields = getDisplayableFields(entity);
 
         if (userPreferences != null) {
             Integer defaultGridSize = settingsService.getGridSize();
@@ -116,10 +118,10 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
         UserPreferences userPreferences =  allUserPreferences.retrieveByClassNameAndUsername(entity.getClassName(), username);
         userPreferences = checkPreferences(userPreferences, entity, username);
 
-        List<Field> fields = new ArrayList<>();
+        Set<Field> fields = new HashSet<>();
         fields.addAll(entity.getFields());
         userPreferences.setSelectedFields(fields);
-        userPreferences.setUnselectedFields(new ArrayList<Field>());
+        userPreferences.setUnselectedFields(new HashSet<Field>());
 
         allUserPreferences.update(userPreferences);
     }
@@ -131,10 +133,10 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
         UserPreferences userPreferences =  allUserPreferences.retrieveByClassNameAndUsername(entity.getClassName(), username);
         userPreferences = checkPreferences(userPreferences, entity, username);
 
-        List<Field> fields = new ArrayList<>();
+        Set<Field> fields = new HashSet<>();
         fields.addAll(entity.getFields());
         userPreferences.setUnselectedFields(fields);
-        userPreferences.setSelectedFields(new ArrayList<Field>());
+        userPreferences.setSelectedFields(new HashSet<Field>());
 
         allUserPreferences.update(userPreferences);
     }
@@ -164,8 +166,8 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
         return entity;
     }
 
-    private List<String> getDisplayableFields(Entity entity) {
-        List<String> displayFields = new ArrayList<>();
+    private Set<String> getDisplayableFields(Entity entity) {
+        Set<String> displayFields = new HashSet<>();
         for (Field field : entity.getFields()) {
             if (field.isUIDisplayable() && !field.isNonDisplayable()) {
                 displayFields.add(field.getName());
@@ -177,7 +179,7 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
 
     private UserPreferences checkPreferences(UserPreferences userPreferences, Entity entity, String username) {
         if (userPreferences == null) {
-            return allUserPreferences.create(new UserPreferences(username, entity.getClassName(), null, new ArrayList<Field>(), new ArrayList<Field>()));
+            return allUserPreferences.create(new UserPreferences(username, entity.getClassName(), null, new HashSet<Field>(), new HashSet<Field>()));
         }
         return userPreferences;
     }
