@@ -35,6 +35,7 @@ import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.events.constants.EventDataKeys;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TaskHandlerException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
@@ -68,6 +69,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.tasks.domain.OperatorType.CONTAINS;
@@ -90,6 +92,8 @@ import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
 import static org.motechproject.tasks.domain.ParameterType.TIME;
 import static org.motechproject.tasks.domain.ParameterType.UNICODE;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
+import static org.motechproject.tasks.events.constants.EventSubjects.SCHEDULE_REPEATING_JOB;
+import static org.motechproject.tasks.events.constants.EventSubjects.UNSCHEDULE_REPEATING_JOB;
 import static org.motechproject.tasks.events.constants.EventSubjects.createHandlerFailureSubject;
 import static org.motechproject.tasks.events.constants.EventSubjects.createHandlerSuccessSubject;
 import static org.motechproject.tasks.events.constants.TaskFailureCause.ACTION;
@@ -215,6 +219,22 @@ public class TaskTriggerHandlerTest {
         assertEquals("taskTriggerHandler", proxy.getIdentifier());
         assertEquals(handler, proxy.getBean());
         assertEquals(findMethod(getTargetClass(handler), "handle", MotechEvent.class), proxy.getMethod());
+    }
+
+    @Test
+    public void shouldRegisterRetryHandlerForSubject() {
+        String subject = "org.motechproject.messagecampaign.campaign-completed";
+
+        handler.registerHandlerFor(subject, true);
+        ArgumentCaptor<EventListener> captor = ArgumentCaptor.forClass(EventListener.class);
+
+        verify(registryService).registerListener(captor.capture(), eq(subject));
+
+        MotechListenerEventProxy proxy = (MotechListenerEventProxy) captor.getValue();
+
+        assertEquals("taskTriggerHandler", proxy.getIdentifier());
+        assertEquals(handler, proxy.getBean());
+        assertEquals(findMethod(getTargetClass(handler), "handleRetry", MotechEvent.class), proxy.getMethod());
     }
 
     @Test
@@ -1512,6 +1532,175 @@ public class TaskTriggerHandlerTest {
         assertEquals("123", paramsMap.get("ext"));
         assertEquals("987", paramsMap.get("fac"));
         assertEquals("[1,", paramsMap.get("lis"));
+    }
+
+    @Test
+    public void shouldScheduleTaskRetriesOnFailure() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+
+        task.setNumberOfRetries(5);
+        task.setRetryIntervalInMilliseconds(5000);
+
+        actionEvent.setServiceInterface("TestService");
+        actionEvent.setServiceMethod("abc");
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findActiveTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task.getActions().get(0))).thenThrow(new RuntimeException());
+
+        MotechEvent event = createEvent();
+        handler.setBundleContext(bundleContext);
+        handler.handle(event);
+        ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
+
+        assertEquals(1, task.getFailuresInRow());
+        verify(eventRelay, times(2)).sendEventMessage(captorEvent.capture());
+
+        MotechEvent scheduleJobEvent = captorEvent.getAllValues().get(1);
+        assertEquals(SCHEDULE_REPEATING_JOB, scheduleJobEvent.getSubject());
+
+        Map<String, Object> parameters = scheduleJobEvent.getParameters();
+        assertEquals(5, parameters.get(EventDataKeys.REPEAT_COUNT));
+        // We send repeat interval time in seconds
+        assertEquals(5, parameters.get(EventDataKeys.REPEAT_INTERVAL_TIME));
+        assertEquals(task.getId(), parameters.get(EventDataKeys.TASK_ID));
+        assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), parameters.get(EventDataKeys.JOB_SUBJECT));
+    }
+
+    @Test
+    public void shouldNotScheduleTaskRetriesAgainOnFailure() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+
+        task.setNumberOfRetries(5);
+        task.setRetryIntervalInMilliseconds(5000);
+
+        actionEvent.setServiceInterface("TestService");
+        actionEvent.setServiceMethod("abc");
+
+        when(taskService.getTask(5L)).thenReturn(task);
+        when(taskService.getActionEventFor(task.getActions().get(0))).thenThrow(new RuntimeException());
+
+        MotechEvent event = createEvent();
+        event.getParameters().put(EventDataKeys.TASK_ID, 5L);
+
+        handler.setBundleContext(bundleContext);
+        handler.handleRetry(event);
+        ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
+
+        assertEquals(1, task.getFailuresInRow());
+        // since we already scheduled task retries, we should not send once again schedule job event
+        verify(eventRelay).sendEventMessage(any(MotechEvent.class));
+    }
+
+    @Test
+    public void shouldNotScheduleTaskRetryWhenNumberOfRetriesIsZero() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+
+        task.setNumberOfRetries(0);
+        task.setRetryIntervalInMilliseconds(0);
+
+        actionEvent.setServiceInterface("TestService");
+        actionEvent.setServiceMethod("abc");
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findActiveTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task.getActions().get(0))).thenThrow(new RuntimeException());
+
+        MotechEvent event = createEvent();
+
+        handler.setBundleContext(bundleContext);
+        handler.handle(event);
+
+        assertEquals(1, task.getFailuresInRow());
+        // task number of retries is 0, we should not send schedule job event
+        verify(eventRelay).sendEventMessage(any(MotechEvent.class));
+    }
+
+    @Test
+    public void shouldUnScheduleTaskRetriesWhenSuccess() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+
+        task.setNumberOfRetries(5);
+        task.setRetryIntervalInMilliseconds(5000);
+
+        actionEvent.setServiceInterface("TestService");
+        actionEvent.setServiceMethod("abc");
+
+        when(taskService.getTask(5L)).thenReturn(task);
+        when(taskService.getActionEventFor(any(TaskActionInformation.class))).thenReturn(actionEvent);
+
+        MotechEvent event = createEvent();
+        event.getParameters().put(EventDataKeys.TASK_ID, 5L);
+
+        handler.setBundleContext(bundleContext);
+        handler.handleRetry(event);
+        ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
+
+        assertEquals(0, task.getFailuresInRow());
+        verify(eventRelay, times(3)).sendEventMessage(captorEvent.capture());
+
+        MotechEvent scheduleJobEvent = captorEvent.getAllValues().get(2);
+        assertEquals(UNSCHEDULE_REPEATING_JOB, scheduleJobEvent.getSubject());
+
+        Map<String, Object> parameters = scheduleJobEvent.getParameters();
+        assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), parameters.get(EventDataKeys.JOB_SUBJECT));
+    }
+
+    @Test
+    public void shouldUnScheduleTaskRetriesWhenTaskDeleted() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+
+        task.setNumberOfRetries(5);
+        task.setRetryIntervalInMilliseconds(5000);
+
+        actionEvent.setServiceInterface("TestService");
+        actionEvent.setServiceMethod("abc");
+
+        when(taskService.getTask(5L)).thenReturn(null);
+
+        MotechEvent event = createEvent();
+        event.getParameters().put(EventDataKeys.TASK_ID, 5L);
+        event.getParameters().put(EventDataKeys.JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
+
+        handler.setBundleContext(bundleContext);
+        handler.handleRetry(event);
+        ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
+
+        verify(eventRelay).sendEventMessage(captorEvent.capture());
+
+        MotechEvent scheduleJobEvent = captorEvent.getValue();
+        assertEquals(UNSCHEDULE_REPEATING_JOB, scheduleJobEvent.getSubject());
+
+        Map<String, Object> parameters = scheduleJobEvent.getParameters();
+        assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), parameters.get(EventDataKeys.JOB_SUBJECT));
+    }
+
+    @Test
+    public void shouldNotHandleTaskRetryWhenTaskDisabled() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+
+        task.setNumberOfRetries(5);
+        task.setRetryIntervalInMilliseconds(5000);
+        task.setEnabled(false);
+
+        actionEvent.setServiceInterface("TestService");
+        actionEvent.setServiceMethod("abc");
+
+        when(taskService.getTask(5L)).thenReturn(task);
+
+        MotechEvent event = createEvent();
+        event.getParameters().put(EventDataKeys.TASK_ID, 5L);
+
+        handler.setBundleContext(bundleContext);
+        handler.handleRetry(event);
+
+        verifyZeroInteractions(eventRelay);
     }
 
     private void initTask() throws Exception {

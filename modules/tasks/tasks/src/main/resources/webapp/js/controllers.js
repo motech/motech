@@ -281,6 +281,7 @@
                 steps: []
             }
         };
+        $scope.task.retryTaskOnFailure = false;
 
         innerLayout({
             spacing_closed: 30,
@@ -304,9 +305,17 @@
                         steps: []
                     }
                 };
+                $scope.task.retryTaskOnFailure = false;
             } else {
                 $scope.task = Tasks.get({ taskId: $routeParams.taskId }, function () {
                     var triggerChannel, trigger, dataSource, object;
+
+                    if ($scope.task.numberOfRetries > 0) {
+                       $scope.task.retryTaskOnFailure = true;
+                       $scope.task.retryIntervalInSeconds = $scope.task.retryIntervalInMilliseconds / 1000;
+                    } else {
+                       $scope.task.retryTaskOnFailure = false;
+                    }
 
                     if ($scope.task.trigger) {
                         triggerChannel = $scope.util.find({
@@ -409,6 +418,23 @@
 
             unblockUI();
         });
+
+        $scope.isTaskValid = function() {
+            // Retry task on failure inputs validation - only numerical non negative values
+            var retryTaskOnFailureValidation;
+            if ($scope.task.retryTaskOnFailure) {
+                retryTaskOnFailureValidation = $scope.isNumericalNonNegativeValue($scope.task.numberOfRetries)
+                && $scope.isNumericalNonNegativeValue($scope.task.retryIntervalInSeconds);
+            } else {
+                retryTaskOnFailureValidation = true;
+            }
+
+            return $scope.task.name && retryTaskOnFailureValidation;
+        };
+
+        $scope.isNumericalNonNegativeValue = function (value) {
+            return !isNaN(value) && value >= 0;
+        };
 
         $scope.selectTrigger = function (channel, trigger) {
             if ($scope.task.trigger) {
@@ -1134,6 +1160,16 @@
 
                 }
             });
+
+            if (!$scope.task.retryTaskOnFailure) {
+                // If the retryTaskOnFailure flag is set on false, we set the following properties to undefined.
+                // The default values will be set for them in the backend.
+                $scope.task.numberOfRetries = undefined;
+                $scope.task.retryIntervalInMilliseconds = undefined;
+            } else {
+                // Convert given value from UI in seconds to milliseconds
+                $scope.task.retryIntervalInMilliseconds = $scope.task.retryIntervalInSeconds * 1000;
+            }
 
             blockUI();
 
