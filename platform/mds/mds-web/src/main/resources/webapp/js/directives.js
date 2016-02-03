@@ -2442,23 +2442,23 @@
     });
 
     directives.directive('charValidity', function() {
-        var CHAR_REGEXP = new RegExp('^[A-z0-9]$');
+        var CHAR_REGEXP = new RegExp('^.$');
         return {
         require: 'ngModel',
         link: function(scope, element, attrs, ctrl) {
-                var elm = angular.element(element), originalValue;
-                ctrl.$parsers.unshift(function(viewValue) {
-                if(viewValue === '' || CHAR_REGEXP.test(viewValue)) {
-                        ctrl.$setValidity('char', true);
-                        originalValue = viewValue;
-                        return viewValue;
-                     }
-                else {
-                    ctrl.$setValidity('char', false);
+            var elm = angular.element(element), originalValue;
+            ctrl.$parsers.unshift(function(viewValue) {
+            if(viewValue === '' || CHAR_REGEXP.test(viewValue)) {
+                    ctrl.$setValidity('char', true);
+                    originalValue = viewValue;
                     return viewValue;
-                    }
-                    });
+                 }
+            else {
+                ctrl.$setValidity('char', false);
+                return viewValue;
                 }
+                });
+            }
         };
     });
     

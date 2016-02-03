@@ -109,7 +109,7 @@ public class TypeDto {
      * Constant <code>FLOAT</code> is a representation of the MDS Decimal type.
      */
     public static final TypeDto FLOAT = new TypeDto(
-            "mds.field.float", "mds.field.description.float", "flo", Float.class.getName()
+            "mds.field.float", "mds.field.description.float", "float", Float.class.getName()
     );
     
     /**

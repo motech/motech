@@ -14,7 +14,7 @@
 <span class="form-hint" ng-class="{hide: checkDecimalValue(field.value, field.settings)}">
     {{getInvalidDecimalMessage(field.settings)}}
 </span>
-<span class="form-hint" ng-show="( {{field.name}}.$error.insetNum || {{field.name}}.$error.outsetNum ) && !{{field.name}}.$pristine && !{{field.name}}.$error.float && !{{field.name}}.$error.min && !{{field.name}}.$error.max">
+<span class="form-hint" ng-show="({{field.name}}.$error.insetNum || {{field.name}}.$error.outsetNum) && !{{field.name}}.$pristine && !{{field.name}}.$error.float && !{{field.name}}.$error.min && !{{field.name}}.$error.max">
     <p ng-show="{{field.name}}.$error.insetNum">{{msg('mds.error.inset')}}</p>
     <p ng-show="{{field.name}}.$error.outsetNum">{{msg('mds.error.outset')}}</p>
 </span>
