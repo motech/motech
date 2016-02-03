@@ -226,3 +226,7 @@ function retrieveStatus() {
         stopLoading();
     }
 }
+
+function submitForm() {
+    blockUI();
+}

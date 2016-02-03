@@ -445,10 +445,10 @@ public class EntityServiceImpl implements EntityService {
         }
     }
 
-    private List<Field> getFieldsForPreferences(Entity parent, EntityDraft draft, List<String> oldList) {
-        List<Field> newFields = new ArrayList<>();
+    private Set<Field> getFieldsForPreferences(Entity parent, EntityDraft draft, Set<String> oldFields) {
+        Set<Field> newFields = new HashSet<>();
 
-        for (String field : oldList) {
+        for (String field : oldFields) {
 
             String name = field;
             if (draft.getFieldNameChanges().containsKey(name)) {

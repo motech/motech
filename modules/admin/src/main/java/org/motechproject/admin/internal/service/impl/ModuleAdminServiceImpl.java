@@ -111,11 +111,13 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
     @Override
     public List<BundleInformation> getBundles() {
+        LOGGER.info("GET BUNDLES IN MODULE ADMIN SERVICE!!!!");
         List<BundleInformation> bundles = new ArrayList<>();
 
         List<Bundle> motechBundles = motechBundleFilter.filter(bundleContext.getBundles());
 
         for (Bundle bundle : motechBundles) {
+            LOGGER.info("bundle: " + bundle.toString());
             BundleInformation bundleInformation = new BundleInformation(bundle);
             ModuleRegistrationData moduleRegistrationData = uiFrameworkService.getModuleDataByBundle(bundle);
             if (moduleRegistrationData != null) {

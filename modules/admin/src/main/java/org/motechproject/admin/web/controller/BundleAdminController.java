@@ -58,6 +58,7 @@ public class BundleAdminController {
     @RequestMapping(value = "/bundles", method = RequestMethod.GET)
     @ResponseBody
     public List<BundleInformation> getBundles() {
+        LOGGER.info("GET BUNDLES IN BUNDLES ADMIN CONTROLLER");
         return moduleAdminService.getBundles();
     }
 
