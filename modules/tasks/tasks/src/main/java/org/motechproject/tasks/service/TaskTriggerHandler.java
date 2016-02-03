@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.Map;
 
 import static org.motechproject.tasks.events.constants.EventDataKeys.HANDLER_ERROR_PARAM;
+import static org.motechproject.tasks.events.constants.EventDataKeys.JOB_SUBJECT;
+import static org.motechproject.tasks.events.constants.EventDataKeys.REPEAT_COUNT;
+import static org.motechproject.tasks.events.constants.EventDataKeys.REPEAT_INTERVAL_TIME;
 import static org.motechproject.tasks.events.constants.EventDataKeys.TASK_FAIL_FAILURE_DATE;
 import static org.motechproject.tasks.events.constants.EventDataKeys.TASK_FAIL_FAILURE_NUMBER;
 import static org.motechproject.tasks.events.constants.EventDataKeys.TASK_FAIL_MESSAGE;
@@ -41,6 +44,9 @@ import static org.motechproject.tasks.events.constants.EventDataKeys.TASK_FAIL_S
 import static org.motechproject.tasks.events.constants.EventDataKeys.TASK_FAIL_TASK_ID;
 import static org.motechproject.tasks.events.constants.EventDataKeys.TASK_FAIL_TASK_NAME;
 import static org.motechproject.tasks.events.constants.EventDataKeys.TASK_FAIL_TRIGGER_DISABLED;
+import static org.motechproject.tasks.events.constants.EventDataKeys.TASK_ID;
+import static org.motechproject.tasks.events.constants.EventSubjects.SCHEDULE_REPEATING_JOB;
+import static org.motechproject.tasks.events.constants.EventSubjects.UNSCHEDULE_REPEATING_JOB;
 import static org.motechproject.tasks.events.constants.EventSubjects.createHandlerFailureSubject;
 import static org.motechproject.tasks.events.constants.EventSubjects.createHandlerSuccessSubject;
 import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
@@ -82,17 +88,27 @@ public class TaskTriggerHandler implements TriggerHandler {
     public void init() {
         for (Task task : taskService.getAllTasks()) {
             registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
+
+            if (task.retryTaskOnFailure()) {
+                registerHandlerFor(task.getTrigger().getEffectiveListenerRetrySubject(), true);
+            }
         }
     }
 
     @Override
     public void registerHandlerFor(String subject) {
+        registerHandlerFor(subject, false);
+    }
+
+    @Override
+    public void registerHandlerFor(String subject, boolean isRetryHandler) {
         LOGGER.info("Registering handler for {}", subject);
 
         String serviceName = "taskTriggerHandler";
-        Method method = ReflectionUtils.findMethod(this.getClass(), "handle", MotechEvent.class);
+        String methodName = isRetryHandler ? "handleRetry" : "handle";
+        Method method = ReflectionUtils.findMethod(this.getClass(), methodName, MotechEvent.class);
         Object obj = CollectionUtils.find(
-            registryService.getListeners(subject), withServiceName(serviceName)
+                registryService.getListeners(subject), withServiceName(serviceName)
         );
 
         try {
@@ -135,16 +151,36 @@ public class TaskTriggerHandler implements TriggerHandler {
     }
 
     @Override
+    public void handleRetry(MotechEvent event) {
+        LOGGER.info("Handling the motech event with subject: {} for task retry", event.getSubject());
+
+        Map<String, Object> eventParams = event.getParameters();
+        Task task = taskService.getTask((Long) eventParams.get(TASK_ID));
+
+        if (task == null) {
+            unscheduleTaskRetry((String) eventParams.get(JOB_SUBJECT));
+        } else if (task.isEnabled()) {
+            handleTask(task, eventParams);
+        }
+    }
+
+    @Override
     @Transactional
     public void retryTask(Long activityId) {
         TaskActivity activity = activityService.getTaskActivityById(activityId);
         handleTask(taskService.getTask(activity.getTask()), activity.getParameters());
     }
 
+    private boolean isTaskRetryAlreadyScheduled(Map<String, Object> eventParams) {
+        return eventParams.get(TASK_ID) != null;
+    }
+
     private void handleTask(Task task, Map<String, Object> parameters) {
 
         TaskContext taskContext = new TaskContext(task, parameters, activityService);
         TaskInitializer initializer = new TaskInitializer(taskContext);
+
+        boolean success = true;
 
         try {
             LOGGER.info("Executing all actions from task: {}", task.getName());
@@ -157,9 +193,38 @@ public class TaskTriggerHandler implements TriggerHandler {
             LOGGER.warn("Actions from task: {} weren't executed, because config steps didn't pass the evaluation", task.getName());
         } catch (TaskHandlerException e) {
             handleError(parameters, task, e);
+            success = false;
         } catch (RuntimeException e) {
             handleError(parameters, task, new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e));
+            success = false;
         }
+
+        if (task.retryTaskOnFailure()) {
+            if (success && isTaskRetryAlreadyScheduled(parameters)) {
+                unscheduleTaskRetry(task.getTrigger().getEffectiveListenerRetrySubject());
+            } else if (!success && !isTaskRetryAlreadyScheduled(parameters)) {
+                scheduleTaskRetry(task, parameters);
+            }
+        }
+    }
+
+    private void scheduleTaskRetry(Task task, Map<String, Object> parameters) {
+        Map<String, Object> eventParameters = new HashMap<>();
+        eventParameters.putAll(parameters);
+
+        eventParameters.put(TASK_ID, task.getId());
+        eventParameters.put(REPEAT_COUNT, task.getNumberOfRetries());
+        eventParameters.put(REPEAT_INTERVAL_TIME, task.getRetryIntervalInMilliseconds() / 1000);
+        eventParameters.put(JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
+
+        eventRelay.sendEventMessage(new MotechEvent(SCHEDULE_REPEATING_JOB, eventParameters));
+    }
+
+    private void unscheduleTaskRetry(String jobSubject) {
+        Map<String, Object> eventParameters = new HashMap<>();
+        eventParameters.put(JOB_SUBJECT, jobSubject);
+
+        eventRelay.sendEventMessage(new MotechEvent(UNSCHEDULE_REPEATING_JOB, eventParameters));
     }
 
     private void handleError(Map<String, Object> params, Task task, TaskHandlerException e) {
