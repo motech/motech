@@ -503,7 +503,7 @@
                 var isReadOnly = scope.$eval(attr.ngReadonly);
                 if(!isReadOnly) {
                     angular.element(element).click( function() {
-                    	$("button.ui-datepicker-current").removeClass("ui-priority-secondary").addClass("ui-priority-primary");
+                        $("button.ui-datepicker-current").removeClass("ui-priority-secondary").addClass("ui-priority-primary");
                     });
                     angular.element(element).timepicker({
                         onSelect: function (timeTex) {
