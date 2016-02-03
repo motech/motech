@@ -11,6 +11,7 @@
   "dependencies": {
     "bower": "~1.6.8",
     "gulp": "^3.9.0",
+    "gulp-bless": "^3.0.1",
     "gulp-concat": "~2.6.0",
     "gulp-rename": "~1.2.2",
     "gulp-sequence": "~0.4.1",

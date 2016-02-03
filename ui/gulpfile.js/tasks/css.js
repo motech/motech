@@ -2,6 +2,7 @@ var config = require('../config');
 var gulp = require('gulp');
 var lib = require('bower-files')();
 var concat = require('gulp-concat');
+var bless = require('gulp-bless');
 var path = require('path');
 
 var paths = {
@@ -14,5 +15,6 @@ gulp.task('css', function () {
     files.push(paths.src);
     gulp.src(files)
         .pipe(concat('motech.css'))
+        .pipe(bless())
         .pipe(gulp.dest(paths.dest));
 });
