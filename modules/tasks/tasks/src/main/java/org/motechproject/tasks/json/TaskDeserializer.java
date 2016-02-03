@@ -51,6 +51,7 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
         TypeFactory typeFactory = mapper.getTypeFactory();
         JavaType stringType = typeFactory.constructType(String.class);
         JavaType longType = typeFactory.constructType(Long.class);
+        JavaType intType = typeFactory.constructType(Integer.class);
         JavaType dateTime = typeFactory.constructType(DateTime.class);
 
         setProperty("id", longType);
@@ -65,6 +66,8 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
         setProperty("hasRegisteredChannel", stringType);
         setProperty("taskConfig", typeFactory.constructType(TaskConfig.class));
         setProperty("trigger", typeFactory.constructType(TaskTriggerInformation.class));
+        setProperty("numberOfRetries", intType);
+        setProperty("retryIntervalInMilliseconds", intType);
 
         setProperty(
                 "validationErrors",

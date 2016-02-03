@@ -34,6 +34,37 @@
                     </div>
                 </div>
 
+                <!------------------ RETRY TASK ON FAILURE ------------------>
+                <div class="inside-0">
+                    <div class="form-group ng-cloak">
+                        <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.retryTaskOnFailure')}}</label>
+                        <div class="col-md-10 col-sm-9">
+                            <div class="checkbox">
+                                <input type="checkbox" ng-model="task.retryTaskOnFailure"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="inside-0" ng-if="task.retryTaskOnFailure">
+                    <div class="form-group ng-cloak" ng-class="{'has-error': !isNumericalNonNegativeValue(task.numberOfRetries)}">
+                        <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.numberOfRetries')}}</label>
+                        <div class="col-md-10 col-sm-9">
+                            <input class="form-control" type='text' ng-model='task.numberOfRetries' id="task.numberOfRetries">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="inside-0" ng-if="task.retryTaskOnFailure">
+                    <div class="form-group ng-cloak" ng-class="{'has-error': !isNumericalNonNegativeValue(task.retryIntervalInSeconds)}">
+                        <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.retryInterval')}}</label>
+                        <div class="col-md-10 col-sm-9">
+                            <input class="form-control" type='text' ng-model='task.retryIntervalInSeconds' id="task.retryIntervalInSeconds"
+                                   placeholder="{{msg('task.retryIntervalPlaceholder')}}">
+                        </div>
+                    </div>
+                </div>
+
                 <!------------------ SELECT TRIGGER ------------------>
                 <div class="panel-group task-group" id="select-trigger" overflow-change expand-accordion>
 
@@ -527,8 +558,8 @@
                         <p class="centered input-xxlarge-fluid margin-center">{{msg('task.info.addSave')}}</p>
                         <div class="clearfix"></div>
                         <div class="form-group centered inside">
-                            <button ng-disabled="!task.name" ng-click="save(true)" class="btn btn-primary">{{msg('task.button.saveAndEnable')}}</button>
-                            <button ng-disabled="!task.name" ng-click="save(false)" class="btn btn-success">{{msg('task.button.save')}}</button>
+                            <button ng-disabled="!isTaskValid()" ng-click="save(true)" class="btn btn-primary">{{msg('task.button.saveAndEnable')}}</button>
+                            <button ng-disabled="!isTaskValid()" ng-click="save(false)" class="btn btn-success">{{msg('task.button.save')}}</button>
                             <a target="_self" href="#/tasks/dashboard" class="btn btn-default"> {{msg('task.button.cancel')}}</a>
                         </div>
                     </div>
