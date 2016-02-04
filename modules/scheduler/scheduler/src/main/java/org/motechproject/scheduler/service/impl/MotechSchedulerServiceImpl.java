@@ -94,21 +94,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         constructMisfirePoliciesMaps();
     }
 
-    private void constructMisfirePoliciesMaps() {
-        cronTriggerMisfirePolicies = new HashMap<>();
-        cronTriggerMisfirePolicies.put("do_nothing", CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING);
-        cronTriggerMisfirePolicies.put("fire_once_now", CronTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW);
-        cronTriggerMisfirePolicies.put("ignore", CronTrigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY);
-
-        simpleTriggerMisfirePolicies = new HashMap<>();
-        simpleTriggerMisfirePolicies.put("fire_now", SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW);
-        simpleTriggerMisfirePolicies.put("ignore", SimpleTrigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY);
-        simpleTriggerMisfirePolicies.put("reschedule_next_with_existing_count", SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
-        simpleTriggerMisfirePolicies.put("reschedule_next_with_remaining_count", SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT);
-        simpleTriggerMisfirePolicies.put("reschedule_now_with_existing_count", SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT);
-        simpleTriggerMisfirePolicies.put("reschedule_now_with_remaining_count", SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT);
-    }
-
     @Override
     public void scheduleJob(CronSchedulableJob cronSchedulableJob) {
         logObjectIfNotNull(cronSchedulableJob);
@@ -175,28 +160,146 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         scheduleJob(jobDetail, trigger);
     }
 
-    private MotechEvent assertCronJob(CronSchedulableJob cronSchedulableJob) {
-        assertArgumentNotNull("SchedulableJob", cronSchedulableJob);
-        MotechEvent motechEvent = cronSchedulableJob.getMotechEvent();
-        assertArgumentNotNull("MotechEvent of the SchedulableJob", motechEvent);
-        return motechEvent;
+    @Override
+    public void scheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob) {
+        logObjectIfNotNull(repeatingSchedulableJob);
+
+        MotechEvent motechEvent = assertArgumentNotNull(repeatingSchedulableJob);
+
+        DateTime jobStartTime = repeatingSchedulableJob.getStartTime();
+        DateTime jobEndTime = repeatingSchedulableJob.getEndTime();
+        assertArgumentNotNull("Job start date", jobStartTime);
+
+        Integer repeatIntervalInSeconds = repeatingSchedulableJob.getRepeatIntervalInSeconds();
+        if (repeatIntervalInSeconds == 0) {
+            throw new IllegalArgumentException("Invalid RepeatingSchedulableJob. The job repeat intreval in seconds can not be 0 ");
+        }
+
+        Integer jobRepeatCount = repeatingSchedulableJob.getRepeatCount();
+        if (null == jobRepeatCount) {
+            jobRepeatCount = MAX_REPEAT_COUNT;
+        }
+
+        JobId jobId = new RepeatingJobId(motechEvent);
+        JobDetail jobDetail = newJob(MotechScheduledJob.class)
+                .withIdentity(jobKey(jobId.value(), JOB_GROUP_NAME))
+                .build();
+
+        putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
+        jobDetail.getJobDataMap().put(UI_DEFINED, repeatingSchedulableJob.isUiDefined());
+
+        ScheduleBuilder scheduleBuilder;
+        if (!repeatingSchedulableJob.isUseOriginalFireTimeAfterMisfire()) {
+            SimpleScheduleBuilder simpleSchedule = simpleSchedule()
+                    .withIntervalInSeconds(repeatIntervalInSeconds)
+                    .withRepeatCount(jobRepeatCount);
+
+            simpleSchedule = setMisfirePolicyForSimpleTrigger(simpleSchedule, schedulerSettings.getProperty("scheduler.repeating.trigger.misfire.policy"));
+
+            scheduleBuilder = simpleSchedule;
+        } else {
+            if (repeatingSchedulableJob.getRepeatCount() != null) {
+                final double half = 0.5;
+                jobEndTime = new DateTime((long) (repeatingSchedulableJob.getStartTime().getMillis() + repeatIntervalInSeconds * MILLISECOND * (repeatingSchedulableJob.getRepeatCount() + half)));
+            }
+            scheduleBuilder = CalendarIntervalScheduleBuilder.calendarIntervalSchedule()
+                    .withIntervalInSeconds(repeatIntervalInSeconds)
+                    .withMisfireHandlingInstructionFireAndProceed();
+        }
+
+        Trigger trigger = buildJobDetail(repeatingSchedulableJob, DateUtil.toDate(jobStartTime),
+                DateUtil.toDate(jobEndTime), jobId, jobDetail, scheduleBuilder);
+        scheduleJob(jobDetail, trigger);
     }
 
-    private CronScheduleBuilder setMisfirePolicyForCronTrigger(CronScheduleBuilder cronSchedule, String motechMisfireProperty) {
-        Integer misfirePolicyAsInt = cronTriggerMisfirePolicies.get(motechMisfireProperty);
-        if (misfirePolicyAsInt == null || misfirePolicyAsInt.equals(CronTrigger.MISFIRE_INSTRUCTION_SMART_POLICY)) {
-            return cronSchedule;
+    @Override
+    public void scheduleRepeatingPeriodJob(RepeatingPeriodSchedulableJob repeatingPeriodSchedulableJob) {
+        logObjectIfNotNull(repeatingPeriodSchedulableJob);
+
+        MotechEvent motechEvent = assertArgumentNotNull(repeatingPeriodSchedulableJob);
+
+        assertArgumentNotNull("Job start date", repeatingPeriodSchedulableJob.getStartTime());
+
+        Period repeatPeriod = repeatingPeriodSchedulableJob.getRepeatPeriod();
+        if (repeatPeriod == null) {
+            throw new IllegalArgumentException("Invalid RepeatingPeriodSchedulableJob. The job repeat period can not be null");
         }
-        if (misfirePolicyAsInt.equals(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING)) {
-            return cronSchedule.withMisfireHandlingInstructionDoNothing();
+
+        JobId jobId = new RepeatingPeriodJobId(motechEvent);
+        JobDetail jobDetail = newJob(MotechScheduledJob.class)
+                .withIdentity(jobKey(jobId.value(), JOB_GROUP_NAME))
+                .build();
+
+        putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
+        jobDetail.getJobDataMap().put(UI_DEFINED, repeatingPeriodSchedulableJob.isUiDefined());
+
+        ScheduleBuilder scheduleBuilder = PeriodIntervalScheduleBuilder.periodIntervalSchedule()
+                .withRepeatPeriod(repeatPeriod)
+                .withMisfireHandlingInstructionFireAndProceed();
+
+        Trigger trigger = buildJobDetail(repeatingPeriodSchedulableJob, DateUtil.toDate(repeatingPeriodSchedulableJob.getStartTime()),
+                DateUtil.toDate(repeatingPeriodSchedulableJob.getEndTime()), jobId, jobDetail, scheduleBuilder);
+        scheduleJob(jobDetail, trigger);
+    }
+
+    @Override
+    public void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob) {
+        logObjectIfNotNull(schedulableJob);
+
+        assertArgumentNotNull("RunOnceSchedulableJob", schedulableJob);
+        MotechEvent motechEvent = schedulableJob.getMotechEvent();
+
+        DateTime jobStartDate = schedulableJob.getStartDate();
+        assertArgumentNotNull("Job start date", jobStartDate);
+        DateTime currentDate = DateUtil.now();
+        if (jobStartDate.isBefore(currentDate)) {
+            String errorMessage = "Invalid RunOnceSchedulableJob. The job start date can not be in the past. \n" +
+                    " Job start date: " + jobStartDate.toString() +
+                    " Attempted to schedule at:" + currentDate.toString();
+            throw new IllegalArgumentException(errorMessage);
         }
-        if (misfirePolicyAsInt.equals(CronTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW)) {
-            return cronSchedule.withMisfireHandlingInstructionFireAndProceed();
-        }
-        if (misfirePolicyAsInt.equals(CronTrigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY)) {
-            return cronSchedule.withMisfireHandlingInstructionIgnoreMisfires();
-        }
-        return cronSchedule;
+
+        JobId jobId = new RunOnceJobId(motechEvent);
+        JobDetail jobDetail = newJob(MotechScheduledJob.class)
+                .withIdentity(jobId.value(), JOB_GROUP_NAME)
+                .build();
+
+        putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
+        jobDetail.getJobDataMap().put(UI_DEFINED, schedulableJob.isUiDefined());
+
+        SimpleScheduleBuilder simpleSchedule = simpleSchedule()
+                .withRepeatCount(0)
+                .withIntervalInSeconds(0)
+                .withMisfireHandlingInstructionFireNow();
+
+        Trigger trigger = newTrigger()
+                .withIdentity(triggerKey(jobId.value(), JOB_GROUP_NAME))
+                .forJob(jobDetail)
+                .withSchedule(simpleSchedule)
+                .startAt(DateUtil.toDate(jobStartDate))
+                .build();
+
+        scheduleJob(jobDetail, trigger);
+    }
+
+    @Override
+    public void scheduleDayOfWeekJob(DayOfWeekSchedulableJob dayOfWeekSchedulableJob) {
+        logObjectIfNotNull(dayOfWeekSchedulableJob);
+
+        MotechEvent motechEvent = dayOfWeekSchedulableJob.getMotechEvent();
+        LocalDate start = dayOfWeekSchedulableJob.getStartDate();
+        LocalDate end = dayOfWeekSchedulableJob.getEndDate();
+        Time time = dayOfWeekSchedulableJob.getTime();
+
+        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.atHourAndMinuteOnGivenDaysOfWeek(time.getHour(),
+                time.getMinute(), dayOfWeekSchedulableJob.getCronDays()
+                        .toArray(new Integer[dayOfWeekSchedulableJob.getCronDays().size()]));
+
+        CronTriggerImpl cronTrigger = (CronTriggerImpl) cronScheduleBuilder.build();
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, cronTrigger.getCronExpression(),
+                start.toDateMidnight().toDateTime(), end != null ? end.toDateMidnight().toDateTime() : null, dayOfWeekSchedulableJob.isIgnorePastFiresAtStart());
+
+        scheduleJob(cronSchedulableJob);
     }
 
     @Override
@@ -212,6 +315,51 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             LOGGER.error("Error while unscheduling job with id {}", jobId.value(), e);
         }
         scheduleJob(cronSchedulableJob);
+    }
+
+    @Override
+    public void safeScheduleRepeatingPeriodJob(RepeatingPeriodSchedulableJob repeatingPeriodSchedulableJob) {
+        logObjectIfNotNull(repeatingPeriodSchedulableJob);
+
+        assertArgumentNotNull(repeatingPeriodSchedulableJob);
+
+        JobId jobId = new RepeatingJobId(repeatingPeriodSchedulableJob.getMotechEvent());
+
+        try {
+            unscheduleJob(jobId);
+        } catch (MotechSchedulerException e) {
+            LOGGER.error("Unable to unschedule repeating job with id {}", jobId.value(), e);
+        }
+        scheduleRepeatingPeriodJob(repeatingPeriodSchedulableJob);
+    }
+
+    @Override
+    public void safeScheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob) {
+        logObjectIfNotNull(repeatingSchedulableJob);
+        assertArgumentNotNull(repeatingSchedulableJob);
+
+        JobId jobId = new RepeatingJobId(repeatingSchedulableJob.getMotechEvent());
+
+        try {
+            unscheduleJob(jobId);
+        } catch (MotechSchedulerException e) {
+            LOGGER.error("Unable to unschedule repeating job with ID {}", jobId.value(), e);
+        }
+        scheduleRepeatingJob(repeatingSchedulableJob);
+    }
+
+    @Override
+    public void safeScheduleRunOnceJob(RunOnceSchedulableJob schedulableJob) {
+        logObjectIfNotNull(schedulableJob);
+        assertArgumentNotNull("RunOnceSchedulableJob", schedulableJob);
+
+        JobId jobId = new RunOnceJobId(schedulableJob.getMotechEvent());
+        try {
+            unscheduleJob(jobId);
+        } catch (MotechSchedulerException e) {
+            LOGGER.error("Unable to unschedule run once job with ID {}", jobId.value(), e);
+        }
+        scheduleRunOnceJob(schedulableJob);
     }
 
     @Override
@@ -300,101 +448,338 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     }
 
     @Override
-    public void scheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob) {
-        logObjectIfNotNull(repeatingSchedulableJob);
-
-        MotechEvent motechEvent = assertArgumentNotNull(repeatingSchedulableJob);
-
-        DateTime jobStartTime = repeatingSchedulableJob.getStartTime();
-        DateTime jobEndTime = repeatingSchedulableJob.getEndTime();
-        assertArgumentNotNull("Job start date", jobStartTime);
-
-        Integer repeatIntervalInSeconds = repeatingSchedulableJob.getRepeatIntervalInSeconds();
-        if (repeatIntervalInSeconds == 0) {
-            throw new IllegalArgumentException("Invalid RepeatingSchedulableJob. The job repeat intreval in seconds can not be 0 ");
+    public void unscheduleJob(String subject, String externalId) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(format("unscheduling cron job: " + LOG_SUBJECT_EXTERNALID, subject, externalId));
         }
-
-        Integer jobRepeatCount = repeatingSchedulableJob.getRepeatCount();
-        if (null == jobRepeatCount) {
-            jobRepeatCount = MAX_REPEAT_COUNT;
-        }
-
-        JobId jobId = new RepeatingJobId(motechEvent);
-        JobDetail jobDetail = newJob(MotechScheduledJob.class)
-                .withIdentity(jobKey(jobId.value(), JOB_GROUP_NAME))
-                .build();
-
-        putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
-        jobDetail.getJobDataMap().put(UI_DEFINED, repeatingSchedulableJob.isUiDefined());
-
-        ScheduleBuilder scheduleBuilder;
-        if (!repeatingSchedulableJob.isUseOriginalFireTimeAfterMisfire()) {
-            SimpleScheduleBuilder simpleSchedule = simpleSchedule()
-                    .withIntervalInSeconds(repeatIntervalInSeconds)
-                    .withRepeatCount(jobRepeatCount);
-
-            simpleSchedule = setMisfirePolicyForSimpleTrigger(simpleSchedule, schedulerSettings.getProperty("scheduler.repeating.trigger.misfire.policy"));
-
-            scheduleBuilder = simpleSchedule;
-        } else {
-            if (repeatingSchedulableJob.getRepeatCount() != null) {
-                final double half = 0.5;
-                jobEndTime = new DateTime((long) (repeatingSchedulableJob.getStartTime().getMillis() + repeatIntervalInSeconds * MILLISECOND * (repeatingSchedulableJob.getRepeatCount() + half)));
-            }
-            scheduleBuilder = CalendarIntervalScheduleBuilder.calendarIntervalSchedule()
-                    .withIntervalInSeconds(repeatIntervalInSeconds)
-                    .withMisfireHandlingInstructionFireAndProceed();
-        }
-
-        Trigger trigger = buildJobDetail(repeatingSchedulableJob, DateUtil.toDate(jobStartTime),
-                DateUtil.toDate(jobEndTime), jobId, jobDetail, scheduleBuilder);
-        scheduleJob(jobDetail, trigger);
+        unscheduleJob(new CronJobId(subject, externalId));
     }
 
     @Override
-    public void scheduleRepeatingPeriodJob(RepeatingPeriodSchedulableJob repeatingPeriodSchedulableJob) {
-        logObjectIfNotNull(repeatingPeriodSchedulableJob);
-
-        MotechEvent motechEvent = assertArgumentNotNull(repeatingPeriodSchedulableJob);
-
-        assertArgumentNotNull("Job start date", repeatingPeriodSchedulableJob.getStartTime());
-
-        Period repeatPeriod = repeatingPeriodSchedulableJob.getRepeatPeriod();
-        if (repeatPeriod == null) {
-            throw new IllegalArgumentException("Invalid RepeatingPeriodSchedulableJob. The job repeat period can not be null");
-        }
-
-        JobId jobId = new RepeatingPeriodJobId(motechEvent);
-        JobDetail jobDetail = newJob(MotechScheduledJob.class)
-                .withIdentity(jobKey(jobId.value(), JOB_GROUP_NAME))
-                .build();
-
-        putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
-        jobDetail.getJobDataMap().put(UI_DEFINED, repeatingPeriodSchedulableJob.isUiDefined());
-
-        ScheduleBuilder scheduleBuilder = PeriodIntervalScheduleBuilder.periodIntervalSchedule()
-            .withRepeatPeriod(repeatPeriod)
-            .withMisfireHandlingInstructionFireAndProceed();
-
-        Trigger trigger = buildJobDetail(repeatingPeriodSchedulableJob, DateUtil.toDate(repeatingPeriodSchedulableJob.getStartTime()),
-                DateUtil.toDate(repeatingPeriodSchedulableJob.getEndTime()), jobId, jobDetail, scheduleBuilder);
-        scheduleJob(jobDetail, trigger);
+    public void unscheduleJob(JobId job) {
+        logObjectIfNotNull(job);
+        unscheduleJob(job.value());
     }
 
     @Override
-    public void safeScheduleRepeatingPeriodJob(RepeatingPeriodSchedulableJob repeatingPeriodSchedulableJob) {
-        logObjectIfNotNull(repeatingPeriodSchedulableJob);
+    public void unscheduleRepeatingJob(String subject, String externalId) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(format("unscheduling repeating job: " + LOG_SUBJECT_EXTERNALID, subject, externalId));
+        }
 
-        assertArgumentNotNull(repeatingPeriodSchedulableJob);
+        JobId jobId = new RepeatingJobId(subject, externalId);
+        logObjectIfNotNull(jobId);
 
-        JobId jobId = new RepeatingJobId(repeatingPeriodSchedulableJob.getMotechEvent());
+        unscheduleJob(jobId.value());
+    }
 
+    @Override
+    public void unscheduleRunOnceJob(String subject, String externalId) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(format("unscheduling run once job: " + LOG_SUBJECT_EXTERNALID, subject, externalId));
+        }
+
+        JobId jobId = new RunOnceJobId(subject, externalId);
+        logObjectIfNotNull(jobId);
+
+        unscheduleJob(jobId.value());
+    }
+
+    @Override
+    public void unscheduleAllJobs(String jobIdPrefix) {
         try {
-            unscheduleJob(jobId);
-        } catch (MotechSchedulerException e) {
-            LOGGER.error("Unable to unschedule repeating job with id {}", jobId.value(), e);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Unscheduling jobs with prefix: ", jobIdPrefix);
+            }
+            List<TriggerKey> triggerKeys = new ArrayList<>(scheduler.getTriggerKeys(GroupMatcher.triggerGroupContains(JOB_GROUP_NAME)));
+            List<String> triggerNames = extractTriggerNames(triggerKeys);
+            for (String triggerName : triggerNames) {
+                if (StringUtils.isNotEmpty(jobIdPrefix) && triggerName.contains(jobIdPrefix)) {
+                    unscheduleJob(triggerName);
+                }
+            }
+        } catch (SchedulerException e) {
+            throw new MotechSchedulerException(String.format("Can not unschedule jobs given jobIdPrefix: %s %s",
+                    jobIdPrefix, e.getMessage()), e);
         }
-        scheduleRepeatingPeriodJob(repeatingPeriodSchedulableJob);
+    }
+
+    @Override
+    public void safeUnscheduleRepeatingJob(String subject, String externalId) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(format("safe unscheduling repeating job: " + LOG_SUBJECT_EXTERNALID, subject, externalId));
+        }
+        try {
+            unscheduleRepeatingJob(subject, externalId);
+        } catch (RuntimeException e) {
+            LOGGER.error("Unable to unschedule the repeating job with subject {} and externalId {}",
+                    subject, externalId, e);
+        }
+    }
+
+    @Override
+    public void safeUnscheduleRunOnceJob(String subject, String externalId) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(format("safe unscheduling run once job: " + LOG_SUBJECT_EXTERNALID, subject, externalId));
+        }
+        try {
+            unscheduleRunOnceJob(subject, externalId);
+        } catch (RuntimeException e) {
+            LOGGER.error("Unable to unschedule the run once job with subject {} and externalId {}",
+                    subject, externalId, e);
+        }
+    }
+
+    @Override
+    public void safeUnscheduleJob(String subject, String externalId) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(format("safe unscheduling cron job: " + LOG_SUBJECT_EXTERNALID, subject, externalId));
+        }
+        try {
+            unscheduleJob(subject, externalId);
+        } catch (RuntimeException e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
+
+    @Override
+    public void safeUnscheduleAllJobs(String jobIdPrefix) {
+        try {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(format("Safe unscheduling the Jobs given jobIdPrefix: %s", jobIdPrefix));
+            }
+            List<TriggerKey> triggerKeys = new ArrayList<>(scheduler.getTriggerKeys(GroupMatcher.triggerGroupContains(JOB_GROUP_NAME)));
+            List<String> triggerNames = extractTriggerNames(triggerKeys);
+            for (String triggerName : triggerNames) {
+                if (StringUtils.isNotEmpty(jobIdPrefix) && triggerName.contains(jobIdPrefix)) {
+                    safeUnscheduleJob(triggerName);
+                }
+            }
+        } catch (SchedulerException e) {
+            LOGGER.error("Unable to unschedule all jobs with jobIdPrefix {}", jobIdPrefix, e);
+        }
+    }
+
+    @Override
+    public JobBasicInfo pauseJob(JobBasicInfo info) {
+        try {
+            JobKey key = new JobKey(info.getName(), info.getGroup());
+            validateJob(key);
+            scheduler.pauseJob(key);
+            info.setStatus(JobBasicInfo.STATUS_PAUSED);
+            return info;
+        } catch (MotechSchedulerException | SchedulerException e) {
+            throw new MotechSchedulerException(String.format("Can not pause the job:\n %s\n%s\n%s",
+                    info.getName(), info.getGroup(), e.getMessage()), e);
+        }
+    }
+
+    @Override
+    public JobBasicInfo resumeJob(JobBasicInfo info) {
+        try {
+            JobKey key = new JobKey(info.getName(), info.getGroup());
+            validateJob(key);
+            scheduler.resumeJob(key);
+            info.setStatus(JobBasicInfo.STATUS_OK);
+            return info;
+        } catch (MotechSchedulerException | SchedulerException e) {
+            throw new MotechSchedulerException(String.format("Can not resume the job:\n %s\n%s\n%s",
+                    info.getName(), info.getGroup(), e.getMessage()), e);
+        }
+    }
+
+    @Override
+    public void deleteJob(JobBasicInfo info) {
+        try {
+            JobKey key = new JobKey(info.getName(), info.getGroup());
+            validateJob(key);
+            scheduler.deleteJob(key);
+        } catch (MotechSchedulerException | SchedulerException e) {
+            throw new MotechSchedulerException(String.format("Can not delete the job:\n %s\n%s\n%s",
+                    info.getName(), info.getGroup(), e.getMessage()), e);
+        }
+    }
+
+    @Override
+    public DateTime getPreviousFireDate(JobId jobId) {
+        Date previousFireTime = null;
+        try {
+            Trigger trigger = scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
+            if (trigger != null) {
+                previousFireTime = trigger.getPreviousFireTime();
+            }
+        } catch (SchedulerException e) {
+            throw new MotechSchedulerException(String.format("Can not find next fire date for the job: %s %s", jobId,
+                    e.getMessage()), e);
+        }
+        return (previousFireTime == null) ? null : new DateTime(previousFireTime);
+    }
+
+    @Override
+    public DateTime getNextFireDate(JobId jobId) {
+        Date nextFireTime = null;
+        try {
+            Trigger trigger = scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
+            if (trigger != null) {
+                nextFireTime = trigger.getNextFireTime();
+            }
+        } catch (SchedulerException e) {
+            throw new MotechSchedulerException(String.format("Can not find next fire date for the job: %s %s",
+                    jobId, e.getMessage()), e);
+        }
+        return (nextFireTime == null) ? null : new DateTime(nextFireTime);
+    }
+
+    /*
+     * Assumes that the externalJobId is non-repeating in nature. Thus the fetch is for jobId.value() and not
+     * jobId.repeatingId()
+     * Uses quartz API to fetch the exact triggers. Fast
+     */
+    @Override
+    public List<DateTime> getScheduledJobTimings(String subject, String externalJobId, DateTime startDate, DateTime endDate) {
+        JobId jobId = new CronJobId(subject, externalJobId);
+        Trigger trigger;
+        try {
+            trigger = scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
+            return DateUtil.datesToDateTimes(TriggerUtils.computeFireTimesBetween(
+                    (OperableTrigger) trigger, new BaseCalendar(), DateUtil.toDate(startDate), DateUtil.toDate(endDate)));
+
+        } catch (SchedulerException e) {
+            throw new MotechSchedulerException(String.format(
+                    "Can not get scheduled job timings given subject and externalJobId for dates : %s %s %s %s %s",
+                    subject, externalJobId, startDate.toString(), endDate.toString(), e.getMessage()), e);
+        }
+    }
+
+    /*
+     * Loads all triggers and then loops over them to find the applicable trigger using string comparison. This
+     * will work regardless of the jobId being cron or repeating.
+     */
+    @Override
+    public List<DateTime> getScheduledJobTimingsWithPrefix(
+            String subject, String externalJobIdPrefix, DateTime startDate, DateTime endDate) {
+
+        JobId jobId = new CronJobId(subject, externalJobIdPrefix);
+        List<Date> messageTimings = new ArrayList<>();
+        try {
+            List<TriggerKey> triggerKeys = new ArrayList<TriggerKey>(
+                    scheduler.getTriggerKeys(GroupMatcher.triggerGroupContains(JOB_GROUP_NAME)));
+            for (TriggerKey triggerKey : triggerKeys) {
+                if (StringUtils.isNotEmpty(externalJobIdPrefix) && triggerKey.getName().contains(jobId.value())) {
+                    Trigger trigger = scheduler.getTrigger(triggerKey);
+                    messageTimings.addAll(TriggerUtils.computeFireTimesBetween(
+                            (OperableTrigger) trigger, new BaseCalendar(), DateUtil.toDate(startDate), DateUtil.toDate(endDate)));
+                }
+            }
+
+        } catch (SchedulerException e) {
+            throw new MotechSchedulerException(String.format(
+                    "Can not get scheduled job timings given subject and externalJobIdPrefix for dates : %s %s %s %s %s",
+                    subject, externalJobIdPrefix, startDate.toString(), endDate.toString(), e.getMessage()), e);
+        }
+
+        return DateUtil.datesToDateTimes(messageTimings);
+    }
+
+    /**
+     * Asserts that given object is not null.
+     *
+     * @param objectName  the objects name
+     * @param object  the object to be checked for being null
+     * @throws IllegalArgumentException if object is null
+     */
+    protected void assertArgumentNotNull(String objectName, Object object) {
+        if (object == null) {
+            throw new IllegalArgumentException(String.format("%s cannot be null", objectName));
+        }
+    }
+
+    /**
+     * Logs object if it is not null.
+     *
+     * @param obj  the object to be checked for being null
+     */
+    protected void logObjectIfNotNull(Object obj) {
+        if (LOGGER.isDebugEnabled() && obj != null) {
+            LOGGER.debug(obj.toString());
+        }
+    }
+
+    private void scheduleJob(JobDetail jobDetail, Trigger trigger) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Scheduling job:" + jobDetail);
+        }
+        try {
+            scheduler.scheduleJob(jobDetail, trigger);
+        } catch (SchedulerException e) {
+            throw new MotechSchedulerException(String.format("Can not schedule the job:\n %s\n%s\n%s",
+                    jobDetail.toString(), trigger.toString(), e.getMessage()), e);
+        }
+    }
+
+    private void unscheduleJob(String jobId) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(jobId);
+        }
+        try {
+            assertArgumentNotNull("ScheduledJobID", jobId);
+            scheduler.unscheduleJob(triggerKey(jobId, JOB_GROUP_NAME));
+        } catch (SchedulerException e) {
+            throw new MotechSchedulerException(String.format("Can not unschedule the job: %s %s",
+                    jobId, e.getMessage()), e);
+        }
+    }
+
+    private void safeUnscheduleJob(String jobId) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(jobId);
+        }
+        try {
+            assertArgumentNotNull("ScheduledJobID", jobId);
+            scheduler.unscheduleJob(triggerKey(jobId, JOB_GROUP_NAME));
+        } catch (SchedulerException e) {
+            LOGGER.error("Unable to unschedule job with ID {}", jobId, e);
+        }
+    }
+
+    private void validateJob(JobKey key) throws SchedulerException {
+        JobDetail detail = scheduler.getJobDetail(key);
+
+        if (detail == null) {
+            throw new MotechSchedulerException(String.format("Job doesn't exist:\n %s\n %s", key.getName(),
+                    key.getGroup()));
+        }
+
+        JobDataMap map = detail.getJobDataMap();
+
+        if (map != null && !map.getBooleanValue(UI_DEFINED)) {
+            throw new MotechSchedulerException(String.format("Job is not ui defined:\n %s\n %s", key.getName(),
+                    key.getGroup()));
+        }
+    }
+
+    private MotechEvent assertCronJob(CronSchedulableJob cronSchedulableJob) {
+        assertArgumentNotNull("SchedulableJob", cronSchedulableJob);
+        MotechEvent motechEvent = cronSchedulableJob.getMotechEvent();
+        assertArgumentNotNull("MotechEvent of the SchedulableJob", motechEvent);
+        return motechEvent;
+    }
+
+    private CronScheduleBuilder setMisfirePolicyForCronTrigger(CronScheduleBuilder cronSchedule, String motechMisfireProperty) {
+        Integer misfirePolicyAsInt = cronTriggerMisfirePolicies.get(motechMisfireProperty);
+        if (misfirePolicyAsInt == null || misfirePolicyAsInt.equals(CronTrigger.MISFIRE_INSTRUCTION_SMART_POLICY)) {
+            return cronSchedule;
+        }
+        if (misfirePolicyAsInt.equals(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING)) {
+            return cronSchedule.withMisfireHandlingInstructionDoNothing();
+        }
+        if (misfirePolicyAsInt.equals(CronTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW)) {
+            return cronSchedule.withMisfireHandlingInstructionFireAndProceed();
+        }
+        if (misfirePolicyAsInt.equals(CronTrigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY)) {
+            return cronSchedule.withMisfireHandlingInstructionIgnoreMisfires();
+        }
+        return cronSchedule;
     }
 
     private Trigger buildJobDetail(SchedulableJob schedulableJob, Date jobStartTime, Date jobEndTime,
@@ -467,387 +852,11 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         return simpleSchedule;
     }
 
-    @Override
-    public void safeScheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob) {
-        logObjectIfNotNull(repeatingSchedulableJob);
-        assertArgumentNotNull(repeatingSchedulableJob);
-
-        JobId jobId = new RepeatingJobId(repeatingSchedulableJob.getMotechEvent());
-
-        try {
-            unscheduleJob(jobId);
-        } catch (MotechSchedulerException e) {
-            LOGGER.error("Unable to unschedule repeating job with ID {}", jobId.value(), e);
-        }
-        scheduleRepeatingJob(repeatingSchedulableJob);
-    }
-
-    @Override
-    public void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob) {
-        logObjectIfNotNull(schedulableJob);
-
-        assertArgumentNotNull("RunOnceSchedulableJob", schedulableJob);
-        MotechEvent motechEvent = schedulableJob.getMotechEvent();
-
-        DateTime jobStartDate = schedulableJob.getStartDate();
-        assertArgumentNotNull("Job start date", jobStartDate);
-        DateTime currentDate = DateUtil.now();
-        if (jobStartDate.isBefore(currentDate)) {
-            String errorMessage = "Invalid RunOnceSchedulableJob. The job start date can not be in the past. \n" +
-                    " Job start date: " + jobStartDate.toString() +
-                    " Attempted to schedule at:" + currentDate.toString();
-            throw new IllegalArgumentException(errorMessage);
-        }
-
-        JobId jobId = new RunOnceJobId(motechEvent);
-        JobDetail jobDetail = newJob(MotechScheduledJob.class)
-                .withIdentity(jobId.value(), JOB_GROUP_NAME)
-                .build();
-
-        putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
-        jobDetail.getJobDataMap().put(UI_DEFINED, schedulableJob.isUiDefined());
-
-        SimpleScheduleBuilder simpleSchedule = simpleSchedule()
-                .withRepeatCount(0)
-                .withIntervalInSeconds(0)
-                .withMisfireHandlingInstructionFireNow();
-
-        Trigger trigger = newTrigger()
-                .withIdentity(triggerKey(jobId.value(), JOB_GROUP_NAME))
-                .forJob(jobDetail)
-                .withSchedule(simpleSchedule)
-                .startAt(DateUtil.toDate(jobStartDate))
-                .build();
-
-        scheduleJob(jobDetail, trigger);
-    }
-
     private MotechEvent assertArgumentNotNull(SchedulableJob schedulableJob) {
         assertArgumentNotNull("SchedulableJob", schedulableJob);
         MotechEvent motechEvent = schedulableJob.getMotechEvent();
         assertArgumentNotNull("Invalid SchedulableJob. MotechEvent of the SchedulableJob", motechEvent);
         return motechEvent;
-    }
-
-
-    public void safeScheduleRunOnceJob(RunOnceSchedulableJob schedulableJob) {
-        logObjectIfNotNull(schedulableJob);
-        assertArgumentNotNull("RunOnceSchedulableJob", schedulableJob);
-
-        JobId jobId = new RunOnceJobId(schedulableJob.getMotechEvent());
-        try {
-            unscheduleJob(jobId);
-        } catch (MotechSchedulerException e) {
-            LOGGER.error("Unable to unschedule run once job with ID {}", jobId.value(), e);
-        }
-        scheduleRunOnceJob(schedulableJob);
-    }
-
-    @Override
-    public void scheduleDayOfWeekJob(DayOfWeekSchedulableJob dayOfWeekSchedulableJob) {
-        logObjectIfNotNull(dayOfWeekSchedulableJob);
-
-        MotechEvent motechEvent = dayOfWeekSchedulableJob.getMotechEvent();
-        LocalDate start = dayOfWeekSchedulableJob.getStartDate();
-        LocalDate end = dayOfWeekSchedulableJob.getEndDate();
-        Time time = dayOfWeekSchedulableJob.getTime();
-
-        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.atHourAndMinuteOnGivenDaysOfWeek(time.getHour(),
-                time.getMinute(), dayOfWeekSchedulableJob.getCronDays()
-                        .toArray(new Integer[dayOfWeekSchedulableJob.getCronDays().size()]));
-
-        CronTriggerImpl cronTrigger = (CronTriggerImpl) cronScheduleBuilder.build();
-        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, cronTrigger.getCronExpression(),
-                start.toDateMidnight().toDateTime(), end != null ? end.toDateMidnight().toDateTime() : null, dayOfWeekSchedulableJob.isIgnorePastFiresAtStart());
-
-        scheduleJob(cronSchedulableJob);
-    }
-
-    @Override
-    public void unscheduleRepeatingJob(String subject, String externalId) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(format("unscheduling repeating job: " + LOG_SUBJECT_EXTERNALID, subject, externalId));
-        }
-
-        JobId jobId = new RepeatingJobId(subject, externalId);
-        logObjectIfNotNull(jobId);
-
-        unscheduleJob(jobId.value());
-    }
-
-    @Override
-    public void safeUnscheduleRepeatingJob(String subject, String externalId) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(format("safe unscheduling repeating job: " + LOG_SUBJECT_EXTERNALID, subject, externalId));
-        }
-        try {
-            unscheduleRepeatingJob(subject, externalId);
-        } catch (RuntimeException e) {
-            LOGGER.error("Unable to unschedule the repeating job with subject {} and externalId {}",
-                    subject, externalId, e);
-        }
-    }
-
-    @Override
-    public void unscheduleRunOnceJob(String subject, String externalId) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(format("unscheduling run once job: " + LOG_SUBJECT_EXTERNALID, subject, externalId));
-        }
-
-        JobId jobId = new RunOnceJobId(subject, externalId);
-        logObjectIfNotNull(jobId);
-
-        unscheduleJob(jobId.value());
-    }
-
-    @Override
-    public void safeUnscheduleRunOnceJob(String subject, String externalId) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(format("safe unscheduling run once job: " + LOG_SUBJECT_EXTERNALID, subject, externalId));
-        }
-        try {
-            unscheduleRunOnceJob(subject, externalId);
-        } catch (RuntimeException e) {
-            LOGGER.error("Unable to unschedule the run once job with subject {} and externalId {}",
-                    subject, externalId, e);
-        }
-    }
-
-    @Override
-    public void unscheduleJob(String subject, String externalId) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(format("unscheduling cron job: " + LOG_SUBJECT_EXTERNALID, subject, externalId));
-        }
-        unscheduleJob(new CronJobId(subject, externalId));
-    }
-
-    @Override
-    public void unscheduleJob(JobId job) {
-        logObjectIfNotNull(job);
-        unscheduleJob(job.value());
-    }
-
-    @Override
-    public void safeUnscheduleJob(String subject, String externalId) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(format("safe unscheduling cron job: " + LOG_SUBJECT_EXTERNALID, subject, externalId));
-        }
-        try {
-            unscheduleJob(subject, externalId);
-        } catch (RuntimeException e) {
-            LOGGER.error(e.getMessage());
-        }
-    }
-
-    @Override
-    public DateTime getPreviousFireDate(JobId jobId) {
-        Date previousFireTime = null;
-        try {
-            Trigger trigger = scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
-            if (trigger != null) {
-                previousFireTime = trigger.getPreviousFireTime();
-            }
-        } catch (SchedulerException e) {
-            throw new MotechSchedulerException(String.format("Can not find next fire date for the job: %s %s", jobId,
-                    e.getMessage()), e);
-        }
-        return (previousFireTime == null) ? null : new DateTime(previousFireTime);
-    }
-
-    @Override
-    public DateTime getNextFireDate(JobId jobId) {
-        Date nextFireTime = null;
-        try {
-            Trigger trigger = scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
-            if (trigger != null) {
-                nextFireTime = trigger.getNextFireTime();
-            }
-        } catch (SchedulerException e) {
-            throw new MotechSchedulerException(String.format("Can not find next fire date for the job: %s %s",
-                    jobId, e.getMessage()), e);
-        }
-        return (nextFireTime == null) ? null : new DateTime(nextFireTime);
-    }
-
-    private void unscheduleJob(String jobId) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(jobId);
-        }
-        try {
-            assertArgumentNotNull("ScheduledJobID", jobId);
-            scheduler.unscheduleJob(triggerKey(jobId, JOB_GROUP_NAME));
-        } catch (SchedulerException e) {
-            throw new MotechSchedulerException(String.format("Can not unschedule the job: %s %s",
-                    jobId, e.getMessage()), e);
-        }
-    }
-
-    private void safeUnscheduleJob(String jobId) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(jobId);
-        }
-        try {
-            assertArgumentNotNull("ScheduledJobID", jobId);
-            scheduler.unscheduleJob(triggerKey(jobId, JOB_GROUP_NAME));
-        } catch (SchedulerException e) {
-            LOGGER.error("Unable to unschedule job with ID {}", jobId, e);
-        }
-    }
-
-    @Override
-    public void safeUnscheduleAllJobs(String jobIdPrefix) {
-        try {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(format("Safe unscheduling the Jobs given jobIdPrefix: %s", jobIdPrefix));
-            }
-            List<TriggerKey> triggerKeys = new ArrayList<>(scheduler.getTriggerKeys(GroupMatcher.triggerGroupContains(JOB_GROUP_NAME)));
-            List<String> triggerNames = extractTriggerNames(triggerKeys);
-            for (String triggerName : triggerNames) {
-                if (StringUtils.isNotEmpty(jobIdPrefix) && triggerName.contains(jobIdPrefix)) {
-                    safeUnscheduleJob(triggerName);
-                }
-            }
-        } catch (SchedulerException e) {
-            LOGGER.error("Unable to unschedule all jobs with jobIdPrefix {}", jobIdPrefix, e);
-        }
-    }
-
-    @Override
-    public void unscheduleAllJobs(String jobIdPrefix) {
-        try {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Unscheduling jobs with prefix: ", jobIdPrefix);
-            }
-            List<TriggerKey> triggerKeys = new ArrayList<>(scheduler.getTriggerKeys(GroupMatcher.triggerGroupContains(JOB_GROUP_NAME)));
-            List<String> triggerNames = extractTriggerNames(triggerKeys);
-            for (String triggerName : triggerNames) {
-                if (StringUtils.isNotEmpty(jobIdPrefix) && triggerName.contains(jobIdPrefix)) {
-                    unscheduleJob(triggerName);
-                }
-            }
-        } catch (SchedulerException e) {
-            throw new MotechSchedulerException(String.format("Can not unschedule jobs given jobIdPrefix: %s %s",
-                    jobIdPrefix, e.getMessage()), e);
-        }
-    }
-
-    /*
-     * Assumes that the externalJobId is non-repeating in nature. Thus the fetch is for jobId.value() and not
-     * jobId.repeatingId()
-     * Uses quartz API to fetch the exact triggers. Fast
-     */
-    @Override
-    public List<DateTime> getScheduledJobTimings(String subject, String externalJobId, DateTime startDate, DateTime endDate) {
-        JobId jobId = new CronJobId(subject, externalJobId);
-        Trigger trigger;
-        try {
-            trigger = scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
-            return DateUtil.datesToDateTimes(TriggerUtils.computeFireTimesBetween(
-                    (OperableTrigger) trigger, new BaseCalendar(), DateUtil.toDate(startDate), DateUtil.toDate(endDate)));
-
-        } catch (SchedulerException e) {
-            throw new MotechSchedulerException(String.format(
-                    "Can not get scheduled job timings given subject and externalJobId for dates : %s %s %s %s %s",
-                    subject, externalJobId, startDate.toString(), endDate.toString(), e.getMessage()), e);
-        }
-    }
-
-    /*
-     * Loads all triggers and then loops over them to find the applicable trigger using string comparison. This
-     * will work regardless of the jobId being cron or repeating.
-     */
-    @Override
-    public List<DateTime> getScheduledJobTimingsWithPrefix(
-            String subject, String externalJobIdPrefix, DateTime startDate, DateTime endDate) {
-
-        JobId jobId = new CronJobId(subject, externalJobIdPrefix);
-        List<Date> messageTimings = new ArrayList<>();
-        try {
-            List<TriggerKey> triggerKeys = new ArrayList<TriggerKey>(
-                    scheduler.getTriggerKeys(GroupMatcher.triggerGroupContains(JOB_GROUP_NAME)));
-            for (TriggerKey triggerKey : triggerKeys) {
-                if (StringUtils.isNotEmpty(externalJobIdPrefix) && triggerKey.getName().contains(jobId.value())) {
-                    Trigger trigger = scheduler.getTrigger(triggerKey);
-                    messageTimings.addAll(TriggerUtils.computeFireTimesBetween(
-                            (OperableTrigger) trigger, new BaseCalendar(), DateUtil.toDate(startDate), DateUtil.toDate(endDate)));
-                }
-            }
-
-        } catch (SchedulerException e) {
-            throw new MotechSchedulerException(String.format(
-                    "Can not get scheduled job timings given subject and externalJobIdPrefix for dates : %s %s %s %s %s",
-                    subject, externalJobIdPrefix, startDate.toString(), endDate.toString(), e.getMessage()), e);
-        }
-
-        return DateUtil.datesToDateTimes(messageTimings);
-    }
-
-    @Override
-    public JobBasicInfo pauseJob(JobBasicInfo info) {
-        try {
-            JobKey key = new JobKey(info.getName(), info.getGroup());
-            validateJob(key);
-            scheduler.pauseJob(key);
-            info.setStatus(JobBasicInfo.STATUS_PAUSED);
-            return info;
-        } catch (MotechSchedulerException | SchedulerException e) {
-            throw new MotechSchedulerException(String.format("Can not pause the job:\n %s\n%s\n%s",
-                    info.getName(), info.getGroup(), e.getMessage()), e);
-        }
-    }
-
-    @Override
-    public JobBasicInfo resumeJob(JobBasicInfo info) {
-        try {
-            JobKey key = new JobKey(info.getName(), info.getGroup());
-            validateJob(key);
-            scheduler.resumeJob(key);
-            info.setStatus(JobBasicInfo.STATUS_OK);
-            return info;
-        } catch (MotechSchedulerException | SchedulerException e) {
-            throw new MotechSchedulerException(String.format("Can not resume the job:\n %s\n%s\n%s",
-                    info.getName(), info.getGroup(), e.getMessage()), e);
-        }
-    }
-
-    @Override
-    public void deleteJob(JobBasicInfo info) {
-        try {
-            JobKey key = new JobKey(info.getName(), info.getGroup());
-            validateJob(key);
-            scheduler.deleteJob(key);
-        } catch (MotechSchedulerException | SchedulerException e) {
-            throw new MotechSchedulerException(String.format("Can not delete the job:\n %s\n%s\n%s",
-                    info.getName(), info.getGroup(), e.getMessage()), e);
-        }
-    }
-
-    private void validateJob(JobKey key) throws SchedulerException {
-        JobDetail detail = scheduler.getJobDetail(key);
-
-        if (detail == null) {
-            throw new MotechSchedulerException(String.format("Job doesn't exist:\n %s\n %s", key.getName(),
-                    key.getGroup()));
-        }
-
-        JobDataMap map = detail.getJobDataMap();
-
-        if (map != null && !map.getBooleanValue(UI_DEFINED)) {
-            throw new MotechSchedulerException(String.format("Job is not ui defined:\n %s\n %s", key.getName(),
-                    key.getGroup()));
-        }
-    }
-
-    private void scheduleJob(JobDetail jobDetail, Trigger trigger) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Scheduling job:" + jobDetail);
-        }
-        try {
-            scheduler.scheduleJob(jobDetail, trigger);
-        } catch (SchedulerException e) {
-            throw new MotechSchedulerException(String.format("Can not schedule the job:\n %s\n%s\n%s",
-                    jobDetail.toString(), trigger.toString(), e.getMessage()), e);
-        }
     }
 
     private void putMotechEventDataToJobDataMap(JobDataMap jobDataMap, MotechEvent motechEvent) {
@@ -863,27 +872,18 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         return names;
     }
 
-    /**
-     * Asserts that given object is not null.
-     *
-     * @param objectName  the objects name
-     * @param object  the object to be checked for being null
-     * @throws IllegalArgumentException if object is null
-     */
-    protected void assertArgumentNotNull(String objectName, Object object) {
-        if (object == null) {
-            throw new IllegalArgumentException(String.format("%s cannot be null", objectName));
-        }
-    }
+    private void constructMisfirePoliciesMaps() {
+        cronTriggerMisfirePolicies = new HashMap<>();
+        cronTriggerMisfirePolicies.put("do_nothing", CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING);
+        cronTriggerMisfirePolicies.put("fire_once_now", CronTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW);
+        cronTriggerMisfirePolicies.put("ignore", CronTrigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY);
 
-    /**
-     * Logs object if it is not null.
-     *
-     * @param obj  the object to be checked for being null
-     */
-    protected void logObjectIfNotNull(Object obj) {
-        if (LOGGER.isDebugEnabled() && obj != null) {
-            LOGGER.debug(obj.toString());
-        }
+        simpleTriggerMisfirePolicies = new HashMap<>();
+        simpleTriggerMisfirePolicies.put("fire_now", SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW);
+        simpleTriggerMisfirePolicies.put("ignore", SimpleTrigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY);
+        simpleTriggerMisfirePolicies.put("reschedule_next_with_existing_count", SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
+        simpleTriggerMisfirePolicies.put("reschedule_next_with_remaining_count", SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT);
+        simpleTriggerMisfirePolicies.put("reschedule_now_with_existing_count", SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT);
+        simpleTriggerMisfirePolicies.put("reschedule_now_with_remaining_count", SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT);
     }
 }
