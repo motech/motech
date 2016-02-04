@@ -31,12 +31,12 @@ import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.CustomParserNotFoundException;
 import org.motechproject.tasks.ex.TaskNameAlreadyExistsException;
 import org.motechproject.tasks.ex.TaskNotFoundException;
-import org.motechproject.tasks.ex.TriggerNotFoundException;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.TasksDataService;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.TaskService;
+import org.motechproject.tasks.service.TriggerEventService;
 import org.motechproject.tasks.service.TriggerHandler;
 import org.motechproject.tasks.validation.TaskValidator;
 import org.osgi.framework.BundleContext;
@@ -71,7 +71,6 @@ import static org.motechproject.tasks.events.constants.EventDataKeys.DATA_PROVID
 import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
 import static org.motechproject.tasks.events.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
 import static org.motechproject.tasks.service.HandlerPredicates.tasksWithRegisteredChannel;
-import static org.motechproject.tasks.validation.TaskValidator.TASK;
 
 /**
  * A {@link TaskService} that manages CRUD operations for a {@link Task}.
@@ -83,6 +82,8 @@ public class TaskServiceImpl implements TaskService {
 
     private TasksDataService tasksDataService;
     private ChannelService channelService;
+    private TriggerEventService triggerEventService;
+    private TaskValidator taskValidator;
     private TaskDataProviderService providerService;
     private EventRelay eventRelay;
     private BundleContext bundleContext;
@@ -106,10 +107,10 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Set<TaskError> save(final Task task) {
         LOGGER.info("Saving task: {} with ID: {}", task.getName(), task.getId());
-        Set<TaskError> errors = TaskValidator.validate(task);
+        Set<TaskError> errors = taskValidator.validate(task);
 
         if (task.isEnabled() && !isEmpty(errors)) {
-            throw new ValidationException(TASK, errors);
+            throw new ValidationException(TaskValidator.TASK, errors);
         }
 
         validateName(task);
@@ -119,7 +120,7 @@ public class TaskServiceImpl implements TaskService {
 
         if (!isEmpty(errors)) {
             if (task.isEnabled()) {
-                throw new ValidationException(TASK, errors);
+                throw new ValidationException(TaskValidator.TASK, errors);
             } else {
                 task.setValidationErrors(errors);
             }
@@ -208,33 +209,6 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TriggerEvent findTrigger(String subject) throws TriggerNotFoundException {
-        List<Channel> channels = channelService.getAllChannels();
-        TriggerEvent trigger = null;
-
-        for (Channel c : channels) {
-            for (TriggerEvent t : c.getTriggerTaskEvents()) {
-                if (t.getSubject().equalsIgnoreCase(subject)) {
-                    trigger = t;
-                    break;
-                }
-            }
-
-            if (trigger != null) {
-                break;
-            }
-        }
-
-        if (trigger == null) {
-            throw new TriggerNotFoundException(format(
-                    "Cant find trigger for subject: %s", subject
-            ));
-        }
-
-        return trigger;
-    }
-
-    @Override
     public TasksEventParser findCustomParser(String name) {
         if (StringUtils.isEmpty(name)) {
             return null;
@@ -291,7 +265,7 @@ public class TaskServiceImpl implements TaskService {
             Set<TaskError> errors;
 
             if (task.getTrigger() != null) {
-                errors = validateTrigger(task, channel);
+                errors = validateTrigger(task);
                 handleValidationErrors(task, errors, TASK_TRIGGER_VALIDATION_ERRORS);
             }
 
@@ -461,30 +435,10 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private Set<TaskError> validateTrigger(Task task) {
+
         LOGGER.debug("Validating trigger in task: {} with ID: {}", task.getName(), task.getId());
-        TaskTriggerInformation trigger = task.getTrigger();
-        Channel channel = channelService.getChannel(trigger.getModuleName());
 
-        return validateTrigger(task, channel);
-    }
-
-    private Set<TaskError> validateTrigger(Task task, Channel channel) {
-        LOGGER.debug("Validating trigger in task: {} with ID: {}", task.getName(), task.getId());
-        Set<TaskError> errors = new HashSet<>();
-
-        TaskTriggerInformation trigger = task.getTrigger();
-
-        if (trigger != null) {
-            if (channel == null) {
-                errors.add(new TaskError("task.validation.error.triggerChannelNotRegistered"));
-                return errors;
-            }
-            if (channel.getModuleName().equalsIgnoreCase(trigger.getModuleName())) {
-                errors.addAll(TaskValidator.validateTrigger(task, channel));
-            }
-        } else {
-            errors.add(new TaskError("task.validation.error.triggerNotSpecified"));
-        }
+        Set<TaskError> errors = triggerEventService.validateTrigger(task.getTrigger());
 
         logResultOfValidation("trigger", task.getName(), errors);
 
@@ -517,9 +471,9 @@ public class TaskServiceImpl implements TaskService {
         TaskTriggerInformation trigger = task.getTrigger();
 
         if (provider != null) {
-            errors.addAll(TaskValidator.validateProvider(provider,
+            errors.addAll(taskValidator.validateProvider(provider,
                     dataSource,
-                    channelService.getChannel(trigger.getModuleName()).getTrigger(trigger),
+                    triggerEventService.getTrigger(trigger),
                     availableDataProviders
             ));
         } else {
@@ -568,12 +522,12 @@ public class TaskServiceImpl implements TaskService {
         }
 
         if (channel.getModuleName().equalsIgnoreCase(action.getModuleName())) {
-            errors.addAll(TaskValidator.validateAction(action, channel));
-            TriggerEvent trigger = channelService.getChannel(task.getTrigger().getModuleName()).getTrigger(task.getTrigger());
+            errors.addAll(taskValidator.validateAction(action, channel));
+            TriggerEvent trigger = triggerEventService.getTrigger(task.getTrigger());
             Map<Long, TaskDataProvider> providers = getProviders(task);
             ActionEvent actionEvent = channel.getAction(action);
             if (actionEvent != null) {
-                errors.addAll(TaskValidator.validateActionFields(action, actionEvent, trigger, providers));
+                errors.addAll(taskValidator.validateActionFields(action, actionEvent, trigger, providers));
             }
         }
 
@@ -760,5 +714,15 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    @Autowired
+    public void setTaskValidator(TaskValidator taskValidator) {
+        this.taskValidator = taskValidator;
+    }
+
+    @Autowired
+    public void setTriggerEventService(TriggerEventService triggerEventService) {
+        this.triggerEventService = triggerEventService;
     }
 }

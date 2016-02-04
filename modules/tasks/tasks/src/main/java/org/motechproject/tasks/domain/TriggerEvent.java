@@ -1,6 +1,7 @@
 package org.motechproject.tasks.domain;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.CrudEvents;
@@ -12,6 +13,7 @@ import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.contract.EventParameterRequest;
 import org.motechproject.tasks.contract.TriggerEventRequest;
 
+import javax.jdo.annotations.Persistent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +30,11 @@ import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 public class TriggerEvent extends TaskEvent {
 
     private static final long serialVersionUID = 4235157487991610105L;
+
+    @Field
+    @JsonIgnore
+    @Persistent(defaultFetchGroup = "false")
+    private Channel channel;
 
     @Field
     @Cascade(delete = true)
@@ -53,9 +60,10 @@ public class TriggerEvent extends TaskEvent {
      * @param triggerListenerSubject  the subject that is wrapped by this trigger, in a simple case it is identical to
      *                                the subject above, so it can be omitted
      */
-    public TriggerEvent(String displayName, String subject, String description, List<EventParameter> eventParameters, String triggerListenerSubject) {
+    public TriggerEvent(String displayName, String subject, String description, List<EventParameter> eventParameters,
+                        String triggerListenerSubject) {
         super(description, displayName, subject);
-        this.eventParameters = eventParameters == null ? new ArrayList<EventParameter>() : eventParameters;
+        this.eventParameters = eventParameters == null ? new ArrayList<>() : eventParameters;
         this.triggerListenerSubject = StringUtils.isEmpty(triggerListenerSubject) ? subject : triggerListenerSubject;
     }
 
@@ -89,6 +97,14 @@ public class TriggerEvent extends TaskEvent {
         }
 
         return found;
+    }
+
+    public Channel getChannel() {
+        return channel;
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
     }
 
     public List<EventParameter> getEventParameters() {
