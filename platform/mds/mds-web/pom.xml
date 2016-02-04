@@ -70,6 +70,10 @@
                         <Context-Path>mds</Context-Path>
                         <Resource-Path>mds/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
+                        <Export-Package>
+                            org.motechproject.mds.web.domain;version=${project.version},
+                            org.motechproject.mds.web.service;version=${project.version}
+                        </Export-Package>
                         <Import-Package>
                             net.sf.cglib.core,
                             net.sf.cglib.proxy,
