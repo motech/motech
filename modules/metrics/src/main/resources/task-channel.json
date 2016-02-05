@@ -1,0 +1,67 @@
+{
+  "displayName": "metrics.task.name",
+  "moduleName": "${project.artifactId}",
+  "moduleVersion": "${parsedVersion.osgiVersion}",
+  "actionTaskEvents": [
+    {
+      "subject" : "metrics_counter_increment",
+      "displayName" : "metrics.task.increment.counter",
+      "actionParameters" : [
+        {
+          "key" : "metric_name",
+          "displayName" : "metrics.task.counter.name"
+        },
+        {
+          "key" : "increment_value",
+          "displayName" : "metrics.task.counter.increment.value",
+          "type" : "LONG"
+        }
+      ]
+    },
+    {
+      "subject" : "metrics_counter_decrement",
+      "displayName" : "metrics.task.decrement.counter",
+      "actionParameters" : [
+        {
+          "key" : "metric_name",
+          "displayName" : "metrics.task.counter.name"
+        },
+        {
+          "key" : "metric_value",
+          "displayName" : "metrics.task.counter.decrement.value",
+          "type" : "LONG"
+        }
+      ]
+    },
+    {
+      "subject" : "metrics_meter_mark",
+      "displayName" : "metrics.task.mark.meter",
+      "actionParameters" : [
+        {
+          "key" : "metric_name",
+          "displayName" : "metrics.task.meter.name"
+        },
+        {
+          "key" : "metric_value",
+          "displayName" : "metrics.task.meter.mark.value",
+          "type" : "LONG"
+        }
+      ]
+    },
+    {
+      "subject" : "metrics_histogram_update",
+      "displayName" : "metrics.task.update.histogram",
+      "actionParameters" : [
+        {
+          "key" : "metric_name",
+          "displayName" : "metrics.task.histogram.name"
+        },
+        {
+          "key" : "metric_name",
+          "displayName" : "metrics.task.histogram.update.value",
+          "type" : "LONG"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+[
+  {
+    "roleName": "Metrics Admin",
+    "permissionNames": ["manageMetrics", "viewMetrics"]
+  }
+]
