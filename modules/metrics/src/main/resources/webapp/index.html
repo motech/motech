@@ -1,0 +1,31 @@
+<div id="inner-center" class="ivr inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
+    <div class="header-footer-breadcrumb">
+        <ul class="breadcrumb" role="navigation">
+            <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
+            <li><a role="menu" href="#/metrics/settings">Metrics</a></li>
+            <li ng-show="active('#/metrics/settings')" ng-class="active('#/metrics/settings')">Settings</li>
+            <li ng-show="active('#/metrics/metrics')" ng-class="active('#/metrics/metrics')">Metrics</li>
+        </ul>
+    </div>
+    <div class="header-footer">
+        <ul id="content-tabs" class="nav nav-tabs tasks">
+            <li ng-class="active('#/metrics/settings')"><a href="#/metrics/settings">Settings</a></li>
+            <li ng-class="active('#/metrics/metrics')"><a href="#/metrics/metrics">Metrics</a></li>
+        </ul>
+    </div>
+    <div class="ui-layout-content">
+        <div class="tab-content" id="tab-content">
+            <div id="main-content" class="active">
+                <div ng-view></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="inner-east" class="ivr inner-east ui-layout-pane ui-layout-pane-east">
+    <div class="filter-header"></div>
+    <div class="ui-layout-content">
+        <div class="inside">
+        </div>
+    </div>
+</div>

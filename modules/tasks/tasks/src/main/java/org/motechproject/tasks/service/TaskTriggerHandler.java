@@ -11,6 +11,7 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
+import org.motechproject.metrics.service.MetricRegistryService;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
@@ -60,6 +61,8 @@ import static org.motechproject.tasks.service.HandlerPredicates.withServiceName;
 public class TaskTriggerHandler implements TriggerHandler {
 
     private static final String TASK_POSSIBLE_ERRORS_KEY = "task.possible.errors";
+    private static final String TASKS_TRIGGER_HANDLER_METER = "tasks.handled";
+    private static final String TASKS_TRIGGER_FAILURE_METER = "tasks.handled.failed";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskTriggerHandler.class);
 
@@ -81,6 +84,9 @@ public class TaskTriggerHandler implements TriggerHandler {
 
     @Autowired
     private TaskActionExecutor executor;
+
+    @Autowired
+    private MetricRegistryService metricRegistryService;
 
     private Map<String, DataProvider> dataProviders;
 
@@ -176,6 +182,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     }
 
     private void handleTask(Task task, Map<String, Object> parameters) {
+        metricRegistryService.meter(TASKS_TRIGGER_HANDLER_METER);
 
         TaskContext taskContext = new TaskContext(task, parameters, activityService);
         TaskInitializer initializer = new TaskInitializer(taskContext);
@@ -228,6 +235,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     }
 
     private void handleError(Map<String, Object> params, Task task, TaskHandlerException e) {
+        metricRegistryService.meter(TASKS_TRIGGER_FAILURE_METER).mark();
         LOGGER.warn("Omitted task: {} with ID: {} because: {}", task.getName(), task.getId(), e);
 
         activityService.addError(task, e, params);

@@ -19,6 +19,8 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
+import org.motechproject.metrics.api.Meter;
+import org.motechproject.metrics.service.MetricRegistryService;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionEventBuilder;
@@ -167,6 +169,12 @@ public class TaskTriggerHandlerTest {
     @Captor
     ArgumentCaptor<TaskHandlerException> exceptionCaptor;
 
+    @Mock
+    MetricRegistryService metricRegistryService;
+
+    @Mock
+    Meter meter;
+
     @InjectMocks
     TaskTriggerHandler handler = new TaskTriggerHandler();
 
@@ -185,6 +193,7 @@ public class TaskTriggerHandlerTest {
         when(taskService.getAllTasks()).thenReturn(tasks);
         when(settingsFacade.getProperty("task.possible.errors")).thenReturn("5");
         when(dataProvider.getName()).thenReturn(TASK_DATA_PROVIDER_NAME);
+        when(metricRegistryService.meter(anyString())).thenReturn(meter);
 
         // do the initialization, normally called by Spring as @PostConstruct
         handler.init();
