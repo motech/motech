@@ -23,10 +23,10 @@
     <bean id="commonsDataProvider" class="org.motechproject.server.CommonsDataProvider"/>
 
     <osgi:service id="uiFrameworkServiceOsgi" auto-export="interfaces" ref="uiFrameworkService"
-                  interface="org.motechproject.osgi.web.UIFrameworkService"/>
+                  interface="org.motechproject.osgi.web.service.UIFrameworkService"/>
 
     <osgi:service id="localeServiceOsgi" auto-export="interfaces" ref="localeService"
-                  interface="org.motechproject.osgi.web.LocaleService"/>
+                  interface="org.motechproject.osgi.web.service.LocaleService"/>
 
     <osgi:service id="commonsDataProviderOsgi" auto-export="interfaces" ref="commonsDataProvider"
                   interface="org.motechproject.commons.api.DataProvider"/>

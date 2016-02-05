@@ -1,5 +1,6 @@
-package org.motechproject.osgi.web;
+package org.motechproject.osgi.web.tracker;
 
+import org.motechproject.osgi.web.tracker.internal.HttpServiceTracker;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -17,7 +18,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.eclipse.gemini.blueprint.util.OsgiStringUtils.nullSafeSymbolicName;
 
 /**
- * This is responsible for creating and keeping track of {@link org.motechproject.osgi.web.HttpServiceTracker} instances.
+ * This is responsible for creating and keeping track of {@link HttpServiceTracker} instances.
  */
 public class HttpServiceTrackers {
 
@@ -43,7 +44,7 @@ public class HttpServiceTrackers {
     }
 
     /**
-     * Creates an {@link org.motechproject.osgi.web.HttpServiceTracker} instance for the given bundle.
+     * Creates an {@link HttpServiceTracker} instance for the given bundle.
      * @param bundle the bundle for which the tracker should be created
      * @return the newly created tracker
      */
@@ -61,7 +62,7 @@ public class HttpServiceTrackers {
     }
 
     /**
-     * Checks whether an {@link org.motechproject.osgi.web.HttpServiceTracker} exists for the given bundle.
+     * Checks whether an {@link HttpServiceTracker} exists for the given bundle.
      * @param bundle the bundle to check
      * @return true if a tracker exists, false otherwise
      */

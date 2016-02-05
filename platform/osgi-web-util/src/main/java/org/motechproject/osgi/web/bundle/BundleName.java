@@ -1,4 +1,4 @@
-package org.motechproject.osgi.web.ext;
+package org.motechproject.osgi.web.bundle;
 
 /**
  * A wrapper for a bundle symbolic name. Provides a convenience method for converting the name

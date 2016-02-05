@@ -1,6 +1,6 @@
 package org.motechproject.tasks.osgi;
 
-import org.motechproject.osgi.web.ApplicationContextTracker;
+import org.motechproject.osgi.web.tracker.ApplicationContextTracker;
 import org.motechproject.tasks.annotations.TaskAnnotationBeanPostProcessor;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.service.ChannelService;

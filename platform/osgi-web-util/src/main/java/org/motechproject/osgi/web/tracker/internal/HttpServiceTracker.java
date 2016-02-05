@@ -1,7 +1,11 @@
-package org.motechproject.osgi.web;
+package org.motechproject.osgi.web.tracker.internal;
 
 import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
-import org.motechproject.osgi.web.ext.HttpContextFactory;
+import org.motechproject.osgi.web.BundleContextWrapper;
+import org.motechproject.osgi.web.MotechOSGiWebApplicationContext;
+import org.motechproject.osgi.web.http.OSGiDispatcherServlet;
+import org.motechproject.osgi.web.extension.HttpContextFactory;
+import org.motechproject.osgi.web.tracker.impl.BlueprintApplicationContextTracker;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -18,11 +22,11 @@ import javax.servlet.ServletException;
 import java.util.Map;
 
 /**
- * This is the HttpServiceTracker that will be created by {@link org.motechproject.osgi.web.BlueprintApplicationContextTracker}
+ * This is the HttpServiceTracker that will be created by {@link BlueprintApplicationContextTracker}
  * for bundles that have a Gemini Blueprint context and the <code>Blueprint-Enabled</code> header in their manifest.
  * This class is responsible for tracking the {@link org.osgi.service.http.HttpService}. Once it becomes available,
  * an {@link OSGiDispatcherServlet} is created and registered with service, which means exposing
- * and HTTP endpoint for the bundle. We also create and register an {@link org.motechproject.osgi.web.OSGiDispatcherServlet}
+ * and HTTP endpoint for the bundle. We also create and register an {@link OSGiDispatcherServlet}
  * with a context built upon the context created by the Gemini Extender. The dispatcher servlet created here
  * allows HTTP access to the bundle, by making its Spring context the parent of the dispatchers context.
  */

@@ -1,4 +1,4 @@
-package org.motechproject.osgi.web;
+package org.motechproject.osgi.web.tracker;
 
 import org.motechproject.commons.api.ApplicationContextServiceReferenceUtils;
 import org.osgi.framework.BundleContext;

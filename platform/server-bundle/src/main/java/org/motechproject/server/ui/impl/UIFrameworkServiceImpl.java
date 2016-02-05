@@ -3,7 +3,7 @@ package org.motechproject.server.ui.impl;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.SubmenuInfo;
-import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.osgi.web.service.UIFrameworkService;
 import org.motechproject.osgi.web.util.ModuleRegistrations;
 import org.motechproject.server.ui.comparator.IndividualsComparator;
 import org.motechproject.server.ui.ex.AlreadyRegisteredException;

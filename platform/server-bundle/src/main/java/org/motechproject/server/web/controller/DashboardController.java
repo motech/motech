@@ -3,7 +3,7 @@ package org.motechproject.server.web.controller;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.motechproject.event.listener.EventConsumerInfo;
-import org.motechproject.osgi.web.LocaleService;
+import org.motechproject.osgi.web.service.LocaleService;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.web.form.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;

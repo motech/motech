@@ -20,7 +20,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mds.service.BundleWatcherSuspensionService;
 import org.motechproject.osgi.web.ModuleRegistrationData;
-import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.osgi.web.service.UIFrameworkService;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
 import org.motechproject.server.api.JarInformation;

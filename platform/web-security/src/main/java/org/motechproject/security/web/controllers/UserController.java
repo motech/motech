@@ -2,7 +2,7 @@ package org.motechproject.security.web.controllers;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.osgi.web.LocaleService;
+import org.motechproject.osgi.web.service.LocaleService;
 import org.motechproject.security.config.SettingService;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.ex.EmailExistsException;

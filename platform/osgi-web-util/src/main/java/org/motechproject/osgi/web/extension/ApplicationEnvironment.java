@@ -1,4 +1,6 @@
-package org.motechproject.osgi.web.ext;
+package org.motechproject.osgi.web.extension;
+
+import org.motechproject.osgi.web.bundle.BundleName;
 
 /**
  * Utility class for handling the {@code ENVIRONMENT} system variable. The only meaningful value for the
