@@ -1985,6 +1985,7 @@
             var newLookup = {
                 lookupName: $scope.getLookupNameForNewLookup(),
                 singleObjectReturn: true,
+                indexRequired: true,
                 lookupFields: []
             };
 

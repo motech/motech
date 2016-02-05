@@ -19,6 +19,8 @@ import org.motechproject.mds.builder.Sample;
 import org.motechproject.mds.builder.SampleWithIncrementStrategy;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.EntityType;
+//import org.motechproject.mds.domain.Field;
+//import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.dto.EntityDto;
@@ -296,11 +298,12 @@ public class EntityMetadataBuilderTest {
 
     @Test
     public void shouldSetIndexOnMetadataLookupField() throws Exception {
-        FieldDto lookupField = fieldDto("lookupField", String.class);
 
+        FieldDto lookupField = fieldDto("lookupField", String.class);
         LookupDto lookup = new LookupDto();
         lookup.setLookupName("A lookup");
         lookup.setLookupFields(singletonList(new LookupFieldDto("lookupField", LookupFieldType.VALUE)));
+        lookup.setIndexRequired(true);
         lookupField.setLookups(singletonList(lookup));
 
         FieldMetadata fmd = mock(FieldMetadata.class);
