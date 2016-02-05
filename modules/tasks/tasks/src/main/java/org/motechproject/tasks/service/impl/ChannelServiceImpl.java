@@ -180,7 +180,8 @@ public class ChannelServiceImpl implements ChannelService {
         });
 
         for (Channel channel : channels) {
-            if (triggerEventService.providesDynamicTriggers(channel.getModuleName())) {
+            if (triggerEventService.providesDynamicTriggers(channel.getModuleName()) ||
+                    !channel.getTriggerTaskEvents().isEmpty()) {
                 channel.setProvidesTriggers(true);
             }
         }

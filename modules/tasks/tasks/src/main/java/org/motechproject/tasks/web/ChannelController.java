@@ -23,7 +23,7 @@ import java.util.List;
 @Controller
 public class ChannelController {
 
-    private static final int PAGE_SIE = 10;
+    private static final int PAGE_SIZE = 10;
 
     private ChannelService channelService;
     private TriggerEventService triggerEventService;
@@ -75,11 +75,11 @@ public class ChannelController {
                                      @RequestParam int dynamicTriggersPage) {
         TriggersList staticTriggers = new TriggersList();
         long staticTriggersCount = triggerEventService.countStaticTriggers(moduleName);
-        staticTriggers.addTriggers(triggerEventService.getStaticTriggers(moduleName, staticTriggersPage, PAGE_SIE));
+        staticTriggers.addTriggers(triggerEventService.getStaticTriggers(moduleName, staticTriggersPage, PAGE_SIZE));
         staticTriggers.setPage(staticTriggersPage);
 
-        int staticTriggersPages = (int) staticTriggersCount / PAGE_SIE;
-        if (staticTriggersCount % PAGE_SIE > 0) {
+        int staticTriggersPages = (int) staticTriggersCount / PAGE_SIZE;
+        if (staticTriggersCount % PAGE_SIZE > 0) {
             staticTriggersPages++;
         }
         staticTriggers.setTotal(staticTriggersPages);
@@ -89,11 +89,11 @@ public class ChannelController {
         if (triggerEventService.providesDynamicTriggers(moduleName)) {
             dynamicTriggers = new TriggersList();
             long dynamicTriggersCount = triggerEventService.countDynamicTriggers(moduleName);
-            dynamicTriggers.addTriggers(triggerEventService.getDynamicTriggers(moduleName, dynamicTriggersPage, PAGE_SIE));
+            dynamicTriggers.addTriggers(triggerEventService.getDynamicTriggers(moduleName, dynamicTriggersPage, PAGE_SIZE));
             dynamicTriggers.setPage(dynamicTriggersPage);
 
-            int dynamicTriggersPages = (int) dynamicTriggersCount / PAGE_SIE;
-            if (dynamicTriggersCount % PAGE_SIE > 0) {
+            int dynamicTriggersPages = (int) dynamicTriggersCount / PAGE_SIZE;
+            if (dynamicTriggersCount % PAGE_SIZE > 0) {
                 dynamicTriggersPages++;
             }
             dynamicTriggers.setTotal(dynamicTriggersPages);

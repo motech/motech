@@ -16,13 +16,22 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Default implementation of the {@link DynamicChannelLoader} interface.
+ */
 @Service
 public class DynamicChannelLoaderImpl implements DynamicChannelLoader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicChannelLoaderImpl.class);
 
-    @Autowired
+    private static final String PROVIDER_NOT_FOUND = "Dynamic channel provider not found for module %s";
+
     private BundleContext bundleContext;
+
+    @Autowired
+    public DynamicChannelLoaderImpl(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
 
     public List<TriggerEvent> getDynamicTriggers(String moduleName, int page, int pageSize) {
         LOGGER.debug("Retrieving dynamic triggers for channel {}", moduleName);
@@ -31,6 +40,8 @@ public class DynamicChannelLoaderImpl implements DynamicChannelLoader {
 
         if (provider != null) {
             return provider.getTriggers(page, pageSize);
+        } else {
+            LOGGER.debug(PROVIDER_NOT_FOUND, moduleName);
         }
 
         return new ArrayList<>();
@@ -49,6 +60,8 @@ public class DynamicChannelLoaderImpl implements DynamicChannelLoader {
 
         if (provider != null) {
             return provider.countTriggers();
+        } else {
+            LOGGER.debug(PROVIDER_NOT_FOUND, moduleName);
         }
 
         return null;
@@ -59,9 +72,20 @@ public class DynamicChannelLoaderImpl implements DynamicChannelLoader {
 
         if (provider != null) {
             return provider.getTrigger(triggerInformation);
+        } else {
+            LOGGER.debug(PROVIDER_NOT_FOUND, triggerInformation.getModuleName());
         }
 
         return null;
+    }
+
+    public boolean channelExists(String moduleName) {
+        return getChannelProvider(moduleName) != null;
+    }
+
+    public boolean validateTrigger(String moduleName, String subject) {
+        DynamicChannelProvider provider = getChannelProvider(moduleName);
+        return provider.validateSubject(subject);
     }
 
     private DynamicChannelProvider getChannelProvider(String channelModule) {
@@ -101,14 +125,5 @@ public class DynamicChannelLoaderImpl implements DynamicChannelLoader {
             }
         }
         return null;
-    }
-
-    public boolean channelExists(String moduleName) {
-        return getChannelProvider(moduleName) != null;
-    }
-
-    public boolean validateTrigger(String moduleName, String subject) {
-        DynamicChannelProvider provider = getChannelProvider(moduleName);
-        return provider.validateSubject(subject);
     }
 }

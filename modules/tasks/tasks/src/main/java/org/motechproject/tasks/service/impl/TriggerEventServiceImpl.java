@@ -15,6 +15,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Default implementation of the {@link TriggerEventService} interface.
+ */
 @Service
 public class TriggerEventServiceImpl implements TriggerEventService {
 

@@ -23,7 +23,7 @@ import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.service.TriggerEventService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,7 +39,7 @@ import static org.motechproject.tasks.domain.KeyInformation.parse;
 /**
  * Utility class for validating tasks.
  */
-@Service
+@Component
 public class TaskValidator extends GeneralValidator {
 
     public static final String TASK = "task";

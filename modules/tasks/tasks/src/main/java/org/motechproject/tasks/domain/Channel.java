@@ -6,6 +6,7 @@ import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.contract.ActionEventRequest;
@@ -49,6 +50,7 @@ public class Channel {
     @Field
     private String moduleVersion;
 
+    @Ignore
     private boolean providesTriggers;
 
     /**
