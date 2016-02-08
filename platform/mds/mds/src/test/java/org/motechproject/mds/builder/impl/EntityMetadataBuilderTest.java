@@ -19,8 +19,6 @@ import org.motechproject.mds.builder.Sample;
 import org.motechproject.mds.builder.SampleWithIncrementStrategy;
 import org.motechproject.mds.domain.ClassData;
 import org.motechproject.mds.domain.EntityType;
-//import org.motechproject.mds.domain.Field;
-//import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.OneToManyRelationship;
 import org.motechproject.mds.domain.OneToOneRelationship;
 import org.motechproject.mds.dto.EntityDto;

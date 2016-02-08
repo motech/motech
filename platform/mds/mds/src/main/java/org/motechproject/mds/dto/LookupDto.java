@@ -27,7 +27,7 @@ public class LookupDto {
     private String methodName;
     private boolean referenced;
     private List<String> fieldsOrder;
-    private boolean indexRequired;
+    private boolean indexRequired = true;
 
     public LookupDto() {
         this(null, false, false);
