@@ -1,0 +1,155 @@
+<div class="row margin-after">
+    <h4 class="frame-title">{{msg('metrics.settings.title')}}</h4>
+    <form id="metricsSettingsForm" name="metricsSettingsForm" class="form-horizontal col-sm-12" novalidate>
+        <div class="form-group">
+            <label class="col-md-2 col-sm-3 control-label" for="metricsEnabled">Enable Metrics?</label>
+            <div class="form-inline col-md-10 col-sm-9">
+                <input class="form-control input-auto"
+                       ng-model="settings.metricsEnabled"
+                       type="checkbox"
+                       id="metricsEnabled"/>
+            </div>
+        </div>
+        <div ng-show="settings.metricsEnabled">
+            <!-- Console reporter settings -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Console reporter</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-md-2 col-sm-3 control-label" for="consoleReporterEnabled">{{msg('metrics.settings.reporters.console.active')}}</label>
+                        <div class="form-inline col-md-10 col-sm-9">
+                            <input class="form-control input-auto"
+                                   ng-model="settings.consoleReporterConfig.enabled"
+                                   type="checkbox"
+                                   id="consoleReporterEnabled" />
+                        </div>
+                    </div>
+                    <div ng-show="settings.consoleReporterConfig.enabled">
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-3 control-label" for="consoleReporterConvertRatesUnit">{{msg('metrics.settings.reporters.convertRatesUnit')}}</label>
+                            <div class="form-inline col-md-10 col-sm-9">
+                                <select class="form-control input-auto"
+                                        ng-model="settings.consoleReporterConfig.convertRates"
+                                        ng-options="timeUnit for timeUnit in timeUnits.data"
+                                        id="consoleReporterConvertRatesUnit">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-3 control-label" for="consoleReporterConvertDurationsUnit">{{msg('metrics.settings.reporters.convertDurationsUnit')}}</label>
+                            <div class="form-inline col-md-10 col-sm-9">
+                                <select class="form-control input-auto"
+                                        ng-model="settings.consoleReporterConfig.convertDurations"
+                                        ng-options="timeUnit for timeUnit in timeUnits.data"
+                                        id="consoleReporterConvertDurationsUnit">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-3 control-label" for="consoleReporterReportingFrequencyValue">{{msg('metrics.settings.reporters.reportingInterval')}}</label>
+                            <div class="form-inline col-md-10 col-sm-9">
+                                <input class="form-control input-auto"
+                                       type="text"
+                                       ng-model="settings.consoleReporterConfig.frequency"
+                                       id="consoleReporterReportingFrequencyValue"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-3 control-label" for="consoleReporterReportingFrequencyUnit">{{msg('metrics.settings.reporters.reportingIntervalUnit')}}</label>
+                            <div class="form-inline col-md-10 col-sm-9">
+                                <select class="form-control input-auto"
+                                        ng-model="settings.consoleReporterConfig.frequencyUnit"
+                                        ng-options="timeUnit for timeUnit in timeUnits.data"
+                                        id="consoleReporterReportingFrequencyUnit">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- End console reporter settings -->
+            <!-- Graphite reporter settings -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Graphite reporter</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-md-2 col-sm-3 control-label" for="graphiteReporterEnabled">{{msg('metrics.settings.reporters.graphite.active')}}</label>
+                        <div class="form-inline col-md-10 col-sm-9">
+                            <input class="form-control input-auto"
+                                   ng-model="settings.graphiteReporterConfig.enabled"
+                                   type="checkbox"
+                                   id="graphiteReporterEnabled" />
+                        </div>
+                    </div>
+                    <div ng-show="settings.graphiteReporterConfig.enabled">
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-3 control-label" for="graphiteReporterGraphiteServerURI">{{msg('metrics.settings.reporters.graphite.server.uri')}}</label>
+                            <div class="form-inline col-md-10 col-sm-9">
+                                <input class="form-control input-auto"
+                                       type="text"
+                                       ng-model="settings.graphiteReporterConfig.serverUri"
+                                       id="graphiteReporterGraphiteServerURI"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-3 control-label" for="graphiteReporterGraphiteServerPort">{{msg('metrics.settings.reporters.graphite.server.port')}}</label>
+                            <div class="form-inline col-md-10 col-sm-9">
+                                <input class="form-control input-auto"
+                                       type="text"
+                                       ng-model="settings.graphiteReporterConfig.serverPort"
+                                       id="graphiteReporterGraphiteServerPort"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-3 control-label" for="graphiteReporterConvertRatesUnit">{{msg('metrics.settings.reporters.convertRatesUnit')}}</label>
+                            <div class="form-inline col-md-10 col-sm-9">
+                                <select class="form-control input-auto"
+                                        ng-model="settings.graphiteReporterConfig.convertRates"
+                                        ng-options="timeUnit for timeUnit in timeUnits.data"
+                                        id="graphiteReporterConvertRatesUnit">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-3 control-label" for="graphiteReporterConvertDurationsUnit">{{msg('metrics.settings.reporters.convertDurationsUnit')}}</label>
+                            <div class="form-inline col-md-10 col-sm-9">
+                                <select class="form-control input-auto"
+                                        ng-model="settings.graphiteReporterConfig.convertDurations"
+                                        ng-options="timeUnit for timeUnit in timeUnits.data"
+                                        id="graphiteReporterConvertDurationsUnit">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-3 control-label" for="graphiteReporterReportingFrequencyValue">{{msg('metrics.settings.reporters.reportingInterval')}}</label>
+                            <div class="form-inline col-md-10 col-sm-9">
+                                <input class="form-control input-auto"
+                                       type="text"
+                                       ng-model="settings.graphiteReporterConfig.frequency"
+                                       id="graphiteReporterReportingFrequencyValue"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-3 control-label" for="graphiteReporterReportingFrequencyUnit">{{msg('metrics.settings.reporters.reportingIntervalUnit')}}</label>
+                            <div class="form-inline col-md-10 col-sm-9">
+                                <select class="form-control input-auto"
+                                        ng-model="settings.graphiteReporterConfig.frequencyUnit"
+                                        ng-options="timeUnit for timeUnit in timeUnits.data"
+                                        id="graphiteReporterReportingFrequencyUnit">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- End console reporter settings -->
+        </div>
+        <div class="toolbox">
+            <div class="form-group">
+                <input ng-click="submit()" type="button" value="{{msg('metrics.settings.submit')}}" class="btn btn-primary"/>
+            </div>
+        </div>
+    </form>
+</div>

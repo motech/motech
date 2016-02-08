@@ -38,6 +38,7 @@ import static org.junit.Assert.assertEquals;
 public class ChannelsDataServiceBundleIT extends BasePaxIT {
 
     private static final String MDS_ENTITIES_BUNDLE = "org.motechproject.motech-platform-dataservices-entities";
+    private static final String METRICS_BUNDLE = "org.motechproject.motech-metrics";
 
     @Inject
     private ChannelsDataService channelsDataService;
@@ -56,7 +57,7 @@ public class ChannelsDataServiceBundleIT extends BasePaxIT {
 
         List<Channel> channelList = channelsDataService.retrieveAll();
         // ignore the channels that register with the test bundle and with MDS
-        removeOwnAndMDSChannels(channelList);
+        removeOwnAndMDSAndMetricsChannels(channelList);
 
         assertEquals(channels, channelList);
 
@@ -100,12 +101,13 @@ public class ChannelsDataServiceBundleIT extends BasePaxIT {
         return channelRequests;
     }
 
-    private void removeOwnAndMDSChannels(List<Channel> channels) {
+    private void removeOwnAndMDSAndMetricsChannels(List<Channel> channels) {
         Iterator<Channel> it = channels.iterator();
         while (it.hasNext()) {
             Channel channel = it.next();
             if (StringUtils.equals(bundleContext.getBundle().getSymbolicName(), channel.getModuleName()) ||
-                    StringUtils.equals(MDS_ENTITIES_BUNDLE, channel.getModuleName())) {
+                    StringUtils.equals(MDS_ENTITIES_BUNDLE, channel.getModuleName()) ||
+                    StringUtils.equals(METRICS_BUNDLE, channel.getModuleName())) {
                 it.remove();
             }
         }

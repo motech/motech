@@ -1,0 +1,103 @@
+<div class="row margin-after">
+    <h4 class="frame-title">{{msg('metrics.metrics.title')}}</h4>
+    <form id="metricsRatioGaugeForm" name="metricsRatioGaugeForm" class="form-horizontal col-sm-12" novalidate ng-submit="metricsRatioGaugeForm.$valid && submit()">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Create ratio gauge</h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 control-label" for="ratioGaugeName">Gauge name</label>
+                    <div class="form-inline col-md-10 col-sm-9">
+                        <input class="form-control input-auto"
+                               required
+                               ng-model="ratioGauge.name"
+                               type="text"
+                               id="ratioGaugeName"/>
+                    </div>
+                </div>
+                <h4>Numerator</h4>
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 control-label" for="ratioGaugeNumeratorType">Numerator type</label>
+                    <div class="form-inline col-md-10 col-sm-9">
+                        <select class="form-control input-auto"
+                                required
+                               ng-model="ratioGauge.numerator.type"
+                               ng-change="setSelectedNumerator()"
+                               ng-options="metric.type as metric.type for metric in metrics"
+                               id="ratioGaugeNumeratorType">
+                            <option value="">---Select type---</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 control-label" for="ratioGaugeNumeratorName">Numerator name</label>
+                    <div class="form-inline col-md-10 col-sm-9">
+                        <select class="form-control input-auto"
+                                required
+                                ng-model="ratioGauge.numerator.name"
+                                ng-options="name for name in selectedNumerator.names"
+                                id="ratioGaugeNumeratorName">
+                            <option value="">---Select name---</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 control-label" for="ratioGaugeNumeratorValue">Numerator value</label>
+                    <div class="form-inline col-md-10 col-sm-9">
+                        <select class="form-control input-auto"
+                                required
+                                ng-model="ratioGauge.numerator.value"
+                                ng-options="value for value in selectedNumerator.values"
+                                id="ratioGaugeNumeratorValue">
+                            <option value="">---Select value---</option>
+                        </select>
+                    </div>
+                </div>
+                <h4>Denominator</h4>
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 control-label" for="ratioGaugeDenominatorType">Denominator type</label>
+                    <div class="form-inline col-md-10 col-sm-9">
+                        <select class="form-control input-auto"
+                                required
+                                ng-model="ratioGauge.denominator.type"
+                                ng-change="setSelectedDenominator()"
+                                ng-options="metric.type as metric.type for metric in metrics"
+                                id="ratioGaugeDenominatorType">
+                            <option value="">---Select type---</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 control-label" for="ratioGaugeDenominatorName">Denominator name</label>
+                    <div class="form-inline col-md-10 col-sm-9">
+                        <select class="form-control input-auto"
+                                required
+                                ng-model="ratioGauge.denominator.name"
+                                ng-options="name for name in selectedDenominator.names"
+                                id="ratioGaugeDenominatorName">
+                            <option value="">---Select name---</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 control-label" for="ratioGaugeDenominatorValue">Denominator value</label>
+                    <div class="form-inline col-md-10 col-sm-9">
+                        <select class="form-control input-auto"
+                                required
+                                ng-model="ratioGauge.denominator.value"
+                                ng-options="value for value in selectedDenominator.values"
+                                id="ratioGaugeDenominatorValue">
+                            <option value="">---Select value---</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="toolbox">
+                    <div class="form-group">
+                        <input type="submit" value="{{msg('metrics.settings.submit')}}" class="btn btn-primary"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
