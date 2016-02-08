@@ -3440,6 +3440,8 @@
             resizeLayout();
         };
 
+        $scope.showToolbox = true;
+
         $scope.showBackToEntityListButton = true;
         $scope.showAddInstanceButton = true;
         $scope.showLookupButton = true;

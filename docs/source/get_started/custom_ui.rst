@@ -400,6 +400,12 @@ Those variables let you decide which buttons will be visible in the embedded MDS
 
 .. code-block:: javascript
 
+    $scope.showToolbox
+
+This variable lets you decide if whole toolbox containing buttons will be visible.
+
+.. code-block:: javascript
+
     $scope.backToEntityList
     $scope.showLookupDialog
     $scope.importEntityInstances
