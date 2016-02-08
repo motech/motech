@@ -17,6 +17,7 @@ import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -304,6 +305,15 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
                     IndexMetadata imd = getOrCreateIndexMetadata(fmd);
                     imd.setName(KeyNames.lookupIndexKeyName(entity.getName(), entity.getId(), fieldName, entityType));
                 }
+
+                fmd.setIndexed(false);
+                for (LookupDto lookupDto : field.getLookups()) {
+                    if (lookupDto.isIndexRequired()) {
+                        fmd.setIndexed(true);
+                        break;
+                    }
+                }
+
             }
             if (fmd != null) {
                 customizeFieldMd(fmd, entity, field, entityType, definition);
