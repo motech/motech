@@ -43,6 +43,9 @@ public class Lookup {
     private boolean exposedViaRest;
 
     @Persistent
+    private boolean indexRequired;
+
+    @Persistent
     private Entity entity;
 
     @Persistent
@@ -107,6 +110,15 @@ public class Lookup {
         this.fieldsOrder = fieldsOrder;
     }
 
+    public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly,
+                  String methodName, List<String> rangeLookupFields, List<String> setLookupFields,
+                  Map<String, String> customOperators, Map<String, Boolean> useGenericParams, List<String> fieldsOrder, boolean indexRequired) {
+        this(lookupName, singleObjectReturn, exposedViaRest, fields, readOnly, methodName, rangeLookupFields, setLookupFields, customOperators,
+                useGenericParams, fieldsOrder);
+        this.indexRequired = indexRequired;
+
+    }
+
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, Entity entity) {
         this(lookupName, singleObjectReturn, exposedViaRest, fields);
         this.entity = entity;
@@ -137,7 +149,7 @@ public class Lookup {
         }
 
         return new LookupDto(id, lookupName, singleObjectReturn, exposedViaRest,
-                lookupFields, readOnly, methodName, fieldsOrder);
+                lookupFields, readOnly, methodName, fieldsOrder, indexRequired);
     }
 
     public Long getId() {
@@ -291,7 +303,7 @@ public class Lookup {
         }
 
         return new Lookup(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly, methodName,
-                getRangeLookupFields(), getSetLookupFields(), customOperators, useGenericParams, getFieldsOrder());
+                getRangeLookupFields(), getSetLookupFields(), customOperators, useGenericParams, getFieldsOrder(), indexRequired);
     }
 
     public final void update(LookupDto lookupDto, List<Field> lookupFields) {
@@ -301,6 +313,7 @@ public class Lookup {
         fields = lookupFields;
         methodName = lookupDto.getMethodName();
         readOnly = lookupDto.isReadOnly();
+        indexRequired = lookupDto.isIndexRequired();
 
         updateFieldsOrder(lookupDto.getFieldsOrder());
         updateCustomOperators(lookupDto);
@@ -365,5 +378,13 @@ public class Lookup {
         } else {
             return LookupFieldType.VALUE;
         }
+    }
+
+    public boolean isIndexRequired() {
+        return indexRequired;
+    }
+
+    public void setIndexRequired(boolean indexRequired) {
+        this.indexRequired = indexRequired;
     }
 }

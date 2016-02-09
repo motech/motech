@@ -27,4 +27,7 @@ public @interface Lookup {
      */
     String name() default "";
 
+
+    boolean indexRequired() default true;
+
 }
