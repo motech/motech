@@ -114,15 +114,15 @@ public class AllTypesContextIT extends BaseIT {
                 asList("mds.form.label.cascadePersist", "mds.form.label.cascadeUpdate", "mds.form.label.cascadeDelete"), null
         );
         assertType(
-        		"mds.field.float", "mds.field.description.float", Float.class.getName(),
+        	"mds.field.float", "mds.field.description.float", Float.class.getName(),
                 asList("mds.form.label.precision", "mds.form.label.scale"), asList("mds.field.validation.minValue", "mds.field.validation.maxValue", "mds.field.validation.mustBeInSet", "mds.field.validation.cannotBeInSet")
         );
         assertType(
-        		"mds.field.short", "mds.field.description.short", Short.class.getName(),
+        	"mds.field.short", "mds.field.description.short", Short.class.getName(),
                 null, asList("mds.field.validation.minValue", "mds.field.validation.maxValue", "mds.field.validation.mustBeInSet", "mds.field.validation.cannotBeInSet")
         );
         assertType(
-        		"mds.field.character", "mds.field.description.character", Character.class.getName(),
+        	"mds.field.character", "mds.field.description.character", Character.class.getName(),
                 null, null
         );
     }

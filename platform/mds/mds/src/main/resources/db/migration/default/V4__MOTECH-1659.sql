@@ -30,7 +30,7 @@ LIMIT 1;
 INSERT INTO "TypeValidation"
 SELECT tv."id" + 1, 'mds.field.validation.minValue', t."id"
 FROM "TypeValidation" tv, "Type" t
-WHERE t."typeClass" LIKE "java.lang.Float"
+WHERE t."typeClass" LIKE 'java.lang.Float'
 ORDER BY tv."id" DESC
 LIMIT 1;
 
@@ -46,7 +46,7 @@ LIMIT 1;
 INSERT INTO "TypeValidation"
 SELECT tv."id" + 1, 'mds.field.validation.minValue', t."id"
 FROM "TypeValidation" tv, "Type" t
-WHERE t."typeClass" LIKE "java.lang.Short"
+WHERE t."typeClass" LIKE 'java.lang.Short'
 ORDER BY tv."id" DESC
 LIMIT 1;
 
@@ -62,7 +62,7 @@ LIMIT 1;
 INSERT INTO "TYPE_TYPE_VALIDATION"
 SELECT t."id", 12, 0
 FROM "Type" t
-WHERE t."typeClass" LIKE "java.lang.Float"
+WHERE t."typeClass" LIKE 'java.lang.Float'
 LIMIT 1;
 
 INSERT INTO "TYPE_TYPE_VALIDATION"

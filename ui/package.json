@@ -22,8 +22,7 @@
     "nunjucks": "~2.2.0",
     "path": "~0.12.7",
     "require-dir": "~0.3.0",
-    "yargs": "~3.31.0",
-    "gulp-header": "~1.7.1"
+    "yargs": "~3.31.0"
   },
   "devDependencies": {
     "bower-files": "~3.11.3"
