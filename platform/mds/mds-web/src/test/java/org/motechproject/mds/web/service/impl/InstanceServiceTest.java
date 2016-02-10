@@ -140,6 +140,38 @@ public class InstanceServiceTest {
     }
 
     @Test
+    public void shouldAutoPopulateOwnerAndCreator() {
+        when(entityService.getEntityFields(ENTITY_ID)).thenReturn(asList(
+                FieldTestHelper.fieldDto(1L, "owner", String.class.getName(), "String field", null),
+                FieldTestHelper.fieldDto(1L, "creator", String.class.getName(), "String field", null)
+        ));
+        mockEntity();
+        setUpSecurityContext();
+
+        EntityRecord record = instanceService.newInstance(ENTITY_ID);
+
+        List<FieldRecord> fieldRecords = record.getFields();
+        assertEquals(asList("motech", "motech"), extract(fieldRecords, on(FieldRecord.class).getValue()));
+    }
+
+    @Test
+    public void shouldNotAutoPopulateOwnerAndCreatorForHiddenFields() {
+        FieldDto ownerField = FieldTestHelper.fieldDto(1L, "owner", String.class.getName(), "String field", null);
+        ownerField.setNonDisplayable(true);
+        FieldDto creatorField = FieldTestHelper.fieldDto(1L, "creator", String.class.getName(), "String field", null);
+        creatorField.setNonDisplayable(true);
+
+        when(entityService.getEntityFields(ENTITY_ID)).thenReturn(asList(ownerField, creatorField));
+        mockEntity();
+        setUpSecurityContext();
+
+        EntityRecord record = instanceService.newInstance(ENTITY_ID);
+
+        List<FieldRecord> fieldRecords = record.getFields();
+        assertEquals(asList(null, null), extract(fieldRecords, on(FieldRecord.class).getValue()));
+    }
+
+    @Test
     public void shouldReturnEntityInstance() {
         mockDataService();
         mockSampleFields();
