@@ -148,7 +148,7 @@ public class InstanceServiceTest {
 
     @Test
     public void shouldAutoPopulateOwnerAndCreator() {
-        when(entityService.getEntityFields(ENTITY_ID)).thenReturn(asList(
+        when(entityService.getEntityFieldsForUI(ENTITY_ID)).thenReturn(asList(
                 FieldTestHelper.fieldDto(1L, "owner", String.class.getName(), "String field", null),
                 FieldTestHelper.fieldDto(1L, "creator", String.class.getName(), "String field", null)
         ));
@@ -168,7 +168,7 @@ public class InstanceServiceTest {
         FieldDto creatorField = FieldTestHelper.fieldDto(1L, "creator", String.class.getName(), "String field", null);
         creatorField.setNonDisplayable(true);
 
-        when(entityService.getEntityFields(ENTITY_ID)).thenReturn(asList(ownerField, creatorField));
+        when(entityService.getEntityFieldsForUI(ENTITY_ID)).thenReturn(asList(ownerField, creatorField));
         mockEntity();
         setUpSecurityContext();
 
