@@ -78,48 +78,78 @@ h4.settings-section {
     height: 90px;
 }
 
-.action {
-    width: 31px;
+#commandLinks .action {
+    display: block;
+    position:relative;
+    overflow: hidden;
+    float:left;
+    width: 25px;
     height: 25px;
-    background:url("../img/action-btn-sprite.png") no-repeat;
+    border-radius: 5px;
+    margin-right:3px;
+    padding-left:25px;
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#2a80c8+10,246cb2+50,07387d+51,1e679b+90 */
+    background: #2a80c8; /* Old browsers */
+    background: -moz-linear-gradient(top, #2a80c8 10%, #246cb2 50%, #07387d 51%, #1e679b 90%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, #2a80c8 10%,#246cb2 50%,#07387d 51%,#1e679b 90%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, #2a80c8 10%,#246cb2 50%,#07387d 51%,#1e679b 90%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2a80c8', endColorstr='#1e679b',GradientType=0 ); /* IE6-9 */
+}
+#commandLinks .action:hover{
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#1e679b+10,07387d+49,246cb2+50,2a80c8+90 */
+    background: #1e679b; /* Old browsers */
+    background: -moz-linear-gradient(top, #1e679b 10%, #07387d 49%, #246cb2 50%, #2a80c8 90%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, #1e679b 10%,#07387d 49%,#246cb2 50%,#2a80c8 90%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, #1e679b 10%,#07387d 49%,#246cb2 50%,#2a80c8 90%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e679b', endColorstr='#2a80c8',GradientType=0 ); /* IE6-9 */
 }
 
-.action-start {
-    background-position: 0 0;
+.bundle-actions .action::before{
+    position:absolute;
+    top:0px;
+    left:0px;
+    font: normal normal normal 14px/1 FontAwesome;
+    width:100%;
+    text-align: center;
+    padding-top: 5px;
+    color:#F4F6F7;
 }
-.action-start:hover {
-    background-position: 0 -25px;
+
+.bundle-actions .action-start::before{
+    content:"\f04b";
 }
-.action-stop {
-    background-position: -31px 0;
+.bundle-actions .action-start:hover {
+    color: #00a400;
 }
-.action-stop:hover {
-    background-position: -31px -25px;
+.bundle-actions .action-stop::before{
+    content: "\f04d";
 }
-.action-pause {
-    background-position: -248px 0px;
+.bundle-actions .action-pause::before {
+    content: "\f04c";
 }
-.action-pause:hover {
-    background-position: -248px -25px;
+.bundle-actions .action-remove::before {
+    content: "\f1f8";
 }
-.action-restart {
-    background-position: -124px 0;
+
+.bundle-actions .action-stop:hover::before,
+.bundle-actions .action-pause:hover::before,
+.bundle-actions .action-remove:hover::before {
+    color:#F00;
 }
-.action-restart:hover {
-    background-position: -124px -25px;
+
+.bundle-actions .action-restart::before {
+    content: "\f021";
 }
-.action-settings {
-    background-position: -217px 0;
+.bundle-actions .action-restart:hover::before {
+    color: #EFBD2C;
 }
-.action-settings:hover {
-    background-position: -217px -25px;
+.bundle-actions .action-settings::before {
+    content: "\f013";
 }
-.action-remove {
-    background-position: -93px 0;
+.bundle-actions .action-settings:hover::before {
+    color: #78D3FC;
 }
-.action-remove:hover {
-    background-position: -93px -25px;
-}
+
 
 .bundle-back:hover {
     color: #bec9de;
