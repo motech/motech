@@ -9,7 +9,7 @@ import org.motechproject.scheduler.contract.JobId;
 import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
-import org.motechproject.scheduler.contract.JobDto;
+import org.motechproject.scheduler.contract.SchedulableJob;
 
 import java.util.List;
 
@@ -43,11 +43,11 @@ public interface MotechSchedulerService {
     String JOB_ID_KEY = "JobID";
 
     /**
-     * Schedules a job based on the information given in the DTO.
+     * Schedules the given schedulable job.
      *
      * @param job  the job DTO
      */
-    void scheduleJob(JobDto job);
+    void scheduleJob(SchedulableJob job);
 
     /**
      * Schedules the given schedulable job. The Job ID by which the job will be referencing in the future should be provided
@@ -75,11 +75,11 @@ public interface MotechSchedulerService {
     void updateScheduledJob(MotechEvent motechEvent);
 
     /**
-     * Updates a job based on the information given in the DTO.
+     * Updates the job with job key matching the key of the given job.
      *
-     * @param job  the job DTO
+     * @param job  the updated job
      */
-    void updateJob(JobDto job);
+    void updateJob(SchedulableJob job);
 
     /**
      * Reschedules a job with the given job ID to be fired according to the given Cron Expression
@@ -264,12 +264,4 @@ public interface MotechSchedulerService {
      * @param info  the information about a job
      */
     void deleteJob(JobBasicInfo info);
-
-    /**
-     * Returns a DTO of the job based on the given {@code info}.
-     *
-     * @param info  the information about a job
-     * @return the DTO of the job based on the given {@code info}
-     */
-    JobDto getDto(JobBasicInfo info);
 }

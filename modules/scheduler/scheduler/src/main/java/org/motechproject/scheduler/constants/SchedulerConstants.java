@@ -8,6 +8,13 @@ public final class SchedulerConstants {
     public static final String VIEW_SCHEDULER_JOBS = "hasRole('viewSchedulerJobs')";
     public static final String EVENT_TYPE_KEY_NAME = "eventType";
 
+    /* Job types */
+    public static final String CRON = "CRON";
+    public static final String DAY_OF_WEEK = "DAY_OF_WEEK";
+    public static final String REPEATING = "REPEATING";
+    public static final String REPEATING_PERIOD = "REPEATING_PERIOD";
+    public static final String RUN_ONCE = "RUN_ONCE";
+
     /* Job parameters */
     public static final String END_DATE = "endDate";
     public static final String DAYS = "days";

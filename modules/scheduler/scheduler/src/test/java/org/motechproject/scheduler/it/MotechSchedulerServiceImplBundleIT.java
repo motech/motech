@@ -14,13 +14,10 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
-import org.motechproject.scheduler.constants.SchedulerConstants;
 import org.motechproject.scheduler.contract.CronJobId;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.contract.JobBasicInfo;
-import org.motechproject.scheduler.contract.JobDto;
-import org.motechproject.scheduler.contract.JobType;
 import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
@@ -52,7 +49,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
-import static org.motechproject.commons.date.util.DateUtil.newDate;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.testing.utils.IdGenerator.id;
@@ -118,197 +114,6 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
                     newDateTime(2020, 7, 16, 10, 0, 0),
                     newDateTime(2020, 7, 17, 10, 0, 0)),
                     first3FireTimes);
-        } finally {
-            stopFakingTime();
-        }
-    }
-
-    @Test
-    public void shouldScheduleCronJobFromDto() throws Exception {
-        try {
-            fakeNow(new DateTime(2020, 7, 15, 10, 0, 0));
-
-            JobDto dto = new JobDto();
-            dto.setType(JobType.CRON);
-            dto.setMotechEventSubject("test_event");
-            dto.setMotechEventParameters(new HashMap<>());
-            dto.setStartDate(newDateTime(2020, 7, 15, 12, 0, 0));
-
-            Map<String, String> params = new HashMap<>();
-            params.put(SchedulerConstants.CRON_EXPRESSION, "0 0 0 * * ? *");
-            params.put(SchedulerConstants.END_DATE, FORMATTER.print(newDateTime(2020, 7, 17, 10, 0, 0)));
-
-            dto.setParameters(params);
-
-            schedulerService.scheduleJob(dto);
-
-            JobBasicInfo info = new JobBasicInfo();
-            info.setName("test_event-null");
-            info.setGroup("default");
-
-            JobDto created = schedulerService.getDto(info);
-
-            assertEquals(dto.getType(), created.getType());
-            assertEquals(dto.getMotechEventSubject(), created.getMotechEventSubject());
-            assertTrue((boolean) created.getMotechEventParameters().get("uiDefined"));
-            assertEquals("test_event", created.getMotechEventParameters().get("eventType"));
-            assertEquals(dto.getStartDate(), created.getStartDate());
-            assertEquals(FORMATTER.parseDateTime(dto.getParameters().get(SchedulerConstants.END_DATE)),
-                    FORMATTER.parseDateTime(created.getParameters().get(SchedulerConstants.END_DATE)));
-            assertEquals(dto.getParameters().get(SchedulerConstants.CRON_EXPRESSION),
-                    created.getParameters().get(SchedulerConstants.CRON_EXPRESSION));
-        } finally {
-            stopFakingTime();
-        }
-    }
-
-    @Test
-    public void shouldScheduleRepeatingJobFromDto() throws Exception {
-        try {
-            fakeNow(new DateTime(2020, 7, 15, 10, 0, 0));
-
-            JobDto dto = new JobDto();
-            dto.setType(JobType.REPEATING);
-            dto.setMotechEventSubject("test_event");
-            dto.setMotechEventParameters(new HashMap<>());
-            dto.setStartDate(newDateTime(2020, 7, 15, 12, 0, 0));
-
-            Map<String, String> params = new HashMap<>();
-            params.put(SchedulerConstants.END_DATE, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z").print(
-                    newDateTime(2020, 7, 17, 10, 0, 0)));
-            params.put(SchedulerConstants.REPEAT_COUNT, Integer.toString(1000));
-            params.put(SchedulerConstants.REPEAT_INTERVAL_IN_SECONDS, Integer.toString(10));
-
-            dto.setParameters(params);
-
-            schedulerService.scheduleJob(dto);
-
-            JobBasicInfo info = new JobBasicInfo();
-            info.setName("test_event-null-repeat");
-            info.setGroup("default");
-
-            JobDto created = schedulerService.getDto(info);
-
-            assertEquals(dto.getType(), created.getType());
-            assertEquals(dto.getMotechEventSubject(), created.getMotechEventSubject());
-            assertTrue((boolean) created.getMotechEventParameters().get("uiDefined"));
-            assertEquals("test_event", created.getMotechEventParameters().get("eventType"));
-            assertEquals(dto.getStartDate(), created.getStartDate());
-            assertEquals(FORMATTER.parseDateTime(dto.getParameters().get(SchedulerConstants.END_DATE)),
-                    FORMATTER.parseDateTime(created.getParameters().get(SchedulerConstants.END_DATE)));
-            assertEquals(dto.getParameters().get(SchedulerConstants.REPEAT_COUNT),
-                    created.getParameters().get(SchedulerConstants.REPEAT_COUNT));
-            assertEquals(dto.getParameters().get(SchedulerConstants.REPEAT_INTERVAL_IN_SECONDS),
-                    created.getParameters().get(SchedulerConstants.REPEAT_INTERVAL_IN_SECONDS));
-        } finally {
-            stopFakingTime();
-        }
-    }
-
-    @Test
-    public void shouldScheduleRepeatingPeriodJobFromDto() throws Exception {
-        try {
-            fakeNow(new DateTime(2020, 7, 15, 10, 0, 0));
-
-            JobDto dto = new JobDto();
-            dto.setType(JobType.REPEATING_PERIOD);
-            dto.setMotechEventSubject("test_event");
-            dto.setMotechEventParameters(new HashMap<>());
-            dto.setStartDate(newDateTime(2020, 7, 15, 12, 0, 0));
-
-            Map<String, String> params = new HashMap<>();
-            params.put(SchedulerConstants.END_DATE, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z").print(
-                    newDateTime(2020, 7, 17, 10, 0, 0)));
-            params.put(SchedulerConstants.REPEAT_PERIOD, "PT60S");
-
-            dto.setParameters(params);
-
-            schedulerService.scheduleJob(dto);
-
-            JobBasicInfo info = new JobBasicInfo();
-            info.setName("test_event-null-period");
-            info.setGroup("default");
-
-            JobDto created = schedulerService.getDto(info);
-
-            assertEquals(dto.getType(), created.getType());
-            assertEquals(dto.getMotechEventSubject(), created.getMotechEventSubject());
-            assertTrue((boolean) created.getMotechEventParameters().get("uiDefined"));
-            assertEquals("test_event", created.getMotechEventParameters().get("eventType"));
-            assertEquals(dto.getStartDate(), created.getStartDate());
-            assertEquals(FORMATTER.parseDateTime(dto.getParameters().get(SchedulerConstants.END_DATE)),
-                    FORMATTER.parseDateTime(created.getParameters().get(SchedulerConstants.END_DATE)));
-            assertEquals(dto.getParameters().get(SchedulerConstants.REPEAT_PERIOD),
-                    created.getParameters().get(SchedulerConstants.REPEAT_PERIOD));
-        } finally {
-            stopFakingTime();
-        }
-    }
-
-    @Test
-    public void shouldScheduleRunOnceJobFromDto() throws Exception {
-        try {
-            fakeNow(new DateTime(2020, 7, 15, 10, 0, 0));
-
-            JobDto dto = new JobDto();
-            dto.setType(JobType.RUN_ONCE);
-            dto.setMotechEventSubject("test_event");
-            dto.setMotechEventParameters(new HashMap<>());
-            dto.setStartDate(newDateTime(2020, 7, 15, 12, 0, 0));
-
-            schedulerService.scheduleJob(dto);
-
-            JobBasicInfo info = new JobBasicInfo();
-            info.setName("test_event-null-runonce");
-            info.setGroup("default");
-
-            JobDto created = schedulerService.getDto(info);
-
-            assertEquals(dto.getType(), created.getType());
-            assertEquals(dto.getMotechEventSubject(), created.getMotechEventSubject());
-            assertTrue((boolean) created.getMotechEventParameters().get("uiDefined"));
-            assertEquals("test_event", created.getMotechEventParameters().get("eventType"));
-            assertEquals(dto.getStartDate(), created.getStartDate());
-        } finally {
-            stopFakingTime();
-        }
-    }
-
-    @Test
-    public void shouldScheduleDayOfWeekJobFromDto() throws Exception {
-        try {
-            fakeNow(new DateTime(2020, 7, 15, 10, 0, 0));
-
-            JobDto dto = new JobDto();
-            dto.setType(JobType.DAY_OF_WEEK);
-            dto.setMotechEventSubject("test_event");
-            dto.setMotechEventParameters(new HashMap<>());
-            dto.setStartDate(newDateTime(2020, 7, 15, 12, 0, 0));
-
-            Map<String, String> params = new HashMap<>();
-            params.put(SchedulerConstants.END_DATE, FORMATTER.print(newDateTime(2020, 7, 17, 10, 0, 0)));
-            params.put(SchedulerConstants.DAYS, "1,2,3,4,5,6");
-            params.put(SchedulerConstants.TIME, "16:00");
-
-            dto.setParameters(params);
-
-            schedulerService.scheduleJob(dto);
-
-            JobBasicInfo info = new JobBasicInfo();
-            info.setName("test_event-null");
-            info.setGroup("default");
-
-            JobDto created = schedulerService.getDto(info);
-
-            assertEquals(JobType.CRON, created.getType());
-            assertEquals(dto.getMotechEventSubject(), created.getMotechEventSubject());
-            assertTrue((boolean) created.getMotechEventParameters().get("uiDefined"));
-            assertEquals("test_event", created.getMotechEventParameters().get("eventType"));
-            assertEquals(dto.getStartDate().toDateMidnight().toDateTime(), created.getStartDate());
-            assertEquals(FORMATTER.parseDateTime(dto.getParameters().get(SchedulerConstants.END_DATE)).toDateMidnight()
-                    .toDateTime(), FORMATTER.parseDateTime(created.getParameters().get(SchedulerConstants.END_DATE)));
-            assertEquals("0 0 16 ? * 2,3,4,5,6,7",
-                    created.getParameters().get(SchedulerConstants.CRON_EXPRESSION));
         } finally {
             stopFakingTime();
         }
@@ -542,7 +347,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionForNullRunOneceJob() throws Exception {
+    public void shouldThrowExceptionForNullRunOnceJob() throws Exception {
         schedulerService.scheduleRunOnceJob(null);
     }
 
@@ -732,8 +537,8 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
             schedulerService.scheduleDayOfWeekJob(
                     new DayOfWeekSchedulableJob(
                             new MotechEvent("test_event", params),
-                            newDate(2020, 7, 10),   // friday
-                            newDate(2020, 7, 22),
+                            newDateTime(2020, 7, 10),   // friday
+                            newDateTime(2020, 7, 22),
                             asList(DayOfWeek.Monday, DayOfWeek.Thursday),
                             new Time(10, 10),
                             false)
@@ -760,8 +565,8 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
             schedulerService.scheduleDayOfWeekJob(
                     new DayOfWeekSchedulableJob(
                             new MotechEvent("test_event", params),
-                            newDate(2020, 7, 10),   // friday
-                            newDate(2020, 7, 22),
+                            newDateTime(2020, 7, 10),   // friday
+                            newDateTime(2020, 7, 22),
                             asList(DayOfWeek.Monday, DayOfWeek.Thursday),
                             new Time(10, 10),
                             true)
