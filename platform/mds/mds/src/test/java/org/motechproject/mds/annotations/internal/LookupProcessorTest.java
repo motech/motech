@@ -94,7 +94,7 @@ public class LookupProcessorTest {
 
         List<LookupDto> list = elements.get(TEST_CLASS_NAME);
         LookupDto expected = new LookupDto("Test Method 1", true, false,
-                asList(lookupFieldDto("arg1"), lookupFieldDto("secondArgument", "LIKE")), true, "testMethod1", asList("arg1", "secondArgument"));
+                asList(lookupFieldDto("arg1"), lookupFieldDto("secondArgument", "LIKE")), true, "testMethod1", asList("arg1", "secondArgument"), true);
 
         assertEquals(1, list.size());
         assertEquals(expected, list.get(0));
@@ -135,7 +135,7 @@ public class LookupProcessorTest {
 
         List<LookupDto> list = elements.get(TEST_CLASS_NAME);
         LookupDto expected = new LookupDto("Test Method 2", false, false,
-                lookupFieldDtos(argNames), true, "testMethod2", asList(argNames));
+                lookupFieldDtos(argNames), true, "testMethod2", asList(argNames), true);
 
         assertEquals(1, list.size());
         assertEquals(expected, list.get(0));
@@ -150,7 +150,7 @@ public class LookupProcessorTest {
 
         Method method = getTestMethod(3);
         LookupDto dto = new LookupDto("My new custom lookup", false, false,
-                lookupFieldDtos(argNames), true, "testMethod3",  asList(argNames));
+                lookupFieldDtos(argNames), true, "testMethod3",  asList(argNames), true);
 
         lookupProcessor.process(method);
 
@@ -183,7 +183,7 @@ public class LookupProcessorTest {
             when(paranamer.lookupParameterNames(method)).thenReturn(new String[]{"arg0", "range"});
 
             LookupDto expectedLookup = new LookupDto("Test Method With Range Param " + i, false, false,
-                    asList(expectedFields[i]), true, "testMethodWithRangeParam" + i,  asList(expectedFieldsOrder[i]));
+                    asList(expectedFields[i]), true, "testMethodWithRangeParam" + i,  asList(expectedFieldsOrder[i]), true);
 
             lookupProcessor.process(method);
 
@@ -222,7 +222,7 @@ public class LookupProcessorTest {
             when(paranamer.lookupParameterNames(method)).thenReturn(new String[]{"arg0", "set"});
 
             LookupDto expectedLookup = new LookupDto("Test Method With Set Param " + i, true, false,
-                    asList(expectedFields[i]), true, "testMethodWithSetParam" + i, asList(expectedFieldsOrder[i]));
+                    asList(expectedFields[i]), true, "testMethodWithSetParam" + i, asList(expectedFieldsOrder[i]), true);
 
             lookupProcessor.process(method);
 
@@ -267,7 +267,7 @@ public class LookupProcessorTest {
 
         Method method = getTestMethodExposedViaRest();
         LookupDto dto = new LookupDto("Test Method Exposed Via Rest", true, true,
-                lookupFieldDtos(argNames), true, "testMethodExposedViaRest", asList(argNames));
+                lookupFieldDtos(argNames), true, "testMethodExposedViaRest", asList(argNames), true);
 
         lookupProcessor.process(method);
 
@@ -295,7 +295,7 @@ public class LookupProcessorTest {
 
         Method method = getTestMethodExposedViaRest();
         LookupDto dto = new LookupDto("Test Method Exposed Via Rest", true, false,
-                lookupFieldDtos(argNames), true, "testMethodExposedViaRest", asList(argNames));
+                lookupFieldDtos(argNames), true, "testMethodExposedViaRest", asList(argNames), true);
 
         lookupProcessor.process(method);
 
@@ -305,6 +305,30 @@ public class LookupProcessorTest {
         List<LookupDto> list = elements.get(TEST_CLASS_NAME);
         assertEquals(1, list.size());
         assertEquals(dto, list.get(0));
+    }
+
+    @Test
+    public void shouldNotCreateIndexForLookup() throws Exception {
+        FieldDto arg1Field = new FieldDto("arg1", "Arg1", TypeDto.INTEGER);
+        FieldDto secondArgumentField = new FieldDto("secondArgument", "Second Argument", TypeDto.STRING);
+
+        lookupProcessor.setEntityProcessingResult
+                (Arrays.asList(mockEntityProcessorOutput(new EntityDto(TestClass.class.getName()),
+                        Arrays.asList(arg1Field, secondArgumentField))));
+        when(paranamer.lookupParameterNames(getTestMethod(5))).thenReturn(argNames);
+
+        Method method = getTestMethod(5);
+        lookupProcessor.process(method);
+
+        Map<String, List<LookupDto>> elements = lookupProcessor.getProcessingResult();
+        assertTrue(elements.containsKey(TEST_CLASS_NAME));
+
+        List<LookupDto> list = elements.get(TEST_CLASS_NAME);
+        LookupDto expected = new LookupDto("Test Method 5", true, false,
+                asList(lookupFieldDto("arg1"), lookupFieldDto("secondArgument", "LIKE")), true, "testMethod5", new ArrayList<>(), false);
+
+        assertEquals(1, list.size());
+        assertEquals(expected, list.get(0));
     }
 
     private Method getTestMethod(int number) throws NoSuchMethodException {
@@ -344,6 +368,12 @@ public class LookupProcessorTest {
         @Lookup
         public Integer testMethod4(String arg0, Integer arg1, String arg2) {
             return 42;
+        }
+
+        @Lookup(indexRequired = false)
+        public TestClass testMethod5(String arg0, @LookupField Integer arg1,
+                                     @LookupField(name = "secondArgument", customOperator = "LIKE") String arg2) {
+            return null;
         }
 
         @Lookup
