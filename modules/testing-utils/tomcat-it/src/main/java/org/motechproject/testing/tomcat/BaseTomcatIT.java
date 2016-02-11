@@ -42,16 +42,12 @@ public class BaseTomcatIT {
     }
 
     public void prepareTomcat() throws IOException, InterruptedException {
-        logger.info("PREPARE TOMCAT!!!!!!");
         waitForTomcat();
         createAdminUser();
         login();
-        logger.info("FINISH PREPARE TOMCAT!!!!!!");
     }
 
     public void waitForBundles(JSONArray bundles) throws IOException, InterruptedException {
-
-        logger.info("WAIT FOR BUNDLES!!!!!");
 
         assertNotNull("The bundle list cannot be empty", bundles);
 

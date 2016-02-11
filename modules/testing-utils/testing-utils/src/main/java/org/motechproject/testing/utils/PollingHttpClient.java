@@ -169,7 +169,6 @@ public class PollingHttpClient {
     private <T> T executeWithWaitForUriAvailability(HttpUriRequest httpUriRequest, ResponseHandler<? extends T> responseHandler,
                                                     int expectedErrorCode) throws InterruptedException, IOException {
         final long timeoutInMillis = maxWaitPeriodInSeconds * 1000;
-        LOGGER.info("MAX WAIT PERIOD IN SECONDS: " + maxWaitPeriodInSeconds);
         long waitingFor;
         HttpResponse response = null;
 
@@ -198,13 +197,8 @@ public class PollingHttpClient {
                 }
 
                 waitingFor = System.currentTimeMillis() - startTime;
-                LOGGER.info("WAITING FOR: " + waitingFor);
             } while (responseNotFound(response, expectedErrorCode) && waitingFor < timeoutInMillis);
-            if (waitingFor < timeoutInMillis) {
-                LOGGER.info("WAITING FOR < TIMEOUT");
-            } else {
-                LOGGER.info("WAITING FOR > TIMEOUT");
-            }
+
             return response == null ? null : responseHandler.handleResponse(response);
         } finally {
             if (response != null) {
