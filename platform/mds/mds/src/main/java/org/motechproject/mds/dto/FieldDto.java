@@ -31,7 +31,7 @@ public class FieldDto {
     private List<LookupDto> lookups;
 
     public FieldDto() {
-        this(null, null, null, null, false, false, true, null, null, null, null);
+        this(null, null, null, null, false, false, false, null, null, null, null);
     }
 
     public FieldDto(String name, String displayName, TypeDto type) {
