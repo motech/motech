@@ -1,6 +1,6 @@
 <div ng-if="!showTrash">
     <h4 class="frame-title">{{selectedEntity.module}} <span ui-if="selectedEntity.module">- </span>{{selectedEntity.name}} {{msg('mds.dataBrowsing.instances')}} </h4>
-    <div class="clearfix toolbox form-horizontal">
+    <div class="clearfix toolbox form-horizontal" ng-show="showToolbox">
         <div class="alert alert-danger" ng-show="dataRetrievalError">
             <h4>{{msg('mds.error')}}</h4>
             <p>{{msg('mds.error.dataRetrievalError')}}</p>
