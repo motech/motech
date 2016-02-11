@@ -38,7 +38,7 @@ public class ConfigLoader {
         ConfigLocation configLocation = coreConfigurationService.getConfigLocation();
         Resource configLocationResource = configLocation.toResource();
         try {
-            Resource motechSettings = configLocationResource.createRelative(ConfigurationConstants.SETTINGS_FILE_NAME_WITH_PREFIX);
+            Resource motechSettings = configLocationResource.createRelative(ConfigurationConstants.SETTINGS_FILE_NAME);
             settingsRecord = loadSettingsFromStream(motechSettings);
             settingsRecord.setFilePath(configLocationResource.getURL().getPath());
             checkSettingsRecord(settingsRecord);

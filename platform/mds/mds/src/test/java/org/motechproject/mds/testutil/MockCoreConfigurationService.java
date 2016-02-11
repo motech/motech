@@ -67,6 +67,11 @@ public class MockCoreConfigurationService implements CoreConfigurationService {
     }
 
     @Override
+    public ConfigLocation getMotechLocation() {
+        return null;
+    }
+
+    @Override
     public void addConfigLocation(String location) throws FileSystemException {
     }
 

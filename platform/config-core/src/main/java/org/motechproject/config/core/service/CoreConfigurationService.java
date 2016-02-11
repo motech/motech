@@ -74,6 +74,12 @@ public interface CoreConfigurationService {
     ConfigLocation getConfigLocation();
 
     /**
+     * Returns the Motech location where all Motech files are present.
+     * @return configLocation.
+     */
+    ConfigLocation getMotechLocation();
+
+    /**
      * Adds the new config location to the list of existing config locations where configurations are loaded from in the file system.
      *
      * @param location config location to add.

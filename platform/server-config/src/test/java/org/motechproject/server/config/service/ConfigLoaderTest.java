@@ -64,7 +64,7 @@ public class ConfigLoaderTest {
         UrlResource resource = mock(UrlResource.class);
         when(coreConfigurationService.getConfigLocation()).thenReturn(configLocation);
         when(configLocation.toResource()).thenReturn(resource);
-        when(resource.createRelative(ConfigurationConstants.SETTINGS_FILE_NAME_WITH_PREFIX)).thenThrow(new MalformedURLException());
+        when(resource.createRelative(ConfigurationConstants.SETTINGS_FILE_NAME)).thenThrow(new MalformedURLException());
 
         configLoader.loadMotechSettings();
     }
