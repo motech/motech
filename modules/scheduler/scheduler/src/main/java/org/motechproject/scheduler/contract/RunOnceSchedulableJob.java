@@ -16,8 +16,9 @@ public final class RunOnceSchedulableJob extends SchedulableJob {
 
     private static final long serialVersionUID = 1L;
 
-    private MotechEvent motechEvent;
-    private DateTime startDate;
+    public RunOnceSchedulableJob() {
+        super();
+    }
 
     /**
      * Constructor
@@ -39,32 +40,7 @@ public final class RunOnceSchedulableJob extends SchedulableJob {
      * @param uiDefined  the flag defining, whether job has been created through the UI
      */
     public RunOnceSchedulableJob(MotechEvent motechEvent, DateTime startDate, boolean uiDefined) {
-
-        super(uiDefined);
-
-        if (motechEvent == null) {
-            throw new IllegalArgumentException("MotechEvent can not be null");
-        }
-
-        if (startDate == null) {
-            throw new IllegalArgumentException("Start date can not be null");
-        }
-
-        this.motechEvent = motechEvent;
-        this.startDate = startDate;
-    }
-
-    public MotechEvent getMotechEvent() {
-        return motechEvent;
-    }
-
-    @Override
-    public boolean isIgnorePastFiresAtStart() {
-        return true;
-    }
-
-    public DateTime getStartDate() {
-        return startDate;
+        super(motechEvent, startDate, uiDefined, false);
     }
 
     @Override
@@ -78,28 +54,21 @@ public final class RunOnceSchedulableJob extends SchedulableJob {
 
         RunOnceSchedulableJob that = (RunOnceSchedulableJob) o;
 
-        if (!motechEvent.equals(that.motechEvent)) {
-            return false;
-        }
-        if (!startDate.equals(that.startDate)) {
-            return false;
-        }
-
-        return true;
+        return super.equals(that);
     }
 
     @Override
     public int hashCode() {
-        int result = motechEvent.hashCode();
-        result = 31 * result + startDate.hashCode();
+        int result = getMotechEvent().hashCode();
+        result = 31 * result + getStartDate().hashCode();
         return result;
     }
 
     @Override
     public String toString() {
         return "RunOnceSchedulableJob{" +
-                "motechEvent=" + motechEvent +
-                ", startDate=" + startDate +
+                "motechEvent=" + getMotechEvent() +
+                ", startDate=" + getStartDate() +
                 '}';
     }
 }
