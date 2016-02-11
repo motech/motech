@@ -21,8 +21,11 @@ import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
+import org.motechproject.mds.web.domain.RelationshipsUpdate;
 import org.motechproject.mds.web.service.InstanceService;
 import org.motechproject.mds.web.util.QueryParamsBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -56,6 +59,8 @@ import static org.apache.commons.lang.CharEncoding.UTF_8;
  */
 @Controller
 public class InstanceController extends MdsController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(InstanceController.class);
 
     @Autowired
     private InstanceService instanceService;
@@ -178,12 +183,23 @@ public class InstanceController extends MdsController {
         return entityRecord;
     }
 
-    @RequestMapping(value = "/instances/{entityId}/instance/{instanceId}/{fieldName}", method = RequestMethod.GET)
+    @RequestMapping(value = "/instances/{entityId}/instance/new/{fieldName}", method = RequestMethod.POST)
+    @ResponseBody
+    public Records<EntityRecord> getRelatedValues(@PathVariable Long entityId, @PathVariable String fieldName, String filters, GridSettings settings) {
+        RelationshipsUpdate filter = parseRelatedInstancesFilter(filters);
+        QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
+        Records<EntityRecord> records = instanceService.getRelatedFieldValue(entityId, null, fieldName, filter, queryParams);
+        processFieldsForUI(records);
+        return records;
+    }
+
+    @RequestMapping(value = "/instances/{entityId}/instance/{instanceId}/{fieldName}", method = RequestMethod.POST)
     @ResponseBody
     public Records<EntityRecord> getRelatedValues(@PathVariable Long entityId, @PathVariable Long instanceId,
-                                    @PathVariable String fieldName, GridSettings settings) {
+                                    @PathVariable String fieldName, String filters, GridSettings settings) {
+        RelationshipsUpdate filter = parseRelatedInstancesFilter(filters);
         QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
-        Records<EntityRecord> records = instanceService.getRelatedFieldValue(entityId, instanceId, fieldName,
+        Records<EntityRecord> records = instanceService.getRelatedFieldValue(entityId, instanceId, fieldName, filter,
                 queryParams);
         processFieldsForUI(records);
         return records;
@@ -310,6 +326,21 @@ public class InstanceController extends MdsController {
         } catch (IOException e) {
             throw new CsvImportException("Unable to open uploaded file", e);
         }
+    }
+
+    private RelationshipsUpdate parseRelatedInstancesFilter(String filters) {
+        if (filters == null) {
+            return new RelationshipsUpdate();
+        }
+
+        RelationshipsUpdate filter = null;
+        try {
+            filter =  objectMapper.readValue(filters, RelationshipsUpdate.class);
+        } catch (IOException e) {
+            LOGGER.error("Could not parse related instances filter from the request. ", e);
+        }
+
+        return filter;
     }
 
     private Map<String, Object> getFields(GridSettings gridSettings) throws IOException {
