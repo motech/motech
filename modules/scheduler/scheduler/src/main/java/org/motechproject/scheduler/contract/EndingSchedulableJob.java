@@ -4,6 +4,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 
+/**
+ * Represents a job that can have an end date specified.
+ */
 public abstract class EndingSchedulableJob extends SchedulableJob {
 
     private DateTime endDate;

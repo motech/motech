@@ -3,14 +3,12 @@ package org.motechproject.scheduler.contract;
 import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 
+/**
+ * Represents a job that can use its original fire time after a misfire.
+ */
 public abstract class MisfireSchedulableJob extends EndingSchedulableJob {
 
     private boolean useOriginalFireTimeAfterMisfire;
-
-    protected MisfireSchedulableJob() {
-        super();
-        this.useOriginalFireTimeAfterMisfire = false;
-    }
 
     protected MisfireSchedulableJob(MotechEvent motechEvent, DateTime startDate, DateTime endDate, boolean uiDefined,
                                     boolean ignorePastFiresAtStart, boolean useOriginalFireTimeAfterMisfire) {
