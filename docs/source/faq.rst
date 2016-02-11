@@ -153,3 +153,19 @@ I'm unable to build docker containers because of missing packages in Ubuntu repo
 -----------------------------------------------------------------------------------------
 Try building the container with ``--no-cache``.
 
+How to debug the T7 plugin instance of Tomcat during integration tests? (in platform/server for example)
+--------------------------------------------------------------------------------------------------------
+
+First export the *CATALINA_OPTS* variable with a value that will enable debugging, for example:
+
+.. code-block:: bash
+
+    export CATALINA_OPTS=-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n
+
+Next, run the integration tests as you would normally do, for example:
+
+.. code-block:: bash
+
+    mvn clean install -PIT
+
+Then connect to Tomcat using a remote debugger on port 8000, same as when normally debugging Tomcat.
