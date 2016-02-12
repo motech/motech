@@ -670,7 +670,7 @@
     widgetModule.directive('datePicker', function() {
         return {
             restrict: 'A',
-            scope: {},
+            scope: true,
             link: function(scope, element, attrs) {
                 var elem = angular.element(element),
                    otherDateTextBox = {},
