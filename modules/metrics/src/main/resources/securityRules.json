@@ -1,0 +1,18 @@
+[
+  {
+    "active": true,
+    "pattern": "/**/metrics/api/**",
+    "supportedSchemes": [
+      "BASIC"
+    ],
+    "protocol": "HTTP",
+    "priority": 2,
+    "rest": true,
+    "origin": "SYSTEM_MODULE_METRICS",
+    "version": "1.0-SNAPSHOT",
+    "methodsRequired": [
+      "GET",
+      "POST"
+    ]
+  }
+]

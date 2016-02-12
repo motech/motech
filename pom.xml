@@ -55,6 +55,8 @@
         <npm.cmd>npm</npm.cmd>
         <gulp.cmd>gulp</gulp.cmd>
         <bower.cmd>bower</bower.cmd>
+
+        <metrics.version>3.1.2</metrics.version>
     </properties>
 
     <dependencies>
@@ -1066,6 +1068,38 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
+            <!-- Motech Metrics -->
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-core</artifactId>
+                <version>${metrics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-annotation</artifactId>
+                <version>${metrics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-healthchecks</artifactId>
+                <version>${metrics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-json</artifactId>
+                <version>${metrics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-jvm</artifactId>
+                <version>${metrics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-graphite</artifactId>
+                <version>${metrics.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1088,6 +1122,7 @@
         <module>platform/mds/mds-migration</module>
         <module>platform/mds/mds-web</module>
         <module>modules/admin</module>
+        <module>modules/metrics</module>
         <module>modules/scheduler/scheduler</module>
         <module>modules/scheduler/scheduler-migration</module>
         <module>platform/osgi-platform</module>
