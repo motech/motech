@@ -67,6 +67,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.management.InstanceNotFoundException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -239,12 +240,16 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    public Object getInstanceField(Long entityId, Long instanceId, String fieldName) {
+    public Object getInstanceField(Long entityId, Long instanceId, String fieldName) throws InstanceNotFoundException {
         EntityDto entity = getEntity(entityId);
         MotechDataService service = getServiceForEntity(entity);
         validateCredentialsForReading(entity);
 
-        return service.getDetachedField(instanceId, fieldName);
+        Object instance = service.findById(instanceId);
+        if (instance == null) {
+            throw new InstanceNotFoundException(String.format("Cannot find instance with id: %d", instanceId));
+        }
+        return service.getDetachedField(instance, fieldName);
     }
 
     @Override
