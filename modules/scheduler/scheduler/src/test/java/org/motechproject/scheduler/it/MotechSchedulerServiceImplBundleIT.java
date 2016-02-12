@@ -3,6 +3,8 @@ package org.motechproject.scheduler.it;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Period;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +49,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
-import static org.motechproject.commons.date.util.DateUtil.newDate;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.testing.utils.IdGenerator.id;
@@ -61,6 +62,8 @@ import static org.quartz.TriggerKey.triggerKey;
 @ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
+
+    private final static DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z");
 
     @Inject
     private BundleContext context;
@@ -301,7 +304,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionForNullCronJob() throws Exception {
-        schedulerService.scheduleJob(null);
+        schedulerService.scheduleJob((CronSchedulableJob) null);
     }
 
     @Test
@@ -344,7 +347,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionForNullRunOneceJob() throws Exception {
+    public void shouldThrowExceptionForNullRunOnceJob() throws Exception {
         schedulerService.scheduleRunOnceJob(null);
     }
 
@@ -534,8 +537,8 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
             schedulerService.scheduleDayOfWeekJob(
                     new DayOfWeekSchedulableJob(
                             new MotechEvent("test_event", params),
-                            newDate(2020, 7, 10),   // friday
-                            newDate(2020, 7, 22),
+                            newDateTime(2020, 7, 10),   // friday
+                            newDateTime(2020, 7, 22),
                             asList(DayOfWeek.Monday, DayOfWeek.Thursday),
                             new Time(10, 10),
                             false)
@@ -562,8 +565,8 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
             schedulerService.scheduleDayOfWeekJob(
                     new DayOfWeekSchedulableJob(
                             new MotechEvent("test_event", params),
-                            newDate(2020, 7, 10),   // friday
-                            newDate(2020, 7, 22),
+                            newDateTime(2020, 7, 10),   // friday
+                            newDateTime(2020, 7, 22),
                             asList(DayOfWeek.Monday, DayOfWeek.Thursday),
                             new Time(10, 10),
                             true)
