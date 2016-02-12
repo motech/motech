@@ -9,6 +9,7 @@ import org.motechproject.scheduler.contract.JobId;
 import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
+import org.motechproject.scheduler.contract.SchedulableJob;
 
 import java.util.List;
 
@@ -42,6 +43,13 @@ public interface MotechSchedulerService {
     String JOB_ID_KEY = "JobID";
 
     /**
+     * Schedules the given schedulable job.
+     *
+     * @param job  the job DTO
+     */
+    void scheduleJob(SchedulableJob job);
+
+    /**
      * Schedules the given schedulable job. The Job ID by which the job will be referencing in the future should be provided
      * in an Instance of MotechEvent in SchedulableJob (see MotechEvent.jobId)
      *
@@ -65,6 +73,13 @@ public interface MotechSchedulerService {
      */
     @Deprecated // nobody's using it and can't imagine a case for this
     void updateScheduledJob(MotechEvent motechEvent);
+
+    /**
+     * Updates the job with job key matching the key of the given job.
+     *
+     * @param job  the updated job
+     */
+    void updateJob(SchedulableJob job);
 
     /**
      * Reschedules a job with the given job ID to be fired according to the given Cron Expression

@@ -13,15 +13,15 @@ import java.util.Objects;
  *         Date: 16/02/11
  *         Time: 1:43 PM
  */
-public class CronSchedulableJob extends SchedulableJob {
+public class CronSchedulableJob extends EndingSchedulableJob {
 
     private static final long serialVersionUID = 1L;
 
-    private MotechEvent motechEvent;
     private String cronExpression;
-    private DateTime startTime;
-    private DateTime endTime;
-    private boolean ignorePastFiresAtStart;
+
+    public CronSchedulableJob() {
+        this(null, null, null, null, false, false);
+    }
 
     /**
      * Constructor.
@@ -70,40 +70,12 @@ public class CronSchedulableJob extends SchedulableJob {
      */
     public CronSchedulableJob(MotechEvent motechEvent, String cronExpression, DateTime startTime, DateTime endTime,
                               boolean ignorePastFiresAtStart, boolean uiDefined) {
-        super(uiDefined);
-
-        if (motechEvent == null) {
-            throw new IllegalArgumentException("MotechEvent can not be null");
-        }
-
-        if (cronExpression == null || cronExpression.isEmpty()) {
-            throw new IllegalArgumentException("Cron Expression can not be null or empty");
-        }
-        this.motechEvent = motechEvent;
+        super(motechEvent, startTime, endTime, uiDefined, ignorePastFiresAtStart);
         this.cronExpression = cronExpression;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.ignorePastFiresAtStart = ignorePastFiresAtStart;
-    }
-
-    public DateTime getStartTime() {
-        return startTime;
-    }
-
-    public DateTime getEndTime() {
-        return endTime;
-    }
-
-    public MotechEvent getMotechEvent() {
-        return motechEvent;
     }
 
     public String getCronExpression() {
         return cronExpression;
-    }
-
-    public boolean isIgnorePastFiresAtStart() {
-        return ignorePastFiresAtStart;
     }
 
     @Override
@@ -112,12 +84,12 @@ public class CronSchedulableJob extends SchedulableJob {
         int result = 1;
         result = prime * result
                 + ((cronExpression == null) ? 0 : cronExpression.hashCode());
-        result = prime * result + ((endTime == null) ? 0 : endTime.hashCode());
+        result = prime * result + ((getEndDate() == null) ? 0 : getEndDate().hashCode());
         result = prime * result
-                + ((motechEvent == null) ? 0 : motechEvent.hashCode());
+                + ((getMotechEvent() == null) ? 0 : getMotechEvent().hashCode());
         result = prime * result
-                + ((startTime == null) ? 0 : startTime.hashCode());
-        result = prime * result + (ignorePastFiresAtStart ? 0 : 1);
+                + ((getStartDate() == null) ? 0 : getStartDate().hashCode());
+        result = prime * result + (isIgnorePastFiresAtStart() ? 0 : 1);
         return result;
     }
 
@@ -133,22 +105,18 @@ public class CronSchedulableJob extends SchedulableJob {
 
         CronSchedulableJob other = (CronSchedulableJob) obj;
 
-        return
-            Objects.equals(motechEvent, other.motechEvent) &&
-            Objects.equals(cronExpression, other.cronExpression) &&
-            Objects.equals(startTime, other.startTime) &&
-            Objects.equals(endTime, other.endTime) &&
-            Objects.equals(ignorePastFiresAtStart, other.ignorePastFiresAtStart);
+        return Objects.equals(cronExpression, other.cronExpression)
+                && super.equals(other);
     }
 
     @Override
     public String toString() {
         return "SchedulableJob{" +
-                "motechEvent=" + motechEvent +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
+                "motechEvent=" + getMotechEvent() +
+                ", startTime=" + getStartDate() +
+                ", endTime=" + getEndDate() +
                 ", cronExpression='" + cronExpression + '\'' +
-                ", ignorePastFiresAtStart='" + ignorePastFiresAtStart + '\'' +
+                ", ignorePastFiresAtStart='" + isIgnorePastFiresAtStart() + '\'' +
                 '}';
     }
 }
