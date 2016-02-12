@@ -3,7 +3,7 @@ package org.motechproject.config.core.filestore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.bootstrap.BootstrapManager;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.powermock.modules.junit4.PowerMockRunner;

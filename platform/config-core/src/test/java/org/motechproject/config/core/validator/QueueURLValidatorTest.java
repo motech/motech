@@ -2,7 +2,7 @@ package org.motechproject.config.core.validator;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 
 import java.util.Arrays;
 import java.util.List;
