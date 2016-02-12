@@ -5,6 +5,79 @@
 
     var directives = angular.module('scheduler.directives', []);
 
+    /* General date time picker that can work as either date, time or datetime picker */
+    directives.directive('dateTimePicker', function ($timeout) {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            scope: {
+                dateTimePicker: '@',
+                timeFormat: '@'
+            },
+            link: function (scope, element, attr, ngModel) {
+                var isReadOnly = scope.$eval(attr.ngReadonly),
+                    dateFormat = "",
+                    timeFormat = "",
+                    timeOnly = false,
+                    dateOnly = false,
+                    showTimezone;
+
+                if (scope.dateTimePicker === 'date') {
+                    dateOnly = true;
+                    dateFormat = 'yy-mm-dd';
+
+                } else if (scope.dateTimePicker === 'time') {
+                    timeOnly = true;
+
+                    if (scope.timeFormat) {
+                        timeFormat = scope.timeFormat;
+                    } else {
+                        timeFormat = 'HH:mm z';
+                    }
+
+                    showTimezone = timeFormat.indexOf("z") > -1;
+                } else {
+                    dateFormat = 'yy-mm-dd';
+                    timeFormat = 'HH:mm z';
+                }
+
+                if(!isReadOnly) {
+                    angular.element(element).datetimepicker({
+                        showTimezone: showTimezone,
+                        changeYear: true,
+                        useLocalTimezone: true,
+                        dateFormat: dateFormat,
+                        timeFormat: timeFormat,
+                        showTimepicker: !dateOnly,
+                        timeOnly: timeOnly,
+                        onSelect: function (dateTex) {
+                            $timeout(function () {
+                                ngModel.$setViewValue(dateTex);
+                            });
+                        },
+                        onClose: function (year, month, inst) {
+                            var viewValue = $(this).val();
+                            $timeout(function () {
+                                ngModel.$setViewValue(viewValue);
+                            });
+                        },
+                        onChangeMonthYear: function (year, month, inst) {
+                            var curDate = $(this).datepicker("getDate");
+                            if (curDate === null) {
+                                return;
+                            }
+                            if (curDate.getFullYear() !== year || curDate.getMonth() !== month - 1) {
+                                curDate.setYear(year);
+                                curDate.setMonth(month - 1);
+                                $(this).datepicker("setDate", curDate);
+                            }
+                        }
+                    });
+                }
+            }
+        };
+    });
+
     directives.directive("collapser", function($compile) {
         return {
             restrict: 'C',
@@ -24,6 +97,24 @@
                     } else {
                         element.find('.fa-caret-right').removeClass("fa-caret-right").addClass("fa-caret-down");
                         $(scope.collapser).collapse('toggle');
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive("mtInvalid", function() {
+        return {
+            restrict: 'A',
+            scope: {
+                mtInvalid: '='
+            },
+            link: function (scope, element, attrs) {
+                scope.$watch("$parent." + scope.mtInvalid, function (value) {
+                    if (value === true) {
+                        element.addClass("text-danger");
+                    } else {
+                        element.removeClass("text-danger");
                     }
                 });
             }

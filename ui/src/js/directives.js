@@ -431,8 +431,8 @@
                 require: 'ngModel',
                 link: function(scope, element, attrs, ctrl) {
                     var elem = angular.element(element),
-                    periodSliders = elem.parent().find("#period-slider > div"),
-                    periodSlider = elem.parent().find("#period-slider"),
+                    periodSliders = $("#period-slider > div"),
+                    periodSlider = $("#period-slider"),
                     parent = elem.parent(),
                     started = false,
                     openPeriodModal,
@@ -511,8 +511,8 @@
                     },
                     setParsingPeriod = function () {
                         if (!started) {
-                            periodSliders = elem.parent().find("#period-slider > div");
-                            periodSlider = elem.parent().find("#period-slider");
+                            periodSliders = $("#period-slider > div");
+                            periodSlider = $("#period-slider");
                             periodSliders.each(function(index) {
                                 var getValueSettings, valueName = (this.id);
                                 valueName = valueName.substring(valueName.lastIndexOf('-') + 1);
@@ -627,9 +627,9 @@
                         periodSlider.children( "#period-second" ).slider( "value", second );
                     };
 
-                    elem.siblings('button').on('click', function() {
+                    elem.parent().find('.period-modal-opener').on('click', function() {
                         setParsingPeriod();
-                        parent.children("#periodModal").modal('show');
+                        $("#periodModal").modal('show');
                     });
 
                 }
