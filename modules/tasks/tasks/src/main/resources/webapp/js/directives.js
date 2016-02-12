@@ -241,9 +241,6 @@
     directives.directive('droppable', function (ManageTaskUtils, $compile) {
         return {
             restrict: 'A',
-            scope: {
-              ngModel : '='
-            },
             link: function (scope, element, attrs) {
                 element.droppable({
                     drop: function (event, ui) {
