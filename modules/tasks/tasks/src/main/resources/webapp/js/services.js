@@ -25,4 +25,12 @@
         return $resource('../tasks/api/settings');
     });
 
+    services.factory('Triggers', function($resource) {
+        return $resource('../tasks/api/channel/triggers');
+    });
+
+    services.factory('Actions', function($resource) {
+        return $resource('../tasks/api/channel/actions');
+    });
+
 }());

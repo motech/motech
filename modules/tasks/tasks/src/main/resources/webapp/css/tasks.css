@@ -1010,6 +1010,22 @@
     font-size: 12px;
 }
 
+.tasks .invisible {
+    visibility: hidden
+}
+
+.tasks .list-group-item:hover {
+    background-color: #F4F4F4;
+}
+
+.tasks .popover{
+    max-width: 200%;
+}
+
+.trigger-lists {
+    min-height: 435px;
+}
+
 editable-content .popover .inner-popover, nonEditable, .no-margin-bottom input[type="text"],
 .no-margin-bottom editable-content {
     margin-bottom: 0;
@@ -1039,6 +1055,17 @@ editable-content .popover .inner-popover, nonEditable, .no-margin-bottom input[t
     text-align: right;
     width: 120px;
     overflow: hidden;
+}
+
+.tasks .triggers-pager span {
+    margin: 0px 6px;
+}
+
+.tasks .triggers-pager input {
+    border-radius: 5px;
+    outline: none;
+    border-style: groove;
+    text-align: center;
 }
 
 #period-year, #period-month, #period-week,

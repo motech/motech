@@ -1,21 +1,23 @@
 package org.motechproject.tasks.domain;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.contract.TriggerEventRequest;
 
+import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.Unique;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
 /**
  * Represents a single task channel. Channel contains the list of triggers from the given module and the list of actions
@@ -31,7 +33,9 @@ public class Channel {
     private List<ActionEvent> actionTaskEvents = new ArrayList<>();
 
     @Field
+    @JsonIgnore
     @Cascade(delete = true)
+    @Persistent(mappedBy = "channel")
     private List<TriggerEvent> triggerTaskEvents = new ArrayList<>();
 
     @Field
@@ -45,6 +49,9 @@ public class Channel {
 
     @Field
     private String moduleVersion;
+
+    @Ignore
+    private boolean providesTriggers;
 
     /**
      * Constructor.
@@ -87,6 +94,7 @@ public class Channel {
         if (triggerTaskEvents != null) {
             this.triggerTaskEvents.addAll(triggerTaskEvents);
         }
+        this.providesTriggers = CollectionUtils.isNotEmpty(triggerTaskEvents);
     }
 
     /**
@@ -116,38 +124,12 @@ public class Channel {
         return actionTaskEvents;
     }
 
-    public boolean containsTrigger(TaskTriggerInformation triggerInformation) {
-        boolean found = false;
-
-        for (TriggerEvent trigger : getTriggerTaskEvents()) {
-            if (equalsIgnoreCase(trigger.getSubject(), triggerInformation.getSubject())) {
-                found = true;
-                break;
-            }
-        }
-
-        return found;
-    }
-
     public boolean containsAction(TaskActionInformation actionInformation) {
         boolean found = false;
 
         for (ActionEvent action : getActionTaskEvents()) {
             if (action.accept(actionInformation)) {
                 found = true;
-                break;
-            }
-        }
-
-        return found;
-    }
-
-    public TriggerEvent getTrigger(TaskTriggerInformation triggerInformation) {
-        TriggerEvent found = null;
-
-        for (TriggerEvent trigger : getTriggerTaskEvents()) {
-            if (equalsIgnoreCase(trigger.getSubject(), triggerInformation.getSubject())) {
-                found = trigger;
                 break;
             }
         }
@@ -198,6 +180,8 @@ public class Channel {
                 this.triggerTaskEvents.add(trigger.copy());
             }
         }
+
+        setProvidesTriggers(CollectionUtils.isNotEmpty(this.triggerTaskEvents));
     }
 
     public String getDescription() {
@@ -230,6 +214,14 @@ public class Channel {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public boolean isProvidesTriggers() {
+        return providesTriggers;
+    }
+
+    public void setProvidesTriggers(boolean providesTriggers) {
+        this.providesTriggers = providesTriggers;
     }
 
     @Override

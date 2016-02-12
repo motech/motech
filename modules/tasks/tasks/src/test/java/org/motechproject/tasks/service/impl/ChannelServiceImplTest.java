@@ -26,6 +26,7 @@ import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.repository.TasksDataService;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskService;
+import org.motechproject.tasks.service.TriggerEventService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Version;
@@ -96,13 +97,16 @@ public class ChannelServiceImplTest {
     @Mock
     private ApplicationContext applicationContext;
 
+    @Mock
+    private TriggerEventService triggerEventService;
+
     private ChannelService channelService;
 
     @Before
     public void setup() throws Exception {
         initMocks(this);
 
-        channelService = new ChannelServiceImpl(channelsDataService, resourceLoader, eventRelay, iconLoader);
+        channelService = new ChannelServiceImpl(triggerEventService, channelsDataService, resourceLoader, eventRelay, iconLoader);
         ((ChannelServiceImpl) channelService).setBundleContext(bundleContext);
     }
 
@@ -226,10 +230,11 @@ public class ChannelServiceImplTest {
 
     @Test
     public void shouldSendEventWhenChannelWasUpdated() {
+        Channel channel = new Channel("displayName", BUNDLE_SYMBOLIC_NAME, VERSION);
+
         EventParameter eventParameter = new EventParameter("displayName", "eventKey");
         TriggerEvent triggerEvent = new TriggerEvent("displayName", "subject", null, Arrays.asList(eventParameter), "");
 
-        Channel channel = new Channel("displayName", BUNDLE_SYMBOLIC_NAME, VERSION);
         channel.getTriggerTaskEvents().add(triggerEvent);
 
         when(channelsDataService.findByModuleName(channel.getModuleName())).thenReturn(channel);
