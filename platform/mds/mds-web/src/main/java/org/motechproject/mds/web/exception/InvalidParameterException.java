@@ -1,4 +1,4 @@
-package org.motechproject.mds.web.ex;
+package org.motechproject.mds.web.exception;
 
 /**
  * Thrown when invalid parameter is passed to {@link org.motechproject.mds.web.rest.ParamParser} class.

@@ -3,7 +3,7 @@ package org.motechproject.mds.web.rest;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Order;
-import org.motechproject.mds.web.ex.InvalidParameterException;
+import org.motechproject.mds.web.exception.InvalidParameterException;
 
 import java.util.Map;
 

@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
@@ -49,6 +50,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
 
+import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -144,6 +146,38 @@ public class InstanceServiceTest {
         assertCommonFieldRecordFields(fieldRecords);
         assertEquals(asList("Default", 7, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
+    }
+
+    @Test
+    public void shouldAutoPopulateOwnerAndCreator() {
+        when(entityService.getEntityFieldsForUI(ENTITY_ID)).thenReturn(asList(
+                FieldTestHelper.fieldDto(1L, "owner", String.class.getName(), "String field", null),
+                FieldTestHelper.fieldDto(1L, "creator", String.class.getName(), "String field", null)
+        ));
+        mockEntity();
+        setUpSecurityContext();
+
+        EntityRecord record = instanceService.newInstance(ENTITY_ID);
+
+        List<FieldRecord> fieldRecords = record.getFields();
+        assertEquals(asList("motech", "motech"), extract(fieldRecords, on(FieldRecord.class).getValue()));
+    }
+
+    @Test
+    public void shouldNotAutoPopulateOwnerAndCreatorForHiddenFields() {
+        FieldDto ownerField = FieldTestHelper.fieldDto(1L, "owner", String.class.getName(), "String field", null);
+        ownerField.setNonDisplayable(true);
+        FieldDto creatorField = FieldTestHelper.fieldDto(1L, "creator", String.class.getName(), "String field", null);
+        creatorField.setNonDisplayable(true);
+
+        when(entityService.getEntityFieldsForUI(ENTITY_ID)).thenReturn(asList(ownerField, creatorField));
+        mockEntity();
+        setUpSecurityContext();
+
+        EntityRecord record = instanceService.newInstance(ENTITY_ID);
+
+        List<FieldRecord> fieldRecords = record.getFields();
+        assertEquals(asList(null, null), extract(fieldRecords, on(FieldRecord.class).getValue()));
     }
 
     @Test
@@ -692,6 +726,22 @@ public class InstanceServiceTest {
 
         verify(entityService).getEntityFieldsForUI(ENTITY_ID + 1);
         verify(userPreferencesService).updateGridSize(ENTITY_ID + 1, "motech", 100);
+    }
+
+    @Test
+    public void shouldLoadBlobField() throws InstanceNotFoundException {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setReadOnlySecurityMode(null);
+        entityDto.setSecurityMode(null);
+        entityDto.setClassName(TestSample.class.getName());
+
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityDto);
+        mockDataService();
+        TestSample instance = Mockito.mock(TestSample.class);
+        when(motechDataService.findById(ENTITY_ID + 1)).thenReturn(instance);
+
+        instanceService.getInstanceField(12l, ENTITY_ID + 1, "blobField");
+        verify(motechDataService).getDetachedField(instance, "blobField");
     }
 
     private void setUpSecurityContext() {

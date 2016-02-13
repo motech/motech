@@ -1627,17 +1627,21 @@
                         onDropdownHide: function(event) {
                             $("#" + target).trigger("resize");
                         }
-                   });
+                    });
 
-                   scope.$watch(function () {
-                       return element[0].length;
-                   }, function () {
-                       element.multiselect('rebuild');
-                   });
+                    scope.$watch(function () {
+                        return element[0].length;
+                    }, function () {
+                        element.multiselect('rebuild');
+                    });
 
-                   scope.$watch(attrs.ngModel, function () {
-                       element.multiselect('refresh');
-                   });
+                    $(element).parent().on("click", function () {
+                        element.multiselect('rebuild');
+                    });
+
+                    scope.$watch(attrs.ngModel, function () {
+                        element.multiselect('refresh');
+                    });
                 }
             };
     });
