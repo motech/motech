@@ -1,6 +1,6 @@
 package org.motechproject.scheduler.contract;
 
-import org.joda.time.LocalDate;
+import org.joda.time.DateTime;
 import org.motechproject.commons.date.model.DayOfWeek;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.event.MotechEvent;
@@ -8,93 +8,77 @@ import org.motechproject.event.MotechEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.util.CollectionUtils.isEmpty;
-
 /**
  * Job that is scheduled on particular days of week
  */
-public final class DayOfWeekSchedulableJob extends SchedulableJob {
+public final class DayOfWeekSchedulableJob extends EndingSchedulableJob {
 
     private static final long serialVersionUID = 1L;
 
-    private final MotechEvent motechEvent;
-    private final LocalDate start;
-    private final LocalDate end;
-    private final List<DayOfWeek> days;
+    private List<DayOfWeek> days;
     private Time time;
-    private boolean ignorePastFiresAtStart;
 
-    /**
-     * Constructor.
-     *
-     * @param motechEvent  the {@code MotechEvent} fired, when job triggers, not null
-     * @param start  the {@code Date} at which job should become ACTIVE, not null
-     * @param end  the {@code Date} at which job should be stopped, null treated as never end
-     * @param days  the list of days at which job should be fired, not null
-     * @param time  the time at which job should be fired, not null
-     * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not
-     */
-    public DayOfWeekSchedulableJob(MotechEvent motechEvent, LocalDate start, LocalDate end, List<DayOfWeek> days, Time time, boolean ignorePastFiresAtStart) {
-        this(motechEvent, start, end, days, time, ignorePastFiresAtStart, false);
+    public DayOfWeekSchedulableJob() {
+        this(null, null, null, null, null, false, false);
     }
 
     /**
      * Constructor.
      *
      * @param motechEvent  the {@code MotechEvent} fired, when job triggers, not null
-     * @param start  the {@code Date} at which job should become ACTIVE, not null
-     * @param end  the {@code Date} at which job should be stopped, null treated as never end
+     * @param startDate  the {@code Date} at which job should become ACTIVE, not null
+     * @param endDate  the {@code Date} at which job should be stopped, null treated as never end
+     * @param days  the list of days at which job should be fired, not null
+     * @param time  the time at which job should be fired, not null
+     * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not
+     */
+    public DayOfWeekSchedulableJob(MotechEvent motechEvent, DateTime startDate, DateTime endDate, List<DayOfWeek> days,
+                                   Time time, boolean ignorePastFiresAtStart) {
+        this(motechEvent, startDate, endDate, days, time, ignorePastFiresAtStart, false);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param motechEvent  the {@code MotechEvent} fired, when job triggers, not null
+     * @param startDate  the {@code Date} at which job should become ACTIVE, not null
+     * @param endDate  the {@code Date} at which job should be stopped, null treated as never end
+     * @param days  the list of days at which job should be fired, not null
+     * @param time  the time at which job should be fired, not null
+     */
+    public DayOfWeekSchedulableJob(MotechEvent motechEvent, DateTime startDate, DateTime endDate, List<DayOfWeek> days,
+                                   Time time) {
+        this(motechEvent, startDate, endDate, days, time, false);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param motechEvent  the {@code MotechEvent} fired, when job triggers, not null
+     * @param startDate  the {@code Date} at which job should become ACTIVE, not null
+     * @param endDate  the {@code Date} at which job should be stopped, null treated as never end
      * @param days  the list of days at which job should be fired, not null
      * @param time  the time at which job should be fired, not null
      * @param ignorePastFiresAtStart  the flag defining whether job should ignore past fires at start or not
      * @param uiDefined  the flag defining, whether job has been created through the UI
      */
-    public DayOfWeekSchedulableJob(MotechEvent motechEvent, LocalDate start, LocalDate end, List<DayOfWeek> days,
-                                   Time time, boolean ignorePastFiresAtStart, boolean uiDefined) {
-        super(uiDefined);
-
-        if (motechEvent == null || start == null || isEmpty(days)) {
-            throw new IllegalArgumentException("null/empty arguments");
-        }
-        this.motechEvent = motechEvent;
-        this.start = start;
-        this.end = end;
-        this.time = time;
+    public DayOfWeekSchedulableJob(MotechEvent motechEvent, DateTime startDate, DateTime endDate,
+                                   List<DayOfWeek> days, Time time, boolean ignorePastFiresAtStart, boolean uiDefined) {
+        super(motechEvent, startDate, endDate, uiDefined, ignorePastFiresAtStart);
         this.days = days;
-        this.ignorePastFiresAtStart = ignorePastFiresAtStart;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param motechEvent  the {@code MotechEvent} fired, when job triggers, not null
-     * @param start  the {@code Date} at which job should become ACTIVE, not null
-     * @param end  the {@code Date} at which job should be stopped, null treated as never end
-     * @param days  the list of days at which job should be fired, not null
-     * @param time  the time at which job should be fired, not null
-     */
-    public DayOfWeekSchedulableJob(MotechEvent motechEvent, LocalDate start, LocalDate end, List<DayOfWeek> days, Time time) {
-        this(motechEvent, start, end, days, time, false);
-    }
-
-    public MotechEvent getMotechEvent() {
-        return motechEvent;
-    }
-
-    public LocalDate getStartDate() {
-        return start;
-    }
-
-    public LocalDate getEndDate() {
-        return end;
+        this.time = time;
     }
 
     public Time getTime() {
         return time;
     }
 
-    public boolean isIgnorePastFiresAtStart() {
-        return ignorePastFiresAtStart;
+    public List<DayOfWeek> getDays() {
+        return days;
+    }
+
+    public void setDays(List<DayOfWeek> days) {
+        this.days = days;
     }
 
     /**

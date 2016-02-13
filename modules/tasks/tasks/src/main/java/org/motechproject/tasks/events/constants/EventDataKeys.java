@@ -24,4 +24,9 @@ public final class EventDataKeys {
     public static final String DATA_PROVIDER_NAME = "name";
 
     public static final String HANDLER_ERROR_PARAM = "taskError";
+
+    public static final String REPEAT_COUNT = "repeatCount";
+    public static final String REPEAT_INTERVAL_TIME = "repeatIntervalInSeconds";
+    public static final String JOB_SUBJECT = "jobSubject";
+    public static final String TASK_ID = "task_ID";
 }

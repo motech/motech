@@ -31,21 +31,6 @@ public class TestCronSchedulabeJob {
 
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructor_NullEvent() throws Exception {
-        new CronSchedulableJob(null, "0/5 0 * * * ?");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructor_NullCronExpression() throws Exception {
-        new CronSchedulableJob(motechEvent1, null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructor_InvalidCronExpression() throws Exception {
-        new CronSchedulableJob(motechEvent1, "");
-    }
-
     @Test
     public void equalsTest() throws Exception {
         String cron1 = "0/5 0 * * * ?";

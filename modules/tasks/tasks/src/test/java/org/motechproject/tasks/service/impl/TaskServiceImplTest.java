@@ -43,12 +43,13 @@ import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TaskNameAlreadyExistsException;
 import org.motechproject.tasks.ex.TaskNotFoundException;
-import org.motechproject.tasks.ex.TriggerNotFoundException;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.TasksDataService;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskDataProviderService;
+import org.motechproject.tasks.service.TriggerEventService;
 import org.motechproject.tasks.service.TriggerHandler;
+import org.motechproject.tasks.validation.TaskValidator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -77,6 +78,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.tasks.domain.ParameterType.UNICODE;
@@ -95,6 +97,9 @@ public class TaskServiceImplTest {
 
     @Mock
     ChannelService channelService;
+
+    @Mock
+    TriggerEventService triggerEventService;
 
     @Mock
     TaskDataProviderService providerService;
@@ -132,6 +137,10 @@ public class TaskServiceImplTest {
         taskService.setEventRelay(eventRelay);
         taskService.setProviderService(providerService);
         taskService.setTasksDataService(tasksDataService);
+        taskService.setTriggerEventService(triggerEventService);
+        TaskValidator taskValidator = new TaskValidator();
+        taskValidator.setTriggerEventService(triggerEventService);
+        taskService.setTaskValidator(taskValidator);
 
         when(bundleContext.getBundles()).thenReturn(new Bundle[]{bundleTrigger, bundleAction});
         when(bundleTrigger.getSymbolicName()).thenReturn("test-trigger");
@@ -153,6 +162,30 @@ public class TaskServiceImplTest {
         Task t = new Task("name", trigger, null);
 
         taskService.save(t);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void shouldNotSaveTaskWithInvalidRetryNumberValue() {
+        Task t = new Task("name", trigger, asList(action));
+        t.setNumberOfRetries(-3);
+
+        try {
+            taskService.save(t);
+        } finally {
+            verifyZeroInteractions(tasksDataService);
+        }
+    }
+
+    @Test(expected = ValidationException.class)
+    public void shouldNotSaveTaskWithInvalidRetryIntervalValue() {
+        Task t = new Task("name", trigger, asList(action));
+        t.setRetryIntervalInMilliseconds(-10);
+
+        try {
+            taskService.save(t);
+        } finally {
+            verifyZeroInteractions(tasksDataService);
+        }
     }
 
     @Test(expected = ValidationException.class)
@@ -185,11 +218,15 @@ public class TaskServiceImplTest {
                 .setActionParameters(null).createActionEvent()));
         TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", asList(new LookupFieldsParameter("id", asList("id"))), null)));
         provider.setId(1234L);
+        Set<TaskError> errors = new HashSet<>();
+        errors.add(new TaskError("task.validation.error.triggerNotExist", trigger.getDisplayName()));
 
         when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
         when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
 
         when(providerService.getProviderById(1234L)).thenReturn(provider);
+
+        when(triggerEventService.validateTrigger(trigger)).thenReturn(errors);
 
         taskService.save(task);
     }
@@ -226,6 +263,8 @@ public class TaskServiceImplTest {
 
         taskService.save(task);
         verify(triggerHandler).registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
+        // When task has not set number of retries, it should not register handler for retries
+        verifyNoMoreInteractions(triggerHandler);
 
         verifyCreateAndCaptureTask();
     }
@@ -240,6 +279,7 @@ public class TaskServiceImplTest {
         action.setValues(map);
 
         Task task = new Task("name", trigger, asList(action), config, true, false);
+        task.setNumberOfRetries(5);
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")), "")), null);
 
         ActionEvent actionEvent = new ActionEventBuilder().setDisplayName("receive").setSubject("RECEIVE")
@@ -254,9 +294,12 @@ public class TaskServiceImplTest {
         when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
 
         when(providerService.getProviderById(1234L)).thenReturn(provider);
+        when(triggerEventService.triggerExists(task.getTrigger())).thenReturn(true);
 
         taskService.save(task);
         verify(triggerHandler).registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
+        // Because task has set number of retries to 5, it should register retries handler for this task
+        verify(triggerHandler).registerHandlerFor(task.getTrigger().getEffectiveListenerRetrySubject(), true);
 
         verifyCreateAndCaptureTask();
     }
@@ -357,51 +400,6 @@ public class TaskServiceImplTest {
         List<Task> tasks = taskService.findActiveTasksForTrigger(triggerEvent);
 
         assertEquals(asList(t), tasks);
-    }
-
-    @Test(expected = TriggerNotFoundException.class)
-    public void shouldThrowTriggerNotFoundExceptionWhenChannelListIsEmpty() throws TriggerNotFoundException {
-        when(channelService.getAllChannels()).thenReturn(new ArrayList<Channel>());
-
-        taskService.findTrigger(trigger.getSubject());
-    }
-
-    @Test(expected = TriggerNotFoundException.class)
-    public void shouldThrowTriggerNotFoundExceptionWhenChannelContainsEmptyTriggerList() throws TriggerNotFoundException {
-        Channel c = new Channel();
-        c.setTriggerTaskEvents(new ArrayList<TriggerEvent>());
-
-        when(channelService.getAllChannels()).thenReturn(asList(c));
-
-        taskService.findTrigger(trigger.getSubject());
-    }
-
-    @Test(expected = TriggerNotFoundException.class)
-    public void shouldThrowTriggerNotFoundException() throws TriggerNotFoundException {
-        TriggerEvent triggerEvent = new TriggerEvent();
-        triggerEvent.setSubject(action.getSubject());
-
-        Channel c = new Channel();
-        c.setTriggerTaskEvents(asList(triggerEvent));
-
-        when(channelService.getAllChannels()).thenReturn(asList(c));
-
-        taskService.findTrigger(trigger.getSubject());
-    }
-
-    @Test
-    public void shouldFindTriggerForGivenSubject() throws TriggerNotFoundException {
-        TriggerEvent triggerEvent = new TriggerEvent();
-        triggerEvent.setSubject("RECEIVE");
-
-        Channel c = new Channel();
-        c.setTriggerTaskEvents(asList(triggerEvent));
-
-        when(channelService.getAllChannels()).thenReturn(asList(c));
-
-        TaskEvent actual = taskService.findTrigger("RECEIVE");
-
-        assertEquals(triggerEvent, actual);
     }
 
     @Test
@@ -549,6 +547,7 @@ public class TaskServiceImplTest {
         when(providerService.getProviders()).thenReturn(asList(provider));
         when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
         when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
+        when(triggerEventService.triggerExists(given.getTrigger())).thenReturn(true);
         when(providerService.getProviderById(56789L)).thenReturn(provider);
 
         String json = mapper.writeValueAsString(given);
@@ -586,6 +585,9 @@ public class TaskServiceImplTest {
                 .setActionParameters(null).createActionEvent()));
         when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
         when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
+        Set<TaskError> triggerValidationErrors = new HashSet<>();
+        triggerValidationErrors.add(new TaskError("task.validation.error.triggerNotExist", trigger.getDisplayName()));
+        when(triggerEventService.validateTrigger(eq(trigger))).thenReturn(triggerValidationErrors);
 
         taskService.validateTasksAfterChannelUpdate(getChannelUpdateEvent(trigger));
 
@@ -667,6 +669,7 @@ public class TaskServiceImplTest {
                 .setActionParameters(null).createActionEvent()));
         when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
         when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
+        when(triggerEventService.triggerExists(task.getTrigger())).thenReturn(true);
 
         taskService.validateTasksAfterChannelUpdate(getChannelUpdateEvent(trigger));
 
@@ -737,6 +740,7 @@ public class TaskServiceImplTest {
 
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")), "")), null);
         when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
+        when(triggerEventService.triggerExists(task.getTrigger())).thenReturn(true);
 
         taskService.validateTasksAfterChannelUpdate(getChannelUpdateEvent(trigger));
 
@@ -770,6 +774,9 @@ public class TaskServiceImplTest {
         fooTask.setEnabled(true);
         when(channelService.getChannel("foo-module")).thenReturn(null);
         when(channelService.getChannel("actionModule")).thenReturn(null);
+        Set<TaskError> errors = new HashSet<>();
+        errors.add(new TaskError("task.validation.error.triggerChannelNotRegistered"));
+        when(triggerEventService.validateTrigger(trigger)).thenReturn(errors);
 
         expectedException.expect(ValidationException.class);
         expectedException.expect(new TypeSafeMatcher<ValidationException>() {

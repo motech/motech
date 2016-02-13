@@ -4,9 +4,12 @@
       "name": "extraBool",
       "displayName": "Extra Bool",
       "required": true,
+      "unique": true,
       "defaultValue": "true",
       "tooltip": "Cupcake?",
       "placeholder": "yes",
+      "nonEditable": true,
+      "nonDisplayable": true,
       "type": "mds.field.boolean",
       "metadata": [
         {
@@ -21,9 +24,12 @@
       "name": "extraStr",
       "displayName": "Extra Str",
       "required": false,
+      "unique": false,
       "defaultValue": null,
       "tooltip": null,
       "placeholder": null,
+      "nonEditable": false,
+      "nonDisplayable": false,
       "type": "mds.field.string",
       "metadata": [],
       "validations": [

@@ -48,9 +48,12 @@ public class FieldReader {
         field.setName(objectReader.readString("name"));
         field.setDisplayName(objectReader.readString("displayName"));
         field.setRequired(objectReader.readBoolean("required"));
+        field.setUnique(objectReader.readBoolean("unique"));
         field.setDefaultValue(objectReader.readString("defaultValue"));
         field.setTooltip(objectReader.readString("tooltip"));
         field.setPlaceholder(objectReader.readString("placeholder"));
+        field.setNonEditable(objectReader.readBoolean("nonEditable"));
+        field.setNonDisplayable(objectReader.readBoolean("nonDisplayable"));
         field.setType(importContext.getType(objectReader.readString("type")));
         readMetadata(field);
         readValidations(field);

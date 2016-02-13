@@ -3,9 +3,9 @@ package org.motechproject.scheduler.web.controller;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
 import org.motechproject.scheduler.contract.JobsSearchSettings;
+import org.motechproject.scheduler.service.MotechSchedulerDatabaseService;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.web.domain.JobsRecords;
-import org.motechproject.scheduler.service.MotechSchedulerDatabaseService;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -60,7 +60,7 @@ public class JobsController {
     /**
      * Returns detailed information about job with given ID.
      *
-     * @param jobid  the jobs ID, not null
+     * @param jobInfo  the basic information about a job
      * @return retailed information about job, null if {@code jobid} was null
      */
     @RequestMapping(value = "/job/details", method = RequestMethod.POST)
