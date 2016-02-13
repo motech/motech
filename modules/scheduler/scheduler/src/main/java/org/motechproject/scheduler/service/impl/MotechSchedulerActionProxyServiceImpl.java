@@ -43,14 +43,14 @@ public class MotechSchedulerActionProxyServiceImpl implements MotechSchedulerAct
                                      Integer repeatCount, Integer repeatIntervalInSeconds,
                                      Boolean ignorePastFiresAtStart, Boolean useOriginalFireTimeAfterMisfire) {
         MotechEvent motechEvent = new MotechEvent(subject, createMotechEventParameters(parameters));
-        RepeatingSchedulableJob job = new RepeatingSchedulableJob()
-                .setMotechEvent(motechEvent)
-                .setStartTime(startTime)
-                .setEndTime(endTime)
-                .setRepeatCount(repeatCount)
-                .setRepeatIntervalInSeconds(repeatIntervalInSeconds)
-                .setIgnorePastFiresAtStart(ignorePastFiresAtStart)
-                .setUseOriginalFireTimeAfterMisfire(useOriginalFireTimeAfterMisfire);
+        RepeatingSchedulableJob job = new RepeatingSchedulableJob();
+        job.setMotechEvent(motechEvent);
+        job.setStartDate(startTime);
+        job.setEndDate(endTime);
+        job.setRepeatCount(repeatCount);
+        job.setRepeatIntervalInSeconds(repeatIntervalInSeconds);
+        job.setIgnorePastFiresAtStart(ignorePastFiresAtStart);
+        job.setUseOriginalFireTimeAfterMisfire(useOriginalFireTimeAfterMisfire);
 
         scheduler.scheduleRepeatingJob(job);
     }
@@ -69,8 +69,8 @@ public class MotechSchedulerActionProxyServiceImpl implements MotechSchedulerAct
         Time jobTime = new Time(time.getHourOfDay(), time.getMinuteOfHour());
         List<DayOfWeek> jobDayOfWeeks = createDayOfWeeks(days);
 
-        DayOfWeekSchedulableJob job = new DayOfWeekSchedulableJob(motechEvent, start.toLocalDate(),
-                end != null ? end.toLocalDate() : null, jobDayOfWeeks, jobTime, ignorePastFiresAtStart);
+        DayOfWeekSchedulableJob job = new DayOfWeekSchedulableJob(motechEvent, start, end != null ? end : null,
+                jobDayOfWeeks, jobTime, ignorePastFiresAtStart);
 
         scheduler.scheduleDayOfWeekJob(job);
     }

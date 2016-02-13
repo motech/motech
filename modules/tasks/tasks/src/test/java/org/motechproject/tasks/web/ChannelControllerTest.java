@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.service.ChannelService;
+import org.motechproject.tasks.service.TriggerEventService;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -30,13 +31,16 @@ public class ChannelControllerTest {
     @Mock
     ServletOutputStream outputStream;
 
+    @Mock
+    TriggerEventService triggerEventService;
+
     ChannelController controller;
 
     @Before
     public void setup() throws Exception {
         initMocks(this);
 
-        controller = new ChannelController(channelService);
+        controller = new ChannelController(channelService, triggerEventService);
     }
 
     @Test

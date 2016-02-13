@@ -296,11 +296,12 @@ public class EntityMetadataBuilderTest {
 
     @Test
     public void shouldSetIndexOnMetadataLookupField() throws Exception {
-        FieldDto lookupField = fieldDto("lookupField", String.class);
 
+        FieldDto lookupField = fieldDto("lookupField", String.class);
         LookupDto lookup = new LookupDto();
         lookup.setLookupName("A lookup");
         lookup.setLookupFields(singletonList(new LookupFieldDto("lookupField", LookupFieldType.VALUE)));
+        lookup.setIndexRequired(true);
         lookupField.setLookups(singletonList(lookup));
 
         FieldMetadata fmd = mock(FieldMetadata.class);

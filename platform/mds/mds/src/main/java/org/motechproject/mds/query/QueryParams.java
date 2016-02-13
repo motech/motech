@@ -1,6 +1,8 @@
 package org.motechproject.mds.query;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.Order;
 
@@ -132,5 +134,31 @@ public class QueryParams implements Serializable {
       */
     public static QueryParams descOrder(String field) {
         return new QueryParams(new Order(field, Order.Direction.DESC));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o instanceof QueryParams) {
+            QueryParams other = (QueryParams) o;
+
+            return ObjectUtils.equals(page, other.page)
+                    && ObjectUtils.equals(pageSize, other.pageSize)
+                    && ObjectUtils.equals(orderList, other.orderList);
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(page)
+                .append(pageSize)
+                .append(orderList)
+                .toHashCode();
     }
 }
