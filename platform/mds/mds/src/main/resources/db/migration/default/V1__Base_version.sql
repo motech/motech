@@ -82,9 +82,9 @@ CREATE TABLE "Entity_securityMembers" (
 DROP TABLE IF EXISTS "EntityDraft_fieldNameChanges";
 CREATE TABLE "EntityDraft_fieldNameChanges" (
   "id_OID" bigint NOT NULL,
-  "key" varchar(255) NOT NULL,
-  "value" varchar(255) DEFAULT NULL,
-  PRIMARY KEY ("id_OID", "key"),
+  "oldName" varchar(255) NOT NULL,
+  "newName" varchar(255) DEFAULT NULL,
+  PRIMARY KEY ("id_OID", "oldName"),
   CONSTRAINT "EntityDraft_fieldNameChanges_FK1" FOREIGN KEY ("id_OID") REFERENCES "Entity" ("id")
 );
 
@@ -202,18 +202,18 @@ CREATE TABLE "Lookup_setLookupFields" (
 DROP TABLE IF EXISTS "Lookup_customOperators";
 CREATE TABLE "Lookup_customOperators" (
   "id_OID" bigint NOT NULL,
-  "key" varchar(255) NOT NULL,
-  "value" varchar(255) DEFAULT NULL,
-  PRIMARY KEY ("id_OID", "key"),
+  "fieldName" varchar(255) NOT NULL,
+  "operator" varchar(255) DEFAULT NULL,
+  PRIMARY KEY ("id_OID", "fieldName"),
   CONSTRAINT "Lookup_customOperators_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
 );
 
 DROP TABLE IF EXISTS "Lookup_useGenericParams";
 CREATE TABLE "Lookup_useGenericParams" (
   "id_OID" bigint NOT NULL,
-  "key" varchar(255) NOT NULL,
+  "param" varchar(255) NOT NULL,
   "value" boolean DEFAULT FALSE,
-  PRIMARY KEY ("id_OID", "key"),
+  PRIMARY KEY ("id_OID", "param"),
   CONSTRAINT "Lookup_useGenericParams_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
 );
 

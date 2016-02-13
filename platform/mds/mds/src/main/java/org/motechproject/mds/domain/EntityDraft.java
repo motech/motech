@@ -45,8 +45,8 @@ public class EntityDraft extends Entity {
     private boolean changesMade;
 
     @Join(table = "EntityDraft_fieldNameChanges", column = "id_OID")
-    @Key(column = "key")
-    @Value(column = "value")
+    @Key(column = "oldName")
+    @Value(column = "newName")
     private Map<String, String> fieldNameChanges = new HashMap<>();
 
     @Join(table = "EntityDraft_uniqueIndexesToDropV2", column = "id_OID")

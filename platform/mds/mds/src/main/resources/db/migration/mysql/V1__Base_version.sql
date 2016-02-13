@@ -52,9 +52,9 @@ CREATE TABLE "Entity_securityMembers" (
 DROP TABLE IF EXISTS "EntityDraft_fieldNameChanges";
 CREATE TABLE "EntityDraft_fieldNameChanges" (
   "id_OID" bigint(20) NOT NULL,
-  "key" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  "value" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
-  PRIMARY KEY ("id_OID", "key"),
+  "oldName" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  "newName" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY ("id_OID", "oldName"),
   KEY "EntityDraft_fieldNameChanges_N49" ("id_OID"),
   CONSTRAINT "EntityDraft_fieldNameChanges_FK1" FOREIGN KEY ("id_OID") REFERENCES "Entity" ("id")
 );
@@ -186,9 +186,9 @@ CREATE TABLE "Lookup_setLookupFields" (
 DROP TABLE IF EXISTS "Lookup_customOperators";
 CREATE TABLE "Lookup_customOperators" (
   "id_OID" bigint(20) NOT NULL,
-  "key" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  "value" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
-  PRIMARY KEY ("id_OID", "key"),
+  "fieldName" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  "operator" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY ("id_OID", "fieldName"),
   KEY "Lookup_customOperators_N49" ("id_OID"),
   CONSTRAINT "Lookup_customOperators_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
 );
@@ -196,9 +196,9 @@ CREATE TABLE "Lookup_customOperators" (
 DROP TABLE IF EXISTS "Lookup_useGenericParams";
 CREATE TABLE "Lookup_useGenericParams" (
   "id_OID" bigint(20) NOT NULL,
-  "key" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  "param" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   "value" bit(1) DEFAULT FALSE,
-  PRIMARY KEY ("id_OID", "key"),
+  PRIMARY KEY ("id_OID", "param"),
   KEY "Lookup_useGenericParams_N49" ("id_OID"),
   CONSTRAINT "Lookup_useGenericParams_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
 );

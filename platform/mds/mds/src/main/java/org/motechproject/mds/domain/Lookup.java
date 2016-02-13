@@ -32,6 +32,7 @@ import static org.motechproject.mds.util.Constants.Util.TRUE;
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 public class Lookup {
     private static final String LOOKUP_ID = "id_OID";
+    private static final String FIELD_NAME = "fieldName";
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
@@ -60,24 +61,24 @@ public class Lookup {
     private List<Field> fields;
 
     @Join(table = "Lookup_fieldsOrder", column = LOOKUP_ID)
-    @Element(column = "fieldName")
+    @Element(column = FIELD_NAME)
     private List<String> fieldsOrder;
 
     @Join(table = "Lookup_rangeLookupFields", column = LOOKUP_ID)
-    @Element(column = "fieldName")
+    @Element(column = FIELD_NAME)
     private List<String> rangeLookupFields;
 
     @Join(table = "Lookup_setLookupFields", column = LOOKUP_ID)
-    @Element(column = "fieldName")
+    @Element(column = FIELD_NAME)
     private List<String> setLookupFields;
 
     @Join(table = "Lookup_customOperators", column = LOOKUP_ID)
-    @Key(column = "key")
-    @Value(column = "value")
+    @Key(column = FIELD_NAME)
+    @Value(column = "operator")
     private Map<String, String> customOperators;
 
     @Join(table = "Lookup_userGenericParams", column = LOOKUP_ID)
-    @Key(column = "key")
+    @Key(column = "param")
     @Value(column = "value")
     private Map<String, Boolean> useGenericParams;
 
