@@ -90,14 +90,14 @@ public class TriggerEventServiceImplTest {
         TriggerEvent expectedTrigger = prepareTrigger();
         TaskTriggerInformation triggerInformation = prepareTaskTriggerInformation(expectedTrigger);
 
-        when(triggerEventsDataService.byChannelModuleNameAndListenerSubject(MODULE_NAME,
-                expectedTrigger.getTriggerListenerSubject())).thenReturn(null);
+        when(triggerEventsDataService.byChannelModuleNameAndSubject(MODULE_NAME,
+                expectedTrigger.getSubject())).thenReturn(null);
         when(dynamicChannelLoader.getTrigger(eq(triggerInformation))).thenReturn(expectedTrigger);
 
         TriggerEvent trigger = triggerEventService.getTrigger(triggerInformation);
 
-        verify(triggerEventsDataService, times(1)).byChannelModuleNameAndListenerSubject(MODULE_NAME,
-                expectedTrigger.getTriggerListenerSubject());
+        verify(triggerEventsDataService, times(1)).byChannelModuleNameAndSubject(MODULE_NAME,
+                expectedTrigger.getSubject());
         verify(dynamicChannelLoader, times(1)).getTrigger(triggerInformation);
 
         assertEquals(expectedTrigger, trigger);
@@ -109,14 +109,14 @@ public class TriggerEventServiceImplTest {
         TriggerEvent expectedTrigger = prepareTrigger();
         TaskTriggerInformation triggerInformation = prepareTaskTriggerInformation(expectedTrigger);
 
-        when(triggerEventsDataService.byChannelModuleNameAndListenerSubject(MODULE_NAME,
-                expectedTrigger.getTriggerListenerSubject())).thenReturn(null);
+        when(triggerEventsDataService.byChannelModuleNameAndSubject(MODULE_NAME,
+                expectedTrigger.getSubject())).thenReturn(null);
         when(dynamicChannelLoader.getTrigger(eq(triggerInformation))).thenReturn(expectedTrigger);
 
         boolean exists = triggerEventService.triggerExists(triggerInformation);
 
-        verify(triggerEventsDataService, times(1)).byChannelModuleNameAndListenerSubject(MODULE_NAME,
-                expectedTrigger.getTriggerListenerSubject());
+        verify(triggerEventsDataService, times(1)).byChannelModuleNameAndSubject(MODULE_NAME,
+                expectedTrigger.getSubject());
         verify(dynamicChannelLoader, times(1)).getTrigger(triggerInformation);
 
         assertTrue(exists);
@@ -127,14 +127,14 @@ public class TriggerEventServiceImplTest {
 
         TaskTriggerInformation triggerInformation = prepareTaskTriggerInformation(prepareTrigger());
 
-        when(triggerEventsDataService.byChannelModuleNameAndListenerSubject(MODULE_NAME,
-                triggerInformation.getTriggerListenerSubject())).thenReturn(null);
+        when(triggerEventsDataService.byChannelModuleNameAndSubject(MODULE_NAME,
+                triggerInformation.getSubject())).thenReturn(null);
         when(dynamicChannelLoader.getTrigger(eq(triggerInformation))).thenReturn(null);
 
         boolean exists = triggerEventService.triggerExists(triggerInformation);
 
-        verify(triggerEventsDataService, times(1)).byChannelModuleNameAndListenerSubject(MODULE_NAME,
-                triggerInformation.getTriggerListenerSubject());
+        verify(triggerEventsDataService, times(1)).byChannelModuleNameAndSubject(MODULE_NAME,
+                triggerInformation.getSubject());
         verify(dynamicChannelLoader, times(1)).getTrigger(triggerInformation);
 
         assertFalse(exists);
@@ -199,14 +199,14 @@ public class TriggerEventServiceImplTest {
         TaskTriggerInformation triggerInformation = prepareTaskTriggerInformation(prepareTrigger());
 
         when(channelsDataService.countFindByModuleName(MODULE_NAME)).thenReturn((long) 1992);
-        when(triggerEventsDataService.countByChannelModuleNameAndListenerSubject(MODULE_NAME,
-                triggerInformation.getTriggerListenerSubject())).thenReturn((long) 1);
+        when(triggerEventsDataService.countByChannelModuleNameAndSubject(MODULE_NAME,
+                triggerInformation.getSubject())).thenReturn((long) 1);
 
         Set<TaskError> errors = triggerEventService.validateTrigger(triggerInformation);
 
         verify(channelsDataService, times(1)).countFindByModuleName(MODULE_NAME);
-        verify(triggerEventsDataService, times(1)).countByChannelModuleNameAndListenerSubject(MODULE_NAME,
-                triggerInformation.getTriggerListenerSubject());
+        verify(triggerEventsDataService, times(1)).countByChannelModuleNameAndSubject(MODULE_NAME,
+                triggerInformation.getSubject());
         verify(dynamicChannelLoader, never()).channelExists(anyString());
         verify(dynamicChannelLoader, never()).getTrigger(any(TaskTriggerInformation.class));
 
@@ -219,18 +219,18 @@ public class TriggerEventServiceImplTest {
         TaskTriggerInformation triggerInformation = prepareTaskTriggerInformation(prepareTrigger());
 
         when(channelsDataService.countFindByModuleName(MODULE_NAME)).thenReturn((long) 1992);
-        when(triggerEventsDataService.countByChannelModuleNameAndListenerSubject(MODULE_NAME,
-                triggerInformation.getTriggerListenerSubject())).thenReturn((long) 0);
+        when(triggerEventsDataService.countByChannelModuleNameAndSubject(MODULE_NAME,
+                triggerInformation.getSubject())).thenReturn((long) 0);
         when(dynamicChannelLoader.channelExists(MODULE_NAME)).thenReturn(true);
-        when(dynamicChannelLoader.validateTrigger(MODULE_NAME, triggerInformation.getTriggerListenerSubject())).thenReturn(true);
+        when(dynamicChannelLoader.validateTrigger(MODULE_NAME, triggerInformation.getSubject())).thenReturn(true);
 
         Set<TaskError> errors = triggerEventService.validateTrigger(triggerInformation);
 
         verify(channelsDataService, times(1)).countFindByModuleName(MODULE_NAME);
-        verify(triggerEventsDataService, times(1)).countByChannelModuleNameAndListenerSubject(MODULE_NAME,
-                triggerInformation.getTriggerListenerSubject());
+        verify(triggerEventsDataService, times(1)).countByChannelModuleNameAndSubject(MODULE_NAME,
+                triggerInformation.getSubject());
         verify(dynamicChannelLoader, times(1)).channelExists(MODULE_NAME);
-        verify(dynamicChannelLoader, times(1)).validateTrigger(MODULE_NAME, triggerInformation.getTriggerListenerSubject());
+        verify(dynamicChannelLoader, times(1)).validateTrigger(MODULE_NAME, triggerInformation.getSubject());
 
         assertEquals(0, errors.size());
     }
@@ -246,7 +246,7 @@ public class TriggerEventServiceImplTest {
         Set<TaskError> errors = triggerEventService.validateTrigger(triggerInformation);
 
         verify(channelsDataService, times(1)).countFindByModuleName(MODULE_NAME);
-        verify(triggerEventsDataService, never()).countByChannelModuleNameAndListenerSubject(MODULE_NAME,
+        verify(triggerEventsDataService, never()).countByChannelModuleNameAndSubject(MODULE_NAME,
                 triggerInformation.getTriggerListenerSubject());
         verify(dynamicChannelLoader, times(1)).channelExists(MODULE_NAME);
         verify(dynamicChannelLoader, never()).validateTrigger(MODULE_NAME, triggerInformation.getTriggerListenerSubject());
@@ -262,17 +262,17 @@ public class TriggerEventServiceImplTest {
 
         when(channelsDataService.countFindByModuleName(MODULE_NAME)).thenReturn((long) 0);
         when(dynamicChannelLoader.channelExists(MODULE_NAME)).thenReturn(true);
-        when(dynamicChannelLoader.validateTrigger(MODULE_NAME, triggerInformation.getTriggerListenerSubject()))
+        when(dynamicChannelLoader.validateTrigger(MODULE_NAME, triggerInformation.getSubject()))
                 .thenReturn(false);
 
         Set<TaskError> errors = triggerEventService.validateTrigger(triggerInformation);
 
         verify(channelsDataService, times(1)).countFindByModuleName(MODULE_NAME);
-        verify(triggerEventsDataService, never()).countByChannelModuleNameAndListenerSubject(MODULE_NAME,
-                triggerInformation.getTriggerListenerSubject());
+        verify(triggerEventsDataService, never()).countByChannelModuleNameAndSubject(MODULE_NAME,
+                triggerInformation.getSubject());
         verify(dynamicChannelLoader, times(1)).channelExists(MODULE_NAME);
         verify(dynamicChannelLoader, times(1)).validateTrigger(MODULE_NAME,
-                triggerInformation.getTriggerListenerSubject());
+                triggerInformation.getSubject());
 
         assertEquals(1, errors.size());
         assertEquals("task.validation.error.triggerNotExist", errors.iterator().next().getMessage());

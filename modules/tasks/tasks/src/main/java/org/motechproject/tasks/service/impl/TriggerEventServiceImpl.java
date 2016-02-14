@@ -37,8 +37,8 @@ public class TriggerEventServiceImpl implements TriggerEventService {
 
     @Override
     public TriggerEvent getTrigger(TaskTriggerInformation triggerInformation) {
-        TriggerEvent triggerEvent = triggerEventsDataService.byChannelModuleNameAndListenerSubject(
-                triggerInformation.getModuleName(), triggerInformation.getTriggerListenerSubject());
+        TriggerEvent triggerEvent = triggerEventsDataService.byChannelModuleNameAndSubject(
+                triggerInformation.getModuleName(), triggerInformation.getSubject());
 
         return triggerEvent != null ? triggerEvent : dynamicChannelLoader.getTrigger(triggerInformation);
     }
@@ -66,14 +66,14 @@ public class TriggerEventServiceImpl implements TriggerEventService {
     @Override
     public Set<TaskError> validateTrigger(TaskTriggerInformation trigger) {
         Set<TaskError> errors = new HashSet<>();
-        String subject = trigger.getTriggerListenerSubject();
+        String subject = trigger.getSubject();
         String moduleName = trigger.getModuleName();
         boolean channelExists = false;
         boolean validTrigger = false;
 
         if (channelsDataService.countFindByModuleName(moduleName) != 0) {
             channelExists = true;
-            validTrigger = triggerEventsDataService.countByChannelModuleNameAndListenerSubject(moduleName, subject) > 0;
+            validTrigger = triggerEventsDataService.countByChannelModuleNameAndSubject(moduleName, subject) > 0;
         }
 
         if (!validTrigger && dynamicChannelLoader.channelExists(moduleName)) {
