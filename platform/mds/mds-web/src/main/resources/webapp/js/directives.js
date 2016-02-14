@@ -502,9 +502,6 @@
             link: function (scope, element, attr, ngModel) {
                 var isReadOnly = scope.$eval(attr.ngReadonly);
                 if(!isReadOnly) {
-                    angular.element(element).click( function() {
-                        $("button.ui-datepicker-current").removeClass("ui-priority-secondary").addClass("ui-priority-primary");
-                    });
                     angular.element(element).timepicker({
                         onSelect: function (timeTex) {
                             scope.safeApply(function () {
@@ -527,9 +524,6 @@
             link: function (scope, element, attr, ngModel) {
                 var isReadOnly = scope.$eval(attr.ngReadonly);
                 if(!isReadOnly) {
-                    angular.element(element).click( function() {
-                        $("button.ui-datepicker-current").removeClass("ui-priority-secondary").addClass("ui-priority-primary");
-                    });
                     angular.element(element).datetimepicker({
                         showTimezone: true,
                         changeYear: true,
@@ -574,9 +568,6 @@
             link: function (scope, element, attr, ngModel) {
                 var isReadOnly = scope.$eval(attr.ngReadonly);
                 if(!isReadOnly) {
-                    angular.element(element).click( function() {
-                        $("button.ui-datepicker-current").removeClass("ui-priority-secondary").addClass("ui-priority-primary");
-                    });
                     angular.element(element).datepicker({
                         changeYear: true,
                         showButtonPanel: true,
