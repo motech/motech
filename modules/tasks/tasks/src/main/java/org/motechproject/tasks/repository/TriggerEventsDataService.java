@@ -14,21 +14,21 @@ import java.util.List;
 public interface TriggerEventsDataService extends MotechDataService<TriggerEvent> {
 
     String MODULE_NAME = "channel.moduleName";
-    String TRIGGER_LISTENER_SUBJECT = "triggerListenerSubject";
+    String TRIGGER_SUBJECT = "subject";
 
     @Lookup
     List<TriggerEvent> byChannelModuleName(@LookupField(name = MODULE_NAME) String moduleName,
                                            QueryParams queryParams);
 
     @Lookup
-    TriggerEvent byChannelModuleNameAndListenerSubject(@LookupField(name = MODULE_NAME) String moduleName,
-                                                       @LookupField(name = TRIGGER_LISTENER_SUBJECT) String triggerListenerSubject);
+    TriggerEvent byChannelModuleNameAndSubject(@LookupField(name = MODULE_NAME) String moduleName,
+                                               @LookupField(name = TRIGGER_SUBJECT) String subject);
 
     @Lookup
-    TriggerEvent bySubject(@LookupField(name = TRIGGER_LISTENER_SUBJECT) String subject);
+    TriggerEvent bySubject(@LookupField(name = TRIGGER_SUBJECT) String subject);
 
     long countByChannelModuleName(@LookupField(name = MODULE_NAME) String moduleName);
 
-    long countByChannelModuleNameAndListenerSubject(@LookupField(name = MODULE_NAME) String moduleName,
-                                                    @LookupField(name = TRIGGER_LISTENER_SUBJECT) String subject);
+    long countByChannelModuleNameAndSubject(@LookupField(name = MODULE_NAME) String moduleName,
+                                            @LookupField(name = TRIGGER_SUBJECT) String subject);
 }
