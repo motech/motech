@@ -1,4 +1,4 @@
-package org.motechproject.event.listener.annotations;
+package org.motechproject.event.listener.annotations.types;
 
 /**
  * The enum defining types of <code>MotechListener</code> proxies.

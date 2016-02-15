@@ -128,7 +128,9 @@
                             org.motechproject.event;version=${project.version},
                             org.motechproject.event.listener;version=${project.version},
                             org.motechproject.event.listener.annotations;version=${project.version},
-                            org.motechproject.event.messaging;version=${project.version}
+                            org.motechproject.event.listener.annotations.types;version=${project.version},
+                            org.motechproject.event.messaging;version=${project.version},
+                            org.motechproject.event.starter;version=${project.version}
                         </Export-Package>
                         <DynamicImport-Package>
                             *
