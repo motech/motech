@@ -1,6 +1,8 @@
 package org.motechproject.osgi.web;
 
 import org.eclipse.gemini.blueprint.context.support.OsgiBundleXmlApplicationContext;
+import org.motechproject.osgi.web.http.OSGiDispatcherServlet;
+import org.motechproject.osgi.web.tracker.internal.HttpServiceTracker;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -11,8 +13,8 @@ import javax.servlet.ServletContext;
 
 /**
  * The context that is created for all Blueprint-Enabled bundles. This context will be used
- * for the {@link org.motechproject.osgi.web.OSGiDispatcherServlet} that we create in the
- * {@link org.motechproject.osgi.web.HttpServiceTracker}.
+ * for the {@link OSGiDispatcherServlet} that we create in the
+ * {@link HttpServiceTracker}.
  */
 public class MotechOSGiWebApplicationContext extends OsgiBundleXmlApplicationContext implements ConfigurableWebApplicationContext {
     private ServletContext servletContext;

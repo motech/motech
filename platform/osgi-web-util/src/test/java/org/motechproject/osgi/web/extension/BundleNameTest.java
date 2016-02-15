@@ -1,8 +1,9 @@
-package org.motechproject.osgi.web.ext;
+package org.motechproject.osgi.web.extension;
 
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNot;
 import org.junit.Test;
+import org.motechproject.osgi.web.bundle.BundleName;
 
 import static org.junit.Assert.assertThat;
 

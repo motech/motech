@@ -1,4 +1,4 @@
-package org.motechproject.osgi.web.ext;
+package org.motechproject.osgi.web.http;
 
 import org.motechproject.commons.api.MotechException;
 import org.osgi.service.http.HttpContext;
@@ -14,14 +14,14 @@ import java.net.URL;
 import static java.lang.String.format;
 
 /**
- * An extension of the {@link org.motechproject.osgi.web.ext.UiHttpContext}.
+ * An extension of the {@link UiHttpContext}.
  * This class will be used in development mode for bundles that are configured to load their resources
  * from the hard drive directly, not the jar classpath. The idea is to allow rapid UI development, changes
  * to static html/css/js files will be reflected directly on the UI right after changes are made.
  * If this context fails to load a resource from disk, it will fall back to loading from classpath.
  * This context is a decorator, that decorates the HTTP context coming from Felix.
  *
- * @see org.motechproject.osgi.web.ext.ApplicationEnvironment
+ * @see org.motechproject.osgi.web.extension.ApplicationEnvironment
  */
 public class FileSystemAwareUIHttpContext extends UiHttpContext {
 
