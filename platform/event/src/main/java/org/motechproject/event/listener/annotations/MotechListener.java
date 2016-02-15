@@ -1,7 +1,5 @@
 package org.motechproject.event.listener.annotations;
 
-import org.motechproject.event.listener.annotations.types.MotechListenerType;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

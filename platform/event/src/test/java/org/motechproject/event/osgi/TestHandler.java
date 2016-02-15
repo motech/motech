@@ -2,7 +2,7 @@ package org.motechproject.event.osgi;
 
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
-import org.motechproject.event.listener.annotations.types.MotechListenerType;
+import org.motechproject.event.listener.annotations.MotechListenerType;
 import org.motechproject.event.listener.annotations.MotechParam;
 import org.springframework.stereotype.Component;
 
