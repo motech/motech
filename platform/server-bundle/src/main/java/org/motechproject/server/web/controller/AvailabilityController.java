@@ -1,6 +1,6 @@
 package org.motechproject.server.web.controller;
 
-import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.osgi.web.service.UIFrameworkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -59,6 +59,6 @@
 
     <osgi:reference id="configurationService" interface="org.motechproject.config.service.ConfigurationService"/>
 
-    <osgi:reference id="localeService" interface="org.motechproject.osgi.web.LocaleService"/>
+    <osgi:reference id="localeService" interface="org.motechproject.osgi.web.service.LocaleService"/>
 
 </beans>

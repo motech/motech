@@ -1,5 +1,8 @@
-package org.motechproject.osgi.web;
+package org.motechproject.osgi.web.tracker.internal;
 
+import org.motechproject.osgi.web.BundleContextWrapper;
+import org.motechproject.osgi.web.ModuleRegistrationData;
+import org.motechproject.osgi.web.service.UIFrameworkService;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -12,7 +15,7 @@ import javax.annotation.PostConstruct;
 
 /**
  * A tracker created for each bundle with the <code>Blueprint-Enabled</code> header in its manifest.
- * This tracker will track the {@link org.motechproject.osgi.web.UIFrameworkService}, once it becomes
+ * This tracker will track the {@link UIFrameworkService}, once it becomes
  * active it registers the bundle with it - thanks to this the {@link org.motechproject.osgi.web.ModuleRegistrationData}
  * beans defined in the modules will be respected and will make the module incorporated into the UI.
  */

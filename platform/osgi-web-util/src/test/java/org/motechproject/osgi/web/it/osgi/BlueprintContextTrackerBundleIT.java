@@ -2,8 +2,8 @@ package org.motechproject.osgi.web.it.osgi;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.osgi.web.HttpServiceTrackers;
-import org.motechproject.osgi.web.UIServiceTrackers;
+import org.motechproject.osgi.web.tracker.HttpServiceTrackers;
+import org.motechproject.osgi.web.tracker.UIServiceTrackers;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.wait.Wait;
 import org.motechproject.testing.osgi.wait.WaitCondition;

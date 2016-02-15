@@ -1,6 +1,6 @@
 package org.motechproject.server.web.controller;
 
-import org.motechproject.osgi.web.LocaleService;
+import org.motechproject.osgi.web.service.LocaleService;
 import org.motechproject.server.web.dto.LocaleDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

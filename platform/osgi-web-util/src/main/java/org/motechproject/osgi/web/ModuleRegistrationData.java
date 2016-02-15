@@ -1,6 +1,7 @@
 package org.motechproject.osgi.web;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.motechproject.osgi.web.service.UIFrameworkService;
 import org.motechproject.server.api.BundleInformation;
 import org.osgi.framework.Bundle;
 

@@ -15,7 +15,7 @@ import org.motechproject.admin.internal.service.ModuleAdminService;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.osgi.web.service.UIFrameworkService;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
 import org.motechproject.server.config.domain.MotechSettings;

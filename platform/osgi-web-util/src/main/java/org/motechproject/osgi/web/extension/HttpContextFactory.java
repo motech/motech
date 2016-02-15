@@ -1,5 +1,7 @@
-package org.motechproject.osgi.web.ext;
+package org.motechproject.osgi.web.extension;
 
+import org.motechproject.osgi.web.bundle.BundleName;
+import org.motechproject.osgi.web.http.FileSystemAwareUIHttpContext;
 import org.osgi.framework.Bundle;
 import org.osgi.service.http.HttpContext;
 import org.slf4j.Logger;
@@ -11,7 +13,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  * This factory is responsible for creating {@link org.osgi.service.http.HttpContext} decorator objects
  * for bundles. If dynamic resource loading is set for a given bundle, meaning the <code>ENVIRONMENT</code> variable is set
  * to <code>DEVELOPMENT</code> and variable with an underscored version of the bundle symbolic name is defined, an instance
- * of {@link org.motechproject.osgi.web.ext.FileSystemAwareUIHttpContext} will be created for the bundle. In other
+ * of {@link FileSystemAwareUIHttpContext} will be created for the bundle. In other
  * cases the provided contex is unchaged.
  */
 public final class HttpContextFactory {

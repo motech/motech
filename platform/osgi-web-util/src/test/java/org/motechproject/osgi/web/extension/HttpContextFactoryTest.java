@@ -1,10 +1,12 @@
-package org.motechproject.osgi.web.ext;
+package org.motechproject.osgi.web.extension;
 
 import org.eclipse.gemini.blueprint.mock.MockBundle;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNot;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.osgi.web.bundle.BundleName;
+import org.motechproject.osgi.web.http.FileSystemAwareUIHttpContext;
 import org.osgi.service.http.HttpContext;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;

@@ -1,4 +1,4 @@
-package org.motechproject.osgi.web.ext;
+package org.motechproject.osgi.web.http;
 
 import org.osgi.service.http.HttpContext;
 
