@@ -15,7 +15,7 @@ import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.email.exception.EmailSendException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.osgi.web.service.UIFrameworkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

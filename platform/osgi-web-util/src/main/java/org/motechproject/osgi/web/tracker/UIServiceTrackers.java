@@ -1,5 +1,7 @@
-package org.motechproject.osgi.web;
+package org.motechproject.osgi.web.tracker;
 
+import org.motechproject.osgi.web.ModuleRegistrationData;
+import org.motechproject.osgi.web.tracker.internal.UIServiceTracker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -14,10 +16,10 @@ import java.util.Map;
 import static org.eclipse.gemini.blueprint.util.OsgiStringUtils.nullSafeSymbolicName;
 
 /**
- * The registry that handles {@link org.motechproject.osgi.web.UIServiceTracker} instances created
+ * The registry that handles {@link UIServiceTracker} instances created
  * for bundles with <code>Blueprint-Enabled</code> header in their manifest.
  *
- * @see org.motechproject.osgi.web.UIServiceTracker
+ * @see UIServiceTracker
  */
 public class UIServiceTrackers {
 
@@ -43,11 +45,11 @@ public class UIServiceTrackers {
     }
 
     /**
-     * Creates a {@link org.motechproject.osgi.web.UIServiceTracker} for the given bundle. The {@link org.motechproject.osgi.web.ModuleRegistrationData}
+     * Creates a {@link UIServiceTracker} for the given bundle. The {@link org.motechproject.osgi.web.ModuleRegistrationData}
      * from the provided Spring context of the bundle will be used for registering the UI.
      * @param bundle the bundle to create the tracker for
      * @param applicationContext the Spring context of the bundle
-     * @return the newly created {@link org.motechproject.osgi.web.UIServiceTracker} instance
+     * @return the newly created {@link UIServiceTracker} instance
      */
     public UIServiceTracker addTrackerFor(Bundle bundle, ApplicationContext applicationContext) {
 
@@ -70,7 +72,7 @@ public class UIServiceTrackers {
 }
 
     /**
-     * Closes and removes the {@link org.motechproject.osgi.web.UIServiceTracker} for the bundle.
+     * Closes and removes the {@link UIServiceTracker} for the bundle.
      * @param bundle the bundle to remove the tracker for
      * @return the closed and removed tracker
      */

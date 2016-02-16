@@ -1,5 +1,6 @@
-package org.motechproject.osgi.web;
+package org.motechproject.osgi.web.http;
 
+import org.motechproject.osgi.web.MotechOSGiWebApplicationContext;
 import org.osgi.framework.BundleContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;

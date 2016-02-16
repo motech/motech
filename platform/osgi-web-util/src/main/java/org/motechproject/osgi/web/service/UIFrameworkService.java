@@ -1,5 +1,6 @@
-package org.motechproject.osgi.web;
+package org.motechproject.osgi.web.service;
 
+import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.util.ModuleRegistrations;
 import org.osgi.framework.Bundle;
 

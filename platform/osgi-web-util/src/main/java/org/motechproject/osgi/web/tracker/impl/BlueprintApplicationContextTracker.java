@@ -1,6 +1,14 @@
-package org.motechproject.osgi.web;
+package org.motechproject.osgi.web.tracker.impl;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.osgi.web.bundle.BundleRegister;
+import org.motechproject.osgi.web.bundle.Log4JBundleLoader;
+import org.motechproject.osgi.web.service.UIFrameworkService;
+import org.motechproject.osgi.web.tracker.ApplicationContextTracker;
+import org.motechproject.osgi.web.tracker.HttpServiceTrackers;
+import org.motechproject.osgi.web.tracker.UIServiceTrackers;
+import org.motechproject.osgi.web.tracker.internal.HttpServiceTracker;
+import org.motechproject.osgi.web.tracker.internal.UIServiceTracker;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.motechproject.server.api.BundleLoadingException;
 import org.osgi.framework.Bundle;
@@ -18,10 +26,10 @@ import static org.eclipse.gemini.blueprint.util.OsgiStringUtils.nullSafeSymbolic
 /**
  * The <code>BlueprintApplicationContextTracker</code> class tracks application contexts, which are registered as services
  * by the Gemini extender. This is the main processor for MOTECH modules. For each module it will create an
- * {@link org.motechproject.osgi.web.HttpServiceTracker} and a {@link org.motechproject.osgi.web.UIServiceTracker}.
+ * {@link HttpServiceTracker} and a {@link UIServiceTracker}.
  * These trackers will be responsible for registering the module with {@link org.osgi.service.http.HttpService} (so
- * that they can expose an HTTP endpoint) and the {@link org.motechproject.osgi.web.UIFrameworkService} (so that they can register their UI)
- * respectively. This module also uses the {@link org.motechproject.osgi.web.Log4JBundleLoader} for loading log4j
+ * that they can expose an HTTP endpoint) and the {@link UIFrameworkService} (so that they can register their UI)
+ * respectively. This module also uses the {@link Log4JBundleLoader} for loading log4j
  * configuration files from the registered modules. The processing is only performed for bundles that have the
  * <code>Blueprint-Enabled</code> header in their manifest.
  */
