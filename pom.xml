@@ -1093,7 +1093,6 @@
         <module>platform/event</module>
         <module>platform/osgi-extender-fragment</module>
         <module>platform/osgi-web-util</module>
-        <module>platform/server-api</module>
         <module>platform/server-bundle</module>
         <module>platform/config-core</module>
         <module>platform/server-config</module>

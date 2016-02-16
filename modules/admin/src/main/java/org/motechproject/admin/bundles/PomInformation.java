@@ -1,4 +1,4 @@
-package org.motechproject.server.api;
+package org.motechproject.admin.bundles;
 
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;

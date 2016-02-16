@@ -1,6 +1,5 @@
 package org.motechproject.tasks.web;
 
-import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.TriggersList;
 import org.motechproject.tasks.domain.TriggersLists;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -48,24 +45,6 @@ public class ChannelController {
     @ResponseBody
     public List<Channel> getAllChannels() {
         return channelService.getAllChannels();
-    }
-
-    /**
-     * Returns the channels icon for the module with given name.
-     *
-     * @param moduleName  the name of the module
-     * @param response  the HTTP response
-     * @throws IOException  when there were problems while accessing the icon
-     */
-    @RequestMapping(value = "channel/icon", method = RequestMethod.GET)
-    public void getChannelIcon(@RequestParam String moduleName, HttpServletResponse response) throws IOException {
-        BundleIcon bundleIcon = channelService.getChannelIcon(moduleName);
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentLength(bundleIcon.getContentLength());
-        response.setContentType(bundleIcon.getMime());
-
-        response.getOutputStream().write(bundleIcon.getIcon());
     }
 
     @RequestMapping(value = "channel/triggers", method = RequestMethod.GET)
