@@ -20,9 +20,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-/**
- * Created by marek on 16.02.16.
- */
 public class ModuleControllerTest {
 
     private static final long BUNDLE_ID = 1;
