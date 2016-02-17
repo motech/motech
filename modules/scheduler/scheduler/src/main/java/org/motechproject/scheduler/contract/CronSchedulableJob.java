@@ -78,6 +78,10 @@ public class CronSchedulableJob extends EndingSchedulableJob {
         return cronExpression;
     }
 
+    public void setCronExpression(String cronExpression) {
+        this.cronExpression = cronExpression;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
