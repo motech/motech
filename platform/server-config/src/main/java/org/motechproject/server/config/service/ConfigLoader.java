@@ -1,7 +1,7 @@
 package org.motechproject.server.config.service;
 
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.service.CoreConfigurationService;

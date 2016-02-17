@@ -5,7 +5,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.motechproject.commons.api.ClassUtils;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.osgi.web.domain.LogMapping;
 import org.motechproject.osgi.web.service.ServerLogService;

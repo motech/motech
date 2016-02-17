@@ -1,7 +1,7 @@
 package org.motechproject.config.core.domain;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -18,7 +18,7 @@ public class DBConfig extends AbstractDBConfig {
      * @param url  the URL to the database
      * @param username  the username for the database
      * @param password  the password for the database
-     * @throws org.motechproject.config.core.MotechConfigurationException if given url is invalid.
+     * @throws MotechConfigurationException if given url is invalid.
      */
     public DBConfig(String url, String username, String password) {
         super(url, "none", username, password);

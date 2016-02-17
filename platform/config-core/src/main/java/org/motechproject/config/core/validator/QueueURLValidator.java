@@ -3,7 +3,7 @@ package org.motechproject.config.core.validator;
 import org.apache.activemq.util.URISupport;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.UrlValidator;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -32,7 +32,7 @@ public class QueueURLValidator {
      * Checks whether given URL is valid.
      *
      * @param queueUrl  the URL to be validated
-     * @throws org.motechproject.config.core.MotechConfigurationException if queueUrl is null, empty or invalid
+     * @throws MotechConfigurationException if queueUrl is null, empty or invalid
      */
     public void validate(String queueUrl) {
         if (StringUtils.isBlank(queueUrl)) {

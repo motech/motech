@@ -2,7 +2,7 @@ package org.motechproject.config.core.domain;
 
 import org.hamcrest.core.IsEqual;
 import org.junit.Test;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
