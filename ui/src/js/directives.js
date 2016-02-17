@@ -100,6 +100,28 @@
         };
     });
 
+    /**
+    * Add a time picker (without date) to an element.
+    */
+    widgetModule.directive('timePicker', function () {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function (scope, element, attr, ngModel) {
+                var isReadOnly = scope.$eval(attr.ngReadonly);
+                if(!isReadOnly) {
+                    angular.element(element).timepicker({
+                        onSelect: function (timeTex) {
+                            scope.safeApply(function () {
+                                ngModel.$setViewValue(timeTex);
+                            });
+                        }
+                    });
+                }
+            }
+        };
+    });
+
     widgetModule.directive('overflowChangePanel', function () {
             return {
                 restrict: 'A',
