@@ -26,7 +26,7 @@ CREATE TABLE "Entity" (
   "readOnlySecurityMode" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   PRIMARY KEY ("id"),
   UNIQUE KEY "DRAFT_USER_IDX" ("parentEntity_id_OID","draftOwnerUsername"),
-  KEY "Entity_N49" ("parentEntity_id_OID"),
+  KEY "Entity_KeyIdx1" ("parentEntity_id_OID"),
   CONSTRAINT "Entity_FK1" FOREIGN KEY ("parentEntity_id_OID") REFERENCES "Entity" ("id")
 );
 
@@ -45,7 +45,7 @@ CREATE TABLE "Entity_securityMembers" (
   "Entity_OID" bigint(20) NOT NULL,
   "SecurityMember" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   PRIMARY KEY ("Entity_OID","SecurityMember"),
-  KEY "Entity_securityMembers_N49" ("Entity_OID"),
+  KEY "Entity_securityMembers_KeyIdx1" ("Entity_OID"),
   CONSTRAINT "Entity_securityMembers_FK1" FOREIGN KEY ("Entity_OID") REFERENCES "Entity" ("id")
 );
 
@@ -55,7 +55,7 @@ CREATE TABLE "EntityDraft_fieldNameChanges" (
   "oldName" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   "newName" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY ("id_OID", "oldName"),
-  KEY "EntityDraft_fieldNameChanges_N49" ("id_OID"),
+  KEY "EntityDraft_fieldNameChanges_KeyIdx1" ("id_OID"),
   CONSTRAINT "EntityDraft_fieldNameChanges_FK1" FOREIGN KEY ("id_OID") REFERENCES "Entity" ("id")
 );
 
@@ -80,8 +80,8 @@ CREATE TABLE "Field" (
   "placeholder" varchar(255) DEFAULT NULL,
   PRIMARY KEY ("id"),
   UNIQUE KEY "ENTITY_FIELDNAME_IDX" ("entity_id_OID","name"),
-  KEY "Field_N50" ("entity_id_OID"),
-  KEY "Field_N49" ("type_id_OID"),
+  KEY "Field_KeyIdx2" ("entity_id_OID"),
+  KEY "Field_KeyIdx1" ("type_id_OID"),
   CONSTRAINT "Field_FK1" FOREIGN KEY ("type_id_OID") REFERENCES "Type" ("id"),
   CONSTRAINT "Field_FK2" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
@@ -94,7 +94,7 @@ CREATE TABLE "FieldMetadata" (
   "value" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "metadata_INTEGER_IDX" int(11) DEFAULT NULL,
   PRIMARY KEY ("id"),
-  KEY "FieldMetadata_N49" ("field_id_OID"),
+  KEY "FieldMetadata_KeyIdx1" ("field_id_OID"),
   CONSTRAINT "FieldMetadata_FK1" FOREIGN KEY ("field_id_OID") REFERENCES "Field" ("id")
 );
 
@@ -106,8 +106,8 @@ CREATE TABLE "FieldSetting" (
   "value" TEXT CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "settings_INTEGER_IDX" int(11) DEFAULT NULL,
   PRIMARY KEY ("id"),
-  KEY "FieldSetting_N50" ("field_id_OID"),
-  KEY "FieldSetting_N49" ("DETAILS_ID"),
+  KEY "FieldSetting_KeyIdx2" ("field_id_OID"),
+  KEY "FieldSetting_KeyIdx1" ("DETAILS_ID"),
   CONSTRAINT "FieldSetting_FK2" FOREIGN KEY ("DETAILS_ID") REFERENCES "TypeSetting" ("id"),
   CONSTRAINT "FieldSetting_FK1" FOREIGN KEY ("field_id_OID") REFERENCES "Field" ("id")
 );
@@ -121,8 +121,8 @@ CREATE TABLE "FieldValidation" (
   "value" varchar(1024) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "validations_INTEGER_IDX" int(11) DEFAULT NULL,
   PRIMARY KEY ("id"),
-  KEY "FieldValidation_N49" ("field_id_OID"),
-  KEY "FieldValidation_N50" ("DETAILS_ID"),
+  KEY "FieldValidation_KeyIdx1" ("field_id_OID"),
+  KEY "FieldValidation_KeyIdx2" ("DETAILS_ID"),
   CONSTRAINT "FieldValidation_FK2" FOREIGN KEY ("field_id_OID") REFERENCES "Field" ("id"),
   CONSTRAINT "FieldValidation_FK1" FOREIGN KEY ("DETAILS_ID") REFERENCES "TypeValidation" ("id")
 );
@@ -137,7 +137,7 @@ CREATE TABLE "Lookup" (
   "lookups_INTEGER_IDX" int(11) DEFAULT NULL,
   "readOnly" bit(1) NOT NULL,
   PRIMARY KEY ("id"),
-  KEY "Lookup_N49" ("entity_id_OID"),
+  KEY "Lookup_KeyIdx1" ("entity_id_OID"),
   CONSTRAINT "Lookup_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
 
@@ -147,8 +147,8 @@ CREATE TABLE "LookupFields" (
   "id_EID" bigint(20) NOT NULL,
   "IDX" int(11) NOT NULL,
   PRIMARY KEY ("id_OID","IDX"),
-  KEY "LookupFields_N49" ("id_OID"),
-  KEY "LookupFields_N50" ("id_EID"),
+  KEY "LookupFields_KeyIdx1" ("id_OID"),
+  KEY "LookupFields_KeyIdx2" ("id_EID"),
   CONSTRAINT "LookupFields_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id"),
   CONSTRAINT "LookupFields_FK2" FOREIGN KEY ("id_EID") REFERENCES "Field" ("id")
 );
@@ -159,7 +159,7 @@ CREATE TABLE "Lookup_fieldsOrder" (
   "fieldName" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   "IDX" int(11) NOT NULL,
   PRIMARY KEY ("id_OID", "IDX"),
-  KEY "Lookup_fieldsOrder_N49" ("id_OID"),
+  KEY "Lookup_fieldsOrder_KeyIdx1" ("id_OID"),
   CONSTRAINT "Lookup_fieldsOrder_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
 );
 
@@ -169,7 +169,7 @@ CREATE TABLE "Lookup_rangeLookupFields" (
   "fieldName" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   "IDX" int(11) NOT NULL,
   PRIMARY KEY ("id_OID", "IDX"),
-  KEY "Lookup_rangeLookupFields_N49" ("id_OID"),
+  KEY "Lookup_rangeLookupFields_KeyIdx1" ("id_OID"),
   CONSTRAINT "Lookup_rangeLookupFields_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
 );
 
@@ -179,7 +179,7 @@ CREATE TABLE "Lookup_setLookupFields" (
   "fieldName" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   "IDX" int(11) NOT NULL,
   PRIMARY KEY ("id_OID", "IDX"),
-  KEY "Lookup_setLookupFields_N49" ("id_OID"),
+  KEY "Lookup_setLookupFields_KeyIdx1" ("id_OID"),
   CONSTRAINT "Lookup_setLookupFields_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
 );
 
@@ -189,7 +189,7 @@ CREATE TABLE "Lookup_customOperators" (
   "fieldName" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   "operator" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY ("id_OID", "fieldName"),
-  KEY "Lookup_customOperators_N49" ("id_OID"),
+  KEY "Lookup_customOperators_KeyIdx1" ("id_OID"),
   CONSTRAINT "Lookup_customOperators_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
 );
 
@@ -199,7 +199,7 @@ CREATE TABLE "Lookup_useGenericParams" (
   "param" varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   "value" bit(1) DEFAULT FALSE,
   PRIMARY KEY ("id_OID", "param"),
-  KEY "Lookup_useGenericParams_N49" ("id_OID"),
+  KEY "Lookup_useGenericParams_KeyIdx1" ("id_OID"),
   CONSTRAINT "Lookup_useGenericParams_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
 );
 
@@ -213,7 +213,7 @@ CREATE TABLE "RestOptions" (
   "entity_id_OID" bigint(20) DEFAULT NULL,
   "modifiedByUser" bit(1) NOT NULL default 0,
   PRIMARY KEY ("id"),
-  KEY "RestOptions_N49" ("entity_id_OID"),
+  KEY "RestOptions_KeyIdx1" ("entity_id_OID"),
   CONSTRAINT "RestOptions_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
 
@@ -230,8 +230,8 @@ CREATE TABLE "TYPE_SETTING_SETTING_OPTION" (
   "SETTING_OPTION_ID_EID" bigint(20) DEFAULT NULL,
   "IDX" int(11) NOT NULL,
   PRIMARY KEY ("TYPE_SETTING_ID_OID","IDX"),
-  KEY "TYPE_SETTING_SETTING_OPTION_N49" ("TYPE_SETTING_ID_OID"),
-  KEY "TYPE_SETTING_SETTING_OPTION_N50" ("SETTING_OPTION_ID_EID"),
+  KEY "TYPE_SETTING_SETTING_OPTION_KeyIdx1" ("TYPE_SETTING_ID_OID"),
+  KEY "TYPE_SETTING_SETTING_OPTION_KeyIdx2" ("SETTING_OPTION_ID_EID"),
   CONSTRAINT "TYPE_SETTING_SETTING_OPTION_FK2" FOREIGN KEY ("SETTING_OPTION_ID_EID") REFERENCES "TypeSettingOption" ("id"),
   CONSTRAINT "TYPE_SETTING_SETTING_OPTION_FK1" FOREIGN KEY ("TYPE_SETTING_ID_OID") REFERENCES "TypeSetting" ("id")
 );
@@ -242,8 +242,8 @@ CREATE TABLE "TYPE_TYPE_SETTING" (
   "TYPE_SETTING_ID_EID" bigint(20) DEFAULT NULL,
   "IDX" int(11) NOT NULL,
   PRIMARY KEY ("TYPE_ID_OID","IDX"),
-  KEY "TYPE_TYPE_SETTING_N49" ("TYPE_SETTING_ID_EID"),
-  KEY "TYPE_TYPE_SETTING_N50" ("TYPE_ID_OID"),
+  KEY "TYPE_TYPE_SETTING_KeyIdx1" ("TYPE_SETTING_ID_EID"),
+  KEY "TYPE_TYPE_SETTING_KeyIdx2" ("TYPE_ID_OID"),
   CONSTRAINT "TYPE_TYPE_SETTING_FK1" FOREIGN KEY ("TYPE_ID_OID") REFERENCES "Type" ("id"),
   CONSTRAINT "TYPE_TYPE_SETTING_FK2" FOREIGN KEY ("TYPE_SETTING_ID_EID") REFERENCES "TypeSetting" ("id")
 );
@@ -254,8 +254,8 @@ CREATE TABLE "TYPE_TYPE_VALIDATION" (
   "TYPE_VALIDATION_ID_EID" bigint(20) DEFAULT NULL,
   "IDX" int(11) NOT NULL,
   PRIMARY KEY ("TYPE_ID_OID","IDX"),
-  KEY "TYPE_TYPE_VALIDATION_N50" ("TYPE_VALIDATION_ID_EID"),
-  KEY "TYPE_TYPE_VALIDATION_N49" ("TYPE_ID_OID"),
+  KEY "TYPE_TYPE_VALIDATION_KeyIdx2" ("TYPE_VALIDATION_ID_EID"),
+  KEY "TYPE_TYPE_VALIDATION_KeyIdx1" ("TYPE_ID_OID"),
   CONSTRAINT "TYPE_TYPE_VALIDATION_FK2" FOREIGN KEY ("TYPE_VALIDATION_ID_EID") REFERENCES "TypeValidation" ("id"),
   CONSTRAINT "TYPE_TYPE_VALIDATION_FK1" FOREIGN KEY ("TYPE_ID_OID") REFERENCES "Type" ("id")
 );
@@ -271,7 +271,7 @@ CREATE TABLE "Tracking" (
   "modifiedByUser" bit(1) NOT NULL default 0,
   "nonEditable" bit(1) NOT NULL default 0,
   PRIMARY KEY ("id"),
-  KEY "Tracking_N49" ("entity_id_OID"),
+  KEY "Tracking_KeyIdx1" ("entity_id_OID"),
   CONSTRAINT "Tracking_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
 
@@ -292,7 +292,7 @@ CREATE TABLE "TypeSetting" (
   "name" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "TYPE_ID" bigint(20) DEFAULT NULL,
   PRIMARY KEY ("id"),
-  KEY "TypeSetting_N49" ("TYPE_ID"),
+  KEY "TypeSetting_KeyIdx1" ("TYPE_ID"),
   CONSTRAINT "TypeSetting_FK1" FOREIGN KEY ("TYPE_ID") REFERENCES "Type" ("id")
 );
 
@@ -309,7 +309,7 @@ CREATE TABLE "TypeValidation" (
   "displayName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "TYPE_ID" bigint(20) DEFAULT NULL,
   PRIMARY KEY ("id"),
-  KEY "TypeValidation_N49" ("TYPE_ID"),
+  KEY "TypeValidation_KeyIdx1" ("TYPE_ID"),
   CONSTRAINT "TypeValidation_FK1" FOREIGN KEY ("TYPE_ID") REFERENCES "Type" ("id")
 );
 
@@ -319,7 +319,7 @@ CREATE TABLE "TypeValidation_annotations" (
   "ANNOTATION" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "IDX" int(11) NOT NULL,
   PRIMARY KEY ("id_OID","IDX"),
-  KEY "TypeValidation_annotations_N49" ("id_OID"),
+  KEY "TypeValidation_annotations_KeyIdx1" ("id_OID"),
   CONSTRAINT "TypeValidation_annotations_FK1" FOREIGN KEY ("id_OID") REFERENCES "TypeValidation" ("id")
 );
 
@@ -342,7 +342,7 @@ CREATE TABLE "Entity_readOnlySecurityMembers" (
   "Entity_OID" bigint(20) NOT NULL,
   "ReadOnlySecurityMember" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   PRIMARY KEY ("Entity_OID", "ReadOnlySecurityMember"),
-  KEY "Entity_readOnlySecurityMembers_N49" ("Entity_OID"),
+  KEY "Entity_readOnlySecurityMembers_KeyIdx1" ("Entity_OID"),
   CONSTRAINT "Entity_readOnlySecurityMembers_FK1" FOREIGN KEY ("Entity_OID") REFERENCES "Entity" ("id")
 );
 
@@ -361,8 +361,8 @@ CREATE TABLE "UserPreferences_selectedFields" (
   "selectedField" bigint(20),
   "IDX" int(11),
   PRIMARY KEY ("className_OID", "username_OID", "IDX"),
-  KEY "UserPreferences_selectedFields_N49" ("selectedField"),
-  KEY "UserPreferences_selectedFields_N50" ("className_OID", "username_OID"),
+  KEY "UserPreferences_selectedFields_KeyIdx1" ("selectedField"),
+  KEY "UserPreferences_selectedFields_KeyIdx2" ("className_OID", "username_OID"),
   CONSTRAINT "UserPreferences_visibleFields_FK1" FOREIGN KEY ("className_OID", "username_OID") REFERENCES "UserPreferences" ("className", "username"),
   CONSTRAINT "UserPreferences_visibleFields_FK2" FOREIGN KEY ("selectedField") REFERENCES "Field" ("id") ON DELETE CASCADE
 );
@@ -374,8 +374,8 @@ CREATE TABLE "UserPreferences_unselectedFields" (
   "unselectedField" bigint(20),
   "IDX" int(11),
   PRIMARY KEY ("className_OID", "username_OID", "IDX"),
-  KEY "UserPreferences_unselectedFields_N49" ("unselectedField"),
-  KEY "UserPreferences_unselectedFields_N50" ("className_OID", "username_OID"),
+  KEY "UserPreferences_unselectedFields_KeyIdx1" ("unselectedField"),
+  KEY "UserPreferences_unselectedFields_KeyIdx2" ("className_OID", "username_OID"),
   CONSTRAINT "UserPreferences_unselectedFields_FK1" FOREIGN KEY ("className_OID", "username_OID") REFERENCES "UserPreferences" ("className", "username"),
   CONSTRAINT "UserPreferences_unselectedFields_FK2" FOREIGN KEY ("unselectedField") REFERENCES "Field" ("id") ON DELETE CASCADE
 );
