@@ -264,4 +264,12 @@ public interface MotechSchedulerService {
      * @param info  the information about a job
      */
     void deleteJob(JobBasicInfo info);
+
+    /**
+     * Retrieves a job based on the given information.
+     *
+     * @param jobInfo  the information about a job
+     * @return the job matching the given information
+     */
+    SchedulableJob getJob(JobBasicInfo jobInfo);
 }
