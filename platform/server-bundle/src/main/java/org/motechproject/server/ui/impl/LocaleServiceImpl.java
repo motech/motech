@@ -1,6 +1,6 @@
 package org.motechproject.server.ui.impl;
 
-import org.motechproject.osgi.web.LocaleService;
+import org.motechproject.osgi.web.service.LocaleService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.i18n.I18nRepository;
 import org.springframework.beans.factory.annotation.Autowired;

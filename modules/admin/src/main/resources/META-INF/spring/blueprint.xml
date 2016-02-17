@@ -13,7 +13,7 @@
 
     <osgi:reference id="packageAdmin" interface="org.osgi.service.packageadmin.PackageAdmin"/>
 
-    <osgi:reference id="uiFrameworkServiceOsgi" interface="org.motechproject.osgi.web.UIFrameworkService"/>
+    <osgi:reference id="uiFrameworkServiceOsgi" interface="org.motechproject.osgi.web.service.UIFrameworkService"/>
 
     <osgi:reference id="mailSender" interface="org.motechproject.email.service.EmailSenderService"/>
 

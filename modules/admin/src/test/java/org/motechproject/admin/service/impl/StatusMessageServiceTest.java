@@ -19,7 +19,7 @@ import org.motechproject.email.exception.EmailSendException;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.osgi.web.service.UIFrameworkService;
 import org.springframework.transaction.support.TransactionCallback;
 
 import java.util.ArrayList;
