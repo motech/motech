@@ -206,7 +206,7 @@
         $scope.parseToDateTime = function(date) {
             if (date && date !== "") {
                 var parts = date.split(" ");
-                return parts[0] + "T" + parts[1] + parts[2];
+                return parts[0] + "T" + parts[1];
             }
             return date;
         }
@@ -234,7 +234,7 @@
                 job.endDate = $scope.parseToDateTime(job.endDate);
             }
 
-            if (job.days) {
+            if ($scope.job.days) {
                 for (var day = 0; day < $scope.job.days.length; day += 1) {
                     if (day === 0) {
                         job.days = [];
@@ -274,7 +274,7 @@
         }
 
         $scope.parseDateToString = function(milliseconds) {
-            return moment(milliseconds).format("YYYY-MM-DD HH:mm ZZ");
+            return moment(milliseconds).format("YYYY-MM-DD HH:mm:ss");
         }
 
         if ($scope.action === 'edit') {

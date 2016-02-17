@@ -26,10 +26,22 @@ import static org.motechproject.scheduler.constants.SchedulerConstants.REPEATING
 import static org.motechproject.scheduler.constants.SchedulerConstants.RUN_ONCE;
 import static org.motechproject.scheduler.constants.SchedulerConstants.UI_DEFINED;
 
+/**
+ * Responsible for building jobs based on the given information;
+ */
 public final class SchedulableJobBuilder {
 
     private static final int SECOND = 1000;
 
+    /**
+     * Builds a job based on the given key, data map and trigger.
+     *
+     * @param key  the job key
+     * @param dataMap  the job data map
+     * @param trigger  the job trigger
+     * @return  the created job
+     * @throws SchedulerException when there were problems while building job
+     */
     public static SchedulableJob buildJob(JobKey key, JobDataMap dataMap, Trigger trigger) throws SchedulerException {
 
         SchedulableJob job;
