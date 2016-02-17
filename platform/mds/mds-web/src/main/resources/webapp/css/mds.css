@@ -463,10 +463,3 @@
 .mds .form-inline .form-group label {
     display: inline-block;
 }
-
-.ui-priority-secondary,
-.ui-widget-content .ui-priority-secondary,
-.ui-widget-header .ui-priority-secondary {
-    opacity: 1;
-    font-weight: bold;
-}
