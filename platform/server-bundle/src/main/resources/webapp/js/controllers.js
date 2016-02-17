@@ -23,6 +23,7 @@
                 } else {
                     window.location.hash = '';
                 }
+                $scope.setBootstrapDialogMessages();
             };
 
         $scope.BrowserDetect = BrowserDetect;
@@ -130,7 +131,7 @@
                         $scope.startupViewData.startupSettings.language = lang;
                     }
 
-                    moment.lang(lang);
+                    moment.locale(lang);
                     motechAlert('server.success.changed.language', 'server.changed.language',function(){
                         if (refresh ) {
                             window.location.reload();
@@ -155,6 +156,22 @@
                 key: locale.toString() || "en",
                 value: $scope.languages[locale.toString()] || $scope.languages[locale.withoutVariant()] || $scope.languages[locale.language] || "English"
             };
+        };
+
+        /*
+        * This function provide local messages for Bootstrap3-Dialog plugin.
+        * https://nakupanda.github.io/bootstrap3-dialog/
+        */
+        $scope.setBootstrapDialogMessages = function () {
+            BootstrapDialog.DEFAULT_TEXTS[BootstrapDialog.TYPE_DEFAULT] = $scope.msg('server.bootstrapDialog.TYPE_DEFAULT');
+            BootstrapDialog.DEFAULT_TEXTS[BootstrapDialog.TYPE_INFO] = $scope.msg('server.bootstrapDialog.TYPE_INFO');
+            BootstrapDialog.DEFAULT_TEXTS[BootstrapDialog.TYPE_PRIMARY] = $scope.msg('server.bootstrapDialog.TYPE_PRIMARY');
+            BootstrapDialog.DEFAULT_TEXTS[BootstrapDialog.TYPE_SUCCESS] = $scope.msg('server.bootstrapDialog.TYPE_SUCCESS');
+            BootstrapDialog.DEFAULT_TEXTS[BootstrapDialog.TYPE_WARNING] = $scope.msg('server.bootstrapDialog.TYPE_WARNING');
+            BootstrapDialog.DEFAULT_TEXTS[BootstrapDialog.TYPE_DANGER] = $scope.msg('server.bootstrapDialog.TYPE_DANGER');
+            BootstrapDialog.DEFAULT_TEXTS.OK = $scope.msg('server.bootstrapDialog.ok');
+            BootstrapDialog.DEFAULT_TEXTS.CANCEL = $scope.msg('server.bootstrapDialog.cancel');
+            BootstrapDialog.DEFAULT_TEXTS.CONFIRM = $scope.msg('server.bootstrapDialog.confirm');
         };
 
         $scope.minimizeHeader = function () {
@@ -194,7 +211,10 @@
 
                 $http.get('../server/module/critical/' + moduleName).success(function (data, status) {
                     if (data !== undefined && data !== '' && status !== 408) {
-                        jAlert(data, $scope.msg('error'));
+                        BootstrapDialog.alert({
+                            type: BootstrapDialog.TYPE_DANGER,
+                            message: status + ": " + data.statusText
+                        });
                     }
                 });
 
@@ -375,7 +395,7 @@
                 })
             ]).then(function () {
                 $scope.userLang = $scope.getLanguage(toLocale($scope.user.lang));
-                moment.lang($scope.user.lang);
+                moment.locale($scope.user.lang);
                 $scope.loadI18n($scope.i18n);
             });
         });

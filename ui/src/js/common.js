@@ -1,18 +1,33 @@
     /* Common functions */
 
-function motechAlert(msg, title, params, callback) {
+function motechAlert(msg, title, params, Callback) {
     'use strict';
-    jAlert(jQuery.i18n.prop.apply(null, [msg].concat(params)), jQuery.i18n.prop(title), callback);
+    BootstrapDialog.alert({
+        title: jQuery.i18n.prop(title),
+        message: jQuery.i18n.prop.apply(null, [msg].concat(params)),
+        callback: Callback
+    });
 }
 
-function motechConfirm(msg, title, callback) {
+function motechConfirm(msg, title, Callback) {
     'use strict';
-    jConfirm(jQuery.i18n.prop(msg), jQuery.i18n.prop(title), callback);
+    BootstrapDialog.confirm({
+        title: jQuery.i18n.prop(title),
+        message: jQuery.i18n.prop(msg),
+        callback: Callback
+    });
 }
 
-function motechAlertStackTrace(msg, title, response, callback) {
+function motechAlertStackTrace(msg, title, response, Callback) {
     'use strict';
-    jAlertStackTrace(jQuery.i18n.prop(msg).bold()+": \n"+response, jQuery.i18n.prop(title), callback);
+    if( title === null || title === '') {
+        title = 'Alert';
+    }
+    BootstrapDialog.alert({
+        title: title,
+        message: jQuery.i18n.prop(msg).bold() + ": \n" + response,
+        callback: Callback
+    });
 }
 
 function blockUI() {
@@ -56,7 +71,10 @@ function getAvailableTabs(moduleName, callback) {
 var jFormErrorHandler = function(response) {
         'use strict';
         unblockUI();
-        jAlert(response.status + ": " + response.statusText);
+        BootstrapDialog.alert({
+            type: BootstrapDialog.TYPE_DANGER, //Error type
+            message: response.status + ": " + response.statusText
+        });
     },
 
     parseResponse = function (responseData, defaultMsg) {
@@ -79,7 +97,7 @@ var jFormErrorHandler = function(response) {
         return msg;
     },
 
-    handleResponse = function(title, defaultMsg, response, callback) {
+    handleResponse = function(title, defaultMsg, response, Callback) {
         'use strict';
         var msg = { value: "server.error", literal: false, params: [] },
             responseData = (typeof(response) === 'string') ? response : response.data;
@@ -87,10 +105,15 @@ var jFormErrorHandler = function(response) {
         unblockUI();
         msg = parseResponse(responseData, defaultMsg);
 
-        if (callback) {
-            callback(title, msg.value, msg.params);
+        if (Callback) {
+            Callback(title, msg.value, msg.params);
         } else if (msg.literal) {
-            jAlert(msg.value, jQuery.i18n.prop(title), callback);
+            BootstrapDialog.alert({
+                type: BootstrapDialog.TYPE_DANGER,
+                title: jQuery.i18n.prop(title),
+                message: msg.value,
+                callback: Callback
+            });
         } else {
             motechAlert(msg.value, title, msg.params);
         }

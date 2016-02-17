@@ -52,7 +52,6 @@
     "jqGrid": "jqgrid#~5.0.1",
     "textAngular": "1.2.0",
     "jquery.browser": "https://gist.githubusercontent.com/adeelejaz/4714079/raw/0cecbaadc9d472aad97baa51b4df09fecd47203f/jquery.browser.js",
-    "jquery.alerts-1.1": "http://labs.abeautifulsite.net/archived/jquery-alerts/jquery.alerts-1.1.zip",
     "jquery-ui": "~1.11.4",
     "bootstrap-multiselect": "~0.9.13",
     "angular-bootstrap": "0.6.0",
@@ -104,15 +103,6 @@
       "dependencies": {
         "bootstrap": ">= 3.1.0",
         "jquery": ">= 1.9.0"
-      }
-    },
-    "jquery.alerts-1.1": {
-      "main": [
-        "./jquery.alerts.js",
-        "./jquery.alerts.css"
-      ],
-      "dependencies": {
-        "jquery": "~1"
       }
     },
     "jquery.browser": {
