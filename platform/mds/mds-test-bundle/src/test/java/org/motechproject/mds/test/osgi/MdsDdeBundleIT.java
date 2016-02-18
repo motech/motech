@@ -1013,7 +1013,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
     public void testDogClass() {
 
         Dog dog = new Dog(null, 3);
-        dog.setAge(3.5f);
+        dog.setWeight(35.6f);
 
         dogDataService.create(dog);
 
@@ -1021,11 +1021,11 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         assertEquals(1, created.size());
         assertEquals(dog.getHiddenBones(), created.get(0).getHiddenBones());
-        assertEquals(dog.getAge(), created.get(0).getAge(), 0.01);
+        assertEquals(dog.getWeight(), created.get(0).getWeight(), 0.01);
 
         Dog toUpdate = created.get(0);
         toUpdate.setHiddenBones(5);
-        toUpdate.setAge(4.2f);
+        toUpdate.setWeight(24.2f);
 
         dogDataService.update(toUpdate);
 
@@ -1033,7 +1033,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         assertEquals(1, updated.size());
         assertEquals(toUpdate.getHiddenBones(), updated.get(0).getHiddenBones());
-        assertEquals(toUpdate.getAge(), updated.get(0).getAge(), 0.01);
+        assertEquals(toUpdate.getWeight(), updated.get(0).getWeight(), 0.01);
 
         dogDataService.delete(updated.get(0));
 

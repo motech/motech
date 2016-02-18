@@ -2361,7 +2361,7 @@
                         // it is valid
                         ctrl.$setValidity('integer', true);
                         originalValue = viewValue;
-                        viewValue = parseFloat(viewValue);
+                        viewValue = parseInt(viewValue, 10);
                         if (isNaN(viewValue)) {
                             viewValue = '';
                         }
@@ -2393,7 +2393,7 @@
                         // it is valid
                         ctrl.$setValidity('short', true);
                         originalValue = viewValue;
-                        viewValue = parseFloat(viewValue);
+                        viewValue = parseInt(viewValue, 10);
                         if (viewValue >= 32767 || viewValue <= -32768) {
                             ctrl.$setValidity('short', false);
                         }
