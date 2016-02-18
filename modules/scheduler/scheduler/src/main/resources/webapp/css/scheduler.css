@@ -64,3 +64,36 @@
     white-space: nowrap;
 	overflow: hidden;
 }
+
+.scheduler .horizontally-inside {
+    margin: 0px;
+}
+
+.scheduler .horizontally-inside > button {
+    margin-top: 5px;
+}
+
+.scheduler .middle.input-group-addon {
+    border-left: 0px;
+    border-right: 0px;
+}
+
+.scheduler .map .input-group {
+    margin-top: 5px;
+}
+
+.scheduler .job-form label {
+    transition:all linear 0.5s;
+}
+
+.scheduler .job-form .ng-invalid {
+    color: red;
+}
+
+a .btn {
+    color: white;
+}
+
+#days {
+    height: 132px;
+}

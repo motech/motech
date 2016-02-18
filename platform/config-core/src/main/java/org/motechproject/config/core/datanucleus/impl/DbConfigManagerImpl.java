@@ -1,7 +1,7 @@
 package org.motechproject.config.core.datanucleus.impl;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.datanucleus.DbConfigManager;
 import org.motechproject.config.core.domain.ConfigLocation;

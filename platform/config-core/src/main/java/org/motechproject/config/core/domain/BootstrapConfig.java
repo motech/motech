@@ -1,7 +1,7 @@
 package org.motechproject.config.core.domain;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.validator.QueueURLValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +60,7 @@ public class BootstrapConfig {
      * @param osgiFrameworkStorage  the directory used as the bundle cache
      * @param queueUrl  the URL of the JMS broker
      * @param activeMqProperties  the ActiveMQ properties
-     * @throws org.motechproject.config.core.MotechConfigurationException if sqlConfig is null.
+     * @throws MotechConfigurationException if sqlConfig is null.
      */
     public BootstrapConfig(SQLDBConfig sqlConfig, ConfigSource configSource, String osgiFrameworkStorage, String queueUrl, Properties activeMqProperties) {
         if (sqlConfig == null) {

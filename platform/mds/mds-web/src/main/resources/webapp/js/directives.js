@@ -493,28 +493,6 @@
     });
 
     /**
-    * Add a time picker (without date) to an element.
-    */
-    directives.directive('mdsTimePicker', function () {
-        return {
-            restrict: 'A',
-            require: 'ngModel',
-            link: function (scope, element, attr, ngModel) {
-                var isReadOnly = scope.$eval(attr.ngReadonly);
-                if(!isReadOnly) {
-                    angular.element(element).timepicker({
-                        onSelect: function (timeTex) {
-                            scope.safeApply(function () {
-                                ngModel.$setViewValue(timeTex);
-                            });
-                        }
-                    });
-                }
-            }
-        };
-    });
-
-    /**
     * Add a datetime picker to an element.
     */
     directives.directive('mdsDatetimePicker', function () {
