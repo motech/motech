@@ -241,9 +241,6 @@
     directives.directive('droppable', function (ManageTaskUtils, $compile) {
         return {
             restrict: 'A',
-            scope: {
-              ngModel : '='
-            },
             link: function (scope, element, attrs) {
                 element.droppable({
                     drop: function (event, ui) {
@@ -1397,6 +1394,32 @@
             elem.on('click', function (e) {
                e.stopPropagation();
             });
+        };
+    });
+
+    directives.directive('popoverLoader', function ($compile) {
+        return {
+            restrict: 'A',
+            scope: {
+                popoverLoader: '=',
+                twoLists: '='
+            },
+            link: function (scope, element, attrs) {
+                var maxLength = !scope.twoLists ? 75 : 55;
+                if (scope.popoverLoader.length > maxLength) {
+                    element.attr('data-trigger', 'hover');
+                    element.attr('data-placement', 'bottom');
+                    element.attr('bs-popover', scope.popoverLoader);
+                    element.html(scope.popoverLoader.substring(0, maxLength - 3) + "...");
+                    $(element).popover({
+                        content: function () {
+                            return scope.popoverLoader;
+                        }
+                    });
+                } else {
+                    element.html(scope.popoverLoader);
+                }
+            }
         };
     });
 

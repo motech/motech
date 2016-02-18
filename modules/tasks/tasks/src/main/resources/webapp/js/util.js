@@ -84,7 +84,7 @@
                     var array = [];
 
                     angular.forEach(channels, function (channel) {
-                        if (channel.triggerTaskEvents && channel.triggerTaskEvents.length) {
+                        if (channel.providesTriggers) {
                             array.push(channel);
                         }
                     });

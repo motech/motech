@@ -10,6 +10,7 @@ import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Map;
 
@@ -278,9 +279,10 @@ public interface InstanceService {
      * @param entityId id of the entity
      * @param instanceId id of the instance
      * @param fieldName name of the field to retrieve
+     * @throws InstanceNotFoundException if instance with the given id does not exist
      * @return value of the field
      */
-    Object getInstanceField(Long entityId, Long instanceId, String fieldName);
+    Object getInstanceField(Long entityId, Long instanceId, String fieldName) throws InstanceNotFoundException;
 
     /**
      * Checks whether the logged in user has access to the entity with the given ID.

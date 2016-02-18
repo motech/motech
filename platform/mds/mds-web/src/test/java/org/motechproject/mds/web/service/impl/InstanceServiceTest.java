@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
@@ -49,6 +50,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
 
+import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -724,6 +726,22 @@ public class InstanceServiceTest {
 
         verify(entityService).getEntityFieldsForUI(ENTITY_ID + 1);
         verify(userPreferencesService).updateGridSize(ENTITY_ID + 1, "motech", 100);
+    }
+
+    @Test
+    public void shouldLoadBlobField() throws InstanceNotFoundException {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setReadOnlySecurityMode(null);
+        entityDto.setSecurityMode(null);
+        entityDto.setClassName(TestSample.class.getName());
+
+        when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityDto);
+        mockDataService();
+        TestSample instance = Mockito.mock(TestSample.class);
+        when(motechDataService.findById(ENTITY_ID + 1)).thenReturn(instance);
+
+        instanceService.getInstanceField(12l, ENTITY_ID + 1, "blobField");
+        verify(motechDataService).getDetachedField(instance, "blobField");
     }
 
     private void setUpSecurityContext() {

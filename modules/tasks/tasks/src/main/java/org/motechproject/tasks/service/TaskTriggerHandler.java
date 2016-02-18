@@ -15,9 +15,7 @@ import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskActivity;
-import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.TaskHandlerException;
-import org.motechproject.tasks.ex.TriggerNotFoundException;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,7 +125,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     }
 
     @Override
-    public void handle(MotechEvent event) throws TriggerNotFoundException {
+    public void handle(MotechEvent event) {
         LOGGER.info("Handling the motech event with subject: {}", event.getSubject());
 
         // Look for custom event parser
@@ -139,10 +137,10 @@ public class TaskTriggerHandler implements TriggerHandler {
         }
 
         // Use custom event parser, if it exists, to modify event
-        TriggerEvent trigger = taskService.findTrigger(parser == null ? event.getSubject() : parser.parseEventSubject(event.getSubject(), event.getParameters()));
+        String triggerSubject = parser == null ? event.getSubject() : parser.parseEventSubject(event.getSubject(), event.getParameters());
         Map<String, Object> parameters = parser == null ? event.getParameters() : parser.parseEventParameters(event.getSubject(), event.getParameters());
 
-        List<Task> tasks = taskService.findActiveTasksForTrigger(trigger);
+        List<Task> tasks = taskService.findActiveTasksForTriggerSubject(triggerSubject);
 
         // Handle all tasks one by one
         for (Task task : tasks) {

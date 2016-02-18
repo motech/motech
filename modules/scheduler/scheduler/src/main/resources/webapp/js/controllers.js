@@ -6,7 +6,7 @@
 
     var controllers = angular.module('scheduler.controllers', []);
 
-    controllers.controller('SchedulerCtrl', function($scope, $http, $timeout, $routeParams, JobsService) {
+    controllers.controller('SchedulerCtrl', function($scope, $timeout, $routeParams, JobsService) {
 
         $scope.jobDetails = {};
 
@@ -82,6 +82,17 @@
             })
         };
 
+        $scope.newJob = function() {
+            blockUI();
+            window.location.href = "#/scheduler/createJob?action=new";
+        }
+
+        $scope.editJob = function(job) {
+            JobsService.setCurrentJob(job);
+            blockUI();
+            window.location.href = "#/scheduler/createJob?action=edit";
+        }
+
         $scope.deleteJob = function(job) {
             motechConfirm("scheduler.confirm.delete", "scheduler.confirm", function(response) {
                 if (response) {
@@ -116,6 +127,173 @@
             }
             return undefined;
         };
+    });
+
+    controllers.controller('SchedulerCreateJobCtrl', function($scope, $timeout, $routeParams, JobsService) {
+
+        $scope.job = {};
+        $scope.job.motechEvent = {};
+        $scope.motechEventParameters = [];
+        $scope.action = $routeParams.action;
+
+        $scope.jobTypes = [
+            { displayName: "Cron", name: "CRON" }, { displayName: "Repeating", name: "REPEATING" },
+            { displayName: "Repeating Period", name: "REPEATING_PERIOD"}, { displayName: "Run Once", name: "RUN_ONCE" },
+            { displayName: "Day of Week", name: "DAY_OF_WEEK" }
+        ];
+            
+        $scope.days = [
+            { displayName: "Monday", value: 0 }, { displayName: "Tuesday", value: 1 },
+            { displayName: "Wednesday", value: 2 }, { displayName: "Thursday", value: 3 },
+            { displayName: "Friday", value: 4 }, {displayName: "Saturday", value: 5 },
+            { displayName: "Sunday", value: 6}
+        ];
+
+        function containsKey(map, key) {
+            var result = false;
+            angular.forEach($scope.motechEventParameters, function(element) {
+                if (element.key === key) {
+                    result = true;
+                }
+            });
+            return result;
+        };
+
+        $scope.addToMap = function(key, value) {
+            if (containsKey($scope.motechEventParameters, key)) {
+                motechAlert("scheduler.keyAlreadyExists", "schedulerKeyAlreadyExists");
+            } else {
+                $scope.motechEventParameters.push({
+                    "key": key,
+                    "value": value
+                });
+            }
+            $timeout(function() {
+                $scope.key = "";
+                $scope.value = "";
+            });
+
+        };
+
+        $scope.resetMap = function() {
+            motechConfirm("scheduler.confirm.resetMap", "scheduler.confirm", function(response) {
+                if (response) {
+                    $timeout(function() {
+                        $scope.motechEventParameters = [];
+                    });
+                }
+            });
+        }
+
+        $scope.removeFromMap = function(key) {
+            motechConfirm("scheduler.confirm.removeItem", "scheduler.confirm", function(response) {
+                if (response) {
+                    var id;
+                    for (var i = 0; i < $scope.motechEventParameters.length; i += 1) {
+                        if ($scope.motechEventParameters[i].key === key) {
+                            id = i;
+                        }
+                    }
+                    if (id > -1) {
+                        $timeout(function () {
+                            $scope.motechEventParameters.splice(id, 1);
+                        });
+                    }
+                }
+            });
+        };
+
+        $scope.parseToDateTime = function(date) {
+            if (date && date !== "") {
+                var parts = date.split(" ");
+                return parts[0] + "T" + parts[1];
+            }
+            return date;
+        }
+
+        $scope.createOrUpdateJob = function(action) {
+            var job = {};
+
+            job.motechEvent = {};
+
+            for (var field in $scope.job) {
+                job[field] = $scope.job[field];
+            }
+
+            job.motechEvent.parameters = {};
+
+            angular.forEach($scope.motechEventParameters, function(parameter) {
+                job.motechEvent.parameters[parameter.key] = parameter.value;
+            });
+
+            if (job.startDate) {
+                job.startDate = $scope.parseToDateTime(job.startDate);
+            }
+
+            if (job.endDate) {
+                job.endDate = $scope.parseToDateTime(job.endDate);
+            }
+
+            if ($scope.job.days) {
+                for (var day = 0; day < $scope.job.days.length; day += 1) {
+                    if (day === 0) {
+                        job.days = [];
+                    }
+                    job.days[day] = $scope.job.days[day];
+                }
+            }
+
+            job.uiDefined = true;
+
+            function success() {
+                window.location.href="#/scheduler";
+                unblockUI();
+            }
+
+            if (action === 'new') {
+                blockUI();
+                JobsService.createJob(job, success);
+            } else if (action === 'edit'){
+                motechConfirm("scheduler.confirm.updateJob", "scheduler.confirm", function(response) {
+                    if (response) {
+                        blockUI();
+                        JobsService.updateJob(job, success);
+                    }
+                });
+            }
+        };
+
+        $scope.typeChanged = function() {
+            var job = {};
+            blockUI();
+            job['@jobType'] = $scope.job['@jobType'];
+            job.motechEvent = $scope.job.motechEvent;
+            job.startDate = $scope.job.startDate;
+            $scope.job = job;
+            unblockUI();
+        }
+
+        $scope.parseDateToString = function(milliseconds) {
+            return moment(milliseconds).format("YYYY-MM-DD HH:mm:ss");
+        }
+
+        if ($scope.action === 'edit') {
+            JobsService.getCurrentJob(function(data) {
+                $scope.job = data;
+                if ($scope.job.startDate) {
+                    $scope.job.startDate = $scope.parseDateToString($scope.job.startDate);
+                }
+
+                if ($scope.job.endDate) {
+                    $scope.job.endDate = $scope.parseDateToString($scope.job.endDate);
+                }
+                for (var key in data.motechEvent.parameters) {
+                    $scope.addToMap(key, data.motechEvent.parameters[key]);
+                }
+            });
+        }
+
+        unblockUI();
     });
 
 }());
