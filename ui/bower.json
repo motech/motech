@@ -55,7 +55,8 @@
     "jquery.alerts-1.1": "http://labs.abeautifulsite.net/archived/jquery-alerts/jquery.alerts-1.1.zip",
     "jquery-ui": "~1.11.4",
     "bootstrap-multiselect": "~0.9.13",
-    "angular-bootstrap": "0.6.0"
+    "angular-bootstrap": "0.6.0",
+    "jasny-bootstrap": "git://github.com/jasny/bootstrap"
   },
   "resolutions": {
     "jquery": "1.11.3",
