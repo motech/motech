@@ -1,24 +1,24 @@
     /* Common functions */
 
-function motechAlert(msg, title, params, Callback) {
+function motechAlert(msg, title, params, callback) {
     'use strict';
     BootstrapDialog.alert({
         title: jQuery.i18n.prop(title),
         message: jQuery.i18n.prop.apply(null, [msg].concat(params)),
-        callback: Callback
+        callback: callback
     });
 }
 
-function motechConfirm(msg, title, Callback) {
+function motechConfirm(msg, title, callback) {
     'use strict';
     BootstrapDialog.confirm({
         title: jQuery.i18n.prop(title),
         message: jQuery.i18n.prop(msg),
-        callback: Callback
+        callback: callback
     });
 }
 
-function motechAlertStackTrace(msg, title, response, Callback) {
+function motechAlertStackTrace(msg, title, response, callback) {
     'use strict';
     if( title === null || title === '') {
         title = 'Alert';
@@ -26,7 +26,7 @@ function motechAlertStackTrace(msg, title, response, Callback) {
     BootstrapDialog.alert({
         title: title,
         message: jQuery.i18n.prop(msg).bold() + ": \n" + response,
-        callback: Callback
+        callback: callback
     });
 }
 
@@ -97,7 +97,7 @@ var jFormErrorHandler = function(response) {
         return msg;
     },
 
-    handleResponse = function(title, defaultMsg, response, Callback) {
+    handleResponse = function(title, defaultMsg, response, callback) {
         'use strict';
         var msg = { value: "server.error", literal: false, params: [] },
             responseData = (typeof(response) === 'string') ? response : response.data;
@@ -105,14 +105,14 @@ var jFormErrorHandler = function(response) {
         unblockUI();
         msg = parseResponse(responseData, defaultMsg);
 
-        if (Callback) {
-            Callback(title, msg.value, msg.params);
+        if (callback) {
+            callback(title, msg.value, msg.params);
         } else if (msg.literal) {
             BootstrapDialog.alert({
                 type: BootstrapDialog.TYPE_DANGER,
                 title: jQuery.i18n.prop(title),
                 message: msg.value,
-                callback: Callback
+                callback: callback
             });
         } else {
             motechAlert(msg.value, title, msg.params);

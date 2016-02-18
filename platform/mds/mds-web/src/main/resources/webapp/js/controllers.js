@@ -3470,49 +3470,6 @@
             $('#importInstanceModal').modal('show');
         };
 
-        $scope.showModal2 = function () {
-            BootstrapDialog.show({
-                title: 'Default Title',
-                message: 'Click buttons below.',
-                buttons: [{
-                    label: 'Title 1',
-                    action: function(dialog) {
-                        dialog.setTitle('Title 1');
-                    }
-                }, {
-                    label: 'Title 2',
-                    action: function(dialog) {
-                        dialog.setTitle('Title 2' + $scope.msg('mds.btn.add'));
-                    }
-                }]
-            });
-        };
-
-        $scope.showModal = function () {
-            var i = 1, shortContent = '<p>Something here.</p>', longContent = '';
-            for(i; i <= 200; i += 1) {
-                longContent += shortContent;
-            }
-            BootstrapDialog.show({
-                title: 'Another long dialog',
-                message: longContent
-            });
-            BootstrapDialog.show({
-                title: 'Another short dialog',
-                message: shortContent,
-                draggable: true
-            });
-            BootstrapDialog.show({
-                title: 'A long dialog',
-                message: longContent,
-                draggable: true
-            });
-            BootstrapDialog.show({
-                title: 'A short dialog',
-                message: shortContent
-            });
-        };
-
         /**
         * Sets selected entity by module and entity name
         */
