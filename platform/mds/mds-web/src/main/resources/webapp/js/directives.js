@@ -1588,9 +1588,11 @@
                             if (noSelectedFields) {
                                 $('.page_' + target + '_center').hide();
                                 $('.ui-jqgrid-status-label').removeClass('hidden');
+                                $('#entityInstancesTable .ui-jqgrid-hdiv').hide();
                             } else {
                                 $('.page_' + target + '_center').show();
                                 $('.ui-jqgrid-status-label').addClass('hidden');
+                                $('#entityInstancesTable .ui-jqgrid-hdiv').show();
                             }
                         },
                         onDropdownHide: function(event) {
