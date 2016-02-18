@@ -1,7 +1,7 @@
 package org.motechproject.config.core.service.impl;
 
 import org.apache.log4j.Logger;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.bootstrap.BootstrapManager;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.datanucleus.DbConfigManager;

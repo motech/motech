@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.motechproject.osgi.web.ModuleRegistrationData;
-import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.osgi.web.service.UIFrameworkService;
 import org.motechproject.osgi.web.util.ModuleRegistrations;
 import org.motechproject.server.ui.ex.AlreadyRegisteredException;
 import org.motechproject.server.ui.impl.UIFrameworkServiceImpl;

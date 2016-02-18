@@ -19,4 +19,10 @@ public interface ChannelsDataService extends MotechDataService<Channel> {
     @Lookup
     Channel findByModuleName(@LookupField(name = "moduleName") String moduleName);
 
+    /**
+     * Return the number of channels provided by the module with the given {@code moduleName}.
+     *
+     * @param moduleName  the name of the module
+     */
+    long countFindByModuleName(@LookupField(name = "moduleName") String moduleName);
 }

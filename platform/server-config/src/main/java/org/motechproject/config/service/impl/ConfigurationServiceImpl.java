@@ -9,7 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.api.MotechMapUtils;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.domain.ConfigSource;

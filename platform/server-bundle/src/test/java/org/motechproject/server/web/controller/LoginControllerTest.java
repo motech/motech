@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.startup.StartupManager;
-import org.motechproject.osgi.web.LocaleService;
+import org.motechproject.osgi.web.service.LocaleService;
 import org.osgi.framework.BundleContext;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;

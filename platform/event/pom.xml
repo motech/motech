@@ -136,7 +136,6 @@
                         <Import-Package>
                             org.apache.activemq.command,
                             org.aopalliance.aop,
-                            org.motechproject.config.core,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.aop.support,

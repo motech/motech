@@ -8,7 +8,7 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.osgi.web"/>
 
-    <bean id="logBundleLoader" class="org.motechproject.osgi.web.Log4JBundleLoader" autowire="byType" />
+    <bean id="logBundleLoader" class="org.motechproject.osgi.web.bundle.Log4JBundleLoader" autowire="byType" />
 
     <bean id="serverLogService" class="org.motechproject.osgi.web.service.impl.ServerLogServiceImpl" />
 

@@ -1,7 +1,7 @@
 package org.motechproject.config.core.domain;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 
 /**
  * This class encapsulates the SQL database configuration, composed of as db url, username and password.
@@ -15,7 +15,7 @@ public class SQLDBConfig extends AbstractDBConfig {
      * @param driver  the driver class name for the database
      * @param username  the username for the database
      * @param password  the password for the database
-     * @throws org.motechproject.config.core.MotechConfigurationException if given url is invalid.
+     * @throws MotechConfigurationException if given url is invalid.
      */
     public SQLDBConfig(String url, String driver, String username, String password) {
         super(url, driver, username, password);
