@@ -332,13 +332,18 @@
             };
 
             $scope.deletePermission = function(permission) {
-                motechConfirm('security.confirm.permissionDelete', "security.confirm", function (val) {
-                    if (val) {
-                        permission.$delete(function() {
-                           Permissions.query(function(data) {
-                                $scope.permissionList = data;
-                           });
-                        }, angularHandler('server.error', 'security.delete.permission.error'));
+                BootstrapDialog.confirm({
+                    title: $scope.msg('security.confirm'),
+                    message: $scope.msg('security.confirm.permissionDelete'),
+                    type: BootstrapDialog.TYPE_WARNING,
+                    callback: function(result) {
+                        if (result) {
+                            permission.$delete(function() {
+                               Permissions.query(function(data) {
+                                    $scope.permissionList = data;
+                               });
+                            }, angularHandler('server.error', 'security.delete.permission.error'));
+                        }
                     }
                 });
             };
@@ -522,11 +527,15 @@
         };
 
         $scope.removeRule = function (idx) {
-            motechConfirm('security.warning.removeRule', 'securtiy.warning', function (val) {
-                if (val) {
-                    $scope.safeApply(function () {
-                        $scope.config.securityRules.remove(idx);
-                    });
+            BootstrapDialog.confirm({
+                message: $scope.msg('security.warning.removeRule'),
+                type: BootstrapDialog.TYPE_WARNING,
+                callback: function(result) {
+                    if (result) {
+                        $scope.safeApply(function () {
+                            $scope.config.securityRules.remove(idx);
+                        });
+                    }
                 }
             });
         };
@@ -553,9 +562,13 @@
         };
 
         $scope.cancel = function () {
-            motechConfirm('security.warning.cancel', 'securtiy.warning', function (val) {
-                if (val) {
-                    $scope.config = Dynamic.get();
+            BootstrapDialog.confirm({
+                message: $scope.msg('security.warning.cancel'),
+                type: BootstrapDialog.TYPE_WARNING,
+                callback: function(result) {
+                    if (result) {
+                        $scope.config = Dynamic.get();
+                    }
                 }
             });
         };
