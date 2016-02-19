@@ -74,20 +74,14 @@ public class SettingsFacade {
 
     public void setConfigFiles(List<Resource> resources) {
         for (Resource configFile : resources) {
-            InputStream is = null;
-            try {
-                is = configFile.getInputStream();
-
+            try (InputStream inputStream = configFile.getInputStream()) {
                 Properties props = new Properties();
-                props.load(is);
+                props.load(inputStream);
 
                 config.put(getResourceFileName(configFile), props);
                 defaultConfig.put(getResourceFileName(configFile), props);
-
             } catch (IOException e) {
                 throw new MotechException("Cant load config file " + configFile.getFilename(), e);
-            } finally {
-                IOUtils.closeQuietly(is);
             }
         }
         registerAllProperties();
