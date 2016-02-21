@@ -221,11 +221,49 @@
         };
     });
 
+    directives.directive('field', ['ManageTaskUtils', function (ManageTaskUtils) {
+        return {
+            restrict: 'E',
+            replace: false,
+            scope:{
+                field: "=",
+                editable: "=?"
+            },
+            link: function (scope, element, attrs) {
+                scope.msg = scope.$parent.taskMsg || scope.$parent.msg;
+                if(!scope.field.manipulations || !Array.isArray(scope.field.manipulations)){
+                    scope.field.manipulations = [];
+                }
+
+                if(scope.field.prefix === ManageTaskUtils.DATA_SOURCE_PREFIX){
+                    scope.displayName = "{0}.{1}#{2}.{3}".format(
+                        scope.msg(scope.field.providerName),
+                        scope.msg(scope.field.serviceName),
+                        scope.field.objectId,
+                        scope.msg(scope.field.displayName)
+                    );
+                } else {
+                    scope.displayName = scope.msg(scope.field.displayName);
+                }
+
+                element.data('value', scope.field);
+
+                element.click(function (event) {
+                    if($(event.target).hasClass("field-remove")){
+                        element.remove();
+                    }
+                });
+            },
+            templateUrl: '../tasks/partials/field.html'
+        };
+    }]);
+
     directives.directive('draggable', function () {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                element.draggable({
+                element
+                  .draggable({
                     revert: true,
                     start: function () {
                         if (element.hasClass('draggable')) {
@@ -244,124 +282,8 @@
             link: function (scope, element, attrs) {
                 element.droppable({
                     drop: function (event, ui) {
-                        var parent = scope, value, eventKey, dragElement, browser, emText, dataSource, removeButton,
-                            position = function (dropElement, dragElement) {
-                                var sel, range, space = document.createTextNode(''), el, frag, node, lastNode, rangeInDropElem;
-
-                                if (window.getSelection) {
-                                    sel = window.getSelection();
-
-                                    if (sel.getRangeAt && sel.rangeCount && sel.anchorNode.parentNode.tagName.toLowerCase() !== 'span') {
-                                        range = sel.getRangeAt(0);
-                                        rangeInDropElem = range.commonAncestorContainer.parentNode === dropElement[0] || range.commonAncestorContainer === dropElement[0] || range.commonAncestorContainer.parentNode.parentNode === dropElement[0];
-                                    } else {
-                                        rangeInDropElem = false;
-                                    }
-
-                                    if (rangeInDropElem) {
-                                        el = document.createElement("div");
-                                        el.innerHTML = dragElement[0].outerHTML;
-
-                                        frag = document.createDocumentFragment();
-
-                                        while ((node = el.firstChild) !== null) {
-                                            lastNode = frag.appendChild(node);
-                                        }
-
-                                        $compile(frag)(scope);
-                                        range.insertNode(frag);
-                                        range.insertNode(space);
-
-                                        if (lastNode) {
-                                            range = range.cloneRange();
-                                            range.setStartAfter(lastNode);
-                                            range.collapse(true);
-                                            sel.removeAllRanges();
-                                            sel.addRange(range);
-                                        }
-                                    } else {
-                                        $compile(dragElement)(scope);
-                                        dropElement.append(dragElement);
-                                        dropElement.append(space);
-                                    }
-                                } else if (document.selection && document.selection.type !== "Control") {
-                                    document.selection.createRange().pasteHTML($compile(dragElement[0].outerHTML)(scope));
-                                }
-                            };
-
-                        while (parent.task === undefined) {
-                            parent = parent.$parent;
-                        }
-
-                        dragElement = angular.element(ui.draggable);
-                        browser = parent.BrowserDetect.browser;
-
-                        if (dragElement.hasClass('triggerField')) {
-                            switch (element.data('type')) {
-                            case 'DATE': emText = 'task.placeholder.dateOnly'; break;
-                            case 'TIME': emText = 'task.placeholder.timeOnly'; break;
-                            case 'BOOLEAN': emText = 'task.placeholder.booleanOnly'; break;
-                            default:
-                            }
-
-                            if (element.data('type') === 'MAP') {
-                                scope.ngModel = eventKey;
-                            }
-
-                            if (!(dragElement.data('popover') === 'no' && element.data('type') !== 'format')){
-                                if (emText !== undefined) {
-                                    element.empty();
-                                    element.append('<em style="color: gray;">' + parent.msg(emText) + '</em>');
-                                }
-
-                                element.find('em').remove();
-
-                                dragElement = dragElement.clone();
-                                dragElement.css("position", "relative");
-                                dragElement.css("left", "0px");
-                                dragElement.css("top", "0px");
-                                dragElement.css("width", "auto");
-                                dragElement.attr("unselectable", "on");
-
-                                // Adding remove button to the dragged bean
-                                dragElement.append(" &nbsp;");
-                                dragElement.append(" &nbsp;");
-                                removeButton = $('<button/>', {
-                                        text: 'x',
-                                        type: 'button'
-                                });
-                                removeButton.addClass('close');
-                                removeButton.addClass('badge-close');
-                                dragElement.append(removeButton);
-
-                                if ((dragElement.data('type') !== 'INTEGER' || dragElement.data('type') !== 'DOUBLE') && dragElement.data('popover') !== 'no') {
-                                    if (dragElement.data('type') === 'UNICODE' || dragElement.data('type') === 'TEXTAREA') {
-                                        dragElement.attr("manipulationpopover", "STRING");
-                                    } else if (dragElement.data('type') === 'DATE') {
-                                        if (element.data('type') === 'DATE') {
-                                            dragElement.attr("manipulationpopover", "DATE2DATE");
-                                        } else {
-                                            dragElement.attr("manipulationpopover", "DATE");
-                                        }
-                                    } else {
-                                        dragElement.attr("manipulationpopover", "NONE");
-                                    }
-                                } else {
-                                    dragElement.attr("manipulationpopover", "NONE");
-                                }
-
-                                dragElement.addClass('pointer');
-                                dragElement.addClass('popoverEvent');
-                                dragElement.addClass('nonEditable');
-                                dragElement.removeAttr("ng-repeat");
-                                dragElement.removeAttr("draggable");
-
-                                position(element, dragElement);
-                            }
-                        }
-
-                        parent.$digest();
-                        scope.$apply();
+                        var field = ui.draggable.data('value');
+                        scope.$emit('field.dropped', field);
                     }
                 });
             }
@@ -407,99 +329,157 @@
         };
     });
 
-    directives.directive('contenteditable', function ($compile) {
+    directives.directive('contenteditable', function ($compile, ManageTaskUtils) {
+        function formatField (field) {
+            return '{{{0}}}'.format(
+                ManageTaskUtils.formatField(field)
+                );
+        }
+        function readContent (element) {
+            var container = $('<div></div>');
+            element.contents().each(function(){
+                var field, ele = $(this);
+                if(this.tagName && this.tagName.toLowerCase() === 'field'){
+                    field = ele.data('value');
+                    container.append(formatField(field));
+                }else{
+                    container.append(ele.text());
+                }
+            });
+            return container.text();
+        }
+        function findField (str){
+            var index, startIndex, endIndex;
+            startIndex = str.indexOf("{{");
+            if(startIndex > -1){
+                index = startIndex + 2;
+            }
+            while(index && (-1 < index < str.length)){
+                endIndex = str.substring(index, str.length).indexOf("}}");
+                if(endIndex === -1) {
+                    return false;
+                }
+                if(str.substring(index, index + endIndex).indexOf("{{") > -1){
+                    index = index + endIndex+2;
+                } else {
+                    return str.substring(startIndex, index + endIndex + 2);
+                }
+            }
+            return false;
+        }
+        function parseField (originalStr) {
+            var fieldStr, valueArr = [], str = originalStr;
+            while(originalStr !== valueArr.join('')){
+                if(str.substring(0,2) === "{{"){
+                    fieldStr = findField(str);
+                    if(!fieldStr){
+                        return false;
+                    }
+                    valueArr.push(fieldStr);
+                    str = str.substring(fieldStr.length, str.length);
+                } else if (str.indexOf("{{") > -1) {
+                    valueArr.push(str.substring(0, str.indexOf("{{")));
+                    str = str.substring(str.indexOf("{{"), str.length);
+                } else {
+                    valueArr.push(str);
+                }
+            }
+            return valueArr;
+        }
+        function makeFieldElement (str, scope) {
+            var fieldScope = scope.$parent.$new(false, scope);
+            if(str.substring(0,2) === "{{" && str.substring(str.length-2, str.length) === "}}") {
+                str = str.substring(2, str.length-2);
+            }
+            fieldScope.field = ManageTaskUtils.parseField(str, scope.$parent.getAvailableFields());
+            fieldScope.$on('field.changed', function (event) { // Added because scope.$on wasn't catching field.changed event (this might be a 1.2x bug)
+                scope.$emit('field.changed');
+            });
+            return $compile('<field field="field" editable="true" contenteditable="false" />')(fieldScope);
+        }
+
         return {
             restrict: 'A',
             require: '?ngModel',
             link: function (scope, element, attrs, ngModel) {
-                var read = function () {
-                    var container = $('<div></div>');
-                    if (element.html() === "<br>") {
-                        element.find('br').remove();
-                    }
-                    container.html($.trim(element.html()));
-                    container.find('.editable').attr('contenteditable', false);
-                    container.find('.popover').remove();
-                    ngModel.$setViewValue(container.html());
-                    scope.$apply();
-                };
-
-                if (!ngModel) {
-                    return;
+                if (!ngModel){
+                    return false;
                 }
 
-                ngModel.$render = function () {
-                    var container = $('<div></div>');
-                    container.html(ngModel.$viewValue);
-                    container.find('.editable').attr('contenteditable', true);
-
-                    if (container.text() !== "") {
-                        container = container.contents();
-                        container.each(function () {
-                            if (this.localName === 'span') {
-                                return $compile(this)(scope);
-                            }
-                        });
-                    } else {
-                        container = container.html();
-                    }
-
-                    return element.html(container);
-                };
-
-                element.on('focusin', function (event) {
-                    var el = this;
-
-                    event.stopPropagation();
-
-                    window.setTimeout(function () {
-                        var sel, range;
-                        if (window.getSelection && document.createRange) {
-                            range = document.createRange();
-                            range.selectNodeContents(el);
-
-                            if (el.childNodes.length !== 0) {
-                                range.setStartAfter(el.childNodes[el.childNodes.length - 1]);
-                            }
-
-                            range.collapse(true);
-
-                            sel = window.getSelection();
-                            sel.removeAllRanges();
-                            sel.addRange(range);
-                        } else if (document.body.createTextRange) {
-                            range = document.body.createTextRange();
-
-                            if (el.childNodes.length !== 0) {
-                                range.moveToElementText(el.childNodes[el.childNodes.length - 1]);
-                            }
-
-                            range.collapse(true);
-                            range.select();
-                        }
-                    }, 1);
-
-                    if (ngModel.$viewValue !== $.trim(element.html())) {
-                        return scope.$eval(read);
-                    }
+                scope.$watch(function () {
+                    return ngModel.$viewValue;
+                }, function(){
+                    ngModel.$render();
                 });
 
+                // Disallow enter key being pressed, except on certain data types
                 element.on('keypress', function (event) {
                     var type = $(this).data('type');
-
                     if (type !== 'TEXTAREA' && type !== 'MAP' && type !== 'LIST' && type !== 'PERIOD') {
                         return event.which !== 13;
                     }
                 });
 
-                element.bind('blur keyup change mouseleave', function (event) {
+                element.bind('blur', function (event) {
                     event.stopPropagation();
-                    if (ngModel.$viewValue !== $.trim(element.html())) {
-                        return scope.$eval(read);
+                    if(element[0] !== event.target){
+                        return;
                     }
+                    ngModel.$setViewValue(readContent(element));
+                    scope.$apply();
                 });
 
-                return read;
+                scope.$on('field.changed', function (event) {
+                    event.stopPropagation();
+                    ngModel.$setViewValue(readContent(element));
+                    scope.$apply();
+                });
+
+                ngModel.$render = function () {
+                    var parsedValue, viewValueStr, matches;
+                    element.html("");
+                    if(!ngModel.$viewValue){
+                        return false;
+                    }
+                    parsedValue = parseField(ngModel.$viewValue);
+                    if (parsedValue) {
+                        parsedValue.forEach(function(str){
+                            if(findField(str)){
+                                element.append(makeFieldElement(str, scope));
+                            } else {
+                                element.append(str);
+                            }
+                        });
+                    }
+                };
+
+                scope.$on('field.dropped', function(event, field) {
+                    var offset,
+                        selection = rangy.getSelection(),
+                        anchorText = false;
+                    event.stopPropagation();
+
+                    // Test anchorNode existance, because it might not exist
+                    if (selection && selection.anchorNode) {
+                        anchorText = selection.anchorNode.wholeText;
+                    }
+
+                    if(!field){
+                        return false;
+                    }
+                    field = formatField(field);
+                    if(element[0].contains(selection.anchorNode) && anchorText){
+                        $(selection.anchorNode).before(
+                            anchorText.substring(0, selection.anchorOffset)
+                            + field
+                            + anchorText.substring(selection.anchorOffset)
+                        ).remove();
+                    } else {
+                        element.append(field);
+                    }
+                    ngModel.$setViewValue(readContent(element));
+                    scope.$apply();
+                });
             }
         };
     });
@@ -537,719 +517,252 @@
         };
     });
 
-    directives.directive('manipulationpopover', function ($compile, $templateCache, $http) {
+    directives.directive('manipulationPopover', function ($compile) {
         return {
             restrict: 'A',
-            link: function (scope, el, attrs) {
-                var manipulationOptions = '', title = '', loader, manType = attrs.manipulationpopover,
-                elType = attrs.type, msgScope = scope, filter = scope.$parent.filter;
-
-                while (msgScope.msg === undefined) {
-                    msgScope = msgScope.$parent;
+            scope: {
+                manipulations: "=",
+                manipulationType: "="
+            },
+            link: function (scope, element, attrs) {
+                var filter, hidePopup, showPopup;
+                filter = scope.$parent.filter;
+                scope.msg = scope.$parent.msg;
+                if(!scope.manipulationType){
+                    return false;
                 }
-
-                if (manType === 'STRING') {
-                    title = msgScope.msg('task.stringManipulation', '');
-                    loader = $http.get('../tasks/partials/widgets/string-manipulation.html', {cache: $templateCache})
-                        .success(function (html) {
-                            manipulationOptions = html;
-                        });
-                } else if (manType === 'DATE') {
-                    title = msgScope.msg('task.dateManipulation', '');
-                    loader = $http.get('../tasks/partials/widgets/date-manipulation.html', {cache: $templateCache})
-                        .success(function (html) {
-                            manipulationOptions = html;
-                        });
-                } else if (manType === 'DATE2DATE') {
-                  title = msgScope.msg('task.dateManipulation', '');
-                   loader = $http.get('../tasks/partials/widgets/date2date-manipulation.html', {cache: $templateCache})
-                       .success(function (html) {
-                           manipulationOptions = html;
-                       });
+                if (['UNICODE', 'TEXTAREA', 'DATE'].indexOf(scope.manipulationType) === -1){
+                    return false;
                 }
+                if(!scope.manipulations){
+                    return false;
+                }
+                hidePopup = function () {
+                    element.removeClass('active');
+                    element.popover('destroy');
+                    scope.$emit('field.changed'); // make sure any changes are updated (even if thats not true)
+                };
+                showPopup = function () {
+                    element.addClass('active');
+                    element.popover({
+                      title: function () {
+                         switch(scope.manipulationType){
+                             case 'UNICODE':
+                             case 'STRING':
+                                 return scope.msg('task.stringManipulation');
+                             case 'DATE':
+                             case 'DATE2DATE':
+                                 return scope.msg('task.dateManipulation');
+                         }
+                         return null;
+                      },
+                      html: true,
+                      content: $compile('<manipulation-sorter type="manipulationType" manipulations="manipulations" />')(scope),
+                      placement: "auto left",
+                      trigger: 'manual'
+                    }).on('shown.bs.popover', function(event){
+                      var popoverContent = $('.popover-content',$(event.target).next('.popover'))[0];
+                      $(document).on('click', function(event){
+                        if (!popoverContent.contains(event.target)){
+                            $(document).off(event);
+                            hidePopup();
+                        }
+                      });
+                    });
+                    // Call popover('show') late, so $compile & DOM have chance to update.
+                    setTimeout(function(){
+                        element.popover('show');
+                    }, 10);
+                };
 
-                el.on('click', function (event) {
-                    var man = $("[ismanipulate=true]").text();
-                    if (event.target && event.target.className === 'close badge-close' && event.target.parentElement) {
-                        event.target.parentElement.remove();
-                        return;
-                    }
-                    if (manType !== 'NONE') {
-                        if (man.length === 0) {
-                            angular.element(this).attr('ismanipulate', 'true');
+                element.on('click', function (event) {
+                    if (!$(event.target).hasClass('field-remove')){
+                        if (element.hasClass('active')){
+                            hidePopup();
                         } else {
-                            angular.element(this).removeAttr('ismanipulate');
+                            window.getSelection().removeAllRanges(); // Make sure no text is selected...
+                            showPopup();
                         }
                     }
-
                 });
+            }
+        };
+    });
 
-
-                if (elType === 'UNICODE' || elType === 'TEXTAREA' || elType === 'DATE') {
-                    el.popover({
-                        template : '<div unselectable="on" contenteditable="false" class="popover dragpopover"><div unselectable="on" class="arrow"></div><div unselectable="on" class="popover-inner"><h3 unselectable="on" class="popover-title unselectable defaultCursor"></h3><div unselectable="on" class="popover-content unselectable"><p unselectable="on"></p></div></div></div>',
-                        title: title,
-                        html: true,
-                        content: function () {
-                            var elem = $(manipulationOptions), element, manipulation;
-                            scope.sortableArrayTemp = [];
-                            $compile(elem)(msgScope);
-                            msgScope.$apply(elem);
-                            element = $("[ismanipulate=true]");
-                            manipulation = element.attr('manipulate');
-
-                            if (elem.length === 0) {
-                                elem = $(manipulationOptions);
-                                $compile(elem)(msgScope);
-                                msgScope.$apply(elem);
-                            }
-
-                            elem.find("span").replaceWith(function () {
-                                return $(this)[0].outerHTML;
-                            });
-
-                            if (manipulation !== undefined) {
-
-                                scope.cleanArray = function() {
-                                    var indexArray = scope.sortableArrayTemp.indexOf("");
-                                    if (indexArray !== -1) {
-                                        scope.sortableArrayTemp.splice(indexArray,1);
-                                    }
-                                };
-
-                                scope.setSortable = function(elemen, index) {
-                                // Every new manipulation should be added to options array.
-                                // Add name and input for each manipulation and
-                                // pattern only if manipulation takes parameters
-                                var isValid = false, reg, i, options = [{
-                                        name: 'join',
-                                        input: 'input[join-update]',
-                                        pattern: 5
-                                    }, {
-                                        name: 'split',
-                                        input: 'input[split-update]',
-                                        pattern: 6
-                                    }, {
-                                        name: 'substring',
-                                        input: 'input[substring-update]',
-                                        pattern: 10
-                                    }, {
-                                        name: 'dateTime',
-                                        input: 'input[date-update]',
-                                        pattern: 9
-                                    }, {
-                                        name: 'plusDays',
-                                        input: 'input[manipulation-kind="plusDays"]',
-                                        pattern: 9
-                                    }, {
-                                        name: 'minusDays',
-                                        input: 'input[manipulation-kind="minusDays"]',
-                                        pattern: 10
-                                    }, {
-                                        name: 'plusHours',
-                                        input: 'input[manipulation-kind="plusHours"]',
-                                        pattern: 10
-                                    }, {
-                                        name: 'minusHours',
-                                        input: 'input[manipulation-kind="minusHours"]',
-                                        pattern: 11
-                                    }, {
-                                        name: 'plusMinutes',
-                                        input: 'input[manipulation-kind="plusMinutes"]',
-                                        pattern: 12
-                                    }, {
-                                        name: 'minusMinutes',
-                                        input: 'input[manipulation-kind="minusMinutes"]',
-                                        pattern: 13
-                                    }, {
-                                        name: 'format',
-                                        input: ''
-                                    }, {
-                                        name: 'capitalize',
-                                        input: ''
-                                    }, {
-                                        name: 'toUpper',
-                                        input: ''
-                                    }, {
-                                        name: 'toLower',
-                                        input: ''
-                                    }, {
-                                        name: 'URLEncode',
-                                        input: ''
-                                    }, {
-                                        name: 'parseDate',
-                                        input: 'input[parsedate-update]',
-                                        pattern: 10
-                                    } ];
-
-                                    for(i=0; i<options.length; i+=1) {
-                                        if(elemen.indexOf(options[i].name) !== -1) {
-                                            elemen = elemen.replace(elemen, options[i].name);
-                                            isValid = true;
-                                            break;
-                                        }
-                                    }
-
-                                    if (isValid) {
-                                        elem.find("span[setmanipulation="+elemen+"]").replaceWith(function () {
-                                            if (elemen !== undefined && elemen.indexOf(this.attributes.getNamedItem('setmanipulation').value) !== -1) {
-                                                $(this).parent().children().css({ 'display' : '' });
-                                                $(this).parent().addClass('active');
-
-                                                for(i=0; i<options.length; i+=1) {
-                                                    if (options[i].input !== '') {
-                                                        if (manipulation.indexOf(options[i].name) !== -1 && elemen.indexOf(options[i].name) !== -1) {
-                                                            $(this.nextElementSibling).css({ 'display' : '' });
-                                                            elem.find(options[i].input).val(manipulation.slice(manipulation.indexOf(options[i].name) + options[i].pattern, manipulation.indexOf(")", manipulation.indexOf(options[i].name))));
-                                                            break;
-                                                        }
-                                                    }
-                                                }
-
-                                                $(elem[0]).append($(this).parent().clone().end());
-                                            }
-                                            return $(this)[0].outerHTML;
-                                        });
-                                    } else {
-                                        // invalid manipulation
-                                        reg = new RegExp("\\(.*?\\)", "g");
-                                        elemen = elemen.replace(reg,"");
-                                        elem.filter("ul#sortable").append('<li unselectable="on" class="padding-botton6 invalid"><span unselectable="on" class="pointer ng-binding" setmanipulation="'+elemen+'">'+elemen+'<span class="fa fa-times" style="float: right;"></span></span></li>');
-                                    }
-                                };
-
-                            scope.sortableArrayTemp = manipulation.split(" ");
-                            scope.sortableArrayTemp.forEach(scope.cleanArray);
-                            scope.sortableArrayTemp.forEach(scope.setSortable);
-                            }
-
-                            return $compile(elem)(msgScope);
-                        },
-                        placement: "auto left",
-                        trigger: 'manual'
-                    }).click(function (event) {
-                        event.stopPropagation();
-                        if (!$(this).hasClass('hasPopoverShow') && (event.target || event.target.className !== 'close badge-close')) {
-                            var otherPopoverElem = $('.hasPopoverShow');
-
-                            window.getSelection().removeAllRanges();
-
-                            if (otherPopoverElem !== undefined && $(this) !== otherPopoverElem) {
-                                otherPopoverElem.popover('hide');
-                                otherPopoverElem.removeClass('hasPopoverShow');
-                                otherPopoverElem.removeAttr('ismanipulate');
-                            }
-                            if (filter && filter.key) {
-                                $(this).attr('manipulate', filter.key.split("?").slice(1).join(" "));
-                            }
-
-                            $(this).addClass('hasPopoverShow');
-                            $(this).attr('ismanipulate', 'true');
-                            $(this).popover('show');
-                        } else if (event.target || event.target.className !== 'close badge-close') {
-                            $(this).popover('hide');
-                            $(this).removeClass('hasPopoverShow');
-                            $(this).removeAttr('ismanipulate');
-                            $(this).focus();
-                        } else {
-                            if (event.target.parentElement) {
-                                event.target.parentElement.remove();
-                                $(this).popover('hide');
-                                $(this).removeClass('hasPopoverShow');
-                                $(this).removeAttr('ismanipulate');
-                                $(this).focus();
-                                return;
-                            }
-                        }
-
-                        $('.dragpopover').click(function (event) {
-                            event.stopPropagation();
-                        });
-
-                        $('.dragpopover').mousedown(function (event) {
-                            event.stopPropagation();
-                        });
-
-                        $('.create-edit-task').click(function () {
-                            $('.hasPopoverShow').each(function () {
-                                $(this).popover('hide');
-                                $(this).removeClass('hasPopoverShow');
-                                $(this).removeAttr('ismanipulate');
+    directives.directive('manipulationSorter', function($compile, $http, ManageTaskUtils) {
+        return {
+            restrict: 'EA',
+            templateUrl: '../tasks/partials/manipulation-sorter.html',
+            scope: {
+                type: '=',
+                manipulations: '='
+            },
+            link: function (scope, element, attrs) {
+                $('.sortable', element).sortable({
+                    placeholder: "ui-state-highlight",
+                    update: function (event, ui) {
+                        var sorted = $(event.target), manipulations = [];
+                        $('.manipulation', sorted).each(function(){
+                            manipulations.push({
+                                type: $(this).attr('type'),
+                                argument: $(this).data('argument')
                             });
                         });
-                    });
-
-                    el.on("manipulateChanged", function () {
-                        if (filter && filter.key) {
-                            var manipulateAttributes = el.attr('manipulate'),
-                                key = filter.key.split("?")[0], array, i;
-
-                            if (manipulateAttributes !== "") {
-                                array = manipulateAttributes.split(" ");
-
-                                for (i = 0; i < array.length; i += 1) {
-                                    key = key.concat("?" + array[i]);
-                                }
-                                key = key.replace(/\?+(?=\?)/g, '');
-                            }
-                            filter.key = key;
-                        }
-                    });
-                }
-            }
-        };
-    });
-
-    directives.directive('datetimePicker', function () {
-        return {
-            restrict: 'A',
-            link: function(scope, element, attrs) {
-                element.click(function () {
-                    $(this).prev('input').datetimepicker('show');
-                });
-            }
-        };
-    });
-
-    directives.directive('datetimePickerInput', function () {
-        return {
-            restrict: 'A',
-            link: function (scope, element, attrs) {
-                var parent = scope;
-
-                while (parent.selectedAction === undefined) {
-                    parent = parent.$parent;
-                }
-
-                element.datetimepicker({
-                    showTimezone: true,
-                    useLocalTimezone: true,
-                    dateFormat: 'yy-mm-dd',
-                    timeFormat: 'HH:mm z',
-                    showOn: true,
-                    constrainInput: false,
-                    onSelect: function (dateTex) {
-                        parent.filter(parent.selectedAction[$(this).data('action')].actionParameters, {hidden: false})[$(this).data('index')].value = dateTex;
-                        parent.$apply();
-                    }
-                });
-            }
-        };
-    });
-
-    directives.directive('timePickerInput', function () {
-        return {
-            restrict: 'A',
-            link: function (scope, element, attrs) {
-                var parent = scope;
-
-                while (parent.selectedAction === undefined) {
-                    parent = parent.$parent;
-                }
-
-                element.datetimepicker({
-                    showTimezone: true,
-                    timeOnly: true,
-                    useLocalTimezone: true,
-                    timeFormat: 'HH:mm z',
-                    onSelect: function (dateTex) {
-                        parent.filter(parent.selectedAction[$(this).data('action')].actionParameters, {hidden: false})[$(this).data('index')].value = dateTex;
-                        parent.$apply();
-                    }
-                });
-            }
-        };
-    });
-
-    directives.directive('setmanipulation', function () {
-        return {
-            restrict : 'A',
-            require: '?ngModel',
-            link : function (scope, el, attrs) {
-
-                var manipulateElement = $("[ismanipulate=true]"), sortableElement, manipulateAttr;
-                scope.sortableArray = [];
-                scope.manipulations = '';
-
-                scope.cleanArray = function() {
-                    var indexArray = scope.sortableArray.indexOf("");
-                    if (indexArray !== -1) {
-                        scope.sortableArray.splice(indexArray,1);
-                    }
-                };
-
-                scope.normalizeArray = function(element, index) {
-                    scope.sortableArray.splice(index, 1, element + ' ');
-                };
-
-                scope.setSortableArray = function() {
-                manipulateAttr = manipulateElement.attr("manipulate");
-                    if (manipulateAttr !== undefined) {
-                        scope.sortableArray = manipulateAttr.split(" ");
-                        scope.sortableArray.forEach(scope.cleanArray);
-                        scope.sortableArray.forEach(scope.normalizeArray);
-                    }
-                };
-
-                scope.setSortableArray();
-
-                el.on('mouseenter mousedown', function() {
-
-                    scope.dragStart = function(e, ui) {
-                        ui.originalPosition.top = 0;
-                        scope.setSortableArray();
-                        ui.item.data('start', ui.item.index());
-                    };
-
-                    scope.dragEnd = function(e, ui) {
-                        var start = ui.item.data('start'),
-                        end = ui.item.index();
-                        scope.sortableArray.splice(end, 0,
-                        scope.sortableArray.splice(start, 1)[0]);
-                        if(scope.sortableArray.length) {
-                            scope.manipulations = scope.sortableArray.join("");
-                        }
-                        manipulateElement.attr('manipulate', scope.manipulations);
-                        manipulateElement.trigger('manipulateChanged');
+                        scope.manipulations = manipulations;
                         scope.$apply();
-                    };
+                    }
+                });
+            },
+            controller: ['$scope', function ($scope) {
+                var manipulationType = $scope.type.toLowerCase();
+                $scope.manipulationTypes = [];
+                if(['unicode', 'string'].indexOf(manipulationType) > -1) {
+                    $scope.manipulationTypes = ['toUpper', 'toLower', 'capitalize', 'URLEncode', 'join', 'split', 'substring', 'format', 'parseDate'];
+                }
+                if('date' === manipulationType) {
+                    $scope.manipulationTypes.push('dateTime');
+                }
+                if(['date', 'date2date'].indexOf(manipulationType) > -1) {
+                    $scope.manipulationTypes = $scope.manipulationTypes.concat(['plusDays', 'minusDays', 'plusHours', 'minusHours', 'plusMinutes', 'minusMinutes']);
+                }
 
-                    sortableElement = $('#sortable').sortable({
-                        placeholder: 'ui-state-highlight',
-                        axis: 'y',
-                        cursor: 'move',
-                        opacity: 0.95,
-                        tolerance: 'pointer',
-                        zIndex: 9999,
-                        start: scope.dragStart,
-                        update: scope.dragEnd
+                this.addManipulation = function (type, argument) {
+                    if(!argument){
+                        argument = "";
+                    }
+                    $scope.manipulations.push({
+                        type: type,
+                        argument: argument
                     });
+                    $scope.$apply();
+                };
+                this.removeManipulation = function (manipulationStr) {
+                    var obj, manipulations = [], returnVal = false;
+                    $scope.manipulations.forEach( function (obj) {
+                        if(obj.type !== manipulationStr){
+                            manipulations.push(obj);
+                        }
+                        if(obj.type === manipulationStr){
+                            returnVal = true;
+                        }
+                    });
+                    $scope.manipulations = manipulations;
+                    $scope.$apply();
+                    return returnVal;
+                };
+                this.isActive = function (manipulationStr) {
+                    var index;
+                    for ( index in $scope.manipulations ) {
+                        if($scope.manipulations.hasOwnProperty(index)){
+                            if ($scope.manipulations[index].type === manipulationStr){
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                };
+            }]
+        };
+    });
+
+    directives.directive('manipulation', ['$compile', 'ManageTaskUtils', function ($compile, ManageTaskUtils) {
+        return {
+            restrict : 'EA',
+            require: '^manipulationSorter',
+            transclude: true,
+            replace: true,
+            templateUrl: '../tasks/partials/manipulation.html',
+            scope: {
+                argument: '=?'
+            },
+            link : function (scope, element, attrs, manipulationSorter) {
+                var attributeFieldTemplate, manipulationSettings = {};
+                ManageTaskUtils.MANIPULATION_SETTINGS.forEach(function(manipulation){
+                    if(attrs.type === manipulation.name){
+                        manipulationSettings = manipulation;
+                    }
                 });
 
-                el.on("click", function () {
-                    var manipulateElement = $("[ismanipulate=true]"), joinSeparator = "", reg, manipulation, manipulateAttributes, manipulationAttributesIndex, nonParamManip = true, i, found,
-                    // Every new manipulation that takes parameter should be added to
-                    // paramOptions array. Name is just a name of manipulation
-                    // and id is id of input field for that manipulation
-                    paramOptions = [
-                        {
-                            name: 'join',
-                            id: '#joinSeparator'
-                        },
-                        {
-                            name: 'split',
-                            id: '#splitSeparator'
-                        },
-                        {
-                            name: 'substring',
-                            id: '#substringSeparator'
-                        },
-                        {
-                            name: 'dateTime',
-                            id: '#dateFormat'
-                        },
-                        {
-                            name: 'plusDays',
-                            id: '#plusDays'
-                        },
-                        {
-                            name: 'minusDays',
-                            id: '#minusDays'
-                        },
-                        {
-                            name: 'plusHours',
-                            id: '#plusHours'
-                        },
-                        {
-                            name: 'minusHours',
-                            id: '#minusHours'
-                        },
-                        {
-                            name: 'plusMinutes',
-                            id: '#plusMinutes'
-                        },
-                        {
-                            name: 'minusMinutes',
-                            id: '#minusMinutes'
-                        },
-                        {
-                            name: 'parseDate',
-                            id: '#parseDate'
-                        },
-                        {
-                            name: 'format',
-                            id: ''
+                scope.msg = scope.$parent.$parent.$parent.msg;
+                scope.type = attrs.type;
+                if(attrs.active){
+                    scope.active = true;
+                    attributeFieldTemplate = false;
+                    if ((manipulationSettings.input && manipulationSettings.input !== '') || manipulationSettings.name === 'format') {
+                        attributeFieldTemplate = '<input type="text" ng-model="argument" />';
+                        if(manipulationSettings.name === 'format'){
+                            attributeFieldTemplate = '<format-manipulation ng-model="argument" />';
                         }
-                    ];
-
-                    manipulation = this.getAttribute("setManipulation");
-                    manipulateAttributes = manipulateElement.attr("manipulate") || "";
-                    document.getSelection().removeAllRanges();
-
-                    if ($(this).parent(".invalid").remove().length) {
-                        if (manipulateAttributes.indexOf(manipulation) !== -1) {
-                            reg = new RegExp(manipulation + "(\\(.*\\))?( |$)", "g");
-                            manipulateAttributes = manipulateAttributes.replace(reg, '');
-                            manipulateElement.attr('manipulate', manipulateAttributes);
-                            scope.setSortableArray();
+                        if(!scope.argument){
+                            scope.argument = "";
                         }
-                        return;
+                        element.append($compile(attributeFieldTemplate)(scope));
                     }
-
-                    if (manipulateAttributes.charAt(manipulateAttributes.length - 1) !== " ") {
-                        manipulateAttributes = manipulateAttributes + " ";
-                    }
-
-                    if (manipulateAttributes.indexOf(manipulation) !== -1) {
-                        manipulationAttributesIndex = manipulateElement.attr("manipulate").indexOf(manipulation);
-
-                        if (manipulation === "format") {
-                            reg = new RegExp("format(\\((\\{.*\\})*\\))", "g");
-                            manipulateAttributes = manipulateAttributes.replace(reg, '');
+                    scope.$watch('argument', function(newValue) {
+                        element.data('argument', newValue);
+                    });
+                    element.on("click", ".remove", function(){
+                        manipulationSorter.removeManipulation(scope.type);
+                    });
+                } else {
+                    scope.$watch(function () {
+                        return manipulationSorter.isActive(scope.type);
+                    }, function (active) {
+                        if(active){
+                            element.hide();
                         } else {
-
-                            for (i = 0; i < paramOptions.length; i += 1) {
-                                if(manipulation === paramOptions[i].name) {
-                                    nonParamManip = false;
-                                    break;
-                                }
-                            }
-
-                            if (nonParamManip) {
-                                reg = new RegExp(manipulation + "(\\(.*\\))?( |$)", "g");
-                                manipulateAttributes = manipulateAttributes.replace(reg, '');
-                            } else {
-                                joinSeparator = manipulation + "\\(" + this.nextElementSibling.value + "\\)( |$)";
-                                reg = new RegExp(joinSeparator, "g");
-                                manipulateAttributes = manipulateAttributes.replace(reg, '');
-                            }
+                            element.show();
                         }
-                    } else {
-                        manipulateAttributes = manipulateAttributes.replace(/ +(?= )/g, '');
+                    });
+                    element.on('click', function () {
+                        manipulationSorter.addManipulation(scope.type);
+                    });
+                }
+            }
+        };
+    }]);
 
-                        for(i=0; i<paramOptions.length; i+=1) {
-                            if(manipulation === paramOptions[i].name) {
-                                if(paramOptions[i].id !== '') {
-                                    $(paramOptions[i].id).val("");
-                                }
-                                manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
-                                found = true;
-                                break;
-                            }
+    directives.directive('formatManipulation', function () {
+        return {
+            restrict: 'EA',
+            require: 'ngModel',
+            templateUrl: '../tasks/partials/widgets/string-manipulation-format.html',
+            link: function (scope, el, attrs, ngModel) {
+                scope.getAvailableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.getAvailableFields;
+                scope.availableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.fields;
+                scope.msg = scope.$parent.$parent.$parent.$parent.$parent.$parent.taskMsg;
+
+                ngModel.$parsers.push(function (value) {
+                    var arr = [];
+                    value.forEach(function(obj){
+                        if(obj.value){
+                            arr.push(obj.value);
                         }
-                        if(!found) {
-                            manipulateAttributes = manipulateAttributes + manipulation + " ";
-                        }
-                    }
-
-                    manipulateElement.attr('manipulate', manipulateAttributes);
-                    manipulateElement.trigger('manipulateChanged');
-                    scope.setSortableArray();
-
-                    if (!$(this).parent().hasClass('active')) {
-                        $(this).parent().children().css({ 'display' : '' });
-                        $(this).parent().addClass('active');
-                        $('#sortable').append($(this.parentElement).clone().end());
-                    } else {
-                        $(this).parent().children('.glyphicon').css({ 'display' : 'none' });
-                        $(this.nextElementSibling).css({ 'display' : 'none' });
-                        $(this).parent().removeClass("active");
-                        $('#sortable-no').append($(this.parentElement).clone().end());
-                    }
+                    });
+                    return arr.join(",");
                 });
-            }
-        };
-    });
-
-    directives.directive('joinUpdate', function () {
-        return {
-            restrict : 'A',
-            require: '?ngModel',
-            link : function (scope, el, attrs) {
-                el.on("focusout focusin keyup", function (event) {
-                    event.stopPropagation();
-                    var manipulateElement = $("[ismanipulate=true]"),
-                        manipulation = "join(" + $("#joinSeparator").val() + ")",
-                        elementManipulation = manipulateElement.attr("manipulate"),
-                        regex = new RegExp("join\\(.*?\\)", "g");
-
-                    elementManipulation = elementManipulation.replace(regex, manipulation);
-                    manipulateElement.attr("manipulate", elementManipulation);
-                    manipulateElement.trigger('manipulateChanged');
+                ngModel.$formatters.push(function (value) {
+                    var parsed = [];
+                    value.split(",").forEach(function(str) {
+                        parsed.push({ value: str });
+                    });
+                    return parsed;
                 });
+
+                ngModel.$render = function () {
+                    scope.formatInput = ngModel.$viewValue;
+                };
+                scope.$watch('formatInput', function(newValue){
+                    ngModel.$setViewValue(scope.formatInput);
+                }, true);
+
+                scope.deleteFormatInput = function (index) {
+                    scope.formatInput.splice(index, 1);
+                };
+                scope.addFormatInput = function () {
+                    scope.formatInput.push({});
+                };
             }
-        };
-    });
-
-    directives.directive('splitUpdate', function () {
-        return {
-            restrict : 'A',
-            require: '?ngModel',
-            link : function (scope, el, attrs) {
-                el.on("focusout focusin keyup", function (event) {
-                    event.stopPropagation();
-                    var manipulateElement = $("[ismanipulate=true]"),
-                        manipulation = "split(" + $("#splitSeparator").val() + ")",
-                        elementManipulation = manipulateElement.attr("manipulate"),
-                        regex = new RegExp("split\\(.*?\\)", "g");
-
-                    elementManipulation = elementManipulation.replace(regex, manipulation);
-                    manipulateElement.attr("manipulate", elementManipulation);
-                    manipulateElement.trigger('manipulateChanged');
-                });
-            }
-        };
-    });
-
-    directives.directive('substringUpdate', function () {
-        return {
-            restrict : 'A',
-            require: '?ngModel',
-            link : function (scope, el, attrs) {
-                el.on("focusout focusin keyup", function (event) {
-                    event.stopPropagation();
-                    var manipulateElement = $("[ismanipulate=true]"),
-                        manipulation = "substring(" + $("#substringSeparator").val() + ")",
-                        elementManipulation = manipulateElement.attr("manipulate"),
-                        regex = new RegExp("substring\\(.*?\\)", "g");
-
-                    elementManipulation = elementManipulation.replace(regex, manipulation);
-                    manipulateElement.attr("manipulate", elementManipulation);
-                    manipulateElement.trigger('manipulateChanged');
-                });
-            }
-        };
-    });
-
-    directives.directive('dateUpdate', function () {
-        return {
-            restrict : 'A',
-            require: '?ngModel',
-            link : function (scope, el, attrs) {
-                el.on("focusout focusin keyup", function (event) {
-                    event.stopPropagation();
-                    var manipulateElement = $("[ismanipulate=true]"),
-                        manipulation = "dateTime(" + $("#dateFormat").val() + ")",
-                        elementManipulation = manipulateElement.attr("manipulate"),
-                        regex = new RegExp("dateTime\\(.*?\\)", "g");
-
-                    elementManipulation = elementManipulation.replace(regex, manipulation);
-                    manipulateElement.attr("manipulate", elementManipulation);
-                    manipulateElement.trigger('manipulateChanged');
-                });
-            }
-        };
-    });
-
-    directives.directive('dateManipulationUpdate', function() {
-        return {
-            restrict : 'A',
-            require: '?ngModel',
-            link : function (scope, el, attrs) {
-                el.on("focusout focusin keyup", function (event) {
-                    event.stopPropagation();
-                    var
-                        manipKind = attrs.manipulationKind,
-                        manipulateElement = $("[ismanipulate=true]"),
-                        manipulation = manipKind + "(" + $("#" + manipKind).val() + ")",
-                        elementManipulation = manipulateElement.attr("manipulate"),
-                        regex = new RegExp(manipKind + "\\(.*?\\)", "g");
-
-                    elementManipulation = elementManipulation.replace(regex, manipulation);
-                    manipulateElement.attr("manipulate", elementManipulation);
-                    manipulateElement.trigger('manipulateChanged');
-                });
-            }
-        };
-    });
-
-    directives.directive('parsedateUpdate', function () {
-        return {
-            restrict : 'A',
-            require: '?ngModel',
-            link : function (scope, el, attrs) {
-                el.on("focusout focusin keyup", function (event) {
-                    event.stopPropagation();
-                    var manipulateElement = $("[ismanipulate=true]"),
-                        manipulation = "parseDate(" + $("#parseDate").val() + ")",
-                        elementManipulation = manipulateElement.attr("manipulate"),
-                        regex = new RegExp("parseDate\\(.*?\\)", "g");
-
-                    elementManipulation = elementManipulation.replace(regex, manipulation);
-                    manipulateElement.attr("manipulate", elementManipulation);
-                    manipulateElement.trigger('manipulateChanged');
-                });
-            }
-        };
-    });
-
-    directives.directive('selectEvent', function() {
-        return function(scope, element, attrs) {
-            var elm = angular.element(element);
-            elm.click(function (event) {
-                var li = elm.parent('li'),
-                    content = $(element).find('.content-task'),
-                    visible = content.is(":visible"),
-                    other = $('[select-event=' + attrs.selectEvent + ']').not('#' + $(this).attr('id')),
-                    contentOffsetTop = $('#inner-center').offset().top,
-                    setContentCss;
-
-                    other.parent('li').not('.selectedTrigger').removeClass('active');
-                    other.find('.content-task').hide();
-
-                    if (visible) {
-                        if (!li.hasClass('selectedTrigger')) {
-                            li.removeClass('active');
-                        }
-
-                        content.hide();
-                    } else {
-                        li.addClass('active');
-                        content.show();
-                        content.removeClass('left right bottom top');
-                        content.parent().find('div.arrow').css({'top':'50%'});
-                        setContentCss = function () {
-                            if ($(content).children('.popover-content').height() > 200) {
-                                content.css({'height': '290'});
-                                content.children('.popover-content').css({'height': 200, 'overflow-y': 'auto'});
-                                content.parent().find('div.arrow').css({'top': function () {return ($(content).height()/2);}});
-                                content.css({'top': function () {return -($(content).height()/2  - 60);}});
-                            } else {
-                                content.css({'top': function () {return -($(content).height()/2 - 60);}});
-                            }
-                        };
-                        if (($(window).width() - $(this).offset().left) < 138 + $(content).width() && $(this).offset().left > $(content).width() && $(this).parent().parent().offset().left + ($(content).width()/2) < $(this).offset().left) {
-                            content.addClass('left');
-                            content.css({'left': function () {return -($(content).width() + 3);}});
-                            setContentCss();
-                        } else if (($(window).width() - ($(this).offset().left + 138)) > $(content).width() && !($(this).parent().parent().offset().left + ($(content).width()/2) < $(this).offset().left && $(this).offset().top - contentOffsetTop - 71 > 200 && $(content).children('.popover-content').height() + 11 < 200))  {
-                            content.addClass('right');
-                            content.css({'left': '125px'});
-                            setContentCss();
-                        } else if ($(this).offset().top - contentOffsetTop - 71 > 200 && $(content).children('.popover-content').height() + 11 < 200 && ($(window).width() - ($(this).offset().left + 108)) > $(content).width()) {
-                            content.addClass('top');
-                            content.children('.popover-content').css({'height': function () {return (content.children('.popover-content').children('ul').height()+15);}, 'overflow-y': 'auto'});
-                            content.css({'height': function () {return (content.children('.popover-content').children('ul').height() + content.children('.popover-title').height() + 33);}});
-                            content.css({'top': function () {return -($(content).height() + 8);}});
-                            content.css({'left': function () {return -($(content).width()/2 - 70);}});
-                            content.parent().find('div.arrow').css({'top': function() {return ($(content).height() + 2);}});
-                        } else {
-                            content.addClass('bottom');
-                            content.css({'top': '115px', 'height': '240'});
-                            if ($(content).children('.popover-content').children('ul').height() < 200) {
-                                content.css({'height': function () {return (content.children('.popover-content').children('ul').height() + content.children('.popover-title').height() + 30);}});
-                            } else {
-                                content.children('.popover-content').css({'height': 200, 'overflow-y': 'auto'});
-                            }
-                            if (($(window).width() - ($(this).offset().left + 108)) < $(content).width()) {
-                                content.css({'left': function () {return -($(content).width()/2 - 40);}});
-                            } else {
-                                content.css({'left': function () {return -($(content).width()/2 - 80);}});
-                            }
-                            content.parent().find('div.arrow').css({'top':'-11px'});
-                        }
-                    }
-            });
         };
     });
 
