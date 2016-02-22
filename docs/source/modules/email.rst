@@ -81,7 +81,7 @@ The Email module exposes two OSGi services. First service provides possibility t
         void send(Mail message);
     }
 
-Email message is represented by an object of :code:`org.motechproject.email.contract.Mail` class which contains following fields:
+Email message is represented by an object of :code:`org.motechproject.email.domain.Mail` class which contains following fields:
 
 - :code:`String fromAddress` - sender address.
 - :code:`String toAddress` - recipient address.

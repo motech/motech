@@ -5,7 +5,6 @@ import org.apache.velocity.app.VelocityEngine;
 import org.joda.time.format.DateTimeFormat;
 import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.config.service.ConfigurationService;
-import org.motechproject.email.contract.Mail;
 import org.motechproject.email.exception.EmailSendException;
 import org.motechproject.email.service.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +46,8 @@ public class EmailNotifier {
     public void send(StatusMessage statusMessage, String recipient) throws EmailSendException {
         Map<String, Object> model = templateParams(statusMessage);
         String text = mergeTemplateIntoString(model);
-        emailSender.send(new Mail(senderAddress(), recipient,
-                statusMessage.getLevel() + " notification raised in Motech", text));
+        emailSender.send(senderAddress(), recipient,
+                statusMessage.getLevel() + " notification raised in Motech", text);
     }
 
     protected String mergeTemplateIntoString(Map<String, Object> model) {

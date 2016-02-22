@@ -14,7 +14,7 @@ import org.mockito.MockitoAnnotations;
 import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
 import org.motechproject.config.service.ConfigurationService;
-import org.motechproject.email.contract.Mail;
+import org.motechproject.email.domain.Mail;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.server.config.domain.MotechSettings;
 
@@ -76,13 +76,8 @@ public class EmailNotifierTest {
         Assert.assertTrue(velocityArgumentCaptor.getValue().get("dateTime").toString().matches("^(12[./]20|20[./]12)[./]10 10:50(| AM)$"));
         assertEquals(moduleName, velocityArgumentCaptor.getValue().get("module"));
 
-        ArgumentCaptor<Mail> argument = ArgumentCaptor.forClass(Mail.class);
-        Mockito.verify(emailSenderService).send(argument.capture());
-        Mail mail = argument.getValue();
+        Mockito.verify(emailSenderService).send( "noreply@serverurl", "recipients", "WARN notification raised in Motech", "Mail msg" );
 
-        assertEquals(text, mail.getMessage());
-        assertEquals("recipients", mail.getToAddress());
-        assertEquals("noreply@serverurl", mail.getFromAddress());
     }
 
     @Test

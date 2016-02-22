@@ -344,7 +344,8 @@ a {
 }
 
 .loading-text-block .fa-check-circle,
-.loading-text-block .fa-times-circle {
+.loading-text-block .fa-times-circle,
+.loading-text-block .circle-loader-spinner {
     display: none;
 }
 
@@ -361,8 +362,4 @@ a {
     line-height: 1.1em;
     margin-right: 5px;
     vertical-align: -8%;
-}
-
-.loading-text-block .fa-circle-o-notch.fa-lg {
-    font-size: 1.32em;
 }

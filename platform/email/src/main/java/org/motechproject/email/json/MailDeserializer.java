@@ -5,7 +5,7 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.JsonMappingException;
-import org.motechproject.email.contract.Mail;
+import org.motechproject.email.domain.Mail;
 
 import java.io.IOException;
 

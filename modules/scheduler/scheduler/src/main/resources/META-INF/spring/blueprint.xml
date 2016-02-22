@@ -34,6 +34,8 @@
 
     <osgi:service ref="schedulerActionProxyService" interface="org.motechproject.scheduler.service.MotechSchedulerActionProxyService"/>
 
+    <osgi:service ref="schedulerEventParser" interface="org.motechproject.commons.api.TasksEventParser" />
+
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
 
     <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" bean-name="sqlDbManager"/>

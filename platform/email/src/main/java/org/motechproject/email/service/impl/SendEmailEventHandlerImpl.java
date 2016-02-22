@@ -1,7 +1,6 @@
 package org.motechproject.email.service.impl;
 
 import org.motechproject.email.constants.SendEmailConstants;
-import org.motechproject.email.contract.Mail;
 import org.motechproject.email.exception.EmailSendException;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.event.MotechEvent;
@@ -35,6 +34,6 @@ public class SendEmailEventHandlerImpl {
                     fromAddress, toAddress, subject, message);
         }
 
-        emailSenderService.send(new Mail(fromAddress, toAddress, subject, message));
+        emailSenderService.send(fromAddress, toAddress, subject, message);
     }
 }
