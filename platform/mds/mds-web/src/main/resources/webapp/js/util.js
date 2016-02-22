@@ -188,4 +188,11 @@
         };
     });
 
+    utils.factory('DTOUtils', function() {
+        return {
+            setSelectedEntity : function($scope, entity) {
+                $scope.selectedEntity = entity;
+            }
+        };
+    });
 }());
