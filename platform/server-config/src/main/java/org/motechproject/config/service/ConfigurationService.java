@@ -2,6 +2,7 @@ package org.motechproject.config.service;
 
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.domain.ModulePropertiesRecord;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
@@ -67,7 +68,7 @@ public interface ConfigurationService {
      * </p>
      *
      * @return Bootstrap configuration
-     * @throws org.motechproject.config.core.MotechConfigurationException if bootstrap configuration cannot be loaded.
+     * @throws MotechConfigurationException if bootstrap configuration cannot be loaded.
      */
     BootstrapConfig loadBootstrapConfig();
 
@@ -79,7 +80,7 @@ public interface ConfigurationService {
      * </p>
      *
      * @param bootstrapConfig Bootstrap configuration.
-     * @throws org.motechproject.config.core.MotechConfigurationException if bootstrap configuration cannot be saved.
+     * @throws MotechConfigurationException if bootstrap configuration cannot be saved.
      */
     void save(BootstrapConfig bootstrapConfig);
 

@@ -2,7 +2,7 @@ package org.motechproject.server.config;
 
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.osgi.web.util.OSGiServiceUtils;
 import org.motechproject.server.config.domain.MotechSettings;

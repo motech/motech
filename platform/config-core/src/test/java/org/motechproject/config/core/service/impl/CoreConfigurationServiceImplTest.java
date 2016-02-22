@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.bootstrap.BootstrapManager;
 import org.motechproject.config.core.datanucleus.DbConfigManager;
 import org.motechproject.config.core.domain.ConfigLocation;

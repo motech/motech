@@ -40,15 +40,21 @@ public class TaskContextTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-    private class TestDataSourceObject {
+    public class TestDataSourceObject {
         private int id;
+        private boolean checked;
 
         private TestDataSourceObject() {
             this.id = OBJECT_ID.intValue();
+            this.checked = true;
         }
 
         public int getId() {
             return id;
+        }
+
+        public boolean isChecked() {
+            return checked;
         }
     }
 
@@ -122,6 +128,17 @@ public class TaskContextTest {
         KeyInformation key = parse("ad.1.Integer#1.id");
 
         assertEquals(OBJECT_ID.intValue(), taskContext.getDataSourceObjectValue(key.getObjectId().toString(), key.getKey(), key.getObjectType()));
+    }
+
+    @Test
+    public void testGetDataSourceValueForBooleanWithGetterIs() throws Exception {
+        Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
+        TaskContext taskContext = new TaskContext(task, null, activityService);
+        taskContext.addDataSourceObject("1", new TestDataSourceObject(), true);
+
+        KeyInformation key = parse("ad.1.Boolean#1.checked");
+
+        assertEquals(true, taskContext.getDataSourceObjectValue(key.getObjectId().toString(), key.getKey(), key.getObjectType()));
     }
 
     @Test

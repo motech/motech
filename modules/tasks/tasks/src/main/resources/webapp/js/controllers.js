@@ -111,21 +111,31 @@
                 .success(dummyHandler)
                 .error(function (response) {
                     item.task.enabled = !enabled;
-                    jAlert($scope.util.createErrorMessage($scope, response, false), $scope.msg('task.error.actionNotChangeTitle'));
+                    BootstrapDialog.alert({
+                        type: BootstrapDialog.TYPE_DANGER,
+                        title: $scope.msg('task.error.actionNotChangeTitle'),
+                        message: $scope.util.createErrorMessage($scope, response, false)
+                    });
                 });
         };
 
         $scope.deleteTask = function (item) {
-            jConfirm(jQuery.i18n.prop('task.confirm.remove'), jQuery.i18n.prop("task.header.confirm"), function (val) {
-                if (val) {
-                    blockUI();
-
-                    item.task.$remove(function () {
-                        $scope.allTasks.removeObject(item);
-                        $rootScope.search();
-                        $('#inner-center').trigger("change");
-                        unblockUI();
-                    }, alertHandler('task.error.removed', 'task.header.error'));
+            BootstrapDialog.confirm({
+                title: $scope.msg('task.header.confirm'),
+                message: $scope.msg('task.confirm.remove'),
+                type: BootstrapDialog.TYPE_WARNING,
+                callback: function(result) {
+                    if (result) {
+                        blockUI();
+                        item.task.$remove(function () {
+                            $scope.allTasks.removeObject(item);
+                            $rootScope.search();
+                            $('#inner-center').trigger("change");
+                            unblockUI();
+                        },
+                            alertHandler('task.error.removed', 'task.header.error')
+                        );
+                    }
                 }
             });
         };
@@ -1174,13 +1184,17 @@
                     if (errors.length > 0) {
                         alertMessage = $scope.util.createErrorMessage($scope, errors, true);
                     }
+                    BootstrapDialog.alert({
+                        type: BootstrapDialog.TYPE_SUCCESS,
+                        title: $scope.msg('task.header.saved'),
+                        message: alertMessage,
+                        callback: function () {
+                            unblockUI();
+                            loc = window.location.toString();
+                            indexOf = loc.indexOf('#');
 
-                    jAlert(alertMessage, $scope.msg('task.header.saved'), function () {
-                        unblockUI();
-                        loc = window.location.toString();
-                        indexOf = loc.indexOf('#');
-
-                        window.location = "{0}#/tasks/dashboard".format(loc.substring(0, indexOf));
+                            window.location = "{0}#/tasks/dashboard".format(loc.substring(0, indexOf));
+                        }
                     });
                 },
                 error = function (response) {
@@ -1201,7 +1215,10 @@
                     delete $scope.task.enabled;
 
                     unblockUI();
-                    jAlert($scope.util.createErrorMessage($scope, data, false), $scope.msg('task.header.error'));
+                    BootstrapDialog.alert({
+                        type: BootstrapDialog.TYPE_DANGER,
+                        message: $scope.util.createErrorMessage($scope, data, false)
+                    });
                 };
 
             $scope.task.enabled = enabled;

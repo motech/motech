@@ -3,7 +3,7 @@ package org.motechproject.config.core.domain;
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.core.IsEqual;
 import org.junit.Test;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Path;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -116,7 +115,7 @@ public class ConfigLocationTest {
         }
 
         @Override
-        UrlResource getUrlResource() throws MalformedURLException {
+        public UrlResource getUrlResource() throws MalformedURLException {
             throw new MalformedURLException("Malformed");
         }
     }

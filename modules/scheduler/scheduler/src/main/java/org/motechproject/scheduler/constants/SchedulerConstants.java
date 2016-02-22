@@ -19,6 +19,7 @@ public final class SchedulerConstants {
     public static final String END_DATE = "endDate";
     public static final String DAYS = "days";
     public static final String TIME = "time";
+    public static final String UI_DEFINED = "uiDefined";
     public static final String CRON_EXPRESSION = "cronExpression";
     public static final String REPEAT_COUNT = "repeatCount";
     public static final String REPEAT_PERIOD = "repeatPeriod";

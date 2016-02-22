@@ -110,9 +110,9 @@
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
                                 $, jQuery, angular, TasksDashboardCtrl, TasksManageCtrl, TasksLogCtrl, moment,
-                                dummyHandler, handleResponse, jConfirm, alertHandler, window,
-                                blockUI, unblockUI, motechAlert, motechConfirm, jAlert, cloneObj,
-                                isBlank, defaultLayout, innerLayout
+                                dummyHandler, handleResponse, alertHandler, window,
+                                blockUI, unblockUI, motechAlert, motechConfirm, cloneObj,
+                                isBlank, defaultLayout, innerLayout, BootstrapDialog
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                             <excludes>
