@@ -29,7 +29,7 @@ public class StartupManagerTest {
     private EventAdmin eventAdmin;
 
     @Mock
-    MotechSettings settingsRecord;
+    MotechSettings motechSettings;
 
     @InjectMocks
     StartupManager startupManager = new StartupManager();
@@ -41,7 +41,7 @@ public class StartupManagerTest {
 
     @Test
     public void testNoSettings() {
-        when(settingsRecord.getLoginMode()).thenReturn(LoginMode.REPOSITORY);
+        when(motechSettings.getLoginMode()).thenReturn(LoginMode.REPOSITORY);
 
         startupManager.startup();
 

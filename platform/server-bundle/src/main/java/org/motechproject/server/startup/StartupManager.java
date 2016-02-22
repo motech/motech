@@ -34,7 +34,7 @@ public class StartupManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(StartupManager.class);
 
     private MotechPlatformState platformState = MotechPlatformState.STARTUP;
-    private MotechSettings settingsRecord;
+    private MotechSettings motechSettings;
     private MotechSettings dbSettings;
 
     @Autowired
@@ -72,7 +72,7 @@ public class StartupManager {
         dbSettings = configurationService.getPlatformSettings();
 
         if (bootstrapConfig.getConfigSource() == ConfigSource.FILE) {
-            settingsRecord = configurationService.loadConfig();
+            motechSettings = configurationService.loadConfig();
             syncSettingsWithDb();
         }
 
@@ -132,12 +132,12 @@ public class StartupManager {
                 markPlatformStateAs(NORMAL_RUN);
             }
 
-            if (isFirstRun() || settingsRecord == null ||
-                    !settingsRecord.getConfigFileChecksum().equals(dbSettings.getConfigFileChecksum())) {
+            if (isFirstRun() || motechSettings == null ||
+                    !motechSettings.getConfigFileChecksum().equals(dbSettings.getConfigFileChecksum())) {
                 LOGGER.info("Updating database startup");
 
-                dbSettings.updateSettings(settingsRecord.getConfigFileChecksum(),
-                            settingsRecord.getFilePath(), settingsRecord.asProperties());
+                dbSettings.updateSettings(motechSettings.getConfigFileChecksum(),
+                            motechSettings.getFilePath(), motechSettings.asProperties());
             }
 
             try {
