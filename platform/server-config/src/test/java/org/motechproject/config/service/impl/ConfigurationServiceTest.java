@@ -15,7 +15,7 @@ import org.motechproject.config.domain.ModulePropertiesRecord;
 import org.motechproject.config.service.BundlePropertiesService;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.SettingsRecord;
-import org.motechproject.server.config.service.ConfigLoader;
+import org.motechproject.server.config.loader.ConfigLoader;
 import org.motechproject.server.config.service.SettingService;
 import org.motechproject.testing.utils.FileHelper;
 import org.springframework.core.io.ResourceLoader;

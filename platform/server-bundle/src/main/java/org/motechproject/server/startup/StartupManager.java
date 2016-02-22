@@ -7,7 +7,6 @@ import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.domain.MotechSettings;
-import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.osgi.util.PlatformConstants;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
@@ -35,7 +34,7 @@ public class StartupManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(StartupManager.class);
 
     private MotechPlatformState platformState = MotechPlatformState.STARTUP;
-    private SettingsRecord settingsRecord;
+    private MotechSettings settingsRecord;
     private MotechSettings dbSettings;
 
     @Autowired
@@ -117,7 +116,7 @@ public class StartupManager {
      * This function is only called when the default configuration is loaded
      * and is no config in the database or external files
      */
-    public SettingsRecord getDefaultSettings() {
+    public MotechSettings getDefaultSettings() {
         return configurationService.loadDefaultConfig();
     }
 

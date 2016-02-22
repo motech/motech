@@ -9,6 +9,7 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.server.config.wrapper.MotechURL;
 
 import java.io.IOException;
 import java.security.DigestInputStream;

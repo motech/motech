@@ -19,7 +19,7 @@ import org.motechproject.config.service.BundlePropertiesService;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
-import org.motechproject.server.config.service.ConfigLoader;
+import org.motechproject.server.config.loader.ConfigLoader;
 import org.motechproject.server.config.service.SettingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -248,6 +248,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
      * @param defaultProperties the default properties of the bundle
      * @return properties for given bundle and file name
      */
+    @Override
     @Transactional
     public Properties getBundleProperties(String bundle, String filename, Properties defaultProperties) throws IOException {
         ModulePropertiesRecord record;
@@ -648,7 +649,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
      * @param settingsRecord  the settings to be add
      */
     @Transactional
-    public void addOrUpdateSettings(SettingsRecord settingsRecord) {
+    private void addOrUpdateSettings(SettingsRecord settingsRecord) {
         SettingsRecord record = getSettingsRecord();
         if (record == null) {
             settingService.create(settingsRecord);
@@ -668,7 +669,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
      * @param filename  the name of the file
      * @return the {@code ModulePropertiesRecord} matching given information
      */
-    public ModulePropertiesRecord getBundlePropertiesRecord(String bundle, String filename) {
+    private ModulePropertiesRecord getBundlePropertiesRecord(String bundle, String filename) {
         List<ModulePropertiesRecord>  records = (bundlePropertiesService == null) ? null :
                 bundlePropertiesService.findByBundleAndFileName(bundle, filename);
         if (records != null) {

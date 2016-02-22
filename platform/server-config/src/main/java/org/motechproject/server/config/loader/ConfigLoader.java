@@ -1,4 +1,4 @@
-package org.motechproject.server.config.service;
+package org.motechproject.server.config.loader;
 
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.core.exception.MotechConfigurationException;

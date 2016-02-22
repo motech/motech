@@ -15,7 +15,7 @@ import org.motechproject.config.core.filters.ConfigFileFilter;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.osgi.web.util.OSGiServiceUtils;
-import org.motechproject.server.config.service.ConfigLoader;
+import org.motechproject.server.config.loader.ConfigLoader;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

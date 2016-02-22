@@ -19,7 +19,7 @@ import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.service.ConfigurationService;
-import org.motechproject.server.config.service.ConfigLoader;
+import org.motechproject.server.config.loader.ConfigLoader;
 
 import java.io.File;
 import java.io.IOException;
