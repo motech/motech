@@ -311,7 +311,9 @@ public class BasePaxIT {
     protected Set<String> getTestDependencies() {
         Set<String> testDependencies = new HashSet<>(Arrays.asList(
                 "org.apache.felix:org.apache.felix.eventadmin",
-                "org.springframework:spring-web",
+                "org.apache.felix:org.apache.felix.framework",
+                "org.apache.servicemix.bundles:org.apache.servicemix.bundles.spring-web",
+                "org.apache.servicemix.bundles:org.apache.servicemix.bundles.spring-aop",
                 "org.springframework.security:spring-security-config",
                 "org.springframework.security:spring-security-core",
                 "org.springframework.security:spring-security-web",

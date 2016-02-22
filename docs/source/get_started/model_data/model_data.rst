@@ -2247,9 +2247,9 @@ MDS transaction manager and uses it when declaring annotation driven transaction
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
            xmlns:tx="http://www.springframework.org/schema/tx"
-           xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+           xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
             http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
-            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
 
         <tx:annotation-driven transaction-manager="transactionManager"/>
 

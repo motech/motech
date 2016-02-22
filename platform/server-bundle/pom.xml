@@ -58,6 +58,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.bval</groupId>
+            <artifactId>org.apache.bval.bundle</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
         </dependency>
@@ -153,6 +157,8 @@
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,
+                            org.apache.bval.jsr303,
+                            org.apache.bval.constraints,
                             org.motechproject.config.service,
                             org.motechproject.security.domain,
                             org.osgi.framework;version="0.0.0",
@@ -163,7 +169,11 @@
                             net.sf.cglib.reflect,
                             org.springframework.aop,
                             org.springframework.aop.framework,
+                            org.springframework.cglib.core,
+                            org.springframework.cglib.proxy,
+                            org.springframework.cglib.reflect,
                             org.springframework.context.support,
+                            org.springframework.validation.beanvalidation,
                             org.springframework.web.servlet.i18n,
                             org.springframework.web.servlet.view,
                             *

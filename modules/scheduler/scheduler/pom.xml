@@ -51,8 +51,12 @@
             <artifactId>joda-time</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
+            <groupId>org.apache.bval</groupId>
+            <artifactId>org.apache.bval.bundle</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-context-support</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
@@ -139,6 +143,8 @@
                             org.motechproject.scheduler.exception;version=${project.version}
                         </Export-Package>
                         <Import-Package>
+                            org.apache.bval.jsr303,
+                            org.apache.bval.constraints,
                             org.apache.commons.dbcp,
                             com.mysql.jdbc,
                             org.postgresql,
@@ -166,7 +172,11 @@
                             org.apache.velocity.*,
                             org.springframework.aop,
                             org.springframework.aop.framework,
+                            org.springframework.cglib.core,
+                            org.springframework.cglib.proxy,
+                            org.springframework.cglib.reflect,
                             org.springframework.jdbc.*;resolution:=optional,
+                            org.springframework.validation.beanvalidation,
                             org.motechproject.server.config.service,
                             org.motechproject.config.service,
                             org.motechproject.commons.sql.service,
