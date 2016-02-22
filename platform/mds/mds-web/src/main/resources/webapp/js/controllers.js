@@ -625,7 +625,7 @@
     /**
     * The MdsSchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
-    controllers.controller('MdsSchemaEditorCtrl', function ($scope, $timeout, $http, Entities, MDSUsers, Permissions, MDSUtils, Locale) {
+    controllers.controller('MdsSchemaEditorCtrl', function ($scope, $timeout, $http, Entities, MDSUsers, Permissions, MDSUtils, Locale, DTOUtils) {
 
         MDSUtils.setCustomOperatorFunctions($scope);
 
@@ -741,7 +741,7 @@
         if (loadEntity) {
             blockUI();
             $.ajax("../mds/entities/" + loadEntity).done(function (data) {
-                $scope.selectedEntity = data;
+                DTOUtils.setSelectedEntity($scope, data);
                 loadEntity = undefined;
                 unblockUI();
             });
