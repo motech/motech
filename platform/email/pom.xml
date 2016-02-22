@@ -161,7 +161,6 @@
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.email.builder;version=${project.version},
-                            org.motechproject.email.contract;version=${project.version},
                             org.motechproject.email.domain;version=${project.version},
                             org.motechproject.email.exception;version=${project.version},
                             org.motechproject.email.service;version=${project.version}

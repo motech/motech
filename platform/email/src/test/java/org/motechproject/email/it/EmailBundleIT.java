@@ -4,7 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.email.contract.Mail;
+import org.motechproject.email.domain.Mail;
 import org.motechproject.email.exception.EmailSendException;
 import org.motechproject.email.service.EmailRecordService;
 import org.motechproject.email.service.EmailSenderService;
@@ -55,7 +55,7 @@ public class EmailBundleIT extends BasePaxIT {
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-            mailService.send(new Mail("from@from.com", "to@to.com", "test", "test"));
+            mailService.send("from@from.com", "to@to.com", "test", "test");
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
         }
