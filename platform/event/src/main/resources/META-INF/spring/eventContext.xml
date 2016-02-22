@@ -35,7 +35,7 @@
 
     <osgi:reference id="eventAdmin" interface="org.osgi.service.event.EventAdmin"/>
 
-    <bean id="eventConsumerStarter" class="org.motechproject.event.listener.EventConsumerStarter"/>
+    <bean id="eventConsumerStarter" class="org.motechproject.event.listener.starter.EventConsumerStarter"/>
 
     <bean id="reloadBrokerConfigHandler" class="org.motechproject.event.config.ReloadBrokerConfigHandler"/>
 

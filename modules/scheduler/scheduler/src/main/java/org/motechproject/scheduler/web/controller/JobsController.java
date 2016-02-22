@@ -1,18 +1,23 @@
 package org.motechproject.scheduler.web.controller;
 
+import org.motechproject.scheduler.constants.SchedulerConstants;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
 import org.motechproject.scheduler.contract.JobsSearchSettings;
+import org.motechproject.scheduler.contract.SchedulableJob;
 import org.motechproject.scheduler.service.MotechSchedulerDatabaseService;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.web.domain.JobsRecords;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -29,6 +34,7 @@ import java.util.List;
  * */
 
 @Controller
+@PreAuthorize(SchedulerConstants.VIEW_SCHEDULER_JOBS)
 public class JobsController {
 
     @Autowired
@@ -103,4 +109,41 @@ public class JobsController {
     public void deleteJob(@RequestBody JobBasicInfo jobInfo) throws SchedulerException {
         motechSchedulerService.deleteJob(jobInfo);
     }
+
+    /**
+     * Schedules the given job.
+     *
+     * @param job  the job to be scheduled
+     */
+    @RequestMapping(value = "/jobs/new", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void createJob(@RequestBody SchedulableJob job) {
+        motechSchedulerService.scheduleJob(job);
+    }
+
+    /**
+     * Edit job with the same job key as the given job.
+     *
+     * @param job  the updated job
+     */
+    @RequestMapping(value = "/jobs/edit", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void editJob(@RequestBody SchedulableJob job) {
+        motechSchedulerService.updateJob(job);
+    }
+
+    /**
+     * Return a job based on the given information.
+     *
+     * @param jobInfo  the information about a job
+     * @return the job matching the information
+     */
+    @RequestMapping(value = "/job", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public SchedulableJob getJob(@RequestBody JobBasicInfo jobInfo) {
+        return motechSchedulerService.getJob(jobInfo);
+    }
+
+
 }

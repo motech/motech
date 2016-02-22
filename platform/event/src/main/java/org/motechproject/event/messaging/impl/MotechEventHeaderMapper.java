@@ -1,9 +1,10 @@
-package org.motechproject.event.messaging;
+package org.motechproject.event.messaging.impl;
 
 import org.apache.activemq.ScheduledMessage;
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.apache.log4j.Logger;
 import org.motechproject.event.MotechEvent;
+import org.motechproject.event.messaging.MotechEventConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.MessageHeaders;
 import org.springframework.integration.jms.DefaultJmsHeaderMapper;

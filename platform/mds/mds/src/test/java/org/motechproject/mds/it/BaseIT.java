@@ -110,9 +110,9 @@ public abstract class BaseIT {
         return false;
     }
 
-    protected boolean containsLookup(String lookupName) {
+    protected boolean containsLookup(String lookupName, long entityId) {
         for (Lookup lookup : getLookups()) {
-            if (lookupName.equalsIgnoreCase(lookup.getLookupName())) {
+            if (lookupName.equalsIgnoreCase(lookup.getLookupName()) && lookup.getEntity().getId() == entityId) {
                 return true;
             }
         }

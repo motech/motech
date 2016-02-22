@@ -5,6 +5,7 @@
 
     angular.module('scheduler.services', ['ngResource']).factory('JobsService', function($resource) {
         var listener = {},
+            currentJob = {},
             jobs = {},
             params = {
                 name: "",
@@ -21,10 +22,22 @@
             "get": {
                 method: "GET"
             },
+            "createJob": {
+                url: "../scheduler/api/jobs/new",
+                method: "POST"
+            },
+            "updateJob": {
+                url: "../scheduler/api/jobs/edit",
+                method: "POST"
+            },
             "getDetails": {
                 url: '../scheduler/api/job/details',
                 method: "POST",
                 params: {}
+            },
+            "getJob": {
+                url: '../scheduler/api/job',
+                method: "POST"
             },
             "pauseJob": {
                 url: '../scheduler/api/job/pause',
@@ -46,8 +59,17 @@
             "get": function() {
                 return jobs;
             },
+            "createJob": function(job, success) {
+                source.createJob(job, success);
+            },
+            "updateJob": function(job, success) {
+                source.updateJob(job, success);
+            },
             "getDetails": function(job, success) {
                 source.getDetails(job, success);
+            },
+            "getCurrentJob": function(success) {
+                source.getJob(currentJob, success);
             },
             "pauseJob": function(job, success) {
                 source.pauseJob(job, success);
@@ -63,7 +85,10 @@
             },
             "setParam": function(fieldName, value) {
                 params[fieldName] = value;
-            }, 
+            },
+            "setCurrentJob": function(job) {
+                currentJob = job;
+            },
             "fetchJobs": function() {
                 source.get(params, function(data) {
                     jobs = data;

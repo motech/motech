@@ -1,10 +1,13 @@
-package org.motechproject.config.core;
+package org.motechproject.config.core.exception;
 
 /**
  * The object of this class is thrown when there is a problem with reading
  * the configuration from the predefined sources.
  **/
 public class MotechConfigurationException extends RuntimeException {
+
+    private static final long serialVersionUID = -6851151674758741482L;
+
     /**
      *
      * @param message A descriptive message explaining the nature of the problem resulted in exception
