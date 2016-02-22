@@ -1,4 +1,4 @@
-package org.motechproject.event.listener;
+package org.motechproject.event.listener.starter;
 
 import org.motechproject.server.osgi.event.OsgiEventProxy;
 import org.motechproject.server.osgi.util.PlatformConstants;
