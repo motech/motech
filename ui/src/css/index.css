@@ -2135,3 +2135,23 @@ body {
     opacity: 1 !important;
     font-weight: bold !important;
 }
+
+.navbar-inner.navbar-inverse {
+    background: #073863;
+}
+
+.nav-tabs > .active > a,
+.nav-tabs > .active > a:focus,
+.nav-tabs > li > a:hover,
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus,
+.nav > li > a:hover,
+.nav > li > a:focus,
+.nav.nav-stacked > li > a:hover,
+.nav.nav-stacked > .active > a {
+    color: #224477;
+    background: #F9F9F9;
+    filter:none !important;
+}
+
