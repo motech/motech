@@ -2,11 +2,9 @@ package org.motechproject.email.service.impl;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.email.contract.Mail;
 import org.motechproject.email.exception.EmailSendException;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.event.MotechEvent;
@@ -16,7 +14,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.Mockito.verify;
@@ -58,13 +55,9 @@ public class SendEmailEventHandlerImplTest {
         values.put(SUBJECT, subject);
 
         emailEventHandler.handle(new MotechEvent(SEND_EMAIL_SUBJECT, values));
-        ArgumentCaptor<Mail> captor = ArgumentCaptor.forClass(Mail.class);
-        verify(emailSenderService).send(captor.capture());
 
-        assertEquals(captor.getValue().getFromAddress(), from);
-        assertEquals(captor.getValue().getToAddress(), to);
-        assertEquals(captor.getValue().getSubject(), subject);
-        assertEquals(captor.getValue().getMessage(), message);
+        verify(emailSenderService).send(from, to, subject, message);
+
     }
 
 }

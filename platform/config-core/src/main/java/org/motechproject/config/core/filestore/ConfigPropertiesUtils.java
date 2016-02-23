@@ -1,6 +1,6 @@
 package org.motechproject.config.core.filestore;
 
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

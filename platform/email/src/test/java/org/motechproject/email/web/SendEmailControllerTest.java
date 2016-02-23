@@ -6,7 +6,7 @@ import org.codehaus.jackson.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.email.contract.Mail;
+import org.motechproject.email.domain.Mail;
 import org.motechproject.email.service.EmailSenderService;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.server.MockMvc;
@@ -43,7 +43,7 @@ public class SendEmailControllerTest {
     public void shouldSendEmail() throws Exception {
         sendEmailController.sendEmail(mail);
 
-        verify(senderService).send(mail);
+        verify(senderService).send(mail.getFromAddress(),mail.getToAddress(),mail.getSubject(),mail.getMessage());
     }
 
     @Test
@@ -58,7 +58,7 @@ public class SendEmailControllerTest {
     @Test
     public void shouldHandleExceptionDuringExecutionSendEmailRequest() throws Exception {
         String message = "There are problems with sending email";
-        doThrow(new IllegalStateException(message)).when(senderService).send(mail);
+        doThrow(new IllegalStateException(message)).when(senderService).send(mail.getFromAddress(),mail.getToAddress(),mail.getSubject(),mail.getMessage());
 
         controller.perform(
                 post("/send").body(convertMailToJson()).contentType(MediaType.APPLICATION_JSON)

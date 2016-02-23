@@ -67,6 +67,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.management.InstanceNotFoundException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -212,12 +213,16 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    public Object getInstanceField(Long entityId, Long instanceId, String fieldName) {
+    public Object getInstanceField(Long entityId, Long instanceId, String fieldName) throws InstanceNotFoundException {
         EntityDto entity = getEntity(entityId);
         MotechDataService service = getServiceForEntity(entity);
         validateCredentialsForReading(entity);
 
-        return service.getDetachedField(instanceId, fieldName);
+        Object instance = service.findById(instanceId);
+        if (instance == null) {
+            throw new InstanceNotFoundException(String.format("Cannot find instance with id: %d", instanceId));
+        }
+        return service.getDetachedField(instance, fieldName);
     }
 
     @Override
@@ -579,9 +584,16 @@ public class InstanceServiceImpl implements InstanceService {
 
     private void populateDefaultFields(List<FieldRecord> fieldRecords) {
         for (FieldRecord record : fieldRecords) {
+            // we don't want to pre-populate anything for hidden fields
+            // if we pre-populate the owner field in such a case for example, it will fail validation
             if (Constants.Util.CREATOR_FIELD_NAME.equals(record.getName()) ||
                     Constants.Util.OWNER_FIELD_NAME.equals(record.getName())) {
-                record.setValue(SecurityContextHolder.getContext().getAuthentication().getName());
+                if (record.isNonDisplayable()) {
+                    // make sure this is null, we don't want empty strings for these fields
+                    record.setValue(null);
+                } else {
+                    record.setValue(SecurityContextHolder.getContext().getAuthentication().getName());
+                }
             }
         }
     }

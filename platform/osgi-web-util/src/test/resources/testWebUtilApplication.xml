@@ -7,5 +7,5 @@
 
     <bean id="logService" class="org.motechproject.osgi.web.service.impl.ServerLogServiceImpl" autowire="byType"/>
 
-    <bean id="logBundleLoader" class="org.motechproject.osgi.web.Log4JBundleLoader" autowire="byType"/>
+    <bean id="logBundleLoader" class="org.motechproject.osgi.web.bundle.Log4JBundleLoader" autowire="byType"/>
 </beans>

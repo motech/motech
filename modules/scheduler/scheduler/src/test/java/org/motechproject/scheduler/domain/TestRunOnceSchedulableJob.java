@@ -37,16 +37,6 @@ public class TestRunOnceSchedulableJob {
         currentDate = currentDate.minusDays(1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void newConstructor_NullEvent() throws Exception {
-        new RunOnceSchedulableJob(null, currentDate);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void newConstructor_NullDate() throws Exception {
-        new RunOnceSchedulableJob(motechEvent1, null);
-    }
-
     @Test
     public void equalsTest() throws Exception {
         DateTime now = DateUtil.now();

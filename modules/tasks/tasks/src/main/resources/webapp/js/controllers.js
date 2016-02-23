@@ -111,21 +111,31 @@
                 .success(dummyHandler)
                 .error(function (response) {
                     item.task.enabled = !enabled;
-                    jAlert($scope.util.createErrorMessage($scope, response, false), $scope.msg('task.error.actionNotChangeTitle'));
+                    BootstrapDialog.alert({
+                        type: BootstrapDialog.TYPE_DANGER,
+                        title: $scope.msg('task.error.actionNotChangeTitle'),
+                        message: $scope.util.createErrorMessage($scope, response, false)
+                    });
                 });
         };
 
         $scope.deleteTask = function (item) {
-            jConfirm(jQuery.i18n.prop('task.confirm.remove'), jQuery.i18n.prop("task.header.confirm"), function (val) {
-                if (val) {
-                    blockUI();
-
-                    item.task.$remove(function () {
-                        $scope.allTasks.removeObject(item);
-                        $rootScope.search();
-                        $('#inner-center').trigger("change");
-                        unblockUI();
-                    }, alertHandler('task.error.removed', 'task.header.error'));
+            BootstrapDialog.confirm({
+                title: $scope.msg('task.header.confirm'),
+                message: $scope.msg('task.confirm.remove'),
+                type: BootstrapDialog.TYPE_WARNING,
+                callback: function(result) {
+                    if (result) {
+                        blockUI();
+                        item.task.$remove(function () {
+                            $scope.allTasks.removeObject(item);
+                            $rootScope.search();
+                            $('#inner-center').trigger("change");
+                            unblockUI();
+                        },
+                            alertHandler('task.error.removed', 'task.header.error')
+                        );
+                    }
                 }
             });
         };
@@ -272,7 +282,7 @@
 
     });
 
-    controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, $q, $timeout, $routeParams, $http, $compile, $filter) {
+    controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers, $q, $timeout, $routeParams, $http, $compile, $filter) {
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
         $scope.selectedAction = [];
@@ -282,6 +292,79 @@
             }
         };
         $scope.task.retryTaskOnFailure = false;
+
+        $scope.openTriggersModal = function(channel) {
+            blockUI();
+            $scope.staticTriggersPager = 1;
+            $scope.dynamicTriggersPager = 1;
+            $scope.selectedChannel = channel;
+            Triggers.get(
+                {
+                    moduleName: channel.moduleName,
+                    staticTriggersPage: $scope.staticTriggersPager,
+                    dynamicTriggersPage: $scope.dynamicTriggersPager
+                },
+                function(data) {
+                    $scope.dynamicTriggers = data.dynamicTriggersList;
+                    $scope.staticTriggers = data.staticTriggersList;
+                    $scope.staticTriggersPage = $scope.staticTriggers.page;
+                    $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
+                    $("#staticTriggersPager").val($scope.staticTriggersPage);
+                    $("#dynamicTriggersPager").val($scope.dynamicTriggersPage);
+                    $scope.hasDynamicTriggers = $scope.dynamicTriggers.triggers.length > 0;
+                    $scope.hasStaticTriggers = $scope.staticTriggers.triggers.length > 0;
+                    if ($scope.hasStaticTriggers && $scope.hasDynamicTriggers) {
+                        $scope.divSize = "col-md-6";
+                    } else {
+                        $scope.divSize = "col-md-12";
+                    }
+                    $('#triggersModal').modal('show');
+                    unblockUI();
+                }
+            );
+        };
+
+        $scope.validatePages = function(staticTriggersPage, dynamicTriggersPage){
+            var valid = true;
+
+            if ($scope.hasStaticTriggers) {
+                if (staticTriggersPage === null ||
+                    staticTriggersPage === undefined) {
+                    valid = false;
+                }
+            }
+
+            if ($scope.hasDynamicTriggers) {
+                if (dynamicTriggersPage === null ||
+                    dynamicTriggersPage === undefined) {
+                    valid = false;
+                }
+            }
+
+            return valid;
+        };
+
+        $scope.reloadLists = function(staticTriggersPage, dynamicTriggersPage) {
+            if ($scope.validatePages(staticTriggersPage, dynamicTriggersPage)) {
+                blockUI();
+                Triggers.get(
+                    {
+                        moduleName: $scope.selectedChannel.moduleName,
+                        staticTriggersPage: staticTriggersPage,
+                        dynamicTriggersPage: dynamicTriggersPage
+                    },
+                    function(data) {
+                        $scope.dynamicTriggers = data.dynamicTriggersList;
+                        $scope.staticTriggers = data.staticTriggersList;
+                        $scope.staticTriggersPage = $scope.staticTriggers.page;
+                        $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
+                        $("#staticTriggersPager").val($scope.staticTriggersPage);
+                        $("#dynamicTriggersPager").val($scope.dynamicTriggersPage);
+                        unblockUI();
+                    }
+                );
+            }
+        };
 
         innerLayout({
             spacing_closed: 30,
@@ -442,10 +525,12 @@
                     if (val) {
                         $scope.util.trigger.remove($scope);
                         $scope.util.trigger.select($scope, channel, trigger);
+                        $('#triggersModal').modal('hide');
                     }
                 });
             } else {
                 $scope.util.trigger.select($scope, channel, trigger);
+                $('#triggersModal').modal('hide');
             }
         };
 
@@ -1099,13 +1184,17 @@
                     if (errors.length > 0) {
                         alertMessage = $scope.util.createErrorMessage($scope, errors, true);
                     }
+                    BootstrapDialog.alert({
+                        type: BootstrapDialog.TYPE_SUCCESS,
+                        title: $scope.msg('task.header.saved'),
+                        message: alertMessage,
+                        callback: function () {
+                            unblockUI();
+                            loc = window.location.toString();
+                            indexOf = loc.indexOf('#');
 
-                    jAlert(alertMessage, $scope.msg('task.header.saved'), function () {
-                        unblockUI();
-                        loc = window.location.toString();
-                        indexOf = loc.indexOf('#');
-
-                        window.location = "{0}#/tasks/dashboard".format(loc.substring(0, indexOf));
+                            window.location = "{0}#/tasks/dashboard".format(loc.substring(0, indexOf));
+                        }
                     });
                 },
                 error = function (response) {
@@ -1126,7 +1215,10 @@
                     delete $scope.task.enabled;
 
                     unblockUI();
-                    jAlert($scope.util.createErrorMessage($scope, data, false), $scope.msg('task.header.error'));
+                    BootstrapDialog.alert({
+                        type: BootstrapDialog.TYPE_DANGER,
+                        message: $scope.util.createErrorMessage($scope, data, false)
+                    });
                 };
 
             $scope.task.enabled = enabled;

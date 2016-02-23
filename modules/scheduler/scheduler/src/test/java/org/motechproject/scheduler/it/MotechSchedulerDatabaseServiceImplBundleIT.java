@@ -2,7 +2,6 @@ package org.motechproject.scheduler.it;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDate;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -442,8 +441,8 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
         schedulerService.scheduleDayOfWeekJob(
                 new DayOfWeekSchedulableJob(
                         new MotechEvent("test_event_1", params),
-                        new LocalDate(CURRENT_YEAR - 1, 3, 10),
-                        new LocalDate(CURRENT_YEAR + 2, 3, 22),
+                        new DateTime(CURRENT_YEAR - 1, 3, 10, 0, 0),
+                        new DateTime(CURRENT_YEAR + 2, 3, 22, 0, 0),
                         Arrays.asList(DayOfWeek.Monday, DayOfWeek.Thursday),
                         new Time(10, 10),
                         false)
@@ -453,8 +452,8 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
         schedulerService.scheduleDayOfWeekJob(
                 new DayOfWeekSchedulableJob(
                         new MotechEvent("test_event_2", params),
-                        new LocalDate(CURRENT_YEAR + 1, 7, 10),
-                        new LocalDate(CURRENT_YEAR + 3, 7, 22),
+                        new DateTime(CURRENT_YEAR + 1, 7, 10, 0, 0),
+                        new DateTime(CURRENT_YEAR + 3, 7, 22, 0, 0),
                         Arrays.asList(DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday),
                         new Time(10, 10),
                         false)
@@ -464,8 +463,8 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
         schedulerService.scheduleDayOfWeekJob(
                 new DayOfWeekSchedulableJob(
                         new MotechEvent("test_event_3", params),
-                        new LocalDate(CURRENT_YEAR + 4, 7, 10),
-                        new LocalDate(CURRENT_YEAR + 5, 7, 22),
+                        new DateTime(CURRENT_YEAR + 4, 7, 10, 0, 0),
+                        new DateTime(CURRENT_YEAR + 5, 7, 22, 0, 0),
                         Arrays.asList(DayOfWeek.Monday, DayOfWeek.Thursday),
                         new Time(10, 10),
                         false)

@@ -84,7 +84,7 @@
                     var array = [];
 
                     angular.forEach(channels, function (channel) {
-                        if (channel.triggerTaskEvents && channel.triggerTaskEvents.length) {
+                        if (channel.providesTriggers) {
                             array.push(channel);
                         }
                     });
@@ -386,7 +386,10 @@
                     });
 
                     if (ds === undefined) {
-                        jAlert('Data source cannot be resolved', 'Error');
+                        BootstrapDialog.alert({
+                            type: BootstrapDialog.TYPE_DANGER,
+                            message: 'Data source cannot be resolved'
+                        });
                     }
 
                     replaced.push({

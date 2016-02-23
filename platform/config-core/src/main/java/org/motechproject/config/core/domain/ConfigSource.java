@@ -2,7 +2,7 @@ package org.motechproject.config.core.domain;
 
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 
 /**
  * Represents the source from which MOTECH configuration should be read.
@@ -21,7 +21,7 @@ public final class ConfigSource {
      * If name isn't one of above MotechConfigurationException will be thrown.
      *
      * @param name  the name of the configuration source, null and blank String treated as "UI"
-     * @throws org.motechproject.config.core.MotechConfigurationException when name is neither "FILE" nor "UI"
+     * @throws MotechConfigurationException when name is neither "FILE" nor "UI"
      * @return proper instance of {@code ConfigSource}
      */
     public static ConfigSource valueOf(String name) {
