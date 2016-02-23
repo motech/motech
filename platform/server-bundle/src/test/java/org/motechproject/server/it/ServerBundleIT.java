@@ -4,7 +4,7 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.osgi.web.ModuleRegistrationData;
-import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.osgi.web.service.UIFrameworkService;
 import org.motechproject.server.web.helper.SuggestionHelper;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;

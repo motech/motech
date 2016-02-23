@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.internal.matchers.Contains;
-import org.motechproject.osgi.web.LocaleService;
+import org.motechproject.osgi.web.service.LocaleService;
 import org.motechproject.security.config.SettingService;
 import org.motechproject.security.ex.PasswordTooShortException;
 import org.motechproject.security.ex.PasswordValidatorException;

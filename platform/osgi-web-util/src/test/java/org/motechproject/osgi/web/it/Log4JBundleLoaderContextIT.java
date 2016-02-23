@@ -3,7 +3,7 @@ package org.motechproject.osgi.web.it;
 import org.apache.log4j.LogManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.osgi.web.Log4JBundleLoader;
+import org.motechproject.osgi.web.bundle.Log4JBundleLoader;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;

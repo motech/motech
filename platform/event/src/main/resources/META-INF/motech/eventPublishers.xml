@@ -10,8 +10,8 @@
             http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
 
 
-    <bean id="eventTransformer" class="org.motechproject.event.messaging.MotechEventTransformer"/>
-    <bean id="eventHeaderMapper" class="org.motechproject.event.messaging.MotechEventHeaderMapper"/>
+    <bean id="eventTransformer" class="org.motechproject.event.messaging.impl.MotechEventTransformer"/>
+    <bean id="eventHeaderMapper" class="org.motechproject.event.messaging.impl.MotechEventHeaderMapper"/>
 
     <int:gateway id="outboundEventGateway"
                  service-interface="org.motechproject.event.messaging.OutboundEventGateway">

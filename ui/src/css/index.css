@@ -2128,3 +2128,10 @@ body {
     width: 45px;
     font-size: 18px;
 }
+
+.ui-priority-secondary,
+.ui-widget-content .ui-priority-secondary,
+.ui-widget-header .ui-priority-secondary {
+    opacity: 1 !important;
+    font-weight: bold !important;
+}

@@ -41,7 +41,6 @@
 <script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery-cron/jquery-cron.js"></script>
 <script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery-cron/jquery-gentleSelect.js"></script>
 <script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery/jquery-ui.js"></script>
-<script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery/jquery.alerts.js"></script>
 <script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery/jquery.blockUI.js"></script>
 <script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery/jquery.caret.js"></script>
 <script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery/jquery.form.js"></script>

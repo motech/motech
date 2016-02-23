@@ -341,11 +341,16 @@
         };
 
         $scope.discard = function (entityId) {
-            motechConfirm('mds.wip.info.discard', 'mds.warning', function (val) {
-                if (val) {
-                    Entities.abandon({id: entityId}, function () {
-                        workInProgress.setList(Entities);
-                    });
+            BootstrapDialog.confirm({
+                title: $scope.msg('mds.warning'),
+                message: $scope.msg('mds.wip.info.discard'),
+                type: BootstrapDialog.TYPE_WARNING,
+                callback: function(result) {
+                    if (result) {
+                        Entities.abandon({id: entityId}, function () {
+                            workInProgress.setList(Entities);
+                        });
+                    }
                 }
             });
         };
@@ -1613,33 +1618,37 @@
         * @param {object} field The field which should be removed.
         */
         $scope.removeField = function (field) {
-            motechConfirm('mds.warning.removeField', 'mds.warning', function (val) {
-                if (val) {
-                    $scope.draft({
-                        remove: true,
-                        values: {
-                            fieldId: field.id
-                        }
-                    }, function() {
-                         $scope.safeApply(function () {
-                            var filterableIndex;
-                            $scope.fields.removeObject(field);
-
-                            if ($scope.findFieldInArrayByName(field.basic.name, $scope.restAvailableFields)) {
-                                $scope.restAvailableFields.removeObject(field);
-                            } else {
-                                $scope.restExposedFields.removeObject(field);
+            BootstrapDialog.confirm({
+                message: $scope.msg('mds.warning.removeField'),
+                type: BootstrapDialog.TYPE_WARNING,
+                callback: function(result) {
+                    if (result) {
+                        $scope.draft({
+                            remove: true,
+                            values: {
+                                fieldId: field.id
                             }
+                        }, function() {
+                             $scope.safeApply(function () {
+                                var filterableIndex;
+                                $scope.fields.removeObject(field);
 
-                            filterableIndex = $scope.advancedSettings.browsing.filterableFields.indexOf(field.id);
-                            if(filterableIndex >= 0) {
-                                $scope.advancedSettings.browsing.filterableFields.splice(filterableIndex, 1);
-                            }
+                                if ($scope.findFieldInArrayByName(field.basic.name, $scope.restAvailableFields)) {
+                                    $scope.restAvailableFields.removeObject(field);
+                                } else {
+                                    $scope.restExposedFields.removeObject(field);
+                                }
 
-                            setBrowsing();
-                            setRest();
+                                filterableIndex = $scope.advancedSettings.browsing.filterableFields.indexOf(field.id);
+                                if(filterableIndex >= 0) {
+                                    $scope.advancedSettings.browsing.filterableFields.splice(filterableIndex, 1);
+                                }
+
+                                setBrowsing();
+                                setRest();
+                            });
                         });
-                    });
+                    }
                 }
             });
         };
@@ -3524,16 +3533,20 @@
         };
 
         $scope.editInstanceOfEntity = function(instanceId, entityClassName) {
-            motechConfirm('mds.confirm.disabledInstanceChanges', 'mds.confirm', function (val) {
-                if (val) {
-                    $scope.previouslyEdited = {
-                        instanceId: $scope.selectedInstance,
-                        entityClassName: $scope.selectedEntity.className,
-                        previouslyEdited: $scope.previouslyEdited
-                    };
-                    $scope.selectEntityByClassName(entityClassName, function() {
-                        $scope.editInstance(instanceId);
-                    });
+            BootstrapDialog.confirm({
+                title: $scope.msg('mds.confirm'),
+                message: $scope.msg('mds.confirm.disabledInstanceChanges'),
+                callback: function(result) {
+                    if (result) {
+                        $scope.previouslyEdited = {
+                            instanceId: $scope.selectedInstance,
+                            entityClassName: $scope.selectedEntity.className,
+                            previouslyEdited: $scope.previouslyEdited
+                        };
+                        $scope.selectEntityByClassName(entityClassName, function() {
+                            $scope.editInstance(instanceId);
+                        });
+                    }
                 }
             });
         };

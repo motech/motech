@@ -142,7 +142,7 @@
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
                                 $, jQuery, angular, angularHandler, jFormErrorHandler,
-                                dummyHandler, jConfirm, alertHandler, window, alertHandlerWithCallback, module,
+                                dummyHandler, alertHandler, window, alertHandlerWithCallback, module,
                                 blockUI, unblockUI, motechAlert, handleWithStackTrace, restartBundleHandler, parseUri,
                                 defaultLayout, innerLayout, moment
                             </predefinedVars>

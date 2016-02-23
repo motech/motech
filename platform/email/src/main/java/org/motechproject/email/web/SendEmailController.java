@@ -1,7 +1,7 @@
 package org.motechproject.email.web;
 
 import org.motechproject.email.constants.EmailRolesConstants;
-import org.motechproject.email.contract.Mail;
+import org.motechproject.email.domain.Mail;
 import org.motechproject.email.exception.EmailSendException;
 import org.motechproject.email.service.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +38,9 @@ public class SendEmailController {
     @RequestMapping(value = "/send", method = RequestMethod.POST)
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseStatus(HttpStatus.OK)
-    public void sendEmail(@RequestBody Mail mail) throws EmailSendException {
-        senderService.send(mail);
+
+    public void sendEmail(@RequestBody Mail email) throws EmailSendException {
+        senderService.send(email.getFromAddress(), email.getToAddress(), email.getSubject(), email.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

@@ -6,7 +6,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.motechproject.osgi.web.ext.ApplicationEnvironment;
+import org.motechproject.osgi.web.extension.ApplicationEnvironment;
 
 /**
  * This class sets and updates the path used for static resources in JSP views

@@ -4,7 +4,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.filters.ConfigFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +28,10 @@ public class ConfigLocation {
 
     private String configLocation;
 
+    /**
+     * Creates a config location instance.
+     * @param configLocation the path to the config location
+     */
     public ConfigLocation(String configLocation) {
         this.configLocation = configLocation;
 
@@ -53,11 +57,18 @@ public class ConfigLocation {
         }
     }
 
+    /**
+     * @return the location path
+     */
     public String getLocation() {
         return configLocation;
     }
 
-    UrlResource getUrlResource() throws MalformedURLException {
+    /**
+     * @return {@link UrlResource} instance representing this config location
+     * @throws MalformedURLException if the location is not a valid url
+     */
+    public UrlResource getUrlResource() throws MalformedURLException {
         return new UrlResource(String.format("file:%s", configLocation));
     }
 
@@ -65,14 +76,14 @@ public class ConfigLocation {
      * <p>
      * This method Returns the {@link java.io.File} object for the given file name relative to the config location.
      * It also checks for the requested file accessibility. If the requested access type check is
-     * {@link ConfigLocation.FileAccessType.READABLE}, the file's existence and readability will be checked.
-     * Similarly, if the requested access type check is {@link ConfigLocation.FileAccessType.WRITABLE}, then the
+     * {@link org.motechproject.config.core.domain.ConfigLocation.FileAccessType#READABLE}, the file's existence and readability will be checked.
+     * Similarly, if the requested access type check is {@link ConfigLocation.FileAccessType#WRITABLE}, then the
      * write accessibility to the file will be checked. If the file does not exists, write accessibility of its
      * ancestors will be checked.
      * </p>
      *
      * @param fileName   Name of the file to be added to the config location.
-     * @param accessType One of {@link ConfigLocation.FileAccessType.READABLE} or {@link ConfigLocation.FileAccessType.WRITABLE}.
+     * @param accessType One of {@link ConfigLocation.FileAccessType#READABLE} or {@link ConfigLocation.FileAccessType#WRITABLE}.
      * @return File relative to the config location.
      * @throws MotechConfigurationException if the file is not readable or writable depending on the given access type.
      */
@@ -120,7 +131,7 @@ public class ConfigLocation {
     /**
      * Defines the access check required.
      */
-    public static enum FileAccessType {
+    public enum FileAccessType {
         READABLE {
             @Override
             boolean isAccessible(Resource resource) {

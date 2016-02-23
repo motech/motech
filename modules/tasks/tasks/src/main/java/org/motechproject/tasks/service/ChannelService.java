@@ -74,4 +74,12 @@ public interface ChannelService {
      * @throws IOException  when there were problems while fetching the icon
      */
     BundleIcon getChannelIcon(String moduleName) throws IOException;
+
+    /**
+     * Checks whether the given module provides a task channel.
+     *
+     * @param moduleName  the name of the module
+     * @return true if the module provides the task channel, false otherwise
+     */
+    boolean channelExists(String moduleName);
 }

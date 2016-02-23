@@ -1,6 +1,6 @@
 package org.motechproject.security.osgi;
 
-import org.motechproject.osgi.web.ApplicationContextTracker;
+import org.motechproject.osgi.web.tracker.ApplicationContextTracker;
 import org.motechproject.security.annotations.SecurityAnnotationBeanPostProcessor;
 import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechRoleService;

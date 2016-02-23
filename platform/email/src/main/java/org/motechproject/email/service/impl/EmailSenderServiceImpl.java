@@ -1,6 +1,6 @@
 package org.motechproject.email.service.impl;
 
-import org.motechproject.email.contract.Mail;
+import org.motechproject.email.domain.Mail;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
 import org.motechproject.email.exception.EmailSendException;
@@ -45,7 +45,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
     @Override
     @Transactional
-    public void send(final Mail mail) throws EmailSendException {
+    public void send(String fromAddress, String toAddress, String subject, String message) throws EmailSendException {
+        Mail mail = new Mail(fromAddress, toAddress, subject, message);
         LOGGER.info(String.format("Sending message [%s] from [%s] to [%s] with subject [%s].",
                 mail.getMessage(), mail.getFromAddress(), mail.getToAddress(), mail.getSubject()));
         try {

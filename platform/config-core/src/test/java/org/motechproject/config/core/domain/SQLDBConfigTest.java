@@ -1,7 +1,7 @@
 package org.motechproject.config.core.domain;
 
 import org.junit.Test;
-import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 
 public class SQLDBConfigTest {
 
