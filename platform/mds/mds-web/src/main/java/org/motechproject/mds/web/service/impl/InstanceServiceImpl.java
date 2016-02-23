@@ -774,11 +774,11 @@ public class InstanceServiceImpl implements InstanceService {
 
     private Object parseRelationshipValue(MotechDataService service, Class<?> argumentType, RelationshipsUpdate relationshipsUpdate, List<FieldDto> entityFields)
             throws IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException, CannotCompileException, NoSuchFieldException {
-        Object parsedValue;
+        Object parsedValue = null;
 
         if (!relationshipsUpdate.getAddedIds().isEmpty()) {
             parsedValue = findRelatedObjectById(relationshipsUpdate.getAddedIds().get(0), service);
-        } else {
+        } else if (!relationshipsUpdate.getAddedNewRecords().isEmpty()) {
             parsedValue = newInstanceFromEntityRecord(argumentType, entityFields, relationshipsUpdate.getAddedNewRecords().get(0).getFields(), service);
         }
 

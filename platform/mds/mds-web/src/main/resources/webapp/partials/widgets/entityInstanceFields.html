@@ -1,5 +1,5 @@
-<form name="instanceFieldsForm" class="form-horizontal inside" ng-init="getHistory()">
-    <div class="form-group" ng-repeat="field in fields" ng-class="{ 'has-error' : {{field.name}}.$invalid && {{field.name}}.$dirty}"
+<form name="instanceFieldsForm" class="form-horizontal inside" novalidate>
+    <div class="form-group" ng-repeat="field in fields track by $index" ng-class="{ 'has-error' : {{field.name}}.$invalid && {{field.name}}.$dirty}"
          ng-if="shouldShowInputForField(field)">
         <label class="col-md-2 col-sm-3 control-label">
             {{field.displayName}}
@@ -10,19 +10,12 @@
         </label>
         <div class="col-md-10 col-sm-9 form-inline">
             <ng-form name="{{field.name}}">
-                <div ng-include="loadEditValueForm(field)"></div>
-                <span class="form-hint form-hint-bottom" ng-if="getTypeSingleClassName(field.type) !== 'map'" ng-show="{{field.name}}.$error.required && !{{field.name}}.$pristine">{{msg('mds.error.requiredField')}}</span>
+                <div template-form nested-field="false" ng-model="field"></div>
+                <span class="form-hint form-hint-bottom" ng-if="!isMapField(field)" ng-show="{{field.name}}.$error.required && !{{field.name}}.$pristine">{{msg('mds.error.requiredField')}}</span>
                 <div class="clearfix"></div>
             </ng-form>
-            <div class="margin-before" ng-if="getTypeSingleClassName(field.type) === 'combobox' && field.settings[1].value" ng-hide="shouldHideEdition(field)">
-                <ng-form name="entityOptionNewValue{{field.id}}">
-                    <a class="btn btn-default btn-sm" show-add-option-input><span class="fa fa-fw fa-plus"></span>&nbsp;{{msg('mds.form.label.addOption')}}</a>
-                    <span id="showAddOptionInput{{field.id}}" class="hidden combobox" ng-class="{ 'has-error' : entityOptionNewValue{{field.id}}.$invalid }">
-                       <input id="entityOptionNewValue{{field.id}}" add-option-combobox class="form-control input-auto input-sm no-error" ng-model="newOptionValue">
-                       <a id="saveoption{{field.id}}" ng-readonly="entityOptionNewValue{{field.id}}.$error.uniqueValue || entityOptionNewValue{{field.id}}.$pristine" class="btn btn-default btn-sm" ng-click="field">{{msg('mds.btn.save')}}</a>
-                       <span class="form-hint" ng-show="entityOptionNewValue{{field.id}}.$error.uniqueValue && !entityOptionNewValue{{field.id}}.$pristine">{{msg('mds.error.noUniqueValue')}}</span>
-                    </span>
-                </ng-form>
+            <div class="margin-before" ng-if="isComboboxField(field) && field.settings[1].value" ng-hide="shouldHideEdition(field)">
+                <div ng-include="'../mds/resources/partials/widgets/addComboboxValue.html'"></div>
             </div>
         </div>
     </div>

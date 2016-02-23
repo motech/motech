@@ -38,6 +38,13 @@
             }
             return val;
         },
+        idFormatter = function (cellValue, options, rowObject) {
+            var val = cellValue;
+            if (cellValue !== undefined && !isNaN(cellValue) && parseInt(cellValue, 10) < 0) {
+                val = '';
+            }
+            return val;
+        },
         stringEscapeFormatter = function (cellValue, options, rowObject) {
             var val = '';
                 val = _.escape(cellValue);
@@ -106,7 +113,7 @@
         var intervalWidthResize, tableWidth;
         clearInterval(intervalWidthResize);
         intervalWidthResize = setInterval( function () {
-            tableWidth = $('.overrideJqgridTable').width();
+            tableWidth = $('#' + gridId).parent().width();
             $('#' + gridId).jqGrid("setGridWidth", tableWidth);
             clearInterval(intervalWidthResize);
         }, 200);
@@ -219,6 +226,10 @@
                     // append a formatter for relationships
                     cmd.formatter = relationshipFormatter;
                     cmd.sortable = false;
+                }
+
+                if (field.basic.name === 'id') {
+                    cmd.formatter = idFormatter;
                 }
 
                 if (scope.isTextArea(field.settings)) {
@@ -1381,13 +1392,13 @@
                                 if ($('#instancesTable').getGridParam('records') > 0) {
                                     $('#pageInstancesTable_center').show();
                                     $('#entityInstancesTable .ui-jqgrid-hdiv').show();
-                                    $('.jqgfirstrow').css('height','0');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','0');
                                 } else {
                                     if (noSelectedFields) {
                                         $('#pageInstancesTable_center').hide();
                                         $('#entityInstancesTable .ui-jqgrid-hdiv').hide();
                                     }
-                                    $('.jqgfirstrow').css('height','1px');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','1px');
                                 }
                                 $('#entityInstancesTable .ui-jqgrid-hdiv').addClass("table-lightblue");
                                 $('#entityInstancesTable .ui-jqgrid-btable').addClass("table-lightblue");
@@ -1446,16 +1457,17 @@
     /**
     * Displays related instances data using jqGrid
     */
-    directives.directive('entityInstancesBrowserGrid', function ($rootScope, $route, $timeout) {
+    directives.directive('entityInstancesBrowserGrid', function ($timeout, $http) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                var elem = angular.element(element), tableWidth, gridId = attrs.id;
-
-                if (scope.relatedEntity !== undefined) {
+                var tableWidth, relatedEntityId, relatedClass, selectedEntityNested,
+                elem = angular.element(element),
+                gridId = attrs.id,
+                showGrid = function () {
                     $.ajax({
                         type: "GET",
-                        url: "../mds/entities/" + scope.relatedEntity.id + "/entityFields",
+                        url: "../mds/entities/" + relatedEntityId + "/entityFields",
                         dataType: "json",
                         success: function (result) {
                             var colMd, colModel = [], i, spanText;
@@ -1463,7 +1475,7 @@
                             buildGridColModel(colModel, result, scope, false, true);
 
                             elem.jqGrid({
-                                url: "../mds/entities/" + scope.relatedEntity.id + "/instances",
+                                url: "../mds/entities/" + relatedEntityId + "/instances",
                                 headers: {
                                     'Accept': 'application/x-www-form-urlencoded',
                                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -1482,7 +1494,11 @@
                                    order: 'sortDirection'
                                 },
                                 onSelectRow: function (id) {
-                                    scope.addRelatedInstance(id, scope.relatedEntity, scope.editedField);
+                                    if (scope.relatedMode.isNested) {
+                                        scope.addRelatedInstance(id, selectedEntityNested, scope.editedField);
+                                    } else {
+                                        scope.addRelatedInstance(id, scope.selectedEntity, scope.editedField);
+                                    }
                                 },
                                 resizeStop: function (width, index) {
                                     var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
@@ -1509,37 +1525,57 @@
                                 autowidth: true,
                                 shrinkToFit: false,
                                 gridComplete: function () {
-                                    $('#pageInstancesBrowserTable_center').addClass('page_instancesTable_center');
-                                    if ($('#browserTable').getGridParam('records') > 0) {
-                                        $('#pageInstancesBrowserTable_center').show();
-                                        $('.jqgfirstrow').css('height','0');
+                                    $('#' + attrs.entityInstancesBrowserGrid + '_center').addClass('page_instancesTable_center');
+                                    if ($('#' + gridId).getGridParam('records') > 0) {
+                                        $('#' + attrs.entityInstancesBrowserGrid + '_center').show();
+                                        $('#gbox_' + gridId + ' .jqgfirstrow').css('height','0');
                                     } else {
-                                        $('.jqgfirstrow').css('height','1px');
+                                        $('#gbox_' + gridId + ' .jqgfirstrow').css('height','1px');
                                     }
                                     tableWidth = $('#instanceBrowserTable').width();
-                                    $('#instanceBrowserTable').children().css('width','100%');
-                                    $('#instanceBrowserTable .ui-jqgrid-htable').addClass("table-lightblue");
-                                    $('#instanceBrowserTable .ui-jqgrid-btable').addClass("table-lightblue");
-                                    $('#instanceBrowserTable .ui-jqgrid-htable').width(tableWidth);
-                                    $('#instanceBrowserTable .ui-jqgrid-btable').width(tableWidth);
-                                    $('#instanceBrowserTable .ui-jqgrid-bdiv').width('100%');
-                                    $('#instanceBrowserTable .ui-jqgrid-hdiv').width('100%').show();
-                                    $('#instanceBrowserTable .ui-jqgrid-view').width('100%');
-                                    $('#instanceBrowserTable .ui-jqgrid-pager').width('100%');
+                                    $('#gbox_' + gridId).css('width','100%');
+                                    $('#gview_' + gridId).css('width','100%');
+                                    $('#gview_' + gridId + ' .ui-jqgrid-htable').addClass("table-lightblue");
+                                    $('#gview_' + gridId + ' .ui-jqgrid-btable').addClass("table-lightblue");
+                                    $('#gview_' + gridId + ' .ui-jqgrid-htable').width(tableWidth);
+                                    $('#gview_' + gridId + ' .ui-jqgrid-btable').width(tableWidth);
+                                    $('#gview_' + gridId + ' .ui-jqgrid-bdiv').width('100%');
+                                    $('#gview_' + gridId + ' .ui-jqgrid-hdiv').width('100%').show();
+                                    $('#gview_' + gridId + ' .ui-jqgrid-view').width('100%');
+                                    $('#gbox_' + gridId + ' .ui-jqgrid-pager').width('100%');
                                 }
                             });
                         }
                     });
+                };
+
+                if (scope.relatedEntity !== undefined && scope.relatedMode.isNested !== true) {
+                    relatedEntityId = scope.relatedEntity.id;
+                    showGrid();
+                } else if (scope.relatedMode.isNested) {
+                    relatedClass = scope.getRelatedClass(scope.field);
+                    if (relatedClass !== undefined && scope.relatedMode.isNested) {
+                        blockUI();
+                        $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
+                            relatedEntityId = data.id;
+                            unblockUI();
+                            showGrid();
+                            if (scope.currentRelationRecord !== undefined) {
+                                selectedEntityNested = {id: scope.currentRelationRecord.entitySchemaId};
+                            }
+                        });
+                    }
                 }
+
                 scope.$watch("instanceBrowserRefresh", function () {
-                      $('#' + attrs.id).jqGrid('setGridParam', {
-                          page: 1,
-                          postData: {
-                              fields: JSON.stringify(scope.lookupBy),
-                              lookup: (scope.selectedLookup) ? scope.selectedLookup.lookupName : "",
-                              filter: (scope.filterBy) ? JSON.stringify(scope.filterBy) : ""
-                          }
-                      }).trigger('reloadGrid');
+                    elem.jqGrid('setGridParam', {
+                        page: 1,
+                        postData: {
+                            fields: JSON.stringify(scope.lookupBy),
+                            lookup: (scope.selectedLookup) ? scope.selectedLookup.lookupName : "",
+                            filter: (scope.filterBy) ? JSON.stringify(scope.filterBy) : ""
+                        }
+                    }).trigger('reloadGrid');
                 });
                 elem.on('jqGridSortCol', function (e, fieldName) {
                     // For correct sorting in jqgrid we need to convert back to the original name
@@ -1558,14 +1594,14 @@
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                var tableWidth, isHiddenGrid, eventResize, eventChange, relatedClass, relatedEntityId, updatePostData,
+                var tableWidth, isHiddenGrid, eventResize, eventChange, relatedClass, relatedEntityId, updatePostData, postdata,
                     filter = {removedIds: [], addedIds: [], addedNewRecords: []},
                     elem = angular.element(element),
                     gridId = attrs.id,
-                    pagerGrid = attrs.entityRelationsGrid,
                     gridRecords = 0,
                     fieldId = attrs.fieldId,
-                    relationsField = attrs.relationsFieldGrid,
+                    gridHide = attrs.gridHide,
+                    pagerHide = attrs.pagerHide,
                     selectedEntityId = scope.selectedEntity.id,
                     selectedInstance = (scope.selectedInstance !== undefined && angular.isNumber(parseInt(scope.selectedInstance, 10)))? parseInt(scope.selectedInstance, 10) : undefined;
 
@@ -1582,21 +1618,29 @@
                             success: function (result) {
                                 var colModel = [], i, spanText;
 
-                                colModel.push({
-                                    name: scope.msg('mds.form.label.action').toUpperCase(),
-                                    width: 150,
-                                    align: 'center',
-                                    title:  false,
-                                    frozen: true,
-                                    hidden:  scope.field.nonEditable,
-                                    formatter: function (array, options, data) {
-                                        return "<button class='btn btn-default btn-xs btn-danger-hover removeRelatedInstance' "
-                                        + " title='" + scope.msg('mds.dataBrowsing.removeRelatedInstance')
-                                        + "'><i class='fa fa-fw fa-trash-o'></i>"
-                                        + scope.msg('mds.dataBrowsing.remove') + "</button>";
-                                    },
-                                    sortable: false
-                                });
+                                if (scope.relatedMode.isNested) {
+                                    selectedInstance = scope.editedInstanceId;
+                                    if (scope.currentRelationRecord !== undefined) {
+                                        selectedEntityId = scope.currentRelationRecord.entitySchemaId;
+                                    }
+                                } else {
+                                    colModel.push({
+                                        name: scope.msg('mds.form.label.action').toUpperCase(),
+                                        width: 150,
+                                        align: 'center',
+                                        title:  false,
+                                        frozen: true,
+                                        hidden:  scope.field.nonEditable,
+                                        formatter: function (array, options, data) {
+                                            return "<button class='btn btn-default btn-xs btn-danger-hover removeRelatedInstance' "
+                                            + " title='" + scope.msg('mds.dataBrowsing.removeRelatedInstance')
+                                            + "'><i class='fa fa-fw fa-trash-o'></i>"
+                                            + scope.msg('mds.dataBrowsing.remove') + "</button>";
+                                        },
+                                        sortable: false
+                                    });
+                                    selectedEntityId = scope.selectedEntity.id;
+                                }
 
                                 buildGridColModel(colModel, result, scope, false, true);
 
@@ -1619,14 +1663,22 @@
                                             || (e.target.tagName ==='I' && e.target.parentElement.getAttribute('class').indexOf('removeRelatedInstance') >= 0))) {
 
                                             scope.relatedData.removeNewAdded(scope.field, parseInt(id, 10));
-                                        }
+                                        } else if (!scope.field.nonEditable && e.target.tagName !=='I' && e.target.tagName !== 'BUTTON' && e.target.tagName ==='TD'
+                                           && !(e.target.children[0] !== undefined && e.target.children[0].getAttribute('class').indexOf('removeRelatedInstance') >= 0)
+                                           && scope.newRelatedFields === null && !scope.relatedMode.isNested) {
+                                            selectedInstance = parseInt(id, 10);
+                                            scope.currentRelationRecord = {entitySchemaId: relatedEntityId};
+                                            if (scope.field.type.defaultName !== "manyToManyRelationship" && scope.field.type.defaultName !== "oneToManyRelationship" && scope.field.type.defaultName !== "oneToOneRelationship" && selectedInstance > 0) {
+                                                scope.editRelatedInstanceOfEntity(scope.relatedData.getRelatedId(scope.field), undefined, scope.field);
+                                            } else if (scope.field.type.defaultName !== "manyToManyRelationship" && scope.field.type.defaultName !== "oneToManyRelationship" && selectedInstance < 0) {
+                                                scope.editRelatedInstanceOfEntity(selectedInstance, undefined, scope.field);
+                                            } else {
+                                                scope.editRelatedInstanceOfEntity(selectedInstance, relatedEntityId, scope.field);
+                                            }
+                                       }
                                     },
                                     ondblClickRow : function(id,iRow,iCol,e) {
-                                        if (!scope.field.nonEditable && e.target.tagName !=='I' && e.target.tagName !== 'BUTTON' && e.target.tagName ==='TD'
-                                            && !(e.target.children[0] !== undefined && e.target.children[0].getAttribute('class').indexOf('removeRelatedInstance') >= 0)) {
 
-                                           scope.editRelatedInstanceOfEntity(parseInt(id, 10), relatedEntityId, scope.field);
-                                        }
                                     },
                                     resizeStop: function (width, index) {
                                         var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
@@ -1645,22 +1697,28 @@
                                     loadonce: false,
                                     headertitles: true,
                                     colModel: colModel,
-                                    pager: '#' + pagerGrid,
+                                    pager: '#' + attrs.entityRelationsGrid,
                                     viewrecords: true,
                                     autowidth: true,
-                                    loadui: 'block',
+                                    loadui: 'disable',
                                     shrinkToFit: false,
                                     gridComplete: function () {
                                         $('#' + attrs.entityRelationsGrid + '_center').addClass('page_' + gridId + '_center');
                                         gridRecords = $('#' + gridId).getGridParam('records');
                                         if (gridRecords > 0) {
+                                            if (gridHide !== undefined && gridHide === "true") {
+                                                $('body #instance_' + gridId).removeClass('hiddengrid');
+                                            }
                                             $('#relationsTableTotalRecords_' + fieldId).text(gridRecords + '  ' + scope.msg('mds.field.items'));
                                             $('#' + attrs.entityRelationsGrid + '_center').show();
-                                            $(".jqgfirstrow").css("height","0");
+                                            $('#gbox_' + gridId + ' .jqgfirstrow').css("height","0");
                                         } else {
                                             $('#relationsTableTotalRecords_' + fieldId).text('0  ' + scope.msg('mds.field.items'));
                                             $('#' + attrs.entityRelationsGrid + '_center').hide();
-                                            $(".jqgfirstrow").css("height","1px");
+                                            $('#gbox_' + gridId + ' .jqgfirstrow').css("height","1px");
+                                            if (gridHide !== undefined && gridHide === "true") {
+                                                $('body #instance_' + gridId).addClass('hiddengrid');
+                                            }
                                         }
                                         $('#gview_' + gridId + ' .ui-jqgrid-hdiv').show();
                                         $('#gview_' + gridId + ' .ui-jqgrid-hdiv').addClass("table-lightblue");
@@ -1670,6 +1728,12 @@
                                         }, 250);
                                     }
                                 }).jqGrid('setFrozenColumns');
+                                if (pagerHide === "true") {
+                                    $('#' + attrs.entityRelationsGrid).addClass('hidden');
+                                }
+                                if (gridHide !== undefined && gridHide === "true") {
+                                    $('body #instance_' + gridId).addClass('hiddengrid');
+                                }
                             }
                         });
                     }).error(function (response) {
@@ -1686,41 +1750,49 @@
                     postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
                     $.extend(postdata, { filters: angular.toJson(filter) });
                     $('#' + attrs.id).jqGrid('setGridParam', { search: true, postData: postdata });
-                    $('#' + attrs.id).jqGrid().trigger("reloadGrid");
+                    $timeout(function() {
+                        $('#' + attrs.id).jqGrid().trigger("reloadGrid");
+                    }, 300);
                 };
 
                 scope.$watch('field.value.removedIds', function (newValue) {
-                    var postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+                    postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
 
                     if (postdata !== undefined) {
                         if (postdata.filters !== undefined) {
                             filter = JSON.parse(postdata.filters);
                         }
-                        filter.removedIds = newValue;
+                        if (newValue !== null) {
+                            filter.removedIds = newValue;
+                        }
                         updatePostData(filter, postdata);
                     }
                 }, true);
 
                 scope.$watch('field.value.addedIds', function (newValue) {
-                    var postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+                    postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
 
                     if (postdata !== undefined) {
                         if (postdata.filters !== undefined) {
                             filter = JSON.parse(postdata.filters);
                         }
-                        filter.addedIds = newValue;
+                        if (newValue !== null) {
+                            filter.addedIds = newValue;
+                        }
                         updatePostData(filter, postdata);
                     }
                 }, true);
 
                 scope.$watch('field.value.addedNewRecords', function (newValue) {
-                    var postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+                    postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
 
                     if (postdata !== undefined) {
                         if (postdata.filters !== undefined) {
                             filter = JSON.parse(postdata.filters);
                         }
-                        filter.addedNewRecords = newValue;
+                        if (newValue !== null) {
+                            filter.addedNewRecords = newValue;
+                        }
                         updatePostData(filter, postdata);
                     }
                 }, true);
@@ -1751,11 +1823,14 @@
             require: 'ngModel',
             replace: true,
             link: function (scope, element, attrs, ngModel) {
-                scope.$parent.$watch(attrs.ngModel, function () {
-                    scope.fields = scope.newRelatedFields;
+                scope.$parent.$watch(attrs.ngModel, function (newValue, oldValue, scope) {
+                    scope.fields = newValue;
+                    if (scope.newRelatedFields !== undefined  && scope.newRelatedFields !== null) {
+                        scope.fields = scope.newRelatedFields;
+                    }
                 });
             },
-            templateUrl: '../mds/resources/partials/widgets/entityInstanceFields.html'
+            templateUrl: '../mds/resources/partials/widgets/entityInstanceFieldsRelated.html'
         };
     });
 
@@ -1773,7 +1848,7 @@
                     }
                 });
             },
-            templateUrl:'../mds/resources/partials/widgets/entityInstanceFields.html'
+            templateUrl: '../mds/resources/partials/widgets/entityInstanceFieldsRelated.html'
         };
     });
 
@@ -1783,23 +1858,52 @@
             link: function (scope, element, attrs) {
                 var isHiddenGrid,
                 elem = angular.element(element),
-                gridId = attrs.showRelationsGrid;
+                gridId = attrs.showRelationsGrid,
+                gridHide = attrs.gridHide,
+                setHiddenGrid = function () {
+                    elem.children().removeClass('fa-angle-double-up');
+                    elem.children().addClass('fa-angle-double-down');
+                    $('#' + gridId).jqGrid('setGridState','hidden');
+                    $('body #instance_' + gridId).addClass('hiddengrid');
+                },
+                setVisibleGrid = function () {
+                    elem.children().removeClass('fa-angle-double-down');
+                    elem.children().addClass('fa-angle-double-up');
+                    $('#' + gridId).jqGrid('setGridState','visible');
+                    $('body #instance_' + gridId).removeClass('hiddengrid').delay(500).fadeIn("slow");
+                };
 
                 elem.on('click', function () {
                     isHiddenGrid = $('#' + gridId).jqGrid('getGridParam','hiddengrid');
                     $('#' + gridId).jqGrid('setGridParam', { hiddengrid: !isHiddenGrid });
                     if (isHiddenGrid) {
-                        $(this).children().removeClass('fa-angle-double-down');
-                        $(this).children().addClass('fa-angle-double-up');
-                        $('#' + gridId).jqGrid('setGridState','visible');
-                        $('#gbox_' + gridId).removeClass('hidden').delay(500).fadeIn("slow");
+                        setVisibleGrid();
                     } else {
-                        $(this).children().removeClass('fa-angle-double-up');
-                        $(this).children().addClass('fa-angle-double-down');
-                        $('#' + gridId).jqGrid('setGridState','hidden');
-                        $('#gbox_' + gridId).addClass('hidden');
+                        setHiddenGrid();
                     }
                 });
+            }
+        };
+    });
+
+    directives.directive('templateForm', function($http, $templateCache, $compile) {
+        return {
+            restrict: "A", require: 'ngModel', priority: 1000,
+            compile: function (element, attrs, transclude, ngModel) {
+                return function (scope, $element, $attr, ngModel) {
+                    function updateTemplate() {
+                        var isNestedField;
+                        if ($attr.nestedField === 'true') {isNestedField = true;} else {isNestedField = false;}
+                        $http.get(scope.loadEditValueForm(scope.getTypeSingleClassName(ngModel.$modelValue.type), ngModel.$modelValue, isNestedField), { cache: $templateCache })
+                        .success(function(response) {
+                            var contents = $element.html(response).contents();
+                            $compile(contents)(scope);
+                        });
+                    }
+                    if (ngModel.$modelValue !== undefined) {
+                        scope.$watch(ngModel.$modelValue, updateTemplate);
+                    }
+                };
             }
         };
     });
@@ -1966,13 +2070,13 @@
                                 if ($('#historyTable').getGridParam('records') > 0) {
                                     $('#pageInstanceHistoryTable_center').show();
                                     $('#instanceHistoryTable .ui-jqgrid-hdiv').show();
-                                    $('.jqgfirstrow').css('height','0');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','0');
                                 } else {
                                     if (noSelectedFields) {
                                         $('#pageInstanceHistoryTable_center').hide();
                                         $('#instanceHistoryTable .ui-jqgrid-hdiv').hide();
                                     }
-                                    $('.jqgfirstrow').css('height','1px');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','1px');
                                 }
                                 $('#instanceHistoryTable .ui-jqgrid-hdiv').addClass('table-lightblue');
                                 $('#instanceHistoryTable .ui-jqgrid-btable').addClass("table-lightblue");
@@ -2083,13 +2187,13 @@
                                 if ($('#trashTable').getGridParam('records') > 0) {
                                     $('#pageInstanceTrashTable_center').show();
                                     $('#instanceTrashTable .ui-jqgrid-hdiv').show();
-                                    $('.jqgfirstrow').css('height','0');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','0');
                                 } else {
                                     if (noSelectedFields) {
                                         $('#pageInstanceTrashTable_center').hide();
                                         $('#instanceTrashTable .ui-jqgrid-hdiv').hide();
                                     }
-                                    $('.jqgfirstrow').css('height','1px');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','1px');
                                 }
                                 $('#instanceTrashTable .ui-jqgrid-hdiv').addClass("table-lightblue");
                                 $('#instanceTrashTable .ui-jqgrid-btable').addClass("table-lightblue");
@@ -3348,14 +3452,14 @@
         };
     });
 
-    directives.directive('mdsVisitedInputs', function () {
+    directives.directive('mdsVisitedInput', function () {
         return {
             restrict: 'A',
             require: 'ngModel',
             link: function (scope, element, attrs, ctrl) {
                 var elm = angular.element(element),
                 fieldId = attrs.mdsFieldId,
-                fieldName = scope.field.name,
+                fieldName = attrs.mdsFieldName,
                 typingTimer;
 
                 elm.on('keyup', function () {
@@ -3367,7 +3471,9 @@
                     typingTimer = setTimeout( function() {
                         elm.siblings('#visited-hint-' + fieldId).removeClass('hidden');
                         scope.$apply(function () {
-                            scope[fieldName].$dirty = true;
+                            if (scope[fieldName] !== undefined) {
+                                scope[fieldName].$dirty = true;
+                            }
                         });
                     }, 1500);
                 });
@@ -3375,7 +3481,9 @@
                 elm.on("blur", function() {
                     scope.$apply(function () {
                         elm.siblings('#visited-hint-' + fieldId).removeClass('hidden');
-                        scope[fieldName].$dirty = true;
+                        if (scope[fieldName] !== undefined) {
+                            scope[fieldName].$dirty = true;
+                        }
                     });
                 });
             }

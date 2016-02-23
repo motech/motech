@@ -1,4 +1,4 @@
-<div class="relation-field" ng-init="relatedData.initValue(field)">
+<div class="relation-field" id="relation-field_{{field.id}}" ng-init="relatedData.initValue(field)">
     <div class="btn-toolbar" role="toolbar">
         <div class="btn-group">
             <span class="col-sm-1 form-control input-sm input-records" id="relationsTableTotalRecords_{{field.id}}">0</span>
@@ -11,11 +11,14 @@
             </button>
         </div>
         <div class="btn-group">
-            <button ng-click="addNewRelatedInstance(field)" type="button" class="btn btn-sm btn-default" ng-disabled="field.nonEditable"  ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
+            <button ng-click="addNewRelatedInstance(field)" type="button" class="btn btn-sm btn-default"
+                    ng-disabled="field.nonEditable || (newRelatedFields !== null && isRelationshipField(field))"
+                    ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
                 <i class="fa fa-lg fa-plus"></i> {{msg('mds.btn.addNew')}} {{field.displayName}}
             </button>
-            <button class="btn btn-sm btn-default" target="_self" href="#instanceBrowserModal" data-toggle="modal"
-                    data-backdrop="static" ng-click="setRelatedEntity(field)" ng-disabled="field.nonEditable"  ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance"
+            <button class="btn btn-sm btn-default" target="_self" href="#instanceBrowserModal_{{field.id}}" data-toggle="modal"
+                    data-backdrop="static" ng-click="setRelatedEntity(field)" ng-disabled="field.nonEditable"
+                    ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance"
                     ui-validate="{relationshipValidation: 'validateRelationshipPresence(field)'}" ui-validate-watch="'field.value.length'" ng-model="field.value">
                 <i class="fa fa-lg fa-plus"></i>
                 {{msg('mds.btn.addExisting')}} {{field.displayName}}
@@ -23,7 +26,7 @@
         </div>
     </div>
     <div id="instance_relationsTable_{{field.id}}" class="overrideJqgridTable margin-before">
-        <table id="relationsTable_{{field.id}}" field-id="{{field.id}}"  entity-relations-grid="pageRelationsTable_{{field.id}}"></table>
+        <table id="relationsTable_{{field.id}}" field-id="{{field.id}}" entity-relations-grid="pageRelationsTable_{{field.id}}"></table>
         <div id="pageRelationsTable_{{field.id}}"></div>
     </div>
     <div class="clearfix"></div>

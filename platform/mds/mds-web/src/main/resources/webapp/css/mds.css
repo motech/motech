@@ -23,6 +23,11 @@
     padding: 20px 15px;
 }
 
+.mds .hiddengrid {
+    visibility: hidden;
+    position: absolute;
+}
+
 .mds.alert {
     margin-bottom: 10px;
 }
