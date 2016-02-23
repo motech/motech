@@ -7,21 +7,19 @@ This is a description of building process for DEB packages on Ubuntu
 Requirements
 ============
 
-* Apache Tomcat 7.0 or greater, can be installed with apt-get command
+* for Apache Tomcat, Java 8 and Apache Maven you can view ` <http://docs.motechproject.org/en/latest/development/dev_setup/dev_install.html>`_.
+
+* Lintian, can be installed with apt-get command
 
 .. code-block:: bash
 
-    sudo apt-get install tomcat7
+    sudo apt-get install lintian
 
-* Java 1.8 or greater, can be installed with apt-get command
+* Build Essentials, can be installed with apt-get command
 
 .. code-block:: bash
 
-    sudo add-apt-repository ppa:webupd8team/java
-    sudo apt-get update
-    sudo apt-get install oracle-java8-installer
-
-* Apache Maven 3 (needed only for building package)
+    sudo apt-get install build-essential
 
 Building process
 ================
@@ -34,7 +32,7 @@ Building process
 
     mvn clean install -PDEB
 
-4) in the folder "./target/" should appear 2 files
+4) in the folder "./target/" 2 files should appear
 
 - "motech_(release number)-SNAPSHOT.deb"
 - "motech-base_(release number)-SNAPSHOT.deb"
@@ -46,7 +44,7 @@ Before installation be sure that all Tomcat processes are stopped
 
 Firstly you have to install "motech-base" package, then "motech".
 
-You can install Motech from DEB packages in 2 ways:
+You can install DEB packages in 2 ways:
 - from terminal using "dpkg" command
 
 .. code-block:: bash
@@ -56,7 +54,7 @@ You can install Motech from DEB packages in 2 ways:
 where FILE_NAME is name of package with .deb extension you want to install
 
 - from folder explorer by mouse double click on .deb file you want to install,
-    then in the Ubuntu Software Centre window click on the "install" button
+    then in the Ubuntu Software Center window click on the "install" button
 
 .. image:: deb-install.png
     :scale: 50%
