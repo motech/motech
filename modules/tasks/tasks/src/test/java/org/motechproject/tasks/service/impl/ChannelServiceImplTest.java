@@ -10,7 +10,7 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.domain.ActionEventBuilder;
-import org.motechproject.tasks.contract.TestActionEventRequestBuilder;
+import org.motechproject.tasks.contract.builder.TestActionEventRequestBuilder;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
