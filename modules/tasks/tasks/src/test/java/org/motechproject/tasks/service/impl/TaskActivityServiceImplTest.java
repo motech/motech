@@ -9,7 +9,7 @@ import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
-import org.motechproject.tasks.ex.TaskHandlerException;
+import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.repository.TaskActivitiesDataService;
 import org.motechproject.tasks.service.TaskActivityService;
 

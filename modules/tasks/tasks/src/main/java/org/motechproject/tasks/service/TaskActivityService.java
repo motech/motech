@@ -4,7 +4,7 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
-import org.motechproject.tasks.ex.TaskHandlerException;
+import org.motechproject.tasks.exception.TaskHandlerException;
 
 import java.util.List;
 import java.util.Map;

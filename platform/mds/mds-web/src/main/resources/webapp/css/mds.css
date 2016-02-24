@@ -83,7 +83,7 @@
     background: -o-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
     background: -ms-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
     background: linear-gradient(to bottom,  #D9EDF7 0%, #B9DEF0 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D9EDF7', endColorstr='#B9DEF0',GradientType=0 );
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFD9EDF7', endColorstr='#FFB9DEF0',GradientType=0 );
 }
 
 .mds .table-lightblue.table-bordered th, .mds .table-lightblue.table-bordered td, .mds .table.table-bordered > tbody + tbody {
@@ -163,7 +163,7 @@
     background: -o-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
     background: -ms-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
     background: linear-gradient(to bottom,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3b679e', endColorstr='#7db9e8',GradientType=0 );
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff3b679e', endColorstr='#ff7db9e8',GradientType=0 );
     color:#ffffff;
 }
 
@@ -184,7 +184,7 @@
     background: -o-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
     background: -ms-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
     background: linear-gradient(to bottom,  #D9EDF7 0%, #B9DEF0 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D9EDF7', endColorstr='#B9DEF0',GradientType=0 );
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFD9EDF7', endColorstr='#FFB9DEF0',GradientType=0 );
 }
 
 .module-header a, .module-header a:hover, .module-header  a:link, .module-header a:active {
@@ -352,7 +352,7 @@
 }
 
 .mds .popover .popover-content {
-    color: #333;
+    color: #333333;
 }
 
 .mds .has-error .combobox .form-control.no-error {
@@ -374,13 +374,13 @@
 
 .mds .has-error .multiselect-container.dropdown-menu .radio,
 .mds .has-error .multiselect-container.dropdown-menu .checkbox {
-    color: #333;
+    color: #333333;
 }
 
 .mds .multiselect-container.dropdown-menu > .active > a .radio,
 .mds .has-error .multiselect-container.dropdown-menu > .active > a:hover .radio,
 .mds .has-error .multiselect-container.dropdown-menu > .active > a:focus .radio {
-    color: #fff;
+    color: #ffffff;
 }
 
 .mds .multiselect-container.dropdown-menu > li > a:hover label,
@@ -434,7 +434,7 @@
 }
 
 .mds .pattern-regexp-list  li {
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #cccccc;
 }
 
 .mds .reset-combobox-alert {

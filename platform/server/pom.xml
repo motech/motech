@@ -292,24 +292,6 @@
                 <inherited>false</inherited>
                 <executions>
                     <execution>
-                        <id>clean-bundles</id>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                        <phase>initialize</phase>
-                        <configuration>
-                            <filesets>
-                                <fileset>
-                                    <directory>${user.home}/.motech/bundles</directory>
-                                    <includes>
-                                        <include>**/*.jar</include>
-                                    </includes>
-                                    <followSymlinks>false</followSymlinks>
-                                </fileset>
-                            </filesets>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>clean-config</id>
                         <goals>
                             <goal>clean</goal>

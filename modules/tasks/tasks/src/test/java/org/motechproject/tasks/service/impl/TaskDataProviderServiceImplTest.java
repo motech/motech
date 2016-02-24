@@ -13,7 +13,7 @@ import org.motechproject.tasks.domain.FieldParameter;
 import org.motechproject.tasks.domain.LookupFieldsParameter;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskDataProviderObject;
-import org.motechproject.tasks.ex.ValidationException;
+import org.motechproject.tasks.exception.ValidationException;
 import org.motechproject.tasks.repository.DataProviderDataService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 

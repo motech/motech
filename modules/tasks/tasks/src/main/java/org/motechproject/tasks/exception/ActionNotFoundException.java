@@ -1,4 +1,4 @@
-package org.motechproject.tasks.ex;
+package org.motechproject.tasks.exception;
 
 /**
  * Thrown when the requested action doesn't exists.

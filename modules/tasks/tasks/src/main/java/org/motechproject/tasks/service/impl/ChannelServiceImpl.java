@@ -13,7 +13,7 @@ import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.TaskError;
-import org.motechproject.tasks.ex.ValidationException;
+import org.motechproject.tasks.exception.ValidationException;
 import org.motechproject.tasks.json.ActionEventRequestDeserializer;
 import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.service.ChannelService;
