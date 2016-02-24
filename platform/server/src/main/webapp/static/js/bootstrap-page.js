@@ -76,6 +76,11 @@ var TRACKED_BUNDLES = [ OSGI_WEB_UTIL, CONFIG_CORE, COMMONS_SQL, EVENT, EMAIL, S
 
 var timer;
 
+$.ajaxSetup ({
+    // Disable caching of AJAX responses. fix for IE9
+    cache: false
+});
+
 function startLoading() {
     retrieveStatus();
     timer = setInterval(function(){retrieveStatus()}, TIMEOUT);
@@ -120,19 +125,20 @@ function setStatus(symbolicName, status) {
         if (status === 'LOADING') {
             element.find('.fa-check-circle').hide();
             element.find('.fa-times-circle').hide();
+            element.find('.circle-loader').hide();
 
-            // add notch and start spinning
-            element.find('.fa-circle-o').removeClass('.fa-circle-o').addClass('fa-circle-o-notch fa-spin');
+            // change for spinning gif
+            element.find('.circle-loader-spinner').show();
         } else if (status === 'OK') {
-            element.find('.fa-circle-o').hide();
-            element.find('.fa-circle-o-notch').hide();
+            element.find('.circle-loader').hide();
+            element.find('.circle-loader-spinner').hide();
             element.find('.fa-times-circle').hide();
 
             element.find('.fa-check-circle').show();
         } else {
             // failed
-            element.find('.fa-circle-o').hide();
-            element.find('.fa-circle-o-notch').hide();
+            element.find('.circle-loader').hide();
+            element.find('.circle-loader-spinner').hide();
             element.find('.fa-check-circle').hide();
 
             element.find('.fa-times-circle').show();

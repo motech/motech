@@ -3,7 +3,9 @@ package org.motechproject.scheduler.it;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.commons.api.ThreadSuspender;
 import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventConsumerInfo;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
@@ -39,8 +41,13 @@ public class SchedulerBundleIT extends BasePaxIT {
     @Filter(timeout = 360000)
     private MotechSchedulerService schedulerService;
 
+    @Inject
+    private EventConsumerInfo eventConsumerInfo;
+
     @Test
     public void testRunOnceJob() throws InterruptedException {
+        waitForEventConsumerToStart();
+
         final List<String> receivedEvents = new ArrayList<>();
 
         eventRegistry.registerListener(new EventListener() {
@@ -68,5 +75,12 @@ public class SchedulerBundleIT extends BasePaxIT {
         }
         assertEquals(1, receivedEvents.size());
         assertEquals(receivedEvents.get(0), TEST_SUBJECT);
+    }
+
+    private void waitForEventConsumerToStart() {
+        int retries = 0;
+        while (!eventConsumerInfo.isRunning() && retries++ < 60) {
+            ThreadSuspender.sleep(1000);
+        }
     }
 }

@@ -60,7 +60,7 @@
     background: -o-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
     background: -ms-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
     background: linear-gradient(to bottom,  #D9EDF7 0%, #B9DEF0 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D9EDF7', endColorstr='#B9DEF0',GradientType=0 );
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFD9EDF7', endColorstr='#FFB9DEF0',GradientType=0 );
 }
 .swagger-section .swagger-ui-wrap ul#resources li.resource.active > ul.endpoints {
     border: 1px solid #d4e1f9;

@@ -68,7 +68,7 @@ a {
 }
 
 .logo {
-    background: #fff;
+    background: #ffffff;
     clip: rect(0px, 300px, 55px, 0px);
     height: 60px;
     margin: 0;
@@ -85,7 +85,7 @@ a {
     display:block;
     float:left;
     margin: 30px 0 0 8%;
-    background: #fff;
+    background: #ffffff;
     color:#224477;
     text-weight:400;
     font-size: 18px;
@@ -97,7 +97,7 @@ a {
     display: block;
     margin: 0 0 10px 0;
     padding: 0;
-    color: #fff;
+    color: #ffffff;
     line-height: 20px;
     font-size: 15px;
     background: #073863;
@@ -192,7 +192,7 @@ a {
 .startup-logo img {
     height: 117px;
     display: block;
-    background: #fff;
+    background: #ffffff;
     margin: auto;
 }
 
@@ -235,7 +235,7 @@ a {
 .error-code h1 {
     margin-bottom: 1px;
     margin-top: 1px;
-    color: #fff;
+    color: #ffffff;
     font-size: 26px;
 }
 
@@ -344,7 +344,8 @@ a {
 }
 
 .loading-text-block .fa-check-circle,
-.loading-text-block .fa-times-circle {
+.loading-text-block .fa-times-circle,
+.loading-text-block .circle-loader-spinner {
     display: none;
 }
 
@@ -361,8 +362,4 @@ a {
     line-height: 1.1em;
     margin-right: 5px;
     vertical-align: -8%;
-}
-
-.loading-text-block .fa-circle-o-notch.fa-lg {
-    font-size: 1.32em;
 }

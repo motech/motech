@@ -1,15 +1,14 @@
 package org.motechproject.tasks.service;
 
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.events.constants.TaskFailureCause;
-import org.motechproject.tasks.ex.TaskHandlerException;
+import org.motechproject.tasks.exception.TaskHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -143,8 +142,7 @@ public class TaskContext {
                 current = ((Map) current).get(subField);
             } else {
                 try {
-                    Method method = current.getClass().getMethod("get" + WordUtils.capitalize(subField));
-                    current = method.invoke(current);
+                    current = PropertyUtils.getProperty(current, subField);
                 } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                     throw new MotechException(e.getMessage(), e);
                 }

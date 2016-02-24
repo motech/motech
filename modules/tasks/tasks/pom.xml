@@ -106,9 +106,9 @@
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
                                 $, jQuery, angular, TasksDashboardCtrl, TasksManageCtrl, TasksLogCtrl, moment,
-                                dummyHandler, handleResponse, jConfirm, alertHandler, window,
-                                blockUI, unblockUI, motechAlert, motechConfirm, jAlert, cloneObj,
-                                isBlank, defaultLayout, innerLayout
+                                dummyHandler, handleResponse, alertHandler, window,
+                                blockUI, unblockUI, motechAlert, motechConfirm, cloneObj,
+                                isBlank, defaultLayout, innerLayout, BootstrapDialog
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                             <excludes>
@@ -133,7 +133,7 @@
                             org.motechproject.tasks.json;version=${project.version},
                             org.motechproject.tasks.repository;version=${project.version},
                             org.motechproject.tasks.annotations;version=${project.version},
-                            org.motechproject.tasks.ex;version=${project.version},
+                            org.motechproject.tasks.exception;version=${project.version},
                             org.motechproject.tasks.util;version=${project.version}
                         </Export-Package>
                         <Import-Package>
