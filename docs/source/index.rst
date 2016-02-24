@@ -27,6 +27,7 @@ Contents
    demos/index
    contribute/index
    releases/index
+   packaging/index
    roadmap
    mailing_lists
    packages
