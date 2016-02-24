@@ -6,7 +6,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskError;
-import org.motechproject.tasks.ex.ValidationException;
+import org.motechproject.tasks.exception.ValidationException;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
 import org.slf4j.Logger;
