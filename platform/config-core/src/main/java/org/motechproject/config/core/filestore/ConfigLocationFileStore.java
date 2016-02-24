@@ -8,9 +8,7 @@ import org.motechproject.config.core.domain.ConfigLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -37,39 +35,8 @@ public class ConfigLocationFileStore {
      *
      * @return the list of configuration locations
      */
-    public Iterable<ConfigLocation> getAllConfigLocations() {
-        List<String> locations = getLocations();
-        List<String> configLocations = new ArrayList<>();
-        for (String location : locations) {
-            configLocations.add(new String(location + "/config/"));
-        }
-        return map(configLocations);
-    }
-
-    /**
-     * Returns all the configuration locations stored by this object.
-     *
-     * @return the list of configuration locations
-     */
-    public Iterable<ConfigLocation> getAllMotechLocations() {
-        List<String> locations = getLocations();
-        return map(locations);
-    }
-
-    private List<String> getLocations() {
-        String defaultPath = new File(System.getProperty("user.home"), ".motech").getAbsolutePath();
-        List<String> configLocations = loadAll();
-        int i = 0;
-        if (configLocations != null && configLocations.size() > 0) {
-            for (String location : configLocations) {
-                if (location.equals(defaultPath)) {
-                    Collections.swap(configLocations, i, configLocations.size() - 1);
-                    break;
-                }
-                i++;
-            }
-        }
-        return configLocations;
+    public Iterable<ConfigLocation> getAll() {
+        return map(loadAll());
     }
 
     private Iterable<ConfigLocation> map(List<String> configPaths) {

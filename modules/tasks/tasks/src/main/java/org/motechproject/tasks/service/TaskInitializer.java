@@ -5,7 +5,7 @@ import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.FilterSet;
 import org.motechproject.tasks.domain.Lookup;
 import org.motechproject.tasks.domain.TaskConfigStep;
-import org.motechproject.tasks.ex.TaskHandlerException;
+import org.motechproject.tasks.exception.TaskHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

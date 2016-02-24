@@ -4,6 +4,7 @@ import org.datanucleus.PropertyNames;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.sql.service.SqlDBManager;
 import org.motechproject.commons.sql.util.JdbcUrl;
+import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.mds.util.Constants;
 import org.springframework.core.io.ClassPathResource;
@@ -143,12 +144,8 @@ public class MdsConfig {
 
     public File getFlywayMigrationDirectory() {
         String flywayLocation = getFlywayLocations()[0];
-        File migrationDirectory;
-        if (coreConfigurationService != null && coreConfigurationService.getMotechLocation() != null && coreConfigurationService.getMotechLocation().getLocation() != null) {
-            migrationDirectory = new File(coreConfigurationService.getMotechLocation().getLocation(), Constants.EntitiesMigration.MIGRATION_DIRECTORY);
-        } else {
-            migrationDirectory = new File(System.getProperty("user.home"), Constants.EntitiesMigration.MIGRATION_DIRECTORY);
-        }
+        BootstrapConfig bootstrapConfig = coreConfigurationService.loadBootstrapConfig();
+        File migrationDirectory = new File(bootstrapConfig.getMotechDir(), Constants.EntitiesMigration.MIGRATION_DIRECTORY);
         migrationDirectory = new File(migrationDirectory, flywayLocation.substring(flywayLocation.lastIndexOf('/') + 1));
         return migrationDirectory;
     }

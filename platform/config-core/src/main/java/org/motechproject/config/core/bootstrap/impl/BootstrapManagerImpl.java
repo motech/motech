@@ -62,10 +62,10 @@ public class BootstrapManagerImpl implements BootstrapManager {
 
     @Override
     public void saveBootstrapConfig(BootstrapConfig bootstrapConfig) {
-        configLocationFileStore.add(bootstrapConfig.getMotechDir());
+        configLocationFileStore.add(new File(bootstrapConfig.getMotechDir(), "config").getAbsolutePath());
 
         File defaultBootstrapFile = ConfigPropertiesUtils.getDefaultPropertiesFile(ConfigLocation.FileAccessType.WRITABLE,
-                configLocationFileStore.getAllConfigLocations(), BOOTSTRAP_PROPERTIES);
+                configLocationFileStore.getAll(), BOOTSTRAP_PROPERTIES);
         ConfigPropertiesUtils.saveConfig(defaultBootstrapFile, BootstrapConfigPropertyMapper.toProperties(bootstrapConfig));
     }
 
@@ -104,7 +104,7 @@ public class BootstrapManagerImpl implements BootstrapManager {
 
     private BootstrapConfig readBootstrapConfigFromDefaultLocation() {
         File bootstrapFile = ConfigPropertiesUtils.getDefaultPropertiesFile(ConfigLocation.FileAccessType.READABLE,
-                    configLocationFileStore.getAllConfigLocations(), BOOTSTRAP_PROPERTIES);
+                    configLocationFileStore.getAll(), BOOTSTRAP_PROPERTIES);
         return readBootstrapConfigFromFile(bootstrapFile, StringUtils.EMPTY);
     }
 

@@ -35,6 +35,7 @@ public class BootstrapConfig {
 
     public static final String DEFAULT_OSGI_FRAMEWORK_STORAGE = new File(System.getProperty("user.home"), ".motech" + File.separator + "felix-cache").getAbsolutePath();
     public static final String DEFAULT_MOTECH_DIR = new File(System.getProperty("user.home"), ".motech").getAbsolutePath();
+
     private SQLDBConfig sqlConfig;
     private String osgiFrameworkStorage;
     private String motechDir;

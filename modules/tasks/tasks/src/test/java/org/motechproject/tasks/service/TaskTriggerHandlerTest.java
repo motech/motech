@@ -36,8 +36,8 @@ import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.events.constants.EventDataKeys;
-import org.motechproject.tasks.ex.ActionNotFoundException;
-import org.motechproject.tasks.ex.TaskHandlerException;
+import org.motechproject.tasks.exception.ActionNotFoundException;
+import org.motechproject.tasks.exception.TaskHandlerException;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 

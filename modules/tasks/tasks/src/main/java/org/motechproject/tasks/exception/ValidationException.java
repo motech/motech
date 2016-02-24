@@ -1,4 +1,4 @@
-package org.motechproject.tasks.ex;
+package org.motechproject.tasks.exception;
 
 import org.motechproject.tasks.domain.TaskError;
 

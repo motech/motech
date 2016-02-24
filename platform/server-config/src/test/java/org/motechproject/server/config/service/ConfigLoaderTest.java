@@ -48,7 +48,7 @@ public class ConfigLoaderTest {
 
     @Test
     public void testMotechSettingsLoading() {
-        final String dirPath = FileHelper.getResourceFile("").getAbsolutePath();
+        final String dirPath = FileHelper.getResourceFile("config/").getAbsolutePath();
         ConfigLocation configLocation = new ConfigLocation(dirPath);
         when(coreConfigurationService.getConfigLocation()).thenReturn(configLocation);
 

@@ -169,7 +169,7 @@ public class PollingHttpClient {
     private <T> T executeWithWaitForUriAvailability(HttpUriRequest httpUriRequest, ResponseHandler<? extends T> responseHandler,
                                                     int expectedErrorCode) throws InterruptedException, IOException {
         final long timeoutInMillis = maxWaitPeriodInSeconds * 1000;
-        
+
         long waitingFor;
         HttpResponse response = null;
 

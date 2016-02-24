@@ -101,32 +101,15 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
 
     @Override
     public ConfigLocation getConfigLocation() {
-        return getLocation(true);
-    }
-
-    @Override
-    public ConfigLocation getMotechLocation() {
-        return getLocation(false);
-    }
-
-    public ConfigLocation getLocation(boolean config) {
         Iterable<ConfigLocation> locations;
-        if (config) {
-            locations = configLocationFileStore.getAllConfigLocations();
-        } else {
-            locations = configLocationFileStore.getAllMotechLocations();
-        }
+        locations = configLocationFileStore.getAll();
         StringBuilder sb = new StringBuilder("");
         for (ConfigLocation configLocation : locations) {
             sb.append(configLocation.getLocation()).append(' ');
             Resource configLocationResource = configLocation.toResource();
             try {
                 Resource motechSettings;
-                if (config) {
                     motechSettings = configLocationResource.createRelative(ConfigurationConstants.SETTINGS_FILE_NAME);
-                } else {
-                    motechSettings = configLocationResource.createRelative(ConfigurationConstants.SETTINGS_FILE_NAME_WITH_PREFIX);
-                }
                 if (motechSettings.isReadable() && locations != null) {
                     return configLocation;
                 }

@@ -26,7 +26,7 @@ public class ConfigLocationFileStoreIT {
 
     @Test
     public void shouldReadConfigLocations() {
-        Iterable<ConfigLocation> configLocationsIterable = configLocationFileStore.getAllMotechLocations();
+        Iterable<ConfigLocation> configLocationsIterable = configLocationFileStore.getAll();
 
         assertNotNull(configLocationsIterable);
         assertTrue(configLocationsIterable.iterator().hasNext());
@@ -37,7 +37,7 @@ public class ConfigLocationFileStoreIT {
         PropertiesConfiguration propertiesConfiguration = new PropertiesConfiguration(getClass().getClassLoader().getResource("config-locations.properties"));
         ConfigLocationFileStore configLocationFileStore = new ConfigLocationFileStore(propertiesConfiguration);
 
-        Iterable<ConfigLocation> configLocationsIterable = configLocationFileStore.getAllMotechLocations();
+        Iterable<ConfigLocation> configLocationsIterable = configLocationFileStore.getAll();
 
         assertNotNull(configLocationsIterable);
         Iterator<ConfigLocation> configLocationIterator = configLocationsIterable.iterator();

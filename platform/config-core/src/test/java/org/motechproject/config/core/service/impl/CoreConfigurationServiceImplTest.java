@@ -48,13 +48,13 @@ public class CoreConfigurationServiceImplTest {
 
     @Test
     public void shouldGetConfigLocation() {
-        String correctConfigPath = this.getClass().getClassLoader().getResource("").getPath();
+        String correctConfigPath = this.getClass().getClassLoader().getResource("config").getPath();
         String inCorrectConfigPath = this.getClass().getClassLoader().getResource("some_random_dir").getPath();
         ConfigLocation incorrectLocation = new ConfigLocation(inCorrectConfigPath);
         ConfigLocation correctLocation = new ConfigLocation(correctConfigPath);
-        when(configLocationFileStoreMock.getAllMotechLocations()).thenReturn(Arrays.asList(incorrectLocation, correctLocation));
+        when(configLocationFileStoreMock.getAll()).thenReturn(Arrays.asList(incorrectLocation, correctLocation));
 
-        ConfigLocation configLocation = coreConfigurationService.getMotechLocation();
+        ConfigLocation configLocation = coreConfigurationService.getConfigLocation();
 
         assertEquals(correctLocation, configLocation);
     }
@@ -62,7 +62,7 @@ public class CoreConfigurationServiceImplTest {
     @Test
     public void shouldThrowExceptionIfNoneOfTheConfigLocationsAreReadable() {
         String inCorrectConfigPath = this.getClass().getClassLoader().getResource("some_random_dir").getPath();
-        when(configLocationFileStoreMock.getAllConfigLocations()).thenReturn(Arrays.asList(new ConfigLocation(inCorrectConfigPath)));
+        when(configLocationFileStoreMock.getAll()).thenReturn(Arrays.asList(new ConfigLocation(inCorrectConfigPath)));
 
         expectedException.expect(MotechConfigurationException.class);
         expectedException.expectMessage(String.format("Could not read settings from any of the config locations. Searched directories: %s .", new ConfigLocation(inCorrectConfigPath).getLocation()));

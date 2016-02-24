@@ -6,10 +6,10 @@ import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.service.ConfigurationService;
 import org.osgi.framework.Bundle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,20 +28,19 @@ public class BundleDirectoryManager {
     @Autowired
     private ConfigurationService configurationService;
 
-    @Value("${user.home}/.motech/bundles")
     private String bundleDir;
+
+    @PostConstruct
+    public void init() {
+        BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
+        bundleDir = bootstrapConfig.getMotechDir() + "/bundles";
+    }
 
     /**
      * Returns the directory used to store Motech bundles
      * @return the bundle directory
      */
     public String getBundleDir() {
-        if (configurationService != null) {
-            BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
-            if (bootstrapConfig != null) {
-                return bootstrapConfig.getMotechDir() + "/bundles";
-            }
-        }
         return bundleDir;
     }
 
@@ -86,7 +85,7 @@ public class BundleDirectoryManager {
      * @see #setBundleDir(String)
      */
     public File saveBundleStreamToFile(String destFileName, InputStream in) throws IOException {
-        File destFile = new File(getBundleDir(), destFileName);
+        File destFile = new File(bundleDir, destFileName);
         try (OutputStream os = FileUtils.openOutputStream(destFile)) {
             IOUtils.copy(in, os);
             return destFile;
