@@ -1358,12 +1358,10 @@
                                 }
                                 if ($('#instancesTable').getGridParam('records') > 0) {
                                     $('#pageInstancesTable_center').show();
-                                    $('#entityInstancesTable .ui-jqgrid-hdiv').show();
                                     $('.jqgfirstrow').css('height','0');
                                 } else {
                                     if (noSelectedFields) {
                                         $('#pageInstancesTable_center').hide();
-                                        $('#entityInstancesTable .ui-jqgrid-hdiv').hide();
                                     }
                                     $('.jqgfirstrow').css('height','1px');
                                 }
@@ -1588,11 +1586,9 @@
                             if (noSelectedFields) {
                                 $('.page_' + target + '_center').hide();
                                 $('.ui-jqgrid-status-label').removeClass('hidden');
-                                $('#entityInstancesTable .ui-jqgrid-hdiv').hide();
                             } else {
                                 $('.page_' + target + '_center').show();
                                 $('.ui-jqgrid-status-label').addClass('hidden');
-                                $('#entityInstancesTable .ui-jqgrid-hdiv').show();
                             }
                         },
                         onDropdownHide: function(event) {
