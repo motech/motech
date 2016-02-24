@@ -12,7 +12,7 @@ import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.service.impl.MotechSchedulerServiceImpl;
-import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.config.SettingsFacade;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.matchers.GroupMatcher;

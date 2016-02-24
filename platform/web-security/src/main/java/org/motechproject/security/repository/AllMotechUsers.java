@@ -1,5 +1,6 @@
 package org.motechproject.security.repository;
 
+import org.motechproject.config.domain.LoginMode;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.ex.EmailExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +122,7 @@ public class AllMotechUsers {
 
     /**
      * Returns all MotechUsers that comes from
-     * {@link org.motechproject.server.config.domain.LoginMode#REPOSITORY}
+     * {@link LoginMode#REPOSITORY}
      *
      * @return list that contains users
      */
@@ -143,7 +144,7 @@ public class AllMotechUsers {
 
     /**
      * Returns all MotechUsers that comes from
-     * {@link org.motechproject.server.config.domain.LoginMode#OPEN_ID}
+     * {@link LoginMode#OPEN_ID}
      *
      * @return list that contains users
      */

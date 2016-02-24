@@ -12,7 +12,7 @@ import org.motechproject.security.constants.Scheme;
 import org.motechproject.security.constants.SecurityConfigConstants;
 import org.motechproject.security.domain.MotechURLSecurityRule;
 import org.motechproject.security.ex.SecurityConfigException;
-import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

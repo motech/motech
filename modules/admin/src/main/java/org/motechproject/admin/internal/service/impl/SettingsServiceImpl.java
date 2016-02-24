@@ -13,7 +13,7 @@ import org.motechproject.config.monitor.ConfigFileMonitor;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.config.domain.MotechSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Version;

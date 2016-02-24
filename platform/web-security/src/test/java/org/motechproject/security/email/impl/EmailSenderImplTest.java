@@ -10,8 +10,8 @@ import org.motechproject.security.config.SettingService;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.ex.VelocityTemplateParsingException;
 import org.motechproject.security.velocity.VelocityTemplateParser;
-import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.config.SettingsFacade;
+import org.motechproject.config.domain.MotechSettings;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 import java.util.HashMap;

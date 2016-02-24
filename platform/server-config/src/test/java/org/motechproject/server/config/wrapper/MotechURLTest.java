@@ -3,6 +3,7 @@ package org.motechproject.server.config.wrapper;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Test;
+import org.motechproject.config.wrapper.MotechURL;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.hamcrest.core.IsNull.nullValue;

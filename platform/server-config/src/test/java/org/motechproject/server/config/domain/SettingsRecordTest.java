@@ -1,7 +1,8 @@
 package org.motechproject.server.config.domain;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
+import org.motechproject.config.domain.LoginMode;
+import org.motechproject.config.domain.SettingsRecord;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.hamcrest.core.Is.is;

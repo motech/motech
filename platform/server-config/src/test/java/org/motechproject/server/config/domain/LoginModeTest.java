@@ -1,6 +1,7 @@
 package org.motechproject.server.config.domain;
 
 import org.junit.Test;
+import org.motechproject.config.domain.LoginMode;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

@@ -1,6 +1,6 @@
 package org.motechproject.server.web.dto;
 
-import org.motechproject.server.config.domain.LoginMode;
+import org.motechproject.config.domain.LoginMode;
 import org.motechproject.server.web.form.LoginForm;
 
 import java.util.Locale;

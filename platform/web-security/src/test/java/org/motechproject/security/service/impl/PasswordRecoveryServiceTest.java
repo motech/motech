@@ -20,11 +20,10 @@ import org.motechproject.security.ex.UserNotFoundException;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.repository.AllPasswordRecoveries;
 import org.motechproject.security.service.PasswordRecoveryService;
-import org.motechproject.security.service.impl.PasswordRecoveryServiceImpl;
 import org.motechproject.security.velocity.VelocityTemplateParser;
-import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.server.config.domain.LoginMode;
-import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.config.SettingsFacade;
+import org.motechproject.config.domain.LoginMode;
+import org.motechproject.config.domain.MotechSettings;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 import java.util.Arrays;

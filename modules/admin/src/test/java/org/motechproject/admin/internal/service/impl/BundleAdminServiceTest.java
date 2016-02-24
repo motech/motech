@@ -18,7 +18,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.osgi.web.service.UIFrameworkService;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
-import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.config.domain.MotechSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;

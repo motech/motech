@@ -1,12 +1,12 @@
-package org.motechproject.server.config.loader;
+package org.motechproject.config.loader;
 
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.service.CoreConfigurationService;
-import org.motechproject.server.config.domain.LoginMode;
-import org.motechproject.server.config.domain.SettingsRecord;
+import org.motechproject.config.domain.LoginMode;
+import org.motechproject.config.domain.SettingsRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
