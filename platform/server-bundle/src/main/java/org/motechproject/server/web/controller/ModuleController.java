@@ -7,7 +7,7 @@ import org.apache.commons.io.IOUtils;
 import org.motechproject.osgi.web.service.LocaleService;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.service.UIFrameworkService;
-import org.motechproject.server.ui.BundleService;
+import org.motechproject.server.ui.BundleIconService;
 import org.motechproject.server.web.dto.BundleIcon;
 import org.motechproject.server.web.dto.ModuleConfig;
 import org.motechproject.server.web.dto.ModuleMenu;
@@ -65,7 +65,7 @@ public class ModuleController {
 
     private UIFrameworkService uiFrameworkService;
     private LocaleService localeService;
-    private BundleService bundleService;
+    private BundleIconService bundleIconService;
     private BundleContext bundleContext;
     private MenuBuilder menuBuilder;
 
@@ -144,9 +144,9 @@ public class ModuleController {
                               HttpServletResponse response) throws IOException {
         BundleIcon bundleIcon;
         if(bundleId != null) {
-            bundleIcon = bundleService.getBundleIconById(bundleId, defaultIcon);
+            bundleIcon = bundleIconService.getBundleIconById(bundleId, defaultIcon);
         } else {
-            bundleIcon = bundleService.getBundleIconByName(bundleName, defaultIcon);
+            bundleIcon = bundleIconService.getBundleIconByName(bundleName, defaultIcon);
         }
 
         response.setStatus(HttpServletResponse.SC_OK);
@@ -332,8 +332,8 @@ public class ModuleController {
     }
 
     @Autowired
-    public void setBundleService(BundleService bundleService) {
-        this.bundleService = bundleService;
+    public void setBundleIconService(BundleIconService bundleIconService) {
+        this.bundleIconService = bundleIconService;
     }
 
     @Autowired

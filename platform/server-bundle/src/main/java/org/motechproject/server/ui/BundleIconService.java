@@ -3,9 +3,9 @@ package org.motechproject.server.ui;
 import org.motechproject.server.web.dto.BundleIcon;
 
 /**
- * The <code>BundleService</code> interface provides methods for getting icons from the bundles.
+ * The <code>BundleIconService</code> interface provides methods for getting icons from the bundles.
  */
-public interface BundleService {
+public interface BundleIconService {
 
     /**
      * Retrieves a {@link BundleIcon} for the bundle with the given bundle id. The icon is

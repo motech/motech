@@ -2,7 +2,7 @@ package org.motechproject.server.ui.impl;
 
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.server.ui.BundleService;
+import org.motechproject.server.ui.BundleIconService;
 import org.motechproject.server.web.dto.BundleIcon;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -20,14 +20,14 @@ import static org.eclipse.gemini.blueprint.util.OsgiStringUtils.nullSafeSymbolic
 import static org.motechproject.server.web.dto.BundleIcon.ICON_LOCATIONS;
 
 /**
- * Implementation of the <code>BundleService</code> interface. Provides access to bundle icons by its id or name.
+ * Implementation of the <code>BundleIconService</code> interface. Provides access to bundle icons by its id or name.
  * If couldn't find any icon, returns default icon.
  */
 
 @Service("bundleService")
-public class BundleServiceImpl implements BundleService {
+public class BundleIconServiceImpl implements BundleIconService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BundleServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BundleIconServiceImpl.class);
 
     private static final String DEFAULT_PATH = "/webapp/img/";
     private static final String DEFAULT_ICON = "bundle_icon.png";

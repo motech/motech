@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.server.ui.BundleService;
+import org.motechproject.server.ui.BundleIconService;
 import org.motechproject.server.web.dto.BundleIcon;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -21,9 +21,9 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
- * Tests for the <code>BundleServiceImpl</code> class.
+ * Tests for the <code>BundleIconServiceImpl</code> class.
  */
-public class BundleServiceImplTest {
+public class BundleIconServiceImplTest {
 
     private static final long BUNDLE_ID = 1;
     private static final long BUNDLE_ID_2 = 2;
@@ -34,7 +34,7 @@ public class BundleServiceImplTest {
     private static final String DEFAULT_ICON_2 = "iconTaskChannel.png";
 
     @InjectMocks
-    BundleService bundleService = new BundleServiceImpl();
+    BundleIconService bundleIconService = new BundleIconServiceImpl();
 
     @Mock
     BundleContext bundleContext;
@@ -53,7 +53,7 @@ public class BundleServiceImplTest {
         byte[] expectedIcon = readDefaultIcon(DEFAULT_PATH + DEFAULT_ICON);
         when(bundle.getResource("icon.gif")).thenReturn(getDefaultIconUrl(DEFAULT_PATH + DEFAULT_ICON));
 
-        BundleIcon bundleIcon = bundleService.getBundleIconById(BUNDLE_ID, null);
+        BundleIcon bundleIcon = bundleIconService.getBundleIconById(BUNDLE_ID, null);
 
         assertArrayEquals(expectedIcon, bundleIcon.getIcon());
         assertEquals(expectedIcon.length, bundleIcon.getContentLength());
@@ -66,7 +66,7 @@ public class BundleServiceImplTest {
     public void shouldReturnDefaultIconWhenBundleDoesNotContainIcon() {
         setupBundleRetrieval();
 
-        BundleIcon bundleIcon = bundleService.getBundleIconById(BUNDLE_ID, null);
+        BundleIcon bundleIcon = bundleIconService.getBundleIconById(BUNDLE_ID, null);
         byte[] expectedIcon = readDefaultIcon(DEFAULT_PATH + DEFAULT_ICON);
 
         assertArrayEquals(expectedIcon, bundleIcon.getIcon());
@@ -82,7 +82,7 @@ public class BundleServiceImplTest {
     public void shouldReturnDefaultIconWhenBundleNotFound() {
         setupBundleRetrieval();
 
-        BundleIcon bundleIcon = bundleService.getBundleIconById(BUNDLE_ID_2, null);
+        BundleIcon bundleIcon = bundleIconService.getBundleIconById(BUNDLE_ID_2, null);
         byte[] expectedIcon = readDefaultIcon(DEFAULT_PATH + DEFAULT_ICON);
 
         assertArrayEquals(expectedIcon, bundleIcon.getIcon());
@@ -93,7 +93,7 @@ public class BundleServiceImplTest {
     public void shouldReturnGivenDefaultIconWhenBundleDoesNotContainIcon() {
         setupBundleRetrieval();
 
-        BundleIcon bundleIcon = bundleService.getBundleIconById(BUNDLE_ID, DEFAULT_ICON_2);
+        BundleIcon bundleIcon = bundleIconService.getBundleIconById(BUNDLE_ID, DEFAULT_ICON_2);
         byte[] expectedIcon = readDefaultIcon(DEFAULT_PATH + DEFAULT_ICON_2);
 
         assertArrayEquals(expectedIcon, bundleIcon.getIcon());
@@ -105,7 +105,7 @@ public class BundleServiceImplTest {
         setupBundleRetrieval();
         when(bundle.getResource("icon.gif")).thenReturn(getDefaultIconUrl(DEFAULT_PATH + DEFAULT_ICON));
 
-        BundleIcon bundleIcon = bundleService.getBundleIconByName(BUNDLE_NAME, null);
+        BundleIcon bundleIcon = bundleIconService.getBundleIconByName(BUNDLE_NAME, null);
         byte[] expectedIcon = readDefaultIcon(DEFAULT_PATH + DEFAULT_ICON);
 
         assertArrayEquals(expectedIcon, bundleIcon.getIcon());
@@ -129,6 +129,6 @@ public class BundleServiceImplTest {
     }
 
     private static URL getDefaultIconUrl(String path) {
-        return BundleServiceImplTest.class.getResource(path);
+        return BundleIconServiceImplTest.class.getResource(path);
     }
 }

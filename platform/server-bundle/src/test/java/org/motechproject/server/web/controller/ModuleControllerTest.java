@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.osgi.web.service.LocaleService;
 import org.motechproject.osgi.web.service.UIFrameworkService;
-import org.motechproject.server.ui.BundleService;
+import org.motechproject.server.ui.BundleIconService;
 import org.motechproject.server.web.dto.BundleIcon;
 import org.motechproject.server.web.helper.MenuBuilder;
 import org.osgi.framework.BundleContext;
@@ -35,7 +35,7 @@ public class ModuleControllerTest {
     private LocaleService localeService;
 
     @Mock
-    private BundleService bundleService;
+    private BundleIconService bundleIconService;
 
     @Mock
     private BundleContext bundleContext;
@@ -58,7 +58,7 @@ public class ModuleControllerTest {
     public void shouldGetBundleIcon() throws IOException {
         BundleIcon bundleIcon = new BundleIcon(new byte[] {1, 2, 3, 4}, ICON_MIME);
 
-        when(bundleService.getBundleIconById(BUNDLE_ID, null)).thenReturn(bundleIcon);
+        when(bundleIconService.getBundleIconById(BUNDLE_ID, null)).thenReturn(bundleIcon);
         when(response.getOutputStream()).thenReturn(outputStream);
 
         moduleController.getBundleIcon(BUNDLE_ID, null, null, response);
