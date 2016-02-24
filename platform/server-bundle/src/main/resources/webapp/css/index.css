@@ -2106,3 +2106,10 @@ body {
 .ta-editor h6 {
     color: #333;
 }
+
+.ui-priority-secondary,
+.ui-widget-content .ui-priority-secondary,
+.ui-widget-header .ui-priority-secondary {
+    opacity: 1 !important;
+    font-weight: bold !important;
+}
