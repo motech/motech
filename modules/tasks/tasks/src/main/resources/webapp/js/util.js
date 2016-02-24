@@ -386,7 +386,10 @@
                     });
 
                     if (ds === undefined) {
-                        jAlert('Data source cannot be resolved', 'Error');
+                        BootstrapDialog.alert({
+                            type: BootstrapDialog.TYPE_DANGER,
+                            message: 'Data source cannot be resolved'
+                        });
                     }
 
                     replaced.push({

@@ -5,7 +5,7 @@ import org.joda.time.DateTime;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.scheduler.constants.SchedulerConstants;
+import org.motechproject.scheduler.builder.SchedulableJobBuilder;
 import org.motechproject.scheduler.contract.CronJobId;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
@@ -57,6 +57,8 @@ import java.util.Set;
 import static java.lang.String.format;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.commons.date.util.DateUtil.now;
+import static org.motechproject.scheduler.constants.SchedulerConstants.EVENT_TYPE_KEY_NAME;
+import static org.motechproject.scheduler.constants.SchedulerConstants.UI_DEFINED;
 import static org.motechproject.scheduler.validation.SchedulableJobValidator.validateCronSchedulableJob;
 import static org.motechproject.scheduler.validation.SchedulableJobValidator.validateDayOfWeekSchedulableJob;
 import static org.motechproject.scheduler.validation.SchedulableJobValidator.validateRepeatingPeriodSchedulableJob;
@@ -81,7 +83,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     private static final int MAX_REPEAT_COUNT = 999999;
     private static final int MILLISECOND = 1000;
     private static final String LOG_SUBJECT_EXTERNAL_ID = "subject: %s, externalId: %s";
-    private static final String UI_DEFINED = "uiDefined";
 
     private SettingsFacade schedulerSettings;
 
@@ -429,6 +430,18 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         } catch (MotechSchedulerException | SchedulerException e) {
             throw new MotechSchedulerException(String.format("Can not delete the job:\n %s\n%s\n%s",
                     info.getName(), info.getGroup(), e.getMessage()), e);
+        }
+    }
+
+    @Override
+    public SchedulableJob getJob(JobBasicInfo info) {
+        try {
+            JobKey key = jobKey(info.getName(), info.getGroup());
+            return SchedulableJobBuilder.buildJob(key, scheduler.getJobDetail(key).getJobDataMap(),
+                    scheduler.getTriggersOfJob(key).get(0));
+        } catch (SchedulerException e) {
+            throw new MotechSchedulerException(String.format("Can not retrieve the job:\n %s\n %s\n %s", info.getName(),
+                    info.getGroup(), e.getMessage()), e);
         }
     }
 
@@ -905,7 +918,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     private void putMotechEventDataToJobDataMap(JobDataMap jobDataMap, MotechEvent motechEvent) {
         jobDataMap.putAll(motechEvent.getParameters());
-        jobDataMap.put(SchedulerConstants.EVENT_TYPE_KEY_NAME, motechEvent.getSubject());
+        jobDataMap.put(EVENT_TYPE_KEY_NAME, motechEvent.getSubject());
     }
 
     private List<String> extractTriggerNames(List<TriggerKey> triggerKeys) {

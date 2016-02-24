@@ -1,7 +1,7 @@
 package org.motechproject.email.service.impl;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.email.contract.Mail;
+import org.motechproject.email.domain.Mail;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 

@@ -1,4 +1,4 @@
-package org.motechproject.tasks.ex;
+package org.motechproject.tasks.exception;
 
 /**
  * Thrown when there were problems while retrieving trigger(s).

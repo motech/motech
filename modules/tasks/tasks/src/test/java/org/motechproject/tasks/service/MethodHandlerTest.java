@@ -7,7 +7,7 @@ import org.motechproject.tasks.domain.ActionEventBuilder;
 import org.motechproject.tasks.domain.ActionParameterBuilder;
 import org.motechproject.tasks.domain.MethodCallManner;
 import org.motechproject.tasks.domain.ParameterType;
-import org.motechproject.tasks.ex.TaskHandlerException;
+import org.motechproject.tasks.exception.TaskHandlerException;
 
 import java.util.ArrayList;
 import java.util.HashMap;

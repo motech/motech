@@ -6,7 +6,7 @@ import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TriggerEvent;
-import org.motechproject.tasks.ex.ActionNotFoundException;
+import org.motechproject.tasks.exception.ActionNotFoundException;
 
 import java.io.IOException;
 import java.util.List;

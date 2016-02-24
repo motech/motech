@@ -28,12 +28,12 @@ public @interface MotechListener {
     String[] subjects();
 
     /**
-     * Sets the type specified in {@link org.motechproject.event.listener.annotations.MotechListenerType}
-     * enum, that is: {@link org.motechproject.event.listener.annotations.MotechListenerType#MOTECH_EVENT}
-     * or {@link org.motechproject.event.listener.annotations.MotechListenerType#NAMED_PARAMETERS}.
-     * By default the type is {@link org.motechproject.event.listener.annotations.MotechListenerType#MOTECH_EVENT}.
+     * Sets the type specified in {@link MotechListenerType}
+     * enum, that is: {@link MotechListenerType#MOTECH_EVENT}
+     * or {@link MotechListenerType#NAMED_PARAMETERS}.
+     * By default the type is {@link MotechListenerType#MOTECH_EVENT}.
      *
-     * @return the value of a {@link org.motechproject.event.listener.annotations.MotechListenerType}
+     * @return the value of a {@link MotechListenerType}
      */
     MotechListenerType type() default MotechListenerType.MOTECH_EVENT;
 }

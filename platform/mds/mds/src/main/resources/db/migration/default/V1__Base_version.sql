@@ -23,7 +23,7 @@ CREATE TABLE "Entity" (
   CONSTRAINT "DRAFT_USER_IDX" UNIQUE ("parentEntity_id_OID", "draftOwnerUsername"),
   CONSTRAINT "Entity_FK1" FOREIGN KEY ("parentEntity_id_OID") REFERENCES "Entity" ("id")
 );
-
+CREATE INDEX "Entity_KeyIdx1" ON "Entity" ("parentEntity_id_OID");
 
 DROP TABLE IF EXISTS "Type";
 CREATE TABLE "Type" (
@@ -44,6 +44,7 @@ CREATE TABLE "TypeSetting" (
   PRIMARY KEY ("id"),
   CONSTRAINT "TypeSetting_FK1" FOREIGN KEY ("TYPE_ID") REFERENCES "Type" ("id")
 );
+CREATE INDEX "TypeSetting_KeyIdx1" ON "TypeSetting" ("TYPE_ID");
 
 DROP TABLE IF EXISTS "TypeValidation";
 CREATE TABLE "TypeValidation" (
@@ -53,6 +54,7 @@ CREATE TABLE "TypeValidation" (
   PRIMARY KEY ("id"),
   CONSTRAINT "TypeValidation_FK1" FOREIGN KEY ("TYPE_ID") REFERENCES "Type" ("id")
 );
+CREATE INDEX "TypeValidation_KeyIdx1" ON "TypeValidation" ("TYPE_ID");
 
 DROP TABLE IF EXISTS "TypeSettingOption";
 CREATE TABLE "TypeSettingOption" (
@@ -78,6 +80,17 @@ CREATE TABLE "Entity_securityMembers" (
   PRIMARY KEY ("Entity_OID","SecurityMember"),
   CONSTRAINT "Entity_securityMembers_FK1" FOREIGN KEY ("Entity_OID") REFERENCES "Entity" ("id")
 );
+CREATE INDEX "Entity_securityMembers_KeyIdx1" ON "Entity_securityMembers" ("Entity_OID");
+
+DROP TABLE IF EXISTS "EntityDraft_fieldNameChanges";
+CREATE TABLE "EntityDraft_fieldNameChanges" (
+  "id_OID" bigint NOT NULL,
+  "oldName" varchar(255) NOT NULL,
+  "newName" varchar(255) DEFAULT NULL,
+  PRIMARY KEY ("id_OID", "oldName"),
+  CONSTRAINT "EntityDraft_fieldNameChanges_FK1" FOREIGN KEY ("id_OID") REFERENCES "Entity" ("id")
+);
+CREATE INDEX "EntityDraft_fieldNameChanges_KeyIdx1" ON "EntityDraft_fieldNameChanges" ("id_OID");
 
 DROP TABLE IF EXISTS "Field";
 CREATE TABLE "Field" (
@@ -103,6 +116,8 @@ CREATE TABLE "Field" (
   CONSTRAINT "Field_FK1" FOREIGN KEY ("type_id_OID") REFERENCES "Type" ("id"),
   CONSTRAINT "Field_FK2" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
+CREATE INDEX "Field_KeyIdx1" ON "Field" ("type_id_OID");
+CREATE INDEX "Field_KeyIdx2" ON "Field" ("entity_id_OID");
 
 DROP TABLE IF EXISTS "FieldMetadata";
 CREATE TABLE "FieldMetadata" (
@@ -114,6 +129,7 @@ CREATE TABLE "FieldMetadata" (
   PRIMARY KEY ("id"),
   CONSTRAINT "FieldMetadata_FK1" FOREIGN KEY ("field_id_OID") REFERENCES "Field" ("id")
 );
+CREATE INDEX "FieldMetadata_KeyIdx1" ON "FieldMetadata" ("field_id_OID");
 
 DROP TABLE IF EXISTS "FieldSetting";
 CREATE TABLE "FieldSetting" (
@@ -126,6 +142,8 @@ CREATE TABLE "FieldSetting" (
   CONSTRAINT "FieldSetting_FK2" FOREIGN KEY ("DETAILS_ID") REFERENCES "TypeSetting" ("id"),
   CONSTRAINT "FieldSetting_FK1" FOREIGN KEY ("field_id_OID") REFERENCES "Field" ("id")
 );
+CREATE INDEX "FieldSetting_KeyIdx1" ON "FieldSetting" ("DETAILS_ID");
+CREATE INDEX "FieldSetting_KeyIdx2" ON "FieldSetting" ("field_id_OID");
 
 DROP TABLE IF EXISTS "FieldValidation";
 CREATE TABLE "FieldValidation" (
@@ -139,6 +157,8 @@ CREATE TABLE "FieldValidation" (
   CONSTRAINT "FieldValidation_FK2" FOREIGN KEY ("field_id_OID") REFERENCES "Field" ("id"),
   CONSTRAINT "FieldValidation_FK1" FOREIGN KEY ("DETAILS_ID") REFERENCES "TypeValidation" ("id")
 );
+CREATE INDEX "FieldValidation_KeyIdx1" ON "FieldValidation" ("field_id_OID");
+CREATE INDEX "FieldValidation_KeyIdx2" ON "FieldValidation" ("DETAILS_ID");
 
 DROP TABLE IF EXISTS "Lookup";
 CREATE TABLE "Lookup" (
@@ -149,10 +169,10 @@ CREATE TABLE "Lookup" (
   "singleObjectReturn" boolean NOT NULL,
   "lookups_INTEGER_IDX" bigint DEFAULT NULL,
   "readOnly" boolean NOT NULL,
-  "fieldsOrder" BYTEA DEFAULT NULL,
   PRIMARY KEY ("id"),
   CONSTRAINT "Lookup_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
+CREATE INDEX "Lookup_KeyIdx1" ON "Lookup" ("entity_id_OID");
 
 DROP TABLE IF EXISTS "LookupFields";
 CREATE TABLE "LookupFields" (
@@ -163,7 +183,58 @@ CREATE TABLE "LookupFields" (
   CONSTRAINT "LookupFields_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id"),
   CONSTRAINT "LookupFields_FK2" FOREIGN KEY ("id_EID") REFERENCES "Field" ("id")
 );
+CREATE INDEX "LookupFields_KeyIdx1" ON "LookupFields" ("id_OID");
+CREATE INDEX "LookupFields_KeyIdx2" ON "LookupFields" ("id_EID");
 
+DROP TABLE IF EXISTS "Lookup_fieldsOrder";
+CREATE TABLE "Lookup_fieldsOrder" (
+  "id_OID" bigint NOT NULL,
+  "fieldName" varchar(255) NOT NULL,
+  "IDX" bigint NOT NULL,
+  PRIMARY KEY ("id_OID", "IDX"),
+  CONSTRAINT "Lookup_fieldsOrder_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
+);
+CREATE INDEX "Lookup_fieldsOrder_KeyIdx1" ON "Lookup_fieldsOrder" ("id_OID");
+
+DROP TABLE IF EXISTS "Lookup_rangeLookupFields";
+CREATE TABLE "Lookup_rangeLookupFields" (
+  "id_OID" bigint NOT NULL,
+  "fieldName" varchar(255) NOT NULL,
+  "IDX" bigint NOT NULL,
+  PRIMARY KEY ("id_OID", "IDX"),
+  CONSTRAINT "Lookup_rangeLookupFields_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
+);
+CREATE INDEX "Lookup_rangeLookupFields_KeyIdx1" ON "Lookup_rangeLookupFields" ("id_OID");
+
+DROP TABLE IF EXISTS "Lookup_setLookupFields";
+CREATE TABLE "Lookup_setLookupFields" (
+  "id_OID" bigint NOT NULL,
+  "fieldName" varchar(255) NOT NULL,
+  "IDX" bigint NOT NULL,
+  PRIMARY KEY ("id_OID", "IDX"),
+  CONSTRAINT "Lookup_setLookupFields_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
+);
+CREATE INDEX "Lookup_setLookupFields_KeyIdx1" ON "Lookup_setLookupFields" ("id_OID");
+
+DROP TABLE IF EXISTS "Lookup_customOperators";
+CREATE TABLE "Lookup_customOperators" (
+  "id_OID" bigint NOT NULL,
+  "fieldName" varchar(255) NOT NULL,
+  "operator" varchar(255) DEFAULT NULL,
+  PRIMARY KEY ("id_OID", "fieldName"),
+  CONSTRAINT "Lookup_customOperators_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
+);
+CREATE INDEX "Lookup_customOperators_KeyIdx1" ON "Lookup_customOperators" ("id_OID");
+
+DROP TABLE IF EXISTS "Lookup_useGenericParams";
+CREATE TABLE "Lookup_useGenericParams" (
+  "id_OID" bigint NOT NULL,
+  "param" varchar(255) NOT NULL,
+  "value" boolean DEFAULT FALSE,
+  PRIMARY KEY ("id_OID", "param"),
+  CONSTRAINT "Lookup_useGenericParams_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id")
+);
+CREATE INDEX "Lookup_useGenericParams_KeyIdx1" ON "Lookup_useGenericParams" ("id_OID");
 
 DROP TABLE IF EXISTS "RestOptions";
 CREATE TABLE "RestOptions" (
@@ -177,6 +248,7 @@ CREATE TABLE "RestOptions" (
   PRIMARY KEY ("id"),
   CONSTRAINT "RestOptions_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
+CREATE INDEX "RestOptions_KeyIdx1" ON "RestOptions" ("entity_id_OID");
 
 DROP TABLE IF EXISTS "SEQUENCE_TABLE";
 CREATE TABLE "SEQUENCE_TABLE" (
@@ -194,6 +266,8 @@ CREATE TABLE "TYPE_SETTING_SETTING_OPTION" (
   CONSTRAINT "TYPE_SETTING_SETTING_OPTION_FK2" FOREIGN KEY ("SETTING_OPTION_ID_EID") REFERENCES "TypeSettingOption" ("id"),
   CONSTRAINT "TYPE_SETTING_SETTING_OPTION_FK1" FOREIGN KEY ("TYPE_SETTING_ID_OID") REFERENCES "TypeSetting" ("id")
 );
+CREATE INDEX "TYPE_SETTING_SETTING_OPTION_KeyIdx1" ON "TYPE_SETTING_SETTING_OPTION" ("TYPE_SETTING_ID_OID");
+CREATE INDEX "TYPE_SETTING_SETTING_OPTION_KeyIdx2" ON "TYPE_SETTING_SETTING_OPTION" ("SETTING_OPTION_ID_EID");
 
 DROP TABLE IF EXISTS "TYPE_TYPE_SETTING";
 CREATE TABLE "TYPE_TYPE_SETTING" (
@@ -204,6 +278,8 @@ CREATE TABLE "TYPE_TYPE_SETTING" (
   CONSTRAINT "TYPE_TYPE_SETTING_FK1" FOREIGN KEY ("TYPE_ID_OID") REFERENCES "Type" ("id"),
   CONSTRAINT "TYPE_TYPE_SETTING_FK2" FOREIGN KEY ("TYPE_SETTING_ID_EID") REFERENCES "TypeSetting" ("id")
 );
+CREATE INDEX "TYPE_TYPE_SETTING_KeyIdx1" ON "TYPE_TYPE_SETTING" ("TYPE_SETTING_ID_EID");
+CREATE INDEX "TYPE_TYPE_SETTING_KeyIdx2" ON "TYPE_TYPE_SETTING" ("TYPE_ID_OID");
 
 DROP TABLE IF EXISTS "TYPE_TYPE_VALIDATION";
 CREATE TABLE "TYPE_TYPE_VALIDATION" (
@@ -214,6 +290,8 @@ CREATE TABLE "TYPE_TYPE_VALIDATION" (
   CONSTRAINT "TYPE_TYPE_VALIDATION_FK2" FOREIGN KEY ("TYPE_VALIDATION_ID_EID") REFERENCES "TypeValidation" ("id"),
   CONSTRAINT "TYPE_TYPE_VALIDATION_FK1" FOREIGN KEY ("TYPE_ID_OID") REFERENCES "Type" ("id")
 );
+CREATE INDEX "TYPE_TYPE_VALIDATION_KeyIdx1" ON "TYPE_TYPE_VALIDATION" ("TYPE_ID_OID");
+CREATE INDEX "TYPE_TYPE_VALIDATION_KeyIdx2" ON "TYPE_TYPE_VALIDATION" ("TYPE_VALIDATION_ID_EID");
 
 DROP TABLE IF EXISTS "Tracking";
 CREATE TABLE "Tracking" (
@@ -227,6 +305,7 @@ CREATE TABLE "Tracking" (
   PRIMARY KEY ("id"),
   CONSTRAINT "Tracking_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
+CREATE INDEX "Tracking_KeyIdx1" ON "Tracking" ("entity_id_OID");
 
 DROP TABLE IF EXISTS "TypeValidation_annotations";
 CREATE TABLE "TypeValidation_annotations" (
@@ -236,6 +315,7 @@ CREATE TABLE "TypeValidation_annotations" (
   PRIMARY KEY ("id_OID","IDX"),
   CONSTRAINT "TypeValidation_annotations_FK1" FOREIGN KEY ("id_OID") REFERENCES "TypeValidation" ("id")
 );
+CREATE INDEX "TypeValidation_annotations_KeyIdx1" ON "TypeValidation_annotations" ("id_OID");
 
 DROP TABLE IF EXISTS "SchemaChangeLock";
 CREATE TABLE "SchemaChangeLock" (
@@ -258,6 +338,7 @@ CREATE TABLE "Entity_readOnlySecurityMembers" (
   PRIMARY KEY ("Entity_OID","ReadOnlySecurityMember"),
   CONSTRAINT "Entity_readOnlySecurityMembers_FK1" FOREIGN KEY ("Entity_OID") REFERENCES "Entity" ("id")
 );
+CREATE INDEX "Entity_readOnlySecurityMembers_KeyIdx1" ON "Entity_readOnlySecurityMembers" ("Entity_OID");
 
 DROP TABLE IF EXISTS "UserPreferences";
 CREATE TABLE IF NOT EXISTS "UserPreferences" (
@@ -277,6 +358,8 @@ CREATE TABLE IF NOT EXISTS "UserPreferences_selectedFields" (
   CONSTRAINT "UserPreferences_selectedFields_FK1" FOREIGN KEY ("username_OID", "className_OID") REFERENCES "UserPreferences" ("username", "className"),
   CONSTRAINT "UserPreferences_selectedFields_FK2" FOREIGN KEY ("selectedField") REFERENCES "Field" ("id") ON DELETE CASCADE
 );
+CREATE INDEX "UserPreferences_selectedFields_KeyIdx1" ON "UserPreferences_selectedFields" ("selectedField");
+CREATE INDEX "UserPreferences_selectedFields_KeyIdx2" ON "UserPreferences_selectedFields" ("className_OID", "username_OID");
 
 DROP TABLE IF EXISTS "UserPreferences_unselectedFields";
 CREATE TABLE IF NOT EXISTS "UserPreferences_unselectedFields" (
@@ -288,6 +371,8 @@ CREATE TABLE IF NOT EXISTS "UserPreferences_unselectedFields" (
   CONSTRAINT "UserPreferences_unselectedFields_FK1" FOREIGN KEY ("username_OID", "className_OID") REFERENCES "UserPreferences" ("username", "className"),
   CONSTRAINT "UserPreferences_unselectedFields_FK2" FOREIGN KEY ("unselectedField") REFERENCES "Field" ("id") ON DELETE CASCADE
 );
+CREATE INDEX "UserPreferences_unselectedFields_KeyIdx1" ON "UserPreferences_unselectedFields" ("unselectedField");
+CREATE INDEX "UserPreferences_unselectedFields_KeyIdx2" ON "UserPreferences_unselectedFields" ("className_OID", "username_OID");
 
 DROP TABLE IF EXISTS "ConfigSettings";
 CREATE TABLE IF NOT EXISTS "ConfigSettings" (
