@@ -25,6 +25,7 @@ import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.openid.OpenIDAuthenticationFilter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
@@ -48,12 +49,13 @@ import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
-import org.springframework.security.web.util.AntPathRequestMatcher;
-import org.springframework.security.web.util.AnyRequestMatcher;
-import org.springframework.security.web.util.RequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.AnyRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.Filter;
+import javax.servlet.ServletException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -109,7 +111,7 @@ public class SecurityRuleBuilder {
         String pattern = securityRule.getPattern();
 
         if (pattern.equals(SecurityConfigConstants.ANY_PATTERN) || "/**".equals(pattern) || "**".equals(pattern)) {
-            matcher = new AnyRequestMatcher();
+            matcher = AnyRequestMatcher.INSTANCE;
         } else if (ANY == method) {
             matcher = new AntPathRequestMatcher(pattern);
         } else {
@@ -117,7 +119,11 @@ public class SecurityRuleBuilder {
         }
 
         if (!noSecurity(securityRule)) {
-            filters = addFilters(securityRule);
+            try {
+                filters = addFilters(securityRule);
+            } catch (ServletException e) {
+                LOGGER.error("Cannot create {} in {} security rule.", SecurityContextHolderAwareRequestFilter.class, securityRule.getPattern(), e);
+            }
         }
 
         LOGGER.info("Built security chain for rule: {} and method: {}", securityRule.getPattern(), method);
@@ -165,7 +171,7 @@ public class SecurityRuleBuilder {
         return result;
     }
 
-    private List<Filter> addFilters(MotechURLSecurityRule securityRule) {
+    private List<Filter> addFilters(MotechURLSecurityRule securityRule) throws ServletException {
         List<Filter> filters = new ArrayList<>();
 
         SecurityContextRepository contextRepository = new HttpSessionSecurityContextRepository();
@@ -201,8 +207,10 @@ public class SecurityRuleBuilder {
         filters.add(logoutFilter);
     }
 
-    private void addSecurityContextHolderAwareRequestFilter(List<Filter> filters) {
+    private void addSecurityContextHolderAwareRequestFilter(List<Filter> filters) throws ServletException {
         SecurityContextHolderAwareRequestFilter securityFilter = new SecurityContextHolderAwareRequestFilter();
+        securityFilter.setTrustResolver(new AuthenticationTrustResolverImpl());
+        securityFilter.afterPropertiesSet();
         filters.add(securityFilter);
     }
 
@@ -266,7 +274,7 @@ public class SecurityRuleBuilder {
 
             if (securityRule.getMethodsRequired().contains(ANY) &&
                     (pattern.equals(SecurityConfigConstants.ANY_PATTERN) || "/**".equals(pattern))) {
-                matcher = new AnyRequestMatcher();
+                matcher = AnyRequestMatcher.INSTANCE;
             } else if (securityRule.getMethodsRequired().contains(ANY)) {
                 matcher = new AntPathRequestMatcher(pattern, null);
             } else {
@@ -323,7 +331,7 @@ public class SecurityRuleBuilder {
         ChannelProcessingFilter channelProcessingFilter = new ChannelProcessingFilter();
         channelProcessingFilter.setChannelDecisionManager(channelDecisionManager);
 
-        RequestMatcher anyRequest = new AnyRequestMatcher();
+        RequestMatcher anyRequest = AnyRequestMatcher.INSTANCE;
 
         LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap = new LinkedHashMap<>();
         Collection<ConfigAttribute> configAtts = new ArrayList<>();

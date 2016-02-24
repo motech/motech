@@ -4,7 +4,7 @@ import org.motechproject.security.domain.MotechURLSecurityRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.RequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;

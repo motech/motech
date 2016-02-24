@@ -8,7 +8,7 @@
     <properties>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
         <module.version>3.2.16.RELEASE_1</module.version>
-        <spring.version>3.2.16.RELEASE</spring.version>
+        <spring.import.version>3.2.16.RELEASE</spring.import.version>
     </properties>
 
     <groupId>org.springframework</groupId>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
-            <version>3.2.16.RELEASE</version>
+            <version>${spring.import.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -134,47 +134,47 @@
                             org.hibernate.type;version="[3.3.1,5)";resolution:=optional,
                             org.hibernate.usertype;version="[3.3.1,5)";resolution:=optional,
                             org.hibernate.util;version="[3.3.1,5)";resolution:=optional,
-                            org.springframework.aop.scope;version="[${spring.version},3.3)",
-                            org.springframework.aop.support;version="[${spring.version},3.3)",
-                            org.springframework.beans;version="[${spring.version},3.3)",
-                            org.springframework.beans.factory;version="[${spring.version},3.3)",
-                            org.springframework.beans.factory.annotation;version="[${spring.version},3.3)",
-                            org.springframework.beans.factory.config;version="[${spring.version},3.3)",
-                            org.springframework.beans.factory.support;version="[${spring.version},3.3)",
-                            org.springframework.context;version="[${spring.version},3.3)",
-                            org.springframework.context.weaving;version="[${spring.version},3.3)",
-                            org.springframework.core;version="[${spring.version},3.3)",
-                            org.springframework.core.io;version="[${spring.version},3.3)",
-                            org.springframework.core.io.support;version="[${spring.version},3.3)",
-                            org.springframework.core.type;version="[${spring.version},3.3)",
-                            org.springframework.core.type.classreading;version="[${spring.version},3.3)",
-                            org.springframework.core.type.filter;version="[${spring.version},3.3)",
-                            org.springframework.dao;version="[${spring.version},3.3)",
-                            org.springframework.dao.support;version="[${spring.version},3.3)",
-                            org.springframework.instrument;version="[${spring.version},3.3)";resolution:=optional,
-                            org.springframework.instrument.classloading;version="[${spring.version},3.3)";resolution:=optional,
-                            org.springframework.jdbc;version="[${spring.version},3.3)",
-                            org.springframework.jdbc.datasource;version="[${spring.version},3.3)",
-                            org.springframework.jdbc.datasource.lookup;version="[${spring.version},3.3)",
-                            org.springframework.jdbc.support;version="[${spring.version},3.3)",
-                            org.springframework.jdbc.support.lob;version="[${spring.version},3.3)",
-                            org.springframework.jndi;version="[${spring.version},3.3)";resolution:=optional,
-                            org.springframework.transaction;version="[${spring.version},3.3)",
-                            org.springframework.transaction.jta;version="[${spring.version},3.3)",
-                            org.springframework.transaction.support;version="[${spring.version},3.3)",
-                            org.springframework.ui;version="[${spring.version},3.3)";resolution:=optional,
-                            org.springframework.util;version="[${spring.version},3.3)";resolution:=optional,
-                            org.springframework.util.xml;version="[${spring.version},3.3)";resolution:=optional,
-                            org.springframework.web.context;version="[${spring.version},3.3)";resolution:=optional,
-                            org.springframework.web.context.request;version="[${spring.version},3.3)";resolution:=optional,
-                            org.springframework.web.context.request.async;version="[${spring.version},3.3)";resolution:=optional,
-                            org.springframework.web.context.support;version="[${spring.version},3.3)";resolution:=optional,
-                            org.springframework.web.filter;version="[${spring.version},3.3)";resolution:=optional,
+                            org.springframework.aop.scope;version="[${spring.import.version},3.3)",
+                            org.springframework.aop.support;version="[${spring.import.version},3.3)",
+                            org.springframework.beans;version="[${spring.import.version},3.3)",
+                            org.springframework.beans.factory;version="[${spring.import.version},3.3)",
+                            org.springframework.beans.factory.annotation;version="[${spring.import.version},3.3)",
+                            org.springframework.beans.factory.config;version="[${spring.import.version},3.3)",
+                            org.springframework.beans.factory.support;version="[${spring.import.version},3.3)",
+                            org.springframework.context;version="[${spring.import.version},3.3)",
+                            org.springframework.context.weaving;version="[${spring.import.version},3.3)",
+                            org.springframework.core;version="[${spring.import.version},3.3)",
+                            org.springframework.core.io;version="[${spring.import.version},3.3)",
+                            org.springframework.core.io.support;version="[${spring.import.version},3.3)",
+                            org.springframework.core.type;version="[${spring.import.version},3.3)",
+                            org.springframework.core.type.classreading;version="[${spring.import.version},3.3)",
+                            org.springframework.core.type.filter;version="[${spring.import.version},3.3)",
+                            org.springframework.dao;version="[${spring.import.version},3.3)",
+                            org.springframework.dao.support;version="[${spring.import.version},3.3)",
+                            org.springframework.instrument;version="[${spring.import.version},3.3)";resolution:=optional,
+                            org.springframework.instrument.classloading;version="[${spring.import.version},3.3)";resolution:=optional,
+                            org.springframework.jdbc;version="[${spring.import.version},3.3)",
+                            org.springframework.jdbc.datasource;version="[${spring.import.version},3.3)",
+                            org.springframework.jdbc.datasource.lookup;version="[${spring.import.version},3.3)",
+                            org.springframework.jdbc.support;version="[${spring.import.version},3.3)",
+                            org.springframework.jdbc.support.lob;version="[${spring.import.version},3.3)",
+                            org.springframework.jndi;version="[${spring.import.version},3.3)";resolution:=optional,
+                            org.springframework.transaction;version="[${spring.import.version},3.3)",
+                            org.springframework.transaction.jta;version="[${spring.import.version},3.3)",
+                            org.springframework.transaction.support;version="[${spring.import.version},3.3)",
+                            org.springframework.ui;version="[${spring.import.version},3.3)";resolution:=optional,
+                            org.springframework.util;version="[${spring.import.version},3.3)";resolution:=optional,
+                            org.springframework.util.xml;version="[${spring.import.version},3.3)";resolution:=optional,
+                            org.springframework.web.context;version="[${spring.import.version},3.3)";resolution:=optional,
+                            org.springframework.web.context.request;version="[${spring.import.version},3.3)";resolution:=optional,
+                            org.springframework.web.context.request.async;version="[${spring.import.version},3.3)";resolution:=optional,
+                            org.springframework.web.context.support;version="[${spring.import.version},3.3)";resolution:=optional,
+                            org.springframework.web.filter;version="[${spring.import.version},3.3)";resolution:=optional,
                             org.w3c.dom;resolution:=optional,
                             org.xml.sax;resolution:=optional
                         </Import-Package>
                         <Export-Package>
-                            org.springframework.orm*;version=${spring.version}
+                            org.springframework.orm*;version=${spring.import.version}
                         </Export-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
