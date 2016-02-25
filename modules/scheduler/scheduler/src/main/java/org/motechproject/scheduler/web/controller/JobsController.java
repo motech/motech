@@ -1,5 +1,6 @@
 package org.motechproject.scheduler.web.controller;
 
+import org.motechproject.scheduler.constants.SchedulerConstants;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
 import org.motechproject.scheduler.contract.JobsSearchSettings;
@@ -9,6 +10,7 @@ import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.web.domain.JobsRecords;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +34,7 @@ import java.util.List;
  * */
 
 @Controller
+@PreAuthorize(SchedulerConstants.VIEW_SCHEDULER_JOBS)
 public class JobsController {
 
     @Autowired

@@ -1,4 +1,4 @@
-package org.motechproject.tasks.ex;
+package org.motechproject.tasks.exception;
 
 import static java.lang.String.format;
 

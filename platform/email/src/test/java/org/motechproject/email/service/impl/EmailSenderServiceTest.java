@@ -4,8 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.email.contract.Mail;
-import org.motechproject.email.service.EmailAuditService;
+import org.motechproject.email.domain.Mail;
 import org.motechproject.email.service.EmailRecordService;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.server.config.SettingsFacade;
@@ -37,11 +36,11 @@ public class EmailSenderServiceTest {
 
     @Test
     public void shouldSendCriticalNotification() throws Exception {
-        Mail mail = new Mail("from", "to", "subject", "text");
-        when(settings.getProperty(anyString())).thenReturn("true");
-        emailSender.send(mail);
 
-        verify(javaMailSender).send(new MotechMimeMessagePreparator(mail));
+        when(settings.getProperty(anyString())).thenReturn("true");
+        emailSender.send( "from", "to", "subject", "text");
+
+        verify(javaMailSender).send(new MotechMimeMessagePreparator(new Mail ("from", "to", "subject", "text")));
     }
 
 }

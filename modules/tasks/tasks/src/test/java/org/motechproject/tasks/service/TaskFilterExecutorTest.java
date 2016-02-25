@@ -14,7 +14,7 @@ import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskBuilder;
 import org.motechproject.tasks.domain.TaskConfig;
-import org.motechproject.tasks.ex.TaskHandlerException;
+import org.motechproject.tasks.exception.TaskHandlerException;
 
 import java.util.ArrayList;
 import java.util.HashMap;

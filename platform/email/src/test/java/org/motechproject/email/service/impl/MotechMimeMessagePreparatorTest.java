@@ -2,7 +2,7 @@ package org.motechproject.email.service.impl;
 
 import org.hamcrest.core.IsEqual;
 import org.junit.Test;
-import org.motechproject.email.contract.Mail;
+import org.motechproject.email.domain.Mail;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;

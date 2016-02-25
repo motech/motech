@@ -1,4 +1,4 @@
-package org.motechproject.event.messaging;
+package org.motechproject.event.messaging.impl;
 
 import org.motechproject.event.MotechEvent;
 
