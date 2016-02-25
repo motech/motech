@@ -1409,7 +1409,6 @@
                 entity.name = value;
                 blockUI();
                 $scope.clearEntityModal();
-
                 Entities.save({}, entity, function (response) {
                     $scope.selectedEntity = response;
                     angular.element('#selectEntity').select2('val', response.id);
