@@ -21,10 +21,11 @@ public final class StateManagerUtil {
      *
      * @param instance  the instance from which state manager will be retrieved
      * @param versionFieldName the name of the version field
+     * @param transientObject the instance from which transaction version will be retrieved
      */
-    public static void setTransactionVersion(Object instance, String versionFieldName) {
+    public static void setTransactionVersion(Object instance, String versionFieldName, Object transientObject) {
         try {
-            setTransactionVersion(instance, PropertyUtil.getProperty(instance, versionFieldName), versionFieldName);
+            setTransactionVersion(instance, PropertyUtil.getProperty(transientObject, versionFieldName), versionFieldName);
         } catch (IllegalAccessException | InvocationTargetException| NoSuchMethodException e) {
             throw new PropertyCopyException("Unable to copy properties for " + instance.getClass().getName(), e);
         }

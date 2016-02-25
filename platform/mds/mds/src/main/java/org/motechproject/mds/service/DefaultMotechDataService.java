@@ -225,9 +225,8 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
             PropertyUtil.copyProperties(fromDbInstance, transientObject, null, fieldsToUpdate);
 
             if (versionFieldName != null) {
-                StateManagerUtil.setTransactionVersion(fromDbInstance, versionFieldName);
+                StateManagerUtil.setTransactionVersion(fromDbInstance, versionFieldName, transientObject);
             }
-
             updateModificationData(fromDbInstance);
 
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
@@ -352,7 +351,22 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     @Override
     @Transactional
+    public T detachedCopy(T object) {
+        return repository.detachedCopy(object);
+    }
+
+    @Override
+    @Transactional
+    public Object getDetachedField(Long id, String fieldName) {
+        return getDetachedField(findById(id), fieldName);
+    }
+
+    @Override
+    @Transactional
     public Object getDetachedField(T instance, String fieldName) {
+        if (JDOHelper.getObjectState(instance) == ObjectState.TRANSIENT) {
+            return repository.getDetachedField(findById((Long) getId(instance)), fieldName);
+        }
         return repository.getDetachedField(instance, fieldName);
     }
 

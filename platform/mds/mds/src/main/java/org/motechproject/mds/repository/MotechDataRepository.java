@@ -5,6 +5,7 @@ import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
 import org.springframework.stereotype.Repository;
@@ -176,8 +177,12 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
         return QueryExecutor.executeDelete(query, values, restriction);
     }
 
+    public T detachedCopy(T object) {
+        return getPersistenceManager().detachCopy(object);
+    }
+
     public Object getDetachedField(T instance, String field) {
-        T attached = getPersistenceManager().makePersistent(instance);
+        T attached = retrieve(PropertyUtil.safeGetProperty(instance, Constants.Util.ID_FIELD_NAME));
         return PropertyUtil.safeGetProperty(attached, field);
     }
 
