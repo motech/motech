@@ -173,7 +173,7 @@
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,
-                            org.motechproject.server.config,
+                            org.motechproject.config,
                             org.motechproject.config.service,
                             org.springframework.aop,
                             org.springframework.aop.framework,
