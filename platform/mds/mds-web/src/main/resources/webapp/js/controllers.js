@@ -1403,17 +1403,17 @@
                 value = input.val(),
                 entity = {};
 
+
+
             if (isBlank(value)) {
                 help.removeClass('hide');
             } else {
                 entity.name = value;
                 blockUI();
-
+                $scope.clearEntityModal();
                 Entities.save({}, entity, function (response) {
                     $scope.selectedEntity = response;
                     angular.element('#selectEntity').select2('val', response.id);
-
-                    $scope.clearEntityModal();
                     unblockUI();
                 }, function (response) {
                     handleResponse('mds.error', 'mds.error.cantSaveEntity', response);
@@ -1442,6 +1442,8 @@
             form.resetForm();
             modal.modal('hide');
         };
+
+
 
         /**
         * Deletes the selected entity. If the entity is read only (provided by module), action is
