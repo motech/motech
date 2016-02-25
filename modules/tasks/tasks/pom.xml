@@ -160,6 +160,8 @@
                             org.springframework.cglib.proxy,
                             org.springframework.cglib.reflect,
                             org.springframework.context.config,
+                            org.springframework.security.core,
+                            org.springframework.security.config,
                             org.springframework.transaction,
                             org.springframework.validation.beanvalidation,
                             org.springframework.web.multipart.commons,

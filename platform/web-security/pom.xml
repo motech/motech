@@ -73,8 +73,8 @@
             <artifactId>spring-security-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-security-config</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -206,9 +206,6 @@
                             org.springframework.security.openid,
                             org.springframework.security.web.authentication.www,
                             org.openid4java.consumer,
-                            net.sf.cglib.proxy,
-                            net.sf.cglib.reflect,
-                            net.sf.cglib.core,
                             org.motechproject.scheduler.contract;resolution:=optional,
                             org.motechproject.scheduler.service;resolution:=optional,
                             *

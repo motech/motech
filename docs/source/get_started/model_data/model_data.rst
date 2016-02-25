@@ -2269,12 +2269,12 @@ might be required to explicitly import the following packages (example of the bu
 .. code-block:: xml
 
        <Import-Package>
-            net.sf.cglib.core,
-            net.sf.cglib.proxy,
-            net.sf.cglib.reflect,
             org.aopalliance.aop,
             org.springframework.aop,
             org.springframework.aop.framework,
+            org.springframework.cglib.core,
+            org.springframework.cglib.proxy,
+            org.springframework.cglib.reflect,
             org.springframework.transaction,
             *
         </Import-Package>

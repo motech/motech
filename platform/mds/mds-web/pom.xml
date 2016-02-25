@@ -75,9 +75,6 @@
                             org.motechproject.mds.web.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            net.sf.cglib.core,
-                            net.sf.cglib.proxy,
-                            net.sf.cglib.reflect,
                             org.aopalliance.aop,
                             org.apache.bval.jsr303,
                             org.apache.bval.constraints,
