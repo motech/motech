@@ -9,6 +9,7 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.domain.mds.channel.Channel;
 import org.motechproject.tasks.json.TaskDeserializer;
 
 import javax.jdo.annotations.Unique;

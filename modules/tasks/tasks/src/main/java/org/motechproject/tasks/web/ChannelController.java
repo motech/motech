@@ -1,7 +1,7 @@
 package org.motechproject.tasks.web;
 
 import org.motechproject.server.api.BundleIcon;
-import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.mds.channel.Channel;
 import org.motechproject.tasks.domain.TriggersList;
 import org.motechproject.tasks.domain.TriggersLists;
 import org.motechproject.tasks.service.ChannelService;
@@ -68,6 +68,14 @@ public class ChannelController {
         response.getOutputStream().write(bundleIcon.getIcon());
     }
 
+    /**
+     * Returns the list of triggers provider by the module with the given {@code moduleName}.
+     *
+     * @param moduleName  the name of the module
+     * @param staticTriggersPage  the number of the page of static trigger
+     * @param dynamicTriggersPage  the number of the page of dynamic trigger
+     * @return the list of both static and dynamic triggers
+     */
     @RequestMapping(value = "channel/triggers", method = RequestMethod.GET)
     @ResponseBody
     public TriggersLists getTriggers(@RequestParam String moduleName,

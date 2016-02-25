@@ -1,10 +1,10 @@
-package org.motechproject.tasks.domain;
+package org.motechproject.tasks.domain.mds.channel;
 
 /**
  * The <code>MethodCallManner</code> enumerates possible call manners of an <code>ActionEvent</code> service method.
  * It also implies expected signature of this method.
  *
- * @see org.motechproject.tasks.domain.ActionEvent
+ * @see ActionEvent
  */
 public enum MethodCallManner {
     /**

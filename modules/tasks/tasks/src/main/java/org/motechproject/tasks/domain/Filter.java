@@ -11,8 +11,6 @@ import org.motechproject.tasks.constants.TasksRoles;
 import java.io.Serializable;
 import java.util.Objects;
 
-import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
-
 /**
  * Represents a single filter. A filter is a part of the {@link FilterSet} and represents a single condition that task
  * must meet before being executed. If that condition is not met the task execution will be stopped. It is an optional
@@ -48,27 +46,6 @@ public class Filter implements Serializable {
      */
     public Filter() {
         this(null, null, null, false, null, null);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param eventParameter  the event parameter
-     * @param negationOperator  defines if the represented operator should be negated
-     * @param operator  the filter operator
-     * @param expression  the filter operator
-     */
-    public Filter(EventParameter eventParameter, boolean negationOperator, String operator,
-                  String expression) {
-        this.negationOperator = negationOperator;
-        this.operator = operator;
-        this.expression = expression;
-
-        if (eventParameter != null) {
-            this.displayName = String.format("%s (Trigger)", eventParameter.getDisplayName());
-            this.key = String.format("%s.%s", TRIGGER_PREFIX, eventParameter.getEventKey());
-            this.type = eventParameter.getType();
-        }
     }
 
     /**

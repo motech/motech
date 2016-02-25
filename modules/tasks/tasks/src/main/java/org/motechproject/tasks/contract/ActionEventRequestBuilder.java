@@ -98,7 +98,7 @@ public class ActionEventRequestBuilder {
     /**
      * Sets the service method call manner of the action event to be built.
      *
-     * @param serviceMethodCallManner  the action event service method call manner, for supported values see {@see org.motechproject.tasks.domain.MethodCallManner}
+     * @param serviceMethodCallManner  the action event service method call manner, for supported values see {@see org.motechproject.tasks.domain.mds.channel.MethodCallManner}
      * @return the reference to this object
      */
     public ActionEventRequestBuilder setServiceMethodCallManner(String serviceMethodCallManner) {

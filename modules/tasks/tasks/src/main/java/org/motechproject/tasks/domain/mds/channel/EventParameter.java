@@ -1,4 +1,4 @@
-package org.motechproject.tasks.domain;
+package org.motechproject.tasks.domain.mds.channel;
 
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.CrudEvents;
@@ -7,7 +7,8 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
-import org.motechproject.tasks.contract.EventParameterRequest;
+import org.motechproject.tasks.domain.Parameter;
+import org.motechproject.tasks.domain.ParameterType;
 
 import java.util.Objects;
 
@@ -54,13 +55,8 @@ public class EventParameter extends Parameter {
         this.eventKey = eventKey;
     }
 
-    /**
-     * Constructor.
-     *
-     * @param eventParameterRequest  the request for event parameter, not null
-     */
-    public EventParameter(EventParameterRequest eventParameterRequest) {
-        this(eventParameterRequest.getDisplayName(), eventParameterRequest.getEventKey(), ParameterType.fromString(eventParameterRequest.getType()));
+    public EventParameter(EventParameter eventParameter) {
+        this(eventParameter.getDisplayName(), eventParameter.getEventKey(), eventParameter.getType());
     }
 
     public String getEventKey() {

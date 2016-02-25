@@ -2,9 +2,9 @@ package org.motechproject.tasks.validation;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
-import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionParameter;
-import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.channel.ActionParameter;
+import org.motechproject.tasks.domain.mds.channel.Channel;
 import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.FilterSet;
@@ -20,8 +20,9 @@ import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
-import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.service.TriggerEventService;
+import org.motechproject.tasks.util.ChannelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -105,7 +106,7 @@ public class TaskValidator extends GeneralValidator {
      */
     public Set<TaskError> validateAction(TaskActionInformation actionInformation, Channel channel) {
         Set<TaskError> errors = new HashSet<>();
-        boolean exists = channel.containsAction(actionInformation);
+        boolean exists = ChannelUtils.containsAction(channel, actionInformation);
 
 
         if (!exists) {

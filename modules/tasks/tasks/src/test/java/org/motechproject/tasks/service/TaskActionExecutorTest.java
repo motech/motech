@@ -6,9 +6,9 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.tasks.domain.ActionEventBuilder;
-import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionParameter;
+import org.motechproject.tasks.domain.mds.channel.builder.ActionEventBuilder;
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.channel.ActionParameter;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskBuilder;
@@ -43,7 +43,7 @@ public class TaskActionExecutorTest {
     public void shouldRaiseEventIfActionHasSubject() throws ActionNotFoundException, TaskHandlerException {
         TaskActionInformation actionInformation = new TaskActionInformation("action", "channel", "module", "0.1", "actionSubject");
         ActionEvent actionEvent = new ActionEventBuilder().setDisplayName("Action").setSubject("actionSubject")
-                .setDescription("").setActionParameters(new TreeSet<ActionParameter>()).createActionEvent();
+                .setDescription("").setActionParameters(new TreeSet<>()).build();
         when(taskService.getActionEventFor(actionInformation)).thenReturn(actionEvent);
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
@@ -53,7 +53,7 @@ public class TaskActionExecutorTest {
 
         taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
 
-        MotechEvent raisedEvent = new MotechEvent("actionSubject", new HashMap<String, Object>());
+        MotechEvent raisedEvent = new MotechEvent("actionSubject", new HashMap<>());
         verify(eventRelay).sendEventMessage(raisedEvent);
     }
 
@@ -61,8 +61,8 @@ public class TaskActionExecutorTest {
     public void shouldRaiseEventWhenActionHasSubjectAndService_IfServiceIsNotAvailable() throws TaskHandlerException, ActionNotFoundException {
         TaskActionInformation actionInformation = new TaskActionInformation("action", "channel", "module", "0.1", "serviceInterface", "serviceMethod");
         ActionEvent actionEvent = new ActionEventBuilder().setDisplayName("Action").setSubject("actionSubject")
-                .setDescription("").setServiceInterface("serviceInterface").setServiceMethod("serviceMethod").setActionParameters(new TreeSet<ActionParameter>()).createActionEvent();
-        actionEvent.setActionParameters(new TreeSet<ActionParameter>());
+                .setDescription("").setServiceInterface("serviceInterface").setServiceMethod("serviceMethod").setActionParameters(new TreeSet<ActionParameter>()).build();
+        actionEvent.setActionParameters(new TreeSet<>());
         when(taskService.getActionEventFor(actionInformation)).thenReturn(actionEvent);
 
         when(bundleContext.getServiceReference("serviceInterface")).thenReturn(null);
@@ -82,7 +82,7 @@ public class TaskActionExecutorTest {
         TaskActionInformation actionInformation = new TaskActionInformation("action", "channel", "module", "0.1", "serviceInterface", "serviceMethod");
         ActionEvent actionEvent = new ActionEventBuilder().setDisplayName("Action").setSubject("actionSubject")
                 .setDescription("").setServiceInterface("serviceInterface").setServiceMethod("serviceMethod")
-                .setActionParameters(new TreeSet<ActionParameter>()).createActionEvent();
+                .setActionParameters(new TreeSet<>()).build();
         when(taskService.getActionEventFor(actionInformation)).thenReturn(actionEvent);
 
         ServiceReference serviceReference = mock(ServiceReference.class);
@@ -104,7 +104,7 @@ public class TaskActionExecutorTest {
         TaskActionInformation actionInformation = new TaskActionInformation("action", "channel", "module", "0.1", "serviceInterface", "serviceMethod");
         ActionEvent actionEvent = new ActionEventBuilder().setDisplayName("Action")
                 .setDescription("").setServiceInterface("serviceInterface").setServiceMethod("serviceMethod")
-                .setActionParameters(new TreeSet<ActionParameter>()).createActionEvent();
+                .setActionParameters(new TreeSet<>()).build();
         when(taskService.getActionEventFor(actionInformation)).thenReturn(actionEvent);
 
         ServiceReference serviceReference = mock(ServiceReference.class);
@@ -127,8 +127,8 @@ public class TaskActionExecutorTest {
         TaskActionInformation actionInformation = new TaskActionInformation("action", "channel", "module", "0.1", "serviceInterface", "serviceMethod");
         ActionEvent actionEvent = new ActionEventBuilder().setDisplayName("Action")
                 .setDescription("").setServiceInterface("serviceInterface").setServiceMethod("serviceMethod")
-                .setActionParameters(new TreeSet<ActionParameter>()).createActionEvent();
-        actionEvent.setActionParameters(new TreeSet<ActionParameter>());
+                .setActionParameters(new TreeSet<>()).build();
+        actionEvent.setActionParameters(new TreeSet<>());
         when(taskService.getActionEventFor(actionInformation)).thenReturn(actionEvent);
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
@@ -143,8 +143,8 @@ public class TaskActionExecutorTest {
         TaskActionInformation actionInformation = new TaskActionInformation("action", "channel", "module", "0.1", "serviceInterface", "serviceMethod");
         ActionEvent actionEvent = new ActionEventBuilder().setDisplayName("Action")
                 .setDescription("").setServiceInterface("serviceInterface").setServiceMethod("serviceMethod")
-                .setActionParameters(new TreeSet<ActionParameter>()).createActionEvent();
-        actionEvent.setActionParameters(new TreeSet<ActionParameter>());
+                .setActionParameters(new TreeSet<>()).build();
+        actionEvent.setActionParameters(new TreeSet<>());
         when(taskService.getActionEventFor(actionInformation)).thenReturn(actionEvent);
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
@@ -159,8 +159,8 @@ public class TaskActionExecutorTest {
         TaskActionInformation actionInformation = new TaskActionInformation("action", "channel", "module", "0.1", "serviceInterface", "serviceMethod");
         ActionEvent actionEvent = new ActionEventBuilder().setDisplayName("Action").setSubject("actionSubject")
                 .setDescription("").setServiceInterface("serviceInterface").setServiceMethod("serviceMethod")
-                .setActionParameters(new TreeSet<ActionParameter>()).createActionEvent();
-        actionEvent.setActionParameters(new TreeSet<ActionParameter>());
+                .setActionParameters(new TreeSet<>()).build();
+        actionEvent.setActionParameters(new TreeSet<>());
         when(taskService.getActionEventFor(actionInformation)).thenReturn(actionEvent);
 
         when(bundleContext.getServiceReference("serviceInterface")).thenReturn(null);

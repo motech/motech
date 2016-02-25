@@ -1,9 +1,9 @@
 package org.motechproject.tasks.validation;
 
 import org.motechproject.tasks.domain.TaskError;
-import org.motechproject.tasks.domain.EventParameter;
+import org.motechproject.tasks.domain.mds.channel.EventParameter;
 import org.motechproject.tasks.domain.FieldParameter;
-import org.motechproject.tasks.domain.ActionParameter;
+import org.motechproject.tasks.domain.mds.channel.ActionParameter;
 import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.domain.Parameter;
 import org.osgi.framework.Version;

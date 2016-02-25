@@ -1,13 +1,15 @@
-package org.motechproject.tasks.domain;
+package org.motechproject.tasks.domain.mds.channel.builder;
 
 import org.motechproject.tasks.contract.ActionParameterRequest;
+import org.motechproject.tasks.domain.ParameterType;
+import org.motechproject.tasks.domain.mds.channel.ActionParameter;
 
 import java.util.SortedSet;
 
 /**
  * The <code>ActionParameterBuilder</code> class provides methods for constructing action parameters.
  *
- * @see org.motechproject.tasks.domain.ActionParameter
+ * @see ActionParameter
  */
 public class ActionParameterBuilder {
     private String displayName;
@@ -64,7 +66,7 @@ public class ActionParameterBuilder {
      *
      * @return the created instance
      */
-    public ActionParameter createActionParameter() {
+    public ActionParameter build() {
         return new ActionParameter(displayName, type, order, key, value, required, hidden, options);
     }
 
@@ -85,26 +87,6 @@ public class ActionParameterBuilder {
         builder.setRequired(actionParameterRequest.isRequired());
         builder.setHidden(actionParameterRequest.isHidden());
         builder.setOptions(actionParameterRequest.getOptions());
-        return builder;
-    }
-
-    /**
-     * Builds an object of the {@code ActionParameterBuilder} class based on the passed {@code ActionParameter}
-     * instance.
-     *
-     * @param actionParameter  the action parameter request, not null
-     * @return a builder ready to build a new instance of the {@code ActionParameter} class
-     */
-    public static ActionParameterBuilder fromActionParameter(ActionParameter actionParameter) {
-        ActionParameterBuilder builder = new ActionParameterBuilder();
-        builder.setDisplayName(actionParameter.getDisplayName());
-        builder.setType(actionParameter.getType());
-        builder.setOrder(actionParameter.getOrder());
-        builder.setKey(actionParameter.getKey());
-        builder.setValue(actionParameter.getValue());
-        builder.setRequired(actionParameter.isRequired());
-        builder.setHidden(actionParameter.isHidden());
-        builder.setOptions(actionParameter.getOptions());
         return builder;
     }
 }

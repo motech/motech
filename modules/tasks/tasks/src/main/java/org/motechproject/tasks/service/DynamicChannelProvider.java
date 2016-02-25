@@ -1,4 +1,7 @@
-package org.motechproject.tasks.domain;
+package org.motechproject.tasks.service;
+
+import org.motechproject.tasks.domain.TaskTriggerInformation;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package org.motechproject.tasks.domain;
+package org.motechproject.tasks.domain.mds.channel;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -9,9 +9,6 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
-import org.motechproject.tasks.contract.ActionEventRequest;
-import org.motechproject.tasks.contract.ChannelRequest;
-import org.motechproject.tasks.contract.TriggerEventRequest;
 
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.Unique;
@@ -97,59 +94,6 @@ public class Channel {
         this.providesTriggers = CollectionUtils.isNotEmpty(triggerTaskEvents);
     }
 
-    /**
-     * Constructor.
-     *
-     * @param channelRequest  the channel request, not null
-     */
-    public Channel(ChannelRequest channelRequest) {
-        this(channelRequest.getDisplayName(), channelRequest.getModuleName(), channelRequest.getModuleVersion(),
-                channelRequest.getDescription(),
-                getTriggerTaskEventsFoRequest(channelRequest), getActionTaskEventsForRequest(channelRequest));
-    }
-
-    private static List<TriggerEvent> getTriggerTaskEventsFoRequest(ChannelRequest channelRequest) {
-        List<TriggerEvent> triggerTaskEvents = new ArrayList<>();
-        for (TriggerEventRequest triggerEventRequest : channelRequest.getTriggerTaskEvents()) {
-            triggerTaskEvents.add(new TriggerEvent(triggerEventRequest));
-        }
-        return triggerTaskEvents;
-    }
-
-    private static List<ActionEvent> getActionTaskEventsForRequest(ChannelRequest channelRequest) {
-        List<ActionEvent> actionTaskEvents = new ArrayList<>();
-        for (ActionEventRequest actionEventRequest : channelRequest.getActionTaskEvents()) {
-            actionTaskEvents.add(ActionEventBuilder.fromActionEventRequest(actionEventRequest).createActionEvent());
-        }
-        return actionTaskEvents;
-    }
-
-    public boolean containsAction(TaskActionInformation actionInformation) {
-        boolean found = false;
-
-        for (ActionEvent action : getActionTaskEvents()) {
-            if (action.accept(actionInformation)) {
-                found = true;
-                break;
-            }
-        }
-
-        return found;
-    }
-
-    public ActionEvent getAction(TaskActionInformation actionInformation) {
-        ActionEvent found = null;
-
-        for (ActionEvent action : getActionTaskEvents()) {
-            if (action.accept(actionInformation)) {
-                found = action;
-                break;
-            }
-        }
-
-        return found;
-    }
-
     public void addActionTaskEvent(ActionEvent actionEvent) {
         actionTaskEvents.add(actionEvent);
     }
@@ -163,7 +107,7 @@ public class Channel {
 
         if (actionTaskEvents != null) {
             for (ActionEvent action : actionTaskEvents) {
-                addActionTaskEvent(ActionEventBuilder.fromActionEvent(action).createActionEvent());
+                addActionTaskEvent(new ActionEvent(action));
             }
         }
     }
@@ -177,7 +121,7 @@ public class Channel {
 
         if (triggerTaskEvents != null) {
             for (TriggerEvent trigger : triggerTaskEvents) {
-                this.triggerTaskEvents.add(trigger.copy());
+                this.triggerTaskEvents.add(new TriggerEvent(trigger));
             }
         }
 

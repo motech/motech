@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.motechproject.tasks.domain.DataSource;
-import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.FilterSet;
 import org.motechproject.tasks.domain.Lookup;
@@ -30,6 +29,7 @@ import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.junit.runners.Parameterized.Parameters;
+import static org.motechproject.tasks.domain.ParameterType.UNICODE;
 
 @RunWith(Parameterized.class)
 public class TaskDeserializerTest {
@@ -38,8 +38,8 @@ public class TaskDeserializerTest {
 
     static {
         List<Filter> filters = new ArrayList<>();
-        filters.add(new Filter(new EventParameter("Concept name", "ObservationConceptName"), true, "equals", "pregnancy_urine_test"));
-        filters.add(new Filter(new EventParameter("Observation value", "ObservationValue"), true, "equals", "positive"));
+        filters.add(new Filter("Concept name (Trigger)", "trigger.ObservationConceptName", UNICODE, true, "equals", "pregnancy_urine_test"));
+        filters.add(new Filter("Observation value (Trigger)", "trigger.ObservationValue", UNICODE, true, "equals", "positive"));
 
         String name = "Pregnancy SMS";
 

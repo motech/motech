@@ -1,7 +1,10 @@
-package org.motechproject.tasks.domain;
+package org.motechproject.tasks.domain.mds.channel.builder;
 
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.channel.ActionParameter;
+import org.motechproject.tasks.domain.mds.channel.MethodCallManner;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -11,7 +14,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 /**
  * The <code>ActionEventBuilder</code> class provides methods for constructing action events.
  *
- * @see org.motechproject.tasks.domain.ActionEvent
+ * @see ActionEvent
  */
 public class ActionEventBuilder {
 
@@ -69,7 +72,7 @@ public class ActionEventBuilder {
      *
      * @return the created instance
      */
-    public ActionEvent createActionEvent() {
+    public ActionEvent build() {
         return new ActionEvent(name, description, displayName, subject, serviceInterface, serviceMethod,
                 serviceMethodCallManner, actionParameters);
     }
@@ -100,37 +103,8 @@ public class ActionEventBuilder {
     private static SortedSet<ActionParameter> mapActionParameters(SortedSet<ActionParameterRequest> actionParameterRequests) {
         SortedSet<ActionParameter> actionParameters = new TreeSet<>();
         for (ActionParameterRequest actionParameterRequest : actionParameterRequests) {
-            actionParameters.add(ActionParameterBuilder.fromActionParameterRequest(actionParameterRequest)
-                    .createActionParameter());
+            actionParameters.add(ActionParameterBuilder.fromActionParameterRequest(actionParameterRequest).build());
         }
         return actionParameters;
-    }
-
-    /**
-     * Builds an object of the {@code ActionEventBuilder} class based on the passed {@code ActionEvent} instance.
-     *
-     * @param actionEventRequest  the action event, not null
-     * @return the instance of the {@code ActionEventBuilder} class ready to build instance of the {@code ActionEvent} class
-     */
-    public static ActionEventBuilder fromActionEvent(ActionEvent actionEventRequest) {
-        ActionEventBuilder builder = new ActionEventBuilder();
-        builder.setName(actionEventRequest.getName());
-        builder.setDescription(actionEventRequest.getDescription());
-        builder.setDisplayName(actionEventRequest.getDisplayName());
-        builder.setSubject(actionEventRequest.getSubject());
-        builder.setServiceInterface(actionEventRequest.getServiceInterface());
-        builder.setServiceMethod(actionEventRequest.getServiceMethod());
-        builder.setServiceMethodCallManner(actionEventRequest.getServiceMethodCallManner());
-        builder.setActionParameters(copyActionParameters(actionEventRequest.getActionParameters()));
-        return builder;
-    }
-
-    private static SortedSet<ActionParameter> copyActionParameters(SortedSet<ActionParameter> actionParameters) {
-        SortedSet<ActionParameter> copiedActionParameters = new TreeSet<>();
-        for (ActionParameter actionParameter : actionParameters) {
-            copiedActionParameters.add(ActionParameterBuilder.fromActionParameter(actionParameter)
-                    .createActionParameter());
-        }
-        return copiedActionParameters;
     }
 }

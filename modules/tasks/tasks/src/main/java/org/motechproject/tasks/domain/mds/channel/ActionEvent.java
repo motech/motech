@@ -1,7 +1,5 @@
-package org.motechproject.tasks.domain;
+package org.motechproject.tasks.domain.mds.channel;
 
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.CrudEvents;
@@ -70,26 +68,13 @@ public class ActionEvent extends TaskEvent {
         this.serviceInterface = serviceInterface;
         this.serviceMethod = serviceMethod;
         this.serviceMethodCallManner = serviceMethodCallManner;
-        this.actionParameters = actionParameters == null ? new TreeSet<ActionParameter>() : actionParameters;
+        this.actionParameters = actionParameters == null ? new TreeSet<>() : actionParameters;
     }
 
-    @JsonIgnore
-    public boolean accept(TaskActionInformation info) {
-        boolean result = false;
-
-        if (null != info.getName() && null != getName()) {
-            if (StringUtils.equals(info.getName(), getName())) {
-                result = true;
-            }
-        } else {
-            if (hasService() && info.hasService() && equalsService(info.getServiceInterface(), info.getServiceMethod())) {
-                result = true;
-            } else if (hasSubject() && info.hasSubject() && equalsSubject(info.getSubject())) {
-                result = true;
-            }
-        }
-
-        return result;
+    public ActionEvent(ActionEvent actionEvent) {
+        this(actionEvent.getName(), actionEvent.getDescription(), actionEvent.getDisplayName(),
+                actionEvent.getSubject(), actionEvent.getServiceInterface(), actionEvent.getServiceMethod(),
+                actionEvent.getServiceMethodCallManner(), copyActionParameters(actionEvent.getActionParameters()));
     }
 
     @Override
@@ -212,5 +197,13 @@ public class ActionEvent extends TaskEvent {
             }
         }
         return isEqual;
+    }
+
+    private static SortedSet<ActionParameter> copyActionParameters(SortedSet<ActionParameter> actionParameters) {
+        SortedSet<ActionParameter> copiedActionParameters = new TreeSet<>();
+        for (ActionParameter actionParameter : actionParameters) {
+            copiedActionParameters.add(new ActionParameter(actionParameter));
+        }
+        return copiedActionParameters;
     }
 }

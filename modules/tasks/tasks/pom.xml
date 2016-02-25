@@ -130,6 +130,8 @@
                             org.motechproject.tasks.service;version=${project.version},
                             org.motechproject.tasks.contract;version=${project.version},
                             org.motechproject.tasks.domain;version=${project.version},
+                            org.motechproject.tasks.domain.mds.channel;version=${project.version},
+                            org.motechproject.tasks.domain.mds.channel.builder;version=${project.version},
                             org.motechproject.tasks.json;version=${project.version},
                             org.motechproject.tasks.repository;version=${project.version},
                             org.motechproject.tasks.annotations;version=${project.version},

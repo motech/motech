@@ -9,18 +9,17 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.server.api.BundleIcon;
-import org.motechproject.tasks.domain.ActionEventBuilder;
-import org.motechproject.tasks.contract.TestActionEventRequestBuilder;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.contract.EventParameterRequest;
+import org.motechproject.tasks.contract.TestActionEventRequestBuilder;
 import org.motechproject.tasks.contract.TriggerEventRequest;
-import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionParameter;
-import org.motechproject.tasks.domain.Channel;
-import org.motechproject.tasks.domain.EventParameter;
-import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.channel.Channel;
+import org.motechproject.tasks.domain.mds.channel.EventParameter;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
+import org.motechproject.tasks.domain.mds.channel.builder.ActionEventBuilder;
 import org.motechproject.tasks.exception.ValidationException;
 import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.repository.TasksDataService;
@@ -174,7 +173,7 @@ public class ChannelServiceImplTest {
         assertEquals(1, channelToBeCreated.getActionTaskEvents().size());
         ActionEvent expectedAction = new ActionEventBuilder().setDisplayName("actionName").setSubject("subject.foo")
                 .setDescription("action description").setServiceInterface("some.interface").setServiceMethod("method")
-                .setActionParameters(new TreeSet<ActionParameter>()).createActionEvent();
+                .setActionParameters(new TreeSet<>()).build();
         ActionEvent actualAction = channelToBeCreated.getActionTaskEvents().get(0);
         assertEquals(expectedAction, actualAction);
     }
@@ -342,7 +341,7 @@ public class ChannelServiceImplTest {
 
 
         Bundle bundle = mock(Bundle.class);
-        when(bundle.getHeaders()).thenReturn(new Hashtable<String, String>());
+        when(bundle.getHeaders()).thenReturn(new Hashtable<>());
         when(bundle.getSymbolicName()).thenReturn(BUNDLE_SYMBOLIC_NAME);
         when(bundle.getResource(anyString())).thenReturn(null);
         Bundle[] bundles = {bundle};
@@ -370,11 +369,11 @@ public class ChannelServiceImplTest {
         Bundle mobileFormsBundle = mock(Bundle.class);
         when(mobileFormsBundle.getSymbolicName()).thenReturn(symbolicName);
         URL iconUrl = new URL("http://some.url");
-        when(mobileFormsBundle.getHeaders()).thenReturn(new Hashtable<String, String>());
+        when(mobileFormsBundle.getHeaders()).thenReturn(new Hashtable<>());
         when(mobileFormsBundle.getResource(anyString())).thenReturn(iconUrl);
 
         Bundle fooBundle = mock(Bundle.class);
-        when(fooBundle.getHeaders()).thenReturn(new Hashtable<String, String>());
+        when(fooBundle.getHeaders()).thenReturn(new Hashtable<>());
         when(fooBundle.getSymbolicName()).thenReturn("org.motechproject.motech-foo-bundle");
 
         BundleIcon expectedIcon = mock(BundleIcon.class);

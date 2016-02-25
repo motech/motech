@@ -1,13 +1,15 @@
-package org.motechproject.tasks.domain;
+package org.motechproject.tasks.domain.mds.channel;
 
-import org.motechproject.mds.annotations.Entity;
-import org.motechproject.mds.annotations.Cascade;
-import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Access;
+import org.motechproject.mds.annotations.Cascade;
+import org.motechproject.mds.annotations.CrudEvents;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.domain.Parameter;
+import org.motechproject.tasks.domain.ParameterType;
 
 import java.util.Objects;
 import java.util.SortedSet;
@@ -70,7 +72,13 @@ public class ActionParameter extends Parameter implements Comparable<ActionParam
         this.value = value;
         this.required = required;
         this.hidden = hidden;
-        this.options = options == null ? new TreeSet<String>() : options;
+        this.options = options == null ? new TreeSet<>() : options;
+    }
+
+    public ActionParameter(ActionParameter actionParameter) {
+        this(actionParameter.getDisplayName(), actionParameter.getType(), actionParameter.getOrder(),
+                actionParameter.getKey(), actionParameter.getValue(), actionParameter.isRequired(),
+                actionParameter.isHidden(), actionParameter.getOptions());
     }
 
     public Integer getOrder() {

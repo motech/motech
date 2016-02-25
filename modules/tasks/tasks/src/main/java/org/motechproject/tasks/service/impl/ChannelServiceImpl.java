@@ -11,8 +11,9 @@ import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
-import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.mds.channel.Channel;
 import org.motechproject.tasks.domain.TaskError;
+import org.motechproject.tasks.domain.mds.channel.builder.ChannelBuilder;
 import org.motechproject.tasks.exception.ValidationException;
 import org.motechproject.tasks.json.ActionEventRequestDeserializer;
 import org.motechproject.tasks.repository.ChannelsDataService;
@@ -84,7 +85,7 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public void registerChannel(ChannelRequest channelRequest) {
         LOGGER.info("Registering channel: {}", channelRequest.getModuleName());
-        addOrUpdate(new Channel(channelRequest));
+        addOrUpdate(ChannelBuilder.fromChannelRequest(channelRequest).build());
     }
 
     @Override

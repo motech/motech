@@ -1,4 +1,4 @@
-package org.motechproject.tasks.domain;
+package org.motechproject.tasks.domain.mds.channel;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -10,8 +10,6 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
-import org.motechproject.tasks.contract.EventParameterRequest;
-import org.motechproject.tasks.contract.TriggerEventRequest;
 
 import javax.jdo.annotations.Persistent;
 import java.util.ArrayList;
@@ -68,21 +66,13 @@ public class TriggerEvent extends TaskEvent {
     }
 
     /**
-     * Class constructor.
+     * Copy constructor.
      *
-     * @param triggerEventRequest  the trigger event request, not null
+     * @param triggerEvent  the object to be copied
      */
-    public TriggerEvent(TriggerEventRequest triggerEventRequest) {
-        this(triggerEventRequest.getDisplayName(), triggerEventRequest.getSubject(), triggerEventRequest.getDescription(),
-                getEventParametersForTriggerEvent(triggerEventRequest), triggerEventRequest.getTriggerListenerSubject());
-    }
-
-    private static List<EventParameter> getEventParametersForTriggerEvent(TriggerEventRequest triggerEventRequest) {
-        List<EventParameter> parameters = new ArrayList<>();
-        for (EventParameterRequest eventParameterRequest : triggerEventRequest.getEventParameters()) {
-            parameters.add(new EventParameter(eventParameterRequest));
-        }
-        return parameters;
+    public TriggerEvent(TriggerEvent triggerEvent) {
+        this(triggerEvent.getDisplayName(), triggerEvent.getSubject(), triggerEvent.getDescription(),
+                copyEventParameters(triggerEvent.getEventParameters()), triggerEvent.getTriggerListenerSubject());
     }
 
     @Override
@@ -165,15 +155,11 @@ public class TriggerEvent extends TaskEvent {
         return type;
     }
 
-    public TriggerEvent copy() {
-        List<EventParameter> eventParametersCopy = new ArrayList<>();
-
-        for (EventParameter eventParameter : getEventParameters()) {
-            eventParametersCopy.add(new EventParameter(eventParameter.getDisplayName(), eventParameter.getEventKey(),
-                    eventParameter.getType()));
+    private static List<EventParameter> copyEventParameters(List<EventParameter> sourceEventParameters) {
+        List<EventParameter> eventParameters = new ArrayList<>();
+        for (EventParameter sourceEventParameter : sourceEventParameters) {
+            eventParameters.add(new EventParameter(sourceEventParameter));
         }
-
-        return new TriggerEvent(getDisplayName(), getSubject(), getDescription(), eventParametersCopy,
-                getTriggerListenerSubject());
+        return eventParameters;
     }
 }

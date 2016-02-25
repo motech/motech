@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.tasks.contract.TestActionEventRequestBuilder;
 import org.motechproject.tasks.contract.ActionParameterRequestBuilder;
-import org.motechproject.tasks.domain.MethodCallManner;
+import org.motechproject.tasks.domain.mds.channel.MethodCallManner;
 import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;

@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.scheduler.service.SchedulerChannelProvider;
-import org.motechproject.tasks.domain.DynamicChannelProvider;
+import org.motechproject.tasks.service.DynamicChannelProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 

@@ -1,5 +1,6 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.web.ChannelController;
 
 import java.util.ArrayList;

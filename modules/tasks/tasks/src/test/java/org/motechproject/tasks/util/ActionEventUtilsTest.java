@@ -1,14 +1,18 @@
-package org.motechproject.tasks.domain;
+package org.motechproject.tasks.util;
 
 import org.junit.Test;
+import org.motechproject.tasks.domain.TaskActionInformation;
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.channel.ActionParameter;
+import org.motechproject.tasks.domain.mds.channel.builder.ActionEventBuilder;
 
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class ActionEventTest {
+public class ActionEventUtilsTest {
 
     @Test
     public void shouldAcceptTaskActionInformationWithSameService() {
@@ -18,9 +22,9 @@ public class ActionEventTest {
         TaskActionInformation information = new TaskActionInformation(null, null, null, null, serviceInterface, serviceMethod);
         ActionEvent actionEvent = new ActionEventBuilder().setDisplayName(null).setDescription(null)
                 .setServiceInterface(serviceInterface).setServiceMethod(serviceMethod).setActionParameters(null)
-                .createActionEvent();
+                .build();
 
-        assertTrue(actionEvent.accept(information));
+        assertTrue(ActionEventUtils.accept(actionEvent, information));
     }
 
     @Test
@@ -32,11 +36,11 @@ public class ActionEventTest {
         information.setServiceInterface(serviceInterface);
         information.setServiceMethod(serviceMethod);
 
-        ActionEvent actionEvent = new ActionEventBuilder().createActionEvent();
+        ActionEvent actionEvent = new ActionEventBuilder().build();
         actionEvent.setServiceInterface("abc");
         actionEvent.setServiceMethod(serviceMethod);
 
-        assertFalse(actionEvent.accept(information));
+        assertFalse(ActionEventUtils.accept(actionEvent, information));
     }
 
     @Test
@@ -48,11 +52,11 @@ public class ActionEventTest {
         information.setServiceInterface(serviceInterface);
         information.setServiceMethod(serviceMethod);
 
-        ActionEvent actionEvent = new ActionEventBuilder().createActionEvent();
+        ActionEvent actionEvent = new ActionEventBuilder().build();
         actionEvent.setServiceInterface(serviceInterface);
         actionEvent.setServiceMethod("abc");
 
-        assertFalse(actionEvent.accept(information));
+        assertFalse(ActionEventUtils.accept(actionEvent, information));
     }
 
     @Test
@@ -64,10 +68,10 @@ public class ActionEventTest {
         information.setServiceInterface(serviceInterface);
         information.setServiceMethod(serviceMethod);
 
-        ActionEvent actionEvent = new ActionEventBuilder().createActionEvent();
+        ActionEvent actionEvent = new ActionEventBuilder().build();
         actionEvent.setSubject("subject");
 
-        assertFalse(actionEvent.accept(information));
+        assertFalse(ActionEventUtils.accept(actionEvent, information));
     }
 
     @Test
@@ -76,9 +80,9 @@ public class ActionEventTest {
 
         TaskActionInformation information = new TaskActionInformation(null, null, null, null, subject);
         ActionEvent actionEvent = new ActionEventBuilder().setDisplayName(null).setSubject(subject).setDescription(null)
-                .setActionParameters(null).createActionEvent();
+                .setActionParameters(null).build();
 
-        assertTrue(actionEvent.accept(information));
+        assertTrue(ActionEventUtils.accept(actionEvent, information));
     }
 
     @Test
@@ -88,10 +92,10 @@ public class ActionEventTest {
         TaskActionInformation information = new TaskActionInformation();
         information.setSubject(subject);
 
-        ActionEvent actionEvent = new ActionEventBuilder().createActionEvent();
+        ActionEvent actionEvent = new ActionEventBuilder().build();
         actionEvent.setSubject("abc");
 
-        assertFalse(actionEvent.accept(information));
+        assertFalse(ActionEventUtils.accept(actionEvent, information));
     }
 
     @Test
@@ -103,11 +107,11 @@ public class ActionEventTest {
         TaskActionInformation information = new TaskActionInformation();
         information.setSubject(subject);
 
-        ActionEvent actionEvent = new ActionEventBuilder().createActionEvent();
+        ActionEvent actionEvent = new ActionEventBuilder().build();
         actionEvent.setServiceInterface(serviceInterface);
         actionEvent.setServiceMethod(serviceMethod);
 
-        assertFalse(actionEvent.accept(information));
+        assertFalse(ActionEventUtils.accept(actionEvent, information));
     }
 
     @Test
