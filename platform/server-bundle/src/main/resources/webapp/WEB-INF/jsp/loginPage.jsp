@@ -145,7 +145,7 @@
                                     <div class="well3">
                                         <div class="left-divider">
                                             <div ui-if="loginViewData.loginMode.repository" ng-cloak>
-                                                <form class="inside form-horizontal" action="{{loginViewData.contextPath}}" method="POST">
+                                                <form class="inside form-horizontal" action="{{loginContextPath}}" method="POST">
                                                     <div class="form-group">
                                                         <h4>
                                                             {{msg('security.signInWithId')}}&nbsp;
@@ -164,7 +164,7 @@
                                                 </form>
                                             </div>
                                             <div ui-if="loginViewData.loginMode.openId" ng-cloak>
-                                                <form class="inside form-horizontal" action="{{loginViewData.contextPath}}" method="POST">
+                                                <form class="inside form-horizontal" action="{{loginContextPathOpenId}}" method="POST">
                                                     <div class="form-group open-id">
                                                         <p>For ${openIdProviderName} users:&nbsp;&nbsp;</p>
                                                         <input name="openid_identifier" type="hidden" value="{{loginViewData.openIdProviderUrl}}"/>
