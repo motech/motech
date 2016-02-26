@@ -1,5 +1,8 @@
-package org.motechproject.tasks.annotations;
+package org.motechproject.tasks.annotations.processor;
 
+import org.motechproject.tasks.annotations.TaskAction;
+import org.motechproject.tasks.annotations.TaskActionParam;
+import org.motechproject.tasks.annotations.TaskChannel;
 import org.motechproject.tasks.domain.ActionEventBuilder;
 import org.motechproject.tasks.domain.ActionParameterBuilder;
 import org.motechproject.tasks.domain.ActionEvent;
