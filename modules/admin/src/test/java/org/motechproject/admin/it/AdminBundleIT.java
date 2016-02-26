@@ -114,6 +114,30 @@ public class AdminBundleIT extends BasePaxIT {
         assertTrue("No messages listed", json.size() > 0);
     }
 
+	@Test
+	public void testUploadBundleFromRepository() throws IOException, InterruptedException {
+	    Bundle[] bundlesBeforeUpload, bundlesAfterUpload;
+
+	    String uri = String.format("http://%s:%d/admin/api/bundles/upload/", HOST, PORT);
+	    HttpPost httpPost = new HttpPost(uri);
+
+	    MultipartEntityBuilder entity = MultipartEntityBuilder.create();
+	    Charset chars = Charset.forName("UTF-8");
+	    entity.setCharset(chars);
+	    entity.addTextBody("moduleSource", "Repository", ContentType.MULTIPART_FORM_DATA);
+	    entity.addTextBody("moduleId","org.motechproject:cms-lite:LATEST", ContentType.MULTIPART_FORM_DATA);
+	    entity.addTextBody("startBundle","on", ContentType.MULTIPART_FORM_DATA);
+	    httpPost.setEntity(entity.build());
+
+	    bundlesBeforeUpload = bundleContext.getBundles();
+	    HttpResponse response = getHttpClient().execute(httpPost);
+	    EntityUtils.consume(response.getEntity());
+
+	    bundlesAfterUpload = bundleContext.getBundles();
+
+	    assertTrue(bundlesAfterUpload.length == bundlesBeforeUpload.length+1);
+	}
+
     private String apiGet(String path) throws IOException, InterruptedException {
         String processedPath = (path.startsWith("/")) ? path.substring(1) : path;
 
