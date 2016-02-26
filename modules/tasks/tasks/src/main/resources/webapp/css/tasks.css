@@ -233,8 +233,8 @@
     background: -webkit-linear-gradient(top,  #CBE6FF 0%,#98bede 100%);
     background: -o-linear-gradient(top,  #CBE6FF 0%,#98bede 100%);
     background: -ms-linear-gradient(top,  #CBE6FF 0%,#98bede 100%);
-    background: linear-gradient(to bottom,  #CBE6FF 0%,#B7D8F2 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#CBE6FF', endColorstr='#98bede',GradientType=0 );
+    background: linear-gradient(to bottom,  #CBE6FF 0%,#98bede 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFCBE6FF', endColorstr='#FF98bede',GradientType=0 );
 }
 
 .tasks .tasks-list .inbox-header.paused,
@@ -246,7 +246,7 @@
     background: -o-linear-gradient(top,  #EDF2F4 0%,#CCD7DE 100%);
     background: -ms-linear-gradient(top,  #EDF2F4 0%,#CCD7DE 100%);
     background: linear-gradient(to bottom,  #EDF2F4 0%,#CCD7DE 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#EDF2F4', endColorstr='#CCD7DE',GradientType=0 );
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFEDF2F4', endColorstr='#FFCCD7DE',GradientType=0 );
 }
 
 .tasks .tasks-list .inbox-header {
@@ -382,7 +382,7 @@
     background: -o-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
     background: -ms-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
     background: linear-gradient(to bottom,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3b679e', endColorstr='#7db9e8',GradientType=0 );
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff3b679e', endColorstr='#ff7db9e8',GradientType=0 );
 }
 
 .tasks .tasks-list .task-buttons {
@@ -395,7 +395,7 @@
     background: -o-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
     background: -ms-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
     background: linear-gradient(to bottom,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3b679e', endColorstr='#7db9e8',GradientType=0 );
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff3b679e', endColorstr='#ff7db9e8',GradientType=0 );
 }
 
 .tasks .task-bar .task-nav > li.task-buttons {
@@ -509,7 +509,7 @@
     background: -o-linear-gradient(top,  #f5f9fb 0%,#e0edf4 100%);
     background: -ms-linear-gradient(top,  #f5f9fb 0%,#e0edf4 100%);
     background: linear-gradient(to bottom,  #f5f9fb 0%,#e0edf4 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5f9fb', endColorstr='#e0edf4',GradientType=0 );
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fff5f9fb', endColorstr='#ffe0edf4',GradientType=0 );
     -webkit-box-shadow: 0 0 2px #bec9de;
        -moz-box-shadow: 0 0 2px #bec9de;
             box-shadow: 0 0 2px #bec9de;
@@ -774,7 +774,7 @@
     background: -o-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
     background: -ms-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
     background: linear-gradient(to bottom,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3b679e', endColorstr='#7db9e8',GradientType=0 );
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff3b679e', endColorstr='#ff7db9e8',GradientType=0 );
 }
 
 .tasks .task-panel.active {
@@ -858,7 +858,7 @@
 
 .tasks .create-edit-task .dropdown-menu .select-limit > li > a {
     clear: both;
-    color: #333;
+    color: #333333;
     display: block;
     font-weight: 400;
     line-height: 1.42857;

@@ -1,4 +1,4 @@
-package org.motechproject.tasks.annotations;
+package org.motechproject.tasks.annotations.processor;
 
 import org.apache.commons.collections.Predicate;
 import org.junit.Before;
@@ -6,10 +6,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.tasks.domain.ActionEventBuilder;
-import org.motechproject.tasks.domain.ActionParameterBuilder;
+import org.motechproject.tasks.annotations.TaskAction;
+import org.motechproject.tasks.annotations.TaskActionParam;
+import org.motechproject.tasks.annotations.TaskChannel;
 import org.motechproject.tasks.domain.ActionEvent;
+import org.motechproject.tasks.domain.ActionEventBuilder;
 import org.motechproject.tasks.domain.ActionParameter;
+import org.motechproject.tasks.domain.ActionParameterBuilder;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.service.ChannelService;

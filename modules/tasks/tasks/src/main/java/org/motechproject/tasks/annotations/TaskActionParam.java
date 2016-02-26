@@ -16,7 +16,6 @@ import java.lang.annotation.Target;
  *
  * @see TaskAction
  * @see TaskChannel
- * @see TaskAnnotationBeanPostProcessor
  * @since 0.19
  */
 @Target(ElementType.PARAMETER)
