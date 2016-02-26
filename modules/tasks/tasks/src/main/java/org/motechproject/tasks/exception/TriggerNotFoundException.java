@@ -1,4 +1,4 @@
-package org.motechproject.tasks.ex;
+package org.motechproject.tasks.exception;
 
 /**
  * Thrown when requested trigger doesn't exists.

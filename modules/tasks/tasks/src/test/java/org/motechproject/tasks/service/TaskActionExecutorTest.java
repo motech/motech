@@ -12,8 +12,8 @@ import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskBuilder;
-import org.motechproject.tasks.ex.ActionNotFoundException;
-import org.motechproject.tasks.ex.TaskHandlerException;
+import org.motechproject.tasks.exception.ActionNotFoundException;
+import org.motechproject.tasks.exception.TaskHandlerException;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 

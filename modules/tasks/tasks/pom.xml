@@ -133,7 +133,7 @@
                             org.motechproject.tasks.json;version=${project.version},
                             org.motechproject.tasks.repository;version=${project.version},
                             org.motechproject.tasks.annotations;version=${project.version},
-                            org.motechproject.tasks.ex;version=${project.version},
+                            org.motechproject.tasks.exception;version=${project.version},
                             org.motechproject.tasks.util;version=${project.version}
                         </Export-Package>
                         <Import-Package>

@@ -2,7 +2,7 @@ package org.motechproject.tasks.service;
 
 import org.motechproject.commons.api.DataProvider;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.tasks.ex.TriggerNotFoundException;
+import org.motechproject.tasks.exception.TriggerNotFoundException;
 
 /**
  * Service responsible for handling triggers. When registered for an event with a specific subject, it will act as
