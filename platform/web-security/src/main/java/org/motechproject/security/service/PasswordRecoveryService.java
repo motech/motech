@@ -1,9 +1,9 @@
 package org.motechproject.security.service;
 
 import org.joda.time.DateTime;
-import org.motechproject.security.ex.InvalidTokenException;
-import org.motechproject.security.ex.NonAdminUserException;
-import org.motechproject.security.ex.UserNotFoundException;
+import org.motechproject.security.exception.InvalidTokenException;
+import org.motechproject.security.exception.NonAdminUserException;
+import org.motechproject.security.exception.UserNotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

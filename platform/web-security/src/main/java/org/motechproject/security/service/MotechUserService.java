@@ -2,9 +2,9 @@ package org.motechproject.security.service;
 
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.domain.UserStatus;
-import org.motechproject.security.ex.NonAdminUserException;
-import org.motechproject.security.ex.PasswordValidatorException;
-import org.motechproject.security.ex.UserNotFoundException;
+import org.motechproject.security.exception.NonAdminUserException;
+import org.motechproject.security.exception.PasswordValidatorException;
+import org.motechproject.security.exception.UserNotFoundException;
 import org.motechproject.security.model.UserDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -122,7 +122,7 @@ public interface MotechUserService {
      * Checks if user with given name exists
      *
      * @param username of user
-     * @return true if user exists, otherwise return false
+     * @return true if user exists, false otherwise
      */
     boolean hasUser(String username);
 
@@ -130,14 +130,14 @@ public interface MotechUserService {
      * Checks if user with given email exists
      *
      * @param email of user
-     * @return true if user exists, otherwise false
+     * @return true if user exists, false otherwise
      */
     boolean hasEmail(String email);
 
     /**
-     * Returns all {@link org.motechproject.security.domain.MotechUserProfile}
+     * Returns {@link org.motechproject.security.domain.MotechUserProfile} of all users.
      *
-     * @return list that contains profiles
+     * @return list that contains profiles of all users
      */
     @PreAuthorize("hasAnyRole('manageUser', 'manageURL', 'mdsSchemaAccess', 'mdsDataAccess')")
     List<MotechUserProfile> getUsers();

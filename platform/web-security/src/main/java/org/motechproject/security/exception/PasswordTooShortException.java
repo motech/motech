@@ -1,4 +1,4 @@
-package org.motechproject.security.ex;
+package org.motechproject.security.exception;
 
 /**
  * Signals that password is shorter than the configured minimal length.

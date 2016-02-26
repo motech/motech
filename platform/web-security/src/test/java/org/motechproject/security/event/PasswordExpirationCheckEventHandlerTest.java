@@ -11,7 +11,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.security.config.SettingService;
 import org.motechproject.security.domain.MotechUser;
-import org.motechproject.security.repository.MotechUsersDataService;
+import org.motechproject.security.service.mds.MotechUsersDataService;
 
 import java.util.ArrayList;
 import java.util.HashMap;

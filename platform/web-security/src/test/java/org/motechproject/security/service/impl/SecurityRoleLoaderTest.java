@@ -1,4 +1,4 @@
-package org.motechproject.security.service;
+package org.motechproject.security.service.impl;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -8,6 +8,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.model.RoleDto;
+import org.motechproject.security.service.MotechPermissionService;
+import org.motechproject.security.service.MotechRoleService;
+import org.motechproject.security.service.impl.SecurityRoleLoader;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.springframework.context.ApplicationContext;

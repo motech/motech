@@ -1,11 +1,13 @@
-package org.motechproject.security.service;
+package org.motechproject.security.service.impl;
 
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.domain.MotechURLSecurityRule;
-import org.motechproject.security.repository.AllMotechSecurityRules;
+import org.motechproject.security.repository.MotechSecurityRulesDao;
+import org.motechproject.security.service.MotechProxyManager;
+import org.motechproject.security.service.SecurityRuleLoaderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,7 @@ public class SecurityRuleLoaderServiceImpl implements SecurityRuleLoaderService 
 
     private MotechJsonReader motechJsonReader = new MotechJsonReader();
 
-    private AllMotechSecurityRules allSecurityRules;
+    private MotechSecurityRulesDao allSecurityRules;
     private MotechProxyManager proxyManager;
 
     @Transactional
@@ -117,7 +119,7 @@ public class SecurityRuleLoaderServiceImpl implements SecurityRuleLoaderService 
     }
 
     @Autowired
-    public void setAllSecurityRules(AllMotechSecurityRules allSecurityRules) {
+    public void setAllSecurityRules(MotechSecurityRulesDao allSecurityRules) {
         this.allSecurityRules = allSecurityRules;
     }
 

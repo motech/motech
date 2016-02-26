@@ -1,4 +1,4 @@
-package org.motechproject.security.ex;
+package org.motechproject.security.exception;
 
 /**
  * Represents a failed attempt to delete a role currently assigned to a user.

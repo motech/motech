@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.security.domain.MotechUserProfile;
-import org.motechproject.security.ex.InvalidTokenException;
+import org.motechproject.security.exception.InvalidTokenException;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.security.service.PasswordRecoveryService;
 import org.motechproject.server.web.dto.ChangePasswordViewData;

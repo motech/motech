@@ -83,7 +83,6 @@
                             org.motechproject.mds.javassist,
                             org.motechproject.mds.service,
                             org.motechproject.osgi.web,
-                            org.motechproject.security.annotations,
                             org.springframework.aop,
                             org.springframework.aop.aspectj.annotation,
                             org.springframework.aop.framework,

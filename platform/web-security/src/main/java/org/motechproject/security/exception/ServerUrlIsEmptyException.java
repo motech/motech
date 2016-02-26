@@ -1,4 +1,4 @@
-package org.motechproject.security.ex;
+package org.motechproject.security.exception;
 
 /**
  * Exception which signalizes that server url property in platform settings is empty

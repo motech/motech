@@ -1,4 +1,4 @@
-package org.motechproject.security.ex;
+package org.motechproject.security.exception;
 
 /**
  * Thrown when there were problems while parsing velocity template.

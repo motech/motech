@@ -12,14 +12,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
+import org.motechproject.security.domain.MotechURLSecurityRule;
 import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.osgi.helper.SecurityTestConfigBuilder;
-import org.motechproject.security.repository.AllMotechSecurityRules;
 import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechProxyManager;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
+import org.motechproject.security.service.mds.MotechURLSecurityRuleDataService;
 import org.motechproject.testing.utils.TestContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
@@ -75,6 +76,9 @@ public class WebSecurityBundleIT extends BaseIT {
 
     @Inject
     private MotechUserService userService;
+
+    @Inject
+    private MotechURLSecurityRuleDataService securityRuleDataService;
 
     private FilterChainProxy originalSecurityProxy;
 
@@ -221,7 +225,11 @@ public class WebSecurityBundleIT extends BaseIT {
     }
 
     private void updateSecurity(MotechSecurityConfiguration config) throws InterruptedException, InvalidSyntaxException {
-        getFromContext(AllMotechSecurityRules.class).addOrUpdate(config);
+        securityRuleDataService.deleteAll();
+
+        for (MotechURLSecurityRule rule : config.getSecurityRules()) {
+            securityRuleDataService.create(rule);
+        }
     }
 
     private void resetSecurityConfig() throws InterruptedException, InvalidSyntaxException {
