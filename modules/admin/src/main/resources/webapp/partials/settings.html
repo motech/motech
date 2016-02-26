@@ -10,19 +10,19 @@
                 <h4 class="settings-section">{{msg('admin.platform.settings')}}</h4>
                 <form class="form-inline inside" id="settingsFileForm" action="../admin/api/settings/platform/upload" method="post" enctype="multipart/form-data">
                     <fieldset>
-                        <div class="form-group fileupload fileupload-new" data-provides="fileupload">
+                        <div class="form-group fileinput fileinput-new" data-provides="fileinput">
                             <label class="control-label">{{msg('admin.settings.fileChosen')}}</label>
                             <div class="input-append btn-group">
-                                <div class="form-control input-auto uneditable-input input-large fileupload-exists">
+                                <div class="form-control input-auto uneditable-input input-large fileuinput-exists">
                                     <span class="glyphicon glyphicon-file"></span>&nbsp;
-                                    <span class="fileupload-preview"></span>
+                                    <span class="fileinput-preview"></span>
                                 </div>
                                 <span class="btn btn-default btn-file">
-                                    <span class="fileupload-new">{{msg('admin.button.selectFile')}}</span>
-                                    <span class="fileupload-exists">{{msg('admin.button.changeFile')}}</span>
+                                    <span class="fileinput-new">{{msg('admin.button.selectFile')}}</span>
+                                    <span class="fileinput-exists">{{msg('admin.button.changeFile')}}</span>
                                     <input type="file" id="settingsFile" name="settingsFile" class="input-file"/>
                                 </span>
-                                <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload">
+                                <a href="#" class="btn btn-danger fileinput-exists" data-dismiss="fileinput">
                                     <i class="fa fa-fw fa-trash-o"></i>&nbsp;{{msg('admin.button.remove')}}
                                 </a>
                             </div>

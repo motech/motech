@@ -23,7 +23,7 @@
     <div class="inside inline top-line" ng-controller="AdminBundleListCtrl">
         <form id="bundleUploadForm" action="../admin/api/bundles/upload" enctype="multipart/form-data" method="POST">
             <div class="form-inline">
-                <div class="fileupload fileupload-new" data-provides="fileupload">
+                <div class="fileinput fileinput-new" data-provides="fileinput">
                     <div class="form-group">
                         <label><b>{{msg('admin.bundles.upload')}} {{msg('admin.import.from')}} </b></label>
                     </div>
@@ -38,14 +38,14 @@
                     <div class="form-group offset-1">
                     <div class="input-append btn-group" ng-show="moduleSource=='File'">
 
-                        <div class="form-control uneditable-input input-auto fileupload-exists">
-                            &nbsp;<i class="glyphicon glyphicon-file"></i>&nbsp;<span class="fileupload-preview"></span>
+                        <div class="form-control uneditable-input input-auto fileinput-exists">
+                            &nbsp;<i class="glyphicon glyphicon-file"></i>&nbsp;<span class="fileinput-preview"></span>
                         </div>
                         <input type="file" id="bundleFile" name="bundleFile" class="input-file"  style="display: none;"  />
-                    <span class="btn btn-default btn-file" filereader="checkFile"><span class="fileupload-new">{{msg('admin.selectFile')}}</span>
-                    <span class="fileupload-exists">{{msg('admin.bundles.change')}}</span><input type="file"/>
-                    </span><a href="#" class="btn btn-danger fileupload-exists"
-                              data-dismiss="fileupload">{{msg('admin.bundles.remove')}}</a>
+                    <span class="btn btn-default btn-file" filereader="checkFile"><span class="fileinput-new">{{msg('admin.selectFile')}}</span>
+                    <span class="fileinput-exists">{{msg('admin.bundles.change')}}</span><input type="file"/>
+                    </span><a href="#" class="btn btn-danger fileinput-exists"
+                              data-dismiss="fileinput">{{msg('admin.bundles.remove')}}</a>
                     </div>
                     </div>
                     <div class="form-group offset-1" data-toggle="buttons-checkbox">

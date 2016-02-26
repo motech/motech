@@ -286,7 +286,7 @@
                                 unblockUI();
                             }
                             $scope.module = "";
-                            $('#bundleUploadForm .fileupload').trigger('reset');
+                            $('#bundleUploadForm .fileinput').trigger('reset');
                         });
                     }
                 },
