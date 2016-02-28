@@ -1,4 +1,4 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.service.util;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;

@@ -1,4 +1,4 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.service.impl;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -38,6 +38,9 @@ import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.events.constants.EventDataKeys;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 import org.motechproject.tasks.exception.TaskHandlerException;
+import org.motechproject.tasks.service.SampleTasksEventParser;
+import org.motechproject.tasks.service.TaskActivityService;
+import org.motechproject.tasks.service.TaskService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 

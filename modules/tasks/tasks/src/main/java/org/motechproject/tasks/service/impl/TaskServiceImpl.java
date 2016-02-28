@@ -70,7 +70,7 @@ import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MOD
 import static org.motechproject.tasks.events.constants.EventDataKeys.DATA_PROVIDER_NAME;
 import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
 import static org.motechproject.tasks.events.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
-import static org.motechproject.tasks.service.HandlerPredicates.tasksWithRegisteredChannel;
+import static org.motechproject.tasks.service.util.HandlerPredicates.tasksWithRegisteredChannel;
 
 /**
  * A {@link TaskService} that manages CRUD operations for a {@link Task}.

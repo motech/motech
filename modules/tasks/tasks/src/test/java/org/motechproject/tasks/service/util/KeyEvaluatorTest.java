@@ -1,9 +1,10 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.service.util;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.tasks.service.util.KeyEvaluator;
 
 import static junit.framework.Assert.assertEquals;
 

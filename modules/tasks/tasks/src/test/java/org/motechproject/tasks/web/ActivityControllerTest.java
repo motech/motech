@@ -8,7 +8,7 @@ import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
 import org.motechproject.tasks.service.TaskActivityService;
-import org.motechproject.tasks.service.TaskTriggerHandler;
+import org.motechproject.tasks.service.impl.TaskTriggerHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;

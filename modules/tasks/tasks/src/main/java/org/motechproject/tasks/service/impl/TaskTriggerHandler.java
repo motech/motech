@@ -1,4 +1,4 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.service.impl;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -16,6 +16,10 @@ import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.exception.TaskHandlerException;
+import org.motechproject.tasks.service.TaskActivityService;
+import org.motechproject.tasks.service.util.TaskContext;
+import org.motechproject.tasks.service.TaskService;
+import org.motechproject.tasks.service.TriggerHandler;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +52,7 @@ import static org.motechproject.tasks.events.constants.EventSubjects.UNSCHEDULE_
 import static org.motechproject.tasks.events.constants.EventSubjects.createHandlerFailureSubject;
 import static org.motechproject.tasks.events.constants.EventSubjects.createHandlerSuccessSubject;
 import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
-import static org.motechproject.tasks.service.HandlerPredicates.withServiceName;
+import static org.motechproject.tasks.service.util.HandlerPredicates.withServiceName;
 
 /**
  * The <code>TaskTriggerHandler</code> receives events and executes tasks for which the trigger

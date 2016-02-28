@@ -1,4 +1,4 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.service.util;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
