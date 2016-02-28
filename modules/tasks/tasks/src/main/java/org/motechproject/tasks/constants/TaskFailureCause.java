@@ -1,4 +1,4 @@
-package org.motechproject.tasks.events.constants;
+package org.motechproject.tasks.constants;
 
 /**
  * Enumeration class representing the potential causes of task failure.

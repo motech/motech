@@ -1,4 +1,4 @@
-package org.motechproject.tasks.events.constants;
+package org.motechproject.tasks.constants;
 
 /**
  * Utility class storing keys for event data.
