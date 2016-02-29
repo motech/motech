@@ -1,6 +1,6 @@
 package org.motechproject.mds.service;
 
-import org.motechproject.mds.ex.action.ActionHandlerException;
+import org.motechproject.mds.exception.action.ActionHandlerException;
 
 import java.util.Map;
 

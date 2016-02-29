@@ -25,7 +25,7 @@ import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.TypeValidationDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
-import org.motechproject.mds.ex.field.EnumFieldAccessException;
+import org.motechproject.mds.exception.field.EnumFieldAccessException;
 import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MemberUtil;
@@ -94,7 +94,7 @@ import static org.motechproject.mds.util.Constants.Util.OWNER_FIELD_NAME;
  * By default all public fields (the field is public if it has public modifier or single methods
  * called 'getter and 'setter') will be added in the MDS definition of the entity. The field type
  * will be mapped on the appropriate type in the MDS system. If the appropriate mapping does not
- * exist an {@link org.motechproject.mds.ex.type.NoSuchTypeException} exception will be raised.
+ * exist an {@link org.motechproject.mds.exception.type.NoSuchTypeException} exception will be raised.
  * <p/>
  * Fields or acceptable methods with the {@link org.motechproject.mds.annotations.Ignore}
  * annotation are ignored by the processor and they are not added into entity definition.

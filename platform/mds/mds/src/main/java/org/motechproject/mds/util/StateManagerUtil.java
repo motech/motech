@@ -2,8 +2,8 @@ package org.motechproject.mds.util;
 
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.state.StateManagerImpl;
-import org.motechproject.mds.ex.MdsException;
-import org.motechproject.mds.ex.object.PropertyCopyException;
+import org.motechproject.mds.exception.MdsException;
+import org.motechproject.mds.exception.object.PropertyCopyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

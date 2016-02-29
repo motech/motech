@@ -21,7 +21,7 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.UIDisplayFieldComparator;
 import org.motechproject.mds.event.CrudEventBuilder;
-import org.motechproject.mds.ex.MdsException;
+import org.motechproject.mds.exception.MdsException;
 import org.motechproject.mds.helper.ActionParameterTypeResolver;
 import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
