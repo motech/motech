@@ -298,7 +298,7 @@
                             org.motechproject.mds.enhancer;version=${project.version},
                             org.motechproject.mds.entityinfo;version=${project.version},
                             org.motechproject.mds.event;version=${project.version},
-                            org.motechproject.mds.ex;version=${project.version},
+                            org.motechproject.mds.exception;version=${project.version},
                             org.motechproject.mds.exception.csv;version=${project.version},
                             org.motechproject.mds.exception.entity;version=${project.version},
                             org.motechproject.mds.exception.field;version=${project.version},
