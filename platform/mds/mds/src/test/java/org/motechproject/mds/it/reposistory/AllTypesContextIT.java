@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class AllTypesContextIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 21;
+    private static final int START_NUMBER_OF_TYPES = 24;
 
     @Autowired
     private AllTypes allTypes;
@@ -112,6 +112,18 @@ public class AllTypesContextIT extends BaseIT {
         assertType(
                 "mds.field.relationship.oneToOne", "mds.field.description.relationship.oneToOne", OneToOneRelationship.class.getName(),
                 asList("mds.form.label.cascadePersist", "mds.form.label.cascadeUpdate", "mds.form.label.cascadeDelete"), null
+        );
+        assertType(
+        	"mds.field.float", "mds.field.description.float", Float.class.getName(),
+                asList("mds.form.label.precision", "mds.form.label.scale"), asList("mds.field.validation.minValue", "mds.field.validation.maxValue", "mds.field.validation.mustBeInSet", "mds.field.validation.cannotBeInSet")
+        );
+        assertType(
+        	"mds.field.short", "mds.field.description.short", Short.class.getName(),
+                null, asList("mds.field.validation.minValue", "mds.field.validation.maxValue", "mds.field.validation.mustBeInSet", "mds.field.validation.cannotBeInSet")
+        );
+        assertType(
+        	"mds.field.character", "mds.field.description.character", Character.class.getName(),
+                null, null
         );
     }
 
