@@ -2,8 +2,13 @@ package org.motechproject.admin.it;
 
 import ch.lambdaj.Lambda;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
@@ -25,9 +30,12 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.having;
@@ -46,9 +54,14 @@ public class AdminBundleIT extends BasePaxIT {
     private static final String WARNING_MSG = "test-warn";
     private static final String MODULE_NAME = "test-module";
     private static final DateTime TIMEOUT = DateUtil.nowUTC().plusHours(1);
+    private static final String HOST = "localhost";
+    private static final int PORT = TestContext.getJettyPort();
 
     @Inject
     private StatusMessageService statusMessageService;
+
+    @Inject
+    private BundleContext bundleContext;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
