@@ -122,7 +122,7 @@ public class MotechAuthenticationProviderTest {
     public void shouldChangeUserStatusToMustChangePass() {
         MotechUser motechUser = new MotechUser("bob", "encodedPassword", "entity_1", "", asList("some_role"), "", Locale.ENGLISH);
         motechUser.setUserStatus(UserStatus.ACTIVE);
-        motechUser.setLastPasswordChange(DateTime.now().minusDays(2));
+        motechUser.setLastPasswordChange(DateTime.now().minusDays(3));
 
         when(motechUsersDao.findByUserName("bob")).thenReturn(motechUser);
         when(settingService.getNumberOfDaysToChangePassword()).thenReturn(2);
