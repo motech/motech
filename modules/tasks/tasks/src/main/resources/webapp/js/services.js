@@ -26,11 +26,12 @@
     });
 
     services.factory('Triggers', function($resource) {
-        return $resource('../tasks/api/channel/triggers');
-    });
-
-    services.factory('Actions', function($resource) {
-        return $resource('../tasks/api/channel/actions');
+        return $resource('../tasks/api/channel/triggers', {}, {
+            "getTrigger":  {
+                url: "../tasks/api/channel/trigger",
+                method: "POST"
+            }
+        });
     });
 
 }());
