@@ -7,7 +7,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.tasks.domain.KeyInformation;
-import org.motechproject.tasks.ex.TaskHandlerException;
+import org.motechproject.tasks.exception.TaskHandlerException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

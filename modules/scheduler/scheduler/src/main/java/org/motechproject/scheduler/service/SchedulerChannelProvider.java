@@ -8,7 +8,7 @@ import org.motechproject.tasks.domain.DynamicChannelProvider;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
-import org.motechproject.tasks.ex.TriggerRetrievalException;
+import org.motechproject.tasks.exception.TriggerRetrievalException;
 import org.quartz.JobDataMap;
 import org.quartz.utils.DBConnectionManager;
 
