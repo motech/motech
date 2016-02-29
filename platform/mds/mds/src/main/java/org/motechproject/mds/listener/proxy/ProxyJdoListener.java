@@ -2,7 +2,7 @@ package org.motechproject.mds.listener.proxy;
 
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.motechproject.mds.annotations.InstanceLifecycleListenerType;
-import org.motechproject.mds.ex.JdoListenerInvocationException;
+import org.motechproject.mds.exception.JdoListenerInvocationException;
 import org.motechproject.mds.listener.MotechLifecycleListener;
 import org.motechproject.mds.service.JdoListenerRegistryService;
 import org.motechproject.osgi.web.util.OSGiServiceUtils;

@@ -3,7 +3,7 @@ package org.motechproject.mds.util;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.motechproject.mds.ex.entity.InvalidJavaFieldNameException;
+import org.motechproject.mds.exception.entity.InvalidJavaFieldNameException;
 
 import java.util.ArrayList;
 import java.util.Arrays;

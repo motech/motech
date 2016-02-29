@@ -2,7 +2,7 @@ package org.motechproject.mds.service.impl;
 
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
-import org.motechproject.mds.ex.lookup.SingleResultFromLookupExpectedException;
+import org.motechproject.mds.exception.lookup.SingleResultFromLookupExpectedException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.QueryParams;

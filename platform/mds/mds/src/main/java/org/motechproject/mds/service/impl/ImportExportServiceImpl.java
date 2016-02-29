@@ -7,7 +7,7 @@ import org.apache.commons.io.FileUtils;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.ImportExportBlueprint;
 import org.motechproject.mds.domain.ImportManifest;
-import org.motechproject.mds.ex.importexport.ImportExportException;
+import org.motechproject.mds.exception.importexport.ImportExportException;
 import org.motechproject.mds.helper.RelationshipResolver;
 import org.motechproject.mds.helper.RelationshipSorter;
 import org.motechproject.mds.json.ExportContext;

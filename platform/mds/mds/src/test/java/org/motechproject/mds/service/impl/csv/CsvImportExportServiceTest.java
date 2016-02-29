@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.EntityDto;
-import org.motechproject.mds.ex.csv.CsvImportException;
+import org.motechproject.mds.exception.csv.CsvImportException;
 import org.motechproject.mds.service.CsvExportCustomizer;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.service.DefaultCsvExportCustomizer;
