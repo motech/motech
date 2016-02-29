@@ -1,4 +1,4 @@
-package org.motechproject.tasks.events.constants;
+package org.motechproject.tasks.constants;
 
 /**
  * Utility class containing various event subject values used throughout the tasks module
