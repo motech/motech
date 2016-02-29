@@ -283,6 +283,11 @@
                 <artifactId>org.apache.servicemix.bundles.spring-jdbc</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>org.motechproject.spring-orm</artifactId>
+                <version>${spring.version}-${external.dependency.release.tag}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.springframework.security</groupId>
