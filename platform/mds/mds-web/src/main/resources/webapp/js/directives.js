@@ -1864,28 +1864,6 @@
         };
     });
 
-    directives.directive('templateForm', function($http, $templateCache, $compile) {
-        return {
-            restrict: "A", require: 'ngModel', priority: 1000,
-            compile: function (element, attrs, transclude, ngModel) {
-                return function (scope, $element, $attr, ngModel) {
-                    function updateTemplate() {
-                        var isNestedField;
-                        if ($attr.nestedField === 'true') {isNestedField = true;} else {isNestedField = false;}
-                        $http.get(scope.loadEditValueForm(scope.getTypeSingleClassName(ngModel.$modelValue.type), ngModel.$modelValue, isNestedField), { cache: $templateCache })
-                        .success(function(response) {
-                            var contents = $element.html(response).contents();
-                            $compile(contents)(scope);
-                        });
-                    }
-                    if (ngModel.$modelValue !== undefined) {
-                        scope.$watch(ngModel.$modelValue, updateTemplate);
-                    }
-                };
-            }
-        };
-    });
-
     directives.directive('multiselectDropdown', function () {
             return {
                 restrict: 'A',
@@ -2754,7 +2732,7 @@
             require: 'ngModel',
             link: function(scope, elm, attrs, ctrl) {
                 ctrl.$parsers.unshift(function(viewValue) {
-                    var inset = attrs.insetValidity,
+                    var inset = '',
                     checkInset = function (inset, viewValue) {
                         var result,
                         insetParameters = inset.split(' ');
@@ -2772,6 +2750,9 @@
                         }
                     return result;
                     };
+                    if (scope.field.validation.criteria[attrs.insetValidity] !== undefined && scope.field.validation.criteria[attrs.insetValidity].enabled) {
+                        inset = scope.field.validation.criteria[attrs.insetValidity].value;
+                    }
 
                     if (ctrl.$viewValue === '' || inset === '' || checkInset(inset, ctrl.$viewValue)) {
                         ctrl.$setValidity('insetNum', true);
@@ -2790,7 +2771,7 @@
             require: 'ngModel',
             link: function(scope, elm, attrs, ctrl) {
                 ctrl.$parsers.unshift(function(viewValue) {
-                    var outset = attrs.outsetValidity,
+                    var outset = '',
                     checkOutset = function (outset, viewValue) {
                         var result,
                         outsetParameters = outset.split(' ');
@@ -2808,7 +2789,9 @@
                         }
                     return result;
                     };
-
+                    if (scope.field.validation.criteria[attrs.outsetValidity] !== undefined && scope.field.validation.criteria[attrs.outsetValidity].enabled) {
+                        outset = scope.field.validation.criteria[attrs.outsetValidity].value;
+                    }
                     if (ctrl.$viewValue === '' || outset === '' || !checkOutset(outset, ctrl.$viewValue)) {
                         ctrl.$setValidity('outsetNum', true);
                         return viewValue;
@@ -2826,7 +2809,10 @@
             require: 'ngModel',
             link: function(scope, element, attrs, ctrl) {
                 ctrl.$parsers.unshift(function(viewValue) {
-                    var max = attrs.maxValidity;
+                    var max = '';
+                    if (scope.field.validation.criteria[attrs.maxValidity] !== undefined && scope.field.validation.criteria[attrs.maxValidity].enabled) {
+                        max = scope.field.validation.criteria[attrs.maxValidity].value;
+                    }
                     if (ctrl.$viewValue === '' || max === '' || parseFloat(ctrl.$viewValue) <= parseFloat(max)) {
                         ctrl.$setValidity('max', true);
                         return viewValue;
@@ -2844,7 +2830,10 @@
             require: 'ngModel',
             link: function(scope, element, attrs, ctrl) {
                 ctrl.$parsers.unshift(function(viewValue) {
-                    var min = attrs.minValidity;
+                    var min = '';
+                    if (scope.field.validation.criteria[attrs.minValidity] !== undefined && scope.field.validation.criteria[attrs.minValidity].enabled) {
+                            min = scope.field.validation.criteria[attrs.minValidity].value;
+                        }
                     if (ctrl.$viewValue === '' || min === '' || parseFloat(ctrl.$viewValue) >= parseFloat(min)) {
                         ctrl.$setValidity('min', true);
                         return viewValue;
@@ -3206,7 +3195,11 @@
             require: 'ngModel',
             link: function(scope, element, attrs, ctrl) {
                 ctrl.$parsers.unshift(function(viewValue) {
-                    PATTERN_REGEXP = new RegExp(attrs.patternValidity);
+                    if (attrs.patternValidity !== undefined && scope.field.validation.criteria[attrs.patternValidity].enabled) {
+                        PATTERN_REGEXP = new RegExp(scope.field.validation.criteria[attrs.patternValidity].value);
+                    } else {
+                        PATTERN_REGEXP = new RegExp('');
+                    }
                     if (ctrl.$viewValue === '' || PATTERN_REGEXP.test(ctrl.$viewValue)) {
                         // it is valid
                         ctrl.$setValidity('pattern', true);
@@ -3443,7 +3436,9 @@
                 elm.on('keyup', function () {
                     scope.$apply(function () {
                         elm.siblings('#visited-hint-' + fieldId).addClass('hidden');
-                        scope[fieldName].$dirty = false;
+                        if (scope[fieldName] !== undefined) {
+                            scope[fieldName].$dirty = false;
+                        }
                     });
                     clearTimeout(typingTimer);
                     typingTimer = setTimeout( function() {

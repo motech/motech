@@ -4835,7 +4835,8 @@
         * Construct appropriate url according with a field type for form used to set correct
         * value of edit value property.
         */
-        $scope.loadEditValueForm = function (value, field, isNestedField) {
+        $scope.loadEditValueForm = function (field, isNestedField) {
+            var value = angular.copy($scope.getTypeSingleClassName(field.type));
 
             if (value === 'boolean') {
 
