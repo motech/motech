@@ -1,9 +1,15 @@
 package org.motechproject.admin.it;
 
 import ch.lambdaj.Lambda;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
@@ -18,6 +24,7 @@ import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.server.web.controller.ModuleController;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.utils.TestContext;
@@ -25,9 +32,16 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.having;
@@ -46,9 +60,14 @@ public class AdminBundleIT extends BasePaxIT {
     private static final String WARNING_MSG = "test-warn";
     private static final String MODULE_NAME = "test-module";
     private static final DateTime TIMEOUT = DateUtil.nowUTC().plusHours(1);
+    private static final String HOST = "localhost";
+    private static final int PORT = TestContext.getJettyPort();
 
     @Inject
     private StatusMessageService statusMessageService;
+
+    @Inject
+    private BundleContext bundleContext;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -116,26 +135,44 @@ public class AdminBundleIT extends BasePaxIT {
 
     @Test
     public void testUploadBundleFromRepository() throws IOException, InterruptedException {
-        Bundle[] bundlesBeforeUpload, bundlesAfterUpload;
+        boolean isUploadSuccessful = uploadBundle("Repository", "org.motechproject:cms-lite:LATEST", null, "on");
 
+        assertTrue(isUploadSuccessful);
+    }
+
+    @Test
+    public void testUploadBundleFromFile() throws IOException, InterruptedException {
+        File file = new File("src/test/resources/motech-upload-test-bundle.jar");
+
+        boolean isUploadSuccessful = uploadBundle("File", null, file, "on");
+
+        assertTrue(isUploadSuccessful);
+    }
+
+    private boolean uploadBundle(String moduleSource, String moduleId, File bundleFile, String startBundle) throws IOException, InterruptedException {
         String uri = String.format("http://%s:%d/admin/api/bundles/upload/", HOST, PORT);
-        HttpPost httpPost = new HttpPost(uri);
 
+        HttpPost httpPost = new HttpPost(uri);
         MultipartEntityBuilder entity = MultipartEntityBuilder.create();
         Charset chars = Charset.forName("UTF-8");
         entity.setCharset(chars);
-        entity.addTextBody("moduleSource", "Repository", ContentType.MULTIPART_FORM_DATA);
-        entity.addTextBody("moduleId","org.motechproject:cms-lite:LATEST", ContentType.MULTIPART_FORM_DATA);
-        entity.addTextBody("startBundle","on", ContentType.MULTIPART_FORM_DATA);
+        entity.addTextBody("moduleSource", moduleSource, ContentType.MULTIPART_FORM_DATA);
+        if(moduleSource.equals("Repository")) entity.addTextBody("moduleId", moduleId, ContentType.MULTIPART_FORM_DATA);
+        else if(moduleSource.equals("File")) {
+            if(bundleFile == null) return false;
+            entity.addBinaryBody("bundleFile", bundleFile);
+        }
+        else return false;
+        entity.addTextBody("startBundle", startBundle, ContentType.MULTIPART_FORM_DATA);
+
         httpPost.setEntity(entity.build());
 
-        bundlesBeforeUpload = bundleContext.getBundles();
+        int bundlesCountBeforeUpload = bundleContext.getBundles().length;
         HttpResponse response = getHttpClient().execute(httpPost);
         EntityUtils.consume(response.getEntity());
+        int bundlesCountAfterUpload = bundleContext.getBundles().length;
 
-        bundlesAfterUpload = bundleContext.getBundles();
-
-        assertTrue(bundlesAfterUpload.length == bundlesBeforeUpload.length+1);
+        return (bundlesCountAfterUpload == bundlesCountBeforeUpload + 1);
     }
 
     private String apiGet(String path) throws IOException, InterruptedException {
