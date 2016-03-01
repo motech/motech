@@ -1,6 +1,6 @@
 package org.motechproject.tasks.exception;
 
-import org.motechproject.tasks.events.constants.TaskFailureCause;
+import org.motechproject.tasks.constants.TaskFailureCause;
 
 import java.util.ArrayList;
 import java.util.Arrays;

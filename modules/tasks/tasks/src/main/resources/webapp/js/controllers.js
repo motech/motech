@@ -391,16 +391,16 @@
                 $scope.task.retryTaskOnFailure = false;
             } else {
                 $scope.task = Tasks.get({ taskId: $routeParams.taskId }, function () {
-                    var triggerChannel, trigger, dataSource, object;
+                    Triggers.getTrigger($scope.task.trigger, function(trigger) {
+                        var triggerChannel, dataSource, object;
 
-                    if ($scope.task.numberOfRetries > 0) {
-                       $scope.task.retryTaskOnFailure = true;
-                       $scope.task.retryIntervalInSeconds = $scope.task.retryIntervalInMilliseconds / 1000;
-                    } else {
-                       $scope.task.retryTaskOnFailure = false;
-                    }
+                        if ($scope.task.numberOfRetries > 0) {
+                           $scope.task.retryTaskOnFailure = true;
+                           $scope.task.retryIntervalInSeconds = $scope.task.retryIntervalInMilliseconds / 1000;
+                        } else {
+                           $scope.task.retryTaskOnFailure = false;
+                        }
 
-                    if ($scope.task.trigger) {
                         triggerChannel = $scope.util.find({
                             where: $scope.channels,
                             by: {
@@ -409,92 +409,84 @@
                             }
                         });
 
-                        trigger = triggerChannel && $scope.util.find({
-                            where: triggerChannel.triggerTaskEvents,
-                            by: {
-                                what: 'subject',
-                                equalTo: $scope.task.trigger.subject
-                            }
-                        });
-
                         if (trigger) {
                             $scope.util.trigger.select($scope, triggerChannel, trigger);
                         }
-                    }
 
-                    angular.forEach($scope.task.taskConfig.steps, function (step) {
-                        var source, object;
+                        angular.forEach($scope.task.taskConfig.steps, function (step) {
+                            var source, object;
 
-                        angular.element('#collapse-step-' + step.order).livequery(function() {
-                            $(this).collapse('hide');
+                            angular.element('#collapse-step-' + step.order).livequery(function() {
+                                $(this).collapse('hide');
+                            });
+
+                            if (step['@type'] === 'DataSource') {
+                                source = $scope.findDataSource(step.providerId);
+                                object = $scope.util.find({
+                                    where: source.objects,
+                                    by: {
+                                        what: 'type',
+                                        equalTo: step.type
+                                    }
+                                });
+
+                                if (source && object) {
+                                    step.providerName = source.name;
+                                    step.displayName = object.displayName;
+                                    angular.forEach(step.lookup, function(lookupField) {
+                                        lookupField.value = $scope.util.convertToView($scope, 'UNICODE', lookupField.value);
+                                    });
+                                }
+                            }
                         });
 
-                        if (step['@type'] === 'DataSource') {
-                            source = $scope.findDataSource(step.providerId);
-                            object = $scope.util.find({
-                                where: source.objects,
+                        angular.forEach($scope.task.actions, function (info, idx) {
+                            var action = null, actionBy = [];
+
+                            $scope.selectedActionChannel[idx] = $scope.util.find({
+                                where: $scope.channels,
                                 by: {
-                                    what: 'type',
-                                    equalTo: step.type
+                                    what: 'moduleName',
+                                    equalTo: info.moduleName
                                 }
                             });
 
-                            if (source && object) {
-                                step.providerName = source.name;
-                                step.displayName = object.displayName;
-                                angular.forEach(step.lookup, function(lookupField) {
-                                    lookupField.value = $scope.util.convertToView($scope, 'UNICODE', lookupField.value);
-                                });
-                            }
-                        }
-                    });
+                            if ($scope.selectedActionChannel[idx]) {
+                                if (info.name) {
+                                    actionBy.push({ what: 'name', equalTo: info.name });
+                                    action = $scope.util.find({
+                                        where: $scope.selectedActionChannel[idx].actionTaskEvents,
+                                        by: actionBy
+                                    });
+                                } else {
+                                    if (info.subject) {
+                                        actionBy.push({ what: 'subject', equalTo: info.subject });
+                                    }
 
-                    angular.forEach($scope.task.actions, function (info, idx) {
-                        var action = null, actionBy = [];
+                                    if (info.serviceInterface && info.serviceMethod) {
+                                        actionBy.push({ what: 'serviceInterface', equalTo: info.serviceInterface });
+                                        actionBy.push({ what: 'serviceMethod', equalTo: info.serviceMethod });
+                                    }
 
-                        $scope.selectedActionChannel[idx] = $scope.util.find({
-                            where: $scope.channels,
-                            by: {
-                                what: 'moduleName',
-                                equalTo: info.moduleName
+                                    action = $scope.util.find({
+                                        where: $scope.selectedActionChannel[idx].actionTaskEvents,
+                                        by: actionBy
+                                    });
+                                }
+
+                                if (action) {
+                                    $timeout(function () {
+                                        $scope.util.action.select($scope, idx, action);
+                                        angular.element('#collapse-action-' + idx).collapse('hide');
+
+                                        angular.forEach($scope.selectedAction[idx].actionParameters, function (param) {
+                                            param.value = info.values[param.key] || '';
+                                            param.value = $scope.util.convertToView($scope, param.type, param.value);
+                                        });
+                                    });
+                                }
                             }
                         });
-
-                        if ($scope.selectedActionChannel[idx]) {
-                            if (info.name) {
-                                actionBy.push({ what: 'name', equalTo: info.name });
-                                action = $scope.util.find({
-                                    where: $scope.selectedActionChannel[idx].actionTaskEvents,
-                                    by: actionBy
-                                });
-                            } else {
-                                if (info.subject) {
-                                    actionBy.push({ what: 'subject', equalTo: info.subject });
-                                }
-
-                                if (info.serviceInterface && info.serviceMethod) {
-                                    actionBy.push({ what: 'serviceInterface', equalTo: info.serviceInterface });
-                                    actionBy.push({ what: 'serviceMethod', equalTo: info.serviceMethod });
-                                }
-
-                                action = $scope.util.find({
-                                    where: $scope.selectedActionChannel[idx].actionTaskEvents,
-                                    by: actionBy
-                                });
-                            }
-
-                            if (action) {
-                                $timeout(function () {
-                                    $scope.util.action.select($scope, idx, action);
-                                    angular.element('#collapse-action-' + idx).collapse('hide');
-
-                                    angular.forEach($scope.selectedAction[idx].actionParameters, function (param) {
-                                        param.value = info.values[param.key] || '';
-                                        param.value = $scope.util.convertToView($scope, param.type, param.value);
-                                    });
-                                });
-                            }
-                        }
                     });
                 });
             }

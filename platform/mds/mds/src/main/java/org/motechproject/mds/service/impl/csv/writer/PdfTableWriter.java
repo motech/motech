@@ -14,7 +14,7 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.motechproject.mds.ex.csv.DataExportException;
+import org.motechproject.mds.exception.csv.DataExportException;
 
 import java.io.IOException;
 import java.io.OutputStream;

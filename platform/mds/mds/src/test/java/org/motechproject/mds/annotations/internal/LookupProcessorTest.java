@@ -19,7 +19,7 @@ import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.ex.lookup.LookupWrongParameterTypeException;
+import org.motechproject.mds.exception.lookup.LookupWrongParameterTypeException;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;

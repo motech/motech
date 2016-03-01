@@ -1,0 +1,13 @@
+<input short-validity mds-auto-save-field-change mds-field-id="{{field.id}}" type="text" class="form-control input-xlarge-fluid"
+       ng-model="field.basic.defaultValue" default-field-name-valid="{{field.basic.name}}"
+       min-validity="{{getValidationCriteria(field, 0)}}" max-validity="{{getValidationCriteria(field, 1)}}" ng-readonly="field.readOnly"
+       ng-class="{'has-error': {{field.basic.name}}.$invalid || checkMax(field.basic.defaultValue, field) || checkMin(field.basic.defaultValue, field) || checkInSet(field.basic.defaultValue, field) || checkOutSet(field.basic.defaultValue, field)}">
+
+<span class="form-hint" ng-show="{{field.basic.name}}.$error.short">{{msg('mds.error.incorrectValueShort')}}</span>
+<span class="form-hint" ng-show="checkMin(field.basic.defaultValue, field) && !{{field.basic.name}}.$error.short">{{msg('mds.error.min')}}</span>
+<span class="form-hint" ng-show="checkMax(field.basic.defaultValue, field) && !{{field.basic.name}}.$error.short">{{msg('mds.error.max')}}</span>
+
+<span class="form-hint" ng-show="(checkInSet(field.basic.defaultValue, field) || checkOutSet(field.basic.defaultValue, field)) && !checkMin(field.basic.defaultValue, field) && !checkMax(field.basic.defaultValue, field) && !{{field.basic.name}}.$error.short">
+    <p ng-show="checkInSet(field.basic.defaultValue, field)">{{msg('mds.error.inset')}}</p>
+    <p ng-show="checkOutSet(field.basic.defaultValue, field)">{{msg('mds.error.outset')}}</p>
+</span>

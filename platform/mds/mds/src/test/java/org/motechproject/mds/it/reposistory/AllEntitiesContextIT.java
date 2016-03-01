@@ -6,7 +6,7 @@ import org.motechproject.mds.it.BaseIT;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.dto.EntityDto;
-import org.motechproject.mds.ex.entity.EntityNotFoundException;
+import org.motechproject.mds.exception.entity.EntityNotFoundException;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;

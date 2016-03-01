@@ -35,7 +35,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
 import static org.motechproject.tasks.domain.TaskActivityType.SUCCESS;
 import static org.motechproject.tasks.domain.TaskActivityType.WARNING;
-import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
+import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
 
 public class TaskActivityServiceImplTest {
 

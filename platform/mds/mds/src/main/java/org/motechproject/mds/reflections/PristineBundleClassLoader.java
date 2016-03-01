@@ -3,7 +3,7 @@ package org.motechproject.mds.reflections;
 import javassist.ByteArrayClassPath;
 import javassist.ClassPool;
 import org.apache.commons.io.IOUtils;
-import org.motechproject.mds.ex.loader.LoaderException;
+import org.motechproject.mds.exception.loader.LoaderException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.JavassistUtil;
 import org.osgi.framework.Bundle;
