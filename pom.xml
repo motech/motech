@@ -1246,7 +1246,6 @@
         <module>modules/scheduler/scheduler</module>
         <module>modules/scheduler/scheduler-migration</module>
         <module>platform/osgi-platform</module>
-        <module>platform/spring-orm</module>
 
         <!-- Testing modules -->
         <module>modules/testing-utils/pax-it</module>
