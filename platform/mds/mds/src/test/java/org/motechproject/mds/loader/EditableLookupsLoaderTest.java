@@ -13,7 +13,7 @@ import org.motechproject.mds.annotations.internal.MDSProcessorOutput;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.JsonLookupDto;
 import org.motechproject.mds.dto.LookupDto;
-import org.motechproject.mds.ex.loader.MalformedLookupsJsonException;
+import org.motechproject.mds.exception.loader.MalformedLookupsJsonException;
 import org.motechproject.mds.lookup.EntityLookups;
 import org.motechproject.mds.service.JsonLookupService;
 import org.osgi.framework.Bundle;

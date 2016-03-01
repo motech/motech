@@ -3,7 +3,7 @@ package org.motechproject.tasks.service;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.events.constants.TaskFailureCause;
+import org.motechproject.tasks.constants.TaskFailureCause;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

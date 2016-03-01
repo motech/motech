@@ -37,9 +37,9 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
-import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
-import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_DEREGISTER_SUBJECT;
-import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
+import static org.motechproject.tasks.constants.EventDataKeys.CHANNEL_MODULE_NAME;
+import static org.motechproject.tasks.constants.EventSubjects.CHANNEL_DEREGISTER_SUBJECT;
+import static org.motechproject.tasks.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
 
 /**
  * A {@link ChannelService}, used to manage CRUD operations for a {@link Channel}.

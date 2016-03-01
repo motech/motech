@@ -1,12 +1,15 @@
 package org.motechproject.tasks.web;
 
 import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.TaskTriggerInformation;
+import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.domain.TriggersList;
 import org.motechproject.tasks.domain.TriggersLists;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TriggerEventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -79,5 +82,17 @@ public class ChannelController {
         }
 
         return new TriggersLists(staticTriggers, dynamicTriggers);
+    }
+
+    /**
+     * Returns a trigger matching the given instance of the {@link TaskTriggerInformation} class.
+     *
+     * @param info  the information about the trigger
+     * @return the trigger matching given information
+     */
+    @RequestMapping(value = "channel/trigger", method = RequestMethod.POST)
+    @ResponseBody
+    public TriggerEvent getTrigger(@RequestBody TaskTriggerInformation info) {
+        return triggerEventService.getTrigger(info);
     }
 }

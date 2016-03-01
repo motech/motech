@@ -46,9 +46,9 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
-import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_DEREGISTER_SUBJECT;
-import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
+import static org.motechproject.tasks.constants.EventDataKeys.CHANNEL_MODULE_NAME;
+import static org.motechproject.tasks.constants.EventSubjects.CHANNEL_DEREGISTER_SUBJECT;
+import static org.motechproject.tasks.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
 
 public class ChannelServiceImplTest {
     private static final String BUNDLE_SYMBOLIC_NAME = "test";
