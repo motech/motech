@@ -42,8 +42,12 @@ import java.util.List;
 
 import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
@@ -129,22 +133,18 @@ public class AdminBundleIT extends BasePaxIT {
 
     @Test
     public void testUploadBundleFromRepository() throws IOException, InterruptedException {
-        boolean isUploadSuccessful = uploadBundle("Repository", "org.motechproject:cms-lite:LATEST", null,
+        uploadBundle("Repository", "org.motechproject:cms-lite:LATEST", null,
                 "on","org.motechproject.cms-lite");
-
-        assertTrue(isUploadSuccessful);
     }
 
     @Test
     public void testUploadBundleFromFile() throws IOException, InterruptedException {
         File file = new File("src/test/resources/motech-upload-test-bundle.jar");
 
-        boolean isUploadSuccessful = uploadBundle("File", null, file, "on", "motech-upload-test-bundle");
-
-        assertTrue(isUploadSuccessful);
+        uploadBundle("File", null, file, "on", "motech-upload-test-bundle");
     }
 
-    private boolean uploadBundle(String moduleSource, String moduleId, File bundleFile,
+    private void uploadBundle(String moduleSource, String moduleId, File bundleFile,
                                  String startBundle, String bundleSymbolicName) throws IOException, InterruptedException {
         String uri = String.format("http://%s:%d/admin/api/bundles/upload/", HOST, PORT);
 
@@ -155,14 +155,10 @@ public class AdminBundleIT extends BasePaxIT {
         entity.addTextBody("moduleSource", moduleSource, ContentType.MULTIPART_FORM_DATA);
         if (moduleSource.equals("Repository")) {
             entity.addTextBody("moduleId", moduleId, ContentType.MULTIPART_FORM_DATA);
-        }
-        else if (moduleSource.equals("File")) {
-            if (bundleFile == null) {
-                fail("Bundle file was null.");
-            }
+        } else if (moduleSource.equals("File")) {
+            assertNotNull(bundleFile);
             entity.addBinaryBody("bundleFile", bundleFile);
-        }
-        else {
+        } else {
             fail("Wrong module source.");
         }
         entity.addTextBody("startBundle", startBundle, ContentType.MULTIPART_FORM_DATA);
@@ -173,16 +169,12 @@ public class AdminBundleIT extends BasePaxIT {
         EntityUtils.consume(response.getEntity());
         int bundlesCountAfterUpload = bundleContext.getBundles().length;
 
-        if (response.getStatusLine().getStatusCode() != HttpStatus.ORDINAL_200_OK) {
-            fail("Wrong response code.");
-        }
+        assertEquals(response.getStatusLine().getStatusCode(), HttpStatus.ORDINAL_200_OK);
 
         Bundle uploadedBundle = getBundleFromBundlesArray(bundleSymbolicName);
-        if(uploadedBundle == null) {
-            fail("Couldn't find uploaded bundle in current bundles.");
-        }
-
-        return (bundlesCountAfterUpload == bundlesCountBeforeUpload + 1) && (uploadedBundle.getState() == Bundle.ACTIVE);
+        assertNotNull(uploadedBundle);
+        assertEquals(bundlesCountAfterUpload, bundlesCountBeforeUpload + 1);
+        assertEquals(uploadedBundle.getState() ,Bundle.ACTIVE);
     }
 
     private String apiGet(String path) throws IOException, InterruptedException {
@@ -210,12 +202,11 @@ public class AdminBundleIT extends BasePaxIT {
 
     private Bundle getBundleFromBundlesArray(String bundleSymbolicName) {
         Bundle[] bundles = bundleContext.getBundles();
-        for(int i = 0; i < bundles.length; i++) {
-            if(bundles[i].getSymbolicName() == null) {
+        for(Bundle bundle : bundles) {
+            if (bundle.getSymbolicName() == null) {
                 continue;
-            }
-            else if (bundles[i].getSymbolicName().equals(bundleSymbolicName)) {
-                return bundles[i];
+            } else if (bundle.getSymbolicName().equals(bundleSymbolicName)) {
+                return bundle;
             }
         }
         return null;
@@ -232,3 +223,4 @@ public class AdminBundleIT extends BasePaxIT {
         }
     }
 }
+
