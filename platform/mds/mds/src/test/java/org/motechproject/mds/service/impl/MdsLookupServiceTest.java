@@ -12,7 +12,7 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.LookupFieldType;
-import org.motechproject.mds.ex.lookup.SingleResultFromLookupExpectedException;
+import org.motechproject.mds.exception.lookup.SingleResultFromLookupExpectedException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.DefaultMotechDataService;

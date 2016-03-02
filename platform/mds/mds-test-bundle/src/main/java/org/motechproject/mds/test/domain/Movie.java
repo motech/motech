@@ -17,6 +17,9 @@ public class Movie {
     private String name;
 
     @Field
+    private Character rating;
+    
+    @Field
     @IndexedManyToMany(relatedField = "movies")
     private List<Actor> actors;
 
@@ -33,6 +36,14 @@ public class Movie {
         this.name = name;
     }
 
+    public Character getRating() {
+        return rating;
+    }
+    
+    public void setRating(Character rating) {
+        this.rating = rating;
+    }
+    
     public List<Actor> getActors() {
         if (actors == null) {
             actors = new ArrayList<>();

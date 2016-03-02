@@ -12,6 +12,9 @@ public class Dog extends Pet {
 
     @Field
     private int hiddenBones;
+    
+    @Field
+    private float weight;
 
     public Dog(PetOwner petOwner, int hiddenBones) {
         super(petOwner);
@@ -24,5 +27,13 @@ public class Dog extends Pet {
 
     public void setHiddenBones(int hiddenBones) {
         this.hiddenBones = hiddenBones;
+    }
+    
+    public float getWeight() {
+        return weight;
+    }
+    
+    public void setWeight(float weight) {
+        this.weight = weight;
     }
 }
