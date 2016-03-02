@@ -30,6 +30,7 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 import javax.inject.Inject;
@@ -56,6 +57,7 @@ public class AdminBundleIT extends BasePaxIT {
     private static final DateTime TIMEOUT = DateUtil.nowUTC().plusHours(1);
     private static final String HOST = "localhost";
     private static final int PORT = TestContext.getJettyPort();
+    private static final int BUNDLE_ACTIVE_STATE = 32;
 
     @Inject
     private StatusMessageService statusMessageService;
@@ -151,9 +153,11 @@ public class AdminBundleIT extends BasePaxIT {
         Charset chars = Charset.forName("UTF-8");
         entity.setCharset(chars);
         entity.addTextBody("moduleSource", moduleSource, ContentType.MULTIPART_FORM_DATA);
-        if(moduleSource.equals("Repository")) entity.addTextBody("moduleId", moduleId, ContentType.MULTIPART_FORM_DATA);
-        else if(moduleSource.equals("File")) {
-            if(bundleFile == null) return false;
+        if (moduleSource.equals("Repository")) entity.addTextBody("moduleId", moduleId, ContentType.MULTIPART_FORM_DATA);
+        else if (moduleSource.equals("File")) {
+            if (bundleFile == null) {
+                return false;
+            }
             entity.addBinaryBody("bundleFile", bundleFile);
         }
         else return false;
@@ -166,7 +170,13 @@ public class AdminBundleIT extends BasePaxIT {
         EntityUtils.consume(response.getEntity());
         int bundlesCountAfterUpload = bundleContext.getBundles().length;
 
-        return (bundlesCountAfterUpload == bundlesCountBeforeUpload + 1);
+        if (response.getStatusLine().getStatusCode() != 200) {
+            return false;
+        }
+
+        int bundleState = bundleContext.getBundles()[bundlesCountAfterUpload-1].getState();
+
+        return (bundlesCountAfterUpload == bundlesCountBeforeUpload + 1) && (bundleState == BUNDLE_ACTIVE_STATE);
     }
 
     private String apiGet(String path) throws IOException, InterruptedException {
