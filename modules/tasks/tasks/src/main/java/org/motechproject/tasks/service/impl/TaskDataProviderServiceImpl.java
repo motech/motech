@@ -29,8 +29,8 @@ import java.util.Queue;
 import java.util.Set;
 
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
-import static org.motechproject.tasks.events.constants.EventDataKeys.DATA_PROVIDER_NAME;
-import static org.motechproject.tasks.events.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
+import static org.motechproject.tasks.constants.EventDataKeys.DATA_PROVIDER_NAME;
+import static org.motechproject.tasks.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
 
 @Service("taskDataProviderService")
 public class TaskDataProviderServiceImpl implements TaskDataProviderService, OsgiServiceLifecycleListener {

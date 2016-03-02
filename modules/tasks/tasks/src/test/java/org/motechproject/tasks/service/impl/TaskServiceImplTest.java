@@ -82,10 +82,10 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.tasks.domain.ParameterType.UNICODE;
-import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
-import static org.motechproject.tasks.events.constants.EventDataKeys.DATA_PROVIDER_NAME;
-import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
-import static org.motechproject.tasks.events.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
+import static org.motechproject.tasks.constants.EventDataKeys.CHANNEL_MODULE_NAME;
+import static org.motechproject.tasks.constants.EventDataKeys.DATA_PROVIDER_NAME;
+import static org.motechproject.tasks.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
+import static org.motechproject.tasks.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
 
 public class TaskServiceImplTest {
 

@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.mds.ex.rest.RestNotSupportedException;
+import org.motechproject.mds.exception.rest.RestNotSupportedException;
 import org.motechproject.mds.rest.MdsRestFacade;
 import org.motechproject.mds.util.ClassName;
 import org.osgi.framework.BundleContext;

@@ -1,8 +1,8 @@
 package org.motechproject.tasks.domain;
 
 import org.motechproject.event.MotechEvent;
-import org.motechproject.tasks.events.constants.EventDataKeys;
-import org.motechproject.tasks.events.constants.EventSubjects;
+import org.motechproject.tasks.constants.EventDataKeys;
+import org.motechproject.tasks.constants.EventSubjects;
 
 import java.util.HashMap;
 

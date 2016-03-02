@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static org.motechproject.tasks.events.constants.TaskFailureCause.DATA_SOURCE;
-import static org.motechproject.tasks.events.constants.TaskFailureCause.FILTER;
+import static org.motechproject.tasks.constants.TaskFailureCause.DATA_SOURCE;
+import static org.motechproject.tasks.constants.TaskFailureCause.FILTER;
 
 
 /**

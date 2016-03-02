@@ -1,10 +1,8 @@
 package org.motechproject.tasks.service;
 
-import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.domain.Channel;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -65,15 +63,6 @@ public interface ChannelService {
      * @return  the channel for the module
      */
     Channel getChannel(String moduleName);
-
-    /**
-     * Returns the icon for the channel from module with the given name.
-     *
-     * @param moduleName  the name of the module, null returns default icon
-     * @return  the icon of the module
-     * @throws IOException  when there were problems while fetching the icon
-     */
-    BundleIcon getChannelIcon(String moduleName) throws IOException;
 
     /**
      * Checks whether the given module provides a task channel.

@@ -6,7 +6,7 @@ import org.motechproject.mds.dto.DraftData;
 import org.motechproject.mds.dto.DraftResult;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
-import org.motechproject.mds.ex.entity.EntityNotFoundException;
+import org.motechproject.mds.exception.entity.EntityNotFoundException;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MdsBundleRegenerationService;
 import org.motechproject.mds.util.Constants;
