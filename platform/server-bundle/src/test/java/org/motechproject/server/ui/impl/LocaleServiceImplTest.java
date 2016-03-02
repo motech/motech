@@ -1,4 +1,4 @@
-package org.motechproject.server.ui;
+package org.motechproject.server.ui.impl;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class LocaleServiceTest {
+public class LocaleServiceImplTest {
 
     @Mock
     private MotechUserService userService;

@@ -3,6 +3,7 @@ package org.motechproject.osgi.web.tracker.impl;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.osgi.web.bundle.BundleRegister;
 import org.motechproject.osgi.web.bundle.Log4JBundleLoader;
+import org.motechproject.osgi.web.exception.BundleConfigurationLoadingException;
 import org.motechproject.osgi.web.service.UIFrameworkService;
 import org.motechproject.osgi.web.tracker.ApplicationContextTracker;
 import org.motechproject.osgi.web.tracker.HttpServiceTrackers;
@@ -10,7 +11,6 @@ import org.motechproject.osgi.web.tracker.UIServiceTrackers;
 import org.motechproject.osgi.web.tracker.internal.HttpServiceTracker;
 import org.motechproject.osgi.web.tracker.internal.UIServiceTracker;
 import org.motechproject.osgi.web.util.BundleHeaders;
-import org.motechproject.server.api.BundleLoadingException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -104,7 +104,7 @@ public class BlueprintApplicationContextTracker extends ApplicationContextTracke
                         }
                         bundleRegister.getBundleList().clear();
                     }
-                } catch (BundleLoadingException e) {
+                } catch (BundleConfigurationLoadingException e) {
                     LOGGER.error("Failed adding log4j configuration for [" + serviceReference.getBundle().getLocation() + "]\n" + e.getMessage());
                 } catch (IOException e) {
                     LOGGER.error(e.getMessage());

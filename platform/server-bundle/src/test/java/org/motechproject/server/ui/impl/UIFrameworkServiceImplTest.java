@@ -1,4 +1,4 @@
-package org.motechproject.server.ui;
+package org.motechproject.server.ui.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
@@ -12,7 +12,7 @@ import org.motechproject.server.ui.impl.UIFrameworkServiceImpl;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
-public class UIFrameworkServiceTest {
+public class UIFrameworkServiceImplTest {
 
     UIFrameworkService service = new UIFrameworkServiceImpl();
 
