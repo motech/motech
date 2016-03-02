@@ -206,7 +206,7 @@
         $scope.parseToDateTime = function(date) {
             if (date && date !== "") {
                 var parts = date.split(" ");
-                return parts[0] + "T" + parts[1];
+                return parts[0] + "T" + parts[1] + new Date().toString().match(/([-\+][0-9]+)\s/)[1];
             }
             return date;
         }
