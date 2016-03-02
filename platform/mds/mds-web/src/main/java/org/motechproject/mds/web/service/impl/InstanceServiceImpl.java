@@ -552,11 +552,11 @@ public class InstanceServiceImpl implements InstanceService {
 
     private void populateDefaultFields(List<FieldRecord> fieldRecords) {
         for (FieldRecord record : fieldRecords) {
-            // we don't want to pre-populate anything for hidden fields
+            // we don't want to pre-populate anything for editable fields
             // if we pre-populate the owner field in such a case for example, it will fail validation
             if (Constants.Util.CREATOR_FIELD_NAME.equals(record.getName()) ||
                     Constants.Util.OWNER_FIELD_NAME.equals(record.getName())) {
-                if (record.isNonDisplayable()) {
+                if (record.isNonEditable()) {
                     // make sure this is null, we don't want empty strings for these fields
                     record.setValue(null);
                 } else {
