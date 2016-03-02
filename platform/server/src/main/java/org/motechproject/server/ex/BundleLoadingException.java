@@ -1,4 +1,4 @@
-package org.motechproject.server.api;
+package org.motechproject.server.ex;
 
 /**
  * This exception is thrown when a problem occurs during bundle loading.

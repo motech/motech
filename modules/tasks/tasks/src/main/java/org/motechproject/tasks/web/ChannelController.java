@@ -1,6 +1,5 @@
 package org.motechproject.tasks.web;
 
-import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
@@ -16,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -53,32 +50,6 @@ public class ChannelController {
         return channelService.getAllChannels();
     }
 
-    /**
-     * Returns the channels icon for the module with given name.
-     *
-     * @param moduleName  the name of the module
-     * @param response  the HTTP response
-     * @throws IOException  when there were problems while accessing the icon
-     */
-    @RequestMapping(value = "channel/icon", method = RequestMethod.GET)
-    public void getChannelIcon(@RequestParam String moduleName, HttpServletResponse response) throws IOException {
-        BundleIcon bundleIcon = channelService.getChannelIcon(moduleName);
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentLength(bundleIcon.getContentLength());
-        response.setContentType(bundleIcon.getMime());
-
-        response.getOutputStream().write(bundleIcon.getIcon());
-    }
-
-    /**
-     * Returns lists of both static and dynamic triggers for the given information.
-     *
-     * @param moduleName  the name of the module
-     * @param staticTriggersPage  the page of the static triggers
-     * @param dynamicTriggersPage  the page of the dynamic triggers
-     * @return list of static and dynamic triggers
-     */
     @RequestMapping(value = "channel/triggers", method = RequestMethod.GET)
     @ResponseBody
     public TriggersLists getTriggers(@RequestParam String moduleName,

@@ -1,4 +1,4 @@
-package org.motechproject.server.api;
+package org.motechproject.admin.bundles;
 
 
 import org.motechproject.server.osgi.util.PlatformConstants;
@@ -23,12 +23,13 @@ public class JarInformation {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JarInformation.class);
 
-    public static final String EXTRACTION_FAILED = "Extraction failed.";
-    public static final String IMPLEMENTATION_VERSION = "Implementation-Version";
-    public static final String IMPLEMENTATION_TITLE = "Implementation-Title";
-    public static final String IMPLEMENTATION_VENDOR_ID = "Implementation-Vendor-Id";
-    public static final String BUNDLE_SYMBOLIC_NAME = "Bundle-SymbolicName";
     public static final String BUNDLE_VERSION = "Bundle-Version";
+
+    private static final String EXTRACTION_FAILED = "Extraction failed.";
+    private static final String IMPLEMENTATION_VERSION = "Implementation-Version";
+    private static final String IMPLEMENTATION_TITLE = "Implementation-Title";
+    private static final String IMPLEMENTATION_VENDOR_ID = "Implementation-Vendor-Id";
+    private static final String BUNDLE_SYMBOLIC_NAME = "Bundle-SymbolicName";
 
     private String path;
     private String filename;

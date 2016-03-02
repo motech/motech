@@ -1,5 +1,6 @@
-package org.motechproject.server.api;
+package org.motechproject.server;
 
+import org.motechproject.server.ex.BundleLoadingException;
 import org.osgi.framework.Bundle;
 
 /**

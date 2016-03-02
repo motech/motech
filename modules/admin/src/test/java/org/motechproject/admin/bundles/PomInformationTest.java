@@ -1,4 +1,4 @@
-package org.motechproject.server.api;
+package org.motechproject.admin.bundles;
 
 import org.apache.maven.model.Parent;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class PomInformationTest {
                 "${project.version}"
         ), JavaScopes.RUNTIME);
 
-        try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("pom.xml")) {
+        try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("pom/pom.xml")) {
             pomInformation = new PomInformation();
             pomInformation.parsePom(inputStream);
         }
@@ -56,7 +56,7 @@ public class PomInformationTest {
         properties.put("project.version", "0-27-SNAPSHOT");
         properties.put("project.artifactId", "motech-platform-server-api");
 
-        try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("parentPom.xml")) {
+        try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("pom/parentPom.xml")) {
             pomInformation = new PomInformation();
             pomInformation.parseParentPom(inputStream);
         }
