@@ -55,7 +55,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>copy-bundles2</id>
+                        <id>copy-bundle-to-admin-test-resources</id>
                         <phase>package</phase>
                         <goals>
                             <goal>copy-resources</goal>
