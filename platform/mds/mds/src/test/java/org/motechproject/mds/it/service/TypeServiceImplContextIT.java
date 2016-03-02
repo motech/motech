@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class TypeServiceImplContextIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 21;
+    private static final int START_NUMBER_OF_TYPES = 24;
 
     @Autowired
     private TypeService typeService;
@@ -66,6 +66,9 @@ public class TypeServiceImplContextIT extends BaseIT {
         testFindType(int.class, Integer.class);
         testFindType(double.class, Double.class);
         testFindType(long.class, Long.class);
+        testFindType(short.class, Short.class);
+        testFindType(float.class, Float.class);
+        testFindType(char.class, Character.class);
     }
 
     private void testFindType(Class<?> request, Class<?> expected) {

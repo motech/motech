@@ -4,8 +4,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.motechproject.osgi.web.domain.LogMapping;
+import org.motechproject.osgi.web.exception.BundleConfigurationLoadingException;
 import org.motechproject.osgi.web.service.ServerLogService;
-import org.motechproject.server.api.BundleLoadingException;
 import org.osgi.framework.Bundle;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +60,7 @@ public class Log4JBundleLoader {
         }
     }
 
-    public void loadBundle(Bundle bundle) throws BundleLoadingException, IOException {
+    public void loadBundle(Bundle bundle) throws BundleConfigurationLoadingException, IOException {
         String symbolicName = bundle.getSymbolicName();
 
         LOGGER.debug("Looking for log4j config in {}", symbolicName);
@@ -91,7 +91,7 @@ public class Log4JBundleLoader {
                 logService.reconfigure();
                 LOGGER.debug("Added log4j configuration for [" + bundle.getLocation() + "]");
             } catch (ParserConfigurationException | SAXException e) {
-                throw new BundleLoadingException("Error while loading log4j configuration from " + bundle, e);
+                throw new BundleConfigurationLoadingException("Error while loading log4j configuration from " + bundle, e);
             } finally {
                 IOUtils.closeQuietly(log4jStream);
             }

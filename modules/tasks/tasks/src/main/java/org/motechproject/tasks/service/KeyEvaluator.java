@@ -17,7 +17,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.motechproject.tasks.domain.KeyInformation.ADDITIONAL_DATA_PREFIX;
 import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 import static org.motechproject.tasks.domain.KeyInformation.parseAll;
-import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
+import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
 
 /**
  * KeyEvaluator evaluates the value of a key in the context of a task which is used to execute filters and actions.

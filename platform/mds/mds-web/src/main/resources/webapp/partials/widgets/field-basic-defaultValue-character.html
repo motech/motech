@@ -1,0 +1,4 @@
+<input char-validity class="form-control input-xlarge-fluid" type="text" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-model="field.basic.defaultValue" ng-readonly="field.readOnly"
+        default-field-name-valid="{{field.basic.name}}"
+        ng-class="{'has-error': {{field.basic.name}}.$invalid} || checkInSet(field.basic.defaultValue, field) || checkOutSet(field.basic.defaultValue, field)">
+ <span class="form-hint" ng-show="{{field.basic.name}}.$error.char">{{msg('mds.error.incorrectValueCharacter')}}</span>

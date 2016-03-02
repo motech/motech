@@ -2339,7 +2339,7 @@
                         // it is valid
                         ctrl.$setValidity('integer', true);
                         originalValue = viewValue;
-                        viewValue = parseFloat(viewValue);
+                        viewValue = parseInt(viewValue, 10);
                         if (isNaN(viewValue)) {
                             viewValue = '';
                         }
@@ -2359,6 +2359,41 @@
         };
     });
 
+    directives.directive('shortValidity', function() {
+        var INTEGER_REGEXP = new RegExp('^([-][1-9])?(\\d)*$'),
+        TWOZERO_REGEXP = new RegExp('^(0+\\d+)$');
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                var elm = angular.element(element), originalValue;
+                ctrl.$parsers.unshift(function(viewValue) {
+                    if (viewValue === '' || INTEGER_REGEXP.test(viewValue)) {
+                        // it is valid
+                        ctrl.$setValidity('short', true);
+                        originalValue = viewValue;
+                        viewValue = parseInt(viewValue, 10);
+                        if (viewValue >= 32767 || viewValue <= -32768) {
+                            ctrl.$setValidity('short', false);
+                        }
+                        if (isNaN(viewValue)) {
+                            viewValue = '';
+                        }
+                        if (TWOZERO_REGEXP.test(originalValue)) {
+                            setTimeout(function () {
+                                elm.val(viewValue);
+                            }, 1000);
+                        }
+                        return viewValue;
+                    } else {
+                        // it is invalid, return undefined (no model update)
+                        ctrl.$setValidity('short', false);
+                        return viewValue;
+                    }
+                });
+            }
+        };
+    });
+    
     directives.directive('decimalValidity', function() {
         var DECIMAL_REGEXP = new RegExp('^[-]?\\d+(\\.\\d+)?$'),
         TWOZERO_REGEXP = new RegExp('^[-]?0+\\d+(\\.\\d+)?$');
@@ -2391,6 +2426,59 @@
         };
     });
 
+    directives.directive('floatValidity', function() {
+        var FLOAT_REGEXP = new RegExp('^[-]?\\d+(\\.\\d+)?$'),
+        TWOZERO_REGEXP = new RegExp('^[-]?0+\\d+(\\.\\d+)?$');
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                var elm = angular.element(element), originalValue;
+                ctrl.$parsers.unshift(function(viewValue) {
+                    if (viewValue === '' || FLOAT_REGEXP.test(viewValue)) {
+                        // it is valid
+                        ctrl.$setValidity('float', true);
+                        originalValue = viewValue;
+                        viewValue = parseFloat(viewValue);
+                        if (isNaN(viewValue)) {
+                            viewValue = '';
+                        }
+                        if (TWOZERO_REGEXP.test(originalValue)) {
+                            setTimeout(function () {
+                                elm.val(viewValue);
+                            }, 1000);
+                        }
+                        return viewValue;
+                    } else {
+                        // it is invalid, return undefined (no model update)
+                        ctrl.$setValidity('float', false);
+                        return viewValue;
+                    }
+                });
+            }
+        };
+    });
+
+    directives.directive('charValidity', function() {
+        var CHAR_REGEXP = new RegExp('^.$');
+        return {
+        require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                var elm = angular.element(element), originalValue;
+                ctrl.$parsers.unshift(function(viewValue) {
+                    if(viewValue === '' || CHAR_REGEXP.test(viewValue)) {
+                        ctrl.$setValidity('char', true);
+                        originalValue = viewValue;
+                        return viewValue;
+                    }
+                    else {
+                        ctrl.$setValidity('char', false);
+                        return viewValue;
+                    }
+                });
+            }
+        };
+    });
+    
     directives.directive('insetValidity', function() {
         return {
             require: 'ngModel',

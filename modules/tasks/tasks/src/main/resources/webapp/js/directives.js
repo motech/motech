@@ -1343,7 +1343,7 @@
                                 img = angular.element('<img />'),
                                 name = angular.element('<span style="margin-left: 5px" />');
 
-                            img.attr('src', '../tasks/api/channel/icon?moduleName=' + action.moduleName);
+                            img.attr('src', '../server/module/icon?bundleName=' + action.moduleName + '&defaultIcon=iconTaskChannel.png');
                             img.addClass('task-list-img');
 
                             name.text(scope.msg(action.channelName) + ": " + scope.msg(action.displayName));
@@ -1375,7 +1375,7 @@
                             img = angular.element('<img />'),
                             name = angular.element('<span style="margin-left: 5px" />');
 
-                        img.attr('src', '../tasks/api/channel/icon?moduleName=' + scope.item.task.trigger.moduleName);
+                        img.attr('src', '../server/module/icon?bundleName=' + scope.item.task.trigger.moduleName + '&defaultIcon=iconTaskChannel.png');
                         img.addClass('task-list-img');
                         name.text(scope.msg(scope.item.task.trigger.channelName) + ": " + scope.msg(scope.item.task.trigger.displayName));
                         div.append(img);

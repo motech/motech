@@ -96,7 +96,7 @@
             <td>{{bundle.bundleId}}</td>
             <td>
                 <div ng-class="getIconClass(bundle)">
-                    <img ng-src="../admin/api/bundles/{{bundle.bundleId}}/icon" class="small-icon"/>
+                    <img ng-src="../server/module/icon?bundleId={{bundle.bundleId}}" class="small-icon"/>
                 </div>
             </td>
             <td><a ng-href="#/admin/bundle/{{bundle.bundleId}}"
