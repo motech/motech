@@ -59,6 +59,7 @@
                             org.motechproject.mds.test.domain.inheritancestrategies;version=${project.version},
                             org.motechproject.mds.test.domain.instancelifecyclelistener;version=${project.version},
                             org.motechproject.mds.test.domain.manytomany;version=${project.version},
+                            org.motechproject.mds.test.domain.qa;version=${project.version},
                             org.motechproject.mds.test.domain.relationshipswithhistory;version=${project.version},
                             org.motechproject.mds.test.domain.setofenumandstring;version=${project.version},
                             org.motechproject.mds.test.domain.validation;version=${project.version},

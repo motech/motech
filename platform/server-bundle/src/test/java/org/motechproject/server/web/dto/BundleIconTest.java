@@ -1,4 +1,4 @@
-package org.motechproject.server.api;
+package org.motechproject.server.web.dto;
 
 import org.junit.Test;
 
