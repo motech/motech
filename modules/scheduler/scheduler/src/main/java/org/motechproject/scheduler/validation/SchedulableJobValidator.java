@@ -8,6 +8,10 @@ import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.contract.SchedulableJob;
+import org.motechproject.scheduler.exception.MotechSchedulerException;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.apache.commons.lang.Validate.notEmpty;
 import static org.apache.commons.lang.Validate.notNull;
@@ -40,7 +44,9 @@ public final class SchedulableJobValidator {
         notNull(job, JOB_CANNOT_BE_NULL);
         notNull(job.getRepeatIntervalInSeconds(), "Repeat interval cannot be null!");
         if (job.getRepeatIntervalInSeconds() == 0) {
-            throw new IllegalArgumentException("Invalid RepeatingSchedulableJob. The job repeat interval in seconds can not be 0 ");
+            throw new MotechSchedulerException(
+                    "Invalid RepeatingSchedulableJob. The job repeat interval in seconds can not be 0 ",
+                    "scheduler.error.repeatIntervalIsZero", new ArrayList<>());
         }
         validateSchedulableJob(job);
     }
@@ -71,7 +77,8 @@ public final class SchedulableJobValidator {
             String errorMessage = "Invalid RunOnceSchedulableJob. The job start date can not be in the past. \n" +
                     " Job start date: " + startDate.toString() +
                     " Attempted to schedule at:" + currentDate.toString();
-            throw new IllegalArgumentException(errorMessage);
+            throw new MotechSchedulerException(errorMessage, "scheduler.error.startDateInThePast",
+                    Arrays.asList(startDate.toString(), currentDate.toString()));
         }
     }
 
