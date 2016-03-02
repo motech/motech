@@ -26,7 +26,7 @@ public interface EntityService {
 
     /**
      * Creates an entity and adds default fields, provided the entity does not contain them
-     * already (from inheritance). It will throw {@link org.motechproject.mds.ex.entity.EntityAlreadyExistException}
+     * already (from inheritance). It will throw {@link org.motechproject.mds.exception.entity.EntityAlreadyExistException}
      * if an entity of identical class name already exists.
      *
      * @param entityDto representation of an entity to construct from.
@@ -256,7 +256,7 @@ public interface EntityService {
      * Retrieves a draft and attempts to update actual entity, according to the changes present in the draft. The
      * username, for which the draft should be retrieved, will be determined on the current security context.
      * If the draft is outdated, which means that somebody else has already updated the entity, the
-     * {@link org.motechproject.mds.ex.entity.EntityChangedException} will be thrown. If the draft is not outdated,
+     * {@link org.motechproject.mds.exception.entity.EntityChangedException} will be thrown. If the draft is not outdated,
      * a validation will be performed to determine whether the changes are valid and can be applied, and if so
      * the changes will be made and the draft will get deleted.
      *
@@ -268,7 +268,7 @@ public interface EntityService {
     /**
      * Retrieves a draft for a given user and attempts to update actual entity, according to the changes present in the draft.
      * If the draft is outdated, which means that somebody else has already updated the entity, the
-     * {@link org.motechproject.mds.ex.entity.EntityChangedException} will be thrown. If the draft is not outdated,
+     * {@link org.motechproject.mds.exception.entity.EntityChangedException} will be thrown. If the draft is not outdated,
      * a validation will be performed to determine whether the changes are valid and can be applied, and if so
      * the changes will be made and the draft will get deleted.
      *
@@ -306,7 +306,7 @@ public interface EntityService {
 
     /**
      * Updates rest options for the given entity. If entity of the given id does not exist, it
-     * throws {@link org.motechproject.mds.ex.entity.EntityNotFoundException}
+     * throws {@link org.motechproject.mds.exception.entity.EntityNotFoundException}
      *
      * @param entityId id of an entity
      * @param restOptionsDto new rest options
@@ -315,7 +315,7 @@ public interface EntityService {
 
     /**
      * Updates audit settings for the given entity. If entity of the given id does not exist, it
-     * throws {@link org.motechproject.mds.ex.entity.EntityNotFoundException}
+     * throws {@link org.motechproject.mds.exception.entity.EntityNotFoundException}
      *
      * @param entityId id of an entity
      * @param trackingDto new audit settings
@@ -342,7 +342,7 @@ public interface EntityService {
     /**
      * Adds fields to the given entity. If the field of identical name already exists in the
      * entity definition, it will be updated. If the entity does not exist, it throws
-     * {@link org.motechproject.mds.ex.entity.EntityNotFoundException}
+     * {@link org.motechproject.mds.exception.entity.EntityNotFoundException}
      *
      * @param entity the entity to add fields to
      * @param fields fields to add or update
@@ -352,7 +352,7 @@ public interface EntityService {
     /**
      * Adds fields to the given entity. If the field of identical name already exists in the
      * entity definition, it will be updated. If the entity does not exist, it throws
-     * {@link org.motechproject.mds.ex.entity.EntityNotFoundException}
+     * {@link org.motechproject.mds.exception.entity.EntityNotFoundException}
      *
      * @param entity the entity to add fields to
      * @param fields fields to add or update
@@ -362,7 +362,7 @@ public interface EntityService {
     /**
      * Adds fields to the given entity. If the field of identical name already exists in the
      * entity definition, it will be updated. If the entity does not exist, it throws
-     * {@link org.motechproject.mds.ex.entity.EntityNotFoundException}
+     * {@link org.motechproject.mds.exception.entity.EntityNotFoundException}
      *
      * @param entityId id of the entity to add fields to
      * @param fields fields to add or update
@@ -372,7 +372,7 @@ public interface EntityService {
     /**
      * Adds fields to the given entity. If the field of identical name already exists in the
      * entity definition, it will be updated. If the entity does not exist, it throws
-     * {@link org.motechproject.mds.ex.entity.EntityNotFoundException}
+     * {@link org.motechproject.mds.exception.entity.EntityNotFoundException}
      *
      * @param entityId id of the entity to add fields to
      * @param fields fields to add or update
@@ -402,7 +402,7 @@ public interface EntityService {
 
     /**
      * Updates security options for the given entity. If entity of the given id does not exist, it
-     * throws {@link org.motechproject.mds.ex.entity.EntityNotFoundException}
+     * throws {@link org.motechproject.mds.exception.entity.EntityNotFoundException}
      *
      * @param entityId id of an entity
      * @param securityMode new security mode
@@ -441,7 +441,7 @@ public interface EntityService {
 
     /**
      * Retrieves lookup representation by entity id and lookup name. If entity of given id does not
-     * exists, it throws {@link org.motechproject.mds.ex.entity.EntityNotFoundException}. If there is no
+     * exists, it throws {@link org.motechproject.mds.exception.entity.EntityNotFoundException}. If there is no
      * lookup of such name in the entity, it returns {@code null}.
      *
      * @param entityId id of an entity
@@ -454,7 +454,7 @@ public interface EntityService {
      * Retrieves all fields of an entity, that are marked as displayable. By default, these are all the fields
      * that aren't auto-generated by the MDS. The displayable fields can be adjusted using annotations or
      * {@link #addDisplayedFields(org.motechproject.mds.dto.EntityDto, java.util.Map)} method. If entity of given
-     * id does not exist, it throws {@link org.motechproject.mds.ex.entity.EntityNotFoundException}.
+     * id does not exist, it throws {@link org.motechproject.mds.exception.entity.EntityNotFoundException}.
      *
      * @param entityId id of an entity
      * @return All fields of the entity, that are marked as displayable
@@ -463,7 +463,7 @@ public interface EntityService {
 
     /**
      * Retrieves current version of the entity schema. The version gets incremented each time the entity gets updated.
-     * It throws {@link org.motechproject.mds.ex.entity.EntityNotFoundException} if entity of given class name
+     * It throws {@link org.motechproject.mds.exception.entity.EntityNotFoundException} if entity of given class name
      * does not exist.
      *
      * @param entityClassName fully qualified class name of the entity
@@ -475,7 +475,7 @@ public interface EntityService {
      * Increments the version of the entity.
      *
      * @param entityId id of an entity
-     * @throws org.motechproject.mds.ex.entity.EntityNotFoundException when entity of the given id does not exist
+     * @throws org.motechproject.mds.exception.entity.EntityNotFoundException when entity of the given id does not exist
      */
     void incrementVersion(Long entityId);
 

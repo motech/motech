@@ -1,8 +1,8 @@
 package org.motechproject.mds.util;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.mds.ex.entity.InvalidJavaFieldNameException;
-import org.motechproject.mds.ex.entity.ReservedKeywordException;
+import org.motechproject.mds.exception.entity.InvalidJavaFieldNameException;
+import org.motechproject.mds.exception.entity.ReservedKeywordException;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +30,7 @@ public final class ValidationUtil {
     }
 
     /**
-     * Verifies that given string is not a reserved Java keyword. Throws {@link org.motechproject.mds.ex.entity.ReservedKeywordException}
+     * Verifies that given string is not a reserved Java keyword. Throws {@link org.motechproject.mds.exception.entity.ReservedKeywordException}
      * if given String is reserved.
      *
      * @param str String to verify
@@ -42,7 +42,7 @@ public final class ValidationUtil {
     }
 
     /**
-     * Verifies that given string is a valid java field name. Throws {@link org.motechproject.mds.ex.entity.InvalidJavaFieldNameException}
+     * Verifies that given string is a valid java field name. Throws {@link org.motechproject.mds.exception.entity.InvalidJavaFieldNameException}
      * if given String is not blank and is not valid java identifier.
      *
      * @param str String to verify

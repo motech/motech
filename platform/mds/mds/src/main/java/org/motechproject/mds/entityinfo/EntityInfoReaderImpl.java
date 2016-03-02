@@ -3,7 +3,7 @@ package org.motechproject.mds.entityinfo;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
-import org.motechproject.mds.ex.entity.EntityNotFoundException;
+import org.motechproject.mds.exception.entity.EntityNotFoundException;
 import org.motechproject.mds.util.Constants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;

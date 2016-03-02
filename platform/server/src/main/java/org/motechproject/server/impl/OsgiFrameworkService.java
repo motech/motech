@@ -8,9 +8,8 @@ import org.eclipse.gemini.blueprint.OsgiException;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.service.impl.mapper.BootstrapConfigPropertyMapper;
-import org.motechproject.server.api.BundleLoader;
-import org.motechproject.server.api.BundleLoadingException;
-import org.motechproject.server.api.JarInformation;
+import org.motechproject.server.BundleLoader;
+import org.motechproject.server.ex.BundleLoadingException;
 import org.motechproject.server.jndi.JndiLookupService;
 import org.motechproject.server.jndi.JndiLookupServiceImpl;
 import org.motechproject.server.osgi.util.PlatformConstants;
@@ -50,6 +49,9 @@ import java.util.jar.Manifest;
 public class OsgiFrameworkService implements ApplicationContextAware {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgiFrameworkService.class);
+
+    private static final String BUNDLE_SYMBOLIC_NAME = "Bundle-SymbolicName";
+    private static final String BUNDLE_VERSION = "Bundle-Version";
 
     private ApplicationContext applicationContext;
 
@@ -298,14 +300,14 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 return null;
             }
 
-            String symbolicName = mf.getMainAttributes().getValue(JarInformation.BUNDLE_SYMBOLIC_NAME);
+            String symbolicName = mf.getMainAttributes().getValue(BUNDLE_SYMBOLIC_NAME);
             // we want to ignore the generated entities bundle, MDS will handle starting this bundle itself
             // we also don't want to start the framework again
             if (symbolicName == null || PlatformConstants.MDS_ENTITIES_BUNDLE.equals(symbolicName)
                     || PlatformConstants.FELIX_FRAMEWORK_BUNDLE.equals(symbolicName)) {
                 return null;
             } else {
-                String version = mf.getMainAttributes().getValue(JarInformation.BUNDLE_VERSION);
+                String version = mf.getMainAttributes().getValue(BUNDLE_VERSION);
                 return new BundleID(symbolicName, version);
             }
         }

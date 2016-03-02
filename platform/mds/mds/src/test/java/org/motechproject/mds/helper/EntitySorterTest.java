@@ -12,8 +12,8 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SchemaHolder;
-import org.motechproject.mds.ex.entity.InvalidEntitySettingsException;
-import org.motechproject.mds.ex.entity.InvalidRelationshipException;
+import org.motechproject.mds.exception.entity.InvalidEntitySettingsException;
+import org.motechproject.mds.exception.entity.InvalidRelationshipException;
 
 import java.util.ArrayList;
 import java.util.List;

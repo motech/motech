@@ -9,9 +9,9 @@ import org.motechproject.mds.domain.FieldValidation;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.domain.TypeValidation;
-import org.motechproject.mds.ex.field.FieldReadOnlyException;
-import org.motechproject.mds.ex.type.TypeSettingNotFoundException;
-import org.motechproject.mds.ex.type.TypeValidationNotFoundException;
+import org.motechproject.mds.exception.field.FieldReadOnlyException;
+import org.motechproject.mds.exception.type.TypeSettingNotFoundException;
+import org.motechproject.mds.exception.type.TypeValidationNotFoundException;
 
 import java.io.IOException;
 

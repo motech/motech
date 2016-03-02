@@ -18,7 +18,7 @@ public interface MDSLookupService {
      * Retrieves and executes single-return lookup for the given entity class,
      * lookup name and parameters. It will fail, if lookup parameters do not match the
      * parameters specified in the lookup or if the lookup of given name does not exist for
-     * the retrieved entity. It will also throw {@link org.motechproject.mds.ex.lookup.SingleResultFromLookupExpectedException}
+     * the retrieved entity. It will also throw {@link org.motechproject.mds.exception.lookup.SingleResultFromLookupExpectedException}
      * in case lookup returns a collection of instances, rather than single instance.
      *
      * @param entityClass entity class
@@ -33,7 +33,7 @@ public interface MDSLookupService {
      * Retrieves and executes single-return lookup for the given entity class name,
      * lookup name and parameters. It will fail, if lookup parameters do not match the
      * parameters specified in the lookup or if the lookup of given name does not exist for
-     * the retrieved entity. It will also throw {@link org.motechproject.mds.ex.lookup.SingleResultFromLookupExpectedException}
+     * the retrieved entity. It will also throw {@link org.motechproject.mds.exception.lookup.SingleResultFromLookupExpectedException}
      * in case lookup returns a collection of instances, rather than single instance.
      *
      * @param entityClassName entity class name

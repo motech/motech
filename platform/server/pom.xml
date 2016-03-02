@@ -23,11 +23,6 @@
         <!-- Motech Platform, loaded from inside the war -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-osgi-platform</artifactId>
             <version>${project.version}</version>
         </dependency>

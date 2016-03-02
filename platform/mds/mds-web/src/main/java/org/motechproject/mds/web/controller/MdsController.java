@@ -1,7 +1,7 @@
 package org.motechproject.mds.web.controller;
 
 import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.ex.MdsException;
+import org.motechproject.mds.exception.MdsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,7 @@ import java.io.IOException;
 
 /**
  * The <code>MdsController</code> is a basic controller for other controllers defined in
- * the mds module. Its function is to handle all {@link org.motechproject.mds.ex.MdsException}
+ * the mds module. Its function is to handle all {@link org.motechproject.mds.exception.MdsException}
  * exceptions from extended classes.
  *
  * @see MdsException

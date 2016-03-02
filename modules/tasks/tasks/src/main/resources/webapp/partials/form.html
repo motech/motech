@@ -86,7 +86,7 @@
                                                 <a ng-click="removeTrigger($event)" ui-if="task.trigger && task.trigger.moduleName == channel.moduleName">
                                                     <i class="fa fa-times close-channel"></i>
                                                 </a>
-                                                <img ng-src="../tasks/api/channel/icon?moduleName={{channel.moduleName}}&moduleVersion={{channel.moduleVersion}}" class="panel-img" />
+                                                <img ng-src="../server/module/icon?bundleName={{channel.moduleName}}&defaultIcon=iconTaskChannel.png" class="panel-img" />
                                             </div>
                                             <span>{{taskMsg(channel.displayName)}}</span>
                                         </div>

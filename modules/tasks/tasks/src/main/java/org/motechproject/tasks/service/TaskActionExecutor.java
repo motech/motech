@@ -30,8 +30,8 @@ import java.util.SortedSet;
 
 import static org.motechproject.tasks.domain.ParameterType.LIST;
 import static org.motechproject.tasks.domain.ParameterType.MAP;
-import static org.motechproject.tasks.events.constants.TaskFailureCause.ACTION;
-import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
+import static org.motechproject.tasks.constants.TaskFailureCause.ACTION;
+import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
 
 /**
  * Builds action parameters from  {@link TaskContext} and executes the action by invoking its service or raising its event.
