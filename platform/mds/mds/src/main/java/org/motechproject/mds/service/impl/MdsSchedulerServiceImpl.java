@@ -1,7 +1,7 @@
 package org.motechproject.mds.service.impl;
 
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.mds.ex.scheduler.MdsSchedulerException;
+import org.motechproject.mds.exception.scheduler.MdsSchedulerException;
 import org.motechproject.mds.service.MdsSchedulerService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;

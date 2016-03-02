@@ -17,6 +17,9 @@ public class House extends MdsEntity {
     private String name;
 
     @Field
+    private Short houseNumber;
+    
+    @Field
     @Persistent(mappedBy = "house", defaultFetchGroup = "true")
     @Cascade(delete = true)
     private Address address;
@@ -29,6 +32,14 @@ public class House extends MdsEntity {
         this.name = name;
     }
 
+    public Short getHouseNumber() {
+        return houseNumber;
+    }
+    
+    public void setHouseNumber(Short houseNumber) {
+        this.houseNumber = houseNumber;
+    }
+    
     public Address getAddress() {
         return address;
     }

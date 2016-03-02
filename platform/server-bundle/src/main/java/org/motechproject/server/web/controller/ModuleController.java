@@ -7,6 +7,8 @@ import org.apache.commons.io.IOUtils;
 import org.motechproject.osgi.web.service.LocaleService;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.service.UIFrameworkService;
+import org.motechproject.server.ui.BundleIconService;
+import org.motechproject.server.web.dto.BundleIcon;
 import org.motechproject.server.web.dto.ModuleConfig;
 import org.motechproject.server.web.dto.ModuleMenu;
 import org.motechproject.server.web.form.UserInfo;
@@ -20,9 +22,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
@@ -61,6 +65,7 @@ public class ModuleController {
 
     private UIFrameworkService uiFrameworkService;
     private LocaleService localeService;
+    private BundleIconService bundleIconService;
     private BundleContext bundleContext;
     private MenuBuilder menuBuilder;
 
@@ -124,6 +129,34 @@ public class ModuleController {
     }
 
     /**
+     * Returns the icon associated with the given bundle. Bundles that do not have their own icons will
+     * get a default icon.
+     * @param bundleId the id of the bundle for which the icon should be retrieved
+     * @param bundleName the name of the bundle for which the icon should be retrieved
+     * @param defaultIcon the name of the default icon which be provided if any standard icon couldn't be searched
+     * @param response the HttpServletResponse, used for writing the icon in its output
+     * @throws IOException if there were failures writing the icon to the output
+     */
+    @RequestMapping(value = "/module/icon", method = RequestMethod.GET)
+    public void getBundleIcon(@RequestParam(required = false) Long bundleId,
+                              @RequestParam(required = false) String bundleName,
+                              @RequestParam(required = false) String defaultIcon,
+                              HttpServletResponse response) throws IOException {
+        BundleIcon bundleIcon;
+        if(bundleId != null) {
+            bundleIcon = bundleIconService.getBundleIconById(bundleId, defaultIcon);
+        } else {
+            bundleIcon = bundleIconService.getBundleIconByName(bundleName, defaultIcon);
+        }
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentLength(bundleIcon.getContentLength());
+        response.setContentType(bundleIcon.getMime());
+
+        response.getOutputStream().write(bundleIcon.getIcon());
+    }
+
+    /**
      * Returns the url for rest documentation spec of the given module
      * @param moduleName the name of the module
      * @return the url at which the REST API spec can be accessed
@@ -134,7 +167,6 @@ public class ModuleController {
         return uiFrameworkService.getRestDocLinks().get(moduleName);
     }
 
-    
     public UserInfo getUser(HttpServletRequest request) {
         String lang = localeService.getUserLocale(request).getLanguage();
         boolean securityLaunch = request.getUserPrincipal() != null;
@@ -297,6 +329,11 @@ public class ModuleController {
     @Autowired
     public void setLocaleService(LocaleService localeService) {
         this.localeService = localeService;
+    }
+
+    @Autowired
+    public void setBundleIconService(BundleIconService bundleIconService) {
+        this.bundleIconService = bundleIconService;
     }
 
     @Autowired

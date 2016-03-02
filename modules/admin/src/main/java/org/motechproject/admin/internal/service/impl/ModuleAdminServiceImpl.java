@@ -1,7 +1,6 @@
 package org.motechproject.admin.internal.service.impl;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.Wagon;
@@ -21,10 +20,9 @@ import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mds.service.BundleWatcherSuspensionService;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.service.UIFrameworkService;
-import org.motechproject.server.api.BundleIcon;
-import org.motechproject.server.api.BundleInformation;
-import org.motechproject.server.api.JarInformation;
-import org.motechproject.server.api.PomInformation;
+import org.motechproject.admin.bundles.BundleInformation;
+import org.motechproject.admin.bundles.JarInformation;
+import org.motechproject.admin.bundles.PomInformation;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -57,8 +55,6 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -71,7 +67,6 @@ import java.util.regex.Pattern;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.motechproject.config.core.constants.ConfigurationConstants.FILE_CHANGED_EVENT_SUBJECT;
-import static org.motechproject.server.api.BundleIcon.ICON_LOCATIONS;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 
@@ -82,8 +77,6 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 public class ModuleAdminServiceImpl implements ModuleAdminService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModuleAdminServiceImpl.class);
-
-    private static final String DEFAULT_ICON = "/bundle_icon.png";
 
     @Autowired
     private BundleContext bundleContext;
@@ -181,27 +174,6 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         } catch (IOException e) {
             throw new MotechException("Error while removing bundle file", e);
         }
-    }
-
-    @Override
-    public BundleIcon getBundleIcon(long bundleId) {
-        BundleIcon bundleIcon = null;
-        Bundle bundle = getBundle(bundleId);
-
-        for (String iconLocation : ICON_LOCATIONS) {
-            URL iconURL = bundle.getResource(iconLocation);
-            if (iconURL != null) {
-                bundleIcon = loadBundleIcon(iconURL);
-                break;
-            }
-        }
-
-        if (bundleIcon == null) {
-            URL defaultIconURL = getClass().getResource(DEFAULT_ICON);
-            bundleIcon = loadBundleIcon(defaultIconURL);
-        }
-
-        return bundleIcon;
     }
 
     @Override
@@ -539,23 +511,6 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
             return null;
         }
         return jarInformation;
-    }
-
-    private BundleIcon loadBundleIcon(URL iconURL) {
-        InputStream is = null;
-        try {
-            URLConnection urlConn = iconURL.openConnection();
-            is = urlConn.getInputStream();
-
-            String mime = urlConn.getContentType();
-            byte[] image = IOUtils.toByteArray(is);
-
-            return new BundleIcon(image, mime);
-        } catch (IOException e) {
-            throw new MotechException("Error loading icon.", e);
-        } finally {
-            IOUtils.closeQuietly(is);
-        }
     }
 
     private Bundle getBundle(long bundleId) {

@@ -106,6 +106,27 @@ public class TypeDto {
     );
 
     /**
+     * Constant <code>FLOAT</code> is a representation of the MDS Decimal type.
+     */
+    public static final TypeDto FLOAT = new TypeDto(
+            "mds.field.float", "mds.field.description.float", "float", Float.class.getName()
+    );
+    
+    /**
+     * Constant <code>SHORT</code> is a representation of the MDS small Integer type.
+     */
+    public static final TypeDto SHORT = new TypeDto(
+            "mds.field.short", "mds.field.description.short", "short", Short.class.getName()
+    );
+    
+    /**
+     * Constant <code>CHARACTER</code> is a representation of the MDS Character type.
+     */
+    public static final TypeDto CHARACTER = new TypeDto(
+            "mds.field.character", "mds.field.description.character", "char", Character.class.getName()
+    );
+    
+    /**
      * Constant <code>LIST</code> is a representation of the MDS Combobox type.
      */
     public static final TypeDto COLLECTION = new TypeDto(
