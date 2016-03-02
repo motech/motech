@@ -131,6 +131,11 @@
 
     controllers.controller('SchedulerCreateJobCtrl', function($scope, $timeout, $routeParams, JobsService) {
 
+        innerLayout({}, {
+            show: false,
+            button: '#scheduler-filters'
+        });
+
         $scope.job = {};
         $scope.job.motechEvent = {};
         $scope.motechEventParameters = [];
