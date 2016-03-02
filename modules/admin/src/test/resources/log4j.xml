@@ -18,10 +18,6 @@
         <level value="INFO"/>
     </logger>
 
-    <logger name="org.motechproject.admin">
-        <level value="INFO"/>
-    </logger>
-
     <root>
         <priority value="ERROR" />
         <appender-ref ref="CONSOLE" />
