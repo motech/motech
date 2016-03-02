@@ -18,12 +18,12 @@ into <directory **PATH**> </directory>
 .. code-block:
 
 	Header always set Access-Control-Allow-Origin "*"
-	Header always set Access-Control-Expose-Headers **REQUEST HEADERS**
-	Header always set Access-Control-Allow-Headers **RESPONSE HEADERS**
+	Header always set Access-Control-Allow-Headers **REQUEST HEADERS**
+	Header always set Access-Control-Expose-Headers **RESPONSE HEADERS**
 	Header always set Access-Control-Allow-Methods **METHODS**
 
 **REQUEST HEADERS** is the list of headers separated by comma that can be used to prepare request. Example:
- "Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers"
+ "Content-Type,X-Requested-With,accept,authorization,Origin,Access-Control-Request-Method,Access-Control-Request-Headers"
 
 **RESPONSE HEADERS** is the list of headers separated by comma, other than simple response headers that browsers are allowed to access. Example:
  "Access-Control-Allow-Origin,Access-Control-Allow-Credentials"
@@ -58,13 +58,12 @@ $CATALINA_BASE is the main tomcat folder.
     </filter-mapping>
 
 **REQUEST HEADERS** is the list of headers separated by comma that can be used to prepare request. Example:
- <param-value>Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers</param-value>
+ <param-value>Content-Type,X-Requested-With,accept,authorization,Origin,Access-Control-Request-Method,Access-Control-Request-Headers</param-value>
 
 **RESPONSE HEADERS** is the list of headers separated by comma, other than simple response headers that browsers are allowed to access. Example:
  <param-value>Access-Control-Allow-Origin,Access-Control-Allow-Credentials</param-value>
 
 If changes are made while the Tomcat was enabled, you should restart Tomcat.
-
 
 Add CORS support to Jetty server
 ================================
@@ -90,6 +89,7 @@ Add following filter into $JETTY_BASE/webapps/**motechDir**/WEB-INF/web.xml
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-allowedHeaders, a comma separated list of HTTP headers that are allowed to be specified when accessing the resources. Default value is X-Requested-With
+allowedHeaders, a comma separated list of HTTP headers that are allowed to be specified when accessing the resources. Default value is X-Requested-With. Example:
+ <param-value>Content-Type,X-Requested-With,accept,authorization,Origin,Access-Control-Request-Method,Access-Control-Request-Headers</param-value>
 
 If changes are made while the Jetty was enabled, you should restart Jetty.
