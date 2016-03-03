@@ -1,4 +1,11 @@
 /* -- override Jquery Grid -- */
+@mixin navbar($y) {
+    background: #224477 repeat-x 0 $y;
+    background: -moz-linear-gradient(top, #7c8ca6 0%, #7483a0 5%, #7182a0 8%, #687d9c 10%, #607495 15%, #2f4e7a 38%, #244674 45%, #0d2f5d 48%, #02275b 50%, #04275d 73%, #022b61 88%, #022c5e 90%, #032e65 93%, #022e5f 95%, #022d62 98%, #053067 100%) repeat-x 0 $y;
+    background: -webkit-linear-gradient(top, #7c8ca6 0%,#7483a0 5%,#7182a0 8%,#687d9c 10%,#607495 15%,#2f4e7a 38%,#244674 45%,#0d2f5d 48%,#02275b 50%,#04275d 73%,#022b61 88%,#022c5e 90%,#032e65 93%,#022e5f 95%,#022d62 98%,#053067 100%) repeat-x 0 $y;
+    background: linear-gradient(to bottom, #7c8ca6 0%,#7483a0 5%,#7182a0 8%,#687d9c 10%,#607495 15%,#2f4e7a 38%,#244674 45%,#0d2f5d 48%,#02275b 50%,#04275d 73%,#022b61 88%,#022c5e 90%,#032e65 93%,#022e5f 95%,#022d62 98%,#053067 100%) repeat-x 0 $y;
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7c8ca6', endColorstr='#053067',GradientType=0 ) repeat-x 0 $y;
+}
 
 .overrideJqgridTable .ui-jqgrid input.ui-pg-input {
     width: auto;
@@ -29,7 +36,7 @@
 }
 
 .overrideJqgridTable .ui-widget-header {
-    background: #224477 url("../../img/navbar.jpg") repeat-x 0 0;
+    @include navbar(0);
 }
 
 .overrideJqgridTable .ui-jqgrid .table-lightblue .ui-widget-content {

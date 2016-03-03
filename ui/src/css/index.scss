@@ -1,3 +1,37 @@
+@mixin lightblue-bg($y) {
+    background: rgb(255,255,255) repeat-x 0 $y;
+    background: -moz-linear-gradient(top, rgb(255,255,255) 0%, rgb(253,255,254) 9%, rgb(251,252,255) 9%, rgb(239,249,251) 10%, rgb(239,248,253) 10%, rgb(236,247,251) 10%, rgb(237,246,253) 10%, rgb(223,240,248) 12%, rgb(221,238,248) 13%, rgb(222,239,247) 14%, rgb(226,240,249) 14%, rgb(225,239,248) 15%, rgb(227,241,250) 15%, rgb(230,243,249) 16%, rgb(234,245,251) 16%, rgb(242,250,253) 19%, rgb(245,250,254) 19%, rgb(246,251,255) 24%, rgb(243,251,254) 24%, rgb(241,249,252) 28%, rgb(240,249,254) 32%, rgb(240,248,251) 32%, rgb(232,245,251) 40%, rgb(233,244,250) 43%, rgb(230,243,251) 43%, rgb(232,242,251) 44%, rgb(224,241,249) 50%, rgb(226,240,249) 50%, rgb(222,239,247) 52%, rgb(222,239,249) 53%, rgb(217,237,246) 58%, rgb(218,236,248) 59%, rgb(214,236,247) 60%, rgb(213,232,246) 64%, rgb(209,233,245) 66%, rgb(206,229,243) 74%, rgb(206,229,243) 83%, rgb(208,232,244) 83%, rgb(211,230,245) 84%, rgb(209,233,245) 84%, rgb(213,232,246) 85%, rgb(212,234,247) 85%, rgb(215,235,246) 86%, rgb(214,234,245) 86%, rgb(218,236,248) 87%, rgb(221,238,246) 89%, rgb(222,239,249) 89%, rgb(224,238,247) 90%, rgb(227,242,249) 91%, rgb(232,243,249) 93%, rgb(234,245,251) 93%, rgb(234,245,249) 94%, rgb(236,245,254) 94%, rgb(236,245,250) 94%, rgb(238,245,251) 95%, rgb(238,248,250) 96%, rgb(239,246,252) 96%, rgb(241,249,252) 96%, rgb(247,251,252) 99%, rgb(251,252,254) 100%) repeat-x 0 $y;
+    background: -webkit-linear-gradient(top, rgb(255,255,255) 0%,rgb(253,255,254) 9%,rgb(251,252,255) 9%,rgb(239,249,251) 10%,rgb(239,248,253) 10%,rgb(236,247,251) 10%,rgb(237,246,253) 10%,rgb(223,240,248) 12%,rgb(221,238,248) 13%,rgb(222,239,247) 14%,rgb(226,240,249) 14%,rgb(225,239,248) 15%,rgb(227,241,250) 15%,rgb(230,243,249) 16%,rgb(234,245,251) 16%,rgb(242,250,253) 19%,rgb(245,250,254) 19%,rgb(246,251,255) 24%,rgb(243,251,254) 24%,rgb(241,249,252) 28%,rgb(240,249,254) 32%,rgb(240,248,251) 32%,rgb(232,245,251) 40%,rgb(233,244,250) 43%,rgb(230,243,251) 43%,rgb(232,242,251) 44%,rgb(224,241,249) 50%,rgb(226,240,249) 50%,rgb(222,239,247) 52%,rgb(222,239,249) 53%,rgb(217,237,246) 58%,rgb(218,236,248) 59%,rgb(214,236,247) 60%,rgb(213,232,246) 64%,rgb(209,233,245) 66%,rgb(206,229,243) 74%,rgb(206,229,243) 83%,rgb(208,232,244) 83%,rgb(211,230,245) 84%,rgb(209,233,245) 84%,rgb(213,232,246) 85%,rgb(212,234,247) 85%,rgb(215,235,246) 86%,rgb(214,234,245) 86%,rgb(218,236,248) 87%,rgb(221,238,246) 89%,rgb(222,239,249) 89%,rgb(224,238,247) 90%,rgb(227,242,249) 91%,rgb(232,243,249) 93%,rgb(234,245,251) 93%,rgb(234,245,249) 94%,rgb(236,245,254) 94%,rgb(236,245,250) 94%,rgb(238,245,251) 95%,rgb(238,248,250) 96%,rgb(239,246,252) 96%,rgb(241,249,252) 96%,rgb(247,251,252) 99%,rgb(251,252,254) 100%) repeat-x 0 $y;
+    background: linear-gradient(to bottom, rgb(255,255,255) 0%,rgb(253,255,254) 9%,rgb(251,252,255) 9%,rgb(239,249,251) 10%,rgb(239,248,253) 10%,rgb(236,247,251) 10%,rgb(237,246,253) 10%,rgb(223,240,248) 12%,rgb(221,238,248) 13%,rgb(222,239,247) 14%,rgb(226,240,249) 14%,rgb(225,239,248) 15%,rgb(227,241,250) 15%,rgb(230,243,249) 16%,rgb(234,245,251) 16%,rgb(242,250,253) 19%,rgb(245,250,254) 19%,rgb(246,251,255) 24%,rgb(243,251,254) 24%,rgb(241,249,252) 28%,rgb(240,249,254) 32%,rgb(240,248,251) 32%,rgb(232,245,251) 40%,rgb(233,244,250) 43%,rgb(230,243,251) 43%,rgb(232,242,251) 44%,rgb(224,241,249) 50%,rgb(226,240,249) 50%,rgb(222,239,247) 52%,rgb(222,239,249) 53%,rgb(217,237,246) 58%,rgb(218,236,248) 59%,rgb(214,236,247) 60%,rgb(213,232,246) 64%,rgb(209,233,245) 66%,rgb(206,229,243) 74%,rgb(206,229,243) 83%,rgb(208,232,244) 83%,rgb(211,230,245) 84%,rgb(209,233,245) 84%,rgb(213,232,246) 85%,rgb(212,234,247) 85%,rgb(215,235,246) 86%,rgb(214,234,245) 86%,rgb(218,236,248) 87%,rgb(221,238,246) 89%,rgb(222,239,249) 89%,rgb(224,238,247) 90%,rgb(227,242,249) 91%,rgb(232,243,249) 93%,rgb(234,245,251) 93%,rgb(234,245,249) 94%,rgb(236,245,254) 94%,rgb(236,245,250) 94%,rgb(238,245,251) 95%,rgb(238,248,250) 96%,rgb(239,246,252) 96%,rgb(241,249,252) 96%,rgb(247,251,252) 99%,rgb(251,252,254) 100%) repeat-x 0 $y;
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#fbfcfe',GradientType=0 );
+    background-repeat: repeat-x;
+}
+
+@mixin splash-bg($y) {
+    background: #dbedf7 repeat-x 0 $y;
+    background: -moz-linear-gradient(top, #f0f8fb 0%, #f6fbff 6%, #f6fbff 16%, #f3fbfe 17%, #f1f9fc 26%, #ecf7fd 52%, #ebf6fa 53%, #e8f5fb 59%, #eaf4fd 61%, #e8f3f9 64%, #e3f1fa 82%, #dff0f8 84%, #e2f0f9 85%, #dff0f8 86%, #dbedf7 100%) repeat-x 0 $y;
+    background: -webkit-linear-gradient(top, #f0f8fb 0%,#f6fbff 6%,#f6fbff 16%,#f3fbfe 17%,#f1f9fc 26%,#ecf7fd 52%,#ebf6fa 53%,#e8f5fb 59%,#eaf4fd 61%,#e8f3f9 64%,#e3f1fa 82%,#dff0f8 84%,#e2f0f9 85%,#dff0f8 86%,#dbedf7 100%) repeat-x 0 $y;
+    background: linear-gradient(to bottom, #f0f8fb 0%,#f6fbff 6%,#f6fbff 16%,#f3fbfe 17%,#f1f9fc 26%,#ecf7fd 52%,#ebf6fa 53%,#e8f5fb 59%,#eaf4fd 61%,#e8f3f9 64%,#e3f1fa 82%,#dff0f8 84%,#e2f0f9 85%,#dff0f8 86%,#dbedf7 100%) repeat-x 0 $y;
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f8fb', endColorstr='#dbedf7',GradientType=0 ) repeat-x 0 $y;
+    background-repeat: repeat-x;
+}
+
+@mixin frame-bg($y) {
+    background: #dbedf7 repeat-x 0 $y;
+    background: -moz-linear-gradient(top, #eff8fd 0%, #f6fbff 6%, #f6fbff 16%, #f3fbfe 16%, #f0f9fe 37%, #f0f8fb 39%, #ebf6fc 56%, #e8f5fb 57%, #eaf5fb 61%, #e8f3f9 65%, #e6f3fb 65%, #e8f2fb 67%, #dbedf7 100%) repeat-x 0 $y;
+    background: -webkit-linear-gradient(top, #eff8fd 0%,#f6fbff 6%,#f6fbff 16%,#f3fbfe 16%,#f0f9fe 37%,#f0f8fb 39%,#ebf6fc 56%,#e8f5fb 57%,#eaf5fb 61%,#e8f3f9 65%,#e6f3fb 65%,#e8f2fb 67%,#dbedf7 100%) repeat-x 0 $y;
+    background: linear-gradient(to bottom, #eff8fd 0%,#f6fbff 6%,#f6fbff 16%,#f3fbfe 16%,#f0f9fe 37%,#f0f8fb 39%,#ebf6fc 56%,#e8f5fb 57%,#eaf5fb 61%,#e8f3f9 65%,#e6f3fb 65%,#e8f2fb 67%,#dbedf7 100%) repeat-x 0 $y;
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eff8fd', endColorstr='#dbedf7',GradientType=0 ) repeat-x 0 $y;
+}
+
+@mixin navbar($y) {
+    background: #224477 repeat-x 0 $y;
+    background: -moz-linear-gradient(top, #7c8ca6 0%, #7483a0 5%, #7182a0 8%, #687d9c 10%, #607495 15%, #2f4e7a 38%, #244674 45%, #0d2f5d 48%, #02275b 50%, #04275d 73%, #022b61 88%, #022c5e 90%, #032e65 93%, #022e5f 95%, #022d62 98%, #053067 100%) repeat-x 0 $y;
+    background: -webkit-linear-gradient(top, #7c8ca6 0%,#7483a0 5%,#7182a0 8%,#687d9c 10%,#607495 15%,#2f4e7a 38%,#244674 45%,#0d2f5d 48%,#02275b 50%,#04275d 73%,#022b61 88%,#022c5e 90%,#032e65 93%,#022e5f 95%,#022d62 98%,#053067 100%) repeat-x 0 $y;
+    background: linear-gradient(to bottom, #7c8ca6 0%,#7483a0 5%,#7182a0 8%,#687d9c 10%,#607495 15%,#2f4e7a 38%,#244674 45%,#0d2f5d 48%,#02275b 50%,#04275d 73%,#022b61 88%,#022c5e 90%,#032e65 93%,#022e5f 95%,#022d62 98%,#053067 100%) repeat-x 0 $y;
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7c8ca6', endColorstr='#053067',GradientType=0 ) repeat-x 0 $y;
+}
+
 html, body {
     margin: 0;
     padding: 0;
@@ -6,19 +40,19 @@ html, body {
 }
 
 .body-up {
-    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 -40px;
+    @include lightblue-bg(-40px);
 }
 
 .body-down {
-    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 0;
+    @include lightblue-bg(0);
 }
 
 .body-startup {
-    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 -70px;
+    @include lightblue-bg(-70px);
 }
 
 .lightblue-bg {
-    background: #dbedf7 url("../img/frame-bg.jpg") repeat-x 0 0;
+    @include frame-bg(0);
 }
 
 .stripes-bg {
@@ -69,6 +103,7 @@ a:active, a:hover, a:focus {
 
 .header {
     display:block;
+    background: #ffffff;
     margin:auto;
 }
 
@@ -168,7 +203,7 @@ form.inside {
 }
 
 .navbar-collapse .nav > li > a.no-hover:hover {
-    background: #224477 url("../img/navbar.jpg") repeat-x 0 0;
+    @include navbar(0);
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset, 0 1px 0 rgba(255, 255, 255, 0.075);
     color: #c2eafe;
@@ -490,7 +525,7 @@ h4.panel-title {
     border-radius: 4px;
     border: 1px solid #D4E1F9;
     padding: 0;
-    background: #dbedf7 url("../img/frame-bg.jpg") repeat-x 0 0;
+    @include frame-bg(0);
 }
 
 .frame-title,
@@ -663,7 +698,7 @@ input.form-control.form-control {
 /* ----- startup ----- */
 
 .body-startup {
-    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 -95px;
+    @include lightblue-bg(-65px);
 }
 
 .body-startup .bodywrap {
@@ -681,7 +716,7 @@ input.form-control.form-control {
     min-height: 200px;
     margin: auto;
     z-index: 9999;
-    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 60px;
+    @include lightblue-bg(60px);
     border:1px #7bb5fc solid;
     -webkit-border-radius: 4px;
          -moz-border-radius: 4px;
@@ -696,6 +731,7 @@ input.form-control.form-control {
     width: 100%;
     height: 140px;
     display: block;
+    background: #ffffff;
     margin: auto;
     padding: 10px 0 0 8px;
     text-align: center;
@@ -924,7 +960,7 @@ input.form-control.form-control {
     left: 50%;
     position: fixed;
     z-index: 9999;
-    background: #dbedf7 url("../img/splash-bg.jpg") repeat-x 0 0;
+    @include splash-bg(0);
     border:1px #7bb5fc solid;
     -webkit-border-radius: 4px;
          -moz-border-radius: 4px;
