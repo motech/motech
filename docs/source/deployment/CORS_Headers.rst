@@ -1,41 +1,48 @@
 ========================================
-Add CORS Headers to MOTECH Configuration
+Add CORS Headers to server configuration
 ========================================
 
 .. contents:: Table of Contents
     :depth: 2
 
-Add CORS support to Apache server
-=================================
+Overview
+========
 
-First step is enable mod headers for Apache. Do it by running the following command:
+Cross-origin resource sharing (CORS) is the mechanism for resource sharing between servers located in different domains.
+CORS Headers are new HTTP access control headers that allows to indicate which servers have permission for communicate.
+That Headers improves our security, because if we set them correctly, then we don't give access to our server for unknown domain.
+
+Add CORS support to the Apache server
+=====================================
+
+First step is to enable mod headers for Apache. Do it by running the following command:
 
     a2enmod headers
 
-Configuration CORS, if you want set this globally, add following line into apache server configuration (usually /etc/apache*.conf)
-into <directory **PATH**> </directory>
+Add the following lines into Apache server configuration (usually /etc/apache*/apache*.conf), into <directory **PATH**> </directory>, in this way:
 
 .. code-block:
+    <directory **PATH**> </directory>
+        Header always set Access-Control-Allow-Origin "*"
+        Header always set Access-Control-Allow-Headers **REQUEST HEADERS**
+        Header always set Access-Control-Expose-Headers **RESPONSE HEADERS**
+        Header always set Access-Control-Allow-Methods **METHODS**
+    </directory>
 
-	Header always set Access-Control-Allow-Origin "*"
-	Header always set Access-Control-Allow-Headers **REQUEST HEADERS**
-	Header always set Access-Control-Expose-Headers **RESPONSE HEADERS**
-	Header always set Access-Control-Allow-Methods **METHODS**
-
-**REQUEST HEADERS** is the list of headers separated by comma that can be used to prepare request. Example:
+**REQUEST HEADERS** is the list of headers separated by commas that can be used to prepare the request:
  "Content-Type,X-Requested-With,accept,authorization,Origin,Access-Control-Request-Method,Access-Control-Request-Headers"
 
-**RESPONSE HEADERS** is the list of headers separated by comma, other than simple response headers that browsers are allowed to access. Example:
+**RESPONSE HEADERS** is the list of headers separated by commas, other than simple response headers that browsers are allowed to access:
  "Access-Control-Allow-Origin,Access-Control-Allow-Credentials"
 
-**METHODS** is the list of methods separated by comma that can be used. Example: "POST, GET, OPTIONS, DELETE, PUT"
+**METHODS** is the list of methods separated by commas that can be used: "POST, GET, OPTIONS, DELETE, PUT"
 
-If changes are made while the apache was enabled, you should restart apache.
+If changes are made while the Apache server was running, you should restart apache.
 
-Add CORS support to Tomcat server
-=================================
+Add CORS support to the Tomcat server
+=====================================
 
-Configuration CORS, if you want set this globally, add following filter into $CATALINA_BASE/conf/web.xml
+Configuration CORS, if you want to set this globally, add the following filter into $CATALINA_BASE/conf/web.xml or if you want to set this only in motech it is $CATALINA_BASE/webapps/motech-platform-server/WEB-INF/web.xml.
 $CATALINA_BASE is the main tomcat folder.
 
 ..code-block:
@@ -57,39 +64,10 @@ $CATALINA_BASE is the main tomcat folder.
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-**REQUEST HEADERS** is the list of headers separated by comma that can be used to prepare request. Example:
+**REQUEST HEADERS** is the list of headers separated by commas that can be used to prepare the request:
  <param-value>Content-Type,X-Requested-With,accept,authorization,Origin,Access-Control-Request-Method,Access-Control-Request-Headers</param-value>
 
-**RESPONSE HEADERS** is the list of headers separated by comma, other than simple response headers that browsers are allowed to access. Example:
+**RESPONSE HEADERS** is the list of headers separated by commas, other than simple response headers that browsers are allowed to access:
  <param-value>Access-Control-Allow-Origin,Access-Control-Allow-Credentials</param-value>
 
-If changes are made while the Tomcat was enabled, you should restart Tomcat.
-
-Add CORS support to Jetty server
-================================
-
-It seems similar like add CORS to Tomcat server, but you have to copy jetty*.jar from $JETTY_BASE/lib to $JETTY_BASE/webapps/**motechDir**/lib .
-Add following filter into $JETTY_BASE/webapps/**motechDir**/WEB-INF/web.xml
-..code-block:
-
-    <filter>
-        <filter-name>cross-origin</filter-name>
-        <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
-        <init-param>
-            <param-name>allowedOrigins</param-name>
-            <param-value>*</param-value>
-        </init-param>
-        <init-param>
-            <param-name>allowedHeaders</param-name>
-            <param-value>*</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>cross-origin</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-allowedHeaders, a comma separated list of HTTP headers that are allowed to be specified when accessing the resources. Default value is X-Requested-With. Example:
- <param-value>Content-Type,X-Requested-With,accept,authorization,Origin,Access-Control-Request-Method,Access-Control-Request-Headers</param-value>
-
-If changes are made while the Jetty was enabled, you should restart Jetty.
+If changes are made while the Tomcat server was running, you should restart Tomcat.
