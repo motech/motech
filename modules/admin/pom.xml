@@ -84,6 +84,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-upload-test-bundle</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.sonatype.aether</groupId>
             <artifactId>org.motechproject.aether-api</artifactId>
             <exclusions>
