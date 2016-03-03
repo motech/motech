@@ -6,7 +6,6 @@ import org.motechproject.commons.sql.service.SqlDBManager;
 import org.motechproject.commons.sql.util.JdbcUrl;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.mds.util.Constants;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -36,7 +35,6 @@ public class MdsConfig {
     private Map<String, Properties> config = new HashMap<>();
 
     private SqlDBManager sqlDBManager;
-    @Autowired
     private CoreConfigurationService coreConfigurationService;
     private Properties mdsDataSqlProperties;
     private Properties mdsInternalSqlProperties;
@@ -145,7 +143,7 @@ public class MdsConfig {
 
     public File getFlywayMigrationDirectory() {
         String flywayLocation = getFlywayLocations()[0];
-        String motechDir = new File(System.getProperty("user.home"), File.separator + ".motech").getAbsolutePath();
+        String motechDir = new File(System.getProperty("user.home"), ".motech").getAbsolutePath();
         if (coreConfigurationService != null && coreConfigurationService.loadBootstrapConfig() != null) {
             motechDir = coreConfigurationService.loadBootstrapConfig().getMotechDir();
         }
