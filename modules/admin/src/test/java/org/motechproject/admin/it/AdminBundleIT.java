@@ -43,7 +43,7 @@ import java.util.List;
 import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.TestCase.assertTrue;
+import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -133,7 +133,7 @@ public class AdminBundleIT extends BasePaxIT {
 
     @Test
     public void testUploadBundleFromRepository() throws IOException, InterruptedException {
-        uploadBundle("Repository", "org.motechproject:cms-lite:LATEST", null,
+            uploadBundle("Repository", "org.motechproject:cms-lite:LATEST", null,
                 "on","org.motechproject.cms-lite");
     }
 
@@ -174,7 +174,7 @@ public class AdminBundleIT extends BasePaxIT {
         Bundle uploadedBundle = getBundleFromBundlesArray(bundleSymbolicName);
         assertNotNull(uploadedBundle);
         assertEquals(bundlesCountAfterUpload, bundlesCountBeforeUpload + 1);
-        assertEquals(uploadedBundle.getState() ,Bundle.ACTIVE);
+        assertEquals(uploadedBundle.getState(), Bundle.ACTIVE);
     }
 
     private String apiGet(String path) throws IOException, InterruptedException {
