@@ -54,7 +54,7 @@ public class TypeServiceImpl implements TypeService {
     @Transactional
     public List<TypeValidation> findValidations(TypeDto type, Class<? extends Annotation> aClass) {
         Type typeSource = allTypes.retrieveByClassName(type.getTypeClass());
-        List<TypeValidation> list = null == typeSource ? new ArrayList<TypeValidation>() : typeSource.getValidations();
+        List<TypeValidation> list = null == typeSource ? new ArrayList<>() : typeSource.getValidations();
         List<TypeValidation> validations = new ArrayList<>();
 
         for (TypeValidation validation : list) {

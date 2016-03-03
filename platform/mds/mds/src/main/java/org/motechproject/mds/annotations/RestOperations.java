@@ -26,5 +26,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RestOperations {
+
+    /**
+     * An array of REST operations, that should be exposed for this entity.
+     */
     RestOperation[] value();
 }

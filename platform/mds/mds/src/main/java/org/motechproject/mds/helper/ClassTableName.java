@@ -13,7 +13,6 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 public final class ClassTableName {
 
     private ClassTableName() {
-
     }
 
     /**

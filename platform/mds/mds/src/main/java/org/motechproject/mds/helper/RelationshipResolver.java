@@ -29,7 +29,7 @@ public class RelationshipResolver {
         EntitiesRetriever entitiesRetriever = new EntitiesRetriever(entities);
 
         for (Entity entity : entities) {
-            if (isEntityResolved(entity, new ArrayList<Entity>(), new ArrayList<Entity>(), entitiesRetriever)) {
+            if (isEntityResolved(entity, new ArrayList<>(), new ArrayList<>(), entitiesRetriever)) {
                 resolvedEntities.add(entity);
             }
         }

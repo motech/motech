@@ -20,10 +20,10 @@ import static org.motechproject.commons.date.util.DateUtil.nowUTC;
  * {@link org.motechproject.mds.util.Constants.Config#MDS_TIME_UNIT}.
  * <p/>
  * Each value from this enum can be converted to long value that presents time interval in
- * milliseconds. For example the {@link #HOURS} value is equal to {@value 3.6E6}.
+ * milliseconds. For example the {@link #HOURS} value is equal to {@literal 3.6E6}.
  * <p/>
  * The {@link #UNKNOWN} value should not be used in code as appropriate value. It was added to
- * ensure that the {@link #fromString(String)} method will not return {@value null} value.
+ * ensure that the {@link #fromString(String)} method will not return {@literal null} value.
  */
 public enum TimeUnit {
     UNKNOWN(Seconds.ZERO), HOURS(Hours.ONE), DAYS(Days.ONE), WEEKS(Weeks.ONE), MONTHS(Months.ONE),
@@ -42,7 +42,7 @@ public enum TimeUnit {
 
     /**
      * Converts the given string to appropriate time unit. This method will never return
-     * {@value null} value. If the appropriate unit doesn't exists then the {@link #UNKNOWN} unit
+     * {@literal null} value. If the appropriate unit doesn't exists then the {@link #UNKNOWN} unit
      * will be returned.
      *
      * @param string the string representation of the time unit.

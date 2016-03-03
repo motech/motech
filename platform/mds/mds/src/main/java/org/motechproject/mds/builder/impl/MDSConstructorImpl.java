@@ -24,7 +24,7 @@ import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.exception.entity.EntityCreationException;
 import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.helper.EntitySorter;
-import org.motechproject.mds.helper.MdsBundleHelper;
+import org.motechproject.mds.helper.bundle.MdsBundleHelper;
 import org.motechproject.mds.javassist.JavassistLoader;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.internal.MetadataHolder;

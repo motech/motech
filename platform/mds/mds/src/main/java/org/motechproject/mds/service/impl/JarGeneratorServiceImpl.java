@@ -23,7 +23,7 @@ import org.motechproject.mds.dto.UIDisplayFieldComparator;
 import org.motechproject.mds.event.CrudEventBuilder;
 import org.motechproject.mds.exception.MdsException;
 import org.motechproject.mds.helper.ActionParameterTypeResolver;
-import org.motechproject.mds.helper.MdsBundleHelper;
+import org.motechproject.mds.helper.bundle.MdsBundleHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.repository.internal.MetadataHolder;

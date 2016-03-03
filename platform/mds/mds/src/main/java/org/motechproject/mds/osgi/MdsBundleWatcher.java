@@ -12,7 +12,7 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.exception.MdsException;
-import org.motechproject.mds.helper.MdsBundleHelper;
+import org.motechproject.mds.helper.bundle.MdsBundleHelper;
 import org.motechproject.mds.loader.EditableLookupsLoader;
 import org.motechproject.mds.repository.internal.SchemaChangeLockManager;
 import org.motechproject.mds.service.EntityService;

@@ -28,5 +28,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface CrudEvents {
+
+    /**
+     * An array of CRUD event types, for which the annotated entity should send events.
+     * If ALL or NONE is present in values, all other entries are ignored.
+     */
     CrudEventType[] value();
 }

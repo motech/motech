@@ -30,7 +30,7 @@ import org.motechproject.mds.exception.object.ObjectReadException;
 import org.motechproject.mds.exception.object.SecurityException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.helper.DataServiceHelper;
-import org.motechproject.mds.helper.MdsBundleHelper;
+import org.motechproject.mds.helper.bundle.MdsBundleHelper;
 import org.motechproject.mds.lookup.LookupExecutor;
 import org.motechproject.mds.query.InMemoryQueryFilter;
 import org.motechproject.mds.query.QueryParams;

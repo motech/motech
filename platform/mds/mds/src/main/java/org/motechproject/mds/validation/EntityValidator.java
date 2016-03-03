@@ -4,7 +4,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
-import org.motechproject.mds.exception.UserSuppliedComboboxValuesUsedException;
+import org.motechproject.mds.exception.object.UserSuppliedComboboxValuesUsedException;
 import org.motechproject.mds.exception.entity.IncompatibleComboboxFieldException;
 import org.motechproject.mds.exception.field.FieldUsedInLookupException;
 import org.motechproject.mds.exception.lookup.LookupReferencedException;
