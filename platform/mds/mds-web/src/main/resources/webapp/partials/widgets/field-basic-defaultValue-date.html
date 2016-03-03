@@ -1,2 +1,0 @@
-<input date-validity default-field-name-valid="{{field.basic.name}}" ng-class="{'has-error': {{field.basic.name}}.$invalid}" class="form-control input-xlarge-fluid" type="text" ng-model="field.basic.defaultValue" ng-change="dateDefaultValueChange(field.basic.defaultValue, {{field.id}})" mds-field-id="{{field.id}}" ng-readonly="field.readOnly" mds-date-picker>
-<span class="form-hint" ng-show="{{field.basic.name}}.$error.date">{{msg('mds.error.incorrectDate')}}</span>

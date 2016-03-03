@@ -1,1 +1,0 @@
-CREATE TABLE testTable (id bigint(20) NOT NULL);
