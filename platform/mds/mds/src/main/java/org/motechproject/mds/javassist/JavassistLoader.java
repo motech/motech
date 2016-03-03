@@ -3,7 +3,7 @@ package org.motechproject.mds.javassist;
 import javassist.CannotCompileException;
 import javassist.CtClass;
 import org.motechproject.mds.domain.ClassData;
-import org.motechproject.mds.ex.loader.LoaderException;
+import org.motechproject.mds.exception.loader.LoaderException;
 import org.motechproject.mds.util.Loader;
 import org.motechproject.mds.util.MDSClassLoader;
 

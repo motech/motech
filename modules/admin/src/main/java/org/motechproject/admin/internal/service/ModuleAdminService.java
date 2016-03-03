@@ -3,8 +3,7 @@ package org.motechproject.admin.internal.service;
 import org.motechproject.admin.bundles.ExtendedBundleInformation;
 import org.motechproject.admin.security.SecurityConstants;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.server.api.BundleIcon;
-import org.motechproject.server.api.BundleInformation;
+import org.motechproject.admin.bundles.BundleInformation;
 import org.osgi.framework.BundleException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,14 +32,6 @@ public interface ModuleAdminService {
      */
     @PreAuthorize(SecurityConstants.MANAGE_BUNDLES)
     BundleInformation getBundleInfo(long bundleId);
-
-    /**
-     * Retrieves a {@link org.motechproject.server.api.BundleIcon} for the bundle with the given bundle id. The icon is
-     * loaded from the bundle.
-     * @param bundleId the bundle id of the bundle for which the icon should be retrieved.
-     * @return the icon retrieved for the bundle. If no icon is available, the default icon is returned.
-     */
-    BundleIcon getBundleIcon(long bundleId);
 
     /**
      * Retrieves detailed information about the given bundle.

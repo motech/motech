@@ -18,11 +18,11 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
-import org.motechproject.mds.ex.entity.EntityNotFoundException;
-import org.motechproject.mds.ex.object.ObjectNotFoundException;
-import org.motechproject.mds.ex.object.ObjectUpdateException;
-import org.motechproject.mds.ex.object.SecurityException;
+import org.motechproject.mds.exception.entity.EntityInstancesNonEditableException;
+import org.motechproject.mds.exception.entity.EntityNotFoundException;
+import org.motechproject.mds.exception.object.ObjectNotFoundException;
+import org.motechproject.mds.exception.object.ObjectUpdateException;
+import org.motechproject.mds.exception.object.SecurityException;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.DefaultMotechDataService;
 import org.motechproject.mds.service.EntityService;
@@ -164,11 +164,11 @@ public class InstanceServiceTest {
     }
 
     @Test
-    public void shouldNotAutoPopulateOwnerAndCreatorForHiddenFields() {
+    public void shouldNotAutoPopulateOwnerAndCreatorForNonEditableFields() {
         FieldDto ownerField = FieldTestHelper.fieldDto(1L, "owner", String.class.getName(), "String field", null);
-        ownerField.setNonDisplayable(true);
+        ownerField.setNonEditable(true);
         FieldDto creatorField = FieldTestHelper.fieldDto(1L, "creator", String.class.getName(), "String field", null);
-        creatorField.setNonDisplayable(true);
+        creatorField.setNonEditable(true);
 
         when(entityService.getEntityFieldsForUI(ENTITY_ID)).thenReturn(asList(ownerField, creatorField));
         mockEntity();

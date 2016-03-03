@@ -131,6 +131,11 @@
 
     controllers.controller('SchedulerCreateJobCtrl', function($scope, $timeout, $routeParams, JobsService) {
 
+        innerLayout({}, {
+            show: false,
+            button: '#scheduler-filters'
+        });
+
         $scope.job = {};
         $scope.job.motechEvent = {};
         $scope.motechEventParameters = [];
@@ -206,7 +211,7 @@
         $scope.parseToDateTime = function(date) {
             if (date && date !== "") {
                 var parts = date.split(" ");
-                return parts[0] + "T" + parts[1];
+                return parts[0] + "T" + parts[1] + new Date().toString().match(/([-\+][0-9]+)\s/)[1];
             }
             return date;
         }
@@ -250,14 +255,19 @@
                 unblockUI();
             }
 
+            function failure(response) {
+                motechAlert(response.data.key, "scheduler.error", response.data.params);
+                unblockUI();
+            }
+
             if (action === 'new') {
                 blockUI();
-                JobsService.createJob(job, success);
+                JobsService.createJob(job, success, failure);
             } else if (action === 'edit'){
                 motechConfirm("scheduler.confirm.updateJob", "scheduler.confirm", function(response) {
                     if (response) {
                         blockUI();
-                        JobsService.updateJob(job, success);
+                        JobsService.updateJob(job, success, failure);
                     }
                 });
             }
