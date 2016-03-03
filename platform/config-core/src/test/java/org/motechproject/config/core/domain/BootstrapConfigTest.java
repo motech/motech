@@ -21,7 +21,7 @@ public class BootstrapConfigTest {
 
     @Test(expected = MotechConfigurationException.class)
     public void shouldThrowExceptionIfQueueUrlIsInvalid() {
-        new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), ConfigSource.FILE, null,null, "invalid.url");
+        new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), ConfigSource.FILE, null, null, "invalid.url");
     }
 
     @Test
