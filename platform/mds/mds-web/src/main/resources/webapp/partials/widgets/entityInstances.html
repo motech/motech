@@ -5,7 +5,7 @@
             <h4>{{msg('mds.error')}}</h4>
             <p>{{msg('mds.error.dataRetrievalError')}}</p>
         </div>
-        <button ng-click="backToEntityList()" type="button" class="btn btn-primary" ng-show="showBackToEntityListButton">
+        <button ng-click="backToEntityList()" type="button" class="btn btn-default" ng-show="showBackToEntityListButton">
             <i class="fa fa-lg fa-level-up"></i>
             {{msg('mds.btn.backToList')}}
         </button>
@@ -101,7 +101,7 @@
 <div ng-if="showTrash && !showTrashInstance">
     <h4 class="frame-title">{{selectedEntity.module}} <span ui-if="selectedEntity.module">- </span>{{selectedEntity.name}} {{msg('mds.dataBrowsing.deletedInstances')}} </h4>
     <div class="toolbox">
-        <button ng-click="hideInstancesTrash()" type="button" class="btn btn-primary">
+        <button ng-click="hideInstancesTrash()" type="button" class="btn btn-default">
             <i class="fa fa-lg fa-level-up"></i>
             {{msg('mds.btn.backToEntityInstances')}}
         </button>

@@ -26,7 +26,7 @@
                                     <i class="fa fa-fw fa-trash-o"></i>&nbsp;{{msg('admin.button.remove')}}
                                 </a>
                             </div>
-                            <span class="offset-1 btn btn-default" ng-click="uploadSettings()">{{msg('admin.submit')}}</span>
+                            <span class="offset-1 btn btn-primary" ng-click="uploadSettings()">{{msg('admin.submit')}}</span>
                         </div>
                     </fieldset>
                 </form>
@@ -40,7 +40,7 @@
                     <fieldset>
                         <label class="control-label">{{msg('admin.settings.location.new')}}</label>
                         <input class="form-control input-auto" type="text" id="settingsLocation" name="settingsLocation" ng-model="location">
-                        <input type="submit" value="{{msg('admin.submit')}}" class="btn btn-default"/>
+                        <input type="submit" value="{{msg('admin.submit')}}" class="btn btn-primary"/>
                     </fieldset>
                 </form>
             </div>
@@ -87,7 +87,7 @@
                         </div>
                         <div class="form-group">
                             <div class="col-md-offset-4 col-md-8 col-lg-offset-5 col-lg-7">
-                                <input ui-if="!platformSettings.readOnly" type="submit" ng-click="saveSettings(pSettings)" value="{{msg('admin.save')}}" class="btn btn-default"/>
+                                <input ui-if="!platformSettings.readOnly" type="submit" ng-click="saveSettings(pSettings)" value="{{msg('admin.save')}}" class="btn btn-primary"/>
                             </div>
                         </div>
                     </fieldset>
@@ -96,7 +96,7 @@
             <div class="clearfix"></div>
             <form class="clearfix inside settings-form form-save">
                 <div class="form-group">
-                    <div class="col-sm-offset-5"><input ui-if="!platformSettings.readOnly" type="button" ng-click="saveAll()" value="{{msg('admin.saveAll')}}" class="col-sm-4 btn btn-default"/></div>
+                    <div class="col-sm-offset-5"><input ui-if="!platformSettings.readOnly" type="button" ng-click="saveAll()" value="{{msg('admin.saveAll')}}" class="col-sm-4 btn btn-primary"/></div>
                 </div>
             </form>
         </div>
@@ -131,7 +131,7 @@
                     </div>
 
                     <div class="form-group">
-                        <div class="col-md-offset-4 col-md-8 col-lg-offset-5 col-lg-7"><input type="button" ng-click="saveNewSettings()" value="{{msg('admin.submit')}}" class="btn btn-default"/></div>
+                        <div class="col-md-offset-4 col-md-8 col-lg-offset-5 col-lg-7"><input type="button" ng-click="saveNewSettings()" value="{{msg('admin.submit')}}" class="btn btn-primary"/></div>
                     </div>
                 </fieldset>
             </form>

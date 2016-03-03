@@ -19,7 +19,7 @@
         <div class="panel panel-default" ng-class="{'inactive': !rule.active}" id="rule-{{$index}}" ng-repeat="rule in config.securityRules">
             <div class="panel-heading" ng-class="{false: 'inactive', true: 'active'}[rule.active]" websecurity-expand-accordion>
                 <div class="pull-right">
-                    <button ng-click="removeRule($index)" class="btn btn-default btn-danger-hover btn-in-header btn-sm">
+                    <button ng-click="removeRule($index)" class="btn btn-danger btn-in-header btn-sm">
                         <i class="fa fa-trash-o"></i>
                     </button>
                 </div>
