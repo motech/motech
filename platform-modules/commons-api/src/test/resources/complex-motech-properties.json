@@ -1,0 +1,27 @@
+{
+    "case_name": "{'@xmlns': 'http://bihar.commcarehq.org/pregnancy/registration', '#text': 'TEST'}",
+    "case_type": "{'@xmlns': 'http://bihar.commcarehq.org/pregnancy/registration', '#text': 'cc_bihar_pregnancy'}",
+    "date_opened": "2011-12-27T00:00:00",
+    "edd": {
+        "#text": "2012-06-15",
+        "@xmlns": "http://bihar.commcarehq.org/pregnancy/registration"
+    },
+    "external_id": null,
+    "next_due": {
+        "#text": "2012-01-10",
+        "@xmlns": "http://bihar.commcarehq.org/pregnancy/registration"
+    },
+    "next_form": {
+        "#text": "bp",
+        "@xmlns": "http://bihar.commcarehq.org/pregnancy/registration"
+    },
+    "owner_id": "{'@xmlns': 'http://bihar.commcarehq.org/pregnancy/registration', '#text': '347b31fab217f6f28e0c8d6ff4f0651b'}",
+    "partner_name": {
+        "#text": "J.DTPGA",
+        "@xmlns": "http://bihar.commcarehq.org/pregnancy/registration"
+    },
+    "village": {
+        "#text": "JGPJMG",
+        "@xmlns": "http://bihar.commcarehq.org/pregnancy/registration"
+    }
+}

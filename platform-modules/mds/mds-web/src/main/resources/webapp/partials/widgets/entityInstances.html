@@ -1,0 +1,116 @@
+<div ng-if="!showTrash">
+    <h4 class="frame-title">{{selectedEntity.module}} <span ui-if="selectedEntity.module">- </span>{{selectedEntity.name}} {{msg('mds.dataBrowsing.instances')}} </h4>
+    <div class="clearfix toolbox form-horizontal">
+        <div class="alert alert-danger" ng-show="dataRetrievalError">
+            <h4>{{msg('mds.error')}}</h4>
+            <p>{{msg('mds.error.dataRetrievalError')}}</p>
+        </div>
+        <button ng-click="backToEntityList()" type="button" class="btn btn-primary" ng-show="showBackToEntityListButton">
+            <i class="fa fa-lg fa-level-up"></i>
+            {{msg('mds.btn.backToList')}}
+        </button>
+        <button ng-click="addInstance(module, entity)" type="button" class="btn btn-success" ng-show="showAddInstanceButton && !shouldHideButton()">
+            <i class="fa fa-plus"></i> {{msg('mds.btn.add')}}
+        </button>
+        <button id="lookupDialogButton" ng-click="showLookupDialog()" type="button" class="btn btn-default" ng-show="showLookupButton">
+            <i class="fa fa-lg fa-caret-down"></i>
+            {{msg('mds.btn.lookup')}}
+        </button>
+        <span ng-show="showFieldsButton">
+            <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in availableFieldsForDisplay"
+                    multiple="multiple" multiselect-dropdown target-table="instancesTable">
+            </select>
+        </span>
+        <div class="btn-group">
+            <button ng-click="importEntityInstances()" type="button" class="btn btn-default" ng-show="showImportButton && !shouldHideButton()">
+                <span class="glyphicon glyphicon-import"></span>
+                {{msg('mds.btn.importCsv')}}
+            </button>
+            <button ng-click="exportEntityInstances()" type="button" class="btn btn-default" ng-show="showExportButton">
+                <span class="glyphicon glyphicon-export"></span>
+                {{msg('mds.btn.exportData')}}
+            </button>
+        </div>
+        <button type="button" ng-click="showInstancesTrash()" class="btn btn-default" ng-show="showViewTrashButton">
+            <i class="fa fa-trash-o"></i>
+            {{msg('mds.btn.view.trash')}}
+        </button>
+        <button ng-show="showFilters && showFiltersButton" type="button" class="btn btn-default" id="mds-filters">
+            <i class="fa fa-filter"></i>&nbsp;{{msg('mds.filters')}}
+        </button>
+    </div>
+
+    <div id="lookup-dialog" class="popover bottom inside lookup-dialog" ng-style="lookupDialogStyle()">
+        <div class="arrow" style="left:110px"></div>
+        <div class="popover-content form-horizontal margin-after2">
+            <div class="form-group">
+                <label class="col-sm-4 control-label">{{msg('mds.form.label.lookup')}}</label>
+                <div class="col-sm-7">
+                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        {{selectedLookup.lookupName || msg('mds.form.select')}}
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="lookup in entityAdvanced.indexes">
+                            <a ng-click="selectLookup(lookup)">{{lookup.lookupName}}</a>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+
+            <div class="form-group" ng-repeat="field in lookupFields">
+                <label class="col-sm-4 control-label">
+                    {{field.displayName}}
+                    <span ng-if="field.relatedName">
+                        <i class="fa fa-long-arrow-right fa-2"></i>
+                        {{field.relatedFieldDisplayName}}
+                    </span>
+                    <span ng-class="{'ng-hide': !selectedLookup.lookupFields[$index].customOperator}"
+                          data-original-title="{{msg('mds.form.label.operator')}}"
+                          bs-popover="&nbsp;{{getOperatorMsg(selectedLookup.lookupFields[$index].customOperator)}}"
+                          data-placement="right" data-trigger="hover"
+                          class="glyphicon glyphicon-info-sign">
+                    </span>
+                </label>
+                <div class="col-sm-7 form-inline" ng-include="loadInputForLookupField(field)"></div>
+            </div>
+
+            <div class="form-group margin-before3">
+                <div class="col-sm-offset-4 col-sm-7">
+                    <buton type="button" class="btn btn-danger" ng-click="removeLookup()">
+                        {{msg('mds.btn.clear')}}
+                    </buton>
+                    <button type="button" class="btn btn-primary" ng-click="filterInstancesByLookup()">
+                        {{msg('mds.btn.find')}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="entityAdvanced" id="entityInstancesTable" class="overrideJqgridTable">
+        <table id="instancesTable" entity-instances-grid="pageInstancesTable"></table>
+        <div id="pageInstancesTable"></div>
+    </div>
+
+    <div ng-include="'../mds/resources/partials/modals/import-entity.html'"></div>
+    <div ng-include="'../mds/resources/partials/modals/export-entity.html'"></div>
+</div>
+
+<div ng-if="showTrash && !showTrashInstance">
+    <h4 class="frame-title">{{selectedEntity.module}} <span ui-if="selectedEntity.module">- </span>{{selectedEntity.name}} {{msg('mds.dataBrowsing.deletedInstances')}} </h4>
+    <div class="toolbox">
+        <button ng-click="hideInstancesTrash()" type="button" class="btn btn-primary">
+            <i class="fa fa-lg fa-level-up"></i>
+            {{msg('mds.btn.backToEntityInstances')}}
+        </button>
+        <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in availableFieldsForDisplay"
+                multiple="multiple" multiselect-dropdown target-table="trashTable">
+        </select>
+    </div>
+    <div id="instanceTrashTable" class="overrideJqgridTable">
+        <table id="trashTable" instance-trash-grid="pageInstanceTrashTable"></table>
+        <div id="pageInstanceTrashTable"></div>
+    </div>
+</div>

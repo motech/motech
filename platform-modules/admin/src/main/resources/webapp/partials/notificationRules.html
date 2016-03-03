@@ -1,0 +1,72 @@
+<div class="row message-content">
+    <div class="form-group">
+        <h5 class="text-plain inside">{{msg('admin.messages.notifications.header')}}</h5>
+    </div>
+    <div class="col-sm-12">
+        <ng-form id="notificationRulesForm" name="rulesForm" novalidate>
+            <div class="form-inline row" ng-repeat="rule in notificationRuleDto.notificationRules">
+                <fieldset>
+                <label class="control-label">{{msg('admin.messages.notifications.notificationType')}}</label>
+
+                <div class="btn-group">
+                    <a class="btn btn-default dropdown-toggle input-mw" data-toggle="dropdown" href="#" target="_self">
+                        {{msg('admin.messages.notifications.' + rule.actionType)}}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="available in ['SMS', 'EMAIL']">
+                            <a ui-if="rule.actionType == available"><i class="fa fa-fw fa-check-square-o"></i>&nbsp;{{msg('admin.messages.notifications.' + available)}}</a>
+                            <a ui-if="rule.actionType != available" ng-click="changeRuleActionType(rule, available)"><i class="fa fa-fw"></i>&nbsp;{{msg('admin.messages.notifications.' + available)}}</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <label class="control-label offset-1">{{msg('admin.messages.notifications.level')}}</label>
+                <div class="btn-group">
+                    <a class="btn btn-default dropdown-toggle input-mw" data-toggle="dropdown" href="#" target="_self">
+                        {{msg('admin.messages.' + rule.level)}}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="available in ['CRITICAL', 'ERROR', 'WARN', 'INFO', 'DEBUG']">
+                            <a ui-if="rule.level == available"><i class="fa fa-fw fa-check-square-o"></i>&nbsp;{{msg('admin.messages.' + available)}}</a>
+                            <a ui-if="rule.level != available" ng-click="changeRuleLevel(rule, available)"><i class="fa fa-fw"></i>&nbsp;{{msg('admin.messages.' + available)}}</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <label class="control-label offset-1">{{msg('admin.messages.moduleName')}}</label>
+                <div class="btn-group">
+                    <a class="btn btn-default dropdown-toggle input-mw" data-toggle="dropdown" href="#" target="_self">
+                        {{rule.moduleName || msg('admin.messages.all')}}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a ui-if="rule.moduleName == ''"><i class="fa fa-fw fa-check-square-o"></i>&nbsp;{{msg('admin.messages.all')}}</a>
+                            <a ui-if="rule.moduleName != ''" ng-click="changeRuleModuleName(rule, '')"><i class="fa fa-fw"></i>&nbsp;{{msg('admin.messages.all')}}</a>
+                        </li>
+                        <li ng-repeat="bundle in bundles">
+                            <a ui-if="rule.moduleName == bundle.name"><i class="fa fa-fw fa-check-square-o"></i>&nbsp;{{bundle.name}}</a>
+                            <a ui-if="rule.moduleName != bundle.name" ng-click="changeRuleModuleName(rule, bundle.name)"><i class="fa fa-fw"></i>&nbsp;{{bundle.name}}</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <span class="" ng-class="{'has-error': !rule.recipient}">
+                    <label class="control-label offset-1">{{msg('admin.messages.notifications.recipient')}}</label>
+                    <input class="form-control input-auto input-large-fluid" ng-model="rule.recipient" type="text" value="" />
+                </span>
+
+                <a ng-click="removeRule(rule)" class="btn btn-default btn-danger-hover"><i class="fa fa-trash-o"></i></a>
+                </fieldset>
+            </div>
+
+            <div class="row">
+                <button class="btn btn-success" ng-click="newRule()"><i class="fa fa-plus"></i>&nbsp;{{msg('admin.messages.notifications.newRecipient')}}</button>
+                <button class="btn btn-primary" type="button" ng-click="save()">{{msg('admin.save')}}</button>
+                <a href="#/admin/messages" class="btn btn-default">{{msg('admin.cancel')}}</a>
+            </div>
+        </ng-form>
+    </div>
+</div>

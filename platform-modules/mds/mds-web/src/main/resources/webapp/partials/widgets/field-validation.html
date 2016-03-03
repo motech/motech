@@ -1,0 +1,124 @@
+<form class="form-horizontal">
+    <div class="form-group" ng-repeat="criterion in field.validation.criteria" ng-class="{'has-error': validateCriterion(criterion, field.validation.criteria)}">
+        <label class="col-md-2 col-sm-3">
+            <input type="checkbox" ng-disabled="field.readOnly" mds-auto-save-field-change="click" mds-path="validation.criteria.{{$index}}.enabled" mds-field-id="{{field.id}}" ng-model="criterion.enabled">
+            {{msg(criterion.displayName)}}:
+        </label>
+        <div class="col-md-10 col-sm-9 form-inline" ng-switch on="getTypeSingleClassName(criterion.type)">
+            <input class="form-control input-xlarge-fluid" ng-switch-when="integer" type="number" mds-auto-save-field-change mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}" ng-model="criterion.value" ng-readonly="field.readOnly||!criterion.enabled" >
+            <input class="form-control input-xlarge-fluid" ng-switch-when="decimal" type="number" step="any" mds-auto-save-field-change mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}" ng-model="criterion.value" ng-readonly="field.readOnly||!criterion.enabled" >
+            <textarea class="form-control input-xxlarge-fluid" ng-switch-default type="text" ng-if="getTypeSingleClassName(field.type) !== 'integer' && getTypeSingleClassName(field.type) !== 'decimal' "
+                   mds-auto-save-field-change mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}" ng-model="criterion.value" ng-change="resetRegexInfo(field.id)" ng-readonly="field.readOnly||!criterion.enabled">
+            </textarea>
+            <div ng-switch-default ng-if="getTypeSingleClassName(field.type) !== 'integer' && getTypeSingleClassName(field.type) !== 'decimal' " class="btn-group btn-align-top"
+                 mds-criterion-id="{{$index}}" mds-auto-save-btn-select-change ng-model="selectedRegexPattern" mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}">
+                <button ng-disabled="field.readOnly||!criterion.enabled" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    {{msg('mds.regex.use')}} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu pattern-regexp-list" role="menu">
+                    <li ng-repeat="item in listRegexPattern">
+                        <a ng-click="criterion.value=item.pattern;setRegexPattern(item.pattern);setRegexInfoList(field.id, item.description);">
+                            <strong>{{item.name}}</strong>
+                            <div class="text-description">{{item.description}}</div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div ng-switch-default ng-init="initRegexInfoList(field.id)" ng-hide="field.readOnly||!criterion.enabled" class="margin-before">
+                <p class="input-xlarge-fluid" ng-show="getRegexInfo(field.id)">{{msg('mds.regex.typeValue')}}&#58;&nbsp;{{getRegexInfo(field.id)}}</p>
+                <div class="alert alert-info input-xxlarge-fluid" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <p><strong>{{msg('mds.regex.info')}}&#58;&nbsp;</strong></p>
+                    {{msg('mds.regex.addInfo')}}
+                </div>
+            </div>
+
+            <div ng-init="initCriterionValuesList(field.id, criterion, criterion.value); criterionIndex = $index" class="clearfix">
+                <div ng-show="getTypeSingleClassName(criterion.type) === 'string' && getTypeSingleClassName(field.type) === 'decimal' " mds-path="validation.criteria.{{$index}}.value" ng-model="criterion.value">
+                    <div class="clearfix" ng-repeat="valuesList in criterionValuesList | filter: field.id | filter: criterion.displayName" mds-type-criterion="{{criterion.displayName}}" >
+                        <ng-form name="{{criterion.displayName}}_{{$index}}" ng-repeat="value in valuesList.values track by $index">
+                            <div class="clearfix" ng-class="{'margin-before': $index &gt; 0}">
+                                <input mds-criterion-id="{{criterionIndex}}" mds-path="validation.criteria.{{criterionIndex}}.value" decimal-validity mds-update-criterion="{{criterion.displayName}}" mds-value-index="{{$index}}"
+                                       mds-field-id="{{field.id}}" class="form-control input-xlarge-fluid" ng-readonly="field.readOnly || !criterion.enabled" ng-change="updateCriterionValuesList(field.id, criterion.displayName, value, $index)" type="text" ng-model="value">
+                                <a class="btn btn-danger btn-sm" ng-hide="field.readOnly || !criterion.enabled || valuesList.values.length &lt; 2">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                </a>
+                                <span class="form-hint" ng-show="{{criterion.displayName}}_{{$index}}.$error.decimal && field.validation.criteria[criterionIndex].enabled">{{msg('mds.error.incorrectValueDecimal')}}</span>
+                                <span class="form-hint" ng-show="!checkDecimalValue(value, field.settings) && !({{criterion.displayName}}_{{$index}}.$error.decimal)">
+                                    {{getInvalidDecimalMessage(field.settings)}}
+                                </span>
+                                <div class="clearfix" ng-class="{hide: !validateCriterion(field, criterion, field.validation.criteria) || $index &gt; 0}">
+                                    <span class="form-hint form-hint-bottom">
+                                        {{msg(validateCriterion(field, criterion, field.validation.criteria))}}
+                                    </span>
+                                </div>
+                                <div class="clearfix" ng-show="uniqueListValue(valuesList.values, value, $index) && field.validation.criteria[criterionIndex].enabled && !({{criterion.displayName}}_{{$index}}.$error.decimal)">
+                                    <span class="form-hint form-hint-bottom">
+                                        {{msg('mds.error.duplicateValue')}}
+                                    </span>
+                                </div>
+                                <div class="clearfix" ng-if="criterion.displayName === 'mds.field.validation.mustBeInSet' && field.validation.criteria[criterionIndex].enabled && field.validation.criteria[criterionIndex + 1].enabled" ng-show="uniqueBetweenCriteria(field.id, field.validation.criteria[criterionIndex + 1].displayName, value) && !uniqueListValue(valuesList.values, value, $index) && !({{criterion.displayName}}_{{$index}}.$error.decimal)">
+                                    <span class="form-hint form-hint-bottom">
+                                        <p ng-show="uniqueBetweenCriteria(field.id, field.validation.criteria[criterionIndex + 1].displayName, value)">{{msg('mds.error.duplicateBetweenCriteriaNext')}}</p>
+                                    </span>
+                                </div>
+                                <div class="clearfix" ng-if="criterion.displayName === 'mds.field.validation.cannotBeInSet' && field.validation.criteria[criterionIndex].enabled && field.validation.criteria[criterionIndex - 1].enabled" ng-show="uniqueBetweenCriteria(field.id, field.validation.criteria[criterionIndex - 1].displayName, value) && !uniqueListValue(valuesList.values, value, $index) && !({{criterion.displayName}}_{{$index}}.$error.decimal)">
+                                    <span class="form-hint form-hint-bottom">
+                                        <p ng-show="uniqueBetweenCriteria(field.id, field.validation.criteria[criterionIndex - 1].displayName, value)">{{msg('mds.error.duplicateBetweenCriteriaPrevious')}}</p>
+                                    </span>
+                                </div>
+                            </div>
+                        </ng-form>
+                    </div>
+                </div>
+                <div ng-show="getTypeSingleClassName(criterion.type) === 'string' && getTypeSingleClassName(field.type) === 'integer' " mds-path="validation.criteria.{{$index}}.value" ng-model="criterion.value">
+                    <div class="clearfix" ng-repeat="valuesList in criterionValuesList | filter: field.id | filter: criterion.displayName" mds-type-criterion="{{criterion.displayName}}" >
+                        <ng-form name="{{criterion.displayName}}_{{$index}}" ng-repeat="value in valuesList.values track by $index">
+                            <div class="clearfix" ng-class="{'margin-before': $index &gt; 0}">
+                                <input mds-criterion-id="{{criterionIndex}}" mds-path="validation.criteria.{{criterionIndex}}.value" integer-validity mds-update-criterion="{{criterion.displayName}}" mds-value-index="{{$index}}"
+                                       mds-field-id="{{field.id}}" class="form-control input-xlarge-fluid" ng-readonly="field.readOnly || !criterion.enabled" ng-change="updateCriterionValuesList(field.id, criterion.displayName, value, $index)" type="text" ng-model="value">
+                                <a class="btn btn-danger btn-sm" ng-hide="field.readOnly || !criterion.enabled || valuesList.values.length &lt; 2">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                </a>
+                                <span class="form-hint" ng-show="{{criterion.displayName}}_{{$index}}.$error.integer && field.validation.criteria[criterionIndex].enabled">{{msg('mds.error.incorrectValueInteger')}}</span>
+                                <div class="clearfix" ng-class="{hide: !validateCriterion(field, criterion, field.validation.criteria) || $index &gt; 0}">
+                                    <span class="form-hint form-hint-bottom">
+                                        {{msg(validateCriterion(field, criterion, field.validation.criteria))}}
+                                    </span>
+                                </div>
+                                <div class="clearfix" ng-show="uniqueListValue(valuesList.values, value, $index) && field.validation.criteria[criterionIndex].enabled && !{{criterion.displayName}}_{{$index}}.$error.integer">
+                                    <span class="form-hint form-hint-bottom">
+                                        {{msg('mds.error.duplicateValue')}}
+                                    </span>
+                                </div>
+                                <div class="clearfix" ng-if="criterion.displayName === 'mds.field.validation.mustBeInSet' && field.validation.criteria[criterionIndex].enabled && field.validation.criteria[criterionIndex + 1].enabled" ng-show="uniqueBetweenCriteria(field.id, field.validation.criteria[criterionIndex + 1].displayName, value) && !uniqueListValue(valuesList.values, value, $index) && !{{criterion.displayName}}_{{$index}}.$error.integer">
+                                    <span class="form-hint form-hint-bottom">
+                                        <p ng-show="uniqueBetweenCriteria(field.id, field.validation.criteria[criterionIndex + 1].displayName, value)">{{msg('mds.error.duplicateBetweenCriteriaNext')}}</p>
+                                    </span>
+                                </div>
+                                <div class="clearfix" ng-if="criterion.displayName === 'mds.field.validation.cannotBeInSet' && field.validation.criteria[criterionIndex].enabled && field.validation.criteria[criterionIndex - 1].enabled" ng-show="uniqueBetweenCriteria(field.id, field.validation.criteria[criterionIndex - 1].displayName, value) && !uniqueListValue(valuesList.values, value, $index) && !{{criterion.displayName}}_{{$index}}.$error.integer">
+                                    <span class="form-hint form-hint-bottom">
+                                        <p ng-show="uniqueBetweenCriteria(field.id, field.validation.criteria[criterionIndex - 1].displayName, value)">{{msg('mds.error.duplicateBetweenCriteriaPrevious')}}</p>
+                                    </span>
+                                </div>
+                            </div>
+                        </ng-form>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <span class="form-hint form-hint-bottom" ng-class="{hide: !validateCriterion(field, criterion, field.validation.criteria) || getTypeSingleClassName(field.type) === 'integer' || getTypeSingleClassName(field.type) === 'decimal'}">
+                {{msg(validateCriterion(field, criterion, field.validation.criteria))}}
+            </span>
+            <div class="clearfix"></div>
+            <div class="margin-before" ui-if="!field.readOnly && getTypeSingleClassName(criterion.type) === 'string' && (getTypeSingleClassName(field.type) === 'integer' || getTypeSingleClassName(field.type) === 'decimal')">
+                <button class="btn btn-default btn-sm" ng-click="addValue(field.id, criterion)" ng-disabled="field.readOnly || !criterion.enabled || validateCriterion(field, criterion, field.validation.criteria) ">
+                    <span class="fa fa-fw fa-plus"></span>&nbsp;{{msg('mds.btn.newValue')}}
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

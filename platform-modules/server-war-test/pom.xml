@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.motechproject</groupId>
+        <artifactId>motech</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../../</relativePath>
+    </parent>
+
+    <artifactId>motech-platform-server-war-test</artifactId>
+    <name>MOTECH Platform Server WAR Test</name>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <modules.root.dir>${basedir}/../..</modules.root.dir>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20140107</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-tomcat-it</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <target>1.7</target>
+                    <source>1.7</source>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+
+                    <execution>
+                        <id>backup-bundles</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <move toDir="${user.home}/.motech/bundles_back">
+                                    <fileset dir="${user.home}/.motech/bundles" includes="**/*" />
+                                </move>
+                            </tasks>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>restore-bundles</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <move toDir="${user.home}/.motech/bundles">
+                                    <fileset dir="${user.home}/.motech/bundles_back" includes="**/*" />
+                                </move>
+                                <delete dir="${user.home}/.motech/bundles_back" />
+                            </tasks>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>IT</id>
+            <build>
+                <plugins>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>POST IT - check if tomcat is stopped</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${basedir}/tomcat-shutdown.sh</executable>
+                                    <workingDirectory>${basedir}</workingDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>com.googlecode.t7mp</groupId>
+                        <artifactId>maven-t7-plugin</artifactId>
+                        <version>0.9.16</version>
+                        <configuration>
+                            <tomcatHttpPort>${tomcat.port}</tomcatHttpPort>
+                            <tomcatShutdownPort>${tomcat.shutdown.port}</tomcatShutdownPort>
+                            <tomcatShutdownCommand>SHUTDOWN</tomcatShutdownCommand>
+                            <tomcatSetAwait>false</tomcatSetAwait>
+                            <tomcatVersion>7.0.63</tomcatVersion>
+                            <lookInside>false</lookInside>
+                            <webapps>
+                                <webapp>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>motech-platform-server</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>war</type>
+                                    <contextPath>motech-platform-server</contextPath>
+                                </webapp>
+                            </webapps>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>tomcat-start</id>
+                                <goals>
+                                    <goal>run-forked</goal>
+                                </goals>
+                                <phase>pre-integration-test</phase>
+                            </execution>
+                            <execution>
+                                <id>tomcat-stop</id>
+                                <goals>
+                                    <goal>stop-forked</goal>
+                                </goals>
+                                <phase>post-integration-test</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

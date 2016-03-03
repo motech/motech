@@ -1,0 +1,69 @@
+<div class="row">
+    <h4 class="frame-title">{{ msg('email.compose.title')}}</h4>
+    <div class="col-md-12 col-sm-12">
+        <form class="form-horizontal" ng-submit="sendEmail()" name="email_form">
+            <div class="form-group" ng-class="{'has-error' : email_form.fromAddress.$invalid && email_form.fromAddress.$dirty }">
+                <label class="col-md-2 col-sm-3 control-label" for="fromAddress">{{msg('email.from.address')}}<span class="text-danger">*</span></label>
+                <div class="form-inline col-md-10 col-sm-9">
+                    <input class="input-xlarge-fluid form-control input-auto" type="email" ng-model="mail.fromAddress" id="fromAddress" name="fromAddress" ng-required="true">
+                    <span class="form-hint" ng-show="email_form.fromAddress.$dirty && email_form.fromAddress.$invalid">
+                        <div ng-show="email_form.fromAddress.$error.required ">{{msg('email.field.required', msg('email.from.address'))}}</div>
+                        <div ng-show="email_form.fromAddress.$error.email ">{{msg('email.field.notValid', msg('email.from.address'))}}</div>
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-group" ng-class="{'has-error' : email_form.toAddress.$invalid && email_form.toAddress.$dirty}">
+                <label class="col-md-2 col-sm-3 control-label" for="toAddress">{{msg('email.to.address')}}<span class="text-danger">*</span></label>
+                <div class="form-inline col-md-10 col-sm-9">
+                    <input class="input-xlarge-fluid form-control input-auto" type="email" ng-model="mail.toAddress" id="toAddress" name="toAddress" ng-required="true">
+                    <span class="form-hint" ng-show="email_form.toAddress.$dirty && email_form.toAddress.$invalid">
+                        <div ng-show="email_form.toAddress.$error.required ">{{msg('email.field.required', msg('email.to.address'))}}</div>
+                        <div ng-show="email_form.toAddress.$error.email ">{{msg('email.field.notValid', msg('email.to.address'))}}</div>
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-group"  ng-class="{'has-error' : email_form.subject.$invalid && email_form.subject.$dirty}">
+                <label class="col-md-2 col-sm-3 control-label" for="subject">{{msg('email.subject')}}</label>
+                <div class="form-inline col-md-10 col-sm-9">
+                    <input class="input-xxlarge-fluid form-control input-auto" type="text" ng-model="mail.subject" id="subject" name="subject"  ng-maxlength=255>
+                    <span class="form-hint" ng-show="email_form.subject.$dirty && email_form.subject.$invalid">
+                        <div ng-show="email_form.subject.$error.maxlength">{{msg('email.field.subjectTooLong')}}</div>
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-group"  ng-class="{'has-error' : email_form.message.$invalid && email_form.message.$dirty}">
+                <label class="col-md-2 col-sm-3 control-label" for="text">{{msg('email.message')}}</label>
+                <div class="form-inline col-md-10 col-sm-9">
+                    <div id="text" text-angular ng-model="mail.message"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-sm-offset-3 col-md-10 col-sm-9">
+                    <input class="btn btn-primary" type="submit" value="{{msg('email.send')}}" ng-disabled="email_form.$invalid"/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="sendEmailWarning" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="sendEmailWarning" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="cancelSendingEmail()">&times;</button>
+                <h4 class="modal-title" id="importInstanceModalLabel">{{msg('email.subjectReminder')}}</h4>
+            </div>
+            <div class="modal-body">
+                <p>{{msg('email.messageEmptySubject')}}</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" ng-click="sendEmailWithoutSubject()">{{msg('email.btn.sendWithoutSubject')}}</button>
+                <button class="btn btn-default" ng-click="cancelSendingEmail()">{{msg('email.btn.cancel')}}</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
+
+    <import resource="classpath*:META-INF/motech/mdsContext.xml"/>
+
+    <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" bean-name="sqlDbManager" availability="optional"/>
+
+    <osgi:reference id="coreConfigurationService" interface="org.motechproject.config.core.service.CoreConfigurationService"
+                    bean-name="coreConfigurationService"/>
+
+    <osgi:reference id="eventAdmin" interface="org.osgi.service.event.EventAdmin"/>
+
+    <osgi:reference id="osgiEventProxy" interface="org.motechproject.server.osgi.event.OsgiEventProxy"/>
+
+    <osgi:reference id="historyServiceOSGi" interface="org.motechproject.mds.service.HistoryService" availability="optional"/>
+
+    <osgi:reference id="trashServiceOSGi" interface="org.motechproject.mds.service.TrashService" availability="optional"/>
+
+    <osgi:service ref="entityServiceImpl" interface="org.motechproject.mds.service.EntityService"/>
+
+    <osgi:service ref="userPreferencesServiceImpl" interface="org.motechproject.mds.service.UserPreferencesService"/>
+
+    <osgi:service ref="actionHandlerServiceImpl" interface="org.motechproject.mds.service.ActionHandlerService"/>
+
+    <osgi:service ref="jdoListenerRegistryService" interface="org.motechproject.mds.service.JdoListenerRegistryService" auto-export="interfaces" />
+
+    <osgi:service id="mdsDataProviderOsgi" auto-export="interfaces" ref="mdsDataProvider"
+                    interface="org.motechproject.commons.api.DataProvider"/>
+
+    <osgi:service id="settingsServiceOSGi" auto-export="interfaces" ref="settingsService"/>
+
+    <osgi:service id="mdsSchedulerServiceOSGi" auto-export="interfaces" ref="mdsSchedulerService"/>
+
+    <osgi:service id="jarGeneratorServiceOSGi" auto-export="interfaces" ref="jarGeneratorServiceImpl"/>
+
+    <osgi:service id="typeServiceOSGi" auto-export="interfaces" ref="typeServiceImpl"/>
+
+    <osgi:service id="mdsLookupServiceOSGi" auto-export="interfaces" ref="mdsLookupServiceImpl"/>
+
+    <osgi:service id="importExportServiceOSGi" auto-export="interfaces" ref="importExportServiceImpl"/>
+
+    <osgi:service id="restDocumentationServiceOSGi" auto-export="interfaces" ref="restDocumentationServiceImpl"/>
+
+    <osgi:service id="bundleWatcherSuspensionServiceOSGi" auto-export="interfaces" ref="bundleWatcherSuspensionServiceImpl"/>
+
+    <osgi:service id="mdsBundleRegenerationServiceOSGi" auto-export="interfaces" ref="mdsBundleRegenerationServiceImpl">
+        <osgi:service-properties>
+            <entry key="event.topics">
+                <array value-type="java.lang.String">
+                    <value>org_motechproject_mds_regenerate_mds_data_bundle</value>
+                    <value>org_motechproject_mds_regenerate_mds_data_bundle_after_dde_enhancement</value>
+                </array>
+            </entry>
+        </osgi:service-properties>
+    </osgi:service>
+
+    <osgi:service id="mdsOsgiBundleApplicationContextListenerServiceOSGi" auto-export="interfaces" ref="mdsOsgiBundleApplicationContextListener"/>
+
+</beans>

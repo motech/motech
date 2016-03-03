@@ -1,0 +1,27 @@
+{
+  "displayName" : "Task test",
+  "triggerTaskEvents" : [
+    {
+      "displayName" : "Test Trigger",
+      "subject" : "triggerEvent",
+      "eventParameters" : [
+        {
+          "eventKey" : "key_1",
+          "displayName" : "Key 1"
+        }
+      ]
+    }
+  ],
+  "actionTaskEvents": [
+    {
+        "displayName": "Test Action",
+        "subject": "actionEvent",
+        "actionParameters": [
+            {
+                "key": "foo",
+                "displayName": "Foo"
+            }
+        ]
+    }
+  ]
+}

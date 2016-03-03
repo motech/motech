@@ -1,0 +1,63 @@
+<div ng-controller="MdsBasicCtrl" id="inner-center" class="mds inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
+    <div class="header-footer-breadcrumb">
+        <ul class="breadcrumb" role="navigation">
+            <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
+            <li class="active">{{msg('data-services')}}</li>
+        </ul>
+    </div>
+    <div class="header-footer">
+        <ul id="content-tabs" class="nav nav-tabs mds">
+            <li ng-class="{'active': selectedTabState.selectedTab === tab}"
+                ng-click="selectedTabState.selectedTab = tab"
+                ng-repeat="tab in AVAILABLE_TABS">
+                <a href="#/mds/{{tab}}">
+                    {{msg('mds.tab.' + tab)}}
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="ui-layout-content">
+        <div ui-if="hasWorkInProgress()" class="mds alert alert-info margin-before">
+            <h4>{{msg('mds.wip.legend')}}</h4>
+            <div class="mds-alert">
+                {{msg('mds.wip.info')}}
+            </div>
+            <ul class="mds-alert-list">
+                <li ng-repeat="entity in getWorkInProgress()">
+                    {{entity.name}}
+                <span>
+                    <a class="alert-link" ng-click="resumeEdits(entity.id)">
+                        {{ msg('mds.wip.resumeEdits')}}
+                    </a>
+                    {{ msg('mds.or')}}
+                    <a class="alert-link" ng-click="discard(entity.id)">
+                        {{ msg('mds.wip.discard') | lowercase }}
+                    </a>
+                </span>
+                </li>
+            </ul>
+        </div>
+        <div class="tab-content" id="tab-content">
+            <div id="main-content" class="tab-pane active">
+                <div ng-view></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="inner-east" class="mds inner-east ui-layout-pane ui-layout-pane-east">
+    <div class="header-toolbar header-footer"></div>
+    <!------------------------  Filters  ------------------------>
+    <div class="filter-header">{{msg('mds.filters')}}</div>
+    <div class="ui-layout-content" ng-controller="MdsFilterCtrl">
+        <div class="inside">
+            <fieldset class="inside" ng-repeat="filter in filters">
+                <legend>{{filter.displayName}}</legend>
+                <div class="form-group btn-group-vertical">
+                    <button clickfilter singleSelect='{{(filter.type === "java.util.Date" || filter.type === "org.joda.time.DateTime" || filter.type === "org.joda.time.LocalDate")}}' ng-repeat="filterType in filter.types"  class="btn btn-info btn-sm"
+                            type="button" ng-click="selectFilter(filter.field, filterType, filter.type)"><i class="fa fa-fw fa-square-o"></i> {{msgForFilter(filterType)}}</button>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</div>

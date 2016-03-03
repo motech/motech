@@ -1,0 +1,7 @@
+.email .nodays table {
+    display: none;
+}
+
+.email #taTextElement {
+    max-width: 740px;
+}

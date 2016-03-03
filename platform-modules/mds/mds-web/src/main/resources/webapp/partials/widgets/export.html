@@ -1,0 +1,93 @@
+<form action="../mds/settings/export/" method="POST">
+    <table id="export-module" class="table table-bordered table-striped table-lightblue table-import-export">
+        <thead>
+            <tr>
+                <th class="no-bg col-md-8">
+                    <div class="btn-group offset-05">
+                        <input type="text" ng-model="searchText" class="form-control input-sm input-large-fluid search-query" placeholder="{{msg('mds.form.searchByModuleEntity')}}">
+                    </div>
+                    <div class="btn-group offset-05">
+                        <button ng-click="expandAll('export-module')" type="button" class="btn btn-default btn-sm"><i class="fa fa-fw fa-lg fa-angle-double-down"></i> {{msg('mds.btn.expandAll')}}</button>
+                        <button ng-click="collapseAll('export-module')" type="button" class="btn btn-default btn-sm"><i class="fa fa-fw fa-lg fa-angle-double-up"></i> {{msg('mds.btn.collapseAll')}}</button>
+                    </div>
+                </th>
+                <th class="no-bg col-md-2">
+                    {{msg('mds.export.schema')}}
+                </th>
+                <th class="no-bg col-md-2">
+                    {{msg('mds.export.data')}}
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <strong class="table-header offset-05">{{msg('mds.btn.selectAll')}}</strong>
+                </td>
+                <td>
+                    <div class="settings-checkbox">
+                        <input type="checkbox" id="schema-all"
+                               ng-checked="isAllEntitiesSchemaChecked(exportEntities)"
+                               mds-indeterminate="isNotAllEntitiesSchemaChecked(exportEntities)"
+                               ng-click="toggleSchemaCheck(exportEntities)">
+                    </div>
+                </td>
+                <td>
+                    <div class="settings-checkbox">
+                        <input type="checkbox" id="data-all"
+                               ng-checked="isAllEntitiesDataChecked(exportEntities)"
+                               mds-indeterminate="isNotAllEntitiesDataChecked(exportEntities)"
+                               ng-click="toggleDataCheck(exportEntities)">
+                    </div>
+                </td>
+            </tr>
+        </thead>
+        <tbody ng-repeat="moduleEntities in groupedExportEntities | orderObj | findModulesObj:searchText">
+            <tr class="table-heading">
+                <th>
+                    <span class="pointer" ng-click="toggleModule($index, 'export-module')">
+                        <i class="fa fa-fw fa-lg fa-caret-down pointer" id="{{$index}}-arrow-export-module"></i>
+                        {{moduleEntities.$key}}
+                    </span>
+                </th>
+                <th>
+                    <div class="settings-checkbox">
+                        <input type="checkbox" id="schema-{{moduleEntities.$key}}"
+                               ng-checked="isAllEntitiesSchemaChecked(moduleEntities)"
+                               mds-indeterminate="isNotAllEntitiesSchemaChecked(moduleEntities)"
+                               ng-click="toggleSchemaCheck(moduleEntities)">
+                    </div>
+                </th>
+                <th>
+                    <div class="settings-checkbox">
+                        <input type="checkbox" id="data-{{moduleEntities.$key}}"
+                               ng-checked="isAllEntitiesDataChecked(moduleEntities)"
+                               mds-indeterminate="isNotAllEntitiesDataChecked(moduleEntities)"
+                               ng-click="toggleDataCheck(moduleEntities)">
+                    </div>
+                </th>
+            </tr>
+            <tr ng-repeat="entity in moduleEntities | orderBy:'entityName' | findEntity:moduleEntities.$key:searchText:false" class="moduleDetails{{$parent.$index}}">
+                <td class="entity">{{entity.entityName}}</td>
+                <td>
+                    <div class="settings-checkbox">
+                        <input name="{{entity.entityName}}" value="schema"
+                               type="checkbox" id="schema-{{moduleEntities.$key}}-{{entity.entityName}}" ng-model="entity.includeSchema"
+                               ng-click="entity.includeData = entity.includeSchema ? false : entity.includeData">
+                    </div>
+                </td>
+                <td>
+                    <div class="settings-checkbox">
+                        <input name="{{entity.entityName}}" value="data"
+                               type="checkbox" id="data-{{moduleEntities.$key}}-{{entity.entityName}}" ng-model="entity.includeData"
+                               ng-click="entity.includeSchema = entity.includeData ? entity.includeSchema : true">
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="offset-12 margin-after">
+        <button type="submit" class="btn btn-default">
+            <span class="glyphicon glyphicon-export"></span>
+            {{msg('mds.export.export')}}
+        </button>
+    </div>
+</form>

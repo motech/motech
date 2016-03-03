@@ -1,0 +1,172 @@
+package org.motechproject.event.it;
+
+
+import org.joda.time.DateTime;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.domain.TestEventPayload;
+import org.motechproject.event.listener.EventListener;
+import org.motechproject.event.listener.EventListenerRegistryService;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.event.osgi.TestEventListenerOsgi;
+import org.motechproject.server.osgi.event.OsgiEventProxy;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.motechproject.testing.osgi.helper.ServiceRetriever;
+import org.ops4j.pax.exam.ExamFactory;
+import org.ops4j.pax.exam.ProbeBuilder;
+import org.ops4j.pax.exam.TestProbeBuilder;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
+import org.osgi.framework.BundleContext;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerSuite.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
+public class EventBundleIT extends BasePaxIT {
+
+    @Inject
+    private EventListenerRegistryService registry;
+    @Inject
+    private EventRelay eventRelay;
+    @Inject
+    private BundleContext bundleContext;
+    @Inject
+    private OsgiEventProxy osgiEventProxy;
+
+    private final Object waitLock = new Object();
+
+    @ProbeBuilder
+    public TestProbeBuilder build(TestProbeBuilder builder) {
+        return builder.setHeader("Export-Package", "org.motechproject.event.domain");
+    }
+
+    @Test
+    public void testEventListener() throws Exception {
+        final String subject = "OSGi IT - 001";
+        final ArrayList<String> receivedEvents = new ArrayList<>();
+
+        registry.registerListener(new EventListener() {
+            @Override
+            public void handle(MotechEvent event) {
+                receivedEvents.add(event.getSubject());
+                synchronized (waitLock) {
+                    waitLock.notify();
+                }
+            }
+
+            @Override
+            public String getIdentifier() {
+                return subject;
+            }
+        }, subject);
+
+        wait2s();
+        eventRelay.sendEventMessage(new MotechEvent(subject));
+        wait2s();
+
+        assertEquals(1, receivedEvents.size());
+        assertEquals(subject, receivedEvents.get(0));
+    }
+
+    @Test
+    public void testEventListener_WithAnnotation() throws Exception {
+        final TestEventListenerOsgi testEventListenerOsgi = (TestEventListenerOsgi)
+                ServiceRetriever.getWebAppContext(bundleContext, bundleContext.getBundle().getSymbolicName())
+                        .getBean("testEventListenerOsgi");
+
+        eventRelay.sendEventMessage(new MotechEvent(TestEventListenerOsgi.TEST_SUBJECT_OSGI));
+
+        final List<String> receivedEvents = testEventListenerOsgi.getReceivedEvents();
+        synchronized (receivedEvents) {
+            receivedEvents.wait(2000);
+        }
+        assertEquals(1, receivedEvents.size());
+        assertEquals(TestEventListenerOsgi.TEST_SUBJECT_OSGI, receivedEvents.get(0));
+    }
+
+    @Test
+    public void testEventWithTypedPayload() throws Exception {
+        final ArrayList<MotechEvent> receivedEvents = new ArrayList<>();
+
+        registry.registerListener(new EventListener() {
+
+            @Override
+            public void handle(MotechEvent event) {
+                receivedEvents.add(event);
+                synchronized (waitLock) {
+                    waitLock.notify();
+                }
+            }
+
+            @Override
+            public String getIdentifier() {
+                return "event";
+            }
+        }, "event");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("foo", new TestEventPayload());
+
+        wait2s();
+        eventRelay.sendEventMessage(new MotechEvent("event", params));
+        wait2s();
+
+        assertEquals(1, receivedEvents.size());
+        assertTrue(receivedEvents.get(0).getParameters().get("foo") instanceof TestEventPayload);
+    }
+
+    @Test
+    public void shouldProxyOSGiEvents() throws InterruptedException {
+        final ArrayList<MotechEvent> receivedEvents = new ArrayList<>();
+        final String subject = "OSGi IT PROX";
+        final DateTime now = DateUtil.now();
+        final Map<String, Object> params = new HashMap<>();
+        params.put("now", now);
+        params.put("key", "value");
+
+        registry.registerListener(new EventListener() {
+            @Override
+            public void handle(MotechEvent event) {
+                receivedEvents.add(event);
+                synchronized (waitLock) {
+                    waitLock.notify();
+                }
+            }
+
+            @Override
+            public String getIdentifier() {
+                return subject;
+            }
+        }, subject);
+
+        wait2s();
+        osgiEventProxy.sendEvent(subject, params);
+        wait2s();
+
+        assertEquals(1, receivedEvents.size());
+        MotechEvent event = receivedEvents.get(0);
+
+        assertEquals(subject, event.getSubject());
+        assertEquals(now, event.getParameters().get("now"));
+        assertEquals("value", event.getParameters().get("key"));
+    }
+
+    private void wait2s() throws InterruptedException {
+        synchronized (waitLock) {
+            waitLock.wait(2000);
+        }
+    }
+}

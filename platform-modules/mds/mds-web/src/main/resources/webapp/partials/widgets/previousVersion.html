@@ -1,0 +1,22 @@
+<div>
+    <div>
+        <div  class="inside">
+            <button ng-click="selectInstanceHistory(selectedInstance)" type="button" class="btn btn-primary btn-history">
+                {{msg('mds.btn.history')}}
+            </button>
+            <button ng-hide="shouldHideButton()" ng-click="revertPreviousVersion()" type="button" class="btn btn-primary btn-history" ng-class="revertVersionButton()">
+                {{msg('mds.btn.revert')}}
+            </button>
+            <span class="glyphicon glyphicon-info-sign" ng-show="!instanceRevertable && !shouldHideButton()" data-trigger="hover" data-placement="bottom" bs-popover="{{msg('mds.tooltip.schemaMismatch')}}" data-original-title=""></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-8 col-sm-3">
+            <div>{{msg('mds.info.previousVersion')}}
+                <a href="" ng-click="backToInstance()">{{msg('mds.info.version')}}</a>
+            </div>
+        </div>
+        <br/>
+    </div>
+    <div ng-include="'../mds/resources/partials/widgets/entityInstanceFields.html'"></div>
+</div>

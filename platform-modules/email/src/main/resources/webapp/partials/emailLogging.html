@@ -1,0 +1,52 @@
+<div class="row">
+
+    <div id="operations-email-logging" class="frame-title form-group">
+        <div class="btn-group">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#exportEmailLogModal">
+                <i class="glyphicon glyphicon-export"></i>&nbsp;{{msg('email.logging.export')}}
+            </button>
+            <button type="button" class="btn btn-default" id="email-logging-filters">
+                <i class="fa fa-filter"></i>&nbsp;{{msg('email.logging.filters')}}
+            </button>
+        </div>
+    </div>
+
+    <div id="outsideEmailLoggingTable" class="overrideJqgridTable">
+        <table id="emailLoggingTable" email-logging-grid="pageResourceEmailTable"></table>
+        <div id="pageResourceEmailTable"></div>
+    </div>
+
+    <div id="exportEmailLogModal" class="modal fade email" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" ng-click="closeExportEmailLogModal()">&times;</button>
+                    <h4 class="modal-title">{{msg('email.logging.export')}}</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="exportEmailLogForm" name="exportEmailLogForm" class="form-horizontal" action="../email/emails/export" method="GET">
+                        <div class="form-group">
+                            <label class="col-md-3 col-sm-4 control-label">{{msg('email.logging.exportEmailsLog')}}</label>
+                            <div class="form-inline col-md-3 col-sm-4">
+                                <div class="btn-group">
+                                    <a class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                        {{ msg('email.logging.' + loggingRange)}}
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li ng-repeat="range in availableRange" ng-click="change(range)"><a>{{ msg('email.logging.' + range) }}</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <span id="exportDate" class="help-hint hidden"><input id="monthPicker" email-export-date-picker-from="" type="text" class="form-control nodays input-small-fluid" data-event-type="change" /></span>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ng-click="exportEmailLog()">{{msg('email.logging.export')}}</button>
+                    <button class="btn btn-default" ng-click="closeExportEmailLogModal()">{{msg('email.logging.close')}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

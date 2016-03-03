@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+    <import resource="classpath*:META-INF/motech/applicationTasks.xml"/>
+
+    <context:annotation-config/>
+    <security:global-method-security pre-post-annotations="enabled"/>
+
+    <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
+        <constructor-arg name="url" value="../tasks/index.html"/>
+        <constructor-arg name="moduleName" value="tasks"/>
+        <constructor-arg name="angularModules">
+            <list>
+                <value>tasks</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg name="i18n">
+            <map>
+                <entry key="messages" value="../tasks/messages/"/>
+            </map>
+        </constructor-arg>
+        <property name="roleForAccess">
+            <list>
+                <value>manageTasks</value>
+            </list>
+        </property>
+        <property name="settingsURL" value="/tasks/settings" />
+        <property name="defaultURL" value="/tasks/dashboard"/>
+    </bean>
+
+    <osgi:reference id="eventListenerRegistryServiceOsgi"
+                    interface="org.motechproject.event.listener.EventListenerRegistryService"/>
+
+    <osgi:reference id="eventRelayOsgi" interface="org.motechproject.event.listener.EventRelay"/>
+
+    <osgi:reference id="taskDataProviderServiceOsgi" interface="org.motechproject.tasks.repository.DataProviderDataService">
+        <osgi:reference-listener ref="taskDataProviderService"/>
+    </osgi:reference>
+
+    <osgi:set id="dataProvidersOSGi" interface="org.motechproject.commons.api.DataProvider" availability="optional">
+        <osgi:reference-listener ref="dataProviderManager"/>
+    </osgi:set>
+
+    <osgi:reference id="taskActivitiesDataServiceOSGi"
+                    interface="org.motechproject.tasks.repository.TaskActivitiesDataService"/>
+
+    <osgi:reference id="channelsDataServiceOSGi"
+                    interface="org.motechproject.tasks.repository.ChannelsDataService"/>
+
+    <osgi:reference id="tasksDataServiceOSGi"
+                    interface="org.motechproject.tasks.repository.TasksDataService"/>
+
+    <osgi:reference id="triggerEventDataService"
+                    interface="org.motechproject.tasks.repository.TriggerEventsDataService"/>
+
+    <osgi:reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager" context-class-loader="unmanaged"/>
+
+    <osgi:service id="channelServiceOsgi" auto-export="interfaces" ref="channelService"
+                  interface="org.motechproject.tasks.service.ChannelService">
+        <osgi:registration-listener>
+            <bean class="org.motechproject.tasks.osgi.ChannelServiceRegistrationListener"/>
+        </osgi:registration-listener>
+    </osgi:service>
+
+    <osgi:service id="dataProviderServiceOsgi" auto-export="interfaces" ref="taskDataProviderService"
+                  interface="org.motechproject.tasks.service.TaskDataProviderService"/>
+
+    <osgi:service id="taskServiceOsgi" auto-export="interfaces" ref="taskService"
+                  interface="org.motechproject.tasks.service.TaskService"/>
+
+    <osgi:service id="taskTriggerHandlerOsgi" auto-export="interfaces" ref="taskTriggerHandler"
+                  interface="org.motechproject.tasks.service.TriggerHandler"/>
+</beans>

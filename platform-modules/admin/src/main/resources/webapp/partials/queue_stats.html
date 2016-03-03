@@ -1,0 +1,30 @@
+<div class="row margin-before" ng-show="dataAvailable">
+    <table class="table table-bordered table-striped table-condensed table-lightblue">
+        <thead>
+            <tr>
+                <th class="ng-binding">{{msg('admin.queue.name')}}</th>
+                <th class="ng-binding">{{msg('admin.queue.size')}}</th>
+                <th class="ng-binding">{{msg('admin.queue.consumer.count')}}</th>
+                <th class="ng-binding">{{msg('admin.queue.enqueue.count')}}</th>
+                <th class="ng-binding">{{msg('admin.queue.dequeue.count')}}</th>
+                <th class="ng-binding">{{msg('admin.queue.expired.count')}}</th>
+            </tr>
+        </thead>
+        <tbody ng-repeat="queue in queues">
+            <tr>
+                <td class="ng-binding">
+                    <a ng-href="#/admin/queues/browse?queueName={{queue.destination}}"
+                       ng-click="selectedTabState.selectedTab = 'browse'">{{queue.destination}}</a>
+                </td>
+                <td class="ng-binding">{{queue.queueSize}}</td>
+                <td class="ng-binding">{{queue.consumerCount}}</td>
+                <td class="ng-binding">{{queue.enqueueCount}}</td>
+                <td class="ng-binding">{{queue.dequeueCount}}</td>
+                <td class="ng-binding">{{queue.expiredCount}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="alert alert-danger" ng-show="!dataAvailable">
+    {{msg('admin.queue.error')}}
+</div>

@@ -1,0 +1,465 @@
+.mds .tab-content .nav-tabs {
+    background-color: #F6FBFF;
+}
+
+.mds-settings.nav.nav-tabs {
+    border-bottom: 1px solid #D4E1F9;
+}
+
+.mds#advancedObjectSettingsModal .modal-body {
+    background: #F6FBFF;
+    padding: 0 0 10px 0;
+}
+
+.mds#advancedObjectSettingsModal .panel.panel-default {
+    border: none;
+}
+
+.mds .modal-footer {
+    margin-top: 0;
+}
+
+.mds .inside {
+    padding: 20px 15px;
+}
+
+.mds.alert {
+    margin-bottom: 10px;
+}
+
+.mds-alert {
+    color: #333333;
+}
+
+.mds-alert-list li {
+    margin-left: 20px;
+    color: #333333;
+}
+
+.mds .panel-default > .panel-heading.top-header {
+    background-color: #F6FBFF;
+    border-color: unset;
+    color: #224477;
+    font-weight: bold;
+}
+
+.mds .panel-default > .panel-heading.top-header.no-bg {
+    background: none;
+}
+
+.mds .form-control-select2 {
+    height: 34px;
+    line-height: 1.42857;
+    padding: 0;
+    margin: 0 12px 0 0;
+    display: block;
+}
+
+.mds .select2-container .select2-choice {
+    height: 34px;
+}
+
+.mds .select2-container .select2-choice div b {
+    background-position: 0 2px;
+}
+
+.mds .select-entity, .mds .select2-container.security-selector {
+    width: 400px;
+}
+
+.mds .select-field-type {
+    width: 250px;
+}
+
+.new-field .form-group {
+    margin-bottom: 0;
+}
+
+.mds .table th {
+    background: #D9EDF7;
+    background: -moz-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#D9EDF7), color-stop(100%,#B9DEF0));
+    background: -webkit-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
+    background: -o-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
+    background: -ms-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
+    background: linear-gradient(to bottom,  #D9EDF7 0%, #B9DEF0 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D9EDF7', endColorstr='#B9DEF0',GradientType=0 );
+}
+
+.mds .table-lightblue.table-bordered th, .mds .table-lightblue.table-bordered td, .mds .table.table-bordered > tbody + tbody {
+    border: none;
+}
+
+.mds .table.table-bordered, .mds .table-lightblue.table-bordered td {
+    border-top: none;
+}
+
+.mds .table td, .mds .table th {
+    border: none;
+}
+
+.mds .table tbody tr {
+    border: 1px solid #D1E6F9;
+    border-top: none;
+    border-bottom: none;
+}
+
+.mds .lookup-fields {
+    border-left: 1px solid #D4E1F9;
+}
+
+.mds .lookup-fields .form-horizontal .form-group > div {
+    margin-left: 0;
+    margin-right: -15px;
+}
+
+.mds .lookup-caret {
+    display: none;
+    position: absolute;
+    color: #8EB3E0;
+    right: -30px;
+    top: 0.25em;
+}
+
+.mds .lookups .active .lookup-caret {
+    display: block;
+}
+
+.indexes-column .indexes-list {
+    background: #FFFFFF;
+    margin-bottom: 10px;
+    border-radius:4px;
+    border: 1px solid #D4E1F9;
+    min-height: 100px;
+}
+
+.indexes-column .indexes-list ul {
+    list-style: none;
+}
+
+.indexes-list .btn-success.list-group-item {
+    color: #FFFFFF;
+    display: block;
+}
+
+.indexes-column .list ul a, .indexes-column .list ul a:visited {
+    display: block;
+    width: 80%;
+    text-decoration: none;
+    text-align: center;
+    padding: 7px;
+    border-radius:9px;
+    border:2px solid #d4e1f9;
+    background:#e4f1f9;
+}
+
+.indexes-column .list ul a:hover, .indexes-column .list ul a:focus, .indexes-column .list ul .active,
+.indexes-column .list ul li .active, .indexes-column .list ul li a .active {
+    border: 2px solid #0088cc;
+    background: #3b679e; /* Old browsers */
+    background: -moz-linear-gradient(top,  #3b679e 0%, #2b88d9 50%, #207cca 51%, #7db9e8 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#3b679e), color-stop(50%,#2b88d9), color-stop(51%,#207cca), color-stop(100%,#7db9e8));
+    background: -webkit-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
+    background: -o-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
+    background: -ms-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
+    background: linear-gradient(to bottom,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3b679e', endColorstr='#7db9e8',GradientType=0 );
+    color:#ffffff;
+}
+
+.mds #restApiTab .panel-body {
+    min-height: 60px;
+}
+
+.module-header {
+    font-weight: bold;
+    border-radius: 2px;
+    padding: 4px 10px;
+    line-height: 28px;
+    color: #224477;
+    background: #D9EDF7;
+    background: -moz-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#D9EDF7), color-stop(100%,#B9DEF0));
+    background: -webkit-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
+    background: -o-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
+    background: -ms-linear-gradient(top,  #D9EDF7 0%, #B9DEF0 100%);
+    background: linear-gradient(to bottom,  #D9EDF7 0%, #B9DEF0 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D9EDF7', endColorstr='#B9DEF0',GradientType=0 );
+}
+
+.module-header a, .module-header a:hover, .module-header  a:link, .module-header a:active {
+    text-decoration: none;
+    color: #224477;
+}
+
+#data-browser-entity .entity-entry {
+    padding: 1px 7px 1px 18px;
+    height: 37px;
+    line-height: 32px;
+    color: #005580;
+    background-color: #E4F1F9;
+    border: 1px solid #D1E6F9;
+    border-top: none;
+}
+
+#data-browser-entity .entity-entry:hover, #data-browser-entity > div.entity-entry:nth-child(2n+1):hover {
+    background: #EDF5F9;
+    color: #224477;
+}
+
+#data-browser-entity > div.entity-entry:nth-child(2n+1) {
+    background: #F3FBFE;
+}
+
+.mds .settings-input-group {
+    vertical-align: top;
+    display: inline-block;
+}
+
+.mds .settings-checkbox input {
+    margin: -4px 0 0 10px; !important
+    vertical-align: top;
+    display: inline-block;
+}
+
+.mds .container-space {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    background-color: rgb(255, 255, 255);
+}
+
+.mds .container-space.over {
+    background-color: rgb(208, 240, 188);
+}
+
+.mds .display-fields.panel-body {
+    margin: auto;
+    width: 97%;
+}
+
+.mds .outer-container.panel {
+    width: 46%;
+    height: auto;
+    float: left;
+    color: rgb(0, 136, 204);
+}
+
+.mds .outer-container .panel-heading {
+    font-weight: bold;
+}
+
+.mds .scroll-container.panel-body {
+    height: 300px;
+    width: 100%;
+    border: 1px solid #BFDCF4;
+    border-top: none;
+    padding: 0;
+}
+
+.mds .buttons-container {
+    width: auto;
+    float: left;
+    margin: 10px 0 0 0;
+    padding: 40px 10px;
+}
+
+
+.mds .container-item {
+    background-color: rgb(228, 241, 249);
+    border-bottom: 1px solid #BFDCF4;
+    clear: both;
+    overflow: hidden;
+    padding: 5px 10px;
+}
+
+.mds .container-item.selected {
+    background-color: rgb(0, 136, 204);
+    color: rgb(255, 255, 255);
+}
+
+[draggable] {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: move;
+}
+
+.drag {
+  opacity: 0.5;
+}
+
+.mds .container-item.over {
+    background-color: rgb(208, 240, 188);
+}
+
+.mds .button-flat {
+    width: 48px;
+}
+
+.mds .table-import-export td.entity {
+    padding-left: 35px;
+}
+
+.mds .table-import-export.table-lightblue th.no-bg {
+    background: #F6FBFF;
+}
+
+.mds .table-import-export.table-lightblue .table-header {
+    color: #224477;
+}
+
+#entityFieldsLists a:hover {
+    text-decoration: none;
+}
+
+#entityFieldsLists .panel-body {
+    padding: 0;
+}
+
+#entityFieldsLists .panel {
+    margin: 2px 0 0;;
+}
+
+#entityFieldsLists .panel:first-child {
+    border: none;
+}
+
+#entityFieldsLists .panel-default > .panel-heading {
+    border: 0 none;
+    line-height: 28px;
+    padding: 4px 10px;
+}
+
+#entityFieldsLists .panel-default > .panel-heading .form-hint {
+    line-height: 15px;
+}
+
+#entityFieldsLists .panel-default > .panel-heading.top-header.no-bg {
+    background: none;
+}
+
+#entityFieldsLists .panel.new-field > .panel-heading {
+    background: #E4F1F9;
+}
+
+.lookupExists {
+    display: none;
+}
+
+.mds .popover {
+    min-width: 200px;
+}
+
+.mds .popover .popover-content {
+    color: #333;
+}
+
+.mds .has-error .combobox .form-control.no-error {
+    border-color: #cccccc;
+}
+
+.mds .has-error .combobox .form-control.no-error:focus {
+    border-color: #66afe9;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6);
+}
+
+.mds .has-error .combobox.has-error .form-control.no-error {
+    border-color: #B94A48;
+}
+
+.mds .has-error .combobox.has-error .form-control.no-error:focus {
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(232, 102, 102, 0.6);
+}
+
+.mds .has-error .multiselect-container.dropdown-menu .radio,
+.mds .has-error .multiselect-container.dropdown-menu .checkbox {
+    color: #333;
+}
+
+.mds .multiselect-container.dropdown-menu > .active > a .radio,
+.mds .has-error .multiselect-container.dropdown-menu > .active > a:hover .radio,
+.mds .has-error .multiselect-container.dropdown-menu > .active > a:focus .radio {
+    color: #fff;
+}
+
+.mds .multiselect-container.dropdown-menu > li > a:hover label,
+.mds .multiselect-container.dropdown-menu > li > a:focus label {
+    cursor: pointer;
+}
+
+.mds .multiselect-container.dropdown-menu input[type="radio"] {
+    display: none;
+}
+
+.mds .multiselect-container.dropdown-menu .radio,
+.mds .multiselect-container.dropdown-menu .checkbox {
+    display: block;
+}
+
+.mds .ui-jqgrid .ui-paging-info {
+    margin-left: 4px;
+    margin-top: 0;
+}
+
+.mds .form-hint p {
+    margin: 0;
+}
+
+.mds .checkboxList {
+    float: left;
+    position: relative;
+    overflow: hidden;
+    min-width: 20%;
+}
+
+.mds .btn-group.btn-align-top {
+    vertical-align: top;
+}
+
+.mds .text-description {
+    font-size: 0.86em;
+    max-width: 330px;
+    word-wrap: break-word;
+}
+
+.mds .pattern-regexp-list {
+    max-height: 160px;
+    overflow-x: hidden;
+    min-width: 260px;
+}
+
+.mds .pattern-regexp-list.dropdown-menu > li > a {
+    white-space: normal;
+}
+
+.mds .pattern-regexp-list  li {
+    border-bottom: 1px solid #ccc;
+}
+
+.mds .reset-combobox-alert {
+    display: none;
+    margin-bottom: 0;
+    color: #766206;
+}
+
+.mds .related-instances-block {
+    display: inline-block;
+}
+
+.mds .related-instance-display {
+    float: left;
+    width: 270px;
+    word-wrap: break-word;
+    border-bottom: 1px solid #d1e6f9;
+    padding: 5px 5px 5px 0;
+}
+
+.mds .relation-field > div:last-child .related-instance-display {
+    border-bottom: none;
+}
+
+.mds .form-inline .form-group.inline,
+.mds .form-inline .form-group label {
+    display: inline-block;
+}

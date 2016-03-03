@@ -1,0 +1,66 @@
+.security .table-role td:first-child, .security .table-role td .checkbox, .security .table-role td .checkbox input {
+    text-align: center;
+    float: none;
+    margin: 0;
+    padding-left: 0;
+}
+
+.security .table-role th {
+    text-align: center;
+}
+
+.security .table-role thead tr > th:first-child,
+.security .table-permission thead tr > th:first-child, .security .table-permission tbody tr > td:first-child {
+    text-align: center;
+    width: 35px;
+}
+
+.security .table-role th:nth-child(2) {
+    text-align: left;
+    padding-left: 26px;
+}
+
+.security .table-checkbox.checkbox {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.security .panel.panel-default .panel-heading.inactive {
+    background: linear-gradient(to bottom, #F5F5F5 0px, #E8E8E8 100%);
+    background: -moz-linear-gradient(top,  #F5F5F5 0%, #E8E8E8 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#F5F5F5), color-stop(100%,#E8E8E8));
+    background: -webkit-linear-gradient(top,  #F5F5F5 0%,#E8E8E8 100%);
+    background: -o-linear-gradient(top,  #F5F5F5 0%,#E8E8E8 100%);
+    background: -ms-linear-gradient(top,  #F5F5F5 0%,#E8E8E8 100%);
+    background: linear-gradient(to bottom,  #F5F5F5 0%,#E8E8E8 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F5F5F5', endColorstr='#E8E8E8',GradientType=0)
+}
+
+.security .panel.panel-default.inactive a {
+    color: #4B4B4B;
+}
+
+.security .panel-heading a {
+    text-decoration: none;
+}
+
+.security .panel.panel-default.inactive {
+    background-color: #fbfbfb;
+
+}
+
+.security .panel {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.security .panel-group .panel + .panel {
+    margin-top: 1px;
+}
+
+.security .dynamic-select {
+    width: 100%;
+}
+
+.security .info-block {
+    display: none;
+}

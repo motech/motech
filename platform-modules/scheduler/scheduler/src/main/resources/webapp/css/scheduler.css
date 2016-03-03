@@ -1,0 +1,99 @@
+/*---------- scheduler ----------*/
+
+.scheduler .inbox-header {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #B2D8F8;
+    margin-bottom: 2px;
+}
+
+.scheduler .inbox-header hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-top: 1px solid #B2D8F8;
+}
+
+.scheduler .inbox-header a {
+    color: #224477;
+}
+
+.scheduler .align-right {
+    text-align: right;
+}
+
+.scheduler .align-left {
+    text-align: left;
+}
+
+.scheduler .align-center {
+    text-align: center;
+}
+
+.scheduler .col {
+    max-width: 50%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.scheduler .col.subject {
+    margin-right: 50px;
+}
+
+.scheduler .divider {
+    width: 20px;
+    display: inline-block;
+    text-align: center
+}
+
+.scheduler .vertical-divider {
+    border-left: 1px solid #A9CAE6;
+    border-right: 1px solid #CEE3F7;
+    margin: 5px;
+}
+
+.scheduler .label {
+    cursor: default !important;
+}
+
+.scheduler .popover {
+   color: black;
+}
+
+.scheduler .auto-wrap {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+	overflow: hidden;
+}
+
+.scheduler .horizontally-inside {
+    margin: 0px;
+}
+
+.scheduler .horizontally-inside > button {
+    margin-top: 5px;
+}
+
+.scheduler .middle.input-group-addon {
+    border-left: 0px;
+    border-right: 0px;
+}
+
+.scheduler .map .input-group {
+    margin-top: 5px;
+}
+
+.scheduler .job-form label {
+    transition:all linear 0.5s;
+}
+
+.scheduler .job-form .ng-invalid {
+    color: red;
+}
+
+a .btn {
+    color: white;
+}
+
+#days {
+    height: 132px;
+}

@@ -1,0 +1,137 @@
+<!------------------------  Settings  ------------------------------------->
+<div class="row">
+    <h4 class="frame-title">{{ msg('email.settings.title')}}</h4>
+    <div class="inside col-lg-7 col-md-9 col-sm-12">
+        <div class="clearfix margin-before">
+            <form id="emailSettingsForm" name="emailSettingsForm" class="form-horizontal" novalidate>
+
+                <div class="form-group" ng-class="{'error': !settings.host}">
+                    <label class="col-md-3 col-sm-4 control-label" for="settingsHost">{{msg('email.settings.host')}}:</label>
+
+                    <div class="form-inline col-md-9 col-sm-8">
+                        <input class="form-control input-auto" ng-model="settings.host" type="text" id="settingsHost" required/>
+                        <span ng-hide="settings.host" class="form-hint">{{msg('email.field.required', msg('email.settings.host'))}}</span>
+                    </div>
+                </div>
+
+                <div class="form-group" ng-class="{'error': !settings.port}">
+                    <label class="col-md-3 col-sm-4 control-label" for="settingsPort">{{msg('email.settings.port')}}:</label>
+
+                    <div class="form-inline col-md-9 col-sm-8">
+                        <input class="form-control input-auto" ng-model="settings.port" type="text" id="settingsPort" required/>
+                        <span ng-hide="settings.port" class="form-hint">{{msg('email.field.required', msg('email.settings.port'))}}</span>
+                        <span ng-hide="isNumeric('port')" class="form-hint">{{msg('email.field.numeric', msg('email.settings.port'))}}</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-3 col-sm-4 control-label" for="settingsUsername">{{msg('email.settings.username')}}:</label>
+
+                    <div class="form-inline col-md-9 col-sm-8">
+                        <input class="form-control input-auto" ng-model="settings.username" type="text" id="settingsUsername"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-3 col-sm-4 control-label" for="settingsPassword">{{msg('email.settings.password')}}:</label>
+
+                    <div class="form-inline col-md-9 col-sm-8">
+                        <input class="form-control input-auto" ng-model="settings.password" type="text" id="settingsPassword"/>
+                    </div>
+                </div>
+
+                <h5 class="margin-before2">{{msg('email.settings.log.title2')}}</h5>
+
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
+                        <div class="checkbox">
+                            <label for="settingsLogAddress">
+                                <input ng-model="settings.logAddress" type="checkbox" id="settingsLogAddress"
+                                       ng-true-value="true" ng-false-value="false" />
+                                {{msg('email.settings.log.address')}}
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
+                        <div class="checkbox">
+                            <label for="settingsLogSubject">
+                                <input ng-model="settings.logSubject" type="checkbox" id="settingsLogSubject"
+                                       ng-true-value="true" ng-false-value="false" />
+                                {{msg('email.settings.log.subject')}}
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
+                        <div class="checkbox">
+                            <label for="settingsLogBody">
+                                <input ng-model="settings.logBody" type="checkbox" id="settingsLogBody"
+                                       ng-true-value="true" ng-false-value="false" />
+                                {{msg('email.settings.log.body')}}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <h5 class="margin-before2">{{msg('email.settings.log.title3')}}</h5>
+
+                <div ng-repeat="(key, value) in settings.additionalProperties">
+                    <div class="form-group">
+                        <label class="col-md-3 col-sm-4 control-label">{{key}}:</label>
+
+                        <div class="form-inline col-md-9 col-sm-8">
+                            <input class="form-control input-auto" ng-model="settings.additionalProperties[key]" type="text"/>
+                            <a class="btn btn-sm btn-default btn-danger-hover" ng-click="remove(key)">
+                                <i class="fa fa-lg fa-trash-o"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-3 col-sm-4 control-label" for="settingsUsername">{{msg('email.settings.key')}}:</label>
+
+                    <div class="form-inline col-md-9 col-sm-8">
+                        <input class="form-control input-auto" ng-model="property.name" type="text" id="settingsPropertyName" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-3 col-sm-4 control-label" for="settingsUsername">{{msg('email.settings.value')}}:</label>
+
+                    <div class="form-inline col-md-9 col-sm-8">
+                        <input class="form-control input-auto" ng-model="property.value" type="text" id="settingsPropertyValue" />
+                        <input ng-disabled="emptyFields(property)" ng-click="add(property)" type="button" value="{{msg('email.settings.add')}}" class="btn btn-primary"/>
+                    </div>
+                </div>
+
+                <h5 class="margin-before2">{{msg('email.settings.log.title2')}}</h5>
+
+                <div class="form-group form-inline">
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
+                        <div class="checkbox">
+                            <label>
+                                <input ng-model="settings.logPurgeEnable" type="checkbox" id="settingsLogPurgeEnable"
+                                   ng-true-value="true" ng-false-value="false" />
+                                {{msg('email.settings.log.purge')}}
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <input class="form-control input-auto" email-purge-time ng-disabled="purgeTimeControlsDisabled()" ng-model="settings.logPurgeTime" type="text" id="settingsLogPurgeTime" />
+                            <select class="form-control input-auto" ng-disabled="purgeTimeControlsDisabled()"  ng-model="settings.logPurgeTimeMultiplier" ng-options="k as v for (k , v) in timeMultipliers" ></select>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
+                        <input ng-disabled="emailSettingsForm.$invalid" ng-click="submit()" type="button" value="{{msg('email.settings.submit')}}" class="btn btn-primary"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

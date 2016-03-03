@@ -1,0 +1,138 @@
+<div class="row table-content">
+
+    <div class="col-sm-12 row">
+        <div class="col-sm-12 col-md-12 col-lg-4 inside filter">
+            <form class="form-inline">
+                <label class="control-label" for="filter">{{msg('admin.filter')}}</label>
+                <input class="input-auto form-control" id="filter" type="text" ng-model="filterProp" autofocus="autofocus"/>
+            </form>
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-8 statistics">
+            <div class="inline">
+                <span><b>{{msg('admin.bundles.statistics')}}:</b></span>
+                <span><b>{{msg('admin.bundles.statistics.total')}}:</b> {{allBundlesCount()}}.</span>
+                <span class="param"><b>{{msg('admin.bundles.statistics.active')}}:</b> {{activeBundlesCount()}}.</span>
+                <span class="param"><b>{{msg('admin.bundles.statistics.installed')}}:</b> {{installedBundlesCount()}}.</span>
+                <span class="param"><b>{{msg('admin.bundles.statistics.resolved')}}:</b> {{resolvedBundlesCount()}}.</span>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="inside inline top-line" ng-controller="AdminBundleListCtrl">
+        <form id="bundleUploadForm" action="../admin/api/bundles/upload" enctype="multipart/form-data" method="POST">
+            <div class="form-inline">
+                <div class="fileupload fileupload-new" data-provides="fileupload">
+                    <div class="form-group">
+                        <label><b>{{msg('admin.bundles.upload')}} {{msg('admin.import.from')}} </b></label>
+                    </div>
+                    <div class="form-group offset-1">
+                        <select class="form-control form-control-select" name="moduleSource" ng-model="moduleSource" ng-options="k as v for (k,v) in moduleSources"/>
+                    </div>
+                    <div class="form-group offset-1">
+                        <select class="form-control form-control-select" name="moduleId" ng-model="module" ng-options="k as v for (k,v) in modules" ng-show="moduleSource=='Repository'">
+                            <option value="">Select a module</option>
+                        </select>
+                    </div>
+                    <div class="form-group offset-1">
+                    <div class="input-append btn-group" ng-show="moduleSource=='File'">
+
+                        <div class="form-control uneditable-input input-auto fileupload-exists">
+                            &nbsp;<i class="glyphicon glyphicon-file"></i>&nbsp;<span class="fileupload-preview"></span>
+                        </div>
+                        <input type="file" id="bundleFile" name="bundleFile" class="input-file"  style="display: none;"  />
+                    <span class="btn btn-default btn-file" filereader="checkFile"><span class="fileupload-new">{{msg('admin.selectFile')}}</span>
+                    <span class="fileupload-exists">{{msg('admin.bundles.change')}}</span><input type="file"/>
+                    </span><a href="#" class="btn btn-danger fileupload-exists"
+                              data-dismiss="fileupload">{{msg('admin.bundles.remove')}}</a>
+                    </div>
+                    </div>
+                    <div class="form-group offset-1" data-toggle="buttons-checkbox">
+                        <button type="button" class="btn btn-primary start-on-upload" ng-click="startOnUpload()">
+                            <i class="fa fa-fw fa-check-square-o"></i> {{msg('admin.bundles.startOnInstall')}}
+                        </button>
+                        <input type="checkbox" id="startBundle" name="startBundle" ng-checked="startUpload"
+                               style="display: none;"/>
+                    </div>
+                    <div class="form-group offset-1">
+                        <span ng-click="submitBundle()" ng-disabled="isNoModuleOrFileSelected()"
+                              class="btn btn-success">{{msg('admin.bundles.installOrUpdate')}}</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="clearfix"></div>
+    </div>
+    <div class="clearfix"></div>
+    <table class="table table-bundles table-bordered table-striped table-condensed table-lightblue">
+        <thead>
+        <tr>
+            <th ng-click="setOrder('bundleId')">
+                <img src=../admin/img/trans.gif alt="{{msg('admin.bundles.sortingId')}}" title="{{msg('admin.bundles.sortingId')}}"
+                     ng-class="getSortClass('bundleId')" class="sorting-no"/>{{msg('admin.bundles.id')}}
+            </th>
+            <th><img src='../admin/img/trans.gif' class="sorting-no-img"/>{{msg('admin.bundles.icon')}}</th>
+            <th ng-click="setOrder('name')">
+                <img src=../admin/img/trans.gif alt="{{msg('admin.bundles.sortingName')}}"
+                     title="{{msg('admin.bundles.sortingName')}}"
+                     ng-class="getSortClass('name')" class="sorting-no"/>{{msg('admin.bundles.name')}}
+            </th>
+            <th ng-click="setOrder(versionOrder)">
+                <img src='../admin/img/trans.gif' alt="{{msg('admin.bundles.sortingVersion')}}"
+                     title="{{msg('admin.bundles.sortingVersion')}}"
+                     ng-class="getSortClass(versionOrder)" class="sorting-no"/>{{msg('admin.bundles.version')}}
+            </th>
+            <th ng-click="setOrder('state')">
+                <img src='../admin/img/trans.gif' alt="{{msg('admin.bundles.sortingState')}}"
+                     title="{{msg('admin.bundles.sortingState')}}"
+                     ng-class="getSortClass('state')" class="sorting-no"/>{{msg('admin.bundles.state')}}
+            </th>
+            <th><img src='../admin/img/trans.gif' class="sorting-no-img"/>{{msg('admin.bundles.actions')}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="bundle in bundles | orderBy:orderProp:invert | filter:filterProp">
+            <td>{{bundle.bundleId}}</td>
+            <td>
+                <div ng-class="getIconClass(bundle)">
+                    <img ng-src="../admin/api/bundles/{{bundle.bundleId}}/icon" class="small-icon"/>
+                </div>
+            </td>
+            <td><a ng-href="#/admin/bundle/{{bundle.bundleId}}"
+                   ng-click="selectedTabState.selectedTab = 'bundle'">{{bundle.name | moduleName }}</a>
+                    <span ng-show="showDocs(bundle)" class="pull-right btn btn-xs btn-primary" ng-click="openInNewTab(bundle.docURL)">
+                        <i class="fa fa-fw fa-info-circle"></i>
+                    </span>
+            </td>
+            <td><span ng-show="bundleStable(bundle)">{{bundle.printVersion()}}</span></td>
+            <td><span ng-show="bundleStable(bundle)">{{msg('admin.bundle.state.' + bundle.state.toLowerCase())}}</span></td>
+            <td>
+                <div id="commandLinks" class="bundle-actions actions-list" ng-show="bundleStable(bundle)">
+                    <a ng-hide="bundle.isActive()" class="action action-start" ng-click="startBundle(bundle)">
+                        {{msg('admin.bundles.start')}}
+                    </a>
+                    <a ng-show="bundle.isActive()" class="action action-button action-stop" ng-click="stopBundleModal(bundle)">
+                        {{msg('admin.bundles.stop')}}
+                    </a>
+                    <a ng-show="bundle.isActive()" class="action action-button action-restart" ng-click="restartBundle(bundle)">
+                        {{msg('admin.bundles.restart')}}
+                    </a>
+                    <a ng-show="showSettings(bundle)" class="action action-button action-settings" ng-click="loadSettingPage(bundle)">
+                        {{msg('admin.settings')}}
+                    </a>
+                    <a class="action action-remove" role="button" ng-click="uninstallBundleModal(bundle)">
+                        {{msg('admin.bundles.uninstall')}}
+                    </a>
+                </div>
+                <div class="loader.wrapper" ng-hide="bundleStable(bundle)">
+                    <img class="small-icon" src="../admin/img/load.gif" alt="loading"/>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div ng-include="'../admin/partials/widgets/remove-bundle-modal.html'"></div>
+    <div ng-include="'../admin/partials/widgets/stop-bundle-modal.html'"></div>
+</div>
+

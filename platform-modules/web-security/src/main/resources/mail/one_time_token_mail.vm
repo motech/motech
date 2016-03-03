@@ -1,0 +1,16 @@
+#macro( msg $key )
+    $messages.getMessage($key,null,$locale)
+#end
+
+<html>
+<body>
+
+    <strong>#msg('email.hello') $user</strong>
+
+    <p>#msg('email.onetime_body')</p>
+
+    <p><a href="$link">$link</a><p>
+
+    <p>#msg('email.onetime_footer')</p>
+</body>
+</html>

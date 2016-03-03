@@ -1,0 +1,6 @@
+[
+    {
+        "roleName":"Task Admin",
+        "permissionNames": ["manageTasks"]
+    }
+]
