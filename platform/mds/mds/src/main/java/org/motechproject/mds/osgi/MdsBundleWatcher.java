@@ -14,7 +14,7 @@ import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.exception.MdsException;
 import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.loader.EditableLookupsLoader;
-import org.motechproject.mds.repository.SchemaChangeLockManager;
+import org.motechproject.mds.repository.internal.SchemaChangeLockManager;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MigrationService;

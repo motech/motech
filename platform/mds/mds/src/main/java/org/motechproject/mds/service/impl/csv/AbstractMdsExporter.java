@@ -13,7 +13,7 @@ import org.motechproject.mds.service.CsvExportCustomizer;
 import org.motechproject.mds.service.DefaultCsvExportCustomizer;
 import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.service.impl.csv.writer.TableWriter;
+import org.motechproject.mds.service.TableWriter;
 import org.motechproject.mds.util.PropertyUtil;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;

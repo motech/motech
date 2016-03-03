@@ -13,7 +13,7 @@ import org.motechproject.mds.config.ModuleSettings;
 import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.BundleFailureReport;
 import org.motechproject.mds.domain.BundleRestartStatus;
-import org.motechproject.mds.repository.AllBundleFailureReports;
+import org.motechproject.mds.repository.internal.AllBundleFailureReports;
 import org.motechproject.server.osgi.event.OsgiEventProxy;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;

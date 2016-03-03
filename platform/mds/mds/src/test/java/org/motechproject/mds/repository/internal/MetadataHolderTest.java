@@ -1,4 +1,4 @@
-package org.motechproject.mds.repository;
+package org.motechproject.mds.repository.internal;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

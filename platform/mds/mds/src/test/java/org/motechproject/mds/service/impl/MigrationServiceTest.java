@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.config.MdsConfig;
 import org.motechproject.mds.domain.MigrationMapping;
-import org.motechproject.mds.repository.AllMigrationMappings;
+import org.motechproject.mds.repository.internal.AllMigrationMappings;
 import org.motechproject.mds.service.MigrationService;
 import org.motechproject.mds.util.Constants;
 import org.osgi.framework.Bundle;

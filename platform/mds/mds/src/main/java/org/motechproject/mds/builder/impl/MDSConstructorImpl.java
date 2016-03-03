@@ -27,7 +27,7 @@ import org.motechproject.mds.helper.EntitySorter;
 import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.javassist.JavassistLoader;
 import org.motechproject.mds.javassist.MotechClassPool;
-import org.motechproject.mds.repository.MetadataHolder;
+import org.motechproject.mds.repository.internal.MetadataHolder;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.JavassistUtil;

@@ -2,7 +2,7 @@ package org.motechproject.mds.helper;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.repository.internal.AllEntities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -6,10 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.testutil.EntitySchemaBuilder;
+import org.motechproject.mds.repository.internal.AllEntities;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
