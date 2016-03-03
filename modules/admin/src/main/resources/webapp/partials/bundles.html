@@ -36,17 +36,9 @@
                         </select>
                     </div>
                     <div class="form-group offset-1">
-                    <div class="input-append btn-group" ng-show="moduleSource=='File'">
-
-                        <div class="form-control uneditable-input input-auto fileinput-exists">
-                            &nbsp;<i class="glyphicon glyphicon-file"></i>&nbsp;<span class="fileinput-preview"></span>
+                        <div class="input-append btn-group" ng-show="moduleSource=='File'">
+                            <div motech-file-upload></div>
                         </div>
-                        <input type="file" id="bundleFile" name="bundleFile" class="input-file"  style="display: none;"  />
-                    <span class="btn btn-default btn-file" filereader="checkFile"><span class="fileinput-new">{{msg('admin.selectFile')}}</span>
-                    <span class="fileinput-exists">{{msg('admin.bundles.change')}}</span><input type="file"/>
-                    </span><a href="#" class="btn btn-danger fileinput-exists"
-                              data-dismiss="fileinput">{{msg('admin.bundles.remove')}}</a>
-                    </div>
                     </div>
                     <div class="form-group offset-1" data-toggle="buttons-checkbox">
                         <button type="button" class="btn btn-primary start-on-upload" ng-click="startOnUpload()">

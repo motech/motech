@@ -1,14 +1,5 @@
 <div class="fileinput fileinput-new" data-provides="fileinput">
-    <div class="input-append btn-group">
-        <div class="form-control uneditable-input input-auto fileinput-exists" >
-            &nbsp;<span class="glyphicon glyphicon-file"></span>&nbsp;<span class="fileinput-preview"></span>
-        </div>
-        <span class="btn btn-default btn-file" ng-disabled="field.nonEditable">
-            <span class="fileinput-new">{{msg('mds.import.selectFile')}}</span>
-            <span class="fileinput-exists">{{msg('mds.import.changeFile')}}</span>
-            <input ng-disabled="field.nonEditable" ng-required="{{field.required}}" type="file" ng-model="field.value" fileread="field.value" mds-field-id="{{field.id}}" ng-disabled="shouldHideEdition(field)" class="input-file"/>
-        </span>
-        <a target="_self" href="#" class="btn btn-danger fileinput-exists" data-dismiss="fileinput">{{msg('mds.btn.cancel')}}</a>
+        <div motech-file-upload></div>
     </div>
     <button class="offset-2 btn btn-primary" ng-click="downloadBlob(field.name)" ng-show="selectedInstance != null">{{msg('mds.form.label.blob.download')}}</button>
     <button target="_self" ng-click="selectField(field.id)" href="#deleteBlobContentModal" ng-show="selectedInstance != null" data-toggle="modal" data-backdrop="static" class="btn btn-danger">

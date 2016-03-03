@@ -33,17 +33,7 @@
                     <div class="form-group fileinput fileinput-new" data-provides="fileinput">
                         <label class="control-label col-sm-3 col-md-2">{{msg('admin.button.selectFile')}}</label>
                         <div class="col-sm-9 col-md-10">
-                            <div class="form-control input-auto input-xlarge uneditable-input fileinput-exists">
-                                <span class="glyphicon glyphicon-file"></span>&nbsp;
-                                <span class="fileinput-preview"></span>
-                            </div>
-                            <span class="btn btn-default btn-file">
-                                <span class="fileinput-new">{{msg('admin.button.selectFile')}}</span>
-                                <span class="fileinput-exists">{{msg('admin.button.changeFile')}}</span>
-                                <input type="file" id="bundleSettings" name="file" class="input-file"/>
-                            </span>
-                            <a href="#" class="btn btn-danger fileinput-exists" data-dismiss="fileinput"><i class="fa fa-fw fa-trash-o"></i>&nbsp;{{msg('admin.button.remove')}}</a>
-                            <input type="hidden" value="{{rawFile}}" name="filename" />
+                            <div motech-file-upload></div>
                         </div>
                     </div>
                     <div class="form-group">

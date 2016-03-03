@@ -13,18 +13,7 @@
                         <div class="form-group fileinput fileinput-new" data-provides="fileinput">
                             <label class="control-label">{{msg('admin.settings.fileChosen')}}</label>
                             <div class="input-append btn-group">
-                                <div class="form-control input-auto uneditable-input input-large fileuinput-exists">
-                                    <span class="glyphicon glyphicon-file"></span>&nbsp;
-                                    <span class="fileinput-preview"></span>
-                                </div>
-                                <span class="btn btn-default btn-file">
-                                    <span class="fileinput-new">{{msg('admin.button.selectFile')}}</span>
-                                    <span class="fileinput-exists">{{msg('admin.button.changeFile')}}</span>
-                                    <input type="file" id="settingsFile" name="settingsFile" class="input-file"/>
-                                </span>
-                                <a href="#" class="btn btn-danger fileinput-exists" data-dismiss="fileinput">
-                                    <i class="fa fa-fw fa-trash-o"></i>&nbsp;{{msg('admin.button.remove')}}
-                                </a>
+                                <div motech-file-upload></div>
                             </div>
                             <span class="offset-1 btn btn-default" ng-click="uploadSettings()">{{msg('admin.submit')}}</span>
                         </div>
