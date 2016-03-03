@@ -255,14 +255,19 @@
                 unblockUI();
             }
 
+            function failure(response) {
+                motechAlert(response.data.key, "scheduler.error", response.data.params);
+                unblockUI();
+            }
+
             if (action === 'new') {
                 blockUI();
-                JobsService.createJob(job, success);
+                JobsService.createJob(job, success, failure);
             } else if (action === 'edit'){
                 motechConfirm("scheduler.confirm.updateJob", "scheduler.confirm", function(response) {
                     if (response) {
                         blockUI();
-                        JobsService.updateJob(job, success);
+                        JobsService.updateJob(job, success, failure);
                     }
                 });
             }
