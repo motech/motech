@@ -1,4 +1,4 @@
-package org.motechproject.tasks.contract.channel;
+package org.motechproject.tasks.contract.json;
 
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
@@ -7,7 +7,6 @@ import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.contract.TriggerEventRequest;
-import org.motechproject.tasks.json.ActionEventRequestDeserializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
