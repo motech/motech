@@ -35,6 +35,7 @@ public class RestDocumentationController {
      * @param request  the request sent do the server
      * @param serverPrefix  the server prefix for this server(deduced using javascript), the most common one is /motech-platform-server
      * @param response  the response to which the documentation will be written to
+     *
      * @throws IOException if there were problems writing the documentation to the response
      */
     @RequestMapping(value = "/rest-doc", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

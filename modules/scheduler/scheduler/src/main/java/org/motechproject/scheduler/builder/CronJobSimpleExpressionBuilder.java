@@ -28,6 +28,7 @@ public class CronJobSimpleExpressionBuilder {
      * Sets interval on which job should be fired.
      *
      * @param repeatIntervalInDays  the interval(in days) between job fires, 0 means everyday
+     *
      * @return the {@code CronJobSimpleExpressionBuilder} ready to build cron expressions
      */
     public CronJobSimpleExpressionBuilder withRepeatIntervalInDays(int repeatIntervalInDays) {
@@ -42,6 +43,7 @@ public class CronJobSimpleExpressionBuilder {
      */
     public String build() {
         String day = dayOfMonth == 0 ? "*" : "*/" + dayOfMonth;
+
         return String.format(CRON_JOB_EXPR, startTime.getMinute(), startTime.getHour(), day);
     }
 }

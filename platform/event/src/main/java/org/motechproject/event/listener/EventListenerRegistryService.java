@@ -32,6 +32,7 @@ public interface EventListenerRegistryService {
      * If there are no listeners, an empty list is returned.
      *
      * @param subject the subject of the event
+     *
      * @return the matching event listeners
      */
     Set<EventListener> getListeners(String subject);
@@ -40,6 +41,7 @@ public interface EventListenerRegistryService {
      * Returns {@code true} if the event with the subject has any listeners.
      *
      * @param subject the subject of the event
+     *
      * @return {@code true} if the subject has any listeners; {@code false} otherwise
      */
     boolean hasListener(String subject);
@@ -48,6 +50,7 @@ public interface EventListenerRegistryService {
      * Returns the number of event listeners for the event with the subject.
      *
      * @param subject the subject of the event
+     *
      * @return the number of matching listeners
      */
     int getListenerCount(String subject);

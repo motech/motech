@@ -8,8 +8,6 @@ import java.lang.reflect.Method;
 /**
  * Represents a <code>MotechListener</code> proxy, providing access to the listener's
  * name, bean, method. Constructed for listeners defined using annotations.
- *
- * @author yyonkov
  */
 public abstract class MotechListenerAbstractProxy implements EventListener {
 

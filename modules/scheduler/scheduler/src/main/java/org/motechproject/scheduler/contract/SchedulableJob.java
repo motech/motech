@@ -83,6 +83,7 @@ public abstract class SchedulableJob implements Serializable {
      *  +-----+-----+-----+
      *  start    ^current time
      *  </pre>
+     *
      * @param ignorePastFiresAtStart
      */
     public void setIgnorePastFiresAtStart(boolean ignorePastFiresAtStart) {
