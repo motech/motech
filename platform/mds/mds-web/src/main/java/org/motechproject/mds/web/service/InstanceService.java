@@ -2,7 +2,7 @@ package org.motechproject.mds.web.service;
 
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
-import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
+import org.motechproject.mds.exception.entity.EntityInstancesNonEditableException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.web.domain.EntityRecord;
@@ -34,17 +34,17 @@ public interface InstanceService {
      *
      * @param entityRecord representation of the instance
      * @return Created instance
-     * @throws org.motechproject.mds.ex.object.ObjectNotFoundException if the id is specified, but
+     * @throws org.motechproject.mds.exception.object.ObjectNotFoundException if the id is specified, but
      *         the instance of such id does not exist
-     * @throws org.motechproject.mds.ex.object.ObjectUpdateException if any problem arises while saving the instance
+     * @throws org.motechproject.mds.exception.object.ObjectUpdateException if any problem arises while saving the instance
      */
     Object saveInstance(EntityRecord entityRecord);
 
     /**
      * Saves the given instance representation in MDS. If the representation has the id field assigned,
      * an update will be performed. Otherwise, it will attempt to create an instance. If the id is specified,
-     * but the instance of such id does not exist, it throws {@link org.motechproject.mds.ex.object.ObjectNotFoundException}.
-     * If any problem arises while saving the the instance, it throws {@link org.motechproject.mds.ex.object.ObjectUpdateException}.
+     * but the instance of such id does not exist, it throws {@link org.motechproject.mds.exception.object.ObjectNotFoundException}.
+     * If any problem arises while saving the the instance, it throws {@link org.motechproject.mds.exception.object.ObjectUpdateException}.
      * This method is capable of removing the blob field values.
      *
      * @param entityRecord representation of the instance
@@ -56,7 +56,7 @@ public interface InstanceService {
     /**
      * Returns all instances of the entity, that the current user has access to. Additionally, allows to
      * tamper the results, using query parameters (eg. to limit the number of retrieves records).
-     * Throws {@link org.motechproject.mds.ex.entity.EntityNotFoundException}, if entity of
+     * Throws {@link org.motechproject.mds.exception.entity.EntityNotFoundException}, if entity of
      * the given id does not exist.
      *
      * @param entityId id of the entity
@@ -67,7 +67,7 @@ public interface InstanceService {
 
     /**
      * Returns all instances of the entity, that the current user has access to.
-     * Throws {@link org.motechproject.mds.ex.entity.EntityNotFoundException}, if entity of
+     * Throws {@link org.motechproject.mds.exception.entity.EntityNotFoundException}, if entity of
      * the given id does not exist.
      *
      * @param entityId id of the entity
@@ -77,7 +77,7 @@ public interface InstanceService {
 
     /**
      * Retrieves all fields of the entity. This will not include draft fields, created, modified
-     * or deleted by the current user. Throws {@link org.motechproject.mds.ex.entity.EntityNotFoundException},
+     * or deleted by the current user. Throws {@link org.motechproject.mds.exception.entity.EntityNotFoundException},
      * if entity of the given id does not exist.
      *
      * @param entityId id of the entity
@@ -88,10 +88,10 @@ public interface InstanceService {
     /**
      * Retrieves and executes a lookup of the given name, from the given entity. Additionally, allows to
      * tamper the results, using query parameters (eg. to limit the number of retrieves records). It will throw
-     * {@link org.motechproject.mds.ex.lookup.LookupExecutionException} in case the provided lookup
+     * {@link org.motechproject.mds.exception.lookup.LookupExecutionException} in case the provided lookup
      * parameters do not match the lookup definition or if the execution could not be performed for any
-     * other reason. It will also throw {@link org.motechproject.mds.ex.entity.EntityNotFoundException} and
-     * {@link org.motechproject.mds.ex.lookup.LookupNotFoundException} if entity of the given id or lookup
+     * other reason. It will also throw {@link org.motechproject.mds.exception.entity.EntityNotFoundException} and
+     * {@link org.motechproject.mds.exception.lookup.LookupNotFoundException} if entity of the given id or lookup
      * of the given name does not exist.
      *
      * @param entityId id of the entity
@@ -106,7 +106,7 @@ public interface InstanceService {
     /**
      * Retrieves all instances of the given entity, that match criteria, specified in the provided
      * filters. Additionally, allows to tamper the results, using query parameters
-     * (eg. to limit the number of retrieves records). It will throw {@link org.motechproject.mds.ex.entity.EntityNotFoundException}
+     * (eg. to limit the number of retrieves records). It will throw {@link org.motechproject.mds.exception.entity.EntityNotFoundException}
      * when entity of given id does not exist.
      *
      * @param entityId id of the entity
@@ -118,7 +118,7 @@ public interface InstanceService {
 
     /**
      * Returns field definitions of the given entity, assigned to the given instance.
-     * Throws {@link org.motechproject.mds.ex.entity.EntityNotFoundException} if entity of the
+     * Throws {@link org.motechproject.mds.exception.entity.EntityNotFoundException} if entity of the
      * given id does not exist.
      *
      * @param entityId id of the entity
@@ -170,7 +170,7 @@ public interface InstanceService {
 
     /**
      * Retrieves an instance of the given entity, by its id. If there's no instance of such id,
-     * for the given entity, it throws {@link org.motechproject.mds.ex.object.ObjectNotFoundException}.
+     * for the given entity, it throws {@link org.motechproject.mds.exception.object.ObjectNotFoundException}.
      *
      * @param entityId id of the entity
      * @param instanceId id of the instance
@@ -181,7 +181,7 @@ public interface InstanceService {
     /**
      * Retrieves MOTECH Data service for the class, related with the field of the given id from an entity.
      * The service is then queried for the instance of the given id. If such instance is not found, it throws
-     * {@link org.motechproject.mds.ex.object.ObjectNotFoundException}. If such instance exists, its representation
+     * {@link org.motechproject.mds.exception.object.ObjectNotFoundException}. If such instance exists, its representation
      * is prepared and returned.
      *
      * @param entityId id of the entity
@@ -193,8 +193,8 @@ public interface InstanceService {
 
     /**
      * Retrieves total count of the instances, that match given lookup criteria. Throws
-     * {@link org.motechproject.mds.ex.lookup.LookupNotFoundException} if lookup of the given name
-     * does not exist for the given entity. It will also throw {@link org.motechproject.mds.ex.lookup.LookupExecutionException}
+     * {@link org.motechproject.mds.exception.lookup.LookupNotFoundException} if lookup of the given name
+     * does not exist for the given entity. It will also throw {@link org.motechproject.mds.exception.lookup.LookupExecutionException}
      * if lookup parameters do not match their definition.
      *
      * @param entityId id of the entity
@@ -234,7 +234,7 @@ public interface InstanceService {
 
     /**
      * Retrieves a historical revision of an instance and attempts to revert specified instance
-     * to its previous state. It will throw {@link org.motechproject.mds.ex.entity.EntitySchemaMismatchException} if
+     * to its previous state. It will throw {@link org.motechproject.mds.exception.entity.EntitySchemaMismatchException} if
      * two instances are from two different schemas (meaning, that the entity has been changed at least once).
      *
      * @param entityId id of the entity
@@ -273,7 +273,7 @@ public interface InstanceService {
     EntityRecord getSingleTrashRecord(Long entityId, Long instanceId);
 
     /**
-     * Retrieves value of a single field of an instance. Throws {@link org.motechproject.mds.ex.entity.EntityNotFoundException}
+     * Retrieves value of a single field of an instance. Throws {@link org.motechproject.mds.exception.entity.EntityNotFoundException}
      * if entity of given id does not exist.
      *
      * @param entityId id of the entity

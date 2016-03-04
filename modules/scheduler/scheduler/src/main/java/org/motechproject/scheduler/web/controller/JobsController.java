@@ -5,6 +5,7 @@ import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
 import org.motechproject.scheduler.contract.JobsSearchSettings;
 import org.motechproject.scheduler.contract.SchedulableJob;
+import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.scheduler.service.MotechSchedulerDatabaseService;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.web.domain.JobsRecords;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -145,5 +147,41 @@ public class JobsController {
         return motechSchedulerService.getJob(jobInfo);
     }
 
+    @ExceptionHandler(MotechSchedulerException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public Message handleException(MotechSchedulerException e) {
+        return new Message(e);
+    }
 
+    /**
+     * Responsible for passing the error message key along with its parameters to be displayed on the UI.
+     */
+    public class Message {
+
+        private String key;
+
+        private List<String> params;
+
+        public Message(MotechSchedulerException e) {
+            key = e.getMessageKey();
+            params = e.getParams();
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public List<String> getParams() {
+            return params;
+        }
+
+        public void setParams(List<String> params) {
+            this.params = params;
+        }
+    }
 }

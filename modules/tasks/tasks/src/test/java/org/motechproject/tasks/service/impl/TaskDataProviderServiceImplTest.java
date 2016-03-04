@@ -34,8 +34,8 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.tasks.events.constants.EventDataKeys.DATA_PROVIDER_NAME;
-import static org.motechproject.tasks.events.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
+import static org.motechproject.tasks.constants.EventDataKeys.DATA_PROVIDER_NAME;
+import static org.motechproject.tasks.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
 
 public class TaskDataProviderServiceImplTest {
     private static final Long PROVIDER_ID = 12345L;

@@ -9,7 +9,7 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.entityinfo.EntityInfo;
-import org.motechproject.mds.ex.csv.CsvImportException;
+import org.motechproject.mds.exception.csv.CsvImportException;
 import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvExportCustomizer;

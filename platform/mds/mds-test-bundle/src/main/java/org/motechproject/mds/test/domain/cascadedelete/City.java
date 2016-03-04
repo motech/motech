@@ -12,6 +12,9 @@ public class City extends MdsVersionedEntity {
 
     @Field
     private Country country;
+    
+    @Field
+    private Float population;
 
     public City(String name) {
         this.name = name;
@@ -32,7 +35,15 @@ public class City extends MdsVersionedEntity {
     public void setCountry(Country country) {
         this.country = country;
     }
-
+    
+    public Float getPopulation() {
+        return population;
+    }
+    
+    public void setPopulation(Float population) {
+        this.population = population;
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) {

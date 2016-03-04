@@ -22,7 +22,7 @@ public interface TypeService {
 
     /**
      * Retrieves MDS type, based on the class that handles that type in the backend.
-     * Throws {@link org.motechproject.mds.ex.type.TypeNotFoundException} when the given class
+     * Throws {@link org.motechproject.mds.exception.type.TypeNotFoundException} when the given class
      * does not handle any MDS type.
      *
      * @param clazz handler class

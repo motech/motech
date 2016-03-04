@@ -37,6 +37,16 @@ public class FieldValidationDto {
     );
 
     /**
+     * Constant <code>FLOAT</code> contains validation criteria for float type.
+     */
+    public static final FieldValidationDto FLOAT = new FieldValidationDto(
+            new ValidationCriterionDto("mds.field.validation.minValue", TypeDto.FLOAT),
+            new ValidationCriterionDto("mds.field.validation.maxValue", TypeDto.FLOAT),
+            new ValidationCriterionDto("mds.field.validation.mustBeInSet", TypeDto.STRING),
+            new ValidationCriterionDto("mds.field.validation.cannotBeInSet", TypeDto.STRING)
+    );
+
+    /**
      * Constant <code>STRING</code> contains validation criteria for string type.
      */
     public static final FieldValidationDto STRING = new FieldValidationDto(

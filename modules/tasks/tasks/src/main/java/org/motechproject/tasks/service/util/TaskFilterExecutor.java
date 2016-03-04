@@ -9,7 +9,7 @@ import org.motechproject.tasks.domain.KeyInformation;
 import org.motechproject.tasks.domain.LogicalOperator;
 import org.motechproject.tasks.domain.OperatorType;
 import org.motechproject.tasks.domain.ParameterType;
-import org.motechproject.tasks.events.constants.TaskFailureCause;
+import org.motechproject.tasks.constants.TaskFailureCause;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
