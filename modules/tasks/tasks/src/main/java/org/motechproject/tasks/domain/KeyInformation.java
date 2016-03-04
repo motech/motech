@@ -1,6 +1,7 @@
 package org.motechproject.tasks.domain;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.motechproject.tasks.service.impl.TaskTriggerHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,7 +76,7 @@ public final class KeyInformation {
      * </ul>
      * <p/>
      * Argument can also contain list of manipulation which should be executed on field before it
-     * will be used by {@link org.motechproject.tasks.service.TaskTriggerHandler} class.
+     * will be used by {@link TaskTriggerHandler} class.
      * Manipulations should be connected together by the <b>?</b> character.
      * <p/>
      * Example of input argument:

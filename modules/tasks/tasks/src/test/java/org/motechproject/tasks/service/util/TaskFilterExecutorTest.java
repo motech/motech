@@ -1,4 +1,4 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.service.util;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -15,6 +15,7 @@ import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskBuilder;
 import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.exception.TaskHandlerException;
+import org.motechproject.tasks.service.TaskActivityService;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,6 +1,7 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.service.util;
 
 import org.junit.Test;
+import org.motechproject.tasks.service.util.DataSourceObject;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

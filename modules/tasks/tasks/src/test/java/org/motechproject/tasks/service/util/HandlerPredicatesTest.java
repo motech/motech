@@ -1,4 +1,4 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.service.util;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Test;
@@ -6,6 +6,7 @@ import org.motechproject.event.listener.annotations.MotechListenerAbstractProxy;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.event.listener.annotations.MotechListenerNamedParametersProxy;
 import org.motechproject.tasks.domain.Task;
+import org.motechproject.tasks.service.util.HandlerPredicates;
 
 import java.util.ArrayList;
 import java.util.Arrays;
