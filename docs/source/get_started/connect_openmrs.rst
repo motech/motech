@@ -52,27 +52,44 @@ Configuring the OpenMRS-19 module
 
 The MOTECH OpenMRS-19 module exposes a configuration file called openmrs.properties. This file is registered with the configuration
 system. Based on what configuration mode the system is configured with, you can change the settings either by using the Admin UI(UI Mode) or
-the file in the config file location(File Mode). The default username and password match the defaults from OpenMRS(make sure
-that you change these in production environment).
+the file in the config file location(File Mode). You can modify this file through the UI by clicking Admin > Manage Modules > Click the gear icon on the right of the OpenMRS module.
+
+.. image:: img/openmrs_modules_click_gear_screenshot.png
+
+The default username and password match the defaults from OpenMRS(make sure that you change these in production environment).
 
 The table below describes the properties declared in the file and their default values, that will work with a default localhost
 OpenMRS installation. The openmrs.motechIdName setting needs to match an identifier type from OpenMRS. More information on creating
 the identifier type in OpenMRS can be found in the :std:ref:`next section<create_id_type>`
 
-+---------------------+----------------------------------------------------------------------+--------------------------------+
-|Key                  |Description                                                           |Default Value                   |
-+=====================+======================================================================+================================+
-|openmrs.url          |The top level url at which the OpenMRS Instance is accessible.        |`http://localhost:8080/openmrs` |
-|                     |Required since MOTECH integrates with OpenMRS through REST API calls. |                                |
-+---------------------+----------------------------------------------------------------------+--------------------------------+
-|openmrs.user         |The OpenMRS username that MOTECH will use to identify with OpenMRS.   |admin                           |
-+---------------------+----------------------------------------------------------------------+--------------------------------+
-|openmrs.password     |The OpenMRS user password that MOTECH will use to identify with       |Admin123                        |
-|                     |OpenMRS.                                                              |                                |
-+---------------------+----------------------------------------------------------------------+--------------------------------+
-|openmrs.motechIdName |The name of the OpenMRS identifier used by MOTECH. This must match    |MOTECH Id                       |
-|                     |the identifier that you will create in OpenMRS.                       |                                |
-+---------------------+----------------------------------------------------------------------+--------------------------------+
++-----------------------+----------------------------------------------------------------------+--------------------------------+
+|Key                    |Description                                                           |Default Value                   |
++=======================+======================================================================+================================+
+|openmrs.url            |The top level url at which the OpenMRS Instance is accessible.        |`http://localhost:8080/openmrs` |
+|                       |Required since MOTECH integrates with OpenMRS through REST API calls. |                                |
+|                       |Using HTTPS in the openmrs.url requires a valid SSL certificate for   |                                |
+|                       |connection. Otherwise, Java will return an error. For example, running|                                |
+|                       |the Bahmni demo with Vagrant automatically redirects all traffic to   |                                |
+|                       |https regardless of the security certificate                          |                                |
+|                       |(https://192.168.33.10/openmrs). You can get around this by pointing  |                                |
+|                       |to port 8080 as is done in the default value                          |                                |
+|                       |(http://192.168.33.10:8080/openmrs).                                  |                                |
++-----------------------+----------------------------------------------------------------------+--------------------------------+
+|openmrs.user           |The OpenMRS username that MOTECH will use to identify with OpenMRS.   |admin                           |
++-----------------------+----------------------------------------------------------------------+--------------------------------+
+|openmrs.password       |The OpenMRS user password that MOTECH will use to identify with       |Admin123                        |
+|                       |OpenMRS.                                                              |                                |
++-----------------------+----------------------------------------------------------------------+--------------------------------+
+|openmrs.motechIdName   |The name of the OpenMRS identifier used by MOTECH. This must match    |MOTECH Id                       |
+|                       |the identifier that you will create in OpenMRS. The default is MOTECH |                                |
+|                       |Id, but it could easily be changed to anything. For example, one could|                                |
+|                       |choose caseID if storing CommCare caseIDs in OpenMRS.                 |                                |
++-----------------------+----------------------------------------------------------------------+--------------------------------+
+|openmrs.identifierTypes|By default, we support the one identifier type specified in           |                                |
+|                       |openmrs.motechIdName property. Define additional identifier types here|                                |
+|                       |if you need to create or query an OpenMRS patient with multiple,      |                                |
+|                       |custom identifiers via MOTECH (comma separated, if more than one).    |                                |
++-----------------------+----------------------------------------------------------------------+--------------------------------+
 
 .. note::
 

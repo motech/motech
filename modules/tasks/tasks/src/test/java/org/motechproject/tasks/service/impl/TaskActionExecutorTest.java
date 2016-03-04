@@ -1,4 +1,4 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.service.impl;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -6,14 +6,17 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.tasks.domain.ActionEventBuilder;
 import org.motechproject.tasks.domain.ActionEvent;
+import org.motechproject.tasks.domain.ActionEventBuilder;
 import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskBuilder;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 import org.motechproject.tasks.exception.TaskHandlerException;
+import org.motechproject.tasks.service.TaskActivityService;
+import org.motechproject.tasks.service.util.TaskContext;
+import org.motechproject.tasks.service.TaskService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 

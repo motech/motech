@@ -1,4 +1,4 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.service.impl;
 
 import org.motechproject.commons.api.DataProvider;
 import org.motechproject.tasks.domain.DataSource;
@@ -6,6 +6,9 @@ import org.motechproject.tasks.domain.FilterSet;
 import org.motechproject.tasks.domain.Lookup;
 import org.motechproject.tasks.domain.TaskConfigStep;
 import org.motechproject.tasks.exception.TaskHandlerException;
+import org.motechproject.tasks.service.util.KeyEvaluator;
+import org.motechproject.tasks.service.util.TaskContext;
+import org.motechproject.tasks.service.util.TaskFilterExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

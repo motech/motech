@@ -1,4 +1,4 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.service.impl;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -16,6 +16,10 @@ import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.exception.TaskHandlerException;
+import org.motechproject.tasks.service.TaskActivityService;
+import org.motechproject.tasks.service.util.TaskContext;
+import org.motechproject.tasks.service.TaskService;
+import org.motechproject.tasks.service.TriggerHandler;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.motechproject.tasks.service.util.HandlerPredicates.withServiceName;
 import static org.motechproject.tasks.constants.EventDataKeys.HANDLER_ERROR_PARAM;
 import static org.motechproject.tasks.constants.EventDataKeys.JOB_SUBJECT;
 import static org.motechproject.tasks.constants.EventDataKeys.REPEAT_COUNT;
@@ -48,7 +53,6 @@ import static org.motechproject.tasks.constants.EventSubjects.UNSCHEDULE_REPEATI
 import static org.motechproject.tasks.constants.EventSubjects.createHandlerFailureSubject;
 import static org.motechproject.tasks.constants.EventSubjects.createHandlerSuccessSubject;
 import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
-import static org.motechproject.tasks.service.HandlerPredicates.withServiceName;
 
 /**
  * The <code>TaskTriggerHandler</code> receives events and executes tasks for which the trigger
