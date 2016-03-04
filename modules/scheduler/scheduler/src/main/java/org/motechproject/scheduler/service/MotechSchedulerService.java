@@ -1,7 +1,6 @@
 package org.motechproject.scheduler.service;
 
 import org.joda.time.DateTime;
-import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.contract.JobBasicInfo;
