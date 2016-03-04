@@ -463,3 +463,11 @@
 .mds .form-inline .form-group label {
     display: inline-block;
 }
+
+.mds-import {
+    display:inline-block;
+    width:380px;
+    white-space: nowrap;
+    overflow:hidden !important;
+    text-overflow: ellipsis;
+}
