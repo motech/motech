@@ -12,6 +12,7 @@ import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
+import org.motechproject.scheduler.exception.MotechSchedulerException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,8 +87,8 @@ public class SchedulableJobValidatorTest {
         SchedulableJobValidator.validateRepeatingSchedulableJob(job);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentExceptionIfRepeatIntervalIsZero() {
+    @Test(expected = MotechSchedulerException.class)
+    public void shouldThrowMotechSchedulerExceptionIfRepeatIntervalIsZero() {
         RepeatingSchedulableJob job = new RepeatingSchedulableJob(motechEvent, 10, 0, DateTime.now().plusHours(1),
                 null, true, true, false);
 
@@ -182,8 +183,8 @@ public class SchedulableJobValidatorTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentExceptionIfStartDateIsInThePast() {
+    @Test(expected = MotechSchedulerException.class)
+    public void shouldThrowMotechSchedulerExceptionIfStartDateIsInThePast() {
         try {
             fakeNow(newDateTime(2020, 7, 15, 10, 0, 0));
             RunOnceSchedulableJob job = new RunOnceSchedulableJob(motechEvent, DateUtil.now().minusHours(1), false);

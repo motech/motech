@@ -329,7 +329,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = MotechSchedulerException.class)
     public void shouldNotScheduleRunOnceJobInThePast() throws SchedulerException {
         try {
             fakeNow(newDateTime(2020, 7, 15, 10, 0, 0));

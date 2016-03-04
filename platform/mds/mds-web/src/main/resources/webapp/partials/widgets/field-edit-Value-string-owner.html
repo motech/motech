@@ -4,4 +4,4 @@
         <option value="">{{msg('mds.form.label.noSelected')}}</option>
     </select>
 </span>
-<input ng-show="{{shouldHideEdition(field)}}" class="form-control input-large-fluid" type="text" mds-field-id="{{field.id}}" ng-model="field.value" ng-readonly="shouldHideEdition(field)">
+<input ng-show="{{shouldHideEdition(field)}}" class="form-control input-large-fluid" type="text" mds-field-id="{{field.id}}" value="{{field.value ? field.value : username}}" ng-readonly="shouldHideEdition(field)">

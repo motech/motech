@@ -164,11 +164,11 @@ public class InstanceServiceTest {
     }
 
     @Test
-    public void shouldNotAutoPopulateOwnerAndCreatorForHiddenFields() {
+    public void shouldNotAutoPopulateOwnerAndCreatorForNonEditableFields() {
         FieldDto ownerField = FieldTestHelper.fieldDto(1L, "owner", String.class.getName(), "String field", null);
-        ownerField.setNonDisplayable(true);
+        ownerField.setNonEditable(true);
         FieldDto creatorField = FieldTestHelper.fieldDto(1L, "creator", String.class.getName(), "String field", null);
-        creatorField.setNonDisplayable(true);
+        creatorField.setNonEditable(true);
 
         when(entityService.getEntityFieldsForUI(ENTITY_ID)).thenReturn(asList(ownerField, creatorField));
         mockEntity();
