@@ -143,11 +143,7 @@ public class MdsConfig {
 
     public File getFlywayMigrationDirectory() {
         String flywayLocation = getFlywayLocations()[0];
-        String motechDir = new File(System.getProperty("user.home"), ".motech").getAbsolutePath();
-        if (coreConfigurationService != null && coreConfigurationService.loadBootstrapConfig() != null) {
-            motechDir = coreConfigurationService.loadBootstrapConfig().getMotechDir();
-        }
-        File migrationDirectory = new File(motechDir, Constants.EntitiesMigration.MIGRATION_DIRECTORY);
+        File migrationDirectory = new File(coreConfigurationService.loadBootstrapConfig().getMotechDir(), Constants.EntitiesMigration.MIGRATION_DIRECTORY);
         migrationDirectory = new File(migrationDirectory, flywayLocation.substring(flywayLocation.lastIndexOf('/') + 1));
         return migrationDirectory;
     }
