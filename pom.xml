@@ -1085,41 +1085,41 @@
     </dependencyManagement>
 
     <modules>
-        <module>platform/server</module>
-        <module>modules/tasks/tasks</module>
-        <module>platform/commons-api</module>
-        <module>platform/commons-sql</module>
-        <module>platform/commons-date</module>
-        <module>platform/event</module>
-        <module>platform/osgi-extender-fragment</module>
-        <module>platform/osgi-web-util</module>
-        <module>platform/server-api</module>
-        <module>platform/server-bundle</module>
-        <module>platform/config-core</module>
-        <module>platform/server-config</module>
-        <module>platform/web-security</module>
-        <module>platform/email</module>
-        <module>platform/mds/mds</module>
-        <module>platform/mds/mds-migration</module>
-        <module>platform/mds/mds-web</module>
-        <module>modules/admin</module>
-        <module>modules/scheduler/scheduler</module>
-        <module>modules/scheduler/scheduler-migration</module>
-        <module>platform/osgi-platform</module>
+        <module>platform-modules/server</module>
+        <module>platform-modules/tasks/tasks</module>
+        <module>platform-modules/commons-api</module>
+        <module>platform-modules/commons-sql</module>
+        <module>platform-modules/commons-date</module>
+        <module>platform-modules/event</module>
+        <module>platform-modules/osgi-extender-fragment</module>
+        <module>platform-modules/osgi-web-util</module>
+        <module>platform-modules/server-api</module>
+        <module>platform-modules/server-bundle</module>
+        <module>platform-modules/config-core</module>
+        <module>platform-modules/server-config</module>
+        <module>platform-modules/web-security</module>
+        <module>platform-modules/email</module>
+        <module>platform-modules/mds/mds</module>
+        <module>platform-modules/mds/mds-migration</module>
+        <module>platform-modules/mds/mds-web</module>
+        <module>platform-modules/admin</module>
+        <module>platform-modules/scheduler/scheduler</module>
+        <module>platform-modules/scheduler/scheduler-migration</module>
+        <module>platform-modules/osgi-platform</module>
 
         <!-- Testing modules -->
-        <module>modules/testing-utils/pax-it</module>
-        <module>modules/testing-utils/pax-it-container</module>
-        <module>modules/osgi-integration-tests/osgi-integration-tests</module>
-        <module>modules/tasks/tasks-test-utils</module>
-        <module>modules/tasks/tasks-test-bundle</module>
-        <module>modules/testing-utils/testing-utils</module>
-        <module>modules/testing-utils/tomcat-it</module>
-        <module>platform/mds/mds-test-bundle</module>
-        <module>platform/mds/mds-secondary-test-bundle</module>
-        <module>platform/mds/mds-performance-tests</module>
-        <module>platform/server-war-test</module>
-        <module>platform/ui-functional-tests</module>
+        <module>testing-utils/pax-it</module>
+        <module>testing-utils/pax-it-container</module>
+        <module>platform-modules/osgi-integration-tests/osgi-integration-tests</module>
+        <module>platform-modules/tasks/tasks-test-utils</module>
+        <module>platform-modules/tasks/tasks-test-bundle</module>
+        <module>testing-utils/testing-utils</module>
+        <module>testing-utils/tomcat-it</module>
+        <module>platform-modules/mds/mds-test-bundle</module>
+        <module>platform-modules/mds/mds-secondary-test-bundle</module>
+        <module>platform-modules/mds/mds-performance-tests</module>
+        <module>platform-modules/server-war-test</module>
+        <module>platform-modules/ui-functional-tests</module>
 
         <!-- Archetypes modules -->
         <module>utils/archetypes/minimal-bundle-archetype</module>

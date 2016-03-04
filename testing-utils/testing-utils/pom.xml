@@ -4,7 +4,7 @@
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../../../</relativePath>
+        <relativePath>../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>motech-testing-utils</artifactId>
@@ -12,7 +12,7 @@
     <packaging>bundle</packaging>
 
     <properties>
-        <modules.root.dir>${basedir}/../../..</modules.root.dir>
+        <modules.root.dir>${basedir}/../..</modules.root.dir>
     </properties>
 
     <dependencies>
