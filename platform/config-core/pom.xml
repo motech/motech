@@ -64,6 +64,10 @@
             <artifactId>kahadb</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-expression</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>com.springsource.javax.transaction</artifactId>
         </dependency>
@@ -95,6 +99,7 @@
                             org.springframework.cache,
                             org.springframework.cache.concurrent,
                             org.springframework.cache.support,
+                            org.springframework.expression,
                             org.apache.commons.configuration,
                             *
                         </Import-Package>
