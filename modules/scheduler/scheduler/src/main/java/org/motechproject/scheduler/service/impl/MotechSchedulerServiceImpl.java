@@ -47,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -572,7 +573,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             cronSchedule = cronSchedule(job.getCronExpression());
         } catch (RuntimeException e) {
             throw new MotechSchedulerException(format("Can not schedule job %s; invalid Cron expression: %s",
-                    jobId, job.getCronExpression()), e);
+                    jobId, job.getCronExpression()),
+                    "scheduler.error.invalidCronExpression", Arrays.asList(job.getCronExpression()), e);
         }
 
         // TODO: should take readable names rather than integers
@@ -770,7 +772,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             scheduler.scheduleJob(jobDetail, triggerSet, update);
         } catch (SchedulerException e) {
             throw new MotechSchedulerException(String.format("Can not schedule the job:\n %s\n%s\n%s",
-                    jobDetail.toString(), trigger.toString(), e.getMessage()), e);
+                    jobDetail.toString(), trigger.toString(), e.getMessage()),
+                    "scheduler.error.schedulerError", Arrays.asList(e.getMessage()), e);
         }
     }
 

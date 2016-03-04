@@ -2,7 +2,7 @@ package org.motechproject.mds;
 
 import org.apache.commons.io.FileUtils;
 import org.motechproject.mds.config.MdsConfig;
-import org.motechproject.mds.ex.MdsInitializationException;
+import org.motechproject.mds.exception.MdsInitializationException;
 import org.motechproject.mds.osgi.EntitiesBundleMonitor;
 import org.motechproject.mds.osgi.MdsBundleWatcher;
 import org.motechproject.mds.osgi.MdsWeavingHook;

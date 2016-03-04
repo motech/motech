@@ -18,13 +18,13 @@
                                 <ul class="task-nav">
                                     <li class="task-element">
                                         <div trigger-popover>
-                                            <img ng-src="../tasks/api/channel/icon?moduleName={{item.task.trigger.moduleName}}" class="task-list-img" />
+                                            <img ng-src="../server/module/icon?bundleName={{item.task.trigger.moduleName}}&defaultIcon=iconTaskChannel.png" class="task-list-img" />
                                         </div>
                                     </li>
                                     <li class="task-element"><img src="../tasks/img/arrow.png" class="task-list-img-arrow"/></li>
                                     <li class="task-element">
                                         <div actions-popover>
-                                            <img ui-if="item.task.actions.length == 1" ng-src="../tasks/api/channel/icon?moduleName={{item.task.actions[0].moduleName}}" class="task-list-img"/>
+                                            <img ui-if="item.task.actions.length == 1" ng-src="../server/module/icon?bundleName={{item.task.actions[0].moduleName}}&defaultIcon=iconTaskChannel.png" class="task-list-img"/>
                                             <i ui-if="item.task.actions.length > 1" class="fa fa-fw fa-lg fa-bars task-list-img" style="vertical-align: middle;"></i>
                                         </div>
                                     </li>

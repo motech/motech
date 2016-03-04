@@ -8,12 +8,10 @@ import org.mockito.Mock;
 import org.motechproject.admin.internal.service.ModuleAdminService;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.web.controller.BundleAdminController;
-import org.motechproject.server.api.BundleIcon;
-import org.motechproject.server.api.BundleInformation;
+import org.motechproject.admin.bundles.BundleInformation;
 import org.osgi.framework.BundleException;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -42,19 +40,10 @@ public class BundleAdminControllerTest {
     BundleInformation bundleInformation;
 
     @Mock
-    BundleIcon bundleIcon;
-
-    @Mock
     HttpServletResponse response;
 
     @Mock
-    ServletOutputStream outputStream;
-
-    @Mock
     MultipartFile bundleFile;
-
-    @Mock
-    BundleException bundleException;
 
     @Mock
     StatusMessageService statusMessageService;
@@ -141,26 +130,6 @@ public class BundleAdminControllerTest {
         controller.uninstallBundle(BUNDLE_ID);
 
         verify(moduleAdminService).uninstallBundle(BUNDLE_ID, false);
-    }
-
-    @Test
-    public void testGetBundleIcon() throws IOException {
-        final byte[] icon =  new byte[] { 1, 2, 3 };
-        final String mime = "image/gif";
-
-        when(moduleAdminService.getBundleIcon(BUNDLE_ID)).thenReturn(bundleIcon);
-        when(bundleIcon.getIcon()).thenReturn(icon);
-        when(bundleIcon.getMime()).thenReturn(mime);
-        when(bundleIcon.getContentLength()).thenReturn(icon.length);
-        when(response.getOutputStream()).thenReturn(outputStream);
-
-        controller.getBundleIcon(BUNDLE_ID, response);
-
-        verify(moduleAdminService).getBundleIcon(BUNDLE_ID);
-        verify(response).setContentType(mime);
-        verify(response).setContentLength(icon.length);
-        verify(outputStream).write(icon);
-        verify(response).setStatus(HttpServletResponse.SC_OK);
     }
 
     @Test

@@ -1,20 +1,20 @@
 package org.motechproject.tasks.web;
 
-import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.domain.mds.channel.Channel;
+import org.motechproject.tasks.domain.TaskTriggerInformation;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.domain.TriggersList;
 import org.motechproject.tasks.domain.TriggersLists;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TriggerEventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -48,24 +48,6 @@ public class ChannelController {
     @ResponseBody
     public List<Channel> getAllChannels() {
         return channelService.getAllChannels();
-    }
-
-    /**
-     * Returns the channels icon for the module with given name.
-     *
-     * @param moduleName  the name of the module
-     * @param response  the HTTP response
-     * @throws IOException  when there were problems while accessing the icon
-     */
-    @RequestMapping(value = "channel/icon", method = RequestMethod.GET)
-    public void getChannelIcon(@RequestParam String moduleName, HttpServletResponse response) throws IOException {
-        BundleIcon bundleIcon = channelService.getChannelIcon(moduleName);
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentLength(bundleIcon.getContentLength());
-        response.setContentType(bundleIcon.getMime());
-
-        response.getOutputStream().write(bundleIcon.getIcon());
     }
 
     /**
@@ -108,5 +90,17 @@ public class ChannelController {
         }
 
         return new TriggersLists(staticTriggers, dynamicTriggers);
+    }
+
+    /**
+     * Returns a trigger matching the given instance of the {@link TaskTriggerInformation} class.
+     *
+     * @param info  the information about the trigger
+     * @return the trigger matching given information
+     */
+    @RequestMapping(value = "channel/trigger", method = RequestMethod.POST)
+    @ResponseBody
+    public TriggerEvent getTrigger(@RequestBody TaskTriggerInformation info) {
+        return triggerEventService.getTrigger(info);
     }
 }

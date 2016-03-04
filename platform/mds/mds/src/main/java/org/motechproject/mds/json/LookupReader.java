@@ -4,8 +4,8 @@ import com.google.gson.stream.JsonReader;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
-import org.motechproject.mds.ex.lookup.LookupReadOnlyException;
-import org.motechproject.mds.ex.field.FieldNotFoundException;
+import org.motechproject.mds.exception.lookup.LookupReadOnlyException;
+import org.motechproject.mds.exception.field.FieldNotFoundException;
 
 import java.io.IOException;
 import java.util.ArrayList;

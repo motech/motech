@@ -1,6 +1,5 @@
 package org.motechproject.admin.internal.service.impl;
 
-import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,8 +15,7 @@ import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.osgi.web.service.UIFrameworkService;
-import org.motechproject.server.api.BundleIcon;
-import org.motechproject.server.api.BundleInformation;
+import org.motechproject.admin.bundles.BundleInformation;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -28,14 +26,11 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.List;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
@@ -46,7 +41,6 @@ import static org.motechproject.config.core.constants.ConfigurationConstants.FIL
 public class BundleAdminServiceTest {
 
     private static final long BUNDLE_ID = 1;
-    private static final String ICON_MIME = "image/png";
 
     @InjectMocks
     ModuleAdminService moduleAdminService = new ModuleAdminServiceImpl();
@@ -153,37 +147,6 @@ public class BundleAdminServiceTest {
         verify(bundleContext).getBundle(BUNDLE_ID);
         verify(bundle).stop();
         verify(bundle).start();
-    }
-
-    @Test
-    public void testDefaultBundleIcon() {
-        setupBundleRetrieval();
-
-        BundleIcon bundleIcon = moduleAdminService.getBundleIcon(BUNDLE_ID);
-        byte[] expectedIcon = readDefaultIcon();
-
-        assertArrayEquals(expectedIcon, bundleIcon.getIcon());
-        assertEquals(expectedIcon.length, bundleIcon.getContentLength());
-        assertEquals(ICON_MIME, bundleIcon.getMime());
-        verify(bundleContext).getBundle(BUNDLE_ID);
-        verify(bundle).getResource("icon.png");
-        verify(bundle).getResource("icon.jpg");
-        verify(bundle).getResource("icon.gif");
-    }
-
-    @Test
-    public void testBundleIcon() throws IOException {
-        setupBundleRetrieval();
-        byte[] expectedIcon = readDefaultIcon();
-        when(bundle.getResource("icon.gif")).thenReturn(getDefaultIconUrl());
-
-        BundleIcon bundleIcon = moduleAdminService.getBundleIcon(BUNDLE_ID);
-
-        assertArrayEquals(expectedIcon, bundleIcon.getIcon());
-        assertEquals(expectedIcon.length, bundleIcon.getContentLength());
-        assertEquals(ICON_MIME, bundleIcon.getMime());
-        verify(bundleContext).getBundle(BUNDLE_ID);
-        verify(bundle).getResource("icon.gif");
     }
 
     @Test
@@ -305,18 +268,5 @@ public class BundleAdminServiceTest {
             bundleInfoList.add(new BundleInformation(bundle));
         }
         return bundleInfoList;
-    }
-
-    private static byte[] readDefaultIcon() {
-        URL url = getDefaultIconUrl();
-        try (InputStream is = url.openStream()) {
-            return IOUtils.toByteArray(is);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static URL getDefaultIconUrl() {
-        return BundleAdminServiceTest.class.getResource("/bundle_icon.png");
     }
 }
