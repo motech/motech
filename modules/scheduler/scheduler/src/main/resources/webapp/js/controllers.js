@@ -209,6 +209,14 @@
             return date;
         }
 
+        $scope.getMinDate = function(jobType) {
+            if (jobType === "RUN_ONCE") {
+                return moment().format("YYYY-MM-DD HH:mm:ss");
+            }
+
+            return null;
+        };
+
         $scope.createOrUpdateJob = function(action) {
             var job = {};
 
