@@ -1549,6 +1549,9 @@
         /* ~~~~~ FIELD FUNCTIONS ~~~~~ */
 
         $scope.isUniqueEditable = function(field) {
+            if (field.type === undefined) {
+                return false;
+            }
             return !field.readOnly
                    && field.type.typeClass !== 'java.util.Map'
                    && field.type.typeClass !== "org.motechproject.mds.domain.OneToManyRelationship"
@@ -1721,6 +1724,9 @@
         */
         $scope.fieldUsedInReferencedLookup = function (field) {
             var i;
+            if (field.lookups === undefined) {
+                return false;
+            }
             for (i = 0; i < field.lookups.length; i += 1) {
                 if (field.lookups[i].referenced) {
                     return true;
@@ -2739,6 +2745,9 @@
         * @return {string} type information taken from parameter object.
         */
         $scope.getTypeSingleClassName = function (type) {
+            if (type === undefined) {
+                return "";
+            }
             return type.displayName.substring(type.displayName.lastIndexOf('.') + 1);
         };
 
