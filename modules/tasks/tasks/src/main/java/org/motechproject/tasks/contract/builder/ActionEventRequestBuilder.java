@@ -1,4 +1,7 @@
-package org.motechproject.tasks.contract;
+package org.motechproject.tasks.contract.builder;
+
+import org.motechproject.tasks.contract.ActionEventRequest;
+import org.motechproject.tasks.contract.ActionParameterRequest;
 
 import java.util.SortedSet;
 

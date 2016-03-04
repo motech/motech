@@ -1,4 +1,4 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.service.util;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hamcrest.Description;
@@ -16,6 +16,8 @@ import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskBuilder;
 import org.motechproject.tasks.constants.TaskFailureCause;
 import org.motechproject.tasks.exception.TaskHandlerException;
+import org.motechproject.tasks.service.TaskActivityService;
+import org.motechproject.tasks.service.util.TaskContext;
 
 import java.util.HashMap;
 import java.util.Map;
