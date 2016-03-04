@@ -6,8 +6,7 @@ import org.motechproject.admin.bundles.ExtendedBundleInformation;
 import org.motechproject.admin.internal.service.ModuleAdminService;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.server.api.BundleIcon;
-import org.motechproject.server.api.BundleInformation;
+import org.motechproject.admin.bundles.BundleInformation;
 import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +49,7 @@ public class BundleAdminController {
     private StatusMessageService statusMessageService;
 
     /**
-     * Retrieves a list of bundles in the system. Bundles are represented by {@link org.motechproject.server.api.BundleInformation} objects.
+     * Retrieves a list of bundles in the system. Bundles are represented by {@link BundleInformation} objects.
      * Only non-platform (don't start with motech-platform), non-3rd party (must import at least one org.motechproject.* package) are
      * returned. The framework and the admin module bundle are omitted.
      * @return a list of module bundles
@@ -64,7 +63,7 @@ public class BundleAdminController {
     /**
      * Retrieves information about the bundle with the given bundle ID.
      * This bundle does not have to be a MOTECH module.
-     * The information is returned in the form of {@link org.motechproject.server.api.BundleInformation}
+     * The information is returned in the form of {@link BundleInformation}
      * @param bundleId the id of the bundle for which the information will be retrieved
      * @return the information about the bundle
      */
@@ -176,24 +175,6 @@ public class BundleAdminController {
             }
             return moduleAdminService.installBundleFromRepository(moduleId, start);
         }
-    }
-
-    /**
-     * Returns the icon associated with the given bundle. Bundles that do not have their own icons will
-     * get a default icon.
-     * @param bundleId the id of the bundle for which the icon should be retrieved
-     * @param response the HttpServletResponse, used for writing the icon in its output
-     * @throws IOException if there were failures writing the icon to the output
-     */
-    @RequestMapping(value = "/bundles/{bundleId}/icon", method = RequestMethod.GET)
-    public void getBundleIcon(@PathVariable long bundleId, HttpServletResponse response) throws IOException {
-        BundleIcon bundleIcon = moduleAdminService.getBundleIcon(bundleId);
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentLength(bundleIcon.getContentLength());
-        response.setContentType(bundleIcon.getMime());
-
-        response.getOutputStream().write(bundleIcon.getIcon());
     }
 
     /**
