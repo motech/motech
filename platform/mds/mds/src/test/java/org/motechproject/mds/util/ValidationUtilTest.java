@@ -3,7 +3,7 @@ package org.motechproject.mds.util;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.motechproject.mds.ex.entity.ReservedKeywordException;
+import org.motechproject.mds.exception.entity.ReservedKeywordException;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,6 +1,6 @@
 package org.motechproject.mds.rest;
 
-import org.motechproject.mds.ex.rest.RestLookupExecutionForbiddenException;
+import org.motechproject.mds.exception.rest.RestLookupExecutionForbiddenException;
 import org.motechproject.mds.query.QueryParams;
 
 import java.io.InputStream;
@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Interface called by the REST controller REST operations.
  * Should be exposed as an OSGi service for each MDS Entity.
- * If rest is not supported, it throws a {@link org.motechproject.mds.ex.rest.RestNotSupportedException}.
+ * If rest is not supported, it throws a {@link org.motechproject.mds.exception.rest.RestNotSupportedException}.
  *
  * @param <T> the entity class.
  */
@@ -17,7 +17,7 @@ public interface MdsRestFacade<T> {
 
     /**
      * Retrieves entity instances for REST. This will only include fields that are visible for REST.
-     * It throws {@link org.motechproject.mds.ex.rest.RestOperationNotSupportedException} if the entity settings
+     * It throws {@link org.motechproject.mds.exception.rest.RestOperationNotSupportedException} if the entity settings
      * do not permit READ access via REST.
      *
      * @param queryParams query parameters to use retrieving instances
@@ -29,7 +29,7 @@ public interface MdsRestFacade<T> {
 
     /**
      * Retrieves a single instance for REST. This will only include fields that are visible for REST.
-     * It throws {@link org.motechproject.mds.ex.rest.RestOperationNotSupportedException} if the entity settings
+     * It throws {@link org.motechproject.mds.exception.rest.RestOperationNotSupportedException} if the entity settings
      * do not permit READ access via REST.
      *
      * @param id id of the instance
@@ -42,7 +42,7 @@ public interface MdsRestFacade<T> {
      * Creates an instance in MDS, reading it from the input stream. Only fields that are visible via REST
      * will be set in the created instance. It will fail, if data read from input stream contains fields
      * that do not exists or if field values do not match their type. It also throws
-     * {@link org.motechproject.mds.ex.rest.RestOperationNotSupportedException} if the entity settings
+     * {@link org.motechproject.mds.exception.rest.RestOperationNotSupportedException} if the entity settings
      * do not permit CREATE access via REST.
      *
      * @param instanceBody input stream, containing instance representation in JSON
@@ -54,7 +54,7 @@ public interface MdsRestFacade<T> {
      * Updates an instance in MDS, reading it from the input stream. Only fields that are visible via REST
      * will be set in the updated instance. It will fail, if data read from input stream contains fields
      * that do not exists or if field values do not match their type. It also throws
-     * {@link org.motechproject.mds.ex.rest.RestOperationNotSupportedException} if the entity settings
+     * {@link org.motechproject.mds.exception.rest.RestOperationNotSupportedException} if the entity settings
      * do not permit UPDATE access via REST.
      *
      * @param instanceBody input stream, containing instance representation in JSON
@@ -64,7 +64,7 @@ public interface MdsRestFacade<T> {
 
     /**
      * Deletes an instance by id. This works exactly like deleting an instance in any other way,
-     * but will throw {@link org.motechproject.mds.ex.rest.RestOperationNotSupportedException} if
+     * but will throw {@link org.motechproject.mds.exception.rest.RestOperationNotSupportedException} if
      * the entity settings do not permit DELETE access via REST.
      *
      * @param id id of the instance
@@ -75,7 +75,7 @@ public interface MdsRestFacade<T> {
      * Executes a lookup for REST, given the lookup name, lookup parameters and query parameters. The
      * result will only contain fields that are visible for REST. If requested lookup is not available
      * via REST, this will throw {@link RestLookupExecutionForbiddenException}. If
-     * a lookup of given name does not exist, it throws {@link org.motechproject.mds.ex.rest.RestLookupNotFoundException}.
+     * a lookup of given name does not exist, it throws {@link org.motechproject.mds.exception.rest.RestLookupNotFoundException}.
      *
      * @param lookupName name of the lookup
      * @param lookupMap map containing field names and their respective values

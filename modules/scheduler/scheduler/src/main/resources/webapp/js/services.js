@@ -59,8 +59,8 @@
             "get": function() {
                 return jobs;
             },
-            "createJob": function(job, success) {
-                source.createJob(job, success);
+            "createJob": function(job, success, failure) {
+                source.createJob(job, success, failure);
             },
             "updateJob": function(job, success) {
                 source.updateJob(job, success);

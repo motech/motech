@@ -7,7 +7,7 @@ import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.ex.entity.DataMigrationFailedException;
+import org.motechproject.mds.exception.entity.DataMigrationFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

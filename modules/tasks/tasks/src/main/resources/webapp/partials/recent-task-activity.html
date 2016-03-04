@@ -11,7 +11,7 @@
             <tr ng-repeat="activity in activities">
                 <td>
                     <div>
-                        <img ng-src="../tasks/api/channel/icon?moduleName={{activity.trigger.moduleName}}" class="recent-activity-img"/>
+                        <img ng-src="../server/module/icon?bundleName={{activity.trigger.moduleName}}&defaultIcon=iconTaskChannel.png" class="recent-activity-img"/>
                     </div>
                 </td>
                 <td>
@@ -21,7 +21,7 @@
                 </td>
                 <td>
                     <div>
-                        <img ng-src="../tasks/api/channel/icon?moduleName={{activity.action.moduleName}}" class="recent-activity-img"/>
+                        <img ng-src="../server/module/icon?bundleName={{activity.action.moduleName}}&defaultIcon=iconTaskChannel.png" class="recent-activity-img"/>
                     </div>
                 </td>
                 <td class="recent-info">

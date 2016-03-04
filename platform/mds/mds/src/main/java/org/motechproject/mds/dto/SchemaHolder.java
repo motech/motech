@@ -1,7 +1,7 @@
 package org.motechproject.mds.dto;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.mds.ex.entity.EntityNotFoundException;
+import org.motechproject.mds.exception.entity.EntityNotFoundException;
 import org.motechproject.mds.util.TypeHelper;
 
 import java.lang.annotation.Annotation;

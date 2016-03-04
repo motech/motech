@@ -66,10 +66,10 @@ import static java.lang.String.format;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
-import static org.motechproject.tasks.events.constants.EventDataKeys.DATA_PROVIDER_NAME;
-import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
-import static org.motechproject.tasks.events.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
+import static org.motechproject.tasks.constants.EventDataKeys.CHANNEL_MODULE_NAME;
+import static org.motechproject.tasks.constants.EventDataKeys.DATA_PROVIDER_NAME;
+import static org.motechproject.tasks.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
+import static org.motechproject.tasks.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
 import static org.motechproject.tasks.service.HandlerPredicates.tasksWithRegisteredChannel;
 
 /**

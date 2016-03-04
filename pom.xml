@@ -1093,7 +1093,6 @@
         <module>platform/event</module>
         <module>platform/osgi-extender-fragment</module>
         <module>platform/osgi-web-util</module>
-        <module>platform/server-api</module>
         <module>platform/server-bundle</module>
         <module>platform/config-core</module>
         <module>platform/server-config</module>
@@ -1115,6 +1114,7 @@
         <module>modules/tasks/tasks-test-bundle</module>
         <module>modules/testing-utils/testing-utils</module>
         <module>modules/testing-utils/tomcat-it</module>
+        <module>modules/testing-utils/upload-test-bundle</module>
         <module>platform/mds/mds-test-bundle</module>
         <module>platform/mds/mds-secondary-test-bundle</module>
         <module>platform/mds/mds-performance-tests</module>

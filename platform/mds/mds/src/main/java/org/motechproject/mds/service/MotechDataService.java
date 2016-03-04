@@ -122,7 +122,7 @@ public interface MotechDataService<T> {
      * Brings an instance back from trash.
      * @param trashId the id of the trash instance
      * @return the brought back instance
-     * @throws org.motechproject.mds.ex.TrashInstanceNotFoundException if the trash instance with the given id was not found
+     * @throws org.motechproject.mds.exception.TrashInstanceNotFoundException if the trash instance with the given id was not found
      */
     T revertFromTrash(Long trashId);
 
@@ -131,8 +131,8 @@ public interface MotechDataService<T> {
      * @param instanceId the id of the instance which will be reverted
      * @param historicalId the id of the historical revision that we are reverting to
      * @return the reverted instance
-     * @throws org.motechproject.mds.ex.HistoryInstanceNotFoundException if the historical instance with historicalId was not found
-     * @throws org.motechproject.mds.ex.object.ObjectNotFoundException if entity with instanceId was not found
+     * @throws org.motechproject.mds.exception.HistoryInstanceNotFoundException if the historical instance with historicalId was not found
+     * @throws org.motechproject.mds.exception.object.ObjectNotFoundException if entity with instanceId was not found
      */
     T revertToHistoricalRevision(Long instanceId, Long historicalId);
 
