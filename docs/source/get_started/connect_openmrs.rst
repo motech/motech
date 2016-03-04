@@ -54,7 +54,7 @@ The MOTECH OpenMRS-19 module exposes a configuration file called openmrs.propert
 system. Based on what configuration mode the system is configured with, you can change the settings either by using the Admin UI(UI Mode) or
 the file in the config file location(File Mode). You can modify this file through the UI by clicking Admin > Manage Modules > Click the gear icon on the right of the OpenMRS module.
 
-.. image:: img/openmrs_blank_config_screenshot.png
+.. image:: img/openmrs_modules_click_gear_screenshot.png
 
 The default username and password match the defaults from OpenMRS(make sure that you change these in production environment).
 
