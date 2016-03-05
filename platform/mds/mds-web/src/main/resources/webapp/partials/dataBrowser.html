@@ -16,7 +16,7 @@
                         <a ng-click="collapse(entities.$key)"><i class="fa fa-fw fa-lg fa-caret-down" ng-class="arrow(entities.$key)"> </i>{{ entities.$key }}</a>
                     </div>
                     <div class="entity-entry" ng-repeat="entity in sortInsensitive(entities) | findEntity:entities.$key:searchText:true" ng-if="visible(entities.$key)">
-                        <a class="stripped-link" ng-click="selectEntity(entities.$key, entity)">
+                        <a class="stripped-link" ng-click="selectEntity(entities.$key, entity)" id="entity_{{entity}}">
                             <div class="col-lg-9 col-md-8 col-sm-7">{{entity}}</div>
                         </a>
                         <div class="col-lg-3 col-sm-5 col-md-4" align="left">
@@ -24,7 +24,7 @@
                                 <a ng-if="hasAccessTo(SCHEMA_EDITOR)" ng-click="preselectEntity(entities.$key, entity)" type="button" class="btn btn-sm btn-info" href="#/mds/schemaEditor">
                                     <i class="fa fa-fw fa-cogs"></i> {{msg('mds.btn.editSchema')}}
                                 </a>
-                                <button ng-hide="entitiesByNonEditable[entity] || entitiesByReadOnlyAccess[entity]" ng-click="addInstance(entities.$key, entity)" type="button" class="btn btn-sm btn-success">
+                                <button ng-hide="entitiesByNonEditable[entity] || entitiesByReadOnlyAccess[entity]" ng-click="addInstance(entities.$key, entity)" type="button" class="btn btn-sm btn-success" id="addNewInstanceButton">
                                     <i class="fa fa-fw fa-plus"></i> {{msg('mds.btn.add')}}
                                 </button>
                             </div>

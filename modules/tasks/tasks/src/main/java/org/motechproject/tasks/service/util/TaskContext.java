@@ -1,10 +1,11 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.service.util;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.constants.TaskFailureCause;
 import org.motechproject.tasks.exception.TaskHandlerException;
+import org.motechproject.tasks.service.TaskActivityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

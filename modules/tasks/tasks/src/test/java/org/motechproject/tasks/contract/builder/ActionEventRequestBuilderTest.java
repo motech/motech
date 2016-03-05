@@ -1,11 +1,12 @@
-package org.motechproject.tasks.contract;
+package org.motechproject.tasks.contract.builder;
 
 import org.junit.Test;
+import org.motechproject.tasks.contract.ActionEventRequest;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class ActionEventRequestTest {
+public class ActionEventRequestBuilderTest {
 
     private static final String SERVICE_METHOD = "service.method";
     private static final String SERVICE_INTERFACE = "service.interface";

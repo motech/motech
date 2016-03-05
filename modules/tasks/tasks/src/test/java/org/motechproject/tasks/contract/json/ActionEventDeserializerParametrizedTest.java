@@ -1,4 +1,4 @@
-package org.motechproject.tasks.json;
+package org.motechproject.tasks.contract.json;
 
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
@@ -6,11 +6,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.motechproject.commons.api.json.MotechJsonReader;
-import org.motechproject.tasks.contract.TestActionEventRequestBuilder;
-import org.motechproject.tasks.contract.ActionParameterRequestBuilder;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
+import org.motechproject.tasks.contract.builder.ActionParameterRequestBuilder;
+import org.motechproject.tasks.contract.builder.TestActionEventRequestBuilder;
 
 import java.io.IOException;
 import java.io.StringWriter;
