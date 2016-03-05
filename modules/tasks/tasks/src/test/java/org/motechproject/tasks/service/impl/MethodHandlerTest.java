@@ -1,4 +1,4 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.service.impl;
 
 import org.joda.time.DateTime;
 import org.junit.Test;

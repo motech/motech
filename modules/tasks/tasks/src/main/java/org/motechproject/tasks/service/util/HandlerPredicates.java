@@ -1,4 +1,4 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.service.util;
 
 import org.apache.commons.collections.Predicate;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;

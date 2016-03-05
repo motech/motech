@@ -1,4 +1,4 @@
-package org.motechproject.tasks.json;
+package org.motechproject.tasks.contract.json;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -10,8 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.commons.api.json.MotechJsonReader;
-import org.motechproject.tasks.contract.TestActionEventRequestBuilder;
-import org.motechproject.tasks.contract.ActionParameterRequestBuilder;
+import org.motechproject.tasks.contract.builder.TestActionEventRequestBuilder;
+import org.motechproject.tasks.contract.builder.ActionParameterRequestBuilder;
 import org.motechproject.tasks.domain.MethodCallManner;
 import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.contract.ActionEventRequest;
@@ -32,12 +32,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.tasks.json.ActionEventRequestDeserializer.ACTION_PARAMETERS_FIELD;
-import static org.motechproject.tasks.json.ActionEventRequestDeserializer.DESCRIPTION_FIELD;
-import static org.motechproject.tasks.json.ActionEventRequestDeserializer.DISPLAY_NAME_FIELD;
-import static org.motechproject.tasks.json.ActionEventRequestDeserializer.SERVICE_INTERFACE_FIELD;
-import static org.motechproject.tasks.json.ActionEventRequestDeserializer.SERVICE_METHOD_FIELD;
-import static org.motechproject.tasks.json.ActionEventRequestDeserializer.SUBJECT_FIELD;
+import static org.motechproject.tasks.contract.json.ActionEventRequestDeserializer.ACTION_PARAMETERS_FIELD;
+import static org.motechproject.tasks.contract.json.ActionEventRequestDeserializer.DESCRIPTION_FIELD;
+import static org.motechproject.tasks.contract.json.ActionEventRequestDeserializer.DISPLAY_NAME_FIELD;
+import static org.motechproject.tasks.contract.json.ActionEventRequestDeserializer.SERVICE_INTERFACE_FIELD;
+import static org.motechproject.tasks.contract.json.ActionEventRequestDeserializer.SERVICE_METHOD_FIELD;
+import static org.motechproject.tasks.contract.json.ActionEventRequestDeserializer.SUBJECT_FIELD;
 
 public class ActionEventDeserializerTest {
     private static final String PARAMETER_TYPE_KEY = "type";
