@@ -1,5 +1,7 @@
 package org.motechproject.security.authentication;
 
+import org.motechproject.commons.api.json.MotechJsonMessage;
+import org.motechproject.osgi.web.extension.HttpRequestEnvironment;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
@@ -14,11 +16,19 @@ import java.io.IOException;
 public class MotechLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
 
     /**
-     * Performs the redirect (or forward) to the login form URL.
+     * Performs the redirect (or forward) to the login form URL,
+     * unless the request is an Ajax request, where a 401 response will be returned.
      */
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException {
-        super.commence(request, response, authException);
+        if(HttpRequestEnvironment.isAjax(request)){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setHeader("Content-Type", "application/json");
+            MotechJsonMessage message = new MotechJsonMessage("ERROR");
+            response.getWriter().write(message.toJson());
+        } else {
+            super.commence(request, response, authException);
+        }
     }
 }
