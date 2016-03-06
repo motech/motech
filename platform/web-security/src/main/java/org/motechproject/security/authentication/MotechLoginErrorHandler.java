@@ -13,7 +13,6 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
-import org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +28,7 @@ import java.util.Map;
  * It also redirect user to error login page.
  * @see org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
  */
-public class MotechLoginErrorHandler extends ExceptionMappingAuthenticationFailureHandler {
+public class MotechLoginErrorHandler extends MotechLoginErrorJSONHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechLoginErrorHandler.class);
 
