@@ -1,4 +1,4 @@
-package org.motechproject.tasks.util;
+package org.motechproject.tasks.service.osgi;
 
 import org.junit.Before;
 import org.junit.Test;

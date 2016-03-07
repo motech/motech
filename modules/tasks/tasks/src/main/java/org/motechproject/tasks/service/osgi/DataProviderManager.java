@@ -1,4 +1,4 @@
-package org.motechproject.tasks.util;
+package org.motechproject.tasks.service.osgi;
 
 import org.eclipse.gemini.blueprint.service.importer.OsgiServiceLifecycleListener;
 import org.motechproject.commons.api.DataProvider;
