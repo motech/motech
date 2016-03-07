@@ -117,7 +117,7 @@
                             <excludeDefaultDirectories>true</excludeDefaultDirectories>
                             <filesets>
                                 <fileset>
-                                    <directory>${user.home}/.motech/config/org.motechproject.motech-admin-bundle</directory>
+                                    <directory>${motech.dir}/config/org.motechproject.motech-admin-bundle</directory>
                                     <includes>
                                         <include>**/*</include>
                                     </includes>
@@ -206,7 +206,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                            <outputDirectory>${motech.dir}/bundles</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>target</directory>
@@ -224,7 +224,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${user.home}/.motech/rules</outputDirectory>
+                            <outputDirectory>${motech.dir}/rules</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>src/main/resources/rules</directory>
