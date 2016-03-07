@@ -302,12 +302,8 @@ public final class TypeHelper {
 
     private static Object parseStringToCollection(String str, Class<?> toClass, Class<?> generic) {
         Collection collection;
-        if (List.class.isAssignableFrom(toClass)) {
-            collection = new ArrayList();
-        } else if (Set.class.isAssignableFrom(toClass)) {
-            collection = new HashSet();
-        } else if (Collection.class.isAssignableFrom(toClass)) {
-            collection = new ArrayList();
+        if (Collection.class.isAssignableFrom(toClass)) {
+            collection = suggestAndCreateCollectionImplementation((Class<Collection>) toClass);
         } else {
             return str;
         }
