@@ -692,45 +692,19 @@
     widgetModule.directive('datePicker', function() {
         return {
             restrict: 'A',
-            scope: true,
+            scope: {
+                min: "=",
+                max: "="
+            },
             link: function(scope, element, attrs) {
-                var elem = angular.element(element),
-                   otherDateTextBox = undefined,
-                   curId = attrs.id,
-                   curIdLength = curId.length,
-                   otherId = '',
-                   isStartDate = false;
-
-                elem.datetimepicker({
+                element.datetimepicker({
                     dateFormat: "yy-mm-dd",
                     changeMonth: true,
                     changeYear: true,
                     timeFormat: "HH:mm:ss",
-                    onSelect: function (selectedDateTime){
-
-                        if(otherDateTextBox === undefined || otherDateTextBox.size() === 0) {
-                            if(curId.substr(curIdLength-2,2) === 'To') {
-                                otherId = curId.slice(0,curIdLength - 2) + 'From';
-                            }
-                            else {
-                                otherId = curId.slice(0,curIdLength - 4) + 'To';
-                                isStartDate = true;
-                            }
-                            otherDateTextBox = angular.element('#' + otherId);
-                        }
-
-                        if(isStartDate) {
-                            otherDateTextBox.datetimepicker('option', 'minDate', elem.datetimepicker('getDate') );
-                        }
-                        else {
-                            otherDateTextBox.datetimepicker('option', 'maxDate', elem.datetimepicker('getDate') );
-                        }
-                        if(curId === "messagesDateTimeFrom") {
-                            scope.setDateTimeFilter(selectedDateTime, null);
-                        }
-                        else if(curId === "messagesDateTimeTo") {
-                            scope.setDateTimeFilter(null, selectedDateTime);
-                        }
+                    beforeShow: function () {
+                        element.datetimepicker('option', 'minDate', scope.min);
+                        element.datetimepicker('option', 'maxDate', scope.max);
                     },
                     onChangeMonthYear: function (year, month, inst) {
                         var curDate = $(this).datepicker("getDate");
@@ -741,36 +715,6 @@
                             curDate.setYear(year);
                             curDate.setMonth(month - 1);
                             $(this).datepicker("setDate", curDate);
-                        }
-                        if(curId === "messagesDateTimeFrom") {
-                            scope.setDateTimeFilter(curDate, null);
-                        }
-                        else if(curId === "messagesDateTimeTo") {
-                            scope.setDateTimeFilter(null, curDate);
-                        }
-                    },
-                    onClose: function () {
-                        var viewValue = $(this).val();
-                        if (viewValue === '') {
-                            if(isStartDate) {
-                                otherDateTextBox.datetimepicker('option', 'minDate', null);
-                            }
-                            else {
-                                otherDateTextBox.datetimepicker('option', 'maxDate', null);
-                            }
-                        } else {
-                            if(isStartDate) {
-                                otherDateTextBox.datetimepicker('option', 'minDate', elem.datetimepicker('getDate') );
-                            }
-                            else {
-                                otherDateTextBox.datetimepicker('option', 'maxDate', elem.datetimepicker('getDate') );
-                            }
-                        }
-                        if(curId === "messagesDateTimeFrom") {
-                            scope.setDateTimeFilter(viewValue, null);
-                        }
-                        else if(curId === "messagesDateTimeTo") {
-                            scope.setDateTimeFilter(null, viewValue);
                         }
                     }
                 });
