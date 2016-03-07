@@ -618,7 +618,7 @@ public final class Constants {
 
         public static final String MIGRATION_FILE_NAME_PATTERN = "^V[1-9]{1}[0-9]*__[a-zA-Z0-9\\-_ ]*\\.sql$";
 
-        public static final String MIGRATION_DIRECTORY = "/.motech/migration";
+        public static final String MIGRATION_DIRECTORY = "/migration";
 
         public static final String FILESYSTEM_PREFIX = "filesystem:";
 

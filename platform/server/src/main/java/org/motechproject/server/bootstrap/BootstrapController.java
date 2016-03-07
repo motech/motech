@@ -48,6 +48,7 @@ public class BootstrapController {
     private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
     private static final String POSTGRES_DRIVER = "org.postgresql.Driver";
     private static final String FELIX_PATH_DEFAULT = new File(System.getProperty("user.home"), ".motech"+File.separator+"felix-cache").getAbsolutePath();
+    private static final String MOTECH_PATH_DEFAULT = new File(System.getProperty("user.home"), ".motech").getAbsolutePath();
     private static final String ERRORS = "errors";
     private static final String WARNINGS = "warnings";
     private static final String SUCCESS = "success";
@@ -105,10 +106,10 @@ public class BootstrapController {
         BootstrapConfig bootstrapConfig;
         if (form.getOsgiFrameworkStorage() != null) {
              bootstrapConfig = new BootstrapConfig(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
-                     ConfigSource.valueOf(form.getConfigSource()), form.getOsgiFrameworkStorage(), form.getQueueUrl());
+                     ConfigSource.valueOf(form.getConfigSource()), form.getOsgiFrameworkStorage(), form.getMotechDir(), form.getQueueUrl());
         } else {
              bootstrapConfig = new BootstrapConfig(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
-                     ConfigSource.valueOf(form.getConfigSource()), null, form.getQueueUrl());
+                     ConfigSource.valueOf(form.getConfigSource()), null, form.getMotechDir(), form.getQueueUrl());
         }
 
         try {
@@ -193,6 +194,7 @@ public class BootstrapController {
         bootstrapView.addObject("postgresDriverSuggestion", POSTGRES_DRIVER);
         bootstrapView.addObject("felixPath", FELIX_PATH_DEFAULT);
         bootstrapView.addObject("queueUrlSuggestion", QUEUE_URL_SUGGESTION);
+        bootstrapView.addObject("motechPath", MOTECH_PATH_DEFAULT);
     }
 
     private String getMessage(String key, HttpServletRequest request) {
