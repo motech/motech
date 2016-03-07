@@ -1,9 +1,9 @@
-<div id="instanceBrowserModal" class="mds modal fade" tabindex="-1" role="dialog"
+<div id="instanceBrowserModal_{{field.id}}" class="mds modal fade instanceBrowserModal" tabindex="-1" role="dialog"
      aria-labelledby="advancedObjectSettingsModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content large">
             <div class="modal-header">
-                <button type="button" class="close" ng-disabled="blockLookups" data-dismiss="modal" ng-click="closeRelatedEntityModal()"
+                <button type="button" class="close" ng-disabled="blockLookups" data-dismiss="modal" ng-click="closeRelatedEntityModal(field.id)"
                     aria-hidden="true">&times;</button>
                 <h4 class="modal-title">{{msg('mds.dataBrowsing.instances')}}</h4>
             </div>
@@ -65,15 +65,15 @@
                     </div>
                 </div>
 
-                <div id="instanceBrowserTable" class="overrideJqgridTable" ng-if="relatedEntity!==undefined">
-                    <table id="browserTable" entity-instances-browser-grid="pageInstancesBrowserTable"></table>
-                    <div id="pageInstancesBrowserTable"></div>
+                <div id="instanceBrowserTable_{{field.id}}" class="overrideJqgridTable" ng-if="relatedEntity!==undefined">
+                    <table id="browserTable_{{field.id}}" entity-instances-browser-grid="pageInstancesBrowserTable_{{field.id}}"></table>
+                    <div id="pageInstancesBrowserTable_{{field.id}}"></div>
                 </div>
 
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true" ng-click="closeRelatedEntityModal()">
+                <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true" ng-click="closeRelatedEntityModal(field.id)">
                     {{msg('mds.btn.close')}}
                 </button>
             </div>
