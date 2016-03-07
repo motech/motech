@@ -10,6 +10,7 @@ import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.config.core.service.CoreConfigurationService;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -18,6 +19,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class SqlDBManagerTest {
+
+    private String motechDir = new File(System.getProperty("user.home"), ".motech").getAbsolutePath();
 
     @Mock
     private CoreConfigurationService coreConfigurationService;
@@ -29,7 +32,7 @@ public class SqlDBManagerTest {
 
     @Test
     public void shouldProperlySetSqlProperties() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", "root", "pass"), ConfigSource.FILE, "./felix", "tcp://localhost:61616");
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", "root", "pass"), ConfigSource.FILE, "./felix", motechDir, "tcp://localhost:61616");
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
 
         Properties propertiesToUpdate = new Properties();
@@ -50,7 +53,7 @@ public class SqlDBManagerTest {
 
     @Test
     public void shouldARemoveSlash() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", "root", "pass"), ConfigSource.FILE, "./felix", "tcp://localhost:61616");
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://localhost:3306/", "com.mysql.jdbc.Driver", "root", "pass"), ConfigSource.FILE, "./felix", motechDir, "tcp://localhost:61616");
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
 
         Properties propertiesToUpdate = new Properties();

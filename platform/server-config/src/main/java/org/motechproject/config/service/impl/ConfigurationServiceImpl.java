@@ -589,7 +589,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         if (defaultSettings != null) {
             settingsRecord = loadSettingsFromStream(defaultSettings);
         }
-
         return settingsRecord;
     }
 
@@ -732,7 +731,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     private String getConfigDir() {
         if (coreConfigurationService == null) {
-            return System.getProperty("user.home") + "/config";
+            return System.getProperty("user.home") + "/.motech/config";
         }
         return coreConfigurationService.getConfigLocation().getLocation();
     }

@@ -223,7 +223,7 @@
                             <overWriteIfNewer>true</overWriteIfNewer>
                             <overWriteReleases>false</overWriteReleases>
                             <outputDirectory>
-                                ${user.home}/.motech/bundles
+                                ${motech.dir}/bundles
                             </outputDirectory>
                         </configuration>
                     </execution>
@@ -296,7 +296,7 @@
                             <excludeDefaultDirectories>true</excludeDefaultDirectories>
                             <filesets>
                                 <fileset>
-                                    <directory>${user.home}/.motech/config</directory>
+                                    <directory>${motech.dir}/config</directory>
                                     <includes>
                                         <include>*.properties</include>
                                         <include>*.conf</include>

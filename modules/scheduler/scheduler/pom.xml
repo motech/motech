@@ -221,7 +221,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                            <outputDirectory>${motech.dir}/bundles</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>target</directory>
@@ -299,7 +299,7 @@
                                     <excludeDefaultDirectories>true</excludeDefaultDirectories>
                                     <filesets>
                                         <fileset>
-                                            <directory>${user.home}/.motech/config</directory>
+                                            <directory>${motech.dir}/config</directory>
                                             <includes>
                                                 <include>${project.groupId}.${project.artifactId}/*.properties</include>
                                             </includes>

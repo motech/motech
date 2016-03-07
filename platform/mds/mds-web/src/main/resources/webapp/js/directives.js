@@ -38,6 +38,13 @@
             }
             return val;
         },
+        idFormatter = function (cellValue, options, rowObject) {
+            var val = cellValue;
+            if (cellValue !== undefined && !isNaN(cellValue) && parseInt(cellValue, 10) < 0) {
+                val = '';
+            }
+            return val;
+        },
         stringEscapeFormatter = function (cellValue, options, rowObject) {
             var val = '';
                 val = _.escape(cellValue);
@@ -106,7 +113,7 @@
         var intervalWidthResize, tableWidth;
         clearInterval(intervalWidthResize);
         intervalWidthResize = setInterval( function () {
-            tableWidth = $('.overrideJqgridTable').width();
+            tableWidth = $('#' + gridId).parent().width();
             $('#' + gridId).jqGrid("setGridWidth", tableWidth);
             clearInterval(intervalWidthResize);
         }, 200);
@@ -219,6 +226,10 @@
                     // append a formatter for relationships
                     cmd.formatter = relationshipFormatter;
                     cmd.sortable = false;
+                }
+
+                if (field.basic.name === 'id') {
+                    cmd.formatter = idFormatter;
                 }
 
                 if (scope.isTextArea(field.settings)) {
@@ -1359,13 +1370,13 @@
                                 if ($('#instancesTable').getGridParam('records') > 0) {
                                     $('#pageInstancesTable_center').show();
                                     $('#entityInstancesTable .ui-jqgrid-hdiv').show();
-                                    $('.jqgfirstrow').css('height','0');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','0');
                                 } else {
                                     if (noSelectedFields) {
                                         $('#pageInstancesTable_center').hide();
                                         $('#entityInstancesTable .ui-jqgrid-hdiv').hide();
                                     }
-                                    $('.jqgfirstrow').css('height','1px');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','1px');
                                 }
                                 $('#entityInstancesTable .ui-jqgrid-hdiv').addClass("table-lightblue");
                                 $('#entityInstancesTable .ui-jqgrid-btable').addClass("table-lightblue");
@@ -1424,16 +1435,17 @@
     /**
     * Displays related instances data using jqGrid
     */
-    directives.directive('entityInstancesBrowserGrid', function ($rootScope, $route, $timeout) {
+    directives.directive('entityInstancesBrowserGrid', function ($timeout, $http) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                var elem = angular.element(element), tableWidth, gridId = attrs.id;
-
-                if (scope.relatedEntity !== undefined) {
+                var tableWidth, relatedEntityId, relatedClass, selectedEntityNested,
+                elem = angular.element(element),
+                gridId = attrs.id,
+                showGrid = function () {
                     $.ajax({
                         type: "GET",
-                        url: "../mds/entities/" + scope.relatedEntity.id + "/entityFields",
+                        url: "../mds/entities/" + relatedEntityId + "/entityFields",
                         dataType: "json",
                         success: function (result) {
                             var colMd, colModel = [], i, spanText;
@@ -1441,7 +1453,7 @@
                             buildGridColModel(colModel, result, scope, false, true);
 
                             elem.jqGrid({
-                                url: "../mds/entities/" + scope.relatedEntity.id + "/instances",
+                                url: "../mds/entities/" + relatedEntityId + "/instances",
                                 headers: {
                                     'Accept': 'application/x-www-form-urlencoded',
                                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -1460,7 +1472,11 @@
                                    order: 'sortDirection'
                                 },
                                 onSelectRow: function (id) {
-                                    scope.addRelatedInstance(id, scope.relatedEntity, scope.editedField);
+                                    if (scope.relatedMode.isNested) {
+                                        scope.addRelatedInstance(id, selectedEntityNested, scope.editedField);
+                                    } else {
+                                        scope.addRelatedInstance(id, scope.selectedEntity, scope.editedField);
+                                    }
                                 },
                                 resizeStop: function (width, index) {
                                     var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
@@ -1487,37 +1503,57 @@
                                 autowidth: true,
                                 shrinkToFit: false,
                                 gridComplete: function () {
-                                    $('#pageInstancesBrowserTable_center').addClass('page_instancesTable_center');
-                                    if ($('#browserTable').getGridParam('records') > 0) {
-                                        $('#pageInstancesBrowserTable_center').show();
-                                        $('.jqgfirstrow').css('height','0');
+                                    $('#' + attrs.entityInstancesBrowserGrid + '_center').addClass('page_instancesTable_center');
+                                    if ($('#' + gridId).getGridParam('records') > 0) {
+                                        $('#' + attrs.entityInstancesBrowserGrid + '_center').show();
+                                        $('#gbox_' + gridId + ' .jqgfirstrow').css('height','0');
                                     } else {
-                                        $('.jqgfirstrow').css('height','1px');
+                                        $('#gbox_' + gridId + ' .jqgfirstrow').css('height','1px');
                                     }
                                     tableWidth = $('#instanceBrowserTable').width();
-                                    $('#instanceBrowserTable').children().width('100%');
-                                    $('#instanceBrowserTable .ui-jqgrid-htable').addClass("table-lightblue");
-                                    $('#instanceBrowserTable .ui-jqgrid-btable').addClass("table-lightblue");
-                                    $('#instanceBrowserTable .ui-jqgrid-htable').width(tableWidth);
-                                    $('#instanceBrowserTable .ui-jqgrid-btable').width(tableWidth);
-                                    $('#instanceBrowserTable .ui-jqgrid-bdiv').width('100%');
-                                    $('#instanceBrowserTable .ui-jqgrid-hdiv').width('100%').show();
-                                    $('#instanceBrowserTable .ui-jqgrid-view').width('100%');
-                                    $('#instanceBrowserTable .ui-jqgrid-pager').width('100%');
+                                    $('#gbox_' + gridId).css('width','100%');
+                                    $('#gview_' + gridId).css('width','100%');
+                                    $('#gview_' + gridId + ' .ui-jqgrid-htable').addClass("table-lightblue");
+                                    $('#gview_' + gridId + ' .ui-jqgrid-btable').addClass("table-lightblue");
+                                    $('#gview_' + gridId + ' .ui-jqgrid-htable').width(tableWidth);
+                                    $('#gview_' + gridId + ' .ui-jqgrid-btable').width(tableWidth);
+                                    $('#gview_' + gridId + ' .ui-jqgrid-bdiv').width('100%');
+                                    $('#gview_' + gridId + ' .ui-jqgrid-hdiv').width('100%').show();
+                                    $('#gview_' + gridId + ' .ui-jqgrid-view').width('100%');
+                                    $('#gbox_' + gridId + ' .ui-jqgrid-pager').width('100%');
                                 }
                             });
                         }
                     });
+                };
+
+                if (scope.relatedEntity !== undefined && scope.relatedMode.isNested !== true) {
+                    relatedEntityId = scope.relatedEntity.id;
+                    showGrid();
+                } else if (scope.relatedMode.isNested) {
+                    relatedClass = scope.getRelatedClass(scope.field);
+                    if (relatedClass !== undefined && scope.relatedMode.isNested) {
+                        blockUI();
+                        $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
+                            relatedEntityId = data.id;
+                            unblockUI();
+                            showGrid();
+                            if (scope.currentRelationRecord !== undefined) {
+                                selectedEntityNested = {id: scope.currentRelationRecord.entitySchemaId};
+                            }
+                        });
+                    }
                 }
+
                 scope.$watch("instanceBrowserRefresh", function () {
-                      $('#' + attrs.id).jqGrid('setGridParam', {
-                          page: 1,
-                          postData: {
-                              fields: JSON.stringify(scope.lookupBy),
-                              lookup: (scope.selectedLookup) ? scope.selectedLookup.lookupName : "",
-                              filter: (scope.filterBy) ? JSON.stringify(scope.filterBy) : ""
-                          }
-                      }).trigger('reloadGrid');
+                    elem.jqGrid('setGridParam', {
+                        page: 1,
+                        postData: {
+                            fields: JSON.stringify(scope.lookupBy),
+                            lookup: (scope.selectedLookup) ? scope.selectedLookup.lookupName : "",
+                            filter: (scope.filterBy) ? JSON.stringify(scope.filterBy) : ""
+                        }
+                    }).trigger('reloadGrid');
                 });
                 elem.on('jqGridSortCol', function (e, fieldName) {
                     // For correct sorting in jqgrid we need to convert back to the original name
@@ -1525,6 +1561,306 @@
                 });
             }
 
+        };
+    });
+
+
+    /**
+    * Displays related instances data using jqGrid
+    */
+    directives.directive('entityRelationsGrid', function ($timeout, $http, MDSUtils) {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                var tableWidth, isHiddenGrid, eventResize, eventChange, relatedClass, relatedEntityId, updatePostData, postdata,
+                    filter = {removedIds: [], addedIds: [], addedNewRecords: []},
+                    elem = angular.element(element),
+                    gridId = attrs.id,
+                    gridRecords = 0,
+                    fieldId = attrs.fieldId,
+                    gridHide = attrs.gridHide,
+                    pagerHide = attrs.pagerHide,
+                    selectedEntityId = scope.selectedEntity.id,
+                    selectedInstance = (scope.selectedInstance !== undefined && angular.isNumber(parseInt(scope.selectedInstance, 10)))? parseInt(scope.selectedInstance, 10) : undefined;
+
+                relatedClass = scope.getRelatedClass(scope.field);
+                    blockUI();
+                    $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
+                        scope.relatedEntity = data;
+                        relatedEntityId = data.id;
+                        unblockUI();
+                        $.ajax({
+                            type: "GET",
+                            url: "../mds/entities/" + scope.relatedEntity.id + "/entityFields",
+                            dataType: "json",
+                            success: function (result) {
+                                var colModel = [], i, spanText;
+
+                                if (scope.relatedMode.isNested) {
+                                    selectedInstance = scope.editedInstanceId;
+                                    if (scope.currentRelationRecord !== undefined) {
+                                        selectedEntityId = scope.currentRelationRecord.entitySchemaId;
+                                    }
+                                } else {
+                                    colModel.push({
+                                        name: scope.msg('mds.form.label.action').toUpperCase(),
+                                        width: 150,
+                                        align: 'center',
+                                        title:  false,
+                                        frozen: true,
+                                        hidden:  scope.field.nonEditable,
+                                        formatter: function (array, options, data) {
+                                            return "<button class='btn btn-default btn-xs btn-danger-hover removeRelatedInstance' "
+                                            + " title='" + scope.msg('mds.dataBrowsing.removeRelatedInstance')
+                                            + "'><i class='fa fa-fw fa-trash-o'></i>"
+                                            + scope.msg('mds.dataBrowsing.remove') + "</button>";
+                                        },
+                                        sortable: false
+                                    });
+                                    selectedEntityId = scope.selectedEntity.id;
+                                }
+
+                                buildGridColModel(colModel, result, scope, false, true);
+
+                                elem.jqGrid({
+                                    url: "../mds/instances/" + selectedEntityId + "/instance/" + ((selectedInstance !== undefined)? selectedInstance : "new") + "/" + scope.field.name,
+                                    headers: {
+                                        'Accept': 'application/x-www-form-urlencoded',
+                                        'Content-Type': 'application/x-www-form-urlencoded'
+                                    },
+                                    datatype: 'json',
+                                    mtype: "POST",
+                                    postData: {
+                                        filters: (filter.removedIds !== null) ? JSON.stringify(filter) : ""
+                                    },
+                                    jsonReader: {
+                                        repeatitems: false
+                                    },
+                                    onSelectRow: function (id, status, e) {
+                                        if (!scope.field.nonEditable &&  e.target.getAttribute('class') !== null && (e.target.getAttribute('class').indexOf('removeRelatedInstance') >= 0
+                                            || (e.target.tagName ==='I' && e.target.parentElement.getAttribute('class').indexOf('removeRelatedInstance') >= 0))) {
+
+                                            scope.relatedData.removeNewAdded(scope.field, parseInt(id, 10));
+                                        } else if (!scope.field.nonEditable && e.target.tagName !=='I' && e.target.tagName !== 'BUTTON' && e.target.tagName ==='TD'
+                                           && !(e.target.children[0] !== undefined && e.target.children[0].getAttribute('class').indexOf('removeRelatedInstance') >= 0)
+                                           && scope.newRelatedFields === null && !scope.relatedMode.isNested) {
+                                            selectedInstance = parseInt(id, 10);
+                                            scope.currentRelationRecord = {entitySchemaId: relatedEntityId};
+                                            if (scope.field.type.defaultName !== "manyToManyRelationship" && scope.field.type.defaultName !== "oneToManyRelationship" && scope.field.type.defaultName !== "oneToOneRelationship" && selectedInstance > 0) {
+                                                scope.editRelatedInstanceOfEntity(scope.relatedData.getRelatedId(scope.field), undefined, scope.field);
+                                            } else if (scope.field.type.defaultName !== "manyToManyRelationship" && scope.field.type.defaultName !== "oneToManyRelationship" && selectedInstance < 0) {
+                                                scope.editRelatedInstanceOfEntity(selectedInstance, undefined, scope.field);
+                                            } else {
+                                                scope.editRelatedInstanceOfEntity(selectedInstance, relatedEntityId, scope.field);
+                                            }
+                                       }
+                                    },
+                                    ondblClickRow : function(id,iRow,iCol,e) {
+
+                                    },
+                                    resizeStop: function (width, index) {
+                                        var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');
+                                        if (colModel.length - 1 === index + 1 || (colModel[index + 1] !== undefined && isLastNextColumn(colModel, index))) {
+                                            widthOrg = colModel[index].widthOrg;
+                                            widthNew = colModel[index + 1].width + Math.abs(widthOrg - width);
+                                            colModel[index + 1].width = widthNew;
+                                            colModel[index].width = width;
+
+                                            $('.ui-jqgrid-labels > th:eq('+(index + 1)+')').css('width', widthNew);
+                                            $('#' + gridId + ' .jqgfirstrow > td:eq('+(index + 1)+')').css('width', widthNew);
+                                        }
+                                        tableWidth = $('#instance_' + gridId).width();
+                                        $('#' + gridId).jqGrid("setGridWidth", tableWidth);
+                                    },
+                                    loadonce: false,
+                                    headertitles: true,
+                                    colModel: colModel,
+                                    pager: '#' + attrs.entityRelationsGrid,
+                                    viewrecords: true,
+                                    autowidth: true,
+                                    loadui: 'disable',
+                                    shrinkToFit: false,
+                                    gridComplete: function () {
+                                        $('#' + attrs.entityRelationsGrid + '_center').addClass('page_' + gridId + '_center');
+                                        gridRecords = $('#' + gridId).getGridParam('records');
+                                        if (gridRecords > 0) {
+                                            if (gridHide !== undefined && gridHide === "true") {
+                                                $('body #instance_' + gridId).removeClass('hiddengrid');
+                                            }
+                                            $('#relationsTableTotalRecords_' + fieldId).text(gridRecords + '  ' + scope.msg('mds.field.items'));
+                                            $('#' + attrs.entityRelationsGrid + '_center').show();
+                                            $('#gbox_' + gridId + ' .jqgfirstrow').css("height","0");
+                                        } else {
+                                            $('#relationsTableTotalRecords_' + fieldId).text('0  ' + scope.msg('mds.field.items'));
+                                            $('#' + attrs.entityRelationsGrid + '_center').hide();
+                                            $('#gbox_' + gridId + ' .jqgfirstrow').css("height","1px");
+                                            if (gridHide !== undefined && gridHide === "true") {
+                                                $('body #instance_' + gridId).addClass('hiddengrid');
+                                            }
+                                        }
+                                        $('#gview_' + gridId + ' .ui-jqgrid-hdiv').show();
+                                        $('#gview_' + gridId + ' .ui-jqgrid-hdiv').addClass("table-lightblue");
+                                        $('#gview_' + gridId + ' .ui-jqgrid-btable').addClass("table-lightblue");
+                                        $timeout(function() {
+                                            resizeGridWidth(gridId);
+                                        }, 250);
+                                    }
+                                }).jqGrid('setFrozenColumns');
+                                if (pagerHide === "true") {
+                                    $('#' + attrs.entityRelationsGrid).addClass('hidden');
+                                }
+                                if (gridHide !== undefined && gridHide === "true") {
+                                    $('body #instance_' + gridId).addClass('hiddengrid');
+                                }
+                            }
+                        });
+                    }).error(function (response) {
+                        handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
+                    });
+
+                elem.on('jqGridSortCol', function (e, fieldName) {
+                    // For correct sorting in jqgrid we need to convert back to the original name
+                    e.target.p.sortname = backToReservedFieldName(fieldName);
+                });
+
+                updatePostData = function (filter, postdata) {
+                    $('#' + attrs.id).jqGrid('setGridParam', { postData: { filters: ''} });
+                    postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+                    $.extend(postdata, { filters: angular.toJson(filter) });
+                    $('#' + attrs.id).jqGrid('setGridParam', { search: true, postData: postdata });
+                    $timeout(function() {
+                        $('#' + attrs.id).jqGrid().trigger("reloadGrid");
+                    }, 300);
+                };
+
+                scope.$watch('field.value.removedIds', function (newValue) {
+                    postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+
+                    if (postdata !== undefined) {
+                        if (postdata.filters !== undefined) {
+                            filter = JSON.parse(postdata.filters);
+                        }
+                        if (newValue !== null) {
+                            filter.removedIds = newValue;
+                        }
+                        updatePostData(filter, postdata);
+                    }
+                }, true);
+
+                scope.$watch('field.value.addedIds', function (newValue) {
+                    postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+
+                    if (postdata !== undefined) {
+                        if (postdata.filters !== undefined) {
+                            filter = JSON.parse(postdata.filters);
+                        }
+                        if (newValue !== null) {
+                            filter.addedIds = newValue;
+                        }
+                        updatePostData(filter, postdata);
+                    }
+                }, true);
+
+                scope.$watch('field.value.addedNewRecords', function (newValue) {
+                    postdata = $('#' + attrs.id).jqGrid('getGridParam','postData');
+
+                    if (postdata !== undefined) {
+                        if (postdata.filters !== undefined) {
+                            filter = JSON.parse(postdata.filters);
+                        }
+                        if (newValue !== null) {
+                            filter.addedNewRecords = newValue;
+                        }
+                        updatePostData(filter, postdata);
+                    }
+                }, true);
+
+                $(window).on('resize', function() {
+                    clearTimeout(eventResize);
+                    eventResize = $timeout(function() {
+                        $(".ui-layout-content").scrollTop(0);
+                        resizeGridWidth(gridId);
+                    }, 200);
+                }).trigger('resize');
+
+                $('#inner-center').on('change', function() {
+                    clearTimeout(eventChange);
+                    eventChange = $timeout(function() {
+                        resizeGridWidth(gridId);
+                    }, 200);
+                });
+            }
+
+        };
+    });
+
+    directives.directive('relatedfieldsform', function () {
+        return {
+            restrict: 'A',
+            scope: false,
+            require: 'ngModel',
+            replace: true,
+            link: function (scope, element, attrs, ngModel) {
+                scope.$parent.$watch(attrs.ngModel, function (newValue, oldValue, scope) {
+                    scope.fields = newValue;
+                    if (scope.newRelatedFields !== undefined  && scope.newRelatedFields !== null) {
+                        scope.fields = scope.newRelatedFields;
+                    }
+                });
+            },
+            templateUrl: '../mds/resources/partials/widgets/entityInstanceFieldsRelated.html'
+        };
+    });
+
+    directives.directive('editrelatedfieldsform', function () {
+        return {
+            restrict: 'A',
+            scope: false,
+            require: 'ngModel',
+            replace: true,
+            link: function(scope, element, attrs, ngModel) {
+                scope.$parent.$watch(attrs.ngModel, function () {
+                    scope.fields = scope.editRelatedFields;
+                    if (scope.editRelatedFields !== undefined  && scope.editRelatedFields !== null) {
+                        scope.fields = scope.editRelatedFields;
+                    }
+                });
+            },
+            templateUrl: '../mds/resources/partials/widgets/entityInstanceFieldsRelated.html'
+        };
+    });
+
+    directives.directive('showRelationsGrid', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                var isHiddenGrid,
+                elem = angular.element(element),
+                gridId = attrs.showRelationsGrid,
+                gridHide = attrs.gridHide,
+                setHiddenGrid = function () {
+                    elem.children().removeClass('fa-angle-double-up');
+                    elem.children().addClass('fa-angle-double-down');
+                    $('#' + gridId).jqGrid('setGridState','hidden');
+                    $('body #instance_' + gridId).addClass('hiddengrid');
+                },
+                setVisibleGrid = function () {
+                    elem.children().removeClass('fa-angle-double-down');
+                    elem.children().addClass('fa-angle-double-up');
+                    $('#' + gridId).jqGrid('setGridState','visible');
+                    $('body #instance_' + gridId).removeClass('hiddengrid').delay(500).fadeIn("slow");
+                };
+
+                elem.on('click', function () {
+                    isHiddenGrid = $('#' + gridId).jqGrid('getGridParam','hiddengrid');
+                    $('#' + gridId).jqGrid('setGridParam', { hiddengrid: !isHiddenGrid });
+                    if (isHiddenGrid) {
+                        setVisibleGrid();
+                    } else {
+                        setHiddenGrid();
+                    }
+                });
+            }
         };
     });
 
@@ -1692,13 +2028,13 @@
                                 if ($('#historyTable').getGridParam('records') > 0) {
                                     $('#pageInstanceHistoryTable_center').show();
                                     $('#instanceHistoryTable .ui-jqgrid-hdiv').show();
-                                    $('.jqgfirstrow').css('height','0');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','0');
                                 } else {
                                     if (noSelectedFields) {
                                         $('#pageInstanceHistoryTable_center').hide();
                                         $('#instanceHistoryTable .ui-jqgrid-hdiv').hide();
                                     }
-                                    $('.jqgfirstrow').css('height','1px');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','1px');
                                 }
                                 $('#instanceHistoryTable .ui-jqgrid-hdiv').addClass('table-lightblue');
                                 $('#instanceHistoryTable .ui-jqgrid-btable').addClass("table-lightblue");
@@ -1809,13 +2145,13 @@
                                 if ($('#trashTable').getGridParam('records') > 0) {
                                     $('#pageInstanceTrashTable_center').show();
                                     $('#instanceTrashTable .ui-jqgrid-hdiv').show();
-                                    $('.jqgfirstrow').css('height','0');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','0');
                                 } else {
                                     if (noSelectedFields) {
                                         $('#pageInstanceTrashTable_center').hide();
                                         $('#instanceTrashTable .ui-jqgrid-hdiv').hide();
                                     }
-                                    $('.jqgfirstrow').css('height','1px');
+                                    $('#gbox_' + gridId + ' .jqgfirstrow').css('height','1px');
                                 }
                                 $('#instanceTrashTable .ui-jqgrid-hdiv').addClass("table-lightblue");
                                 $('#instanceTrashTable .ui-jqgrid-btable').addClass("table-lightblue");
@@ -2486,7 +2822,7 @@
             require: 'ngModel',
             link: function(scope, elm, attrs, ctrl) {
                 ctrl.$parsers.unshift(function(viewValue) {
-                    var inset = attrs.insetValidity,
+                    var inset = '',
                     checkInset = function (inset, viewValue) {
                         var result,
                         insetParameters = inset.split(' ');
@@ -2504,6 +2840,9 @@
                         }
                     return result;
                     };
+                    if (scope.field.validation.criteria[attrs.insetValidity] !== undefined && scope.field.validation.criteria[attrs.insetValidity].enabled) {
+                        inset = scope.field.validation.criteria[attrs.insetValidity].value;
+                    }
 
                     if (ctrl.$viewValue === '' || inset === '' || checkInset(inset, ctrl.$viewValue)) {
                         ctrl.$setValidity('insetNum', true);
@@ -2522,7 +2861,7 @@
             require: 'ngModel',
             link: function(scope, elm, attrs, ctrl) {
                 ctrl.$parsers.unshift(function(viewValue) {
-                    var outset = attrs.outsetValidity,
+                    var outset = '',
                     checkOutset = function (outset, viewValue) {
                         var result,
                         outsetParameters = outset.split(' ');
@@ -2540,7 +2879,9 @@
                         }
                     return result;
                     };
-
+                    if (scope.field.validation.criteria[attrs.outsetValidity] !== undefined && scope.field.validation.criteria[attrs.outsetValidity].enabled) {
+                        outset = scope.field.validation.criteria[attrs.outsetValidity].value;
+                    }
                     if (ctrl.$viewValue === '' || outset === '' || !checkOutset(outset, ctrl.$viewValue)) {
                         ctrl.$setValidity('outsetNum', true);
                         return viewValue;
@@ -2558,7 +2899,10 @@
             require: 'ngModel',
             link: function(scope, element, attrs, ctrl) {
                 ctrl.$parsers.unshift(function(viewValue) {
-                    var max = attrs.maxValidity;
+                    var max = '';
+                    if (scope.field.validation.criteria[attrs.maxValidity] !== undefined && scope.field.validation.criteria[attrs.maxValidity].enabled) {
+                        max = scope.field.validation.criteria[attrs.maxValidity].value;
+                    }
                     if (ctrl.$viewValue === '' || max === '' || parseFloat(ctrl.$viewValue) <= parseFloat(max)) {
                         ctrl.$setValidity('max', true);
                         return viewValue;
@@ -2576,7 +2920,10 @@
             require: 'ngModel',
             link: function(scope, element, attrs, ctrl) {
                 ctrl.$parsers.unshift(function(viewValue) {
-                    var min = attrs.minValidity;
+                    var min = '';
+                    if (scope.field.validation.criteria[attrs.minValidity] !== undefined && scope.field.validation.criteria[attrs.minValidity].enabled) {
+                            min = scope.field.validation.criteria[attrs.minValidity].value;
+                        }
                     if (ctrl.$viewValue === '' || min === '' || parseFloat(ctrl.$viewValue) >= parseFloat(min)) {
                         ctrl.$setValidity('min', true);
                         return viewValue;
@@ -2938,7 +3285,11 @@
             require: 'ngModel',
             link: function(scope, element, attrs, ctrl) {
                 ctrl.$parsers.unshift(function(viewValue) {
-                    PATTERN_REGEXP = new RegExp(attrs.patternValidity);
+                    if (attrs.patternValidity !== undefined && scope.field.validation.criteria[attrs.patternValidity].enabled) {
+                        PATTERN_REGEXP = new RegExp(scope.field.validation.criteria[attrs.patternValidity].value);
+                    } else {
+                        PATTERN_REGEXP = new RegExp('');
+                    }
                     if (ctrl.$viewValue === '' || PATTERN_REGEXP.test(ctrl.$viewValue)) {
                         // it is valid
                         ctrl.$setValidity('pattern', true);
@@ -3169,19 +3520,23 @@
             link: function (scope, element, attrs, ctrl) {
                 var elm = angular.element(element),
                 fieldId = attrs.mdsFieldId,
-                fieldName = scope.field.name,
+                fieldName = attrs.mdsFieldName,
                 typingTimer;
 
                 elm.on('keyup', function () {
                     scope.$apply(function () {
                         elm.siblings('#visited-hint-' + fieldId).addClass('hidden');
-                        scope[fieldName].$dirty = false;
+                        if (scope[fieldName] !== undefined) {
+                            scope[fieldName].$dirty = false;
+                        }
                     });
                     clearTimeout(typingTimer);
                     typingTimer = setTimeout( function() {
                         elm.siblings('#visited-hint-' + fieldId).removeClass('hidden');
                         scope.$apply(function () {
-                            scope[fieldName].$dirty = true;
+                            if (scope[fieldName] !== undefined) {
+                                scope[fieldName].$dirty = true;
+                            }
                         });
                     }, 1500);
                 });
@@ -3189,7 +3544,9 @@
                 elm.on("blur", function() {
                     scope.$apply(function () {
                         elm.siblings('#visited-hint-' + fieldId).removeClass('hidden');
-                        scope[fieldName].$dirty = true;
+                        if (scope[fieldName] !== undefined) {
+                            scope[fieldName].$dirty = true;
+                        }
                     });
                 });
             }
