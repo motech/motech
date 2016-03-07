@@ -24,6 +24,7 @@ tools/SMPPSim/
 *.tmp
 platform/server/src/main/webapp/WEB-INF/classes/
 platform/server/src/main/webapp/[0-9]*/
+modules/admin/src/test/resources/motech-upload-test-bundle.jar
 docs/build
 docs/env
 docs/source/packages.rst
