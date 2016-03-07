@@ -21,10 +21,14 @@
             <div id="job{{$index}}" class="collapse">
                 <hr/>
                 <span ng-if="job.uiDefined">
-                    <button ng-if="job.status === 'OK'" ng-click="pauseJob(job)" type="button" class="btn btn-sm btn-primary"><i class="fa fa-1 fa-pause"></i> Pause</button>
-                    <button ng-if="job.status === 'PAUSED'" ng-click="resumeJob(job)" type="button" class="btn btn-sm btn-primary"><i class="fa fa-1 fa-play"></i> Resume</button>
-                    <button class="btn btn-sm btn-primary" type="button" target="_self" ng-click="editJob(job)"><i class="fa fa-1 fa-edit"></i> Edit</button>
-                    <button ng-click="deleteJob(job)" class="btn btn-sm btn-primary"><i class="fa fa-1 fa-trash"></i> Delete</button>
+                    <div class="btn-group">
+                        <button ng-if="job.status === 'OK'" ng-click="pauseJob(job)" type="button" class="btn btn-sm btn-default"><i class="fa fa-1 fa-pause"></i> Pause</button>
+                        <button ng-if="job.status === 'PAUSED'" ng-click="resumeJob(job)" type="button" class="btn btn-sm btn-default"><i class="fa fa-1 fa-play"></i> Resume</button>
+                    </div>
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-sm btn-default" type="button" target="_self" ng-click="editJob(job)"><i class="fa fa-1 fa-edit"></i> Edit</button>
+                        <button ng-click="deleteJob(job)" class="btn btn-sm btn-danger"><i class="fa fa-1 fa-trash"></i> Delete</button>
+                    </div>
                 </span>
                 <span ng-if="!job.uiDefined">
                     <div class="row inside">
