@@ -1549,14 +1549,15 @@
         /* ~~~~~ FIELD FUNCTIONS ~~~~~ */
 
         $scope.isUniqueEditable = function(field) {
-            if (field.type === undefined) {
-                return false;
+            if (field.type) {
+                return !field.readOnly
+                                   && field.type.typeClass !== 'java.util.Map'
+                                   && field.type.typeClass !== "org.motechproject.mds.domain.OneToManyRelationship"
+                                   && field.type.typeClass !== "org.motechproject.mds.domain.ManyToManyRelationship"
+                                   && field.type.typeClass !== "java.util.Collection";
             }
-            return !field.readOnly
-                   && field.type.typeClass !== 'java.util.Map'
-                   && field.type.typeClass !== "org.motechproject.mds.domain.OneToManyRelationship"
-                   && field.type.typeClass !== "org.motechproject.mds.domain.ManyToManyRelationship"
-                   && field.type.typeClass !== "java.util.Collection";
+            return false;
+
         };
 
         /**
@@ -1724,12 +1725,11 @@
         */
         $scope.fieldUsedInReferencedLookup = function (field) {
             var i;
-            if (field.lookups === undefined) {
-                return false;
-            }
-            for (i = 0; i < field.lookups.length; i += 1) {
-                if (field.lookups[i].referenced) {
-                    return true;
+            if (field.lookups) {
+                for (i = 0; i < field.lookups.length; i += 1) {
+                    if (field.lookups[i].referenced) {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -2745,10 +2745,11 @@
         * @return {string} type information taken from parameter object.
         */
         $scope.getTypeSingleClassName = function (type) {
-            if (type === undefined) {
-                return "";
+            if (type) {
+                return type.displayName.substring(type.displayName.lastIndexOf('.') + 1);
             }
-            return type.displayName.substring(type.displayName.lastIndexOf('.') + 1);
+            return "";
+
         };
 
         /**
