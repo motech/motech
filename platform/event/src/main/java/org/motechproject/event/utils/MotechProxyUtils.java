@@ -15,7 +15,6 @@ public final class MotechProxyUtils {
      * <code>MotechListenerAbstractProxy</code>.
      *
      * @param object the object to be checked
-     *
      * @return <code>true</code> if the object is an instance of
      *
      * <code>MotechListenerAbstractProxy</code>;
@@ -31,7 +30,6 @@ public final class MotechProxyUtils {
      * the proxy.
      *
      * @param proxy the object to be checked
-     *
      * @return the proxy
      */
     public static Object getTargetIfProxied(Object proxy) {

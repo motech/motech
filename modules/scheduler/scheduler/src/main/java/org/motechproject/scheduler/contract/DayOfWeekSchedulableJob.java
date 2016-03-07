@@ -89,7 +89,7 @@ public final class DayOfWeekSchedulableJob extends EndingSchedulableJob {
     public List<Integer> getCronDays() {
         List<Integer> cronDays = new ArrayList<>();
         for (DayOfWeek day : days) {
-            cronDays.add(Integer.valueOf(day.getCronValue()));
+            cronDays.add(day.getCronValue());
         }
         return cronDays;
     }

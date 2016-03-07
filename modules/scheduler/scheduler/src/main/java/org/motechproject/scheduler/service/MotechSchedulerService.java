@@ -46,7 +46,7 @@ public interface MotechSchedulerService {
 
     /**
      * Schedules the given cron schedulable job. The Job ID by which the job will be referencing in the future should be provided
-     * in an Instance of MotechEvent in SchedulableJob (see motechEvent.getParameters().get("JobID"))
+     * in an Instance of MotechEvent in SchedulableJob
      *
      * If a job with the same JobID as the given exists, this job will be unscheduled and the given schedulable job will be scheduled
      *
@@ -81,7 +81,7 @@ public interface MotechSchedulerService {
 
     /**
      * Schedules the given schedulable job. The Job ID by which the job will be referencing in the future should be provided
-     * in an Instance of MotechEvent in SchedulableJob (see JobID in MotechEvent.parameters map )
+     * in an Instance of MotechEvent in SchedulableJob (see JobID in MotechEvent parameters map )
      *
      * If a job with the same job ID as the given exists, this job will be unscheduled and the given schedulable job will be scheduled
      *
@@ -150,7 +150,6 @@ public interface MotechSchedulerService {
      * Returns last fire date of job with given ID.
      *
      * @param jobId  the {@code JobId} of job, not null
-     *
      * @return last fire date of job
      */
     DateTime getPreviousFireDate(JobId jobId);
@@ -204,8 +203,8 @@ public interface MotechSchedulerService {
     /**
      * Unschedules a run once job with the given job ID
      *
-     * @param subject : String representing domain operation eg. "pill-reminder", "outbox-call" or motechEvent.getSubject()
-     * @param externalId  : domain specific id as String.
+     * @param subject String representing domain operation eg. "pill-reminder", "outbox-call" or motechEvent.getSubject()
+     * @param externalId domain specific id as String.
      */
     void unscheduleRunOnceJob(String subject, String externalId);
 

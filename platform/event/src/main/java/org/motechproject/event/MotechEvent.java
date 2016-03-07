@@ -33,7 +33,6 @@ public class MotechEvent implements Serializable {
      * Constructs a MotechEvent with the given subject.
      *
      * @param subject the subject of the event
-     *
      * @throws IllegalArgumentException if the subject is null or contains <code>'*', '..'</code>
      */
     public MotechEvent(String subject) {
