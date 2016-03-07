@@ -39,9 +39,7 @@ public final class SchedulableJobBuilder {
      * @param key  the job key
      * @param dataMap  the job data map
      * @param trigger  the job trigger
-     *
      * @return  the created job
-     *
      * @throws SchedulerException when there were problems while building job
      */
     public static SchedulableJob buildJob(JobKey key, JobDataMap dataMap, Trigger trigger) throws SchedulerException {

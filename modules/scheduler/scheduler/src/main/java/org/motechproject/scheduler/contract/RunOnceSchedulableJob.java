@@ -22,7 +22,6 @@ public final class RunOnceSchedulableJob extends SchedulableJob {
      *
      * @param motechEvent - event data message that will be send by Motech Scheduler when this job is fired
      * @param startDate   - date and time when the job fill be fired
-     *
      * @throws IllegalArgumentException if motechEvent or startDate is null or startDate is in past
      */
     public RunOnceSchedulableJob(MotechEvent motechEvent, DateTime startDate) {
@@ -35,7 +34,6 @@ public final class RunOnceSchedulableJob extends SchedulableJob {
      * @param motechEvent - event data message that will be send by Motech Scheduler when this job is fired
      * @param startDate   - date and time when the job fill be fired
      * @param uiDefined  the flag defining, whether job has been created through the UI
-     *
      * @throws IllegalArgumentException if motechEvent or startDate is null or startDate is in past
      */
     public RunOnceSchedulableJob(MotechEvent motechEvent, DateTime startDate, boolean uiDefined) {

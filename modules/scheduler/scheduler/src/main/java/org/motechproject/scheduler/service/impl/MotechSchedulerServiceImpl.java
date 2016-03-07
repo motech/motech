@@ -497,7 +497,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
      *
      * @param objectName  the objects name
      * @param object  the object to be checked for being null
-     *
      * @throws IllegalArgumentException if object is null
      */
     protected void assertArgumentNotNull(String objectName, Object object) {

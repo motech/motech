@@ -28,7 +28,6 @@ public class CronJobSimpleExpressionBuilder {
      * Sets interval on which job should be fired.
      *
      * @param repeatIntervalInDays  the interval(in days) between job fires, 0 means everyday
-     *
      * @return the {@code CronJobSimpleExpressionBuilder} ready to build cron expressions
      */
     public CronJobSimpleExpressionBuilder withRepeatIntervalInDays(int repeatIntervalInDays) {

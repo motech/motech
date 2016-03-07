@@ -50,14 +50,14 @@ public interface MotechSchedulerService {
      *
      * If a job with the same JobID as the given exists, this job will be unscheduled and the given schedulable job will be scheduled
      *
-     * @param cronSchedulableJob
+     * @param cronSchedulableJob a job that can be fired unlimited number of times
      */
     void scheduleJob(CronSchedulableJob cronSchedulableJob);
 
     /**
      * Same as scheduleJob, except that it would update existing job if one exists instead of creating a new one
      *
-     * @param cronSchedulableJob
+     * @param cronSchedulableJob a job that can be fired unlimited number of times
      */
     void safeScheduleJob(CronSchedulableJob cronSchedulableJob);
 
@@ -73,9 +73,9 @@ public interface MotechSchedulerService {
      *
      * Previous version of the configured Motech Scheduled Event that will be created when the job is fired remains as it was
      *
-     * @param subject
-     * @param externalId
-     * @param cronExpression
+     * @param subject the subject of job, not null
+     * @param externalId the external ID of job, not null
+     * @param cronExpression cron expressions for job
      */
     void rescheduleJob(String subject, String externalId, String cronExpression);
 
@@ -85,28 +85,28 @@ public interface MotechSchedulerService {
      *
      * If a job with the same job ID as the given exists, this job will be unscheduled and the given schedulable job will be scheduled
      *
-     * @param repeatingSchedulableJob
+     * @param repeatingSchedulableJob a scheduled job that can be fired set number of times
      */
     void scheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob);
 
     /**
      * Same as scheduleRepeatingJob but schedules RepeatingPeriodSchedulableJob
      *
-     * @param repeatingPeriodSchedulableJob
+     * @param repeatingPeriodSchedulableJob Job that will be fired every {@link org.joda.time.Period} of time
      */
     void scheduleRepeatingPeriodJob(RepeatingPeriodSchedulableJob repeatingPeriodSchedulableJob);
 
     /**
      * Same as scheduleRepeatingPeriodJob, except that it would update existing job if one exists instead of creating a new one
      *
-     * @param repeatingPeriodSchedulableJob
+     * @param repeatingPeriodSchedulableJob Job that will be fired every {@link org.joda.time.Period} of time
      */
     void safeScheduleRepeatingPeriodJob(RepeatingPeriodSchedulableJob repeatingPeriodSchedulableJob);
 
     /**
      * Same as safeScheduleRepeatingJob with intervening = true
      *
-     * @param repeatingSchedulableJob
+     * @param repeatingSchedulableJob  a scheduled job that can be fired set number of times
      */
     void safeScheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob);
 
@@ -120,22 +120,22 @@ public interface MotechSchedulerService {
     /**
      * Same as scheduleRunOnceJob, except that it would update existing job if one exists instead of creating a new one
      *
-     * @param schedulableJob
+     * @param schedulableJob ob scheduled in the future that can be fired only once
      */
     void safeScheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
 
     /**
      * Same as safeScheduleDayOfWeekJob with intervening = true
      *
-     * @param dayOfWeekSchedulableJob
+     * @param dayOfWeekSchedulableJob a Job that is scheduled on particular days of week
      */
     void scheduleDayOfWeekJob(DayOfWeekSchedulableJob dayOfWeekSchedulableJob);
 
     /**
      * Unschedules a job with the given job ID
      *
-     * @param subject : String representing domain operation eg. "pill-reminder", "outbox-call" or motechEvent.getSubject()
-     * @param externalId  : domain specific id as String.
+     * @param subject String representing domain operation eg. "pill-reminder", "outbox-call" or motechEvent.getSubject()
+     * @param externalId domain specific id as String.
      */
     void unscheduleJob(String subject, String externalId);
 
@@ -159,7 +159,6 @@ public interface MotechSchedulerService {
      * Returns next fire date of job with given ID.
      *
      * @param jobId  the {@code JobId} of job, not null
-     *
      * @return next fire date of job
      */
     DateTime getNextFireDate(JobId jobId);
@@ -167,8 +166,8 @@ public interface MotechSchedulerService {
     /**
      * Same as unscheduleJob except that it would not throw an exception if the job doesn't exist
      *
-     * @param subject
-     * @param externalId
+     * @param subject the subject of job, not null
+     * @param externalId the external ID of job, not null
      */
     void safeUnscheduleJob(String subject, String externalId);
 
@@ -197,8 +196,8 @@ public interface MotechSchedulerService {
     /**
      * Same as unscheduleRepeatingJob except that it would not throw an exception if the job doesn't exist
      *
-     * @param subject
-     * @param externalId
+     * @param subject the subject of job, not null
+     * @param externalId the external ID of job, not null
      */
     void safeUnscheduleRepeatingJob(String subject, String externalId);
 
@@ -213,8 +212,8 @@ public interface MotechSchedulerService {
     /**
      * Same as unscheduleRunOnceJob except that it would not throw an exception if the job doesn't exist
      *
-     * @param subject
-     * @param externalId
+     * @param subject the subject of job, not null
+     * @param externalId the external ID of job, not null
      */
     void safeUnscheduleRunOnceJob(String subject, String externalId);
 
@@ -225,7 +224,6 @@ public interface MotechSchedulerService {
      * @param externalJobId  the external ID of job, not null
      * @param startDate  the {@code Date} after which dates should be added, not null
      * @param endDate  the {@code Date} before which dates should be added, not null
-     *
      * @return the list of dates, null if exception was thrown
      */
     List<DateTime> getScheduledJobTimings(String subject, String externalJobId, DateTime startDate, DateTime endDate);
@@ -237,7 +235,6 @@ public interface MotechSchedulerService {
      * @param externalJobIdPrefix  the prefix of jobs
      * @param startDate  the {@code Date} after which dates should be added, not null
      * @param endDate  the {@code Date} before which dates should be added, not null
-     *
      * @return the list of dates
      */
     List<DateTime> getScheduledJobTimingsWithPrefix(String subject, String externalJobIdPrefix, DateTime startDate, DateTime endDate);
@@ -246,7 +243,6 @@ public interface MotechSchedulerService {
      * Pauses the job based on the given {@code info}.
      *
      * @param info  the information about a job
-     *
      * @return the updated job
      */
     JobBasicInfo pauseJob(JobBasicInfo info);
@@ -255,7 +251,6 @@ public interface MotechSchedulerService {
      * Resumes the job based on the given {@code info}.
      *
      * @param info  the information about a job
-     *
      * @return the updated job
      */
     JobBasicInfo resumeJob(JobBasicInfo info);
@@ -271,7 +266,6 @@ public interface MotechSchedulerService {
      * Retrieves a job based on the given information.
      *
      * @param jobInfo  the information about a job
-     *
      * @return the job matching the given information
      */
     SchedulableJob getJob(JobBasicInfo jobInfo);

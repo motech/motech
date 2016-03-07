@@ -25,7 +25,6 @@ public class WeeklyCronJobExpressionBuilder {
      * Constructor.
      *
      * @param dayOfWeekNumber  the day of week at which job should be fired, must be in range from 1 to 7
-     *
      * @throws java.lang.IllegalArgumentException when dayOfWeekNumber isn't in range from 1 to 7
      */
     public WeeklyCronJobExpressionBuilder(int dayOfWeekNumber) {
@@ -39,7 +38,6 @@ public class WeeklyCronJobExpressionBuilder {
      * Sets time, at which built job should be fired.
      *
      * @param time  the time at which job should be fired, not null
-     *
      * @return the {@code WeeklyCronJobExpressionBuilder} ready to build cron expressions
      */
     public WeeklyCronJobExpressionBuilder withTime(Time time) {
