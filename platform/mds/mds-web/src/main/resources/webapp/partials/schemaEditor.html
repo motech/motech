@@ -47,7 +47,7 @@
     <div class="row margin-before" ui-if="selectedEntity">
         <div ng-include="'../mds/resources/partials/widgets/fields.html'"></div>
         <div class="inside">
-            <div class="button-group-primary pull-right">
+            <div class="btn-group pull-right">
                 <button class="btn btn-danger" ng-disabled="!selectedEntity.modified" ng-click="abandonChanges()">
                     <i class="fa fa-fw fa-trash-o"></i> {{msg('mds.btn.abandonChanges')}}
                 </button>
@@ -55,7 +55,7 @@
                     <i class="fa fa-fw fa-save"></i> {{msg('mds.btn.saveChanges')}}
                 </button>
             </div>
-            <div class="button-group">
+            <div class="btn-group">
                 <a ng-show='hasAccessTo(DATA_BROWSER)' class="btn btn-success" type="button" target="_self" href="#/mds/dataBrowser/{{selectedEntity.id}}" id="browseInstancesButton">
                     {{msg('mds.btn.browseInstances')}}
                 </a>
