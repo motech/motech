@@ -74,25 +74,31 @@ public final class SchedulableJobBuilder {
     private static SchedulableJob buildCronSchedulableJob(Trigger trigger) {
         CronTrigger cronTrigger = (CronTrigger) trigger;
         CronSchedulableJob job = new CronSchedulableJob();
+
         job.setEndDate(getEndDate(cronTrigger));
         job.setCronExpression(cronTrigger.getCronExpression());
+
         return job;
     }
 
     private static SchedulableJob buildRepeatingSchedulableJob(Trigger trigger) {
         SimpleTrigger simpleTrigger = (SimpleTrigger) trigger;
         RepeatingSchedulableJob job = new RepeatingSchedulableJob();
+
         job.setEndDate(getEndDate(simpleTrigger));
         job.setRepeatCount(simpleTrigger.getRepeatCount());
         job.setRepeatIntervalInSeconds((int) simpleTrigger.getRepeatInterval() / SECOND);
+
         return job;
     }
 
     private static SchedulableJob buildRepeatingPeriodSchedulableJob(Trigger trigger) {
         PeriodIntervalTrigger periodTrigger = (PeriodIntervalTrigger) trigger;
         RepeatingPeriodSchedulableJob job = new RepeatingPeriodSchedulableJob();
+
         job.setEndDate(getEndDate(periodTrigger));
         job.setRepeatPeriod(periodTrigger.getRepeatPeriod());
+
         return job;
     }
 

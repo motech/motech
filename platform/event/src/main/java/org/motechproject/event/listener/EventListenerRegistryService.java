@@ -32,6 +32,7 @@ public interface EventListenerRegistryService {
      * If there are no listeners, an empty list is returned.
      *
      * @param subject the subject of the event
+     *
      * @return the matching event listeners
      */
     Set<EventListener> getListeners(String subject);

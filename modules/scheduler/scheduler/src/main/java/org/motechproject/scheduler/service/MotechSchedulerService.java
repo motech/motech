@@ -1,7 +1,6 @@
 package org.motechproject.scheduler.service;
 
 import org.joda.time.DateTime;
-import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.contract.JobBasicInfo;
@@ -34,10 +33,6 @@ import java.util.List;
  * reschedule_next_with_remaining_count -> @see SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT
  * reschedule_now_with_existing_count -> @see SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT
  * reschedule_now_with_remaining_count -> @see SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT
- *
- * @author Igor (iopushnyev@2paths.com)
- * Date: 16/02/11
- *
  */
 public interface MotechSchedulerService {
     String JOB_ID_KEY = "JobID";
@@ -45,37 +40,29 @@ public interface MotechSchedulerService {
     /**
      * Schedules the given schedulable job.
      *
-     * @param job  the job DTO
+     * @param job the SchedulableJob
      */
     void scheduleJob(SchedulableJob job);
 
     /**
-     * Schedules the given schedulable job. The Job ID by which the job will be referencing in the future should be provided
-     * in an Instance of MotechEvent in SchedulableJob (see MotechEvent.jobId)
+     * Schedules the given cron schedulable job. The Job ID by which the job will be referencing in the future should be provided
+     * in an Instance of MotechEvent in SchedulableJob
      *
-     * If a job with the same job ID as the given exists, this job will be unscheduled and the given schedulable job will be scheduled
+     * If a job with the same JobID as the given exists, this job will be unscheduled and the given schedulable job will be scheduled
      *
-     * @param cronSchedulableJob
+     * @param cronSchedulableJob a job that can be fired unlimited number of times
      */
     void scheduleJob(CronSchedulableJob cronSchedulableJob);
 
     /**
      * Same as scheduleJob, except that it would update existing job if one exists instead of creating a new one
      *
-     * @param cronSchedulableJob
+     * @param cronSchedulableJob a job that can be fired unlimited number of times
      */
     void safeScheduleJob(CronSchedulableJob cronSchedulableJob);
 
     /**
-     * Updates MotechEvent data of the job defined by jobIb in the given instance of that class
-     *
-     * @param motechEvent
-     */
-    @Deprecated // nobody's using it and can't imagine a case for this
-    void updateScheduledJob(MotechEvent motechEvent);
-
-    /**
-     * Updates the job with job key matching the key of the given job.
+     * Updates the job with jobID matching the key of the given JobID in MotechEvent.parameters map.
      *
      * @param job  the updated job
      */
@@ -85,39 +72,41 @@ public interface MotechSchedulerService {
      * Reschedules a job with the given job ID to be fired according to the given Cron Expression
      *
      * Previous version of the configured Motech Scheduled Event that will be created when the job is fired remains as it was
-     * @param subject
-     * @param externalId
-     * @param cronExpression
+     *
+     * @param subject the subject of job, not null
+     * @param externalId the external ID of job, not null
+     * @param cronExpression cron expressions for job
      */
     void rescheduleJob(String subject, String externalId, String cronExpression);
 
     /**
      * Schedules the given schedulable job. The Job ID by which the job will be referencing in the future should be provided
-     * in an Instance of MotechEvent in SchedulableJob (see MotechEvent.jobId)
+     * in an Instance of MotechEvent in SchedulableJob (see JobID in MotechEvent parameters map )
      *
      * If a job with the same job ID as the given exists, this job will be unscheduled and the given schedulable job will be scheduled
      *
-     * @param repeatingSchedulableJob
+     * @param repeatingSchedulableJob a scheduled job that can be fired set number of times
      */
     void scheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob);
 
     /**
      * Same as scheduleRepeatingJob but schedules RepeatingPeriodSchedulableJob
      *
-     * @param repeatingPeriodSchedulableJob
+     * @param repeatingPeriodSchedulableJob Job that will be fired every {@link org.joda.time.Period} of time
      */
     void scheduleRepeatingPeriodJob(RepeatingPeriodSchedulableJob repeatingPeriodSchedulableJob);
 
     /**
      * Same as scheduleRepeatingPeriodJob, except that it would update existing job if one exists instead of creating a new one
      *
-     * @param repeatingPeriodSchedulableJob
+     * @param repeatingPeriodSchedulableJob Job that will be fired every {@link org.joda.time.Period} of time
      */
     void safeScheduleRepeatingPeriodJob(RepeatingPeriodSchedulableJob repeatingPeriodSchedulableJob);
 
     /**
      * Same as safeScheduleRepeatingJob with intervening = true
-     * @param repeatingSchedulableJob
+     *
+     * @param repeatingSchedulableJob  a scheduled job that can be fired set number of times
      */
     void safeScheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob);
 
@@ -130,20 +119,23 @@ public interface MotechSchedulerService {
 
     /**
      * Same as scheduleRunOnceJob, except that it would update existing job if one exists instead of creating a new one
-     * @param schedulableJob
+     *
+     * @param schedulableJob ob scheduled in the future that can be fired only once
      */
     void safeScheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
 
     /**
      * Same as safeScheduleDayOfWeekJob with intervening = true
-     * @param dayOfWeekSchedulableJob
+     *
+     * @param dayOfWeekSchedulableJob a Job that is scheduled on particular days of week
      */
     void scheduleDayOfWeekJob(DayOfWeekSchedulableJob dayOfWeekSchedulableJob);
 
     /**
      * Unschedules a job with the given job ID
-     *  @param subject : String representing domain operation eg. "pill-reminder", "outbox-call" or motechEvent.getSubject()
-     * @param externalId  : domain specific id as String.
+     *
+     * @param subject String representing domain operation eg. "pill-reminder", "outbox-call" or motechEvent.getSubject()
+     * @param externalId domain specific id as String.
      */
     void unscheduleJob(String subject, String externalId);
 
@@ -172,8 +164,9 @@ public interface MotechSchedulerService {
 
     /**
      * Same as unscheduleJob except that it would not throw an exception if the job doesn't exist
-     * @param subject
-     * @param externalId
+     *
+     * @param subject the subject of job, not null
+     * @param externalId the external ID of job, not null
      */
     void safeUnscheduleJob(String subject, String externalId);
 
@@ -201,22 +194,25 @@ public interface MotechSchedulerService {
 
     /**
      * Same as unscheduleRepeatingJob except that it would not throw an exception if the job doesn't exist
-     * @param subject
-     * @param externalId
+     *
+     * @param subject the subject of job, not null
+     * @param externalId the external ID of job, not null
      */
     void safeUnscheduleRepeatingJob(String subject, String externalId);
 
     /**
      * Unschedules a run once job with the given job ID
-     *  @param subject : String representing domain operation eg. "pill-reminder", "outbox-call" or motechEvent.getSubject()
-     * @param externalId  : domain specific id as String.
+     *
+     * @param subject String representing domain operation eg. "pill-reminder", "outbox-call" or motechEvent.getSubject()
+     * @param externalId domain specific id as String.
      */
     void unscheduleRunOnceJob(String subject, String externalId);
 
     /**
      * Same as unscheduleRunOnceJob except that it would not throw an exception if the job doesn't exist
-     * @param subject
-     * @param externalId
+     *
+     * @param subject the subject of job, not null
+     * @param externalId the external ID of job, not null
      */
     void safeUnscheduleRunOnceJob(String subject, String externalId);
 

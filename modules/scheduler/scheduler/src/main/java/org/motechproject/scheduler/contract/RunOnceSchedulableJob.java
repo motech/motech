@@ -8,9 +8,6 @@ import org.motechproject.event.MotechEvent;
  * <p/>
  * This class is immutable
  * <p/>
- * User: Igor (iopushnyev@2paths.com)
- * Date: 16/02/11
- * Time: 1:43 PM
  */
 public final class RunOnceSchedulableJob extends SchedulableJob {
 
@@ -36,8 +33,8 @@ public final class RunOnceSchedulableJob extends SchedulableJob {
      *
      * @param motechEvent - event data message that will be send by Motech Scheduler when this job is fired
      * @param startDate   - date and time when the job fill be fired
-     * @throws IllegalArgumentException if motechEvent or startDate is null or startDate is in past
      * @param uiDefined  the flag defining, whether job has been created through the UI
+     * @throws IllegalArgumentException if motechEvent or startDate is null or startDate is in past
      */
     public RunOnceSchedulableJob(MotechEvent motechEvent, DateTime startDate, boolean uiDefined) {
         super(motechEvent, startDate, uiDefined, false);
@@ -61,15 +58,18 @@ public final class RunOnceSchedulableJob extends SchedulableJob {
     public int hashCode() {
         int result = getMotechEvent().hashCode();
         result = 31 * result + getStartDate().hashCode();
+
         return result;
     }
 
     @Override
     public String toString() {
-        return "RunOnceSchedulableJob{" +
-                "motechEvent=" + getMotechEvent() +
-                ", startDate=" + getStartDate() +
-                '}';
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("RunOnceSchedulableJob{motechEvent=").append(getMotechEvent())
+                .append(", startDate=").append(getStartDate()).append("}");
+
+        return builder.toString();
     }
 }
 

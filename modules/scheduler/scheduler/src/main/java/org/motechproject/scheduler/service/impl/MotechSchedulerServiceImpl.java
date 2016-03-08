@@ -192,41 +192,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     }
 
     @Override
-    @Deprecated // nobody's using it and can't imagine a case for this
-    public void updateScheduledJob(MotechEvent motechEvent) {
-        logObjectIfNotNull(motechEvent);
-
-        assertArgumentNotNull("MotechEvent", motechEvent);
-
-        JobId jobId = new CronJobId(motechEvent);
-        Trigger trigger;
-
-        try {
-            trigger = scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
-
-            if (trigger == null) {
-                throw new MotechSchedulerException("Can not update the job: " + jobId + " The job does not exist (not scheduled)");
-            }
-
-        } catch (SchedulerException e) {
-            String errorMessage = "Can not update the job: " + jobId +
-                    ".\n Can not get a trigger associated with that job " + e.getMessage();
-            throw new MotechSchedulerException(errorMessage, e);
-        }
-
-        try {
-            scheduler.deleteJob(jobKey(jobId.value(), JOB_GROUP_NAME));
-        } catch (SchedulerException e) {
-            throw new MotechSchedulerException(String.format("Can not update the job: %s.\n Can not delete old instance of the job %s", jobId, e.getMessage()), e);
-        }
-
-        JobDetail jobDetail = newJob(MotechScheduledJob.class).withIdentity(jobId.value(), JOB_GROUP_NAME).build();
-        putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
-
-        scheduleJob(jobDetail, trigger);
-    }
-
-    @Override
     public void updateJob(SchedulableJob job) {
         scheduleJob(job, true);
     }

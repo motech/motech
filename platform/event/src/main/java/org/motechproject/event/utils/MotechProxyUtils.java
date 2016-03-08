@@ -16,6 +16,7 @@ public final class MotechProxyUtils {
      *
      * @param object the object to be checked
      * @return <code>true</code> if the object is an instance of
+     *
      * <code>MotechListenerAbstractProxy</code>;
      * <code>false</code> otherwise
      */

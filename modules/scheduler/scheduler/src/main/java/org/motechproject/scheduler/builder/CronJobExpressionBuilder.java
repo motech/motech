@@ -39,6 +39,7 @@ public class CronJobExpressionBuilder {
     private int getEndHour() {
         final int lastHourOfDay = 23;
         int currentEndHour = startTime.getHour() + repeatWindowInHours;
+
         return (currentEndHour > lastHourOfDay) ? lastHourOfDay : currentEndHour;
     }
 }

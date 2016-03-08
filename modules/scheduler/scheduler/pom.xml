@@ -176,8 +176,6 @@
                             org.motechproject.server.config.service,
                             org.motechproject.config.service,
                             org.motechproject.commons.sql.service,
-                            org.motechproject.mds.service,
-                            org.motechproject.mds.service.impl,
                             com.googlecode.flyway.core,
                             *
                         </Import-Package>

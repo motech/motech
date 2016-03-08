@@ -22,10 +22,8 @@ public interface MotechSchedulerDatabaseService {
      * Sorts all jobs with ascending or descending order for given column.
      *
      * @param jobsSearchSettings contains filter, sorting and pagination jobs options.
-     *
      * @return list with {@link org.motechproject.scheduler.contract.JobBasicInfo}
      * for given sorting and pagination option
-     *
      * @throws MotechSchedulerJobRetrievalException when the query fails.
      */
     List<JobBasicInfo> getScheduledJobsBasicInfo(JobsSearchSettings jobsSearchSettings) throws MotechSchedulerJobRetrievalException;
@@ -34,7 +32,6 @@ public interface MotechSchedulerDatabaseService {
      * Returns detailed information about job matching given {@code JobBasicInfo}.
      *
      * @param jobBasicInfo  the {@code JobBasicInfo} about the job
-     *
      * @return the detailed information about job
      */
     JobDetailedInfo getScheduledJobDetailedInfo(JobBasicInfo jobBasicInfo) throws MotechSchedulerJobRetrievalException;
@@ -43,9 +40,7 @@ public interface MotechSchedulerDatabaseService {
      * Counts all triggers in TRIGGER table which matches the filters built from grid settings.
      *
      * @param jobsSearchSettings contains filter jobs information.
-     *
      * @return number of all triggers which matches the filters built from grid settings.
-     *
      * @throws MotechSchedulerJobRetrievalException when the query fails.
      */
     int countJobs(JobsSearchSettings jobsSearchSettings) throws MotechSchedulerJobRetrievalException;

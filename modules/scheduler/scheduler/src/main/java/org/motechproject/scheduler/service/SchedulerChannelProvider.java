@@ -160,18 +160,16 @@ public class SchedulerChannelProvider implements DynamicChannelProvider {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("SELECT ");
-        sb.append(getCorrectName(JOB_NAME, isPostgres));
-        sb.append(", ");
-        sb.append(getCorrectName(JOB_DESCRIPTION, isPostgres));
-        sb.append(", ");
-        sb.append(getCorrectName(JOB_DATA, isPostgres));
-        sb.append(" FROM ");
-        sb.append(getCorrectName(QRTZ_JOB_DETAILS, isPostgres));
-        sb.append(" LIMIT ");
-        sb.append(pageSize);
-        sb.append(" OFFSET ");
-        sb.append((page - 1) * pageSize);
+        sb.append("SELECT ")
+                .append(getCorrectName(JOB_NAME, isPostgres)).append(", ")
+                .append(getCorrectName(JOB_DESCRIPTION, isPostgres)).append(", ")
+                .append(getCorrectName(JOB_DATA, isPostgres))
+                .append(" FROM ")
+                .append(getCorrectName(QRTZ_JOB_DETAILS, isPostgres))
+                .append(" LIMIT ")
+                .append(pageSize)
+                .append(" OFFSET ")
+                .append((page - 1) * pageSize);
 
         return sb.toString();
     }
@@ -183,19 +181,12 @@ public class SchedulerChannelProvider implements DynamicChannelProvider {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("SELECT ");
-        sb.append(getCorrectName(JOB_NAME, isPostgres));
-        sb.append(", ");
-        sb.append(getCorrectName(JOB_DESCRIPTION, isPostgres));
-        sb.append(", ");
-        sb.append(getCorrectName(JOB_DATA, isPostgres));
-        sb.append(" FROM ");
-        sb.append(getCorrectName(QRTZ_JOB_DETAILS, isPostgres));
-        sb.append(" WHERE ");
-        sb.append(getCorrectName(JOB_NAME, isPostgres));
-        sb.append(" = \'");
-        sb.append(subject);
-        sb.append("\'");
+        sb.append("SELECT ").append(getCorrectName(JOB_NAME, isPostgres)).append(", ")
+                .append(getCorrectName(JOB_DESCRIPTION, isPostgres)).append(", ")
+                .append(getCorrectName(JOB_DATA, isPostgres))
+                .append(" FROM ").append(getCorrectName(QRTZ_JOB_DETAILS, isPostgres))
+                .append(" WHERE ").append(getCorrectName(JOB_NAME, isPostgres))
+                .append(" = \'").append(subject).append("\'");
 
         return sb.toString();
     }
