@@ -58,9 +58,14 @@ public class RepeatingPeriodSchedulableJob extends MisfireSchedulableJob {
 
     @Override
     public String toString() {
-        return "RepeatingSchedulableJob [motechEvent=" + getMotechEvent()
-                + ", startTime=" + getStartDate() + ", endTime=" + getEndDate()
-                + ", repeatPeriod=" + repeatPeriod + "]";
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("RepeatingSchedulableJob [motechEvent=").append(getMotechEvent())
+                .append(", startTime=").append(getStartDate())
+                .append(", endTime=").append(getEndDate())
+                .append(", repeatPeriod=").append(repeatPeriod).append("]");
+
+        return builder.toString();
     }
 
     @Override
