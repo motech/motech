@@ -21,10 +21,12 @@ import org.quartz.Trigger;
 
 import static org.motechproject.scheduler.constants.SchedulerConstants.CRON;
 import static org.motechproject.scheduler.constants.SchedulerConstants.EVENT_TYPE_KEY_NAME;
+import static org.motechproject.scheduler.constants.SchedulerConstants.IGNORE_PAST_FIRES_AT_START;
 import static org.motechproject.scheduler.constants.SchedulerConstants.REPEATING;
 import static org.motechproject.scheduler.constants.SchedulerConstants.REPEATING_PERIOD;
 import static org.motechproject.scheduler.constants.SchedulerConstants.RUN_ONCE;
 import static org.motechproject.scheduler.constants.SchedulerConstants.UI_DEFINED;
+import static org.motechproject.scheduler.constants.SchedulerConstants.USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE;
 
 /**
  * Responsible for building jobs based on the given information;
@@ -48,13 +50,13 @@ public final class SchedulableJobBuilder {
 
         switch (getJobType(key)) {
             case CRON:
-                job = buildCronSchedulableJob(trigger);
+                job = buildCronSchedulableJob(trigger, dataMap);
                 break;
             case REPEATING:
-                job = buildRepeatingSchedulableJob(trigger);
+                job = buildRepeatingSchedulableJob(trigger, dataMap);
                 break;
             case REPEATING_PERIOD:
-                job = buildRepeatingPeriodSchedulableJob(trigger);
+                job = buildRepeatingPeriodSchedulableJob(trigger, dataMap);
                 break;
             case RUN_ONCE:
                 job = buildRunOnceSchedulableJob();
@@ -71,28 +73,33 @@ public final class SchedulableJobBuilder {
         return job;
     }
 
-    private static SchedulableJob buildCronSchedulableJob(Trigger trigger) {
+    private static SchedulableJob buildCronSchedulableJob(Trigger trigger, JobDataMap dataMap) {
         CronTrigger cronTrigger = (CronTrigger) trigger;
         CronSchedulableJob job = new CronSchedulableJob();
         job.setEndDate(getEndDate(cronTrigger));
         job.setCronExpression(cronTrigger.getCronExpression());
+        job.setIgnorePastFiresAtStart(dataMap.getBoolean(IGNORE_PAST_FIRES_AT_START));
         return job;
     }
 
-    private static SchedulableJob buildRepeatingSchedulableJob(Trigger trigger) {
+    private static SchedulableJob buildRepeatingSchedulableJob(Trigger trigger, JobDataMap dataMap) {
         SimpleTrigger simpleTrigger = (SimpleTrigger) trigger;
         RepeatingSchedulableJob job = new RepeatingSchedulableJob();
         job.setEndDate(getEndDate(simpleTrigger));
         job.setRepeatCount(simpleTrigger.getRepeatCount());
         job.setRepeatIntervalInSeconds((int) simpleTrigger.getRepeatInterval() / SECOND);
+        job.setIgnorePastFiresAtStart(dataMap.getBoolean(IGNORE_PAST_FIRES_AT_START));
+        job.setUseOriginalFireTimeAfterMisfire(dataMap.getBoolean(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE));
         return job;
     }
 
-    private static SchedulableJob buildRepeatingPeriodSchedulableJob(Trigger trigger) {
+    private static SchedulableJob buildRepeatingPeriodSchedulableJob(Trigger trigger, JobDataMap dataMap) {
         PeriodIntervalTrigger periodTrigger = (PeriodIntervalTrigger) trigger;
         RepeatingPeriodSchedulableJob job = new RepeatingPeriodSchedulableJob();
         job.setEndDate(getEndDate(periodTrigger));
         job.setRepeatPeriod(periodTrigger.getRepeatPeriod());
+        job.setIgnorePastFiresAtStart(dataMap.getBoolean(IGNORE_PAST_FIRES_AT_START));
+        job.setUseOriginalFireTimeAfterMisfire(dataMap.getBoolean(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE));
         return job;
     }
 
@@ -101,7 +108,7 @@ public final class SchedulableJobBuilder {
     }
 
     private static DateTime getEndDate(Trigger trigger) {
-        return new DateTime(trigger.getEndTime());
+        return trigger.getEndTime() == null ? null : new DateTime(trigger.getEndTime());
     }
 
     private static String getJobType(JobKey jobKey) throws SchedulerException {

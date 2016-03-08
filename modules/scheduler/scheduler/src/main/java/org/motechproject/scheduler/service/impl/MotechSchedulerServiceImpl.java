@@ -59,7 +59,9 @@ import static java.lang.String.format;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.scheduler.constants.SchedulerConstants.EVENT_TYPE_KEY_NAME;
+import static org.motechproject.scheduler.constants.SchedulerConstants.IGNORE_PAST_FIRES_AT_START;
 import static org.motechproject.scheduler.constants.SchedulerConstants.UI_DEFINED;
+import static org.motechproject.scheduler.constants.SchedulerConstants.USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE;
 import static org.motechproject.scheduler.validation.SchedulableJobValidator.validateCronSchedulableJob;
 import static org.motechproject.scheduler.validation.SchedulableJobValidator.validateDayOfWeekSchedulableJob;
 import static org.motechproject.scheduler.validation.SchedulableJobValidator.validateRepeatingPeriodSchedulableJob;
@@ -565,6 +567,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 .build();
 
         jobDetail.getJobDataMap().put(UI_DEFINED, job.isUiDefined());
+        jobDetail.getJobDataMap().put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
@@ -643,6 +646,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
         jobDetail.getJobDataMap().put(UI_DEFINED, job.isUiDefined());
+        jobDetail.getJobDataMap().put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
+        jobDetail.getJobDataMap().put(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE, job.isUseOriginalFireTimeAfterMisfire());
 
         ScheduleBuilder scheduleBuilder;
         if (!job.isUseOriginalFireTimeAfterMisfire()) {
@@ -682,6 +687,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
         jobDetail.getJobDataMap().put(UI_DEFINED, job.isUiDefined());
+        jobDetail.getJobDataMap().put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
+        jobDetail.getJobDataMap().put(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE, job.isUseOriginalFireTimeAfterMisfire());
 
         ScheduleBuilder scheduleBuilder = PeriodIntervalScheduleBuilder.periodIntervalSchedule()
                 .withRepeatPeriod(job.getRepeatPeriod())
