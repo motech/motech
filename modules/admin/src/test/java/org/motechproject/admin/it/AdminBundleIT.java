@@ -131,7 +131,7 @@ public class AdminBundleIT extends BasePaxIT {
         assertTrue("No messages listed", json.size() > 0);
     }
 
-//    @Test
+    @Test
     public void testUploadBundleFromRepository() throws IOException, InterruptedException {
         uploadBundle("Repository", "org.motechproject:cms-lite:LATEST", null,
                 "on","org.motechproject.cms-lite");
