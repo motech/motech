@@ -1,6 +1,7 @@
 package org.motechproject.mds.query;
 
 import org.apache.commons.beanutils.BeanComparator;
+import org.apache.commons.collections.comparators.NullComparator;
 import org.apache.commons.collections.comparators.ReverseComparator;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.Order;
@@ -55,7 +56,7 @@ public final class InMemoryQueryFilter {
         List<Comparator<T>> comparatorList = new ArrayList<>();
 
         for (Order order : orderList) {
-            Comparator<T> comparator = new BeanComparator<>(order.getField());
+            Comparator<T> comparator = new BeanComparator<>(order.getField(), new NullComparator());
 
             // reverse it if order is descending
             if (order.getDirection() == Order.Direction.DESC) {

@@ -122,7 +122,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                            <outputDirectory>${motech.dir}/bundles</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>target</directory>
@@ -140,7 +140,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${user.home}/.motech/config</outputDirectory>
+                            <outputDirectory>${motech.dir}/config</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>src/main/resources</directory>

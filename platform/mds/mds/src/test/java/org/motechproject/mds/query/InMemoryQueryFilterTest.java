@@ -25,12 +25,13 @@ public class InMemoryQueryFilterTest {
     public void setUp() {
         testCollection = new HashSet<>();
 
-        testCollection.add(record("zet", 1));
-        testCollection.add(record("test", 2));
-        testCollection.add(record("aaa", 4));
-        testCollection.add(record("something", 3));
-        testCollection.add(record("hmm", 5));
-        testCollection.add(record("hmm", 6));
+        testCollection.add(record("zet", 1L));
+        testCollection.add(record("test", 2L));
+        testCollection.add(record("aaa", 4L));
+        testCollection.add(record("something", 3L));
+        testCollection.add(record("hmm", 5L));
+        testCollection.add(record("hmm", 6L));
+        testCollection.add(record("nullRecord", null));
     }
 
     @Test
@@ -39,8 +40,8 @@ public class InMemoryQueryFilterTest {
 
         List<Record> result = InMemoryQueryFilter.filter(testCollection, queryParams);
 
-        assertListByValues(result, asList("zet", "test", "something", "hmm", "hmm", "aaa"));
-        assertListByIds(result, asList(1L, 2L, 3L, 5L, 6L, 4L));
+        assertListByValues(result, asList("zet", "test", "something", "nullRecord", "hmm", "hmm", "aaa"));
+        assertListByIds(result, asList(1L, 2L, 3L, null, 5L, 6L, 4L));
     }
 
     @Test
@@ -49,8 +50,8 @@ public class InMemoryQueryFilterTest {
 
         List<Record> result = InMemoryQueryFilter.filter(testCollection, queryParams);
 
-        assertListByValues(result, asList("aaa", "hmm", "hmm", "something", "test", "zet"));
-        assertListByIds(result, asList(4L, 5L, 6L, 3L, 2L, 1L));
+        assertListByValues(result, asList("aaa", "hmm", "hmm", "nullRecord", "something", "test", "zet"));
+        assertListByIds(result, asList(4L, 5L, 6L, null, 3L, 2L, 1L));
     }
 
     @Test
@@ -64,8 +65,8 @@ public class InMemoryQueryFilterTest {
 
         queryParams = new QueryParams(2, 3, order);
         result = InMemoryQueryFilter.filter(testCollection, queryParams);
-        assertListByValues(result, asList("something", "test", "zet"));
-        assertListByIds(result, asList(3L, 2L, 1L));
+        assertListByValues(result, asList("nullRecord", "something", "test"));
+        assertListByIds(result, asList(null, 3L, 2L));
     }
 
     @Test
@@ -74,8 +75,8 @@ public class InMemoryQueryFilterTest {
 
         List<Record> result = InMemoryQueryFilter.filter(testCollection, queryParams);
 
-        assertListByValues(result, asList("hmm", "hmm", "aaa"));
-        assertListByIds(result, asList(5L, 6L, 4L));
+        assertListByValues(result, asList("nullRecord", "hmm", "hmm"));
+        assertListByIds(result, asList(null, 5L, 6L));
     }
 
     @Test
@@ -103,8 +104,8 @@ public class InMemoryQueryFilterTest {
 
         List<Record> result = InMemoryQueryFilter.filter(testCollection, queryParams);
 
-        assertListByValues(result, asList("zet", "test", "something", "aaa", "hmm", "hmm"));
-        assertListByIds(result, asList(1L, 2L, 3L, 4L, 5L, 6L));
+        assertListByValues(result, asList("zet", "test", "something", "aaa", "hmm", "hmm", "nullRecord"));
+        assertListByIds(result, asList(1L, 2L, 3L, 4L, 5L, 6L, null));
     }
 
     @Test
@@ -114,8 +115,8 @@ public class InMemoryQueryFilterTest {
 
         List<Record> result = InMemoryQueryFilter.filter(testCollection, queryParams);
 
-        assertListByValues(result, asList("zet", "test", "something", "hmm", "hmm", "aaa"));
-        assertListByIds(result, asList(1L, 2L, 3L, 6L, 5L, 4L));
+        assertListByValues(result, asList("zet", "test", "something", "nullRecord", "hmm", "hmm", "aaa"));
+        assertListByIds(result, asList(1L, 2L, 3L, null, 6L, 5L, 4L));
     }
 
     private void assertListByValues(List<Record> result, List<String> values) {
@@ -126,7 +127,7 @@ public class InMemoryQueryFilterTest {
         assertEquals(ids, extract(result, on(Record.class).getId()));
     }
 
-    private Record record(String value, long id) {
+    private Record record(String value, Long id) {
         Record record = new Record();
         record.setValue(value);
         record.setId(id);
