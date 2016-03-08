@@ -648,7 +648,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
      * @param settingsRecord  the settings to be add
      */
     @Transactional
-    private void addOrUpdateSettings(SettingsRecord settingsRecord) {
+    public void addOrUpdateSettings(SettingsRecord settingsRecord) {
         SettingsRecord record = getSettingsRecord();
         if (record == null) {
             settingService.create(settingsRecord);
