@@ -1,5 +1,5 @@
-<input integer-validity inset-validity="{{getValidationCriteria(field, 2)}}" outset-validity="{{getValidationCriteria(field, 3)}}"
-       ng-required="{{field.required}}" type="text" min-validity="{{getValidationCriteria(field, 0)}}" max-validity="{{getValidationCriteria(field, 1)}}"
+<input integer-validity inset-validity="2" outset-validity="3"
+       ng-required="{{field.required}}" type="text" min-validity="0" max-validity="1"
        class="form-control input-xlarge-fluid" ng-model="field.value" placeholder="{{field.placeholder}}" mds-field-id="{{field.id}}" ng-readonly="shouldHideEdition(field)">
 <span mds-content-tooltip="limitsAvailableIntegerValues" mds-field-id="{{field.id}}" class="glyphicon glyphicon-info-sign" ng-show="anyValidationCriteria(field)"></span>
 <div id="content{{field.id}}" class="hide">

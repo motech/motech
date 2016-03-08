@@ -2,11 +2,14 @@ package org.motechproject.admin.bundles;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.motechproject.config.core.domain.BootstrapConfig;
+import org.motechproject.config.service.ConfigurationService;
 import org.osgi.framework.Bundle;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,8 +25,16 @@ import java.net.URL;
 @Component
 public class BundleDirectoryManager {
 
-    @Value("${user.home}/.motech/bundles")
+    @Autowired
+    private ConfigurationService configurationService;
+
     private String bundleDir;
+
+    @PostConstruct
+    public void init() {
+        BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
+        bundleDir = bootstrapConfig.getMotechDir() + "/bundles";
+    }
 
     /**
      * Returns the directory used to store Motech bundles

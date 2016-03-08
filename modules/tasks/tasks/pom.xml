@@ -80,7 +80,7 @@
                             <excludeDefaultDirectories>true</excludeDefaultDirectories>
                             <filesets>
                                 <fileset>
-                                    <directory>${user.home}/.motech/config/org.motechproject.motech-tasks-bundle</directory>
+                                    <directory>${motech.dir}/config/org.motechproject.motech-tasks-bundle</directory>
                                     <includes>
                                         <include>**/*</include>
                                     </includes>
@@ -129,8 +129,9 @@
                         <Export-Package>
                             org.motechproject.tasks.service;version=${project.version},
                             org.motechproject.tasks.contract;version=${project.version},
+                            org.motechproject.tasks.contract.builder;version=${project.version},
+                            org.motechproject.tasks.contract.json;version=${project.version},
                             org.motechproject.tasks.domain;version=${project.version},
-                            org.motechproject.tasks.json;version=${project.version},
                             org.motechproject.tasks.repository;version=${project.version},
                             org.motechproject.tasks.annotations;version=${project.version},
                             org.motechproject.tasks.exception;version=${project.version},
@@ -177,7 +178,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                            <outputDirectory>${motech.dir}/bundles</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>target</directory>

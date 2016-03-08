@@ -66,8 +66,8 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <move toDir="${user.home}/.motech/bundles_back">
-                                    <fileset dir="${user.home}/.motech/bundles" includes="**/*" />
+                                <move toDir="${motech.dir}/bundles_back">
+                                    <fileset dir="${motech.dir}/bundles" includes="**/*" />
                                 </move>
                             </tasks>
                         </configuration>
@@ -81,10 +81,10 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <move toDir="${user.home}/.motech/bundles">
-                                    <fileset dir="${user.home}/.motech/bundles_back" includes="**/*" />
+                                <move toDir="${motech.dir}/bundles">
+                                    <fileset dir="${motech.dir}/bundles_back" includes="**/*" />
                                 </move>
-                                <delete dir="${user.home}/.motech/bundles_back" />
+                                <delete dir="${motech.dir}/bundles_back" />
                             </tasks>
                         </configuration>
                     </execution>

@@ -24,6 +24,7 @@ public class ConfigLocationFileStore {
     private PropertiesConfiguration propertiesConfiguration;
     public static final String CONFIG_LOCATION_PROPERTY_KEY = "config.location";
 
+
     @Autowired
     public ConfigLocationFileStore(PropertiesConfiguration propertiesConfiguration) {
         this.propertiesConfiguration = propertiesConfiguration;
@@ -35,9 +36,7 @@ public class ConfigLocationFileStore {
      * @return the list of configuration locations
      */
     public Iterable<ConfigLocation> getAll() {
-        List<String> configLocations = loadAll();
-
-        return map(configLocations);
+        return map(loadAll());
     }
 
     private Iterable<ConfigLocation> map(List<String> configPaths) {
