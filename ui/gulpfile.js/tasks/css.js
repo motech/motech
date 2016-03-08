@@ -16,6 +16,7 @@ gulp.task('css', function () {
     files.push(paths.src);
     gulp.src(files)
         .pipe(concat('motech.css'))
+        .pipe(sass({ includePaths: require('node-bourbon').includePaths }))
         .pipe(sass().on('error', sass.logError))
         .pipe(bless())
         .pipe(gulp.dest(paths.dest));
