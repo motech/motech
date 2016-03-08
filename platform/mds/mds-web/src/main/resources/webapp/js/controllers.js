@@ -1547,11 +1547,15 @@
         /* ~~~~~ FIELD FUNCTIONS ~~~~~ */
 
         $scope.isUniqueEditable = function(field) {
-            return !field.readOnly
-                   && field.type.typeClass !== 'java.util.Map'
-                   && field.type.typeClass !== "org.motechproject.mds.domain.OneToManyRelationship"
-                   && field.type.typeClass !== "org.motechproject.mds.domain.ManyToManyRelationship"
-                   && field.type.typeClass !== "java.util.Collection";
+            if (field.type) {
+                return !field.readOnly
+                                   && field.type.typeClass !== 'java.util.Map'
+                                   && field.type.typeClass !== "org.motechproject.mds.domain.OneToManyRelationship"
+                                   && field.type.typeClass !== "org.motechproject.mds.domain.ManyToManyRelationship"
+                                   && field.type.typeClass !== "java.util.Collection";
+            }
+            return false;
+
         };
 
         /**
@@ -1719,9 +1723,11 @@
         */
         $scope.fieldUsedInReferencedLookup = function (field) {
             var i;
-            for (i = 0; i < field.lookups.length; i += 1) {
-                if (field.lookups[i].referenced) {
-                    return true;
+            if (field.lookups) {
+                for (i = 0; i < field.lookups.length; i += 1) {
+                    if (field.lookups[i].referenced) {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -2737,7 +2743,11 @@
         * @return {string} type information taken from parameter object.
         */
         $scope.getTypeSingleClassName = function (type) {
-            return type.displayName.substring(type.displayName.lastIndexOf('.') + 1);
+            if (type) {
+                return type.displayName.substring(type.displayName.lastIndexOf('.') + 1);
+            }
+            return "";
+
         };
 
         /**
@@ -3457,6 +3467,9 @@
         $scope.showViewTrashButton = true;
         $scope.showFiltersButton = true;
         $scope.showDeleteInstanceButton = true;
+        $scope.editRelatedFields = null;
+        $scope.newRelatedFields = null;
+        $scope.relatedMode = {isNested: false};
 
         $scope.customModals = [];
 
@@ -3510,6 +3523,47 @@
             });
         };
 
+        $scope.addNewRelatedInstance = function (field) {
+            $scope.relatedMode.isNested = true;
+            var relatedClass  = $scope.getRelatedClass(field);
+            $scope.editedField = angular.copy(field);
+            $('ng-form[name=' + field.name + '] #new-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
+            $scope.editedInstanceId = undefined;
+            $('body > #new-related_' + field.id).on('hide.bs.modal', function () {
+                $scope.relatedMode.isNested = false;
+                $scope.newRelatedFields = null;
+                $scope.editRelatedFields = null;
+            });
+
+            $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
+                Instances.newInstance({id: data.id}, function(dataInstance) {
+                    $scope.currentRelationRecord = dataInstance;
+                    $scope.newRelatedFields = angular.copy(dataInstance.fields);
+                    angular.forEach($scope.newRelatedFields, function(field) {
+                        if ( field.type.typeClass === "java.util.List" && field.value !== null && field.value.length === 0 ) {
+                            field.value = null;
+                        }
+                    });
+                    unblockUI();
+                });
+            }).error(function(response) {
+                handleResponse('mds.error', 'mds.error.instancesList', response);
+            });
+
+        };
+
+        $scope.cancelAddRelatedForm = function (fieldId) {
+            $scope.newRelatedFields = null;
+            $scope.relatedMode.isNested = false;
+            $('body > #new-related_' + fieldId).modal('hide');
+        };
+
+        $scope.cancelEditRelatedForm = function (fieldId) {
+            $scope.editRelatedFields = null;
+            $scope.relatedMode.isNested = false;
+            $('body > #edit-related_' + fieldId).modal('hide');
+        };
+
         /**
         * Sets selected entity by module and entity name
         */
@@ -3549,6 +3603,69 @@
             });
         };
 
+        /**
+        * Sets the selected instance to edit
+        */
+        $scope.editRelatedInstanceOfEntity = function(instanceId, relatedEntityId, field) {
+            $scope.relatedMode.isNested = true;
+            instanceId = parseInt(instanceId, 10);
+            $scope.editedInstanceId = instanceId;
+            $('ng-form[name=' + field.name + '] #edit-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
+            var addedNewRecords,
+                editExisting = true,
+                setExisting = function () {
+                    $http.get('../mds/instances/' + relatedEntityId + '/instance/' + instanceId).success(function (data) {
+                        $scope.editRelatedFields = angular.copy(data.fields);
+                    }).error(function(response) {
+                        handleResponse('mds.error', 'mds.error.instancesList', response);
+                    });
+                },
+                setExistingWithoutId = function () {
+                    var relatedClass = $scope.getRelatedClass(field);
+                    $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
+                        relatedEntityId = data.id;
+                        setExisting();
+                        unblockUI();
+                    }).error(function(response) {
+                        handleResponse('mds.error', 'mds.error.instancesList', response);
+                    });
+                };
+
+            if (instanceId !== null && field.value.addedNewRecords !== null && field.value.addedNewRecords.length > 0) {
+                $scope.editedField = field;
+                addedNewRecords = field.value.addedNewRecords;
+                if (field.type.defaultName !== "manyToManyRelationship" && field.type.defaultName !== "oneToManyRelationship") {
+                    editExisting = false;
+                    $scope.safeApply(function () {
+                        $scope.editRelatedFields = angular.copy(addedNewRecords[0].fields);
+                     });
+                } else {
+                    angular.forEach(addedNewRecords, function (addedRecord, index) {
+                        if (MDSUtils.find(addedNewRecords[index].fields, [{ field: 'name', value: 'id'}], true).value === instanceId) {
+                            $scope.$apply(function () {
+                                $scope.editRelatedFields = angular.copy(addedNewRecords[index].fields);
+                                editExisting = false;
+                            return;
+                            });
+                        }
+                    });
+                }
+                if (editExisting) {
+                    if (relatedEntityId === undefined) {
+                        setExistingWithoutId();
+                    } else {
+                        setExisting();
+                    }
+                }
+            } else {
+                if (relatedEntityId === undefined) {
+                    setExistingWithoutId();
+                } else {
+                    setExisting();
+                }
+            }
+        };
+
         $scope.shouldHideEdition = function(field) {
             return field.nonEditable || $scope.previousInstance || $scope.isAutoGenerated(field) || ($scope.selectedEntity && ($scope.selectedEntity.nonEditable || $scope.selectedEntity.readOnlyAccess));
         };
@@ -3557,37 +3674,50 @@
             return $scope.selectedEntity && ($scope.selectedEntity.nonEditable || $scope.selectedEntity.readOnlyAccess);
         };
 
-        $scope.closeRelatedEntityModal = function() {
-            $("#instanceBrowserModal").modal('hide');
+        $scope.closeRelatedEntityModal = function(fieldId) {
+            $("body > #instanceBrowserModal_" + fieldId).modal('hide');
         };
 
         $scope.addRelatedInstance = function(id, entity, field) {
             blockUI();
-            $http.get('../mds/instances/' + $scope.selectedEntity.id + '/field/' + field.id + '/instance/' + id)
-            .success(function (data) {
+            id = parseInt(id, 10);
+            $http.get('../mds/instances/' + entity.id + '/field/' + field.id + '/instance/' + id).success(function (data) {
                 var closeModal = false;
                 if ($scope.editedField.type.defaultName === "manyToManyRelationship"
                     || $scope.editedField.type.defaultName === "oneToManyRelationship") {
 
                     if ($scope.editedField.value === undefined || $scope.editedField.value === null || $scope.editedField.value === '') {
                         $scope.editedField.value = [];
-                        $scope.editedField.displayValue = [];
+                        $scope.editedField.displayValue = {};
+                    }
+                    if (!angular.isObject($scope.editedField.displayValue)) {
+                        $scope.editedField.displayValue = {};
                     }
                     if ($scope.editedField.displayValue[id] === undefined) {
-                        $scope.editedField.value.push(data.value);
                         $scope.editedField.displayValue[id] = data.displayValue;
+                        $scope.relatedData.addExisting(field, data.value.id);
                         closeModal = true;
                     } else {
                         motechAlert('mds.info.instanceAlreadyRelated', 'mds.info');
                     }
                 } else {
-                    $scope.editedField.value = data.value;
-                    $scope.editedField.displayValue = data.displayValue;
+                    if ($scope.editedField.value === null || $scope.editedField.value === undefined || $scope.editedField.value.addedIds === undefined) {
+                        $scope.relatedData.initValue(field);
+                    }
+                    if (parseInt(field.displayValue, 10) !== id) {
+                        if (!isNaN(parseInt(field.displayValue, 10))) {
+                            $scope.relatedData.setAsRemoved(field, parseInt(field.displayValue, 10));
+                        }
+                    $scope.relatedData.addExisting($scope.editedField, id);
+                    $scope.editedField.displayValue = id;
                     closeModal = true;
+                    } else {
+                        motechAlert('mds.info.instanceAlreadyRelated', 'mds.info');
+                    }
                 }
                 unblockUI();
                 if (closeModal === true) {
-                    $scope.closeRelatedEntityModal();
+                    $scope.closeRelatedEntityModal(field.id);
                 }
             }).error(function (response) {
                 handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
@@ -3602,17 +3732,211 @@
            field.value = undefined;
         };
 
-        $scope.removeManyRelatedData = function(field, obj) {
-           field.value.removeObject(obj);
-           field.displayValue[obj.id] = undefined;
+        $scope.removeManyRelatedData = function(field, relatedInstance) {
+            if (field && relatedInstance !== undefined && relatedInstance.id !== undefined) {
+                field.displayValue[relatedInstance.id] = undefined;
+                field.value.removeObject(relatedInstance);
+            }
         };
 
-        $scope.setRelatedEntity = function(field) {
-            $('#instanceBrowserModal').on('hide.bs.modal', function () {
-                $scope.relatedEntity = undefined;
-                $scope.filterBy = [];
-            });
+        /**
+        * Set of methods used to manipulate the data relationships
+        */
+        $scope.relatedData = {
 
+            initValue: function (field) {
+                field.value = {
+                    removedIds: [],
+                    addedIds: [],
+                    addedNewRecords: []
+                };
+            },
+
+            addNew: function (field, relatedData) {
+                var newId = -2147483648;
+                $.jgrid.randId();
+                newId = newId + $.jgrid.guid;
+                angular.forEach(relatedData, function (rData, index) {
+                    if (rData.name === 'id' && rData.value === null) {
+                        relatedData[index].value = newId;
+                        return;
+                    }
+                });
+                if (field.value === null || field.value === "") {
+                    $scope.relatedData.initValue(field);
+                }
+                $scope.safeApply(function () {
+                    if (field.type.defaultName !== "manyToManyRelationship" && field.type.defaultName !== "oneToManyRelationship") {
+                        field.value.addedIds = [];
+                        field.value.addedNewRecords = [];
+                        field.displayValue = '';
+                    }
+                    field.value.addedNewRecords.push({id: null, entitySchemaId: $scope.currentRelationRecord.entitySchemaId, fields: relatedData} );
+                });
+                $('body > #new-related_' + field.id).modal('hide');
+                $scope.newRelatedFields = null;
+                $scope.relatedMode.isNested = false;
+            },
+
+            addExisting: function (field, relatedDataId) {
+            var i = this.checkIfInclude(field, relatedDataId, 'removedIds'),
+                checkId = function(item) {
+                   return item.name === 'id' && item.value === relatedDataId;
+                };
+                if (i >= 0 && i !== false) {
+                    field.value.removedIds.splice(i, 1);
+                    if (field.type.defaultName !== "manyToManyRelationship" && field.type.defaultName !== "oneToManyRelationship") {
+                        field.value.addedNewRecords = [];
+                    } else if (field.value.addedNewRecords !== undefined && field.value.addedNewRecords.length > 0) {
+                        $timeout(function() {
+                            for (i = 0; i < field.value.addedNewRecords.length; i += 1) {
+                                if (field.value.addedNewRecords[i].fields.filter(checkId).length > 0) {
+                                        field.value.addedNewRecords.splice(i, 1);
+                                    return;
+                                }
+                            }
+                        }, 250);
+                    }
+                } else {
+                    if (field.value === null || field.value.addedIds === undefined) {
+                        $scope.relatedData.initValue(field);
+                    }
+                    $scope.safeApply(function () {
+                        if (field.type.defaultName !== "manyToManyRelationship" && field.type.defaultName !== "oneToManyRelationship") {
+                            field.value.addedIds = [];
+                            field.value.addedNewRecords = [];
+                        }
+                        field.value.addedIds.push(relatedDataId);
+                    });
+                }
+            },
+
+            update: function (field, editRelatedFields) {
+                var editExisting = true,
+                    setExisting = function () {
+                        $scope.safeApply(function () {
+                            $scope.relatedData.removeFromExisting(field, $scope.editedInstanceId);
+                        });
+                        $timeout(function() {
+                            field.value.addedNewRecords.push({id: $scope.editedInstanceId, entitySchemaId: null, fields: editRelatedFields});
+                        }, 150);
+                    };
+                if (field.type.defaultName !== "manyToManyRelationship" && field.type.defaultName !== "oneToManyRelationship") {
+                    if (!isNaN(parseInt(field.displayValue, 10))) {
+                        $scope.relatedData.setAsRemoved(field, parseInt(field.displayValue, 10));
+                    }
+                    field.value.addedIds = [];
+                    field.value.addedNewRecords = [];
+                    field.value.addedNewRecords.push({id: $scope.editedInstanceId, entitySchemaId: null, fields: editRelatedFields});
+                } else {
+                    if ($scope.editedInstanceId !== undefined && field.value.addedNewRecords !== null && field.value.addedNewRecords.length > 0) {
+                        angular.forEach(field.value.addedNewRecords, function (addedNewRelatedData, index) {
+                            if (MDSUtils.find(addedNewRelatedData.fields, [{ field: 'name', value: 'id'}], true).value === $scope.editedInstanceId) {
+                                field.value.addedNewRecords[index] = angular.copy({id: $scope.editedInstanceId, entitySchemaId: null, fields: editRelatedFields});
+                                editExisting = false;
+                            return;
+                            }
+                        });
+                        if (editExisting) {
+                            setExisting();
+                        }
+                    } else {
+                        if (field.displayValue !== null && field.displayValue[$scope.editedInstanceId] !== undefined && !isNaN(parseInt(field.displayValue[$scope.editedInstanceId], 10))) {
+                            $scope.relatedData.setAsRemoved(field, parseInt($scope.editedInstanceId, 10));
+                        }
+                        setExisting();
+                    }
+                }
+                $scope.editedInstanceId = undefined;
+                $scope.editRelatedFields = null;
+                $('body > #edit-related_' + field.id).modal('hide');
+                $scope.relatedMode.isNested = false;
+            },
+
+            removeFromExisting: function (field, addedId) {
+                var i, fieldLength,
+                    remove = function () {
+                        $scope.safeApply(function () {
+                            field.value.addedIds.splice(i, 1);
+                        });
+                    };
+                if (field.value.addedIds !== undefined) {
+                    fieldLength = field.value.addedIds.length;
+                    for (i = 0; i < fieldLength; i += 1) {
+                        if (field.value.addedIds[i] === addedId) {
+                            remove();
+                        }
+                    }
+                }
+            },
+
+            removeNewAdded: function (field, removeId) {
+                if (field !== null && removeId !== undefined) {
+                    var i,
+                    checkId = function(item) {
+                       return item.name === 'id' && item.value === removeId;
+                    };
+                    if (field.value.addedNewRecords !== null && field.value.addedNewRecords !== undefined) {
+                        if (removeId > 0) {
+                            $scope.relatedData.setAsRemoved(field, removeId);
+                        }
+                        $timeout(function() {
+                            for (i = 0; i < field.value.addedNewRecords.length; i += 1) {
+                                if (field.value.addedNewRecords[i].fields.filter(checkId).length > 0) {
+                                        field.value.addedNewRecords.splice(i, 1);
+                                    return;
+                                }
+                            }
+                        }, 250);
+                    }
+                }
+            },
+
+            setAsRemoved: function (field, id) {
+                var i = this.checkIfInclude(field, id, 'addedIds');
+                if (i < 0 && field.value.removedIds !== undefined && field.value.removedIds.indexOf(id) < 0) {
+                    $scope.safeApply(function () {
+                        field.value.removedIds.push(id);
+                        $scope.relatedData.cleanDisplayValue(field, id);
+                    });
+                } else {
+                    $scope.relatedData.removeFromExisting(field, id);
+                    $scope.relatedData.cleanDisplayValue(field, id);
+                }
+            },
+
+            checkIfInclude: function (field, newAddedId, fieldName) {
+                var i, fieldLength;
+                if (field.value[fieldName] !== undefined) {
+                    fieldLength = field.value[fieldName].length;
+                    for (i = 0; i < fieldLength; i += 1) {
+                        if (field.value[fieldName][i] === newAddedId) {
+                            return i;
+                        }
+                    }
+                }
+                return -1;
+            },
+
+            getRelatedId: function (field) {
+                var i;
+                if (field.value.addedIds !== null && field.value.addedIds !== undefined && field.value.addedIds.length > 0) {
+                    return field.value.addedIds;
+                } else {
+                    return field.displayValue;
+                }
+            },
+
+            cleanDisplayValue: function (field, id) {
+                if (field.displayValue !== null && field.displayValue[id] !== undefined) {
+                    field.displayValue[id] = undefined;
+                } else if (field.displayValue !== null && field.displayValue !== undefined) {
+                    field.displayValue = '';
+                }
+            }
+        };
+
+        $scope.getRelatedClass = function(field) {
             var i, relatedClass;
             if (field.metadata !== undefined && field.metadata !== null && field.metadata.isArray === true) {
                 for (i = 0 ; i < field.metadata.length ; i += 1) {
@@ -3622,6 +3946,17 @@
                     }
                 }
             }
+            return relatedClass;
+        };
+
+        $scope.setRelatedEntity = function(field) {
+            var i, relatedClass;
+            $('body > #instanceBrowserModal_' + field.id).on('hide.bs.modal', function () {
+                $scope.relatedEntity = undefined;
+                $scope.filterBy = [];
+            });
+
+            relatedClass = $scope.getRelatedClass(field);
             if (relatedClass !== undefined) {
                 blockUI();
                 $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
@@ -3640,14 +3975,14 @@
                             $scope.allEntityFields = data;
                         },
                         function (response) {
-                            handleResponse('mds.error', 'mds.dataBrowsing.error.instancesList', response);
+                            handleResponse('mds.error', 'mds.error.instancesList', response);
                         }
                     );
                     unblockUI();
 
                 }).error(function(response)
                 {
-                    handleResponse('mds.error', 'mds.dataBrowsing.error.instancesList', response);
+                    handleResponse('mds.error', 'mds.error.instancesList', response);
                 });
             }
         };
@@ -3761,9 +4096,10 @@
         * Unselects adding or editing instance to allow user to return to entities list by modules
         */
         $scope.unselectInstance = function() {
+            var prev;
             $scope.setVisibleIfExistFilters();
             if ($scope.previouslyEdited) {
-                var prev = $scope.previouslyEdited;
+                prev = $scope.previouslyEdited;
                 $scope.selectEntityByClassName(prev.entityClassName, function() {
                     $scope.editInstance(prev.instanceId);
                     $scope.entityClassName = prev.entityClassName;
@@ -3781,6 +4117,8 @@
                 $scope.loadedFields = undefined;
                 $scope.removeIdFromUrl();
             }
+            $scope.cancelAddRelatedForm();
+            $scope.cancelEditRelatedForm();
             resizeLayout();
         };
 
@@ -4444,8 +4782,6 @@
             });
         };
 
-
-
         /*
         *  Gets field from FieldRecord to set field-edit value
         */
@@ -4509,8 +4845,8 @@
         * Construct appropriate url according with a field type for form used to set correct
         * value of edit value property.
         */
-        $scope.loadEditValueForm = function (field) {
-            var value = $scope.getTypeSingleClassName(field.type);
+        $scope.loadEditValueForm = function (field, isNestedField) {
+            var value = angular.copy($scope.getTypeSingleClassName(field.type));
 
             if (value === 'boolean') {
 
@@ -4526,6 +4862,14 @@
                 }
             } else if (value === 'string' && field.name === 'owner') {
                 value = 'string-owner';
+            } else if (value === 'oneToMany' && ($scope.newRelatedFields !== null || $scope.editRelatedFields !== null) && isNestedField === true) {
+                value = 'oneToManyRelated';
+            } else if (value === 'manyToMany' && ($scope.newRelatedFields !== null || $scope.editRelatedFields !== null) && isNestedField === true) {
+                value = 'manyToManyRelated';
+            } else if (value === 'manyToOne' && ($scope.newRelatedFields !== null || $scope.editRelatedFields !== null) && isNestedField === true) {
+                value = 'manyToOneRelated';
+            } else if (value === 'oneToone' && ($scope.newRelatedFields !== null || $scope.editRelatedFields !== null) && isNestedField === true) {
+                value = 'oneToOneRelated';
             }
             return '../mds/resources/partials/widgets/field-edit-Value-{0}.html'
                           .format(value.substring(value.toLowerCase()));
@@ -4601,8 +4945,8 @@
         */
         $scope.showLookupRelatedInstancesDialog = function() {
             $("#lookup-related-instances-dialog")
-            .css({'top': ($("#instanceBrowserModal").offset().top + 50),
-            'left': ($("#instanceBrowserModal").offset().left) - 30})
+            .css({'top': ($(".instanceBrowserModal").offset().top + 50),
+            'left': ($(".instanceBrowserModal").offset().left) - 30})
             .toggle();
         };
 

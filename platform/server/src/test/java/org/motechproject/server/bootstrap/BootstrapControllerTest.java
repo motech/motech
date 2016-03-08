@@ -26,6 +26,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +43,8 @@ import static org.powermock.api.mockito.PowerMockito.doThrow;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({OsgiListener.class})
 public class BootstrapControllerTest {
+
+    private String motechDir = new File(System.getProperty("user.home"), ".motech").getAbsolutePath();
 
     @Mock
     private MessageSource messageSource;
@@ -93,7 +96,7 @@ public class BootstrapControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("bootstrapconfig"))
                 .andExpect(MockMvcResultMatchers.model().attribute("redirect", true));
 
-        BootstrapConfig expectedConfigToSave = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://www.someurl.com:3306/", "com.mysql.jdbc.Driver", "some_username", "some_password"), ConfigSource.valueOf("UI"), "./felix", "tcp://localhost:61616");
+        BootstrapConfig expectedConfigToSave = new BootstrapConfig(new SQLDBConfig("jdbc:mysql://www.someurl.com:3306/", "com.mysql.jdbc.Driver", "some_username", "some_password"), ConfigSource.valueOf("UI"), "./felix", motechDir, "tcp://localhost:61616");
 
         PowerMockito.verifyStatic(times(1));
         OsgiListener.saveBootstrapConfig(expectedConfigToSave);

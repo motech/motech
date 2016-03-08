@@ -146,13 +146,6 @@
             { displayName: "Repeating Period", name: "REPEATING_PERIOD"}, { displayName: "Run Once", name: "RUN_ONCE" },
             { displayName: "Day of Week", name: "DAY_OF_WEEK" }
         ];
-            
-        $scope.days = [
-            { displayName: "Monday", value: 0 }, { displayName: "Tuesday", value: 1 },
-            { displayName: "Wednesday", value: 2 }, { displayName: "Thursday", value: 3 },
-            { displayName: "Friday", value: 4 }, {displayName: "Saturday", value: 5 },
-            { displayName: "Sunday", value: 6}
-        ];
 
         function containsKey(map, key) {
             var result = false;
@@ -216,6 +209,14 @@
             return date;
         }
 
+        $scope.getMinDate = function(jobType) {
+            if (jobType === "RUN_ONCE") {
+                return moment().format("YYYY-MM-DD HH:mm:ss");
+            }
+
+            return null;
+        };
+
         $scope.createOrUpdateJob = function(action) {
             var job = {};
 
@@ -244,7 +245,7 @@
                     if (day === 0) {
                         job.days = [];
                     }
-                    job.days[day] = $scope.job.days[day];
+                    job.days[day] = parseInt($scope.job.days[day]);
                 }
             }
 
@@ -255,14 +256,19 @@
                 unblockUI();
             }
 
+            function failure(response) {
+                motechAlert(response.data.key, "scheduler.error", response.data.params);
+                unblockUI();
+            }
+
             if (action === 'new') {
                 blockUI();
-                JobsService.createJob(job, success);
+                JobsService.createJob(job, success, failure);
             } else if (action === 'edit'){
                 motechConfirm("scheduler.confirm.updateJob", "scheduler.confirm", function(response) {
                     if (response) {
                         blockUI();
-                        JobsService.updateJob(job, success);
+                        JobsService.updateJob(job, success, failure);
                     }
                 });
             }

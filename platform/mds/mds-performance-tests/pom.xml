@@ -113,7 +113,7 @@
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${user.home}/.motech/config</outputDirectory>
+                                    <outputDirectory>${motech.dir}/config</outputDirectory>
                                     <overwrite>true</overwrite>
                                     <resources>
                                         <resource>

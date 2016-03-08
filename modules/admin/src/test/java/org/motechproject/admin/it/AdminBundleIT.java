@@ -2,8 +2,13 @@ package org.motechproject.admin.it;
 
 import ch.lambdaj.Lambda;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
@@ -14,6 +19,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mortbay.jetty.HttpStatus;
 import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
 import org.motechproject.admin.service.StatusMessageService;
@@ -25,17 +31,23 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
@@ -46,9 +58,14 @@ public class AdminBundleIT extends BasePaxIT {
     private static final String WARNING_MSG = "test-warn";
     private static final String MODULE_NAME = "test-module";
     private static final DateTime TIMEOUT = DateUtil.nowUTC().plusHours(1);
+    private static final String HOST = "localhost";
+    private static final int PORT = TestContext.getJettyPort();
 
     @Inject
     private StatusMessageService statusMessageService;
+
+    @Inject
+    private BundleContext bundleContext;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -114,6 +131,52 @@ public class AdminBundleIT extends BasePaxIT {
         assertTrue("No messages listed", json.size() > 0);
     }
 
+    @Test
+    public void testUploadBundleFromRepository() throws IOException, InterruptedException {
+        uploadBundle("Repository", "org.motechproject:motech-tasks:LATEST", null,
+                "on","org.motechproject.motech-tasks");
+    }
+
+    @Test
+    public void testUploadBundleFromFile() throws IOException, InterruptedException {
+        File file = new File("src/test/resources/motech-upload-test-bundle.jar");
+
+        uploadBundle("File", null, file, "on", "motech-upload-test-bundle");
+    }
+
+    private void uploadBundle(String moduleSource, String moduleId, File bundleFile,
+                                 String startBundle, String bundleSymbolicName) throws IOException, InterruptedException {
+        String uri = String.format("http://%s:%d/admin/api/bundles/upload/", HOST, PORT);
+
+        HttpPost httpPost = new HttpPost(uri);
+        MultipartEntityBuilder entity = MultipartEntityBuilder.create();
+        Charset chars = Charset.forName("UTF-8");
+        entity.setCharset(chars);
+        entity.addTextBody("moduleSource", moduleSource, ContentType.MULTIPART_FORM_DATA);
+        if (moduleSource.equals("Repository")) {
+            entity.addTextBody("moduleId", moduleId, ContentType.MULTIPART_FORM_DATA);
+        } else if (moduleSource.equals("File")) {
+            assertNotNull(bundleFile);
+            entity.addBinaryBody("bundleFile", bundleFile);
+        } else {
+            fail("Wrong module source.");
+        }
+        entity.addTextBody("startBundle", startBundle, ContentType.MULTIPART_FORM_DATA);
+        httpPost.setEntity(entity.build());
+
+        int bundlesCountBeforeUpload = bundleContext.getBundles().length;
+        HttpResponse response = getHttpClient().execute(httpPost);
+        EntityUtils.consume(response.getEntity());
+        int bundlesCountAfterUpload = bundleContext.getBundles().length;
+
+        assertEquals(response.getStatusLine().getStatusCode(), HttpStatus.ORDINAL_200_OK);
+
+        Bundle uploadedBundle = getBundleFromBundlesArray(bundleSymbolicName);
+        assertNotNull(uploadedBundle);
+        assertEquals(bundlesCountAfterUpload, bundlesCountBeforeUpload + 1);
+        assertEquals(uploadedBundle.getState(), Bundle.ACTIVE);
+    }
+
     private String apiGet(String path) throws IOException, InterruptedException {
         String processedPath = (path.startsWith("/")) ? path.substring(1) : path;
 
@@ -135,6 +198,18 @@ public class AdminBundleIT extends BasePaxIT {
         assertFalse("Found more then one matching message for: " + text, found.size() > 1);
 
         return found.get(0);
+    }
+
+    private Bundle getBundleFromBundlesArray(String bundleSymbolicName) {
+        Bundle[] bundles = bundleContext.getBundles();
+        for(Bundle bundle : bundles) {
+            if (bundle.getSymbolicName() == null) {
+                continue;
+            } else if (bundle.getSymbolicName().equals(bundleSymbolicName)) {
+                return bundle;
+            }
+        }
+        return null;
     }
 
     @After

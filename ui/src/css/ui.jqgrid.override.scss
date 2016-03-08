@@ -84,6 +84,11 @@
     border-style: none;
 }
 
+.relation-field .overrideJqgridTable .ui-jqgrid.ui-widget-content {
+    border: 1px solid #c5dbec;
+    border-radius: 4px;
+}
+
 .overrideJqgridTable .ui-jqgrid .ui-jqgrid-titlebar {
     padding: .3em .2em .2em .5em;
     font-size: 15px;
