@@ -133,8 +133,8 @@ public class AdminBundleIT extends BasePaxIT {
 
     @Test
     public void testUploadBundleFromRepository() throws IOException, InterruptedException {
-        uploadBundle("Repository", "org.motechproject:cms-lite:LATEST", null,
-                "on","org.motechproject.cms-lite");
+        uploadBundle("Repository", "org.motechproject:motech-tasks:LATEST", null,
+                "on","org.motechproject.motech-tasks");
     }
 
     @Test
