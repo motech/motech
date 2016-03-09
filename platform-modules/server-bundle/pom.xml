@@ -223,11 +223,11 @@
                             <resources>
                                 <resource>
                                     <directory>
-                                        ${modules.root.dir}/platform/server-bundle/src/main/resources/webapp/lib
+                                        ${modules.root.dir}/platform-modules/server-bundle/src/main/resources/webapp/lib
                                     </directory>
                                 </resource>
                                 <resource>
-                                    <directory>${modules.root.dir}/platform/server-bundle/src/main/resources/webapp/js
+                                    <directory>${modules.root.dir}/platform-modules/server-bundle/src/main/resources/webapp/js
                                     </directory>
                                 </resource>
                             </resources>
@@ -244,14 +244,14 @@
                             <resources>
                                 <resource>
                                     <directory>
-                                        ${modules.root.dir}/platform/server-bundle/src/main/resources/webapp/lib/angular
+                                        ${modules.root.dir}/platform-modules/server-bundle/src/main/resources/webapp/lib/angular
                                     </directory>
                                     <includes>
                                         <inlude>angular.min.js</inlude>
                                     </includes>
                                 </resource>
                                 <resource>
-                                    <directory>${modules.root.dir}/platform/server-bundle/src/test/resources/lib
+                                    <directory>${modules.root.dir}/platform-modules/server-bundle/src/test/resources/lib
                                     </directory>
                                     <includes>
                                         <include>angular-mocks.js</include>

@@ -38,7 +38,7 @@
                     flyway-core.
                 -->
                 <directory>
-                    ${modules.root.dir}/platform/mds/mds/src/main/resources/db/migration/default
+                    ${modules.root.dir}/platform-modules/mds/mds/src/main/resources/db/migration/default
                 </directory>
                 <targetPath>db/migration/default</targetPath>
                 <includes>
@@ -47,7 +47,7 @@
             </resource>
             <resource>
                 <directory>
-                    ${modules.root.dir}/platform/mds/mds/src/main/resources/db/migration/mysql
+                    ${modules.root.dir}/platform-modules/mds/mds/src/main/resources/db/migration/mysql
                 </directory>
                 <targetPath>db/migration/mysql</targetPath>
                 <includes>
