@@ -73,7 +73,7 @@ public final class DayOfWeekSchedulableJob extends EndingSchedulableJob {
     }
 
     /**
-     * Reruns the time of the job execution.
+     * Returns the time of the job execution.
      *
      * @return the execution time
      */
