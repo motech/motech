@@ -549,7 +549,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
                             false)
             );
 
-            List<DateTime> fireTimes = getFireTimes("test_event-job_id-cron");
+            List<DateTime> fireTimes = getFireTimes("test_event-job_id-dayofweek");
             assertEquals(asList(
                     newDateTime(2020, 7, 13, 10, 10, 0),
                     newDateTime(2020, 7, 16, 10, 10, 0),
@@ -577,7 +577,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
                             true)
             );
 
-            List<DateTime> fireTimes = getFireTimes("test_event-job_id-cron");
+            List<DateTime> fireTimes = getFireTimes("test_event-job_id-dayofweek");
             assertEquals(asList(
                     newDateTime(2020, 7, 16, 10, 10, 0),
                     newDateTime(2020, 7, 20, 10, 10, 0)),
