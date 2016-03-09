@@ -6,7 +6,7 @@ import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.exception.RoleHasUserException;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.repository.MotechUsersDao;
-import org.motechproject.security.service.mds.MotechRolesDataService;
+import org.motechproject.security.mds.MotechRolesDataService;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.UserContextService;
 import org.slf4j.Logger;

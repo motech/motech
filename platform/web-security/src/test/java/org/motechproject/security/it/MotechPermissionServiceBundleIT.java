@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.motechproject.security.constants.PermissionNames;
 import org.motechproject.security.domain.MotechPermission;
 import org.motechproject.security.model.PermissionDto;
-import org.motechproject.security.service.mds.MotechPermissionsDataService;
+import org.motechproject.security.mds.MotechPermissionsDataService;
 import org.motechproject.security.service.MotechPermissionService;
 
 import javax.inject.Inject;

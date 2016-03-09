@@ -9,8 +9,8 @@ import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
 import org.motechproject.security.exception.UserNotFoundException;
-import org.motechproject.security.service.mds.MotechUsersDataService;
-import org.motechproject.security.service.mds.PasswordRecoveriesDataService;
+import org.motechproject.security.mds.MotechUsersDataService;
+import org.motechproject.security.mds.PasswordRecoveriesDataService;
 import org.motechproject.security.service.PasswordRecoveryService;
 
 import javax.inject.Inject;

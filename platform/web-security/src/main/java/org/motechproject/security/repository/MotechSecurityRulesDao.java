@@ -5,7 +5,7 @@ import org.apache.commons.collections.Predicate;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.domain.MotechURLSecurityRule;
 import org.motechproject.security.helper.IDTransformer;
-import org.motechproject.security.service.mds.MotechURLSecurityRuleDataService;
+import org.motechproject.security.mds.MotechURLSecurityRuleDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

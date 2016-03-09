@@ -2,7 +2,7 @@ package org.motechproject.security.repository;
 
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.exception.EmailExistsException;
-import org.motechproject.security.service.mds.MotechUsersDataService;
+import org.motechproject.security.mds.MotechUsersDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

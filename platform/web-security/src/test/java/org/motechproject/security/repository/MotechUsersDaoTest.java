@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.exception.EmailExistsException;
-import org.motechproject.security.service.mds.MotechUsersDataService;
+import org.motechproject.security.mds.MotechUsersDataService;
 
 import java.util.Locale;
 

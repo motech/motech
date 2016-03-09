@@ -20,7 +20,7 @@ import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechProxyManager;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
-import org.motechproject.security.service.mds.MotechURLSecurityRuleDataService;
+import org.motechproject.security.mds.MotechURLSecurityRuleDataService;
 import org.motechproject.testing.utils.TestContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;

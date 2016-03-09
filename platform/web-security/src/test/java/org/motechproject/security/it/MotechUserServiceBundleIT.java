@@ -8,8 +8,8 @@ import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.domain.UserStatus;
 import org.motechproject.security.model.UserDto;
-import org.motechproject.security.service.mds.MotechRolesDataService;
-import org.motechproject.security.service.mds.MotechUsersDataService;
+import org.motechproject.security.mds.MotechRolesDataService;
+import org.motechproject.security.mds.MotechUsersDataService;
 import org.motechproject.security.service.MotechUserService;
 
 import javax.inject.Inject;

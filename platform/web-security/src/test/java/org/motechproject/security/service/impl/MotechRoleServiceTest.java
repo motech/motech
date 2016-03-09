@@ -8,7 +8,7 @@ import org.mockito.MockitoAnnotations;
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.repository.MotechUsersDao;
-import org.motechproject.security.service.mds.MotechRolesDataService;
+import org.motechproject.security.mds.MotechRolesDataService;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.UserContextService;
 

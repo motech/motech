@@ -1,4 +1,4 @@
-package org.motechproject.security.service.mds;
+package org.motechproject.security.mds;
 
 import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;

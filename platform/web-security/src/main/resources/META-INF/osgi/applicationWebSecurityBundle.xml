@@ -53,13 +53,13 @@
 
     <!-- Data services -->
 
-    <osgi:reference id="motechPermissionsDataService" interface="org.motechproject.security.service.mds.MotechPermissionsDataService"/>
+    <osgi:reference id="motechPermissionsDataService" interface="org.motechproject.security.mds.MotechPermissionsDataService"/>
 
-    <osgi:reference id="motechRolesDataService" interface="org.motechproject.security.service.mds.MotechRolesDataService"/>
+    <osgi:reference id="motechRolesDataService" interface="org.motechproject.security.mds.MotechRolesDataService"/>
 
-    <osgi:reference id="motechURLSecurityRuleDataService" interface="org.motechproject.security.service.mds.MotechURLSecurityRuleDataService"/>
+    <osgi:reference id="motechURLSecurityRuleDataService" interface="org.motechproject.security.mds.MotechURLSecurityRuleDataService"/>
 
-    <osgi:reference id="motechUsersDataService" interface="org.motechproject.security.service.mds.MotechUsersDataService"/>
+    <osgi:reference id="motechUsersDataService" interface="org.motechproject.security.mds.MotechUsersDataService"/>
 
-    <osgi:reference id="passwordRecoveriesDataService" interface="org.motechproject.security.service.mds.PasswordRecoveriesDataService"/>
+    <osgi:reference id="passwordRecoveriesDataService" interface="org.motechproject.security.mds.PasswordRecoveriesDataService"/>
 </beans>

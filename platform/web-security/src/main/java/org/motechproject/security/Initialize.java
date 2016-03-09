@@ -3,7 +3,7 @@ package org.motechproject.security;
 import org.motechproject.security.domain.MotechPermission;
 import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.model.RoleDto;
-import org.motechproject.security.service.mds.MotechPermissionsDataService;
+import org.motechproject.security.mds.MotechPermissionsDataService;
 import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechRoleService;
 import org.springframework.beans.factory.annotation.Autowired;

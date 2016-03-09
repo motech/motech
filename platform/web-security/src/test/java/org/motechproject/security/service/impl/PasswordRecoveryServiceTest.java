@@ -20,7 +20,7 @@ import org.motechproject.security.exception.InvalidTokenException;
 import org.motechproject.security.exception.NonAdminUserException;
 import org.motechproject.security.exception.UserNotFoundException;
 import org.motechproject.security.repository.MotechUsersDao;
-import org.motechproject.security.service.mds.PasswordRecoveriesDataService;
+import org.motechproject.security.mds.PasswordRecoveriesDataService;
 import org.motechproject.security.service.PasswordRecoveryService;
 import org.motechproject.security.velocity.VelocityTemplateParser;
 import org.motechproject.server.config.SettingsFacade;

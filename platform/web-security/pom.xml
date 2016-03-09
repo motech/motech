@@ -165,8 +165,8 @@
                             org.motechproject.security.domain;version=${project.version},
                             org.motechproject.security.exception;version=${project.version},
                             org.motechproject.security.model;version=${project.version},
+                            org.motechproject.security.mds;version=${project.version},
                             org.motechproject.security.service;version=${project.version},
-                            org.motechproject.security.service.mds;version=${project.version},
                             org.motechproject.security.validator;version=${project.version}
                         </Export-Package>
                         <Import-Package>
