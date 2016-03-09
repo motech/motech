@@ -14,6 +14,7 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -24,13 +25,15 @@ import static org.junit.Assert.assertThat;
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class ConfigurationServiceBundleIT extends BasePaxIT {
 
+    private String motechDir = new File(System.getProperty("user.home"), ".motech").getAbsolutePath();
+
     @Inject
     private ConfigurationService configurationService;
 
     @Test
     public void shouldSaveBootstrapConfigToDefaultLocationAndLoadFromTheSameLocation() {
         BootstrapConfig existingBootstrapConfig = configurationService.loadBootstrapConfig();
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(existingBootstrapConfig.getSqlConfig(), existingBootstrapConfig.getConfigSource(), "./felix", existingBootstrapConfig.getQueueUrl(), existingBootstrapConfig.getActiveMqProperties());
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(existingBootstrapConfig.getSqlConfig(), existingBootstrapConfig.getConfigSource(), "./felix", motechDir, existingBootstrapConfig.getQueueUrl(), existingBootstrapConfig.getActiveMqProperties());
 
         configurationService.save(bootstrapConfig);
 

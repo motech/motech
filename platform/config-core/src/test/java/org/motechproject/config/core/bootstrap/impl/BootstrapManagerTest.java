@@ -44,6 +44,7 @@ public class BootstrapManagerTest {
     private final String sqlUsername = "root";
     private final String sqlPassword = "password";
     private final String felixPath = "./felix";
+    private final String motechDir = new File(System.getProperty("user.home"), ".motech").getAbsolutePath();
     private static final String sqlDriver = "com.mysql.jdbc.Driver";
     private final String configSource = ConfigSource.FILE.getName();
     private final String queueUrl = "tcp://localhost:61616";
@@ -72,7 +73,7 @@ public class BootstrapManagerTest {
 
         when(ConfigPropertiesUtils.getPropertiesFromFile(new File(bootstrapFile))).thenReturn(properties);
 
-        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), ConfigSource.FILE, null, queueUrl);
+        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), ConfigSource.FILE, null, null, queueUrl);
 
         assertThat(bootstrapManager.loadBootstrapConfig(), equalTo(expectedBootstrapConfig));
     }
@@ -94,7 +95,7 @@ public class BootstrapManagerTest {
         when(environment.getConfigDir()).thenReturn(null);
         when(environment.getBootstrapProperties()).thenReturn(createProperties());
 
-        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), ConfigSource.FILE, null, queueUrl);
+        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), ConfigSource.FILE, null, null, queueUrl);
 
         assertThat(bootstrapManager.loadBootstrapConfig(), equalTo(expectedBootstrapConfig));
     }
@@ -107,7 +108,7 @@ public class BootstrapManagerTest {
         properties.put(BootstrapConfig.CONFIG_SOURCE, "");
         when(environment.getBootstrapProperties()).thenReturn(properties);
 
-        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), ConfigSource.UI, null, queueUrl);
+        BootstrapConfig expectedBootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), ConfigSource.UI, null, null, queueUrl);
 
         BootstrapConfig actualBootStrapConfig = bootstrapManager.loadBootstrapConfig();
 
@@ -134,7 +135,7 @@ public class BootstrapManagerTest {
         when(ConfigPropertiesUtils.getPropertiesFromFile(bootstrapConfigFile)).thenReturn(properties);
 
 
-        assertThat(bootstrapManager.loadBootstrapConfig(), equalTo(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), ConfigSource.UI, null, queueUrl)));
+        assertThat(bootstrapManager.loadBootstrapConfig(), equalTo(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, null, null), ConfigSource.UI, null, null, queueUrl)));
     }
 
     private File mockDefaultBootstrapFile() throws IOException {
@@ -192,7 +193,7 @@ public class BootstrapManagerTest {
 
     @Test
     public void shouldSaveBootstrapConfigToPropertiesFileInDefaultLocation() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, "some_username", "some_password"), ConfigSource.FILE, felixPath, queueUrl);
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, "some_username", "some_password"), ConfigSource.FILE, felixPath, motechDir, queueUrl);
 
         String tempDir = new File(System.getProperty("java.io.tmpdir"), "config").getAbsolutePath();
         List<ConfigLocation> configLocationList = new ArrayList<>();

@@ -60,7 +60,6 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
         return pm;
     }
 
-
     public void evictAll() {
         if (getPersistenceManagerFactory() != null) {
             getPersistenceManagerFactory().getDataStoreCache().evictAll();
@@ -81,6 +80,13 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
 
     public T retrieve(Object key) {
         return getPersistenceManager().getObjectById(classType, key);
+    }
+
+    public List<T> retrieveAll(Collection<Long> keys) {
+        Query query = getPersistenceManager().newQuery(classType);
+        query.setFilter(":keys.contains(this.id)");
+        Collection result = (Collection) query.execute(keys);
+        return new ArrayList<>(result);
     }
 
     public T create(T object) {

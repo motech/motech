@@ -12,6 +12,7 @@ public class BootstrapConfigForm {
     private String configSource;
     private String osgiFrameworkStorage;
     private Boolean isCustomFelixPath;
+    private String motechDir;
     private String queueUrl;
 
     public String getSqlUrl() {
@@ -68,6 +69,14 @@ public class BootstrapConfigForm {
 
     public Boolean getIsCustomFelixPath() {
         return isCustomFelixPath;
+    }
+
+    public String getMotechDir() {
+        return this.motechDir;
+    }
+
+    public void setMotechDir(String motechDir) {
+        this.motechDir = motechDir;
     }
 
     public String getQueueUrl() {

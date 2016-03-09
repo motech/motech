@@ -1,0 +1,26 @@
+<div id="new-related_{{field.id}}" class="mds modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="cancelAddRelatedForm(field.id)"
+                        aria-hidden="true">&times;</button>
+                <h4 class="modal-title">{{msg('mds.dataBrowsing.newRelatedInstance')}} - {{field.displayName}}</h4>
+            </div>
+
+            <div ui-if="relatedMode.isNested && newRelatedFields !== null && isRelationshipField(field)" class="modal-body clearfix">
+                <div class="clearfix" relatedfieldsform ng-model="newRelatedFields" parent-field="{{relatedMode.isNested}}"></div>
+            </div>
+
+            <div class="modal-footer">
+                <div class="col-md-offset-2 col-sm-offset-3 col-md-10 col-sm-9">
+                    <button class="btn btn-success" ng-click="relatedData.addNew(field, newRelatedFields)">
+                        {{msg('mds.btn.add')}}
+                    </button>
+                    <button class="btn btn-default" ng-click="cancelAddRelatedForm(field.id)">
+                        {{msg('mds.btn.cancel')}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

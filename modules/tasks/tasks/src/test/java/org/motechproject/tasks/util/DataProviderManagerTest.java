@@ -6,7 +6,7 @@ import org.mockito.Mock;
 import org.motechproject.commons.api.DataProvider;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.service.TaskDataProviderService;
-import org.motechproject.tasks.service.TaskTriggerHandler;
+import org.motechproject.tasks.service.impl.TaskTriggerHandler;
 
 import java.io.IOException;
 

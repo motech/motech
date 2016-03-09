@@ -49,15 +49,15 @@
                 </div>
             </div>
             <div class="form-group" ng-if="job['@jobType']">
-                <label for="startDate" class="control-label col-sm-2" mt-invalid="'JobForm.startDate.$invalid'">{{msg('scheduler.startDate')}}:</label>
+                <label for="jobDateFrom" class="control-label col-sm-2" mt-invalid="'JobForm.startDate.$invalid'">{{msg('scheduler.startDate')}}:</label>
                 <div class="col-sm-10">
-                    <input id="startDate" class="form-control" name="startDate" ng-required="job['@jobType'] !== 'CRON'" placeholder="{{msg('scheduler.enterStartDate')}}" ng-model="job.startDate" date-picker>
+                    <input id="jobDateFrom" date-picker="" min="getMinDate(job['@jobType'])" max="job.endDate" type="datetime" class="form-control" name="startDate" ng-required="job['@jobType'] !== 'CRON'" placeholder="{{msg('scheduler.enterStartDate')}}" ng-model="job.startDate">
                 </div>
             </div>
             <div class="form-group" ng-if="job['@jobType'] && job['@jobType'] !== 'RUN_ONCE'">
-                <label for="startDate" class="control-label col-sm-2">{{msg('scheduler.endDate')}}:</label>
+                <label for="jobDateTo" class="control-label col-sm-2">{{msg('scheduler.endDate')}}:</label>
                 <div class="col-sm-10">
-                    <input id="endDate" class="form-control" placeholder="{{msg('scheduler.enterEndDate')}}" date-picker ng-model="job.endDate">
+                    <input id="jobDateTo" date-picker="" min="job.startDate" type="datetime" class="form-control" placeholder="{{msg('scheduler.enterEndDate')}}" ng-model="job.endDate">
                 </div>
             </div>
             <div class="form-group" ng-if="job['@jobType'] === 'CRON'">
@@ -84,7 +84,8 @@
                 <div class="form-group">
                     <label for="days" class="control-label col-sm-2" mt-invalid="'JobForm.days.$invalid'">{{msg('scheduler.days')}}:</label>
                     <div class="col-sm-10">
-                        <select multiple id="days" class="form-control" name="days" required ng-model="job.days" ng-options="day.value as day.displayName for day in days"></select>
+                        <select name="days" required id="days" multiple="multiple" ng-model="job.days" days-of-week>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group">
@@ -101,7 +102,7 @@
                         <div class="input-group">
                             <input type="text" id="repeatPeriod" class="form-control col-sm-6" name="repeatPeriod" required placeholder="{{msg('scheduler.enterRepeatPeriod')}}" period-amount period-validity ng-model="job.repeatPeriod">
                             <span class="input-group-btn">
-                                <button class="btn btn-default period-modal-opener" data-toggle="modal" data-backdrop="static">{{msg('mds.form.changePeriod')}}</button>
+                                <button type="button" class="btn btn-default period-modal-opener" data-toggle="modal" data-backdrop="static">{{msg('mds.form.changePeriod')}}</button>
                             </span>
                         </div>
                     </div>
@@ -128,4 +129,4 @@
         </form>
     </div>
 </div>
-<div period-modal></div>
+<div period-modal-scheduler></div>

@@ -78,7 +78,7 @@ public class DbConfigManagerImpl implements DbConfigManager {
         try {
             LOGGER.debug("Loading {} properties from default configuration directory", descForLogs);
             properties = loadPropertiesFromDefaultLocation(fileName, descForLogs);
-        } catch(MotechConfigurationException e) {
+        } catch (MotechConfigurationException e) {
             LOGGER.warn(e.getMessage());
         }
 

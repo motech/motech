@@ -84,6 +84,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-upload-test-bundle</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.sonatype.aether</groupId>
             <artifactId>org.motechproject.aether-api</artifactId>
             <exclusions>
@@ -111,7 +117,7 @@
                             <excludeDefaultDirectories>true</excludeDefaultDirectories>
                             <filesets>
                                 <fileset>
-                                    <directory>${user.home}/.motech/config/org.motechproject.motech-admin-bundle</directory>
+                                    <directory>${motech.dir}/config/org.motechproject.motech-admin-bundle</directory>
                                     <includes>
                                         <include>**/*</include>
                                     </includes>
@@ -200,7 +206,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                            <outputDirectory>${motech.dir}/bundles</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>target</directory>
@@ -218,7 +224,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${user.home}/.motech/rules</outputDirectory>
+                            <outputDirectory>${motech.dir}/rules</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>src/main/resources/rules</directory>
@@ -306,6 +312,53 @@
             <plugin>
                 <groupId>com.github.searls</groupId>
                 <artifactId>jasmine-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>copy-upload-test-bundle-to-target</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>motech-upload-test-bundle</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>target/test-bundle/</outputDirectory>
+                                    <destFileName>motech-upload-test-bundle.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-upload-test-bundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>motech-upload-test-bundle</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                                    <destFileName>motech-upload-test-bundle.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
