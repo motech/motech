@@ -133,13 +133,13 @@ public class AdminBundleIT extends BasePaxIT {
 
     @Test
     public void testUploadBundleFromRepository() throws IOException, InterruptedException {
-            uploadBundle("Repository", "org.motechproject:cms-lite:LATEST", null,
-                "on","org.motechproject.cms-lite");
+        uploadBundle("Repository", "org.motechproject:motech-tasks:LATEST", null,
+                "on","org.motechproject.motech-tasks");
     }
 
     @Test
     public void testUploadBundleFromFile() throws IOException, InterruptedException {
-        File file = new File("src/test/resources/motech-upload-test-bundle.jar");
+        File file = new File("target/test-bundle/motech-upload-test-bundle.jar");
 
         uploadBundle("File", null, file, "on", "motech-upload-test-bundle");
     }
@@ -163,6 +163,7 @@ public class AdminBundleIT extends BasePaxIT {
         }
         entity.addTextBody("startBundle", startBundle, ContentType.MULTIPART_FORM_DATA);
         httpPost.setEntity(entity.build());
+
 
         int bundlesCountBeforeUpload = bundleContext.getBundles().length;
         HttpResponse response = getHttpClient().execute(httpPost);
