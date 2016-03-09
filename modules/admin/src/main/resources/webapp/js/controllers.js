@@ -791,38 +791,6 @@
             $scope.logs.removeObject(log);
         };
 
-        $scope.levelsCss = function (level) {
-            var cssClass = ' btn-default';
-
-            if (level !== undefined) {
-                switch (level.toLowerCase()) {
-                    case 'trace':
-                        cssClass = 'btn-primary';
-                        break;
-                    case 'debug':
-                        cssClass = 'btn-success';
-                        break;
-                    case 'info':
-                        cssClass = 'btn-info';
-                        break;
-                    case 'warn':
-                        cssClass = 'btn-warning';
-                        break;
-                    case 'error':
-                        cssClass = 'btn-danger';
-                        break;
-                    case 'fatal':
-                        cssClass = 'btn-inverse';
-                        break;
-                    default:
-                        cssClass = ' btn-default';
-                        break;
-                }
-            }
-
-            return cssClass;
-        };
-
         innerLayout({
             spacing_closed: 30,
             east__minSize: 200,

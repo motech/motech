@@ -171,7 +171,7 @@
                                                             </span>
                                                             <span class="validation-area form-group">
                                                                 <div class="btn-group offset-1">
-                                                                    <a class="btn dropdown-toggle dropdown-small-fluid" data-toggle="dropdown" target="_self" href="#" ng-class="{'btn-danger': filter.negationOperator == undefined, 'btn-default': filter.negationOperator !== undefined}" ng-disabled="!filter.key">
+                                                                    <a class="btn btn-default dropdown-toggle dropdown-small-fluid" data-toggle="dropdown" target="_self" href="#" ng-disabled="!filter.key">
                                                                         {{msg(((filter.negationOperator == true || filter.negationOperator == false) && 'task.info.filter.' + filter.negationOperator) || 'task.info.filter.select')}}
                                                                         <span class="caret"></span>
                                                                     </a>
@@ -185,7 +185,7 @@
                                                             </span>
                                                             <span class="validation-area form-group">
                                                                 <div class="btn-group offset-1">
-                                                                    <a class="btn dropdown-toggle dropdown-medium-fluid" data-toggle="dropdown" target="_self" href="#" ng-class="{'btn-danger': !filter.operator, 'btn-default': filter.operator}" ng-disabled="filter.negationOperator == undefined">
+                                                                    <a class="btn btn-default dropdown-toggle dropdown-medium-fluid" data-toggle="dropdown" target="_self" href="#" ng-disabled="filter.negationOperator == undefined">
                                                                         {{msg(filter.operator || 'task.info.filter.select')}}
                                                                         <span class="caret"></span>
                                                                     </a>
