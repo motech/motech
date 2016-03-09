@@ -6,7 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.List;
 
 /**
- * Service interface to retrieve authorities(permissions) for a given MotechUser
+ * Service interface to retrieve authorities (permissions) for a given {@link MotechUser}
  */
 public interface AuthoritiesService {
 

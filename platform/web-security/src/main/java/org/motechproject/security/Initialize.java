@@ -1,9 +1,11 @@
 package org.motechproject.security;
 
 import org.motechproject.security.domain.MotechPermission;
-import org.motechproject.security.domain.MotechRole;
-import org.motechproject.security.repository.AllMotechPermissions;
-import org.motechproject.security.repository.AllMotechRoles;
+import org.motechproject.security.model.PermissionDto;
+import org.motechproject.security.model.RoleDto;
+import org.motechproject.security.mds.MotechPermissionsDataService;
+import org.motechproject.security.service.MotechPermissionService;
+import org.motechproject.security.service.MotechRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -21,33 +23,31 @@ import static org.motechproject.security.constants.PermissionNames.VIEW_DETAILED
 import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
 
 /**
- * This class initializes some of the Motech Permissions, initializes User Admin role, as well as
- * fixes a bug with "Admin User" role name.
+ * This class initializes some of the Motech Permissions and the MOTECH Admin role.
  */
-
 public class Initialize {
     private static final String WEB_SECURITY = "org.motechproject.motech-platform-web-security";
-    private  static final String MDS_MODULE = "org.motechproject.motech-platform-dataservices";
+    private static final String MDS_MODULE = "org.motechproject.motech-platform-dataservices";
     private static final String EMAIL = "org.motechproject.motech-platform-email";
 
-    private AllMotechPermissions allMotechPermissions;
-    private AllMotechRoles allMotechRoles;
+    private MotechRoleService motechRoleService;
+    private MotechPermissionsDataService permissionsDataService;
+    private MotechPermissionService permissionService;
 
     /**
-     * Initializes module by creating Motech Admin role
-     * and permissions
+     * Initializes module by creating MOTECH Admin role and permissions
      */
     @PostConstruct
     public void initialize() {
-        //Create Motech Admin role
-        if (allMotechRoles.findByRoleName(MOTECH_ADMIN) == null) {
+        //Create MOTECH Admin role
+        if (motechRoleService.getRole(MOTECH_ADMIN) == null) {
             List<String> permissionsNames = new LinkedList<>();
-            List<MotechPermission> permissions = allMotechPermissions.getPermissions();
+            List<MotechPermission> permissions = permissionsDataService.retrieveAll();
             for (MotechPermission permission : permissions) {
                 permissionsNames.add(permission.getPermissionName());
             }
-            MotechRole adminRole = new MotechRole(MOTECH_ADMIN, permissionsNames, false);
-            allMotechRoles.add(adminRole);
+            RoleDto adminRole = new RoleDto(MOTECH_ADMIN, permissionsNames, false);
+            motechRoleService.createRole(adminRole);
         }
         //initialize startup permission for Admin role
         prepareStartupPermissions();
@@ -58,37 +58,41 @@ public class Initialize {
      */
     private void prepareStartupPermissions() {
         //Web Security module
-        MotechPermission manageUserPermission = new MotechPermission(MANAGE_USER_PERMISSION, WEB_SECURITY);
-        MotechPermission manageRoleAndPermissionPermission = new MotechPermission(MANAGE_ROLE_AND_PERMISSION_PERMISSION, WEB_SECURITY);
-        MotechPermission manageURLPermission = new MotechPermission(MANAGE_URL_PERMISSION, WEB_SECURITY);
+        PermissionDto manageUserPermission = new PermissionDto(MANAGE_USER_PERMISSION, WEB_SECURITY);
+        PermissionDto manageRoleAndPermissionPermission = new PermissionDto(MANAGE_ROLE_AND_PERMISSION_PERMISSION, WEB_SECURITY);
+        PermissionDto manageURLPermission = new PermissionDto(MANAGE_URL_PERMISSION, WEB_SECURITY);
 
-        allMotechPermissions.add(manageUserPermission);
-        allMotechPermissions.add(manageRoleAndPermissionPermission);
-        allMotechPermissions.add(manageURLPermission);
+        permissionService.addPermission(manageUserPermission);
+        permissionService.addPermission(manageRoleAndPermissionPermission);
+        permissionService.addPermission(manageURLPermission);
 
         //MDS module
-        MotechPermission mdsSchemaAccess = new MotechPermission(MDS_SCHEMA_ACCESS_PERMISSION, MDS_MODULE);
-        MotechPermission mdsSettingsAccess = new MotechPermission(MDS_SETTINGS_ACCESS_PERMISSION, MDS_MODULE);
-        MotechPermission mdsDataAccess = new MotechPermission(MDS_DATA_ACCESS_PERMISSION, MDS_MODULE);
-        allMotechPermissions.add(mdsSchemaAccess);
-        allMotechPermissions.add(mdsSettingsAccess);
-        allMotechPermissions.add(mdsDataAccess);
+        PermissionDto mdsSchemaAccess = new PermissionDto(MDS_SCHEMA_ACCESS_PERMISSION, MDS_MODULE);
+        PermissionDto mdsSettingsAccess = new PermissionDto(MDS_SETTINGS_ACCESS_PERMISSION, MDS_MODULE);
+        PermissionDto mdsDataAccess = new PermissionDto(MDS_DATA_ACCESS_PERMISSION, MDS_MODULE);
+        permissionService.addPermission(mdsSchemaAccess);
+        permissionService.addPermission(mdsSettingsAccess);
+        permissionService.addPermission(mdsDataAccess);
 
         //Email module
-        MotechPermission viewEmailLogs = new MotechPermission(VIEW_BASIC_EMAIL_LOGS_PERMISSION, EMAIL);
-        MotechPermission viewDetailedLogs = new MotechPermission(VIEW_DETAILED_EMAIL_LOGS_PERMISSION, EMAIL);
-        allMotechPermissions.add(viewEmailLogs);
-        allMotechPermissions.add(viewDetailedLogs);
+        PermissionDto viewEmailLogs = new PermissionDto(VIEW_BASIC_EMAIL_LOGS_PERMISSION, EMAIL);
+        PermissionDto viewDetailedLogs = new PermissionDto(VIEW_DETAILED_EMAIL_LOGS_PERMISSION, EMAIL);
+        permissionService.addPermission(viewEmailLogs);
+        permissionService.addPermission(viewDetailedLogs);
     }
 
     @Autowired
-    public void setAllMotechPermissions(AllMotechPermissions allMotechPermissions) {
-        this.allMotechPermissions = allMotechPermissions;
+    public void setMotechRoleService(MotechRoleService motechRoleService) {
+        this.motechRoleService = motechRoleService;
     }
 
     @Autowired
-    public void setAllMotechRoles(AllMotechRoles allMotechRoles) {
-        this.allMotechRoles = allMotechRoles;
+    public void setPermissionsDataService(MotechPermissionsDataService permissionsDataService) {
+        this.permissionsDataService = permissionsDataService;
     }
 
+    @Autowired
+    public void setPermissionService(MotechPermissionService permissionService) {
+        this.permissionService = permissionService;
+    }
 }

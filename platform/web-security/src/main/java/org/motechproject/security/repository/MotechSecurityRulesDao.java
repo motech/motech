@@ -5,6 +5,7 @@ import org.apache.commons.collections.Predicate;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.domain.MotechURLSecurityRule;
 import org.motechproject.security.helper.IDTransformer;
+import org.motechproject.security.mds.MotechURLSecurityRuleDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +25,15 @@ import java.util.List;
  * reference, the old configuration's ID and revision are used for the new document.
  */
 @Repository
-public class AllMotechSecurityRules {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AllMotechSecurityRules.class);
+public class MotechSecurityRulesDao {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MotechSecurityRulesDao.class);
 
     private MotechURLSecurityRuleDataService dataService;
 
     /**
      * Reads rules from {@link org.motechproject.security.domain.MotechSecurityConfiguration}
      * and split them into those to be created, updated or removed.
-     * Before updating {@link org.motechproject.security.repository.MotechURLSecurityRuleDataService}
+     * Before updating {@link MotechURLSecurityRuleDataService}
      * is checked for old rule with the same id - update will be done
      * only if it exists. Same thing happens for rules to be removed.
      *

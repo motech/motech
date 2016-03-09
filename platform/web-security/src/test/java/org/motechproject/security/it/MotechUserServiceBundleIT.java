@@ -8,8 +8,8 @@ import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.domain.UserStatus;
 import org.motechproject.security.model.UserDto;
-import org.motechproject.security.repository.MotechRolesDataService;
-import org.motechproject.security.repository.MotechUsersDataService;
+import org.motechproject.security.mds.MotechRolesDataService;
+import org.motechproject.security.mds.MotechUsersDataService;
 import org.motechproject.security.service.MotechUserService;
 
 import javax.inject.Inject;
@@ -65,6 +65,24 @@ public class MotechUserServiceBundleIT extends BaseIT {
     }
 
     @Test
+    public void shouldFindUserByUsername() {
+        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH);
+        UserDto motechUser = motechUserService.getUser("userName");
+        assertNotNull(motechUser);
+        assertTrue(motechUser.getRoles().contains("IT_ADMIN"));
+        assertTrue(motechUser.getRoles().contains("DB_ADMIN"));
+    }
+
+    @Test
+    public void shouldFindUserByUsernameCaseInsensitive() {
+        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH);
+        UserDto motechUser = motechUserService.getUser("USERNAME");
+        assertNotNull(motechUser);
+        assertTrue(motechUser.getRoles().contains("IT_ADMIN"));
+        assertTrue(motechUser.getRoles().contains("DB_ADMIN"));
+    }
+
+    @Test
     public void testRegister() {
         motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH);
         MotechUser motechUser = usersDataService.findByUserName("userName");
@@ -83,22 +101,22 @@ public class MotechUserServiceBundleIT extends BaseIT {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfUserNameIsEmptyForRegister() {
-        motechUserService.register("", "password", "ext_id", "", new ArrayList<String>(), Locale.ENGLISH);
+        motechUserService.register("", "password", "ext_id", "", new ArrayList<>(), Locale.ENGLISH);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfUserNameIsEmptyForRegisterWithActiveInfo() {
-        motechUserService.register("", "password", "ext_id", "", new ArrayList<String>(), Locale.ENGLISH, UserStatus.ACTIVE, null);
+        motechUserService.register("", "password", "ext_id", "", new ArrayList<>(), Locale.ENGLISH, UserStatus.ACTIVE, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfPasswordIsEmptyForRegister() {
-        motechUserService.register("user", "", "ext_id", "", new ArrayList<String>(), Locale.ENGLISH);
+        motechUserService.register("user", "", "ext_id", "", new ArrayList<>(), Locale.ENGLISH);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfUserNameisNull() {
-        motechUserService.register(null, "", "ext_id", "", new ArrayList<String>(), Locale.ENGLISH);
+        motechUserService.register(null, "", "ext_id", "", new ArrayList<>(), Locale.ENGLISH);
     }
 
     @Test(expected = IllegalStateException.class)
