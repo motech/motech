@@ -37,18 +37,18 @@ The AngularJS project currently supports and will attempt to fix bugs for IE9 an
 Internet Explorer 9: Issues
 ---------------------------
 
-To keep Compatibility with Internet Explorer 9 it is best to follow these rules:
+To keep compatibility with Internet Explorer 9 it is best to follow these rules:
 
-1. Internet Explorer 9 don't support  CSS3 animations and transitions so it is best to use *.gif files for animations.
-2. Internet Explorer 9 filter support only colours defined in 8 digit hexes (AARRGGBB)
+1. Internet Explorer 9 doesn't support CSS3 animations and transitions, so it is best to use *.gif files for animations.
+2. Internet Explorer 9 filter supports only colours defined in 8 digit hexes (AARRGGBB)
 
     .. code-block:: bash
 
 			filter : progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFE8E8E8', endColorstr='#FFF2F2F1');
 
    For more information see `Gradient Attributes and Properties <https://msdn.microsoft.com/en-us/library/ms532997(v=vs.85).aspx>`_
-   Some frameworks don't use correctly defined colours for MS filter and it might lead to inconsistency between different browsers UI.
-3. Internet Explorer 9 can't Interpret 3 digit hexes for background-colour so it is best not to use it at all for better code management and code consistency.
+   Some frameworks don't use correctly defined colours for MS filter and it might lead to inconsistency between different browser UIs.
+3. Internet Explorer 9 can't interpret 3 digit hexes for background-colour so it is best not to use it at all for better code management and code consistency.
 
 Screen Resolution
 =================
