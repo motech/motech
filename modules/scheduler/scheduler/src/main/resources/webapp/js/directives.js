@@ -50,20 +50,33 @@
 
     directives.directive("daysOfWeek", function() {
         return {
-            link: function (scope, element, attrs) {
+            require: 'ngModel',
+            link: function (scope, element, attrs, ngModel) {
+
                 var days = [
-                    { label: "Monday", value: 0 }, { label: "Tuesday", value: 1 },
-                    { label: "Wednesday", value: 2 }, { label: "Thursday", value: 3 },
-                    { label: "Friday", value: 4 }, {label: "Saturday", value: 5 },
-                    { label: "Sunday", value: 6}
-                ];
+                        { label: "Monday", value: "0" }, { label: "Tuesday", value: "1" },
+                        { label: "Wednesday", value: "2" }, { label: "Thursday", value: "3" },
+                        { label: "Friday", value: "4" }, {label: "Saturday", value: "5" },
+                        { label: "Sunday", value: "6" }
+                    ];
+
+                scope.$watch(function() {
+                    return ngModel.$modelValue;
+                }, function(values) {
+                    if (values) {
+                        angular.forEach(days, function(day) {
+                            day.selected = values.indexOf("" + day.value) != -1;
+                        });
+                        element.multiselect("dataprovider", days);
+                    }
+                });
             
                 element.multiselect({
                     numberDisplayed: 7,
                     dataprovider: days
                 });
-    
-                element.multiselect('dataprovider', days);
+
+                element.multiselect("dataprovider", days);
             }
         };
     });
