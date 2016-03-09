@@ -1,14 +1,13 @@
 package org.motechproject.scheduler.contract;
 
 import org.motechproject.event.MotechEvent;
-import org.motechproject.scheduler.contract.JobId;
 
 /**
  * Jobs ID for RepeatingSchedulableJobs.
  */
 public class RepeatingJobId extends JobId {
 
-    public static final String SUFFIX_REPEATJOBID = "-repeat";
+    public static final String SUFFIX_REPEATJOBID = "repeat";
 
     /**
      * Constructor.

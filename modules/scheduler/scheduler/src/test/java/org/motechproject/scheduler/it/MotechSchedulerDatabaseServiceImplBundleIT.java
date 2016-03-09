@@ -146,7 +146,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
 
             for (String groupName : scheduler.getJobGroupNames()) {
                 for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
-                    if (jobKey.getName().equals("test_event_2-job_id")) {
+                    if (jobKey.getName().equals("test_event_2-job_id-cron")) {
                         scheduler.pauseJob(jobKey);
                     }
                 }
@@ -156,7 +156,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             expectedJobBasicInfos.add(
                     new JobBasicInfo(
                             JobBasicInfo.ACTIVITY_NOTSTARTED, JobBasicInfo.STATUS_PAUSED,
-                            "test_event_2-job_id",
+                            "test_event_2-job_id-cron",
                             DEFAULT_GROUP,
                             format("%s-07-15 10:00:00", CURRENT_YEAR + 6),
                             format("%s-07-15 12:00:00", CURRENT_YEAR + 6),
