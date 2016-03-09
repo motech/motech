@@ -193,10 +193,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>
@@ -362,5 +358,47 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>FT</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.17</version>
+                        <executions>
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <encoding>UTF-8</encoding>
+                                    <includes>
+                                        <include>**/**/*FT.java</include>
+                                    </includes>
+                                    <summaryFile>target/failsafe-reports/failsafe-summary-it.xml</summaryFile>
+                                    <systemPropertiesFile>${modules.root.dir}/maven.properties</systemPropertiesFile>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>verify</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <summaryFiles>
+                                        <summaryFile>target/failsafe-reports/failsafe-summary-it.xml</summaryFile>
+                                    </summaryFiles>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
