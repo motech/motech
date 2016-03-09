@@ -3,7 +3,7 @@ package org.motechproject.mds.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.dto.FieldDto;
-import org.motechproject.mds.ex.csv.CsvImportException;
+import org.motechproject.mds.exception.csv.CsvImportException;
 import org.motechproject.mds.util.Constants;
 
 import java.util.List;

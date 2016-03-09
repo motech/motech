@@ -1013,6 +1013,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
     public void testDogClass() {
 
         Dog dog = new Dog(null, 3);
+        dog.setWeight(35.6f);
 
         dogDataService.create(dog);
 
@@ -1020,9 +1021,11 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         assertEquals(1, created.size());
         assertEquals(dog.getHiddenBones(), created.get(0).getHiddenBones());
+        assertEquals(dog.getWeight(), created.get(0).getWeight(), 0.01);
 
         Dog toUpdate = created.get(0);
         toUpdate.setHiddenBones(5);
+        toUpdate.setWeight(24.2f);
 
         dogDataService.update(toUpdate);
 
@@ -1030,6 +1033,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         assertEquals(1, updated.size());
         assertEquals(toUpdate.getHiddenBones(), updated.get(0).getHiddenBones());
+        assertEquals(toUpdate.getWeight(), updated.get(0).getWeight(), 0.01);
 
         dogDataService.delete(updated.get(0));
 
@@ -1740,6 +1744,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         House house = new House();
         house.setName("A house");
+        house.setHouseNumber((short)12);
         house.setAddress(address);
 
         house = houseDataService.create(house);
@@ -1759,6 +1764,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
         Address secondAddress = new Address();
         secondAddress.setStreet("Abbey Road");
         house.setAddress(secondAddress);
+        house.setHouseNumber((short)87);
         house = houseDataService.update(house);
 
         secondAddress = house.getAddress();

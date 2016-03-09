@@ -33,6 +33,7 @@ public final class BootstrapConfigPropertyMapper {
         setIfNotBlank(properties, BootstrapConfig.SQL_PASSWORD, bootstrapConfig.getSqlConfig().getPassword());
         properties.setProperty(BootstrapConfig.CONFIG_SOURCE, bootstrapConfig.getConfigSource().getName());
         setIfNotBlank(properties, BootstrapConfig.OSGI_FRAMEWORK_STORAGE, bootstrapConfig.getOsgiFrameworkStorage());
+        setIfNotBlank(properties, BootstrapConfig.MOTECH_DIR, bootstrapConfig.getMotechDir());
         properties.putAll(bootstrapConfig.getActiveMqProperties());
 
         return properties;
@@ -60,6 +61,7 @@ public final class BootstrapConfigPropertyMapper {
                     bootstrapProperties.getProperty(BootstrapConfig.SQL_PASSWORD)),
                     ConfigSource.valueOf(bootstrapProperties.getProperty(BootstrapConfig.CONFIG_SOURCE)),
                     bootstrapProperties.getProperty(BootstrapConfig.OSGI_FRAMEWORK_STORAGE),
+                    bootstrapProperties.getProperty(BootstrapConfig.MOTECH_DIR),
                     bootstrapProperties.getProperty(BootstrapConfig.QUEUE_URL),
                     getActiveMqProperties(bootstrapProperties));
     }

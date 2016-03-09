@@ -48,6 +48,26 @@
         };
     });
 
+    directives.directive("daysOfWeek", function() {
+        return {
+            link: function (scope, element, attrs) {
+                var days = [
+                    { label: "Monday", value: 0 }, { label: "Tuesday", value: 1 },
+                    { label: "Wednesday", value: 2 }, { label: "Thursday", value: 3 },
+                    { label: "Friday", value: 4 }, {label: "Saturday", value: 5 },
+                    { label: "Sunday", value: 6}
+                ];
+            
+                element.multiselect({
+                    numberDisplayed: 7,
+                    dataprovider: days
+                });
+    
+                element.multiselect('dataprovider', days);
+            }
+        };
+    });
+
     directives.directive('schedulerFilter', ['JobsService', '$timeout', function (JobsService, $timeout) {
         return {
             restrict: 'A',
@@ -99,4 +119,14 @@
             }
         };
     }]);
+
+    // TODO: Can be removed after common period modals work again. (MOTECH-2265)
+    directives.directive('periodModalScheduler', function($http, $templateCache, $compile) {
+        return function(scope, element, attrs) {
+            $http.get('../server/resources/partials/period-modal.html', { cache: $templateCache }).success(function(response) {
+                var contents = element.html(response).contents();
+                element.replaceWith($compile(contents)(scope));
+            });
+        };
+    });
 }());

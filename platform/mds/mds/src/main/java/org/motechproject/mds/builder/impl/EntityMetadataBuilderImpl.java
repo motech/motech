@@ -18,7 +18,7 @@ import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.LookupDto;
-import org.motechproject.mds.ex.MdsException;
+import org.motechproject.mds.exception.MdsException;
 import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.reflections.ReflectionsUtil;

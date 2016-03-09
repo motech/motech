@@ -11,7 +11,7 @@ import org.motechproject.mds.annotations.internal.SchemaComparator;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.SchemaHolder;
-import org.motechproject.mds.ex.MdsException;
+import org.motechproject.mds.exception.MdsException;
 import org.motechproject.mds.helper.MdsBundleHelper;
 import org.motechproject.mds.loader.EditableLookupsLoader;
 import org.motechproject.mds.repository.SchemaChangeLockManager;

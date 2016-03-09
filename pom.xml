@@ -1093,7 +1093,6 @@
         <module>platform/event</module>
         <module>platform/osgi-extender-fragment</module>
         <module>platform/osgi-web-util</module>
-        <module>platform/server-api</module>
         <module>platform/server-bundle</module>
         <module>platform/config-core</module>
         <module>platform/server-config</module>
@@ -1115,6 +1114,7 @@
         <module>modules/tasks/tasks-test-bundle</module>
         <module>modules/testing-utils/testing-utils</module>
         <module>modules/testing-utils/tomcat-it</module>
+        <module>modules/testing-utils/upload-test-bundle</module>
         <module>platform/mds/mds-test-bundle</module>
         <module>platform/mds/mds-secondary-test-bundle</module>
         <module>platform/mds/mds-performance-tests</module>
@@ -1148,7 +1148,7 @@
                                 <includeScope>runtime</includeScope>
                                 <overWriteIfNewer>true</overWriteIfNewer>
                                 <excludeArtifactIds>org.apache.felix.framework</excludeArtifactIds>
-                                <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                                <outputDirectory>${motech.dir}/bundles</outputDirectory>
                             </configuration>
                         </execution>
                         <execution>
@@ -1462,7 +1462,7 @@
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${user.home}/.motech/config</outputDirectory>
+                                    <outputDirectory>${motech.dir}/config</outputDirectory>
                                     <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
@@ -1494,7 +1494,7 @@
                                     <filesets>
                                         <fileset>
                                             <followSymlinks>false</followSymlinks>
-                                            <directory>${user.home}/.motech/config</directory>
+                                            <directory>${motech.dir}/config</directory>
                                             <includes>
                                                 <include>bootstrap.properties</include>
                                                 <include>motech-settings.properties</include>

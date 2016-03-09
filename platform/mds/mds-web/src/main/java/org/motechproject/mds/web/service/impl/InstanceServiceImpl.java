@@ -6,6 +6,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.commons.date.model.Time;
@@ -17,17 +18,17 @@ import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.TypeDto;
-import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
-import org.motechproject.mds.ex.entity.EntityNotFoundException;
-import org.motechproject.mds.ex.field.FieldNotFoundException;
-import org.motechproject.mds.ex.field.FieldReadOnlyException;
-import org.motechproject.mds.ex.lookup.LookupExecutionException;
-import org.motechproject.mds.ex.lookup.LookupNotFoundException;
-import org.motechproject.mds.ex.object.ObjectCreateException;
-import org.motechproject.mds.ex.object.ObjectNotFoundException;
-import org.motechproject.mds.ex.object.ObjectUpdateException;
-import org.motechproject.mds.ex.object.ObjectReadException;
-import org.motechproject.mds.ex.object.SecurityException;
+import org.motechproject.mds.exception.entity.EntityInstancesNonEditableException;
+import org.motechproject.mds.exception.entity.EntityNotFoundException;
+import org.motechproject.mds.exception.field.FieldNotFoundException;
+import org.motechproject.mds.exception.field.FieldReadOnlyException;
+import org.motechproject.mds.exception.lookup.LookupExecutionException;
+import org.motechproject.mds.exception.lookup.LookupNotFoundException;
+import org.motechproject.mds.exception.object.ObjectCreateException;
+import org.motechproject.mds.exception.object.ObjectNotFoundException;
+import org.motechproject.mds.exception.object.ObjectUpdateException;
+import org.motechproject.mds.exception.object.ObjectReadException;
+import org.motechproject.mds.exception.object.SecurityException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.helper.MdsBundleHelper;
@@ -36,13 +37,11 @@ import org.motechproject.mds.query.InMemoryQueryFilter;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
+import org.motechproject.mds.service.HistoryTrashClassHelper;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.service.UserPreferencesService;
-
-import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.service.HistoryTrashClassHelper;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.MemberUtil;
@@ -55,6 +54,7 @@ import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
+import org.motechproject.mds.web.domain.RelationshipsUpdate;
 import org.motechproject.mds.web.service.InstanceService;
 import org.motechproject.mds.web.util.RelationshipDisplayUtil;
 import org.motechproject.osgi.web.util.WebBundleUtil;
@@ -86,6 +86,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_VALUE_TYPE;
@@ -110,6 +111,8 @@ public class InstanceServiceImpl implements InstanceService {
     private RelationshipDisplayUtil relationshipDisplayUtil;
     private UserPreferencesService userPreferencesService;
 
+    private ObjectMapper mapper = new ObjectMapper();
+
     @Override
     @Transactional
     public Object saveInstance(EntityRecord entityRecord) {
@@ -133,26 +136,14 @@ public class InstanceServiceImpl implements InstanceService {
 
             Object instance;
             if (newObject) {
-                instance = entityClass.newInstance();
-
-                for (FieldDto entityField : entityFields) {
-                    if (entityField.getType().isMap() && entityField.getBasic().getDefaultValue() != null) {
-                        setInstanceFieldMap(instance, entityField);
-                    }
-                }
-
+                instance = newInstanceFromEntityRecord(entityClass, entityFields, entityRecord.getFields(), service);
+                return service.create(instance);
             } else {
                 instance = service.retrieve(ID_FIELD_NAME, entityRecord.getId());
                 if (instance == null) {
                     throw new ObjectNotFoundException(entity.getName(), entityRecord.getId());
                 }
-            }
-
-            updateFields(instance, entityRecord.getFields(), service, deleteValueFieldId, !newObject);
-
-            if (newObject) {
-                return service.create(instance);
-            } else {
+                updateFields(instance, entityRecord.getFields(), service, deleteValueFieldId, true);
                 return service.update(instance);
             }
         } catch (Exception e) {
@@ -162,24 +153,6 @@ public class InstanceServiceImpl implements InstanceService {
                 throw new ObjectUpdateException(entity.getName(), entityRecord.getId(), e);
             }
         }
-    }
-
-    private void setInstanceFieldMap(Object instance, FieldDto entityField) {
-
-        String strMap = entityField.getBasic().getDefaultValue().toString();
-
-        String keyMetadata;
-        String valueMetadata;
-
-        if (entityField.getMetadata(MAP_KEY_TYPE) == null || entityField.getMetadata(MAP_VALUE_TYPE) == null) {
-            keyMetadata = String.class.getName();
-            valueMetadata = String.class.getName();
-        } else {
-            keyMetadata = entityField.getMetadata(MAP_KEY_TYPE).getValue();
-            valueMetadata = entityField.getMetadata(MAP_VALUE_TYPE).getValue();
-        }
-
-        PropertyUtil.safeSetProperty(instance, entityField.getBasic().getName(), TypeHelper.parseStringToMap(keyMetadata, valueMetadata, strMap));
     }
 
     @Override
@@ -234,7 +207,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         MotechDataService service = getServiceForEntity(entity);
         List<FieldDto> fields = entityService.getEntityFieldsForUI(entityId);
-        Object instance = trashService.findTrashById(instanceId,  entity.getClassName());
+        Object instance = trashService.findTrashById(instanceId, entity.getClassName());
 
         return instanceToRecord(instance, entity, fields, service, EntityType.TRASH);
     }
@@ -495,7 +468,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public Records<EntityRecord> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName,
-                                              QueryParams queryParams) {
+                                              RelationshipsUpdate filter, QueryParams queryParams) {
         try {
             // first get the entity
             EntityDto entity = getEntity(entityId);
@@ -521,16 +494,42 @@ public class InstanceServiceImpl implements InstanceService {
             EntityDto relatedEntity = getEntity(relatedClass);
             List<FieldDto> relatedFields = getEntityFields(relatedEntity.getId());
             MotechDataService relatedDataService = getServiceForEntity(relatedEntity);
+            Collection relatedAsColl = new ArrayList<>();
 
-            // get the instance of the original entity
-            Object instance = service.findById(instanceId);
+            // If the relationship already exists, fetch instances and use correct type
+            if (instanceId != null) {
+                // get the instance of the original entity
+                Object instance = service.findById(instanceId);
 
-            if (instance == null) {
-                throw new ObjectNotFoundException(entityName, instanceId);
+                if (instance == null) {
+                    throw new ObjectNotFoundException(entityName, instanceId);
+                }
+
+                // the value of the related field
+                relatedAsColl = TypeHelper.asCollection(PropertyUtil.getProperty(instance, fieldName));
             }
 
-            // the value of the related field
-            Collection relatedAsColl = TypeHelper.asCollection(PropertyUtil.getProperty(instance, fieldName));
+            relatedAsColl.addAll(relatedDataService.findByIds(filter.getAddedIds()));
+
+            List<Long> updatedInstancesIds = new ArrayList<>();
+            for (EntityRecord record : filter.getAddedNewRecords()) {
+                Integer id = (Integer) record.getFieldByName(Constants.Util.ID_FIELD_NAME).getValue();
+                if (id != null && id > 0) {
+                    updatedInstancesIds.add(id.longValue());
+                }
+            }
+
+            relatedAsColl.removeIf(new Predicate() {
+                @Override
+                public boolean test(Object o) {
+                    Long objectId = (Long) PropertyUtil.safeGetProperty(o, Constants.Util.ID_FIELD_NAME);
+                    return filter.getRemovedIds().contains(objectId) || updatedInstancesIds.contains(objectId);
+                }
+            });
+
+            for (EntityRecord record : filter.getAddedNewRecords()) {
+                relatedAsColl.add(newInstanceFromEntityRecord(getEntityClass(relatedEntity), relatedFields, record.getFields(), relatedDataService));
+            }
 
             // apply pagination ordering (currently in memory)
             List filtered = InMemoryQueryFilter.filter(relatedAsColl, queryParams);
@@ -545,18 +544,51 @@ public class InstanceServiceImpl implements InstanceService {
 
             // package as records
             return new Records<>(queryParams.getPage(), rowCount, recordCount, entityRecords);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | IllegalArgumentException e) {
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | IllegalArgumentException |
+                ClassNotFoundException | CannotCompileException | InstantiationException | NoSuchFieldException e) {
            throw new ObjectReadException(entityId, e);
         }
     }
 
+    private Object newInstanceFromEntityRecord(Class<?> entityClass, List<FieldDto> entityFields, List<FieldRecord> fields, MotechDataService service)
+            throws IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException, CannotCompileException, NoSuchFieldException {
+        Object instance = entityClass.newInstance();
+
+        for (FieldDto entityField : entityFields) {
+            if (entityField.getType().isMap() && entityField.getBasic().getDefaultValue() != null) {
+                setInstanceFieldMap(instance, entityField);
+            }
+        }
+
+        updateFields(instance, fields, service, null, false);
+        return instance;
+    }
+
+    private void setInstanceFieldMap(Object instance, FieldDto entityField) {
+
+        String strMap = entityField.getBasic().getDefaultValue().toString();
+
+        String keyMetadata;
+        String valueMetadata;
+
+        if (entityField.getMetadata(MAP_KEY_TYPE) == null || entityField.getMetadata(MAP_VALUE_TYPE) == null) {
+            keyMetadata = String.class.getName();
+            valueMetadata = String.class.getName();
+        } else {
+            keyMetadata = entityField.getMetadata(MAP_KEY_TYPE).getValue();
+            valueMetadata = entityField.getMetadata(MAP_VALUE_TYPE).getValue();
+        }
+
+        PropertyUtil.safeSetProperty(instance, entityField.getBasic().getName(), TypeHelper.parseStringToMap(keyMetadata, valueMetadata, strMap));
+    }
+
     private void populateDefaultFields(List<FieldRecord> fieldRecords) {
         for (FieldRecord record : fieldRecords) {
-            // we don't want to pre-populate anything for hidden fields
+            // we don't want to pre-populate anything for editable fields
             // if we pre-populate the owner field in such a case for example, it will fail validation
             if (Constants.Util.CREATOR_FIELD_NAME.equals(record.getName()) ||
                     Constants.Util.OWNER_FIELD_NAME.equals(record.getName())) {
-                if (record.isNonDisplayable()) {
+                if (record.isNonEditable()) {
                     // make sure this is null, we don't want empty strings for these fields
                     record.setValue(null);
                 } else {
@@ -706,7 +738,8 @@ public class InstanceServiceImpl implements InstanceService {
         }
     }
 
-    private void setRelationProperty(Object instance, FieldRecord fieldRecord) throws NoSuchMethodException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, CannotCompileException {
+    private void setRelationProperty(Object instance, FieldRecord fieldRecord)
+            throws NoSuchMethodException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException, CannotCompileException {
         String fieldName = fieldRecord.getName();
         String methodName =  MemberUtil.getSetterName(fieldName);
         Class<?> clazz = instance.getClass().getClassLoader().loadClass(instance.getClass().getName());
@@ -717,59 +750,81 @@ public class InstanceServiceImpl implements InstanceService {
         TypeDto type = getType(fieldRecord);
 
         if (StringUtils.isNotEmpty(ObjectUtils.toString(fieldRecord.getValue()))) {
+            Class<?> argumentType = null;
             if (type.equals(TypeDto.ONE_TO_MANY_RELATIONSHIP) || type.equals(TypeDto.MANY_TO_MANY_RELATIONSHIP)) {
-                Class<?> genericType = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-                serviceForRelatedClass = DataServiceHelper.getDataService(bundleContext, genericType.getName());
+                argumentType = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
             } else if (type.equals(TypeDto.MANY_TO_ONE_RELATIONSHIP) || type.equals(TypeDto.ONE_TO_ONE_RELATIONSHIP)) {
-                serviceForRelatedClass = DataServiceHelper.getDataService(bundleContext, parameterType.getName());
+                argumentType = parameterType;
             }
 
-            value = buildRelatedInstances(serviceForRelatedClass, parameterType, fieldRecord.getValue());
+            serviceForRelatedClass = DataServiceHelper.getDataService(bundleContext, argumentType.getName());
+            Object related = PropertyUtil.safeGetProperty(instance, fieldName);
+
+            value = buildRelatedInstances(serviceForRelatedClass, parameterType, argumentType, fieldRecord.getValue(), related);
         }
 
         Method method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, parameterType);
         invokeMethod(method, instance, value, methodName, fieldName);
     }
 
-    private Object buildRelatedInstances(MotechDataService service, Class<?> parameterType, Object fieldValue) throws IllegalAccessException, InstantiationException {
-        Object parsedValue = null;
+    private Object buildRelatedInstances(MotechDataService service, Class<?> parameterType, Class<?> argumentType, Object fieldValue, Object relatedObject)
+            throws IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException, CannotCompileException, NoSuchFieldException {
+        Object parsedValue;
+        RelationshipsUpdate relationshipsUpdate = mapper.convertValue(fieldValue, RelationshipsUpdate.class);
+
+        EntityDto relatedEntity = getEntity(argumentType.getName());
+        List<FieldDto> entityFields = getEntityFields(relatedEntity.getId());
 
        if (Collection.class.isAssignableFrom(parameterType)) {
-           Class<?> collectionImplementation = TypeHelper.suggestCollectionImplementation((Class<? extends Collection>) parameterType);
-           parsedValue = collectionImplementation == null ? new ArrayList() : collectionImplementation.newInstance();
-
-           for (Object object : (Collection) fieldValue) {
-               if (isFromUI(object)) {
-                   ((Collection) parsedValue).add(findRelatedObjectById(((Map) object).get(ID_FIELD_NAME), service));
-               } else if (isHistoricalObject(object)) {
-                   String currentVersion = HistoryTrashClassHelper.currentVersion(object.getClass());
-                   ((Collection) parsedValue).add(findRelatedObjectById(PropertyUtil.safeGetProperty(object, currentVersion), service));
-               }
-           }
+           parsedValue = parseRelationshipCollection(service, (Class<? extends Collection>) parameterType, argumentType, (Collection) relatedObject, relationshipsUpdate, entityFields);
        } else {
-           if (isFromUI(fieldValue)) {
-               parsedValue = findRelatedObjectById(((Map) fieldValue).get(ID_FIELD_NAME), service);
-           } else if (isHistoricalObject(fieldValue)) {
-               String currentVersion = HistoryTrashClassHelper.currentVersion(fieldValue.getClass());
-               parsedValue = findRelatedObjectById(PropertyUtil.safeGetProperty(fieldValue, currentVersion), service);
-           }
+           parsedValue = parseRelationshipValue(service, argumentType, relationshipsUpdate, entityFields);
        }
 
        return parsedValue;
     }
 
-    /**
-     * Checks if the value is from the UI. When we updating or creating object with relationship field via the UI
-     * the single related object is representing by Map.
-     * @param value the value to be checked
-     * @return true if the value is from the UI; false otherwise
-     */
-    private boolean isFromUI(Object value) {
-        return value instanceof Map;
+    private Object parseRelationshipValue(MotechDataService service, Class<?> argumentType, RelationshipsUpdate relationshipsUpdate, List<FieldDto> entityFields)
+            throws IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException, CannotCompileException, NoSuchFieldException {
+        Object parsedValue = null;
+
+        if (!relationshipsUpdate.getAddedIds().isEmpty()) {
+            parsedValue = findRelatedObjectById(relationshipsUpdate.getAddedIds().get(0), service);
+        } else if (!relationshipsUpdate.getAddedNewRecords().isEmpty()) {
+            parsedValue = newInstanceFromEntityRecord(argumentType, entityFields, relationshipsUpdate.getAddedNewRecords().get(0).getFields(), service);
+        }
+
+        return parsedValue;
     }
 
-    private boolean isHistoricalObject(Object object) {
-        return ClassName.isHistoryClassName(object.getClass().getName());
+    private Object parseRelationshipCollection(MotechDataService service, Class<? extends Collection> parameterType, Class<?> argumentType, Collection existingRelatedInstances, RelationshipsUpdate relationshipsUpdate, List<FieldDto> entityFields)
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, CannotCompileException, NoSuchFieldException {
+        Collection relatedInstances;
+
+        Class<?> collectionImplementation = TypeHelper.suggestCollectionImplementation(parameterType);
+        relatedInstances = (Collection) (collectionImplementation == null ? new ArrayList() : collectionImplementation.newInstance());
+
+        // Add already related instances, provided any exist
+        if (existingRelatedInstances != null) {
+            relatedInstances.addAll(existingRelatedInstances);
+        }
+
+        // Add new, existing relations, based on the passed IDs
+        relatedInstances.addAll(service.findByIds(relationshipsUpdate.getAddedIds()));
+
+        // Remove existing relations if their ID is on the list
+        relatedInstances.removeIf(new Predicate() {
+            @Override
+            public boolean test(Object o) {
+                return relationshipsUpdate.getRemovedIds().contains(PropertyUtil.safeGetProperty(o, Constants.Util.ID_FIELD_NAME));
+            }
+        });
+
+        // Add new relations, that do not exist in db yet
+        for (EntityRecord record : relationshipsUpdate.getAddedNewRecords()) {
+            relatedInstances.add(newInstanceFromEntityRecord(argumentType, entityFields, record.getFields(), service));
+        }
+        return relatedInstances;
     }
 
     private Object findRelatedObjectById(Object id, MotechDataService service) {

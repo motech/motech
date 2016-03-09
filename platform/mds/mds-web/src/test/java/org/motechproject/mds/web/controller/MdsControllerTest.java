@@ -1,12 +1,12 @@
 package org.motechproject.mds.web.controller;
 
 import org.junit.Test;
-import org.motechproject.mds.ex.MdsException;
-import org.motechproject.mds.ex.entity.EntityAlreadyExistException;
-import org.motechproject.mds.ex.entity.EntityCreationException;
-import org.motechproject.mds.ex.entity.EntityInfrastructureException;
-import org.motechproject.mds.ex.entity.EntityNotFoundException;
-import org.motechproject.mds.ex.entity.EntityReadOnlyException;
+import org.motechproject.mds.exception.MdsException;
+import org.motechproject.mds.exception.entity.EntityAlreadyExistException;
+import org.motechproject.mds.exception.entity.EntityCreationException;
+import org.motechproject.mds.exception.entity.EntityInfrastructureException;
+import org.motechproject.mds.exception.entity.EntityNotFoundException;
+import org.motechproject.mds.exception.entity.EntityReadOnlyException;
 
 import static org.junit.Assert.assertEquals;
 

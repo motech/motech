@@ -21,7 +21,7 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
-import org.motechproject.mds.ex.entity.EntityCreationException;
+import org.motechproject.mds.exception.entity.EntityCreationException;
 import org.motechproject.mds.helper.ClassTableName;
 import org.motechproject.mds.helper.EntitySorter;
 import org.motechproject.mds.helper.MdsBundleHelper;

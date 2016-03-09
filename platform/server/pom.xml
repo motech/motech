@@ -23,11 +23,6 @@
         <!-- Motech Platform, loaded from inside the war -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-osgi-platform</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -228,7 +223,7 @@
                             <overWriteIfNewer>true</overWriteIfNewer>
                             <overWriteReleases>false</overWriteReleases>
                             <outputDirectory>
-                                ${user.home}/.motech/bundles
+                                ${motech.dir}/bundles
                             </outputDirectory>
                         </configuration>
                     </execution>
@@ -301,7 +296,7 @@
                             <excludeDefaultDirectories>true</excludeDefaultDirectories>
                             <filesets>
                                 <fileset>
-                                    <directory>${user.home}/.motech/config</directory>
+                                    <directory>${motech.dir}/config</directory>
                                     <includes>
                                         <include>*.properties</include>
                                         <include>*.conf</include>

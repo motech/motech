@@ -1,0 +1,17 @@
+<input short-validity inset-validity="{{getValidationCriteria(field, 2)}}" outset-validity="{{getValidationCriteria(field, 3)}}"
+       ng-required="{{field.required}}" type="text" min-validity="{{getValidationCriteria(field, 0)}}" max-validity="{{getValidationCriteria(field, 1)}}"
+       class="form-control input-xlarge-fluid" ng-model="field.value" placeholder="{{field.placeholder}}" mds-field-id="{{field.id}}" ng-readonly="shouldHideEdition(field)">
+<span mds-content-tooltip="limitsAvailableIntegerValues" mds-field-id="{{field.id}}" class="glyphicon glyphicon-info-sign" ng-show="anyValidationCriteria(field)"></span>
+<div id="content{{field.id}}" class="hide">
+    <p ng-show="field.validation.criteria[0].enabled && field.validation.criteria[0].value">{{msg('mds.info.minValue')}}&#58; <strong>{{field.validation.criteria[0].value}}</strong></p>
+    <p ng-show="field.validation.criteria[1].enabled && field.validation.criteria[1].value">{{msg('mds.info.maxValue')}}&#58; <strong>{{field.validation.criteria[1].value}}</strong></p>
+    <p ng-show="field.validation.criteria[2].enabled && field.validation.criteria[2].value">{{msg('mds.info.mustBeInSet')}}&#58; <strong>{{field.validation.criteria[2].value}}</strong></p>
+    <p ng-show="field.validation.criteria[3].enabled && field.validation.criteria[3].value">{{msg('mds.info.cannotBeInSet')}}&#58; <strong>{{field.validation.criteria[3].value}}</strong></p>
+</div>
+<span class="form-hint" ng-show="{{field.name}}.$error.short && !{{field.name}}.$pristine">{{msg('mds.error.incorrectValueShort')}}</span>
+<span class="form-hint" ng-show="{{field.name}}.$error.min && !{{field.name}}.$pristine && !{{field.name}}.$error.short">{{msg('mds.error.min')}}</span>
+<span class="form-hint" ng-show="{{field.name}}.$error.max && !{{field.name}}.$pristine && !{{field.name}}.$error.short">{{msg('mds.error.max')}}</span>
+<span class="form-hint" ng-show="( {{field.name}}.$error.insetNum || {{field.name}}.$error.outsetNum ) && !{{field.name}}.$pristine && !{{field.name}}.$error.min && !{{field.name}}.$error.max && !{{field.name}}.$error.short">
+    <p ng-show="{{field.name}}.$error.insetNum">{{msg('mds.error.inset')}}</p>
+    <p ng-show="{{field.name}}.$error.outsetNum">{{msg('mds.error.outset')}}</p>
+</span>

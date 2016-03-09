@@ -1,7 +1,7 @@
 package org.motechproject.mds.helper;
 
 import org.motechproject.mds.domain.Entity;
-import org.motechproject.mds.ex.entity.ServiceNotFoundException;
+import org.motechproject.mds.exception.entity.ServiceNotFoundException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.osgi.web.util.OSGiServiceUtils;
@@ -21,7 +21,7 @@ public final class DataServiceHelper {
 
     /**
      * Retrieves {@link org.motechproject.mds.service.MotechDataService} implementation for the
-     * given entity class. It will throw {@link org.motechproject.mds.ex.entity.ServiceNotFoundException}, in
+     * given entity class. It will throw {@link org.motechproject.mds.exception.entity.ServiceNotFoundException}, in
      * case a service for the given entity class cannot be found.
      *
      * @param bundleContext context of a bundle
@@ -39,7 +39,7 @@ public final class DataServiceHelper {
 
     /**
      * Retrieves {@link org.motechproject.mds.service.MotechDataService} implementation for the
-     * given entity. It will throw {@link org.motechproject.mds.ex.entity.ServiceNotFoundException}, in
+     * given entity. It will throw {@link org.motechproject.mds.exception.entity.ServiceNotFoundException}, in
      * case a service for the given entity class cannot be found.
      *
      * @param bundleContext context of a bundle

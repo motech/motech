@@ -20,7 +20,7 @@
                 <input type="hidden" ui-select2="SELECT_ENTITY_CONFIG" ng-model="selectedEntity" id="selectEntity" class="select-entity col-md-4">
             </div>
             <div class="form-group">
-                <button target="_self" href="#newEntityModal" type="button" class="btn btn-success" data-toggle="modal" data-backdrop="static">
+                <button target="_self" href="#newEntityModal" type="button" class="btn btn-success" data-toggle="modal" data-backdrop="static" id="newEntityButton">
                     <i class="fa fa-fw fa-plus"></i> {{msg('mds.btn.newEntity')}}
                 </button>
             </div>
@@ -47,7 +47,7 @@
     <div class="row margin-before" ui-if="selectedEntity">
         <div ng-include="'../mds/resources/partials/widgets/fields.html'"></div>
         <div class="inside">
-            <a ng-show='hasAccessTo(DATA_BROWSER)' class="btn btn-success pull-right" type="button" target="_self" href="#/mds/dataBrowser/{{selectedEntity.id}}">
+            <a ng-show='hasAccessTo(DATA_BROWSER)' class="btn btn-success pull-right" type="button" target="_self" href="#/mds/dataBrowser/{{selectedEntity.id}}" id="browseInstancesButton">
                 {{msg('mds.btn.browseInstances')}}
             </a>
             <button class="btn btn-danger" ng-disabled="!selectedEntity.modified" ng-click="abandonChanges()">

@@ -1,0 +1,22 @@
+<form name="instanceFieldsForm" class="form-horizontal inside" novalidate>
+    <div class="form-group" ng-repeat="field in fields track by $index" ng-class="{ 'has-error' : {{field.name}}.$invalid && {{field.name}}.$dirty}"
+         ng-if="shouldShowInputForField(field)">
+        <label class="col-md-2 col-sm-3 control-label">
+            {{field.displayName}}
+            <span ng-show="field.required == true" class="text-danger">*</span>
+            <span ng-show="field.tooltip.length &gt; 0" bs-popover="{{field.tooltip}}" data-placement="right" data-trigger="hover"
+                  class="glyphicon glyphicon-info-sign">
+            </span>
+        </label>
+        <div class="col-md-10 col-sm-9 form-inline">
+            <ng-form name="{{field.name}}">
+                <div ng-include="loadEditValueForm(field, true)"></div>
+                <span class="form-hint form-hint-bottom" ng-if="!isMapField(field)" ng-show="{{field.name}}.$error.required && !{{field.name}}.$pristine">{{msg('mds.error.requiredField')}}</span>
+                <div class="clearfix"></div>
+            </ng-form>
+            <div class="margin-before" ng-if="isComboboxField(field) && field.settings[1].value" ng-hide="shouldHideEdition(field)">
+                <div ng-include="'../mds/resources/partials/widgets/addComboboxValue.html'"></div>
+            </div>
+        </div>
+    </div>
+</form>

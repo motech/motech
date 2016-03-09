@@ -7,12 +7,12 @@ import org.motechproject.mds.entityinfo.EntityInfo;
 import org.motechproject.mds.entityinfo.EntityInfoReader;
 import org.motechproject.mds.entityinfo.FieldInfo;
 import org.motechproject.mds.event.CrudEventType;
-import org.motechproject.mds.ex.HistoryInstanceNotFoundException;
-import org.motechproject.mds.ex.SchemaVersionException;
-import org.motechproject.mds.ex.TrashInstanceNotFoundException;
-import org.motechproject.mds.ex.object.ObjectNotFoundException;
-import org.motechproject.mds.ex.object.ObjectUpdateException;
-import org.motechproject.mds.ex.object.SecurityException;
+import org.motechproject.mds.exception.HistoryInstanceNotFoundException;
+import org.motechproject.mds.exception.SchemaVersionException;
+import org.motechproject.mds.exception.TrashInstanceNotFoundException;
+import org.motechproject.mds.exception.object.ObjectNotFoundException;
+import org.motechproject.mds.exception.object.ObjectUpdateException;
+import org.motechproject.mds.exception.object.SecurityException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.QueryExecution;
@@ -43,6 +43,8 @@ import javax.annotation.PostConstruct;
 import javax.jdo.JDOHelper;
 import javax.jdo.ObjectState;
 import javax.jdo.Query;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -417,6 +419,16 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
             return null;
         }
         return retrieve(Constants.Util.ID_FIELD_NAME, id);
+    }
+
+    @Override
+    @Transactional
+    public List<T> findByIds(Collection<Long> ids) {
+        if (ids == null) {
+            return new ArrayList<>();
+        }
+
+        return repository.retrieveAll(ids);
     }
 
     @Override

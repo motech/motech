@@ -15,7 +15,6 @@ import org.motechproject.osgi.web.util.ModuleRegistrations;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
-import org.motechproject.server.api.BundleInformation;
 import org.motechproject.server.web.dto.ModuleMenu;
 import org.motechproject.server.web.dto.ModuleMenuLink;
 import org.motechproject.server.web.dto.ModuleMenuSection;
@@ -45,6 +44,7 @@ import static org.mockito.Mockito.when;
 @PrepareForTest(ApplicationEnvironment.class)
 public class MenuBuilderTest {
 
+    private static final String DOC_URL = "Bundle-DocURL";
     private static final String USERNAME = "motech";
 
     @InjectMocks
@@ -89,7 +89,7 @@ public class MenuBuilderTest {
         when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("emailRole", "adminRole", "schedulerRole",
                 "mcRole", "mdsRole", "viewRestRole"));
 
-        when(dictionary.get(BundleInformation.DOC_URL)).thenReturn("http://grameenfoundation.org/");
+        when(dictionary.get(DOC_URL)).thenReturn("http://grameenfoundation.org/");
         ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
         assertNotNull(menu);
 
@@ -114,7 +114,7 @@ public class MenuBuilderTest {
     public void shouldFilterMenuBasedOnRoles() {
         setUpRest();
         when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("emailRole", "mcRole"));
-        when(bundle.getHeaders().get(BundleInformation.DOC_URL)).thenReturn("www.docs.motechproject.org");
+        when(bundle.getHeaders().get(DOC_URL)).thenReturn("www.docs.motechproject.org");
         ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
         assertNotNull(menu);
 
@@ -133,7 +133,7 @@ public class MenuBuilderTest {
     public void shouldAddDocumentationUrls() {
         setUpRest();
         when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("emailRole", "mcRole"));
-        when(bundle.getHeaders().get(BundleInformation.DOC_URL)).thenReturn("www.docs.motechproject.org");
+        when(bundle.getHeaders().get(DOC_URL)).thenReturn("www.docs.motechproject.org");
         ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
         assertEquals(menu.getSections().get(0).getModuleDocsUrl(), "www.docs.motechproject.org");
         assertNotNull(menu);
@@ -143,7 +143,7 @@ public class MenuBuilderTest {
     public void shouldAddDocumentationUrlForModulesTab() {
         setUpRest();
         when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("emailRole", "mcRole"));
-        when(bundle.getHeaders().get(BundleInformation.DOC_URL)).thenReturn("http://docs.motechproject.org/en/latest/modules/email.html");
+        when(bundle.getHeaders().get(DOC_URL)).thenReturn("http://docs.motechproject.org/en/latest/modules/email.html");
         ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
         assertEquals(null, menu.getSections().get(1).getModuleDocsUrl());
         assertEquals("http://docs.motechproject.org/en/latest/modules/email.html", menu.getSections().get(1).getLinks().get(1).getModuleDocsUrl());
@@ -157,7 +157,7 @@ public class MenuBuilderTest {
         setUpToTestAccessControlledSubMenuLinks(true);
 
         when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("fooRole"));
-        when(bundle.getHeaders().get(BundleInformation.DOC_URL)).thenReturn("http://grameenfoundation.org/");
+        when(bundle.getHeaders().get(DOC_URL)).thenReturn("http://grameenfoundation.org/");
         ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
         assertNotNull(menu);
 
@@ -183,7 +183,7 @@ public class MenuBuilderTest {
         setUpToTestAccessControlledSubMenuLinks(false);
 
         when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("someOtherRole"));
-        when(bundle.getHeaders().get(BundleInformation.DOC_URL)).thenReturn("http://grameenfoundation.org/");
+        when(bundle.getHeaders().get(DOC_URL)).thenReturn("http://grameenfoundation.org/");
         ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
         assertNotNull(menu);
 

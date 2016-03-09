@@ -9,7 +9,8 @@
         <ul id="content-tabs" class="nav nav-tabs mds">
             <li ng-class="{'active': selectedTabState.selectedTab === tab}"
                 ng-click="selectedTabState.selectedTab = tab"
-                ng-repeat="tab in AVAILABLE_TABS">
+                ng-repeat="tab in AVAILABLE_TABS"
+                id="mdsTab_{{tab}}">
                 <a href="#/mds/{{tab}}">
                     {{msg('mds.tab.' + tab)}}
                 </a>
