@@ -16,13 +16,13 @@ public class JobIdTest {
     @Test
     public void value() {
         JobId jobId = new CronJobId(SUBJECT_VALUE, JOB_ID_VALUE);
-        assertEquals(String.format("%s-%s", SUBJECT_VALUE, JOB_ID_VALUE), jobId.value());
+        assertEquals(String.format("%s-%s-%s", SUBJECT_VALUE, JOB_ID_VALUE, CronJobId.SUFFIX_CRON_JOB_ID), jobId.value());
     }
 
     @Test
     public void repeatingId() {
         JobId jobId = new RepeatingJobId(SUBJECT_VALUE, JOB_ID_VALUE);
-        assertEquals(String.format("%s-%s%s", SUBJECT_VALUE, JOB_ID_VALUE, RepeatingJobId.SUFFIX_REPEATJOBID), jobId.value());
+        assertEquals(String.format("%s-%s-%s", SUBJECT_VALUE, JOB_ID_VALUE, RepeatingJobId.SUFFIX_REPEATJOBID), jobId.value());
     }
 
     @Test
@@ -30,9 +30,9 @@ public class JobIdTest {
         MotechEvent motechEvent = new MotechEvent(SUBJECT_VALUE);
         motechEvent.getParameters().put(MotechSchedulerService.JOB_ID_KEY, JOB_ID_VALUE);
         JobId jobId = new CronJobId(motechEvent);
-        assertEquals(String.format("%s-%s", SUBJECT_VALUE, JOB_ID_VALUE), jobId.value());
+        assertEquals(String.format("%s-%s-%s", SUBJECT_VALUE, JOB_ID_VALUE, CronJobId.SUFFIX_CRON_JOB_ID), jobId.value());
 
         jobId = new RepeatingJobId(motechEvent);
-        assertEquals(String.format("%s-%s%s", SUBJECT_VALUE, JOB_ID_VALUE, RepeatingJobId.SUFFIX_REPEATJOBID), jobId.value());
+        assertEquals(String.format("%s-%s-%s", SUBJECT_VALUE, JOB_ID_VALUE, RepeatingJobId.SUFFIX_REPEATJOBID), jobId.value());
     }
 }

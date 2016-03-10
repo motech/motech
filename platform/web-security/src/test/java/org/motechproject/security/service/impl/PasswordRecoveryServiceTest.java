@@ -1,12 +1,14 @@
 package org.motechproject.security.service.impl;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.commons.api.Range;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
@@ -14,13 +16,12 @@ import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
 import org.motechproject.security.email.EmailSender;
 import org.motechproject.security.email.impl.EmailSenderImpl;
-import org.motechproject.security.ex.InvalidTokenException;
-import org.motechproject.security.ex.NonAdminUserException;
-import org.motechproject.security.ex.UserNotFoundException;
-import org.motechproject.security.repository.AllMotechUsers;
-import org.motechproject.security.repository.AllPasswordRecoveries;
+import org.motechproject.security.exception.InvalidTokenException;
+import org.motechproject.security.exception.NonAdminUserException;
+import org.motechproject.security.exception.UserNotFoundException;
+import org.motechproject.security.repository.MotechUsersDao;
+import org.motechproject.security.mds.PasswordRecoveriesDataService;
 import org.motechproject.security.service.PasswordRecoveryService;
-import org.motechproject.security.service.impl.PasswordRecoveryServiceImpl;
 import org.motechproject.security.velocity.VelocityTemplateParser;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.LoginMode;
@@ -31,16 +32,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.motechproject.testing.utils.TimeFaker.fakeNow;
-import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.testing.utils.TimeFaker.fakeNow;
 
 public class PasswordRecoveryServiceTest {
 
@@ -56,7 +55,7 @@ public class PasswordRecoveryServiceTest {
     private MotechUser user;
 
     @Mock
-    private AllMotechUsers allMotechUsers;
+    private MotechUsersDao motechUsersDao;
 
     @Mock
     private PasswordRecovery recovery;
@@ -71,7 +70,7 @@ public class PasswordRecoveryServiceTest {
     private SettingsFacade settingsFacade;
 
     @Mock
-    private AllPasswordRecoveries allPasswordRecoveries;
+    private PasswordRecoveriesDataService passwordRecoveriesDataService;
 
     @Mock
     private EventRelay eventRelay;
@@ -94,63 +93,60 @@ public class PasswordRecoveryServiceTest {
     @Before
     public void setUp() {
         initMocks(this);
+        // Fake DateTime.now()
+        DateTimeUtils.setCurrentMillisFixed(DateTime.now().getMillis());
         prepareMessageSource();
         prepareEmailSender();
     }
 
     @After
     public void tearDown() {
-        stopFakingTime();
+        // Stop faking time
+        DateTimeUtils.setCurrentMillisSystem();
     }
 
     @Test
-    public void testCreateRecovery() throws UserNotFoundException {
+    public void shouldCreateRecoveryAndSendEmail() throws UserNotFoundException {
         final DateTime now = DateTime.now();
         final int expiration = EXPIRATION_HOURS;
 
         testCreateRecoveryTemplate(now, EMAIL, now.plusHours(expiration), true);
+        ArgumentCaptor<PasswordRecovery> captor = ArgumentCaptor.forClass(PasswordRecovery.class);
+        verify(passwordRecoveriesDataService).create(captor.capture());
 
-        verify(allPasswordRecoveries).createRecovery(eq(USERNAME), eq(EMAIL), argThat(new ArgumentMatcher<String>() {
-            @Override
-            public boolean matches(Object argument) {
-                String str = (String) argument;
-                return str.length() == 60;
-            }
-        }), argThat(new ArgumentMatcher<DateTime>() {
-            @Override
-            public boolean matches(Object argument) {
-                DateTime time = (DateTime) argument;
-                return time.equals(now.plusHours(expiration));
-            }
-        }), eq(Locale.ENGLISH));
-        verify(emailSender).sendRecoveryEmail(recovery);
+        PasswordRecovery createdRecovery = captor.getValue();
+
+        assertEquals(USERNAME, createdRecovery.getUsername());
+        assertEquals(EMAIL, createdRecovery.getEmail());
+        assertEquals(now.plusHours(expiration), createdRecovery.getExpirationDate());
+        assertEquals(Locale.ENGLISH, createdRecovery.getLocale());
+        assertEquals(60, createdRecovery.getToken().length());
+
+        verify(emailSender).sendRecoveryEmail(createdRecovery);
     }
 
     @Test
-    public void testCreateRecoveryNoEmail() throws UserNotFoundException {
+    public void shouldCreateRecoveryWithoutNotification() throws UserNotFoundException {
         final DateTime now = DateTime.now();
         final int expiration = EXPIRATION_HOURS;
 
         testCreateRecoveryTemplate(now, EMAIL, now.plusHours(expiration), false);
+        ArgumentCaptor<PasswordRecovery> captor = ArgumentCaptor.forClass(PasswordRecovery.class);
+        verify(passwordRecoveriesDataService).create(captor.capture());
 
-        verify(allPasswordRecoveries).createRecovery(eq(USERNAME), eq(EMAIL), argThat(new ArgumentMatcher<String>() {
-            @Override
-            public boolean matches(Object argument) {
-                String str = (String) argument;
-                return str.length() == 60;
-            }
-        }), argThat(new ArgumentMatcher<DateTime>() {
-            @Override
-            public boolean matches(Object argument) {
-                DateTime time = (DateTime) argument;
-                return time.equals(now.plusHours(expiration));
-            }
-        }), eq(Locale.ENGLISH));
+        PasswordRecovery createdRecovery = captor.getValue();
+
+        assertEquals(USERNAME, createdRecovery.getUsername());
+        assertEquals(EMAIL, createdRecovery.getEmail());
+        assertEquals(now.plusHours(expiration), createdRecovery.getExpirationDate());
+        assertEquals(Locale.ENGLISH, createdRecovery.getLocale());
+        assertEquals(60, createdRecovery.getToken().length());
+
         verifyZeroInteractions(emailSender);
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void testCreateRecoveryWrongDate() throws UserNotFoundException {
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExcetionForCreatingRecoveryWithExpirationDateInPast() throws UserNotFoundException {
         final DateTime now = DateTime.now();
         final int expiration = -2;
 
@@ -158,117 +154,96 @@ public class PasswordRecoveryServiceTest {
     }
 
     @Test
-    public void testCreateRecoveryNoDate() throws UserNotFoundException {
+    public void shouldCreateRecoveryWithDefaultExpirationTimeIfNoneWasProvided() throws UserNotFoundException {
         final DateTime now = DateTime.now();
 
         testCreateRecoveryTemplate(now, EMAIL, null, true);
+        ArgumentCaptor<PasswordRecovery> captor = ArgumentCaptor.forClass(PasswordRecovery.class);
+        verify(passwordRecoveriesDataService).create(captor.capture());
 
-        verify(allPasswordRecoveries).createRecovery(eq(USERNAME), eq(EMAIL), argThat(new ArgumentMatcher<String>() {
-            @Override
-            public boolean matches(Object argument) {
-                String str = (String) argument;
-                return str.length() == 60;
-            }
-        }), argThat(new ArgumentMatcher<DateTime>() {
-            @Override
-            public boolean matches(Object argument) {
-                DateTime time = (DateTime) argument;
-                return time.isAfter(now);
-            }
-        }), eq(Locale.ENGLISH));
-        verify(emailSender).sendRecoveryEmail(recovery);
-    }
+        PasswordRecovery createdRecovery = captor.getValue();
 
-    private void testCreateRecoveryTemplate(final DateTime now, String email, DateTime expiration, boolean notify)
-            throws UserNotFoundException {
-        fakeNow(now);
+        assertEquals(USERNAME, createdRecovery.getUsername());
+        assertEquals(EMAIL, createdRecovery.getEmail());
+        // 3 is the default set in PasswordRecoveryServiceImpl
+        assertEquals(now.plusHours(3), createdRecovery.getExpirationDate());
+        assertEquals(Locale.ENGLISH, createdRecovery.getLocale());
+        assertEquals(60, createdRecovery.getToken().length());
 
-        when(allMotechUsers.findUserByEmail(EMAIL)).thenReturn(user);
-        when(user.getUserName()).thenReturn(USERNAME);
-        when(user.getEmail()).thenReturn(EMAIL);
-        when(user.getLocale()).thenReturn(Locale.ENGLISH);
-        when(allPasswordRecoveries.createRecovery(any(String.class), any(String.class),
-                any(String.class), any(DateTime.class), any(Locale.class))).thenReturn(recovery);
-
-        recoveryService.passwordRecoveryRequest(email, expiration, notify);
+        verify(emailSender).sendRecoveryEmail(createdRecovery);
     }
 
     @Test(expected = UserNotFoundException.class)
-    public void testUserNotFound() throws UserNotFoundException {
-        when(allMotechUsers.findUserByEmail(EMAIL)).thenReturn(null);
+    public void shouldThrowExceptionWhenUserCannotBeFoundWhileRequestingPasswordRecovery() throws UserNotFoundException {
+        when(motechUsersDao.findUserByEmail(EMAIL)).thenReturn(null);
         recoveryService.passwordRecoveryRequest(EMAIL);
     }
 
     @Test
-    public void testCleanUpExpired() {
-        when(allPasswordRecoveries.getExpired()).thenReturn(Arrays.asList(recovery));
+    public void shouldCleanUpExpiredPasswordRecoveries() {
+        when(passwordRecoveriesDataService.findByExpirationDate(any(Range.class))).thenReturn(Arrays.asList(recovery));
         recoveryService.cleanUpExpiredRecoveries();
-        verify(allPasswordRecoveries).remove(recovery);
+        verify(passwordRecoveriesDataService).delete(recovery);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testWrongConfirmation() throws InvalidTokenException {
+    public void shouldThrowExceptionWhenInvalidConfirmationPasswordIsProvidedAtPasswordReset() throws InvalidTokenException {
         recoveryService.resetPassword(TOKEN, PASSWORD, "ppassword");
     }
 
     @Test(expected = InvalidTokenException.class)
-    public void testInvalidToken() throws InvalidTokenException {
-        when(allPasswordRecoveries.findForToken(TOKEN)).thenReturn(null);
+    public void shouldThrowExceptionWhenInvalidTokenIsProvidedAtPasswordReset() throws InvalidTokenException {
+        when(passwordRecoveriesDataService.findForToken(TOKEN)).thenReturn(null);
         recoveryService.resetPassword(TOKEN, PASSWORD, PASSWORD);
     }
 
     @Test(expected = InvalidTokenException.class)
-    public void testExpiredRequest() throws InvalidTokenException {
+    public void shouldThrowExceptionWhenAttemptingToUseExpiredToken() throws InvalidTokenException {
         final DateTime now = DateTime.now();
         fakeNow(now);
-        when(allPasswordRecoveries.findForToken(TOKEN)).thenReturn(recovery);
+        when(passwordRecoveriesDataService.findForToken(TOKEN)).thenReturn(recovery);
         when(recovery.getExpirationDate()).thenReturn(now);
 
         recoveryService.resetPassword(TOKEN, PASSWORD, PASSWORD);
     }
 
     @Test
-    public void testResetPassword() throws InvalidTokenException {
+    public void shouldResetPassword() throws InvalidTokenException {
         final DateTime now = DateTime.now();
         fakeNow(now);
-        when(allPasswordRecoveries.findForToken(TOKEN)).thenReturn(recovery);
+        when(passwordRecoveriesDataService.findForToken(TOKEN)).thenReturn(recovery);
         when(recovery.getExpirationDate()).thenReturn(now.plusMinutes(30));
         when(recovery.getUsername()).thenReturn(USERNAME);
-        when(allMotechUsers.findByUserName(USERNAME)).thenReturn(user);
+        when(motechUsersDao.findByUserName(USERNAME)).thenReturn(user);
         when(passwordEncoder.encodePassword(PASSWORD)).thenReturn(ENCODED_PASSWORD);
 
         recoveryService.resetPassword(TOKEN, PASSWORD, PASSWORD);
 
         verify(user).setPassword(ENCODED_PASSWORD);
-        verify(allMotechUsers).update(user);
-        verify(allPasswordRecoveries).remove(recovery);
+        verify(motechUsersDao).update(user);
+        verify(passwordRecoveriesDataService).delete(recovery);
     }
 
     @Test
-    public void testCreateOpenIDRecovery() throws UserNotFoundException, NonAdminUserException {
+    public void shouldCreatePasswordRecoveryForOpenID() throws UserNotFoundException, NonAdminUserException {
         final DateTime now = DateTime.now();
         final int expiration = EXPIRATION_HOURS;
 
         testCreateOpenIDRecoveryTemplate(now, EMAIL, now.plusHours(expiration));
+        ArgumentCaptor<PasswordRecovery> captor = ArgumentCaptor.forClass(PasswordRecovery.class);
+        verify(passwordRecoveriesDataService).create(captor.capture());
 
-        verify(allPasswordRecoveries).createRecovery(eq(USERNAME), eq(EMAIL), argThat(new ArgumentMatcher<String>() {
-            @Override
-            public boolean matches(Object argument) {
-                String str = (String) argument;
-                return str.length() == 60;
-            }
-        }), argThat(new ArgumentMatcher<DateTime>() {
-            @Override
-            public boolean matches(Object argument) {
-                DateTime time = (DateTime) argument;
-                return time.equals(now.plusHours(expiration));
-            }
-        }), eq(Locale.ENGLISH));
-        verify(emailSender).sendOneTimeToken(recovery);
+        PasswordRecovery createdRecovery = captor.getValue();
+
+        assertEquals(USERNAME, createdRecovery.getUsername());
+        assertEquals(EMAIL, createdRecovery.getEmail());
+        assertEquals(now.plusHours(expiration), createdRecovery.getExpirationDate());
+        assertEquals(Locale.ENGLISH, createdRecovery.getLocale());
+        assertEquals(60, createdRecovery.getToken().length());
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void testCreateOpenIDRecoveryWrongDate() throws UserNotFoundException, NonAdminUserException {
+    public void shouldThrowExceptionWhenRequestingRecoveryForOpenIDWithPastDate() throws UserNotFoundException, NonAdminUserException {
         final DateTime now = DateTime.now();
         final int expiration = -2;
 
@@ -276,45 +251,27 @@ public class PasswordRecoveryServiceTest {
     }
 
     @Test
-    public void testCreateOpenIDRecoveryNoDate() throws UserNotFoundException, NonAdminUserException {
+    public void shouldCreateRecoveryWithDefaultExpirationTimeForOpenIDIfNoneWasProvided() throws UserNotFoundException, NonAdminUserException {
         final DateTime now = DateTime.now();
 
         testCreateOpenIDRecoveryTemplate(now, EMAIL, null);
+        ArgumentCaptor<PasswordRecovery> captor = ArgumentCaptor.forClass(PasswordRecovery.class);
+        verify(passwordRecoveriesDataService).create(captor.capture());
 
-        verify(allPasswordRecoveries).createRecovery(eq(USERNAME), eq(EMAIL), argThat(new ArgumentMatcher<String>() {
-            @Override
-            public boolean matches(Object argument) {
-                String str = (String) argument;
-                return str.length() == 60;
-            }
-        }), argThat(new ArgumentMatcher<DateTime>() {
-            @Override
-            public boolean matches(Object argument) {
-                DateTime time = (DateTime) argument;
-                return time.isAfter(now);
-            }
-        }), eq(Locale.ENGLISH));
-        verify(emailSender).sendOneTimeToken(recovery);
-    }
+        PasswordRecovery createdRecovery = captor.getValue();
 
-    private void testCreateOpenIDRecoveryTemplate(final DateTime now, String email, DateTime expiration)
-            throws UserNotFoundException, NonAdminUserException {
-        fakeNow(now);
+        assertEquals(USERNAME, createdRecovery.getUsername());
+        assertEquals(EMAIL, createdRecovery.getEmail());
+        // 3 is the default set in PasswordRecoveryServiceImpl
+        assertEquals(now.plusHours(3), createdRecovery.getExpirationDate());
+        assertEquals(Locale.ENGLISH, createdRecovery.getLocale());
+        assertEquals(60, createdRecovery.getToken().length());
 
-        when(allMotechUsers.findUserByEmail(EMAIL)).thenReturn(user);
-
-        when(user.getUserName()).thenReturn(USERNAME);
-        when(user.getRoles()).thenReturn(ROLES);
-        when(user.getEmail()).thenReturn(EMAIL);
-        when(user.getLocale()).thenReturn(Locale.ENGLISH);
-        when(allPasswordRecoveries.createRecovery(any(String.class), any(String.class),
-                any(String.class), any(DateTime.class), any(Locale.class))).thenReturn(recovery);
-
-        recoveryService.oneTimeTokenOpenId(email, expiration, true);
+        verify(emailSender).sendOneTimeToken(createdRecovery);
     }
 
     @Test
-    public void testSendRecoveryEmail() {
+    public void shouldSendRecoveryEmail() {
         motechSettings = mock(MotechSettings.class);
         when(settingsFacade.getPlatformSettings()).thenReturn(motechSettings);
         when(motechSettings.getServerHost()).thenReturn("serverurl");
@@ -340,9 +297,37 @@ public class PasswordRecoveryServiceTest {
 
     @Test(expected = NonAdminUserException.class)
     public void testNonAdminUserInOneTimeToken() throws UserNotFoundException, NonAdminUserException {
-        when(allMotechUsers.findUserByEmail(EMAIL)).thenReturn(user);
+        when(motechUsersDao.findUserByEmail(EMAIL)).thenReturn(user);
         when(user.getRoles()).thenReturn(Arrays.asList("user"));
         recoveryService.oneTimeTokenOpenId(EMAIL);
+    }
+
+    private void testCreateRecoveryTemplate(final DateTime now, String email, DateTime expiration, boolean notify)
+            throws UserNotFoundException {
+        fakeNow(now);
+
+        when(motechUsersDao.findUserByEmail(EMAIL)).thenReturn(user);
+        when(user.getUserName()).thenReturn(USERNAME);
+        when(user.getEmail()).thenReturn(EMAIL);
+        when(user.getLocale()).thenReturn(Locale.ENGLISH);
+        when(passwordRecoveriesDataService.create(any(PasswordRecovery.class))).thenReturn(recovery);
+
+        recoveryService.passwordRecoveryRequest(email, expiration, notify);
+    }
+
+    private void testCreateOpenIDRecoveryTemplate(final DateTime now, String email, DateTime expiration)
+            throws UserNotFoundException, NonAdminUserException {
+        fakeNow(now);
+
+        when(motechUsersDao.findUserByEmail(EMAIL)).thenReturn(user);
+
+        when(user.getUserName()).thenReturn(USERNAME);
+        when(user.getRoles()).thenReturn(ROLES);
+        when(user.getEmail()).thenReturn(EMAIL);
+        when(user.getLocale()).thenReturn(Locale.ENGLISH);
+        when(passwordRecoveriesDataService.create(any(PasswordRecovery.class))).thenReturn(recovery);
+
+        recoveryService.oneTimeTokenOpenId(email, expiration, true);
     }
 
     private void prepareMessageSource() {

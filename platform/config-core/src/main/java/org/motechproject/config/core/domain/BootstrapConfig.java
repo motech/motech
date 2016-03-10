@@ -1,6 +1,7 @@
 package org.motechproject.config.core.domain;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.validator.QueueURLValidator;
 import org.slf4j.Logger;
@@ -146,7 +147,7 @@ public class BootstrapConfig {
     }
 
     public String getMotechDir() {
-        return this.motechDir;
+        return StrSubstitutor.replace(this.motechDir, System.getProperties(), "${sys:", "}");
     }
 
     public String getQueueUrl() {

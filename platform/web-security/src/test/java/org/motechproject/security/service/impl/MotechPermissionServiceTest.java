@@ -8,9 +8,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.security.domain.MotechPermission;
 import org.motechproject.security.model.PermissionDto;
-import org.motechproject.security.repository.AllMotechPermissions;
-import org.motechproject.security.repository.AllMotechRoles;
+import org.motechproject.security.mds.MotechPermissionsDataService;
 import org.motechproject.security.service.MotechPermissionService;
+import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.UserContextService;
 
 import java.util.List;
@@ -30,10 +30,10 @@ public class MotechPermissionServiceTest {
     private MotechPermissionService permissionService = new MotechPermissionServiceImpl();
 
     @Mock
-    private AllMotechPermissions allMotechPermissions;
+    private MotechPermissionsDataService motechPermissionsDataService;
 
     @Mock
-    private AllMotechRoles allMotechRoles;
+    private MotechRoleService motechRoleService;
 
     @Mock
     private UserContextService userContextsService;
@@ -50,7 +50,7 @@ public class MotechPermissionServiceTest {
         permissionService.addPermission(permissionDto);
 
         ArgumentCaptor<MotechPermission> captor = ArgumentCaptor.forClass(MotechPermission.class);
-        verify(allMotechPermissions).add(captor.capture());
+        verify(motechPermissionsDataService).create(captor.capture());
 
         assertEquals("permName", captor.getValue().getPermissionName());
         assertEquals("bundleName", captor.getValue().getBundleName());
@@ -59,18 +59,18 @@ public class MotechPermissionServiceTest {
     @Test
     public void shouldDeletePermissions() {
         MotechPermission permission = mock(MotechPermission.class);
-        when(allMotechPermissions.findByPermissionName("permName")).thenReturn(permission);
+        when(motechPermissionsDataService.findByPermissionName("permName")).thenReturn(permission);
 
         permissionService.deletePermission("permName");
 
-        verify(allMotechPermissions).delete(permission);
+        verify(motechPermissionsDataService).delete(permission);
     }
 
     @Test
     public void shouldReturnPermissions() {
         MotechPermission perm1 = new MotechPermission("perm1", "bundle1");
         MotechPermission perm2 = new MotechPermission("perm2", "bundle2");
-        when(allMotechPermissions.getPermissions()).thenReturn(asList(perm1, perm2));
+        when(motechPermissionsDataService.retrieveAll()).thenReturn(asList(perm1, perm2));
 
         List<PermissionDto> result = permissionService.getPermissions();
 
@@ -82,7 +82,7 @@ public class MotechPermissionServiceTest {
     @Test
     public void shouldRefreshUserContextWhenPermissionIsDeleted() {
         MotechPermission permission = mock(MotechPermission.class);
-        when(allMotechPermissions.findByPermissionName("permName")).thenReturn(permission);
+        when(motechPermissionsDataService.findByPermissionName("permName")).thenReturn(permission);
 
         permissionService.deletePermission("permName");
 

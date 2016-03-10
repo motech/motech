@@ -3,12 +3,13 @@ package org.motechproject.security.service.impl;
 import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
-import org.motechproject.security.repository.AllMotechRoles;
+import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.AuthoritiesService;
+import org.motechproject.security.service.MotechRoleService;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Arrays;
@@ -21,24 +22,24 @@ import static org.mockito.Mockito.when;
 public class AuthoritiesServiceImplTest {
 
     @Mock
-    private AllMotechRoles allMotechRoles;
+    private MotechRoleService motechRoleService;
 
-    private AuthoritiesService authoritiesService;
+    @InjectMocks
+    private AuthoritiesService authoritiesService = new AuthoritiesServiceImpl();
 
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
-        authoritiesService = new AuthoritiesServiceImpl(allMotechRoles);
     }
 
     @Test
     public void shouldRetrieveAuthorities() {
         MotechUser user = mock(MotechUser.class);
-        MotechRole role = mock(MotechRole.class);
+        RoleDto role = mock(RoleDto.class);
         List<String> roles = Arrays.asList("role1");
         when(user.getRoles()).thenReturn(roles);
 
-        when(allMotechRoles.findByRoleName("role1")).thenReturn(role);
+        when(motechRoleService.getRole("role1")).thenReturn(role);
 
         List<String> permissions = Arrays.asList("permission1");
         when(role.getPermissionNames()).thenReturn(permissions);

@@ -4,8 +4,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.security.ex.PasswordTooShortException;
-import org.motechproject.security.ex.PasswordValidatorException;
+import org.motechproject.security.exception.PasswordTooShortException;
+import org.motechproject.security.exception.PasswordValidatorException;
 import org.motechproject.security.validator.PasswordValidator;
 
 import static org.mockito.Mockito.doThrow;
