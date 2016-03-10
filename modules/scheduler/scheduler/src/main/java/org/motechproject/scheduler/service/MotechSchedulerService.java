@@ -221,6 +221,22 @@ public interface MotechSchedulerService {
     void safeUnscheduleRunOnceJob(String subject, String externalId);
 
     /**
+     * Unschedules a day of week job with the given {@code subject} and {@code externalId}.
+     *
+     * @param subject  the subject of the job
+     * @param externalId  the external id of the job
+     */
+    void unscheduleDayOfWeekJob(String subject, String externalId);
+
+    /**
+     * Same as unscheduleDayOfWeekJob except that it would not throw an exception if the job doesn't exist
+     *
+     * @param subject  the subject of the job
+     * @param externalId  the external id of the job
+     */
+    void safeUnscheduleDayOfWeekJob(String subject, String externalId);
+
+    /**
      * Returns list of dates at which job will be triggered.
      *
      * @param subject  the subject of job, not null
@@ -234,13 +250,12 @@ public interface MotechSchedulerService {
     /**
      * Returns list of dates at which jobs will be triggered.
      *
-     * @param subject  the subject of job, not null
-     * @param externalJobIdPrefix  the prefix of jobs
+     * @param jobId the job id
      * @param startDate  the {@code Date} after which dates should be added, not null
      * @param endDate  the {@code Date} before which dates should be added, not null
      * @return the list of dates
      */
-    List<DateTime> getScheduledJobTimingsWithPrefix(String subject, String externalJobIdPrefix, DateTime startDate, DateTime endDate);
+    List<DateTime> getScheduledJobTimingsWithPrefix(JobId jobId, DateTime startDate, DateTime endDate);
 
     /**
      * Pauses the job based on the given {@code info}.
