@@ -466,7 +466,7 @@
 
 .mds-import {
     display:inline-block;
-    width:380px;
+    width:360px;
     white-space: nowrap;
     overflow:hidden !important;
     text-overflow: ellipsis;
