@@ -73,7 +73,7 @@ manipulation-sorter ol.sortable li.ui-state-highlight{
     height: 15px;
 }
 
-.tasks .manipulation{
+manipulation-sorter .manipulation{
     display: block;
     position:relative;
     color: #333333;
@@ -86,12 +86,12 @@ manipulation-sorter ol.sortable li.ui-state-highlight{
     margin: 2px 2px 2px 2px;
 }
 
-.tasks .manipulation:hover {
+manipulation-sorter .manipulation:hover {
     color: #046FD3;
     border-color: #046FD3;
 }
 
-.tasks .manipulation.active {
+manipulation-sorter .manipulation.active {
     cursor: move;
     border: 1px solid #92C7E3;
     border-radius: 3px;
@@ -100,7 +100,7 @@ manipulation-sorter ol.sortable li.ui-state-highlight{
     padding-right: 20px;
 }
 
-.tasks .manipulation.active.invalid {
+manipulation-sorter .manipulation.active.invalid {
     cursor: move;
     border: 1px solid #e3ae92;
     border-radius: 3px;
@@ -108,17 +108,17 @@ manipulation-sorter ol.sortable li.ui-state-highlight{
     background: #FCEDE1;
 }
 
-.tasks .manipulation:before{
+manipulation-sorter .manipulation:before{
     content: "\F067"; /* icon-plus */
     font:normal normal normal 14px/1 FontAwesome;
     margin-right: 5px;
 }
 
-.tasks .manipulation.active:before {
+manipulation-sorter .manipulation.active:before {
     content: "\F0DC"; /* icon-sort */
 }
 
-.tasks .manipulation .remove {
+manipulation-sorter .manipulation .remove {
     display: block;
     width: 12px;
     height: 20px;
@@ -130,11 +130,11 @@ manipulation-sorter ol.sortable li.ui-state-highlight{
     border: 0px;
 }
 
-.tasks .manipulation .remove:hover {
+manipulation-sorter .manipulation .remove:hover {
     color: #CF0000;
 }
 
-.tasks .manipulation .remove:before {
+manipulation-sorter .manipulation .remove:before {
     content: "\f057"; /* icon-times */
     font:normal normal normal 14px/1 FontAwesome;
 }

@@ -251,6 +251,7 @@
                 element.click(function (event) {
                     if($(event.target).hasClass("field-remove")){
                         element.remove();
+                        scope.$emit('field.changed');
                     }
                 });
             },
@@ -517,7 +518,7 @@
         };
     });
 
-    directives.directive('manipulationPopover', function ($compile) {
+    directives.directive('manipulationModal', function ($compile) {
         return {
             restrict: 'A',
             scope: {
@@ -525,9 +526,7 @@
                 manipulationType: "="
             },
             link: function (scope, element, attrs) {
-                var filter, hidePopup, showPopup;
-                filter = scope.$parent.filter;
-                scope.msg = scope.$parent.msg;
+                
                 if(!scope.manipulationType){
                     return false;
                 }
@@ -537,52 +536,45 @@
                 if(!scope.manipulations){
                     return false;
                 }
-                hidePopup = function () {
-                    element.removeClass('active');
-                    element.popover('destroy');
-                    scope.$emit('field.changed'); // make sure any changes are updated (even if thats not true)
-                };
-                showPopup = function () {
-                    element.addClass('active');
-                    element.popover({
-                      title: function () {
-                         switch(scope.manipulationType){
-                             case 'UNICODE':
-                             case 'STRING':
-                                 return scope.msg('task.stringManipulation');
-                             case 'DATE':
-                             case 'DATE2DATE':
-                                 return scope.msg('task.dateManipulation');
-                         }
-                         return null;
-                      },
-                      html: true,
-                      content: $compile('<manipulation-sorter type="manipulationType" manipulations="manipulations" />')(scope),
-                      placement: "auto left",
-                      trigger: 'manual'
-                    }).on('shown.bs.popover', function(event){
-                      var popoverContent = $('.popover-content',$(event.target).next('.popover'))[0];
-                      $(document).on('click', function(event){
-                        if (!popoverContent.contains(event.target)){
-                            $(document).off(event);
-                            hidePopup();
-                        }
-                      });
-                    });
-                    // Call popover('show') late, so $compile & DOM have chance to update.
-                    setTimeout(function(){
-                        element.popover('show');
-                    }, 10);
-                };
-
                 element.on('click', function (event) {
+                    var modalScope;
                     if (!$(event.target).hasClass('field-remove')){
-                        if (element.hasClass('active')){
-                            hidePopup();
-                        } else {
-                            window.getSelection().removeAllRanges(); // Make sure no text is selected...
-                            showPopup();
+                        window.getSelection().removeAllRanges(); // Make sure no text is selected...
+                        
+                        modalScope = scope.$new(true, scope);
+                        modalScope.msg = scope.$parent.msg;
+                        modalScope.manipulationType = scope.manipulationType;
+                        modalScope.manipulations = [];
+
+                        if(scope.manipulations && Array.isArray(scope.manipulations)) {
+                            modalScope.manipulations = jQuery.extend(true, [], scope.manipulations);
                         }
+                        BootstrapDialog.show({
+                            title: function () {
+                                 switch(scope.manipulationType){
+                                     case 'UNICODE':
+                                     case 'STRING':
+                                         return modalScope.msg('task.stringManipulation');
+                                     case 'DATE':
+                                     case 'DATE2DATE':
+                                         return modalScope.msg('task.dateManipulation');
+                                 }
+                                 return null;
+                              },
+                            message: $compile('<manipulation-sorter type="manipulationType" manipulations="manipulations" />')(modalScope),
+                            buttons: [{
+                                label: scope.$parent.msg('task.button.save'),
+                                cssClass: 'btn-primary',
+                                action: function(dialogRef) {
+                                    scope.manipulations = jQuery.extend(true, [], modalScope.manipulations);
+                                    scope.$emit('field.changed');
+                                    dialogRef.close();
+                                }
+                            }],
+                            onHide: function(){
+                                modalScope.$destroy();
+                            }
+                        });
                     }
                 });
             }
@@ -691,7 +683,7 @@
                     if ((manipulationSettings.input && manipulationSettings.input !== '') || manipulationSettings.name === 'format') {
                         attributeFieldTemplate = '<input type="text" ng-model="argument" />';
                         if(manipulationSettings.name === 'format'){
-                            attributeFieldTemplate = '<format-manipulation ng-model="argument" />';
+                            attributeFieldTemplate = '<format-manipulation-button ng-model="argument" />';
                         }
                         if(!scope.argument){
                             scope.argument = "";
@@ -722,15 +714,48 @@
         };
     }]);
 
+    directives.directive('formatManipulationButton', ['$compile', function ($compile) {
+        return {
+            restrict: 'EA',
+            templateUrl: '../tasks/partials/widgets/string-manipulation-format-button.html',
+            link: function (scope, element, attrs) {
+                element.on('click', function (event) {
+                    event.preventDefault();
+                    var modalScope = scope.$new();
+                    modalScope.getAvailableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.getAvailableFields;
+                    modalScope.availableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.fields;
+                    modalScope.msg = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.taskMsg;
+                    modalScope.argument = scope.argument;
+
+                    BootstrapDialog.show({
+                        size: BootstrapDialog.SIZE_WIDE,
+                        title: scope.msg('task.format.set.header'),
+                        message: $compile('<format-manipulation ng-model="argument" available-fields="availableFields" get-available-fields="getAvailableFields()" />')(modalScope),
+                        buttons: [{
+                            label: scope.msg('task.button.save'),
+                            cssClass: 'btn-primary',
+                            action: function (dialogRef) {
+                                scope.argument = modalScope.argument;
+                                dialogRef.close();
+                            }
+                        }]
+                    });
+                });
+            }
+        };
+    }]);
+
     directives.directive('formatManipulation', function () {
         return {
             restrict: 'EA',
             require: 'ngModel',
             templateUrl: '../tasks/partials/widgets/string-manipulation-format.html',
+            scope: {
+                availableFields: '=',
+                getAvailableFields: '&'
+            },
             link: function (scope, el, attrs, ngModel) {
-                scope.getAvailableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.getAvailableFields;
-                scope.availableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.fields;
-                scope.msg = scope.$parent.$parent.$parent.$parent.$parent.$parent.taskMsg;
+                scope.msg = scope.$parent.msg;
 
                 ngModel.$parsers.push(function (value) {
                     var arr = [];
