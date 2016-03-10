@@ -46,7 +46,7 @@ public abstract class JobId implements Serializable {
      * @return String representation of jobs ID
      */
     public String value() {
-        return String.format("%s-%s-%s", subject, id, suffix);
+        return String.format("%s-%s%s", subject, id, suffix);
     }
 
     @Override
