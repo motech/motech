@@ -323,6 +323,18 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     }
 
     @Override
+    public void unscheduleDayOfWeekJob(String subject, String externalId) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(format("unscheduling day of week job: " + LOG_SUBJECT_EXTERNAL_ID, subject, externalId));
+        }
+
+        JobId jobId = new DayOfWeekJobId(subject, externalId);
+        logObjectIfNotNull(jobId);
+
+        unscheduleJob(jobId.value());
+    }
+
+    @Override
     public void unscheduleAllJobs(String jobIdPrefix) {
         try {
             if (LOGGER.isDebugEnabled()) {
@@ -363,6 +375,19 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             unscheduleRunOnceJob(subject, externalId);
         } catch (RuntimeException e) {
             LOGGER.error("Unable to unschedule the run once job with subject {} and externalId {}",
+                    subject, externalId, e);
+        }
+    }
+
+    @Override
+    public void safeUnscheduleDayOfWeekJob(String subject, String externalId) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(format("safe unscheduling day of week job: " + LOG_SUBJECT_EXTERNAL_ID, subject, externalId));
+        }
+        try {
+            unscheduleDayOfWeekJob(subject, externalId);
+        } catch (RuntimeException e) {
+            LOGGER.error("Unable to unschedule the day of week job with subject {} and externalId {}",
                     subject, externalId, e);
         }
     }
@@ -500,21 +525,14 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
     }
 
-    /*
-     * Loads all triggers and then loops over them to find the applicable trigger using string comparison. This
-     * will work regardless of the jobId being cron or repeating.
-     */
     @Override
-    public List<DateTime> getScheduledJobTimingsWithPrefix(
-            String subject, String externalJobIdPrefix, DateTime startDate, DateTime endDate) {
-
-        JobId jobId = new CronJobId(subject, externalJobIdPrefix);
+    public List<DateTime> getScheduledJobTimingsWithPrefix(JobId jobId, DateTime startDate, DateTime endDate) {
         List<Date> messageTimings = new ArrayList<>();
         try {
-            List<TriggerKey> triggerKeys = new ArrayList<TriggerKey>(
+            List<TriggerKey> triggerKeys = new ArrayList<>(
                     scheduler.getTriggerKeys(GroupMatcher.triggerGroupContains(JOB_GROUP_NAME)));
             for (TriggerKey triggerKey : triggerKeys) {
-                if (StringUtils.isNotEmpty(externalJobIdPrefix) && triggerKey.getName().contains(jobId.value())) {
+                if (StringUtils.isNotEmpty(jobId.getId()) && triggerKey.getName().contains(jobId.value())) {
                     Trigger trigger = scheduler.getTrigger(triggerKey);
                     messageTimings.addAll(TriggerUtils.computeFireTimesBetween(
                             (OperableTrigger) trigger, new BaseCalendar(), DateUtil.toDate(startDate), DateUtil.toDate(endDate)));
@@ -524,7 +542,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         } catch (SchedulerException e) {
             throw new MotechSchedulerException(String.format(
                     "Can not get scheduled job timings given subject and externalJobIdPrefix for dates : %s %s %s %s %s",
-                    subject, externalJobIdPrefix, startDate.toString(), endDate.toString(), e.getMessage()), e);
+                    jobId.getSubject(), jobId.getId(), startDate.toString(), endDate.toString(), e.getMessage()), e);
         }
 
         return DateUtil.datesToDateTimes(messageTimings);
