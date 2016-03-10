@@ -7,7 +7,7 @@ import org.motechproject.event.MotechEvent;
  */
 public class DayOfWeekJobId extends JobId {
 
-    public static final String SUFFIX_DAY_OF_WEEK_JOB_ID = "dayofweek";
+    public static final String SUFFIX_DAY_OF_WEEK_JOB_ID = "-dayofweek";
 
     /**
      * Constructor.
