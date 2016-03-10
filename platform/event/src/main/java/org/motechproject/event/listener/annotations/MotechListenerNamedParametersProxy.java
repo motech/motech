@@ -13,6 +13,8 @@ import java.util.List;
  * Represents the type of <code>MotechListener</code> proxy where handler is a method with
  * parameters defined by the {@link org.motechproject.event.listener.annotations.MotechParam}
  * annotation.
+ *
+ * @author yyonkov
  */
 public class MotechListenerNamedParametersProxy extends MotechListenerAbstractProxy {
 

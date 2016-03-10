@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
  * This annotation is processed by
  * {@link org.motechproject.event.listener.proxy.EventAnnotationBeanPostProcessor}
  *
+ * @author yyonkov
  * @see org.motechproject.event.listener.proxy.EventAnnotationBeanPostProcessor
  */
 @Target({ElementType.METHOD })

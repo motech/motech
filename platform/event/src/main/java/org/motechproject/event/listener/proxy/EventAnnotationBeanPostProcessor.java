@@ -20,6 +20,8 @@ import java.util.Map;
 
 /**
  * Provides the <code>BeanPostProcessor</code> implementation for processing event annotations.
+ *
+ * @author yyonkov
  */
 public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPostProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(EventAnnotationBeanPostProcessor.class);

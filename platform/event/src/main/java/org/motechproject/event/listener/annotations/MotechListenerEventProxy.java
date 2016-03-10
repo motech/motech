@@ -8,6 +8,8 @@ import java.lang.reflect.Method;
 /**
  * Represents the type of <code>MotechListener</code> proxy where handler is a method with the
  * <code>MotechEvent</code> parameter.
+ *
+ * @author yyonkov
  */
 public class MotechListenerEventProxy extends MotechListenerAbstractProxy {
 

@@ -16,6 +16,8 @@ import java.util.Map;
  * \ingroup scheduler
  * <p/>
  * Main class that can bootstrap a Motech Scheduler
+ *
+ * @author Igor (iopushnyev@2paths.com)
  */
 public final class MotechScheduler {
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechScheduler.class);

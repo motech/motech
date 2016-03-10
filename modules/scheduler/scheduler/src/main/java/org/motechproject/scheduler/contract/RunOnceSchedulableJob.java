@@ -8,6 +8,9 @@ import org.motechproject.event.MotechEvent;
  * <p/>
  * This class is immutable
  * <p/>
+ * User: Igor (iopushnyev@2paths.com)
+ * Date: 16/02/11
+ * Time: 1:43 PM
  */
 public final class RunOnceSchedulableJob extends SchedulableJob {
 

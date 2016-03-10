@@ -15,6 +15,7 @@ import java.lang.annotation.Target;
  * This annotation is processed by
  * {@link org.motechproject.event.listener.annotations.MotechListenerNamedParametersProxy#callHandler(org.motechproject.event.MotechEvent)}
  *
+ * @author yyonkov
  * @see org.motechproject.event.listener.annotations.MotechListenerNamedParametersProxy
  */
 @Target({ElementType.PARAMETER })

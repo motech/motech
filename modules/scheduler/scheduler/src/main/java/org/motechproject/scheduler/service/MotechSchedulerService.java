@@ -33,6 +33,9 @@ import java.util.List;
  * reschedule_next_with_remaining_count -> @see SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT
  * reschedule_now_with_existing_count -> @see SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT
  * reschedule_now_with_remaining_count -> @see SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT
+ *
+ * @author Igor (iopushnyev@2paths.com)
+ * Date: 16/02/11
  */
 public interface MotechSchedulerService {
     String JOB_ID_KEY = "JobID";
