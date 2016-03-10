@@ -7,9 +7,9 @@
 
     <import resource="classpath*:META-INF/motech/*.xml"/>
 
-    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay" />
-
     <bean id="rolePermissionRegListener" class="org.motechproject.security.osgi.RolePermissionRegistrationListener"/>
+
+    <!-- OSGi services -->
 
     <osgi:service id="securityRuleLoaderOSGi" ref="securityRuleLoader" interface="org.motechproject.security.service.SecurityRuleLoaderService">
         <osgi:registration-listener ref="rolePermissionRegListener" />
@@ -27,15 +27,11 @@
 
     <osgi:service id="passwordRecoveryServiceOsgi" ref="passwordRecoveryServiceImpl" interface="org.motechproject.security.service.PasswordRecoveryService" />
 
-    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="viewClass" value="org.motechproject.osgi.web.BundledJspView"/>
-        <property name="prefix" value="/webapp/WEB-INF/jsp/"/>
-        <property name="suffix" value=".jsp"/>
-    </bean>
-
     <osgi:service ref="passwordRecoveryServiceImpl" interface="org.motechproject.security.service.PasswordRecoveryService"/>
 
     <osgi:service ref="sessionHandler" interface="javax.servlet.http.HttpSessionListener"/>
+
+    <!-- Default password validator implementations -->
 
     <osgi:service ref="noneValidator" interface="org.motechproject.security.validator.PasswordValidator"/>
 
@@ -45,20 +41,25 @@
 
     <osgi:service ref="lowerUpperCaseDigitSpecialValidator" interface="org.motechproject.security.validator.PasswordValidator"/>
 
+    <!-- OSGi references -->
+
     <osgi:reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager" context-class-loader="unmanaged"/>
-
-    <osgi:reference id="motechPermissionsDataService" interface="org.motechproject.security.repository.MotechPermissionsDataService"/>
-
-    <osgi:reference id="motechRolesDataService" interface="org.motechproject.security.repository.MotechRolesDataService"/>
-
-    <osgi:reference id="motechURLSecurityRuleDataService" interface="org.motechproject.security.repository.MotechURLSecurityRuleDataService"/>
-
-    <osgi:reference id="motechUsersDataService" interface="org.motechproject.security.repository.MotechUsersDataService"/>
-
-    <osgi:reference id="passwordRecoveriesDataService" interface="org.motechproject.security.repository.PasswordRecoveriesDataService"/>
 
     <osgi:reference id="configurationService" interface="org.motechproject.config.service.ConfigurationService"/>
 
     <osgi:reference id="localeService" interface="org.motechproject.osgi.web.service.LocaleService"/>
 
+    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay" />
+
+    <!-- Data services -->
+
+    <osgi:reference id="motechPermissionsDataService" interface="org.motechproject.security.mds.MotechPermissionsDataService"/>
+
+    <osgi:reference id="motechRolesDataService" interface="org.motechproject.security.mds.MotechRolesDataService"/>
+
+    <osgi:reference id="motechURLSecurityRuleDataService" interface="org.motechproject.security.mds.MotechURLSecurityRuleDataService"/>
+
+    <osgi:reference id="motechUsersDataService" interface="org.motechproject.security.mds.MotechUsersDataService"/>
+
+    <osgi:reference id="passwordRecoveriesDataService" interface="org.motechproject.security.mds.PasswordRecoveriesDataService"/>
 </beans>

@@ -1,7 +1,7 @@
 package org.motechproject.security.web.controllers;
 
 import org.motechproject.security.constants.WebSecurityRoles;
-import org.motechproject.security.ex.RoleHasUserException;
+import org.motechproject.security.exception.RoleHasUserException;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.MotechRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
