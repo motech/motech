@@ -48,8 +48,8 @@ public class ModuleInstallFT extends BasePaxIT {
 
     @Test
     public void testUploadBundleFromRepository() throws IOException, InterruptedException {
-        uploadBundle("Repository", "org.motechproject:motech-tasks:LATEST", null,
-                "on","org.motechproject.motech-tasks");
+        uploadBundle("Repository", "org.motechproject:cms-lite:LATEST", null,
+                "on","org.motechproject.cms-lite");
     }
 
     @Test
@@ -89,12 +89,11 @@ public class ModuleInstallFT extends BasePaxIT {
         EntityUtils.consume(response.getEntity());
         int bundlesCountAfterUpload = bundleContext.getBundles().length;
 
-        assertEquals(response.getStatusLine().getStatusCode(), HttpStatus.ORDINAL_200_OK);
+        assertEquals(HttpStatus.ORDINAL_200_OK, response.getStatusLine().getStatusCode());
 
         Bundle uploadedBundle = getBundleFromBundlesArray(bundleSymbolicName);
         assertNotNull(uploadedBundle);
-        assertEquals(bundlesCountAfterUpload, bundlesCountBeforeUpload + 1);
-        assertEquals(uploadedBundle.getState(), Bundle.ACTIVE);
+        assertEquals(Bundle.ACTIVE, uploadedBundle.getState());
     }
 
     private Bundle getBundleFromBundlesArray(String bundleSymbolicName) {
