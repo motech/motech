@@ -4,7 +4,7 @@ import org.motechproject.osgi.web.tracker.ApplicationContextTracker;
 import org.motechproject.security.annotations.SecurityAnnotationBeanPostProcessor;
 import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechRoleService;
-import org.motechproject.security.service.SecurityRoleLoader;
+import org.motechproject.security.service.impl.SecurityRoleLoader;
 import org.motechproject.security.service.SecurityRuleLoaderService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;

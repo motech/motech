@@ -1,13 +1,10 @@
 package org.motechproject.security.validator.impl;
 
 import org.junit.Test;
-import org.mockito.Mock;
-import org.motechproject.security.ex.PasswordValidatorException;
-import org.motechproject.security.validator.impl.MotechPasswordValidator;
+import org.motechproject.security.exception.PasswordValidatorException;
 
 public class MotechPasswordValidatorTest {
 
-    @Mock
     private MotechPasswordValidator validator = new MotechPasswordValidator(3, 1, 1 , 2, "test", null);
 
     @Test

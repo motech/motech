@@ -8,7 +8,7 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.security.config.SettingService;
 import org.motechproject.security.domain.MotechUser;
-import org.motechproject.security.repository.MotechUsersDataService;
+import org.motechproject.security.mds.MotechUsersDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

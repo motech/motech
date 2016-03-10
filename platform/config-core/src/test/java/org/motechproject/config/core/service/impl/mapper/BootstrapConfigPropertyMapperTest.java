@@ -7,6 +7,7 @@ import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.SQLDBConfig;
 
+import java.io.File;
 import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
@@ -19,20 +20,21 @@ public class BootstrapConfigPropertyMapperTest {
     private String sqlUsername = "root";
     private String sqlPassword = "password";
     private String felixPath = "./felix";
+    private String motechDir = new File(System.getProperty("user.home"), ".motech").getAbsolutePath();
     private static final String sqlDriver = "com.mysql.jdbc.Driver";
     private String queueUrl = "tcp://localhost:61616";
     private ConfigSource configSource = ConfigSource.UI;
 
     @Test
     public void shouldMapToPropertiesFromBootstrapConfig() {
-        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), configSource, felixPath, queueUrl));
+        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), configSource, felixPath, motechDir, queueUrl));
 
         Assert.assertThat(bootstrapProperties.getProperty(CONFIG_SOURCE), is(configSource.getName()));
     }
 
     @Test
     public void shouldMapToPropertiesFromBootstrapConfig_WhenUsernameAndPasswordAreBlank() {
-        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), configSource, felixPath, queueUrl));
+        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new SQLDBConfig(sqlUrl, sqlDriver, sqlUsername, sqlPassword), configSource, felixPath, motechDir, queueUrl));
 
         Assert.assertThat(bootstrapProperties.getProperty(sqlUsername), nullValue());
         Assert.assertThat(bootstrapProperties.getProperty(sqlPassword), nullValue());

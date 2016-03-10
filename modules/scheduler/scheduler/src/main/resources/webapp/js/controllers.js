@@ -209,6 +209,14 @@
             return date;
         }
 
+        $scope.getMinDate = function(jobType) {
+            if (jobType === "RUN_ONCE") {
+                return moment().format("YYYY-MM-DD HH:mm:ss");
+            }
+
+            return null;
+        };
+
         $scope.createOrUpdateJob = function(action) {
             var job = {};
 
@@ -282,17 +290,44 @@
 
         if ($scope.action === 'edit') {
             JobsService.getCurrentJob(function(data) {
-                $scope.job = data;
-                if ($scope.job.startDate) {
-                    $scope.job.startDate = $scope.parseDateToString($scope.job.startDate);
+                var job = data;
+                if (job.startDate) {
+                    job.startDate = $scope.parseDateToString(job.startDate);
                 }
 
-                if ($scope.job.endDate) {
-                    $scope.job.endDate = $scope.parseDateToString($scope.job.endDate);
+                if (job.endDate) {
+                    job.endDate = $scope.parseDateToString(job.endDate);
                 }
+
+                if (job.days) {
+                
+                    var days = {};
+
+                    days["Monday"] = "0";
+                    days["Tuesday"] = "1";
+                    days["Wednesday"] = "2";
+                    days["Thursday"] = "3";
+                    days["Friday"] = "4";
+                    days["Saturday"] = "5";
+                    days["Sunday"] = "6";
+                
+                    for (var i = 0; i < job.days.length; i += 1) {
+                        job.days[i] = days[job.days[i]];
+                    }
+                }
+
+                if (job.time) {
+                    var time = job.time,
+                        hour = time.hour < 10 ? "0" + time.hour : time.hour,
+                        minute = time.minute < 10 ? "0" + time.minute : time.minute;
+                    job.time = hour + ":" + minute;
+                }
+
                 for (var key in data.motechEvent.parameters) {
                     $scope.addToMap(key, data.motechEvent.parameters[key]);
                 }
+
+                $scope.job = job;
             });
         }
 

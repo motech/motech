@@ -1,5 +1,7 @@
 package org.motechproject.mds.testutil;
 
+import org.motechproject.config.core.domain.ConfigSource;
+import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.domain.BootstrapConfig;
@@ -16,7 +18,13 @@ public class MockCoreConfigurationService implements CoreConfigurationService {
 
     @Override
     public BootstrapConfig loadBootstrapConfig() {
-        return null;
+        Properties bootstrapProperties = loadConfig(ConfigurationConstants.BOOTSTRAP_CONFIG_FILE_NAME);
+        return new BootstrapConfig(new SQLDBConfig(bootstrapProperties.getProperty(BootstrapConfig.SQL_URL), bootstrapProperties.getProperty(BootstrapConfig.SQL_DRIVER), bootstrapProperties.getProperty(BootstrapConfig.SQL_USER), bootstrapProperties.getProperty(BootstrapConfig.SQL_PASSWORD)),
+                ConfigSource.valueOf(bootstrapProperties.getProperty(BootstrapConfig.CONFIG_SOURCE)),
+                bootstrapProperties.getProperty(BootstrapConfig.OSGI_FRAMEWORK_STORAGE),
+                bootstrapProperties.getProperty(BootstrapConfig.MOTECH_DIR),
+                bootstrapProperties.getProperty(BootstrapConfig.QUEUE_URL),
+                getActiveMqConfig());
     }
 
     @Override
@@ -72,6 +80,6 @@ public class MockCoreConfigurationService implements CoreConfigurationService {
 
     @Override
     public Properties getActiveMqConfig() {
-        return null;
+        return loadConfig(ConfigurationConstants.BOOTSTRAP_CONFIG_FILE_NAME);
     }
 }

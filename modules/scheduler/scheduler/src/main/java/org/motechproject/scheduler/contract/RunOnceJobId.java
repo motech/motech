@@ -1,14 +1,13 @@
 package org.motechproject.scheduler.contract;
 
 import org.motechproject.event.MotechEvent;
-import org.motechproject.scheduler.contract.JobId;
 
 /**
  * Represents ID for RunOnceSchedulableJob.
  */
 public class RunOnceJobId extends JobId {
 
-    public static final String SUFFIX_RUNONCEJOBID = "-runonce";
+    public static final String SUFFIX_RUNONCEJOBID = "runonce";
 
     /**
      * Constructor.

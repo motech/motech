@@ -7,7 +7,7 @@ import org.motechproject.event.MotechEvent;
  */
 public class RepeatingPeriodJobId extends JobId {
 
-    public static final String SUFFIX_REPEATPERIODJOBID = "-period";
+    public static final String SUFFIX_REPEATPERIODJOBID = "period";
 
     /**
      * Constructor.
