@@ -51,7 +51,6 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.commons.date.util.DateUtil.now;
-import static org.motechproject.scheduler.contract.CronJobId.*;
 import static org.motechproject.testing.utils.IdGenerator.id;
 import static org.motechproject.testing.utils.TimeFaker.fakeNow;
 import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
@@ -109,9 +108,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
                             "0 0 10 * * ?"
                     ));
 
-            List<DateTime> first3FireTimes = getFireTimes(String.format("test_event-%s-%s", job_id, SUFFIX_CRON_JOB_ID))
-                    .subList(0, 3);
-
+            List<DateTime> first3FireTimes = getFireTimes("test_event-" + job_id).subList(0, 3);
             assertEquals(asList(
                     newDateTime(2020, 7, 15, 10, 0, 0),
                     newDateTime(2020, 7, 16, 10, 0, 0),
@@ -202,9 +199,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
                             "0 0 14 * * ?"
                     ));
 
-            List<DateTime> first3FireTimes = getFireTimes(String.format("test_event-%s-%s", jobId, SUFFIX_CRON_JOB_ID))
-                    .subList(0, 3);
-
+            List<DateTime> first3FireTimes = getFireTimes("test_event-" + jobId).subList(0, 3);
             assertEquals(asList(
                     newDateTime(2020, 7, 15, 14, 0, 0),
                     newDateTime(2020, 7, 16, 14, 0, 0),
@@ -230,7 +225,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
 
             schedulerService.rescheduleJob("test_event", "job_id", "0 0 14 * * ?");
 
-            List<DateTime> first3FireTimes = getFireTimes("test_event-job_id-cron").subList(0, 3);
+            List<DateTime> first3FireTimes = getFireTimes("test_event-job_id").subList(0, 3);
             assertEquals(asList(
                     newDateTime(2020, 7, 15, 14, 0, 0),
                     newDateTime(2020, 7, 16, 14, 0, 0),
@@ -549,7 +544,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
                             false)
             );
 
-            List<DateTime> fireTimes = getFireTimes("test_event-job_id-dayofweek");
+            List<DateTime> fireTimes = getFireTimes("test_event-job_id");
             assertEquals(asList(
                     newDateTime(2020, 7, 13, 10, 10, 0),
                     newDateTime(2020, 7, 16, 10, 10, 0),
@@ -577,7 +572,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
                             true)
             );
 
-            List<DateTime> fireTimes = getFireTimes("test_event-job_id-dayofweek");
+            List<DateTime> fireTimes = getFireTimes("test_event-job_id");
             assertEquals(asList(
                     newDateTime(2020, 7, 16, 10, 10, 0),
                     newDateTime(2020, 7, 20, 10, 10, 0)),
@@ -620,20 +615,19 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
         Map<String, Object> params = new HashMap<>();
         params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
 
-        JobBasicInfo info = new JobBasicInfo(JobBasicInfo.ACTIVITY_ACTIVE, JobBasicInfo.STATUS_OK,
-                "test_event-job_id-cron", "default", "start-time", "nex-fire-time", "end-time",
-                JobBasicInfo.JOBTYPE_CRON, "test-info", false);
+        JobBasicInfo info = new JobBasicInfo(JobBasicInfo.ACTIVITY_ACTIVE, JobBasicInfo.STATUS_OK, "test_event-job_id",
+                "default", "start-time", "nex-fire-time", "end-time", JobBasicInfo.JOBTYPE_CRON, "test-info", false);
 
         CronSchedulableJob job = new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?");
         job.setUiDefined(true);
 
         schedulerService.scheduleJob(job);
 
-        assertEquals(NORMAL, scheduler.getTriggerState(triggerKey("test_event-job_id-cron", "default")));
+        assertEquals(NORMAL, scheduler.getTriggerState(triggerKey("test_event-job_id", "default")));
 
         schedulerService.pauseJob(info);
 
-        assertEquals(PAUSED, scheduler.getTriggerState(triggerKey("test_event-job_id-cron", "default")));
+        assertEquals(PAUSED, scheduler.getTriggerState(triggerKey("test_event-job_id", "default")));
     }
 
     @Test(expected = MotechSchedulerException.class)
@@ -648,11 +642,11 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
 
             schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?"));
 
-            assertEquals(NORMAL, scheduler.getTriggerState(triggerKey("test_event-job_id-cron", "default")));
+            assertEquals(NORMAL, scheduler.getTriggerState(triggerKey("test_event-job_id", "default")));
 
             schedulerService.pauseJob(info);
         } finally {
-            assertEquals(NORMAL, scheduler.getTriggerState(triggerKey("test_event-job_id-cron", "default")));
+            assertEquals(NORMAL, scheduler.getTriggerState(triggerKey("test_event-job_id", "default")));
         }
 
     }
@@ -673,8 +667,8 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
         params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
 
         JobBasicInfo info = new JobBasicInfo(JobBasicInfo.ACTIVITY_ACTIVE, JobBasicInfo.STATUS_PAUSED,
-                "test_event-job_id-cron", "default", "start-time", "nex-fire-time", "end-time",
-                JobBasicInfo.JOBTYPE_CRON, "test-info", true);
+                "test_event-job_id", "default", "start-time", "nex-fire-time", "end-time", JobBasicInfo.JOBTYPE_CRON,
+                "test-info", true);
 
         CronSchedulableJob job = new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?");
         job.setUiDefined(true);
@@ -682,11 +676,11 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
         schedulerService.scheduleJob(job);
         scheduler.pauseJob(new JobKey(info.getName(), info.getGroup()));
 
-        assertEquals(PAUSED, scheduler.getTriggerState(triggerKey("test_event-job_id-cron", "default")));
+        assertEquals(PAUSED, scheduler.getTriggerState(triggerKey("test_event-job_id", "default")));
 
         schedulerService.resumeJob(info);
 
-        assertEquals(NORMAL, scheduler.getTriggerState(triggerKey("test_event-job_id-cron", "default")));
+        assertEquals(NORMAL, scheduler.getTriggerState(triggerKey("test_event-job_id", "default")));
     }
 
     @Test(expected = MotechSchedulerException.class)
@@ -696,17 +690,17 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
 
             JobBasicInfo info = new JobBasicInfo(JobBasicInfo.ACTIVITY_ACTIVE, JobBasicInfo.STATUS_PAUSED,
-                    "test_event-job_id-cron", "default", "start-time", "nex-fire-time", "end-time",
+                    "test_event-job_id", "default", "start-time", "nex-fire-time", "end-time",
                     JobBasicInfo.JOBTYPE_CRON, "test-info", false);
 
             schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?"));
             scheduler.pauseJob(new JobKey(info.getName(), info.getGroup()));
 
-            assertEquals(PAUSED, scheduler.getTriggerState(triggerKey("test_event-job_id-cron", "default")));
+            assertEquals(PAUSED, scheduler.getTriggerState(triggerKey("test_event-job_id", "default")));
 
             schedulerService.resumeJob(info);
         } finally {
-            assertEquals(PAUSED, scheduler.getTriggerState(triggerKey("test_event-job_id-cron", "default")));
+            assertEquals(PAUSED, scheduler.getTriggerState(triggerKey("test_event-job_id", "default")));
         }
 
     }
@@ -726,9 +720,8 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
         Map<String, Object> params = new HashMap<>();
         params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
 
-        JobBasicInfo info = new JobBasicInfo(JobBasicInfo.ACTIVITY_ACTIVE, JobBasicInfo.STATUS_OK,
-                "test_event-job_id-cron", "default", "start-time", "nex-fire-time", "end-time",
-                JobBasicInfo.JOBTYPE_CRON, "test-info", false);
+        JobBasicInfo info = new JobBasicInfo(JobBasicInfo.ACTIVITY_ACTIVE, JobBasicInfo.STATUS_OK, "test_event-job_id",
+                "default", "start-time", "nex-fire-time", "end-time", JobBasicInfo.JOBTYPE_CRON, "test-info", false);
 
         CronSchedulableJob job = new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?");
         job.setUiDefined(true);
@@ -737,7 +730,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
 
         schedulerService.deleteJob(info);
 
-        assertNull(scheduler.getTrigger(triggerKey("test_event-job_id-cron", "default")));
+        assertNull(scheduler.getTrigger(triggerKey("test_event-job_id", "default")));
     }
 
     @Test(expected = MotechSchedulerException.class)
@@ -754,7 +747,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
 
             schedulerService.deleteJob(info);
         } finally {
-            assertNotNull(scheduler.getTrigger(triggerKey("test_event-job_id-cron", "default")));
+            assertNotNull(scheduler.getTrigger(triggerKey("test_event-job_id", "default")));
         }
     }
 
@@ -762,7 +755,7 @@ public class MotechSchedulerServiceImplBundleIT extends BasePaxIT {
     public void shouldNotDeleteJobIfJobDoesNotExist() throws Exception {
 
         JobBasicInfo info = new JobBasicInfo(JobBasicInfo.ACTIVITY_ACTIVE, JobBasicInfo.STATUS_OK,
-                "test_event-job_id-cron", "default", "start-time", "nex-fire-time", "end-time",
+                "test_event-job_id", "default", "start-time", "nex-fire-time", "end-time",
                 JobBasicInfo.JOBTYPE_CRON, "test-info", true);
 
         schedulerService.deleteJob(info);

@@ -26,6 +26,7 @@ public final class SchedulerConstants {
     public static final String REPEAT_INTERVAL_IN_SECONDS = "repeatIntervalInMilliseconds";
     public static final String IGNORE_PAST_FIRES_AT_START = "ignorePastFiresAtStart";
     public static final String USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE = "useOriginalFireTimeAfterMisfire";
+    public static final String IS_DAY_OF_WEEK = "isDayOfWeek";
 
     private SchedulerConstants() {
 

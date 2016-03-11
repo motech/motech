@@ -7,7 +7,7 @@ import org.motechproject.event.MotechEvent;
  */
 public class CronJobId extends JobId {
 
-    public static final String SUFFIX_CRON_JOB_ID = "cron";
+    private static final String SUFFIX_CRONJOBID = "";
 
     /**
      * Constructor.
@@ -16,7 +16,7 @@ public class CronJobId extends JobId {
      * @param id  the "JobID" parameter for {@code MotechEvent} fired, when job is triggered, not null
      */
     public CronJobId(String subject, String id) {
-        super(subject, id, SUFFIX_CRON_JOB_ID);
+        super(subject, id, SUFFIX_CRONJOBID);
     }
 
     /**
@@ -25,6 +25,6 @@ public class CronJobId extends JobId {
      * @param event  the {@code MotechEvent} fired, when job is triggered, not null
      */
     public CronJobId(MotechEvent event) {
-        super(event, SUFFIX_CRON_JOB_ID);
+        super(event, SUFFIX_CRONJOBID);
     }
 }
