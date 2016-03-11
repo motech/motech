@@ -244,6 +244,14 @@
                 job.endDate = $scope.parseToDateTime(job.endDate);
             }
 
+            if (job.startDate && job.endDate) {
+                if (job.startDate > job.endDate) {
+                    motechAlert("scheduler.error.incorrectJobDate", "scheduler.error");
+                    unblockUI();
+                    return;
+                }
+            }
+
             if ($scope.job.days) {
                 for (var day = 0; day < $scope.job.days.length; day += 1) {
                     if (day === 0) {
