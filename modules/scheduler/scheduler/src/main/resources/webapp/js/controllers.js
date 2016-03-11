@@ -97,6 +97,10 @@
             motechConfirm("scheduler.confirm.delete", "scheduler.confirm", function(response) {
                 if (response) {
                     blockUI();
+                    // Go back to previous page when deleting last record on the given page
+                    if ($scope.jobs.rows.length === 1 && $scope.jobs.page > 1) {
+                        JobsService.setParam("page", $scope.jobs.page - 1);
+                    }
                     JobsService.deleteJob(job, function() {
                         JobsService.fetchJobs();
                     });
