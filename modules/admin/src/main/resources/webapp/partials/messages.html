@@ -1,6 +1,8 @@
 <div class="row message-content">
-    <div class="btn-group inside">
+    <div class="btn group pull-right">
         <a htef="#" class="btn btn-default" ng-click="refresh()"><i class="fa fa-refresh"></i>&nbsp;{{msg('admin.refresh')}}</a>
+    </div>
+    <div class="btn-group inside">
         <button type="button" class="btn btn-default" id="admin-filters"><i class="fa fa-filter"></i>&nbsp;{{msg('admin.messages.filters')}}</button>
     </div>
     <div class="alert alert-info" ng-show="messages.length < 1">

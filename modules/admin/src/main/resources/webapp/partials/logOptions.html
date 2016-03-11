@@ -5,7 +5,7 @@
                 <div class="form-inline">
                     <span class="label-logAll">{{ msg('admin.log.setForAll') }}</span>
                     <div id="changeForAll" class="btn-group" data-toggle="buttons">
-                        <label class="btn btn-default" ng-click="forAll(level)" ng-repeat="level in availableLevels">
+                        <label class="btn" ng-class="levelsCss(level)" ng-click="forAll(level)" ng-repeat="level in availableLevels">
                             <input type="radio">{{ msg('admin.log.level.' + level) | uppercase }}</input>
                         </label>
                     </div>
@@ -15,7 +15,7 @@
                 <div class="form-inline">
                     <a class="btn btn-hidden"><i class="fa fa-minus"></i></a>
                     <div class="btn-group">
-                        <a id="rootLevel" class="btn btn-default btn-log dropdown-toggle" data-toggle="dropdown" href="#" target="_self">
+                        <a id="rootLevel" class="btn btn-log dropdown-toggle" ng-class="levelsCss(config.root.logLevel)" data-toggle="dropdown" href="#" target="_self">
                             {{ config.root.logLevel | uppercase }}
                             <span class="caret"></span>
                         </a>
@@ -30,7 +30,7 @@
                 <div class="form-inline">
                     <a ng-click="remove(logger)" class="btn btn-danger"><i class="fa fa-trash-o"></i></a>
                     <div class="btn-group">
-                        <a class="btn btn-default btn-log dropdown-toggle" data-toggle="dropdown" href="#" target="_self">
+                        <a class="btn btn-log dropdown-toggle" ng-class="levelsCss(logger.logLevel)" data-toggle="dropdown" href="#" target="_self">
                             {{ logger.logLevel | uppercase }}
                             <span class="caret"></span>
                         </a>
@@ -45,7 +45,7 @@
                 <div class="form-inline">
                     <a ng-click="removeNew(log)" class="btn btn-danger"><i class="fa fa-trash-o"></i></a>
                     <div class="btn-group">
-                        <a class="btn btn-default btn-log dropdown-toggle" data-toggle="dropdown" href="#" target="_self">
+                        <a class="btn btn-log dropdown-toggle" ng-class="levelsCss(log.level)" data-toggle="dropdown" href="#" target="_self">
                             {{ log.level | uppercase }}
                             <span class="caret"></span>
                         </a>

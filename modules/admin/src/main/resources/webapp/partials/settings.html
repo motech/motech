@@ -81,7 +81,7 @@
                                         <option ng-if="!option.value" value="">{{msg('mds.form.label.select')}}</option>
                                     </select>
                                     <input class="input-medium form-control col-md-offset-1 col-md-3 col-lg-3" ng-disabled="platformSettings.readOnly" type="text" ng-model="userValidator"/>
-                                    <a class="btn btn-default" ng-disabled="!userValidator" ng-click="addValue(option.key, userValidator)"><span class="fa fa-fw fa-plus"></span>Add option</a>
+                                    <a class="btn btn-success" ng-disabled="!userValidator" ng-click="addValue(option.key, userValidator)"><span class="fa fa-fw fa-plus"></span>Add option</a>
                                 </div>
                             </div>
                         </div>
