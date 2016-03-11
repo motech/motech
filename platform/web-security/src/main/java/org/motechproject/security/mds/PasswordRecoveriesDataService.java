@@ -1,4 +1,4 @@
-package org.motechproject.security.repository;
+package org.motechproject.security.mds;
 
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;

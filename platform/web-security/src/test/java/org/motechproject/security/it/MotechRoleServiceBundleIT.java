@@ -6,12 +6,13 @@ import org.apache.http.impl.client.HttpClients;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
-import org.motechproject.security.ex.RoleHasUserException;
+import org.motechproject.security.exception.RoleHasUserException;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.model.UserDto;
-import org.motechproject.security.repository.MotechRolesDataService;
-import org.motechproject.security.repository.MotechUsersDataService;
+import org.motechproject.security.mds.MotechRolesDataService;
+import org.motechproject.security.mds.MotechUsersDataService;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.testing.utils.TestContext;
@@ -20,6 +21,7 @@ import org.osgi.framework.BundleContext;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import static java.util.Arrays.asList;
@@ -66,7 +68,7 @@ public class MotechRoleServiceBundleIT extends BaseIT {
     }
 
     @Test
-    public void testCreate() {
+    public void shouldCreateNewRole() {
         motechRoleService.createRole(new RoleDto("Test-Role", asList("permissionA", "permissionB"), true));
         RoleDto role = motechRoleService.getRole("Test-Role");
         assertNotNull(role);
@@ -77,7 +79,7 @@ public class MotechRoleServiceBundleIT extends BaseIT {
     }
 
     @Test
-    public void testDelete() {
+    public void shouldDeleteDeletableRole() {
         motechRoleService.createRole(new RoleDto("Test-Role", asList("permissionA, permissionB"), true));
         RoleDto role = motechRoleService.getRole("Test-Role");
         assertNotNull(role);
@@ -150,5 +152,26 @@ public class MotechRoleServiceBundleIT extends BaseIT {
         motechRoleService.deleteRole(role);
         role = motechRoleService.getRole("Role1");
         assertNull(role);
+    }
+
+    @Test
+    public void shouldNotCreateNewRoleIfRoleOfTheSameNameAlreadyExists() {
+        String roleName = "sameRole";
+        motechRoleService.createRole(new RoleDto(roleName, asList("per1", "per2"), false));
+        motechRoleService.createRole(new RoleDto(roleName, asList("per3", "per4"), false));
+
+        MotechRole motechRole = rolesDataService.findByRoleName(roleName);
+        List<MotechRole> allRoles = rolesDataService.retrieveAll();
+        int numberOfRoles = 0;
+
+        for (MotechRole role : allRoles) {
+            if (roleName.equalsIgnoreCase(role.getRoleName())) {
+                ++numberOfRoles;
+            }
+        }
+
+        assertEquals(1, numberOfRoles);
+        assertEquals("per1", motechRole.getPermissionNames().get(0));
+        assertEquals("per2", motechRole.getPermissionNames().get(1));
     }
 }

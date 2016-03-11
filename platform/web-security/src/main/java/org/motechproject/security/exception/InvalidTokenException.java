@@ -1,4 +1,4 @@
-package org.motechproject.security.ex;
+package org.motechproject.security.exception;
 
 /**
  * Exception that signalizes that given token is invalid

@@ -7,28 +7,27 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.model.RoleDto;
-import org.motechproject.security.repository.AllMotechRoles;
-import org.motechproject.security.repository.AllMotechUsers;
+import org.motechproject.security.repository.MotechUsersDao;
+import org.motechproject.security.mds.MotechRolesDataService;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.UserContextService;
-import org.motechproject.security.service.impl.MotechRoleServiceImpl;
 
 import static java.util.Arrays.asList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class MotechRoleServiceImplTest {
+public class MotechRoleServiceTest {
 
 
     @InjectMocks
     private MotechRoleService motechRoleService;
 
     @Mock
-    private AllMotechRoles allMotechRoles;
+    private MotechRolesDataService rolesDataService;
 
     @Mock
-    private AllMotechUsers allMotechUsers;
+    private MotechUsersDao motechUsersDao;
 
     @Mock
     private UserContextService userContextsService;
@@ -53,7 +52,7 @@ public class MotechRoleServiceImplTest {
         RoleDto role = new RoleDto("role1", asList("permission1"));
 
         MotechRole motechRole = mock(MotechRole.class);
-        when(allMotechRoles.findByRoleName("role1")).thenReturn(motechRole);
+        when(rolesDataService.findByRoleName("role1")).thenReturn(motechRole);
 
         motechRoleService.updateRole(role);
 
@@ -66,7 +65,7 @@ public class MotechRoleServiceImplTest {
 
         MotechRole motechRole = mock(MotechRole.class);
         when(motechRole.isDeletable()).thenReturn(true);
-        when(allMotechRoles.findByRoleName("role1")).thenReturn(motechRole);
+        when(rolesDataService.findByRoleName("role1")).thenReturn(motechRole);
 
         motechRoleService.deleteRole(role);
 

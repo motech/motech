@@ -2,7 +2,7 @@ package org.motechproject.security.service.impl;
 
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.helper.SessionHandler;
-import org.motechproject.security.repository.AllMotechUsers;
+import org.motechproject.security.repository.MotechUsersDao;
 import org.motechproject.security.service.AuthoritiesService;
 import org.motechproject.security.service.UserContextService;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ public class UserContextServiceImpl implements UserContextService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserContextServiceImpl.class);
 
     private SessionHandler sessionHandler;
-    private AllMotechUsers allMotechUsers;
+    private MotechUsersDao motechUsersDao;
     private AuthoritiesService authoritiesService;
 
     @Override
@@ -50,7 +50,7 @@ public class UserContextServiceImpl implements UserContextService {
                 AbstractAuthenticationToken token;
 
                 User userInSession = (User) authentication.getPrincipal();
-                user = allMotechUsers.findByUserName(userInSession.getUsername());
+                user = motechUsersDao.findByUserName(userInSession.getUsername());
 
                 if (user == null) {
                     LOGGER.warn("User {} has a session, but does not exist", userInSession.getUsername());
@@ -70,7 +70,7 @@ public class UserContextServiceImpl implements UserContextService {
     public void refreshUserContextIfActive(String userName) {
         LOGGER.info("Refreshing context for user: {}", userName);
 
-        MotechUser user = allMotechUsers.findByUserName(userName);
+        MotechUser user = motechUsersDao.findByUserName(userName);
         Collection<HttpSession> sessions = sessionHandler.getAllSessions();
 
         for (HttpSession session : sessions) {
@@ -129,8 +129,8 @@ public class UserContextServiceImpl implements UserContextService {
     }
 
     @Autowired
-    public void setAllMotechUsers(AllMotechUsers allMotechUsers) {
-        this.allMotechUsers = allMotechUsers;
+    public void setMotechUsersDao(MotechUsersDao motechUsersDao) {
+        this.motechUsersDao = motechUsersDao;
     }
 
     @Autowired

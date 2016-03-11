@@ -1,6 +1,6 @@
 package org.motechproject.security.validator;
 
-import org.motechproject.security.ex.PasswordValidatorException;
+import org.motechproject.security.exception.PasswordValidatorException;
 
 import java.util.Locale;
 
@@ -13,7 +13,7 @@ public interface PasswordValidator {
      * Validates password.
      *
      * @param password the password to check.
-     * @throws org.motechproject.security.ex.PasswordValidatorException signals an issue with the validation
+     * @throws org.motechproject.security.exception.PasswordValidatorException signals an issue with the validation
      */
     void validate(String password) throws PasswordValidatorException;
 

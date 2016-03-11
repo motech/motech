@@ -19,9 +19,14 @@
 
     <bean class="org.motechproject.security.Initialize"/>
 
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.motechproject.osgi.web.BundledJspView"/>
+        <property name="prefix" value="/webapp/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.security"/>
-
 
     <mvc:annotation-driven/>
     <tx:annotation-driven transaction-manager="transactionManager"/>

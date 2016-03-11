@@ -1,12 +1,15 @@
-package org.motechproject.security.it;
+package org.motechproject.security.builder;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.motechproject.security.builder.SecurityRuleBuilder;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.security.domain.MotechURLSecurityRule;
-import org.motechproject.security.ex.SecurityConfigException;
+import org.motechproject.security.exception.SecurityConfigException;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.Arrays;
@@ -18,20 +21,17 @@ import static org.motechproject.security.constants.HTTPMethod.GET;
 import static org.motechproject.security.constants.Protocol.HTTP;
 import static org.motechproject.security.constants.Scheme.USERNAME_PASSWORD;
 
-public class SecurityRuleBuilderBundleIT extends BaseIT {
+@RunWith(MockitoJUnitRunner.class)
+public class SecurityRuleBuilderTest {
 
     @Rule
     public ExpectedException configException = ExpectedException.none();
 
-    private SecurityRuleBuilder securityBuilder;
+    @Mock
+    public AuthenticationEntryPoint entryPoint;
 
-    @Before
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
-        securityBuilder = getFromContext(SecurityRuleBuilder.class);
-    }
+    @InjectMocks
+    private SecurityRuleBuilder securityBuilder = new SecurityRuleBuilder();
 
     @Test
     public void testShouldRequirePattern() {
@@ -40,7 +40,7 @@ public class SecurityRuleBuilderBundleIT extends BaseIT {
         configException.expectMessage(SecurityRuleBuilder.NO_PATTERN_EXCEPTION_MESSAGE);
 
         MotechURLSecurityRule securityRule = new MotechURLSecurityRule();
-        SecurityFilterChain filterChain = securityBuilder.buildSecurityChain(securityRule, GET);
+        securityBuilder.buildSecurityChain(securityRule, GET);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class SecurityRuleBuilderBundleIT extends BaseIT {
 
         MotechURLSecurityRule securityRule = new MotechURLSecurityRule();
         securityRule.setPattern("pattern");
-        SecurityFilterChain filterChain = securityBuilder.buildSecurityChain(securityRule, GET);
+        securityBuilder.buildSecurityChain(securityRule, GET);
     }
 
     @Test
@@ -63,7 +63,7 @@ public class SecurityRuleBuilderBundleIT extends BaseIT {
         securityRule.setPattern("pattern");
         securityRule.setProtocol(HTTP);
 
-        SecurityFilterChain filterChain = securityBuilder.buildSecurityChain(securityRule, GET);
+        securityBuilder.buildSecurityChain(securityRule, GET);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class SecurityRuleBuilderBundleIT extends BaseIT {
         securityRule.setProtocol(HTTP);
         securityRule.setSupportedSchemes(Arrays.asList(USERNAME_PASSWORD));
 
-        SecurityFilterChain filterChain = securityBuilder.buildSecurityChain(securityRule, GET);
+        securityBuilder.buildSecurityChain(securityRule, GET);
     }
 
     @Test

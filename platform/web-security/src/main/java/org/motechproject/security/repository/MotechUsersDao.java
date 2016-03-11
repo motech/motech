@@ -1,7 +1,8 @@
 package org.motechproject.security.repository;
 
 import org.motechproject.security.domain.MotechUser;
-import org.motechproject.security.ex.EmailExistsException;
+import org.motechproject.security.exception.EmailExistsException;
+import org.motechproject.security.mds.MotechUsersDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +18,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  * Class responsible for handling MotechUsers.
  */
 @Repository
-public class AllMotechUsers {
+public class MotechUsersDao {
     private MotechUsersDataService dataService;
 
     /**

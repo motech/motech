@@ -37,6 +37,16 @@ public class RoleDto {
         this.deletable = deletable;
     }
 
+    public void removePermission(String permissionName) {
+        if (permissionNames != null) {
+            permissionNames.remove(permissionName);
+        }
+    }
+
+    public boolean hasPermission(String permissionName) {
+        return permissionNames != null && permissionNames.contains(permissionName);
+    }
+
     public String getRoleName() {
         return roleName;
     }
@@ -68,7 +78,6 @@ public class RoleDto {
     public void setDeletable(boolean deletable) {
         this.deletable = deletable;
     }
-
 
     @Override
     public int hashCode() {

@@ -11,7 +11,7 @@ import org.motechproject.security.constants.Protocol;
 import org.motechproject.security.constants.Scheme;
 import org.motechproject.security.constants.SecurityConfigConstants;
 import org.motechproject.security.domain.MotechURLSecurityRule;
-import org.motechproject.security.ex.SecurityConfigException;
+import org.motechproject.security.exception.SecurityConfigException;
 import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -12,11 +12,10 @@ import org.motechproject.security.config.SettingService;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.domain.UserStatus;
-import org.motechproject.security.ex.PasswordValidatorException;
+import org.motechproject.security.exception.PasswordValidatorException;
 import org.motechproject.security.model.UserDto;
-import org.motechproject.security.repository.AllMotechUsers;
+import org.motechproject.security.repository.MotechUsersDao;
 import org.motechproject.security.service.MotechUserService;
-import org.motechproject.security.service.impl.MotechUserServiceImpl;
 import org.motechproject.security.validator.PasswordValidator;
 import org.springframework.security.authentication.LockedException;
 
@@ -47,7 +46,7 @@ public class MotechUserServiceTest {
     private SettingService settingService;
 
     @Mock
-    private AllMotechUsers allMotechUsers;
+    private MotechUsersDao motechUsersDao;
 
     @Mock
     private MotechUser user;
@@ -70,7 +69,7 @@ public class MotechUserServiceTest {
 
     @Test(expected = PasswordValidatorException.class)
     public void shouldValidatePasswordOnChange() {
-        when(allMotechUsers.findByUserName("user")).thenReturn(user);
+        when(motechUsersDao.findByUserName("user")).thenReturn(user);
         doThrow(new PasswordValidatorException("error")).when(validator).validate("wrong");
 
         motechUserService.changePassword("user", "old", "wrong");
@@ -81,7 +80,7 @@ public class MotechUserServiceTest {
         UserDto userDto = new UserDto();
         userDto.setPassword("wrong");
         userDto.setUserName("user");
-        when(allMotechUsers.findByUserName("user")).thenReturn(user);
+        when(motechUsersDao.findByUserName("user")).thenReturn(user);
         doThrow(new PasswordValidatorException("error")).when(validator).validate("wrong");
 
         motechUserService.updateUserDetailsWithPassword(userDto);
@@ -95,7 +94,7 @@ public class MotechUserServiceTest {
         motechUser.setUserName(USER);
         motechUser.setFailureLoginCounter(1);
 
-        when(allMotechUsers.findByUserName(USER)).thenReturn(motechUser);
+        when(motechUsersDao.findByUserName(USER)).thenReturn(motechUser);
         when(motechPasswordEncoder.isPasswordValid(PASSWORD, PASSWORD)).thenReturn(false);
         when(settingService.getFailureLoginLimit()).thenReturn(1);
 
@@ -109,7 +108,7 @@ public class MotechUserServiceTest {
         motechUser.setPassword(PASSWORD);
         motechUser.setUserName(USER);
 
-        when(allMotechUsers.findByUserName(USER)).thenReturn(motechUser);
+        when(motechUsersDao.findByUserName(USER)).thenReturn(motechUser);
         doThrow(new PasswordValidatorException("wrong")).when(validator).validate(NEW_PASSWORD);
 
         motechUserService.changeExpiredPassword(USER, PASSWORD, NEW_PASSWORD);
@@ -123,7 +122,7 @@ public class MotechUserServiceTest {
         motechUser.setUserName(USER);
         motechUser.setFailureLoginCounter(1);
 
-        when(allMotechUsers.findByUserName(USER)).thenReturn(motechUser);
+        when(motechUsersDao.findByUserName(USER)).thenReturn(motechUser);
         when(motechPasswordEncoder.isPasswordValid(PASSWORD, PASSWORD)).thenReturn(true);
         when(motechPasswordEncoder.isPasswordValid(PASSWORD, NEW_PASSWORD)).thenReturn(false);
         when(motechPasswordEncoder.encodePassword(NEW_PASSWORD)).thenReturn(NEW_PASSWORD + "_encoded");
@@ -131,7 +130,7 @@ public class MotechUserServiceTest {
 
         MotechUserProfile profile = motechUserService.changeExpiredPassword(USER, PASSWORD, NEW_PASSWORD);
 
-        verify(allMotechUsers).update(userCaptor.capture());
+        verify(motechUsersDao).update(userCaptor.capture());
         verify(motechPasswordEncoder).encodePassword(NEW_PASSWORD);
         MotechUser capturedUser = userCaptor.getValue();
         assertEquals(USER, capturedUser.getUserName());
@@ -149,7 +148,7 @@ public class MotechUserServiceTest {
         motechUser.setUserName(USER);
         motechUser.setFailureLoginCounter(0);
 
-        when(allMotechUsers.findByUserName(USER)).thenReturn(motechUser);
+        when(motechUsersDao.findByUserName(USER)).thenReturn(motechUser);
         when(motechPasswordEncoder.isPasswordValid(PASSWORD, PASSWORD)).thenReturn(false);
         when(settingService.getFailureLoginLimit()).thenReturn(2);
 
@@ -157,7 +156,7 @@ public class MotechUserServiceTest {
 
         assertNull(profile);
 
-        verify(allMotechUsers).update(userCaptor.capture());
+        verify(motechUsersDao).update(userCaptor.capture());
         MotechUser capturedUser = userCaptor.getValue();
         assertEquals(USER, capturedUser.getUserName());
         assertEquals(PASSWORD, capturedUser.getPassword());

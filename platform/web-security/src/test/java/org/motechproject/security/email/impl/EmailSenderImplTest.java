@@ -8,7 +8,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.security.config.SettingService;
 import org.motechproject.security.domain.MotechUser;
-import org.motechproject.security.ex.VelocityTemplateParsingException;
+import org.motechproject.security.exception.VelocityTemplateParsingException;
 import org.motechproject.security.velocity.VelocityTemplateParser;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.MotechSettings;

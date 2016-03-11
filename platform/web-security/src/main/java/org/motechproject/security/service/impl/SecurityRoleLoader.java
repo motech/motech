@@ -1,9 +1,11 @@
-package org.motechproject.security.service;
+package org.motechproject.security.service.impl;
 
 import com.google.gson.reflect.TypeToken;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.model.RoleDto;
+import org.motechproject.security.service.MotechPermissionService;
+import org.motechproject.security.service.MotechRoleService;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
