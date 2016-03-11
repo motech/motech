@@ -8,7 +8,7 @@ import org.motechproject.security.config.SettingService;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.domain.UserStatus;
-import org.motechproject.security.repository.AllMotechUsers;
+import org.motechproject.security.repository.MotechUsersDao;
 import org.motechproject.security.service.AuthoritiesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,15 +31,15 @@ public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticat
     public static final String USER_NOT_FOUND = "The username or password you entered is incorrect. Please enter the correct credentials.";
     public static final String USER_BLOCKED = "The user has been blocked. Please contact your local administrator.";
 
-    private AllMotechUsers allMotechUsers;
+    private MotechUsersDao motechUsersDao;
     private MotechPasswordEncoder passwordEncoder;
     private AuthoritiesService authoritiesService;
     private SettingService settingService;
 
     @Autowired
-    public MotechAuthenticationProvider(AllMotechUsers allMotechUsers, MotechPasswordEncoder motechPasswordEncoder,
+    public MotechAuthenticationProvider(MotechUsersDao motechUsersDao, MotechPasswordEncoder motechPasswordEncoder,
                                         AuthoritiesService authoritiesService, SettingService settingService) {
-        this.allMotechUsers = allMotechUsers;
+        this.motechUsersDao = motechUsersDao;
         this.passwordEncoder = motechPasswordEncoder;
         this.authoritiesService = authoritiesService;
         this.settingService = settingService;
@@ -73,7 +73,7 @@ public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticat
     @Override
     @Transactional
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) {
-        MotechUser user = allMotechUsers.findByUserName(username);
+        MotechUser user = motechUsersDao.findByUserName(username);
         if (user == null) {
             throw new BadCredentialsException(USER_NOT_FOUND);
         } else if (!user.isActive()) {
@@ -82,7 +82,7 @@ public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticat
             if (settingService.getNumberOfDaysToChangePassword() > 0 &&
                     Days.daysBetween(user.getSafeLastPasswordChange(), DateUtil.now()).getDays() >= settingService.getNumberOfDaysToChangePassword()) {
                 user.setUserStatus(UserStatus.MUST_CHANGE_PASSWORD);
-                allMotechUsers.update(user);
+                motechUsersDao.update(user);
             }
             authentication.setDetails(new MotechUserProfile(user));
             return new User(user.getUserName(), user.getPassword(), user.isActive(), true, !UserStatus.MUST_CHANGE_PASSWORD.equals(user.getUserStatus()),

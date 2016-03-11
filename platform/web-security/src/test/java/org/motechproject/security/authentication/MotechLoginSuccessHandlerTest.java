@@ -9,7 +9,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.helper.SessionHandler;
 import org.motechproject.security.config.SettingService;
-import org.motechproject.security.repository.AllMotechUsers;
+import org.motechproject.security.repository.MotechUsersDao;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.ServletException;
@@ -29,7 +29,7 @@ public class MotechLoginSuccessHandlerTest {
     private MotechLoginSuccessHandler motechLoginSuccessHandler = new MotechLoginSuccessHandler();
 
     @Mock
-    AllMotechUsers allMotechUsers;
+    MotechUsersDao motechUsersDao;
 
     @Mock
     private SettingService settingService;
@@ -58,7 +58,7 @@ public class MotechLoginSuccessHandlerTest {
         user.setFailureLoginCounter(3);
 
         when(authentication.getName()).thenReturn("testUser");
-        when(allMotechUsers.findByUserName("testUser")).thenReturn(user);
+        when(motechUsersDao.findByUserName("testUser")).thenReturn(user);
         when(request.getSession()).thenReturn(session);
         when(settingService.getSessionTimeout()).thenReturn(500);
 
@@ -75,13 +75,13 @@ public class MotechLoginSuccessHandlerTest {
         user.setFailureLoginCounter(3);
 
         when(authentication.getName()).thenReturn("testUser");
-        when(allMotechUsers.findByUserName("testUser")).thenReturn(user);
+        when(motechUsersDao.findByUserName("testUser")).thenReturn(user);
         when(request.getSession()).thenReturn(session);
         when(settingService.getSessionTimeout()).thenReturn(500);
 
         motechLoginSuccessHandler.onAuthenticationSuccess(request, response, authentication);
 
-        verify(allMotechUsers).update(userCaptor.capture());
+        verify(motechUsersDao).update(userCaptor.capture());
         assertEquals((Integer)0, userCaptor.getValue().getFailureLoginCounter());
     }
 }
