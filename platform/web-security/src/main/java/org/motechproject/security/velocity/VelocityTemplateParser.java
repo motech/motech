@@ -7,8 +7,8 @@ import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.runtime.RuntimeSingleton;
 import org.apache.velocity.runtime.parser.ParseException;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
-import org.motechproject.security.ex.VelocityTemplateParsingException;
 import org.motechproject.config.SettingsFacade;
+import org.motechproject.security.exception.VelocityTemplateParsingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -1,8 +1,8 @@
 package org.motechproject.server.web.controller;
 
 import org.motechproject.security.domain.MotechUserProfile;
-import org.motechproject.security.ex.InvalidTokenException;
-import org.motechproject.security.ex.PasswordValidatorException;
+import org.motechproject.security.exception.InvalidTokenException;
+import org.motechproject.security.exception.PasswordValidatorException;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.security.service.PasswordRecoveryService;
 import org.motechproject.server.web.dto.ChangePasswordViewData;

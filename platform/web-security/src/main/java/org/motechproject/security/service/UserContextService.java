@@ -1,7 +1,7 @@
 package org.motechproject.security.service;
 
 /**
- * Interface to refresh user context (all or specified username)
+ * Interface to manage user contexts (sessions)
  */
 public interface UserContextService {
 
@@ -17,5 +17,11 @@ public interface UserContextService {
      */
     void refreshUserContextIfActive(String userName);
 
+    /**
+     * Finds and invalidates session of the user with the given userName. When the
+     * session is invalidated, the user will need to log in again.
+     *
+     * @param userName username of the user to invalidate session for
+     */
     void logoutUser(String userName);
 }
