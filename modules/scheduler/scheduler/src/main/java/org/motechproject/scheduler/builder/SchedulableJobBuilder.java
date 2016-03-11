@@ -3,6 +3,7 @@ package org.motechproject.scheduler.builder;
 import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
+import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingJobId;
 import org.motechproject.scheduler.contract.RepeatingPeriodJobId;
 import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
@@ -12,6 +13,7 @@ import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.contract.SchedulableJob;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.scheduler.trigger.PeriodIntervalTrigger;
+import org.motechproject.scheduler.util.CronExpressionUtil;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobKey;
@@ -20,8 +22,10 @@ import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 
 import static org.motechproject.scheduler.constants.SchedulerConstants.CRON;
+import static org.motechproject.scheduler.constants.SchedulerConstants.DAY_OF_WEEK;
 import static org.motechproject.scheduler.constants.SchedulerConstants.EVENT_TYPE_KEY_NAME;
 import static org.motechproject.scheduler.constants.SchedulerConstants.IGNORE_PAST_FIRES_AT_START;
+import static org.motechproject.scheduler.constants.SchedulerConstants.IS_DAY_OF_WEEK;
 import static org.motechproject.scheduler.constants.SchedulerConstants.REPEATING;
 import static org.motechproject.scheduler.constants.SchedulerConstants.REPEATING_PERIOD;
 import static org.motechproject.scheduler.constants.SchedulerConstants.RUN_ONCE;
@@ -48,7 +52,7 @@ public final class SchedulableJobBuilder {
 
         SchedulableJob job;
 
-        switch (getJobType(key)) {
+        switch (getJobType(key, dataMap)) {
             case CRON:
                 job = buildCronSchedulableJob(trigger, dataMap);
                 break;
@@ -57,6 +61,9 @@ public final class SchedulableJobBuilder {
                 break;
             case REPEATING_PERIOD:
                 job = buildRepeatingPeriodSchedulableJob(trigger, dataMap);
+                break;
+            case DAY_OF_WEEK:
+                job = buildDayOfWeekSchedulableJob(trigger, dataMap);
                 break;
             case RUN_ONCE:
                 job = buildRunOnceSchedulableJob();
@@ -103,6 +110,18 @@ public final class SchedulableJobBuilder {
         return job;
     }
 
+    private static SchedulableJob buildDayOfWeekSchedulableJob(Trigger trigger, JobDataMap dataMap) {
+        CronTrigger cronTrigger = (CronTrigger) trigger;
+        DayOfWeekSchedulableJob job = new DayOfWeekSchedulableJob();
+        job.setIgnorePastFiresAtStart(dataMap.getBoolean(IGNORE_PAST_FIRES_AT_START));
+
+        CronExpressionUtil cronExpressionUtil = new CronExpressionUtil(cronTrigger.getCronExpression());
+        job.setTime(cronExpressionUtil.getTime());
+        job.setDays(cronExpressionUtil.getDaysOfWeek());
+
+        return job;
+    }
+
     private static SchedulableJob buildRunOnceSchedulableJob() {
         return new RunOnceSchedulableJob();
     }
@@ -111,13 +130,15 @@ public final class SchedulableJobBuilder {
         return trigger.getEndTime() == null ? null : new DateTime(trigger.getEndTime());
     }
 
-    private static String getJobType(JobKey jobKey) throws SchedulerException {
+    private static String getJobType(JobKey jobKey, JobDataMap dataMap) throws SchedulerException {
         if (jobKey.getName().endsWith(RunOnceJobId.SUFFIX_RUNONCEJOBID)) {
             return RUN_ONCE;
         } else if (jobKey.getName().endsWith(RepeatingJobId.SUFFIX_REPEATJOBID)) {
             return REPEATING;
         } else if (jobKey.getName().endsWith(RepeatingPeriodJobId.SUFFIX_REPEATPERIODJOBID)) {
             return REPEATING_PERIOD;
+        } else if (dataMap.getBoolean(IS_DAY_OF_WEEK)) {
+            return DAY_OF_WEEK;
         } else {
             return CRON;
         }

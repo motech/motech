@@ -60,6 +60,7 @@ import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.scheduler.constants.SchedulerConstants.EVENT_TYPE_KEY_NAME;
 import static org.motechproject.scheduler.constants.SchedulerConstants.IGNORE_PAST_FIRES_AT_START;
+import static org.motechproject.scheduler.constants.SchedulerConstants.IS_DAY_OF_WEEK;
 import static org.motechproject.scheduler.constants.SchedulerConstants.UI_DEFINED;
 import static org.motechproject.scheduler.constants.SchedulerConstants.USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE;
 import static org.motechproject.scheduler.validation.SchedulableJobValidator.validateCronSchedulableJob;
@@ -105,7 +106,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     @Override
     public void scheduleJob(CronSchedulableJob cronSchedulableJob) {
-        scheduleCronJob(cronSchedulableJob, false);
+        scheduleCronJob(cronSchedulableJob, false, false);
     }
 
     @Override
@@ -553,7 +554,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
     }
 
-    private void scheduleCronJob(CronSchedulableJob job, boolean update) {
+    private void scheduleCronJob(CronSchedulableJob job, boolean isDayOfWeek, boolean update) {
         logObjectIfNotNull(job);
 
         validateCronSchedulableJob(job);
@@ -568,6 +569,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         jobDetail.getJobDataMap().put(UI_DEFINED, job.isUiDefined());
         jobDetail.getJobDataMap().put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
+        jobDetail.getJobDataMap().put(IS_DAY_OF_WEEK, isDayOfWeek);
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
@@ -603,7 +605,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         DateTime now = now();
 
-        if (job.isIgnorePastFiresAtStart() && job.getStartDate().isBefore(now)) {
+        if (job.isIgnorePastFiresAtStart() && (job.getStartDate() == null || job.getStartDate().isBefore(now))) {
 
             Date newStartTime = trigger.getFireTimeAfter(now.toDate());
             if (newStartTime == null) {
@@ -748,12 +750,12 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 startDate, endDate != null ? endDate.toLocalDate().toDateMidnight().toDateTime() : null,
                 job.isIgnorePastFiresAtStart(), job.isUiDefined());
 
-        scheduleCronJob(cronSchedulableJob, update);
+        scheduleCronJob(cronSchedulableJob, true, update);
     }
 
     private void scheduleJob(SchedulableJob job, boolean update) {
         if (job instanceof CronSchedulableJob) {
-            scheduleCronJob((CronSchedulableJob) job, update);
+            scheduleCronJob((CronSchedulableJob) job, false, update);
         } else if (job instanceof DayOfWeekSchedulableJob) {
             scheduleDayOfWeekJob((DayOfWeekSchedulableJob) job, update);
         } else if (job instanceof RepeatingSchedulableJob) {
