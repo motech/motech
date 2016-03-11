@@ -113,7 +113,7 @@ public final class SchedulableJobValidator {
     }
 
     private static void validateEndDate(EndingSchedulableJob job) {
-        if (job.getStartDate() != null && job.getEndDate() != null && job.getEndDate().isBefore(job.getStartDate())) {
+        if (job.getStartDate() != null && job.getEndDate() != null && !job.getEndDate().isAfter(job.getStartDate())) {
             throw new MotechSchedulerException(
                     String.format("End date(%s) must be after start date(%s)", job.getStartDate(), job.getEndDate()),
                     "scheduler.error.endDateBeforeStartDate",

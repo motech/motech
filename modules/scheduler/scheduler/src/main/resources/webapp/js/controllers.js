@@ -245,9 +245,8 @@
             }
 
             if (job.startDate && job.endDate) {
-                if (job.startDate > job.endDate) {
-                    motechAlert("scheduler.error.incorrectJobDate", "scheduler.error");
-                    unblockUI();
+                if (job.startDate >= job.endDate) {
+                    motechAlert("scheduler.error.endDateBeforeStartDate", "scheduler.error", [job.startDate, job.endDate]);
                     return;
                 }
             }
