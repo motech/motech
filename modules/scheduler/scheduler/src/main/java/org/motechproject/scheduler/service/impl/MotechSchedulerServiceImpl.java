@@ -651,6 +651,14 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         jobDetail.getJobDataMap().put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
         jobDetail.getJobDataMap().put(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE, job.isUseOriginalFireTimeAfterMisfire());
 
+        try {
+            if (scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME)) != null) {
+                unscheduleJob(jobId);
+            }
+        } catch (SchedulerException e) {
+            throw new MotechSchedulerException(format("Schedule or reschedule the job: %s.\n%s", jobId, e.getMessage()), e);
+        }
+
         ScheduleBuilder scheduleBuilder;
         if (!job.isUseOriginalFireTimeAfterMisfire()) {
             SimpleScheduleBuilder simpleSchedule = simpleSchedule()
