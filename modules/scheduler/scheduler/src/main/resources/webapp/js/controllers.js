@@ -288,13 +288,11 @@
             JobsService.getCurrentJob(function(data) {
                 var job = data;
                 if (job.startDate) {
-                    job.startDate = $scope.parseDateToString(job.startDate);
-                    $scope.dates.startDate = job.startDate;
+                    $scope.dates.startDate = $scope.parseDateToString(job.startDate);
                 }
 
                 if (job.endDate) {
-                    job.endDate = $scope.parseDateToString(job.endDate);
-                    $scope.dates.endDate = job.endDate;
+                    $scope.dates.endDate = $scope.parseDateToString(job.endDate);
                 }
 
                 if (job.days) {
