@@ -1,5 +1,6 @@
 package org.motechproject.email.service.impl;
 
+import org.joda.time.DateTime;
 import org.motechproject.email.domain.EmailRecord;
 import org.motechproject.email.search.CountSearch;
 import org.motechproject.email.search.RecordSearch;
@@ -50,5 +51,17 @@ public class EmailAuditServiceImpl implements EmailAuditService {
     @Transactional
     public long countEmailRecords(EmailRecordSearchCriteria criteria) {
         return emailRecordService.executeQuery(new CountSearch(criteria));
+    }
+
+    @Override
+    @Transactional
+    public void purgeEmailDeliveredBeforeDate(DateTime date) {
+        List<EmailRecord> emailRecordList = findAllEmailRecords();
+
+        for (EmailRecord record : emailRecordList) {
+            if (record.getDeliveryTime().isBefore(date)) {
+                delete(record);
+            }
+        }
     }
 }

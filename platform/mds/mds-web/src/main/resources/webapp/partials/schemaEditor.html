@@ -25,13 +25,13 @@
                 </button>
             </div>
             <div class="form-group">
-                <button target="_self" href="#advancedObjectSettingsModal" class="btn btn-warning" ng-show="selectedEntity"
+                <button target="_self" href="#advancedObjectSettingsModal" class="btn btn-default" ng-show="selectedEntity"
                         data-toggle="modal" data-backdrop="static" ng-click="setAvailableFields()">
                     <i class="fa fa-fw fa-cogs"></i> {{msg('mds.btn.advanced')}}
                 </button>
             </div>
             <div class="form-group">
-                <button target="_self" href="#securityObjectSettingsModal" class="btn btn-info" ng-show="selectedEntity"
+                <button target="_self" href="#securityObjectSettingsModal" class="btn btn-default" ng-show="selectedEntity"
                         data-toggle="modal" data-backdrop="static">
                     <i class="fa fa-fw fa-lock"></i> {{msg('mds.btn.security')}}
                 </button>
@@ -47,15 +47,19 @@
     <div class="row margin-before" ui-if="selectedEntity">
         <div ng-include="'../mds/resources/partials/widgets/fields.html'"></div>
         <div class="inside">
-            <a ng-show='hasAccessTo(DATA_BROWSER)' class="btn btn-success pull-right" type="button" target="_self" href="#/mds/dataBrowser/{{selectedEntity.id}}">
-                {{msg('mds.btn.browseInstances')}}
-            </a>
-            <button class="btn btn-danger" ng-disabled="!selectedEntity.modified" ng-click="abandonChanges()">
-                <i class="fa fa-fw fa-trash-o"></i> {{msg('mds.btn.abandonChanges')}}
-            </button>
-            <button class="btn btn-primary" ng-disabled="!selectedEntity.modified || !canSaveChanges()" ng-click="saveChanges()">
-                <i class="fa fa-fw fa-save"></i> {{msg('mds.btn.saveChanges')}}
-            </button>
+            <div class="btn-group pull-right">
+                <button class="btn btn-danger" ng-disabled="!selectedEntity.modified" ng-click="abandonChanges()">
+                    <i class="fa fa-fw fa-trash-o"></i> {{msg('mds.btn.abandonChanges')}}
+                </button>
+                <button class="btn btn-primary" ng-disabled="!selectedEntity.modified || !canSaveChanges()" ng-click="saveChanges()">
+                    <i class="fa fa-fw fa-save"></i> {{msg('mds.btn.saveChanges')}}
+                </button>
+            </div>
+            <div class="btn-group">
+                <a ng-show='hasAccessTo(DATA_BROWSER)' class="btn btn-default" type="button" target="_self" href="#/mds/dataBrowser/{{selectedEntity.id}}" id="browseInstancesButton">
+                    {{msg('mds.btn.browseInstances')}}
+                </a>
+            </div>
         </div>
     </div>
 
