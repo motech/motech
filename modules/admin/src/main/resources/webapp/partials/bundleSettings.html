@@ -8,7 +8,7 @@
             <h4 class="settings-section">
                 {{mSettings.section}}
             </h4>
-            <form id="settingsForm" class="inside form-vertical" action="api/settings/{{module.bundleId}}" method="post">
+            <form id="settingsForm" class="inside form-vertical" action="{{ 'api/settings/' + module.bundleId }}" method="post">
                 <fieldset>
                     <div ng-repeat="setting in mSettings.settings | orderBy:'key'" class="form-group">
                         <label for="{{setting.key}}">{{setting.key}}</label>
@@ -28,7 +28,7 @@
         <div class="col-sm-10 col-md-8" ng-repeat="rawFile in rawFiles">
             <h4 class="settings-section">{{rawFile}}</h4>
             <div class="clearfix">
-                <form class="form-horizontal inside" id="_raw_{{rawFile}}" action="../admin/api/settings/{{module.bundleId}}/raw"
+                <form class="form-horizontal inside" id="_raw_{{rawFile}}" action="{{ '../admin/api/settings/' + module.bundleId + '/raw' }}"
                       method="post" enctype="multipart/form-data">
                     <div class="form-group fileupload fileupload-new" data-provides="fileupload">
                         <label class="control-label col-sm-3 col-md-2">{{msg('admin.button.selectFile')}}</label>
