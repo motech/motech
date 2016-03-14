@@ -87,18 +87,27 @@ public class MdsDiskSpaceUsageIT extends LoggingPerformanceIT {
         generator.generateDummyInstances(entityDto.getId(), INSTANCES);
 
         WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext, MDS_BUNDLE_SYMBOLIC_NAME);
-        LocalPersistenceManagerFactoryBean localPersistenceManagerFactoryBean = context.getBean(LocalPersistenceManagerFactoryBean.class);
-        PersistenceManagerFactory persistenceManagerFactory = localPersistenceManagerFactoryBean.getObject();
 
-        JDOConnection con = persistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
-        Connection nativeCon = (Connection) con.getNativeConnection();
+        LocalPersistenceManagerFactoryBean dataPersistenceManagerFactoryBean = (LocalPersistenceManagerFactoryBean) context.getBean("&dataPersistenceManagerFactoryBean");
+        LocalPersistenceManagerFactoryBean schemaPersistenceManagerFactoryBean = (LocalPersistenceManagerFactoryBean) context.getBean("&persistenceManagerFactoryBean");
 
-        Statement stmt = nativeCon.createStatement();
-        ResultSet dataResultSet = stmt.executeQuery(String.format(SQLQUERY, "motechdata"));
+        PersistenceManagerFactory dataPersistenceManagerFactory = dataPersistenceManagerFactoryBean.getObject();
+        PersistenceManagerFactory schemaPersistenceManagerFactory = schemaPersistenceManagerFactoryBean.getObject();
+
+        JDOConnection dataCon = dataPersistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
+        JDOConnection schemaCon = schemaPersistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
+
+        Connection dataNativeCon = (Connection) dataCon.getNativeConnection();
+        Connection schemaNativeCon = (Connection) schemaCon.getNativeConnection();
+
+        Statement dataStmt = dataNativeCon.createStatement();
+        Statement schemaStmt = schemaNativeCon.createStatement();
+
+        ResultSet dataResultSet = dataStmt.executeQuery(String.format(SQLQUERY, "motechdata"));
         dataResultSet.absolute(1);
         double spaceUsage = dataResultSet.getDouble("MB");
 
-        ResultSet schemaResultSet = stmt.executeQuery(String.format(SQLQUERY, "motechschema"));
+        ResultSet schemaResultSet = schemaStmt.executeQuery(String.format(SQLQUERY, "motechschema"));
         schemaResultSet.absolute(1);
         spaceUsage += schemaResultSet.getDouble("MB");
 
