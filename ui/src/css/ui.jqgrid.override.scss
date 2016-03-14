@@ -1,3 +1,5 @@
+@import "bourbon";
+
 /* -- override Jquery Grid -- */
 
 .overrideJqgridTable .ui-jqgrid input.ui-pg-input {
@@ -29,7 +31,7 @@
 }
 
 .overrideJqgridTable .ui-widget-header {
-    background: #224477 url("../../img/navbar.jpg") repeat-x 0 0;
+    @include linear-gradient(to bottom, #7c8ca6 0%, #687D9C 10%, #607495 15%, #2F4E7A 38%, #244674 45%, #02275B 50%, #04275D 73%, #022D62 98%, #053067 100%);
 }
 
 .overrideJqgridTable .ui-jqgrid .table-lightblue .ui-widget-content {
