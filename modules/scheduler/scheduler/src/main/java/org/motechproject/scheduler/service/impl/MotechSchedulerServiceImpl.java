@@ -589,7 +589,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         try {
             existingTrigger = scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
         } catch (SchedulerException e) {
-            throw new MotechSchedulerException(format("Schedule or reschedule the job: %s.\n%s", jobId, e.getMessage()), e);
+            throw new MotechSchedulerException(format("Schedule or reschedule the job: %s.\n%s", jobId, e.getMessage()),
+                    "scheduler.error.cantRescheduleJob", Arrays.asList(jobId.value(), e.getMessage()), e);
         }
         if (existingTrigger != null) {
             unscheduleJob(jobId.value());
@@ -648,7 +649,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 unscheduleJob(jobId);
             }
         } catch (SchedulerException e) {
-            throw new MotechSchedulerException(format("Schedule or reschedule the job: %s.\n%s", jobId, e.getMessage()), e);
+            throw new MotechSchedulerException(format("Schedule or reschedule the job: %s.\n%s", jobId, e.getMessage()),
+                    "scheduler.error.cantRescheduleJob", Arrays.asList(jobId.value(), e.getMessage()), e);
         }
 
         ScheduleBuilder scheduleBuilder;
