@@ -2155,3 +2155,6 @@ body {
     filter:none !important;
 }
 
+.btn-file > input {
+    transform: translate(0px, 0) scale(4);
+}
