@@ -21,7 +21,7 @@
                         </a>
                         <div class="col-lg-3 col-sm-5 col-md-4" align="left">
                             <div class="btn-group">
-                                <a ng-if="hasAccessTo(SCHEMA_EDITOR)" ng-click="preselectEntity(entities.$key, entity)" type="button" class="btn btn-sm btn-info" href="#/mds/schemaEditor">
+                                <a ng-if="hasAccessTo(SCHEMA_EDITOR)" ng-click="preselectEntity(entities.$key, entity)" type="button" class="btn btn-sm btn-default" href="#/mds/schemaEditor">
                                     <i class="fa fa-fw fa-cogs"></i> {{msg('mds.btn.editSchema')}}
                                 </a>
                                 <button ng-hide="entitiesByNonEditable[entity] || entitiesByReadOnlyAccess[entity]" ng-click="addInstance(entities.$key, entity)" type="button" class="btn btn-sm btn-success" id="addNewInstanceButton">
