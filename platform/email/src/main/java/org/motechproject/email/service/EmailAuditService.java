@@ -1,5 +1,6 @@
 package org.motechproject.email.service;
 
+import org.joda.time.DateTime;
 import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.domain.EmailRecord;
 
@@ -48,4 +49,10 @@ public interface EmailAuditService {
      * Deletes the specified <code>EmailRecord</code> entry from the email log.
      */
     void delete(EmailRecord emailRecord);
+
+    /**
+     * Purges email records for emails delivered before date.
+     * @param date the date used for determining if a record should be deleted
+     */
+    void purgeEmailDeliveredBeforeDate(DateTime date);
 }
