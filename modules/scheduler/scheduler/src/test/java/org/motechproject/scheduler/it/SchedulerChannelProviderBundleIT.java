@@ -94,11 +94,11 @@ public class SchedulerChannelProviderBundleIT extends BasePaxIT {
     @Test
     public void shouldGetTrigger() {
         TaskTriggerInformation information = new TaskTriggerInformation(
-                "Job: test-event-job_id-cron",
+                "Job: test-event-job_id",
                 "Channel name",
                 "Module name",
                 "Module version",
-                "test-event-job_id-cron",
+                "test-event-job_id",
                 TEST_EVENT
         );
 
@@ -118,8 +118,8 @@ public class SchedulerChannelProviderBundleIT extends BasePaxIT {
         parameters.add(new EventParameter("scheduler.jobId", "JobID"));
 
         return new TriggerEvent(
-                "Job: test-event-job_id-cron",
-                "test-event-job_id-cron",
+                "Job: test-event-job_id",
+                "test-event-job_id",
                 null,
                 parameters,
                 TEST_EVENT
@@ -133,8 +133,8 @@ public class SchedulerChannelProviderBundleIT extends BasePaxIT {
         parameters.add(new EventParameter("scheduler.jobId", "JobID"));
 
         triggers.add(new TriggerEvent(
-                "Job: test-event-job_id-cron",
-                "test-event-job_id-cron",
+                "Job: test-event-job_id",
+                "test-event-job_id",
                 null,
                 parameters,
                 TEST_EVENT

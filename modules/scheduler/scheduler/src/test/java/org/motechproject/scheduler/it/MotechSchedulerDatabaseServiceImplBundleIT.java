@@ -146,7 +146,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
 
             for (String groupName : scheduler.getJobGroupNames()) {
                 for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
-                    if (jobKey.getName().equals("test_event_2-job_id-cron")) {
+                    if (jobKey.getName().equals("test_event_2-job_id")) {
                         scheduler.pauseJob(jobKey);
                     }
                 }
@@ -156,7 +156,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             expectedJobBasicInfos.add(
                     new JobBasicInfo(
                             JobBasicInfo.ACTIVITY_NOTSTARTED, JobBasicInfo.STATUS_PAUSED,
-                            "test_event_2-job_id-cron",
+                            "test_event_2-job_id",
                             DEFAULT_GROUP,
                             format("%s-07-15 10:00:00", CURRENT_YEAR + 6),
                             format("%s-07-15 12:00:00", CURRENT_YEAR + 6),
@@ -311,7 +311,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             List<JobBasicInfo> jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
             assertNotNull(jobs);
             assertEquals(3, jobs.size());
-            assertEquals("test_event_3-job_id3-dayofweek", jobs.get(0).getName());
+            assertEquals("test_event_3-job_id3", jobs.get(0).getName());
             assertEquals("test_event_5-job_id5-runonce", jobs.get(1).getName());
             assertEquals("test_event_6-job_id6-repeat", jobs.get(2).getName());
 
@@ -341,7 +341,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             List<JobBasicInfo> jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
             assertNotNull(jobs);
             assertEquals(1, jobs.size());
-            assertEquals(jobs.get(0).getName(), "test_event_1-job_id1-dayofweek");
+            assertEquals(jobs.get(0).getName(), "test_event_1-job_id1");
             int rowCount = databaseService.countJobs(jobsSearchSettings);
             assertEquals(1, rowCount);
 
@@ -356,7 +356,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
             assertNotNull(jobs);
             assertEquals(1, jobs.size());
-            assertEquals(jobs.get(0).getName(), "test_event_2-job_id2-dayofweek");
+            assertEquals(jobs.get(0).getName(), "test_event_2-job_id2");
             rowCount = databaseService.countJobs(jobsSearchSettings);
             assertEquals(1, rowCount);
         } finally {
@@ -397,7 +397,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             assertNotNull(jobs);
             assertEquals(5, jobs.size());
             assertEquals(6, databaseService.countJobs(jobsSearchSettings));
-            assertEquals(printJobNames(jobs), "test_event_1-job_id1-dayofweek", jobs.get(0).getName());
+            assertEquals(printJobNames(jobs), "test_event_1-job_id1", jobs.get(0).getName());
 
             jobsSearchSettings.setPage(2);
             jobsSearchSettings.setName("test");
@@ -421,7 +421,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
             jobsSearchSettings.setTimeFrom(format("%s-03-15 9:30:00", CURRENT_YEAR + 3));
             jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
             assertEquals(2, jobs.size());
-            assertEquals(printJobNames(jobs), "test_event_3-job_id3-dayofweek", jobs.get(0).getName());
+            assertEquals(printJobNames(jobs), "test_event_3-job_id3", jobs.get(0).getName());
             assertEquals(3, databaseService.countJobs(jobsSearchSettings));
 
             jobsSearchSettings.setSortDirection("desc");
