@@ -1,3 +1,5 @@
+@import "bourbon";
+
 html, body {
     margin: 0;
     padding: 0;
@@ -5,15 +7,18 @@ html, body {
 }
 
 .body-up {
-    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 -40px;
+    @include linear-gradient(to bottom, #ffffff 0%, #FDFFFE 9%, #EFF9FB 10%, #DEEFF7 14%, #F1F9FC 28%, #D3E6F5 84%, #E0EEF7 90%, #ECF5FA 94%, #F7FBFC 99%, #fbfcfe 100%);
+    background-repeat: repeat-x 0 -40px;
 }
 
 .body-down {
-    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 0;
+    @include linear-gradient(to bottom, #ffffff 0%, #FDFFFE 9%, #EFF9FB 10%, #DEEFF7 14%, #F1F9FC 28%, #D3E6F5 84%, #E0EEF7 90%, #ECF5FA 94%, #F7FBFC 99%, #fbfcfe 100%);
+    background-repeat: repeat-x 0 0;
 }
 
 .body-startup {
-    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 -70px;
+    @include linear-gradient(to bottom, #ffffff 0%, #deeff7 1%, #f1f9fc 10%, #d3e6f5 84%, #e0eef7 90%, #ecf5fa 97%, #ecf5fa 97%, #f7fbfc 99%, #fbfcfe 100%);
+    background-repeat: no-repeat;
 }
 
 .fa.icon-red {
@@ -152,7 +157,8 @@ a {
 /* ----- startup ----- */
 
 .body-startup {
-    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 -95px;
+    @include linear-gradient(to bottom, #ffffff 0%, #deeff7 1%, #f1f9fc 10%, #d3e6f5 84%, #e0eef7 90%, #ecf5fa 97%, #ecf5fa 97%, #f7fbfc 99%, #fbfcfe 100%);
+    background-repeat: no-repeat;
 }
 
 .body-startup .bodywrap {
@@ -170,7 +176,8 @@ a {
     min-height: 200px;
     margin: auto;
     z-index: 9999;
-    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 60px;
+    @include linear-gradient(to bottom, #ffffff 0%, #FDFFFE 9%, #EFF9FB 10%, #DEEFF7 14%, #F1F9FC 28%, #D3E6F5 84%, #E0EEF7 90%, #ECF5FA 94%, #F7FBFC 99%, #fbfcfe 100%);
+    background-repeat: repeat-x 0 60px;
     border:1px #7bb5fc solid;
     -webkit-border-radius: 4px;
          -moz-border-radius: 4px;
