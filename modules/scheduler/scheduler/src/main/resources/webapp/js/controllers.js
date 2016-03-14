@@ -144,6 +144,7 @@
         $scope.job.motechEvent = {};
         $scope.motechEventParameters = [];
         $scope.action = $routeParams.action;
+        $scope.dates = {};
 
         $scope.jobTypes = [
             { displayName: "Cron", name: "CRON" }, { displayName: "Repeating", name: "REPEATING" },
@@ -205,14 +206,6 @@
             });
         };
 
-        $scope.parseToDateTime = function(date) {
-            if (date && date !== "") {
-                var parts = date.split(" ");
-                return parts[0] + "T" + parts[1] + new Date().toString().match(/([-\+][0-9]+)/)[1];
-            }
-            return date;
-        }
-
         $scope.getMinDate = function(jobType) {
             if (jobType === "RUN_ONCE") {
                 return moment().format("YYYY-MM-DD HH:mm:ss");
@@ -236,17 +229,9 @@
                 job.motechEvent.parameters[parameter.key] = parameter.value;
             });
 
-            if (job.startDate) {
-                job.startDate = $scope.parseToDateTime(job.startDate);
-            }
-
-            if (job.endDate) {
-                job.endDate = $scope.parseToDateTime(job.endDate);
-            }
-
-            if (job.startDate && job.endDate) {
-                if (job.startDate >= job.endDate) {
-                    motechAlert("scheduler.error.endDateBeforeStartDate", "scheduler.error", [job.startDate, job.endDate]);
+            if ($scope.dates.startDate && $scope.dates.endDate) {
+                if ($scope.dates.startDate >= $scope.dates.endDate) {
+                    motechAlert("scheduler.error.endDateBeforeStartDate", "scheduler.error", [$scope.dates.startDate, $scope.dates.endDate]);
                     return;
                 }
             }
@@ -304,10 +289,12 @@
                 var job = data;
                 if (job.startDate) {
                     job.startDate = $scope.parseDateToString(job.startDate);
+                    $scope.dates.startDate = job.startDate;
                 }
 
                 if (job.endDate) {
                     job.endDate = $scope.parseDateToString(job.endDate);
+                    $scope.dates.endDate = job.endDate;
                 }
 
                 if (job.days) {
