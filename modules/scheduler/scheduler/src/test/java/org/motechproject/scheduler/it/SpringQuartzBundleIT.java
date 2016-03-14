@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
-import org.motechproject.scheduler.service.impl.MotechScheduledJob;
+import org.motechproject.scheduler.service.MotechScheduledJob;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.ops4j.pax.exam.ExamFactory;

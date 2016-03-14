@@ -1,9 +1,10 @@
-package org.motechproject.scheduler.service;
+package org.motechproject.scheduler.tasks;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.motechproject.commons.sql.util.Drivers;
 import org.motechproject.scheduler.constants.SchedulerConstants;
+import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.tasks.domain.DynamicChannelProvider;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.TaskTriggerInformation;

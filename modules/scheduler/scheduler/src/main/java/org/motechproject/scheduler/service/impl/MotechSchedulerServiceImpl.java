@@ -21,6 +21,7 @@ import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.contract.SchedulableJob;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
+import org.motechproject.scheduler.service.MotechScheduledJob;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.trigger.PeriodIntervalScheduleBuilder;
 import org.motechproject.server.config.SettingsFacade;
