@@ -98,20 +98,20 @@ public class MdsStressIT extends LoggingPerformanceIT {
         for (Object instance : testInstances) {
             service.create(instance);
         }
-        double endTime = (System.nanoTime() - startTime) / 1000000;
+        Long endTime = (System.nanoTime() - startTime) / 1000000;
 
         LOGGER.info("MDS Service: Creating " + TEST_INSTANCES + " instances took " + endTime + "ms.");
-        logToFile(endTime);
+        logToFile((double) endTime);
     }
 
     private void stressTestRetrieval(MotechDataService service) {
 
         Long startTime = System.nanoTime();
         service.retrieveAll();
-        double endTime = (System.nanoTime() - startTime) / 1000000;
+        Long endTime = (System.nanoTime() - startTime) / 1000000;
 
         LOGGER.info("MDS Service: Retrieving all instances took " + endTime + "ms.");
-        logToFile(endTime);
+        logToFile((double) endTime);
     }
 
     private void stressTestUpdating(MotechDataService service) {
@@ -121,10 +121,10 @@ public class MdsStressIT extends LoggingPerformanceIT {
         for (Object object : allObjects) {
             service.update(object);
         }
-        double endTime = (System.nanoTime() - startTime) / 1000000;
+        Long endTime = (System.nanoTime() - startTime) / 1000000;
 
         LOGGER.info("MDS Service: Updating " + TEST_INSTANCES + " instances took " + endTime + "ms.");
-        logToFile(endTime);
+        logToFile((double) endTime);
     }
 
     private void stressTestDeleting(MotechDataService service) {
@@ -133,10 +133,10 @@ public class MdsStressIT extends LoggingPerformanceIT {
         for (Object object : service.retrieveAll()) {
             service.delete(object);
         }
-        double endTime = (System.nanoTime() - startTime) / 1000000;
+        Long endTime = (System.nanoTime() - startTime) / 1000000;
 
         LOGGER.info("MDS Service: Deleting " + TEST_INSTANCES + " instances took " + endTime + "ms.");
-        logToFile(endTime);
+        logToFile((double) endTime);
     }
 
 }

@@ -38,7 +38,6 @@ import java.sql.Statement;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_BUNDLE_SYMBOLIC_NAME;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
 
-
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
@@ -89,8 +88,8 @@ public class MdsDiskSpaceUsageIT extends LoggingPerformanceIT {
 
         WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext, MDS_BUNDLE_SYMBOLIC_NAME);
 
-        LocalPersistenceManagerFactoryBean dataPersistenceManagerFactoryBean = (LocalPersistenceManagerFactoryBean) context.getBean( BeanFactory.FACTORY_BEAN_PREFIX + "dataPersistenceManagerFactoryBean");
-        LocalPersistenceManagerFactoryBean schemaPersistenceManagerFactoryBean = (LocalPersistenceManagerFactoryBean) context.getBean( BeanFactory.FACTORY_BEAN_PREFIX + "persistenceManagerFactoryBean");
+        LocalPersistenceManagerFactoryBean dataPersistenceManagerFactoryBean = (LocalPersistenceManagerFactoryBean) context.getBean(BeanFactory.FACTORY_BEAN_PREFIX + "dataPersistenceManagerFactoryBean");
+        LocalPersistenceManagerFactoryBean schemaPersistenceManagerFactoryBean = (LocalPersistenceManagerFactoryBean) context.getBean(BeanFactory.FACTORY_BEAN_PREFIX + "persistenceManagerFactoryBean");
 
         PersistenceManagerFactory dataPersistenceManagerFactory = dataPersistenceManagerFactoryBean.getObject();
         PersistenceManagerFactory schemaPersistenceManagerFactory = schemaPersistenceManagerFactoryBean.getObject();
@@ -113,7 +112,7 @@ public class MdsDiskSpaceUsageIT extends LoggingPerformanceIT {
         spaceUsage += schemaResultSet.getDouble("MB");
 
         LOGGER.info("Disk space usage of Motech Data Services database after creating {} instances is {} MB", INSTANCES, spaceUsage);
-        logToFile( spaceUsage );
+        logToFile(spaceUsage);
 
         Bundle entitiesBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, MDS_ENTITIES_SYMBOLIC_NAME);
         MotechDataService service = generator.getService(entitiesBundle.getBundleContext(), entityDto.getClassName());
