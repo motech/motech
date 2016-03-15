@@ -101,7 +101,7 @@ public class MdsStressIT extends LoggingPerformanceIT {
         Long endTime = (System.nanoTime() - startTime) / 1000000;
 
         LOGGER.info("MDS Service: Creating " + TEST_INSTANCES + " instances took " + endTime + "ms.");
-        logToFile(endTime);
+        logToFile((double) endTime);
     }
 
     private void stressTestRetrieval(MotechDataService service) {
@@ -111,7 +111,7 @@ public class MdsStressIT extends LoggingPerformanceIT {
         Long endTime = (System.nanoTime() - startTime) / 1000000;
 
         LOGGER.info("MDS Service: Retrieving all instances took " + endTime + "ms.");
-        logToFile(endTime);
+        logToFile((double) endTime);
     }
 
     private void stressTestUpdating(MotechDataService service) {
@@ -124,7 +124,7 @@ public class MdsStressIT extends LoggingPerformanceIT {
         Long endTime = (System.nanoTime() - startTime) / 1000000;
 
         LOGGER.info("MDS Service: Updating " + TEST_INSTANCES + " instances took " + endTime + "ms.");
-        logToFile(endTime);
+        logToFile((double) endTime);
     }
 
     private void stressTestDeleting(MotechDataService service) {
@@ -136,7 +136,7 @@ public class MdsStressIT extends LoggingPerformanceIT {
         Long endTime = (System.nanoTime() - startTime) / 1000000;
 
         LOGGER.info("MDS Service: Deleting " + TEST_INSTANCES + " instances took " + endTime + "ms.");
-        logToFile(endTime);
+        logToFile((double) endTime);
     }
 
 }

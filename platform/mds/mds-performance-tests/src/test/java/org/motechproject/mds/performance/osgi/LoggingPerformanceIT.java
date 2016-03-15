@@ -17,12 +17,12 @@ abstract class LoggingPerformanceIT extends BasePaxIT {
     private static final String RESOURCE_USAGE_LOG_FILE = "target/performanceTestResult.log";
 
 
-    protected void logToFile(long value) {
+    protected void logToFile(double value) {
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(RESOURCE_USAGE_LOG_FILE, true)))) {
             StringBuilder log = new StringBuilder();
             log.append(this.getClass().getSimpleName()+',');
             log.append(Thread.currentThread().getStackTrace()[2].getMethodName()+',');
-            log.append(Long.toString(value));
+            log.append(Double.toString(value));
             out.println(log);
         } catch (IOException e) {
             LOGGER.error("Couldn't save to file " + RESOURCE_USAGE_LOG_FILE + ".");
