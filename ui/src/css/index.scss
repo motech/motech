@@ -1,3 +1,5 @@
+@import "bourbon";
+
 html, body {
     margin: 0;
     padding: 0;
@@ -6,19 +8,24 @@ html, body {
 }
 
 .body-up {
-    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 -40px;
+    @include linear-gradient(to bottom, #ffffff 0%, #FDFFFE 9%, #EFF9FB 10%, #DEEFF7 14%, #F1F9FC 28%, #D3E6F5 84%, #E0EEF7 90%, #ECF5FA 94%, #F7FBFC 99%, #fbfcfe 100%);// repeat-x 0 -40px;
+    background-repeat: repeat-x 0 -40px;
+
 }
 
 .body-down {
-    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 0;
+    @include linear-gradient(to bottom, #ffffff 0%, #FDFFFE 9%, #EFF9FB 10%, #DEEFF7 14%, #F1F9FC 28%, #D3E6F5 84%, #E0EEF7 90%, #ECF5FA 94%, #F7FBFC 99%, #fbfcfe 100%);// repeat-x 0 0;
+    background-repeat: repeat-x 0 0;
+
 }
 
 .body-startup {
-    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 -70px;
+    @include linear-gradient(to bottom, #ffffff 0%, #deeff7 1%, #f1f9fc 10%, #d3e6f5 84%, #e0eef7 90%, #ecf5fa 97%, #ecf5fa 97%, #f7fbfc 99%, #fbfcfe 100%);
+    background-repeat: no-repeat;
 }
 
 .lightblue-bg {
-    background: #dbedf7 url("../img/frame-bg.jpg") repeat-x 0 0;
+    @include linear-gradient(to bottom, #eff8fd 0%, #F6FBFF 6%, #F6FBFF 16%, #F3FBFE 16%, #F0F9FE 37%, #F0F8FB 39%, #E8F5FB 57%, #E8F2FB 67%, #dbedf7 100%);
 }
 
 .stripes-bg {
@@ -168,7 +175,7 @@ form.inside {
 }
 
 .navbar-collapse .nav > li > a.no-hover:hover {
-    background: #224477 url("../img/navbar.jpg") repeat-x 0 0;
+    @include linear-gradient(to bottom, #7c8ca6 0%, #687D9C 10%, #607495 15%, #2F4E7A 38%, #244674 45%, #02275B 50%, #04275D 73%, #022D62 98%, #053067 100%);
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset, 0 1px 0 rgba(255, 255, 255, 0.075);
     color: #c2eafe;
@@ -490,7 +497,7 @@ h4.panel-title {
     border-radius: 4px;
     border: 1px solid #D4E1F9;
     padding: 0;
-    background: #dbedf7 url("../img/frame-bg.jpg") repeat-x 0 0;
+    @include linear-gradient(to bottom, #eff8fd 0%, #F6FBFF 6%, #F6FBFF 16%, #F3FBFE 16%, #F0F9FE 37%, #F0F8FB 39%, #E8F5FB 57%, #E8F2FB 67%, #dbedf7 100%);
 }
 
 .frame-title,
@@ -663,7 +670,8 @@ input.form-control.form-control {
 /* ----- startup ----- */
 
 .body-startup {
-    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 -95px;
+    @include linear-gradient(to bottom, #ffffff 0%, #deeff7 1%, #f1f9fc 10%, #d3e6f5 84%, #e0eef7 90%, #ecf5fa 97%, #ecf5fa 97%, #f7fbfc 99%, #fbfcfe 100%);
+    background-repeat: no-repeat;
 }
 
 .body-startup .bodywrap {
@@ -681,7 +689,8 @@ input.form-control.form-control {
     min-height: 200px;
     margin: auto;
     z-index: 9999;
-    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 60px;
+    @include linear-gradient(to bottom, #ffffff 0%, #FDFFFE 9%, #EFF9FB 10%, #DEEFF7 14%, #F1F9FC 28%, #D3E6F5 84%, #E0EEF7 90%, #ECF5FA 94%, #F7FBFC 99%, #fbfcfe 100%);// repeat-x 0 60px;
+    background-repeat: repeat-x 0 60px;
     border:1px #7bb5fc solid;
     -webkit-border-radius: 4px;
          -moz-border-radius: 4px;
@@ -696,6 +705,7 @@ input.form-control.form-control {
     width: 100%;
     height: 140px;
     display: block;
+    background: #ffffff;
     margin: auto;
     padding: 10px 0 0 8px;
     text-align: center;
@@ -924,8 +934,7 @@ input.form-control.form-control {
     left: 50%;
     position: fixed;
     z-index: 9999;
-    background: #dbedf7 url("../img/splash-bg.jpg") repeat-x 0 0;
-    border:1px #7bb5fc solid;
+    @include linear-gradient(to bottom, #f0f8fb 0%, #F6FBFF 6%, #F6FBFF 16%, #F3FBFE 17%, #F1F9FC 26%, #ECF7FD 52%, #EBF6FA 53%, #E8F5FB 59%, #DFF0F8 86%, #dbedf7 100%);    border:1px #7bb5fc solid;
     -webkit-border-radius: 4px;
          -moz-border-radius: 4px;
               border-radius: 4px;

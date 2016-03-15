@@ -14,6 +14,7 @@ import org.motechproject.scheduler.contract.SchedulableJob;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.scheduler.trigger.PeriodIntervalTrigger;
 import org.motechproject.scheduler.util.CronExpressionUtil;
+import org.quartz.CalendarIntervalTrigger;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobKey;
@@ -90,11 +91,20 @@ public final class SchedulableJobBuilder {
     }
 
     private static SchedulableJob buildRepeatingSchedulableJob(Trigger trigger, JobDataMap dataMap) {
-        SimpleTrigger simpleTrigger = (SimpleTrigger) trigger;
         RepeatingSchedulableJob job = new RepeatingSchedulableJob();
-        job.setEndDate(getEndDate(simpleTrigger));
-        job.setRepeatCount(simpleTrigger.getRepeatCount());
-        job.setRepeatIntervalInSeconds((int) simpleTrigger.getRepeatInterval() / SECOND);
+        long interval;
+
+        if (trigger instanceof CalendarIntervalTrigger) {
+            CalendarIntervalTrigger calendarTrigger = (CalendarIntervalTrigger) trigger;
+            interval = calendarTrigger.getRepeatInterval();
+        } else {
+            SimpleTrigger simpleTrigger = (SimpleTrigger) trigger;
+            job.setRepeatCount(simpleTrigger.getRepeatCount());
+            interval = simpleTrigger.getRepeatInterval() / SECOND;
+        }
+
+        job.setEndDate(getEndDate(trigger));
+        job.setRepeatIntervalInSeconds((int) interval);
         job.setIgnorePastFiresAtStart(dataMap.getBoolean(IGNORE_PAST_FIRES_AT_START));
         job.setUseOriginalFireTimeAfterMisfire(dataMap.getBoolean(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE));
         return job;
@@ -113,6 +123,7 @@ public final class SchedulableJobBuilder {
     private static SchedulableJob buildDayOfWeekSchedulableJob(Trigger trigger, JobDataMap dataMap) {
         CronTrigger cronTrigger = (CronTrigger) trigger;
         DayOfWeekSchedulableJob job = new DayOfWeekSchedulableJob();
+        job.setEndDate(getEndDate(trigger));
         job.setIgnorePastFiresAtStart(dataMap.getBoolean(IGNORE_PAST_FIRES_AT_START));
 
         CronExpressionUtil cronExpressionUtil = new CronExpressionUtil(cronTrigger.getCronExpression());

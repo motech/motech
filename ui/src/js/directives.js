@@ -694,28 +694,31 @@
             restrict: 'A',
             scope: {
                 min: "=",
-                max: "="
+                max: "=",
+                parsed: "="
             },
-            link: function(scope, element, attrs) {
+            link: function(scope, element, attrs, ngModel) {
                 element.datetimepicker({
-                    dateFormat: "yy-mm-dd",
+                    dateFormat: 'yy-mm-dd',
+                    timeFormat: 'HH:mm:ss',
                     changeMonth: true,
                     changeYear: true,
-                    timeFormat: "HH:mm:ss",
-                    beforeShow: function () {
-                        element.datetimepicker('option', 'minDate', scope.min);
-                        element.datetimepicker('option', 'maxDate', scope.max);
+                    beforeShow: function() {
+                        if (scope.min) {
+                            var parts = scope.min.split(' ');
+                            element.datetimepicker('option', 'minDate', parts[0]);
+                            element.datetimepicker('option', 'minTime', parts[1]);
+                        }
+                        if (scope.max) {
+                            var parts = scope.max.split(' ');
+                            element.datetimepicker('option', 'maxDate', parts[0]);
+                            element.datetimepicker('option', 'maxTime', parts[1]);
+                        }
                     },
-                    onChangeMonthYear: function (year, month, inst) {
-                        var curDate = $(this).datepicker("getDate");
-                        if (curDate === null) {
-                            return;
-                        }
-                        if (curDate.getFullYear() !== year || curDate.getMonth() !== month - 1) {
-                            curDate.setYear(year);
-                            curDate.setMonth(month - 1);
-                            $(this).datepicker("setDate", curDate);
-                        }
+                    onSelect: function() {
+                        scope.$apply(function() {
+                            scope.parsed = moment(element.datetimepicker('getDate')).format("YYYY-MM-DDTHH:mm:ssZZ");
+                        });
                     }
                 });
             }
