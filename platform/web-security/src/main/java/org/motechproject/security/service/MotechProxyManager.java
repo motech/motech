@@ -7,7 +7,7 @@ import org.motechproject.security.constants.HTTPMethod;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.domain.MotechURLSecurityRule;
 import org.motechproject.security.domain.SecurityRuleComparator;
-import org.motechproject.security.repository.AllMotechSecurityRules;
+import org.motechproject.security.repository.MotechSecurityRulesDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ public class MotechProxyManager {
 
     private FilterChainProxy proxy;
     private SecurityRuleBuilder securityRuleBuilder;
-    private AllMotechSecurityRules securityRulesDAO;
+    private MotechSecurityRulesDao securityRulesDAO;
 
     private MotechJsonReader motechJsonReader = new MotechJsonReader();
     private boolean loadedDefaultSecurityConfiguration;
@@ -109,7 +109,7 @@ public class MotechProxyManager {
 
     /**
      * Loads {@link org.motechproject.security.domain.MotechSecurityConfiguration}
-     * from {@link org.motechproject.security.service.MotechProxyManager#DEFAULT_SECURITY_CONFIG_FILE}
+     * from {@link MotechProxyManager#DEFAULT_SECURITY_CONFIG_FILE}
      *
      * @return loaded security configuration
      */
@@ -168,7 +168,7 @@ public class MotechProxyManager {
     }
 
     @Autowired
-    public void setSecurityRulesDAO(AllMotechSecurityRules securityRulesDAO) {
+    public void setSecurityRulesDAO(MotechSecurityRulesDao securityRulesDAO) {
         this.securityRulesDAO = securityRulesDAO;
     }
 }

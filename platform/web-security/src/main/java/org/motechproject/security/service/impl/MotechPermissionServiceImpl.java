@@ -1,11 +1,11 @@
 package org.motechproject.security.service.impl;
 
 import org.motechproject.security.domain.MotechPermission;
-import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.model.PermissionDto;
-import org.motechproject.security.repository.AllMotechPermissions;
-import org.motechproject.security.repository.AllMotechRoles;
+import org.motechproject.security.model.RoleDto;
+import org.motechproject.security.mds.MotechPermissionsDataService;
 import org.motechproject.security.service.MotechPermissionService;
+import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.UserContextService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,23 +16,26 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.motechproject.security.constants.UserRoleNames.MOTECH_ADMIN;
+
 /**
  * Implementation of the {@link org.motechproject.security.service.MotechPermissionService}
- * interface. Uses {@link AllMotechPermissions} in order to retrieve and persist permissions.
+ * interface. Uses {@link MotechPermissionsDataService} and {@link MotechPermissionService} in order
+ * to retrieve and persist permissions.
  */
 @Service("motechPermissionService")
 public class MotechPermissionServiceImpl implements MotechPermissionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechPermissionServiceImpl.class);
 
-    private AllMotechPermissions allMotechPermissions;
+    private MotechPermissionsDataService permissionsDataService;
     private UserContextService userContextsService;
-    private AllMotechRoles allMotechRoles;
+    private MotechRoleService motechRoleService;
 
     @Override
     @Transactional
     public List<PermissionDto> getPermissions() {
         List<PermissionDto> permissions = new ArrayList<>();
-        for (MotechPermission permission : allMotechPermissions.getPermissions()) {
+        for (MotechPermission permission : permissionsDataService.retrieveAll()) {
             permissions.add(new PermissionDto(permission));
         }
         return permissions;
@@ -40,11 +43,22 @@ public class MotechPermissionServiceImpl implements MotechPermissionService {
 
     @Override
     @Transactional
+    public PermissionDto findPermissionByName(String name) {
+        if (name == null) {
+            return null;
+        }
+
+        MotechPermission motechPermission = permissionsDataService.findByPermissionName(name);
+
+        return motechPermission == null ? null : new PermissionDto(motechPermission);
+    }
+
+    @Override
+    @Transactional
     public void addPermission(PermissionDto permission) {
         LOGGER.info("Adding permission: {} from bundle: {}", permission.getPermissionName(), permission.getBundleName());
 
-        allMotechPermissions.add(new MotechPermission(permission.getPermissionName(),
-                permission.getBundleName()));
+        add(new MotechPermission(permission.getPermissionName(), permission.getBundleName()));
 
         // the admin role was potentially updated
         userContextsService.refreshAllUsersContextIfActive();
@@ -56,31 +70,46 @@ public class MotechPermissionServiceImpl implements MotechPermissionService {
     @Transactional
     public void deletePermission(String permissionName) {
         LOGGER.info("Deleting permission: {}", permissionName);
-        MotechPermission permission = allMotechPermissions.findByPermissionName(permissionName);
+        MotechPermission permission = permissionsDataService.findByPermissionName(permissionName);
         if (permission != null) {
-            allMotechPermissions.delete(permission);
+            permissionsDataService.delete(permission);
             removePermissionFromRoles(permissionName);
             userContextsService.refreshAllUsersContextIfActive();
         }
         LOGGER.info("Deleted permission: {}", permissionName);
     }
 
-    @Transactional
     private void removePermissionFromRoles(String permissionName) {
         LOGGER.info("Removing permission: {} from roles", permissionName);
-        List<MotechRole> roles = allMotechRoles.getRoles();
-        for (MotechRole role : roles) {
+        List<RoleDto> roles = motechRoleService.getRoles();
+        for (RoleDto role : roles) {
             if (role.hasPermission(permissionName)) {
                 role.removePermission(permissionName);
-                allMotechRoles.update(role);
+                motechRoleService.updateRole(role);
             }
         }
         LOGGER.info("Removed permission: {} from roles", permissionName);
     }
 
+    private void add(final MotechPermission permission) {
+        if (findPermissionByName(permission.getPermissionName()) != null) {
+            return;
+        }
+
+        permissionsDataService.create(permission);
+
+        RoleDto adminRole = motechRoleService.getRole(MOTECH_ADMIN);
+        if (adminRole != null) {
+            List<String> permissions = adminRole.getPermissionNames();
+            permissions.add(permission.getPermissionName());
+            adminRole.setPermissionNames(permissions);
+            motechRoleService.updateRole(adminRole);
+        }
+    }
+
     @Autowired
-    public void setAllMotechPermissions(AllMotechPermissions allMotechPermissions) {
-        this.allMotechPermissions = allMotechPermissions;
+    public void setPermissionsDataService(MotechPermissionsDataService permissionsDataService) {
+        this.permissionsDataService = permissionsDataService;
     }
 
     @Autowired
@@ -89,7 +118,7 @@ public class MotechPermissionServiceImpl implements MotechPermissionService {
     }
 
     @Autowired
-    public void setAllMotechRoles(AllMotechRoles allMotechRoles) {
-        this.allMotechRoles = allMotechRoles;
+    public void setMotechRoleService(MotechRoleService motechRoleService) {
+        this.motechRoleService = motechRoleService;
     }
 }

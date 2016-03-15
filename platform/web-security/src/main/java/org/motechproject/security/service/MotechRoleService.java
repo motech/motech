@@ -7,7 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 /**
- * Service for managing Motech roles
+ * Service for managing MOTECH roles
  */
 public interface MotechRoleService {
 

@@ -1,6 +1,7 @@
 package org.motechproject.config.core.domain;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.validator.QueueURLValidator;
 import org.slf4j.Logger;
@@ -30,11 +31,15 @@ public class BootstrapConfig {
     public static final String CONFIG_SOURCE = "config.source";
     public static final String SQL_DRIVER = "sql.driver";
     public static final String OSGI_FRAMEWORK_STORAGE = "org.osgi.framework.storage";
+    public static final String MOTECH_DIR = "motech.dir";
     public static final String QUEUE_URL = "jms.broker.url";
 
-    public static final String DEFAULT_OSGI_FRAMEWORK_STORAGE = new File(System.getProperty("user.home"), ".motech"+File.separator+"felix-cache").getAbsolutePath();
+    public static final String DEFAULT_OSGI_FRAMEWORK_STORAGE = new File(System.getProperty("user.home"), ".motech" + File.separator + "felix-cache").getAbsolutePath();
+    public static final String DEFAULT_MOTECH_DIR = new File(System.getProperty("user.home"), ".motech").getAbsolutePath();
+
     private SQLDBConfig sqlConfig;
     private String osgiFrameworkStorage;
+    private String motechDir;
     private String queueUrl;
     private Properties activeMqProperties;
 
@@ -46,10 +51,11 @@ public class BootstrapConfig {
      * @param sqlConfig  the configuration of a SQL database
      * @param configSource  the source from which MOTECH configuration should be read
      * @param osgiFrameworkStorage  the directory used as the bundle cache
+     * @param motechDir  the motech main directory
      * @param queueUrl  the URL of the JMS broker
      */
-    public BootstrapConfig(SQLDBConfig sqlConfig, ConfigSource configSource, String osgiFrameworkStorage, String queueUrl) {
-        this(sqlConfig, configSource, osgiFrameworkStorage, queueUrl, null);
+    public BootstrapConfig(SQLDBConfig sqlConfig, ConfigSource configSource, String osgiFrameworkStorage, String motechDir, String queueUrl) {
+        this(sqlConfig, configSource, osgiFrameworkStorage, motechDir, queueUrl, null);
     }
 
     /**
@@ -58,17 +64,19 @@ public class BootstrapConfig {
      * @param sqlConfig  the configuration of a SQL database
      * @param configSource  the source from which MOTECH configuration should be read
      * @param osgiFrameworkStorage  the directory used as the bundle cache
+     * @param motechDir  the motech main directory
      * @param queueUrl  the URL of the JMS broker
      * @param activeMqProperties  the ActiveMQ properties
      * @throws MotechConfigurationException if sqlConfig is null.
      */
-    public BootstrapConfig(SQLDBConfig sqlConfig, ConfigSource configSource, String osgiFrameworkStorage, String queueUrl, Properties activeMqProperties) {
+    public BootstrapConfig(SQLDBConfig sqlConfig, ConfigSource configSource, String osgiFrameworkStorage, String motechDir, String queueUrl, Properties activeMqProperties) {
         if (sqlConfig == null) {
             throw new MotechConfigurationException("DB configuration cannot be null.");
         }
         this.sqlConfig = sqlConfig;
         this.configSource = (configSource != null) ? configSource : ConfigSource.UI;
         this.osgiFrameworkStorage = (StringUtils.isNotBlank(osgiFrameworkStorage)) ? osgiFrameworkStorage : DEFAULT_OSGI_FRAMEWORK_STORAGE;
+        this.motechDir = (StringUtils.isNotBlank(motechDir)) ? motechDir : DEFAULT_MOTECH_DIR;
         this.activeMqProperties = setActiveMqProperties(activeMqProperties, queueUrl);
     }
 
@@ -107,6 +115,7 @@ public class BootstrapConfig {
         int result = sqlConfig.hashCode();
         result = 31 * result + configSource.hashCode();
         result = 31 * result + osgiFrameworkStorage.hashCode();
+        result = 31 * result + motechDir.hashCode();
         result = 31 * result + queueUrl.hashCode();
         result = 31 * result + activeMqProperties.hashCode();
         return result;
@@ -120,6 +129,7 @@ public class BootstrapConfig {
         sb.append(", osgiFrameworkStorage=").append(osgiFrameworkStorage);
         sb.append(", queueUrl=").append(queueUrl);
         sb.append(", activeMqProperties=").append(activeMqProperties);
+        sb.append(", motechDir=").append(motechDir);
         sb.append('}');
         return sb.toString();
     }
@@ -134,6 +144,10 @@ public class BootstrapConfig {
 
     public String getOsgiFrameworkStorage() {
         return osgiFrameworkStorage;
+    }
+
+    public String getMotechDir() {
+        return StrSubstitutor.replace(this.motechDir, System.getProperties(), "${sys:", "}");
     }
 
     public String getQueueUrl() {

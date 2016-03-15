@@ -2,23 +2,23 @@ package org.motechproject.security.service.impl;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.joda.time.DateTime;
+import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
 import org.motechproject.security.email.EmailSender;
-import org.motechproject.security.ex.InvalidTokenException;
-import org.motechproject.security.ex.NonAdminUserException;
-import org.motechproject.security.ex.UserNotFoundException;
-import org.motechproject.security.repository.AllMotechUsers;
-import org.motechproject.security.repository.AllPasswordRecoveries;
+import org.motechproject.security.exception.InvalidTokenException;
+import org.motechproject.security.exception.NonAdminUserException;
+import org.motechproject.security.exception.UserNotFoundException;
+import org.motechproject.security.repository.MotechUsersDao;
+import org.motechproject.security.mds.PasswordRecoveriesDataService;
 import org.motechproject.security.service.PasswordRecoveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.openid.OpenIDAttribute;
 import org.springframework.security.openid.OpenIDAuthenticationProvider;
 import org.springframework.security.openid.OpenIDAuthenticationStatus;
 import org.springframework.security.openid.OpenIDAuthenticationToken;
@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Implementation of the {@link org.motechproject.security.service.PasswordRecoveryService}
@@ -45,8 +46,8 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     private static final int TOKEN_LENGTH = 60;
     private static final int DEFAULT_EXPIRATION_HOURS = 3;
 
-    private AllPasswordRecoveries allPasswordRecoveries;
-    private AllMotechUsers allMotechUsers;
+    private PasswordRecoveriesDataService passwordRecoveriesDataService;
+    private MotechUsersDao motechUsersDao;
     private EmailSender emailSender;
     private MotechPasswordEncoder passwordEncoder;
     private OpenIDAuthenticationProvider authenticationManager;
@@ -56,9 +57,11 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     @Override
     @Transactional
     public void cleanUpExpiredRecoveries() {
-        List<PasswordRecovery> expiredRecoveries = allPasswordRecoveries.getExpired();
+        Range<DateTime> range = new Range<>(new DateTime(0), DateUtil.now());
+        List<PasswordRecovery> expiredRecoveries = passwordRecoveriesDataService.findByExpirationDate(range);
+
         for (PasswordRecovery recovery : expiredRecoveries) {
-            allPasswordRecoveries.remove(recovery);
+            passwordRecoveriesDataService.delete(recovery);
         }
         LOGGER.info("Cleaned up all expired password recoveries");
     }
@@ -66,7 +69,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     @Override
     @Transactional
     public boolean validateToken(String token) {
-        PasswordRecovery recovery = allPasswordRecoveries.findForToken(token);
+        PasswordRecovery recovery = findForToken(token);
         return validateRecovery(recovery);
     }
 
@@ -83,7 +86,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     @Override
     @Transactional
     public String oneTimeTokenOpenId(String email, DateTime expiration, boolean notify) throws UserNotFoundException, NonAdminUserException {
-        MotechUser user = allMotechUsers.findUserByEmail(email);
+        MotechUser user = motechUsersDao.findUserByEmail(email);
         DateTime expirationDate = expiration;
 
         if (expirationDate == null) {
@@ -108,8 +111,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         }
 
         String token = RandomStringUtils.randomAlphanumeric(TOKEN_LENGTH);
-        PasswordRecovery recovery = allPasswordRecoveries.createRecovery(user.getUserName(), user.getEmail(),
-                token, expirationDate, user.getLocale());
+        PasswordRecovery recovery = createRecovery(user.getUserName(), user.getEmail(), token, expirationDate, user.getLocale());
 
         if (notify) {
             emailSender.sendOneTimeToken(recovery);
@@ -123,14 +125,14 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     @Override
     @Transactional
     public void validateTokenAndLoginUser(String token, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        PasswordRecovery recovery = allPasswordRecoveries.findForToken(token);
+        PasswordRecovery recovery = findForToken(token);
         if (validateRecovery(recovery)) {
-            MotechUser user = allMotechUsers.findUserByEmail(recovery.getEmail());
-            OpenIDAuthenticationToken openIDToken = new OpenIDAuthenticationToken(OpenIDAuthenticationStatus.SUCCESS, user.getOpenId(), "one time login ", new ArrayList<OpenIDAttribute>());
+            MotechUser user = motechUsersDao.findUserByEmail(recovery.getEmail());
+            OpenIDAuthenticationToken openIDToken = new OpenIDAuthenticationToken(OpenIDAuthenticationStatus.SUCCESS, user.getOpenId(), "one time login ", new ArrayList<>());
             Authentication authentication = authenticationManager.authenticate(openIDToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             request.getSession(true).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-            allPasswordRecoveries.remove(recovery);
+            passwordRecoveriesDataService.delete(recovery);
             redirectStrategy.sendRedirect(request, response, "/server/home");
         } else {
             redirectStrategy.sendRedirect(request, response, "/server/login");
@@ -158,7 +160,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     @Override
     @Transactional
     public String passwordRecoveryRequest(String email, DateTime expiration, boolean notify) throws UserNotFoundException {
-        MotechUser user = allMotechUsers.findUserByEmail(email);
+        MotechUser user = motechUsersDao.findUserByEmail(email);
         DateTime expirationDate = expiration;
 
         if (expirationDate == null) {
@@ -172,8 +174,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         }
 
         String token = RandomStringUtils.randomAlphanumeric(TOKEN_LENGTH);
-        PasswordRecovery recovery = allPasswordRecoveries.createRecovery(user.getUserName(), user.getEmail(),
-                token, expirationDate, user.getLocale());
+        PasswordRecovery recovery = createRecovery(user.getUserName(), user.getEmail(), token, expirationDate, user.getLocale());
 
         if (notify) {
             emailSender.sendRecoveryEmail(recovery);
@@ -191,13 +192,13 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
             throw new IllegalArgumentException("Password and confirmation do not match");
         }
 
-        PasswordRecovery recovery = allPasswordRecoveries.findForToken(token);
+        PasswordRecovery recovery = findForToken(token);
 
         if (!validateRecovery(recovery)) {
             throw new InvalidTokenException();
         }
 
-        MotechUser user = allMotechUsers.findByUserName(recovery.getUsername());
+        MotechUser user = motechUsersDao.findByUserName(recovery.getUsername());
 
         if (user == null) {
             throw new InvalidTokenException("This user has been deleted");
@@ -206,22 +207,55 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         String encodedPassword = passwordEncoder.encodePassword(password);
         user.setPassword(encodedPassword);
 
-        allMotechUsers.update(user);
-        allPasswordRecoveries.remove(recovery);
+        motechUsersDao.update(user);
+        passwordRecoveriesDataService.delete(recovery);
+    }
+
+    private PasswordRecovery createRecovery(String username, String email, String token, DateTime expirationDate, Locale locale) {
+        PasswordRecovery oldRecovery = findForUser(username);
+
+        if (oldRecovery != null) {
+            passwordRecoveriesDataService.delete(oldRecovery);
+        }
+
+        PasswordRecovery recovery = new PasswordRecovery();
+        recovery.setUsername(username);
+        recovery.setEmail(email);
+        recovery.setToken(token);
+        recovery.setExpirationDate(expirationDate);
+        recovery.setLocale(locale);
+
+        add(recovery);
+
+        return recovery;
+    }
+
+    private void add(PasswordRecovery passwordRecovery) {
+        if (findForUser(passwordRecovery.getUsername()) == null) {
+            passwordRecoveriesDataService.create(passwordRecovery);
+        }
     }
 
     private boolean validateRecovery(PasswordRecovery recovery) {
         return recovery != null && recovery.getExpirationDate().isAfter(DateUtil.now());
     }
 
-    @Autowired
-    public void setAllPasswordRecoveries(AllPasswordRecoveries allPasswordRecoveries) {
-        this.allPasswordRecoveries = allPasswordRecoveries;
+    private PasswordRecovery findForUser(String username) {
+        return null == username ? null : passwordRecoveriesDataService.findForUser(username);
+    }
+
+    private PasswordRecovery findForToken(String token) {
+        return null == token ? null : passwordRecoveriesDataService.findForToken(token);
     }
 
     @Autowired
-    public void setAllMotechUsers(AllMotechUsers allMotechUsers) {
-        this.allMotechUsers = allMotechUsers;
+    public void setPasswordRecoveriesDataService(PasswordRecoveriesDataService passwordRecoveriesDataService) {
+        this.passwordRecoveriesDataService = passwordRecoveriesDataService;
+    }
+
+    @Autowired
+    public void setMotechUsersDao(MotechUsersDao motechUsersDao) {
+        this.motechUsersDao = motechUsersDao;
     }
 
     @Autowired

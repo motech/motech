@@ -160,41 +160,39 @@
                             org.motechproject.security.osgi.Activator
                         </Bundle-Activator>
                         <Export-Package>
-                            org.motechproject.security.annotations;version=${project.version},
                             org.motechproject.security.authentication;version=${project.version},
-                            org.motechproject.security.builder;version=${project.version},
                             org.motechproject.security.constants;version=${project.version},
                             org.motechproject.security.domain;version=${project.version},
-                            org.motechproject.security.ex;version=${project.version},
+                            org.motechproject.security.exception;version=${project.version},
                             org.motechproject.security.model;version=${project.version},
-                            org.motechproject.security.repository;version=${project.version},
+                            org.motechproject.security.mds;version=${project.version},
                             org.motechproject.security.service;version=${project.version},
                             org.motechproject.security.validator;version=${project.version}
                         </Export-Package>
                         <Import-Package>
+                            net.sf.cglib.proxy,
+                            net.sf.cglib.reflect,
+                            net.sf.cglib.core,
                             org.aopalliance.aop,
+                            org.eclipse.gemini.blueprint.config,
                             org.motechproject.server.config,
                             org.motechproject.config.service,
+                            org.openid4java.consumer,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
-                            org.springframework.transaction,
-                            org.eclipse.gemini.blueprint.config,
                             org.springframework.security.core,
                             org.springframework.security.config,
+                            org.springframework.security.openid,
                             org.springframework.security.web,
                             org.springframework.security.web.context,
                             org.springframework.security.web.access.channel,
                             org.springframework.security.web.authentication,
+                            org.springframework.security.web.authentication.www,
+                            org.springframework.transaction,
                             org.springframework.web.servlet.config,
                             org.springframework.web.servlet.view,
-                            org.springframework.security.openid,
-                            org.springframework.security.web.authentication.www,
-                            org.openid4java.consumer,
-                            net.sf.cglib.proxy,
-                            net.sf.cglib.reflect,
-                            net.sf.cglib.core,
                             org.motechproject.scheduler.contract;resolution:=optional,
                             org.motechproject.scheduler.service;resolution:=optional,
                             *
@@ -219,7 +217,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                            <outputDirectory>${motech.dir}/bundles</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>target</directory>

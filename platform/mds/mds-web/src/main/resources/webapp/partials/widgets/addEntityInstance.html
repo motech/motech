@@ -1,6 +1,6 @@
 <div>
     <div class="inside" ng-show="selectedInstance">
-        <button ng-click="selectInstanceHistory(selectedInstance)" type="button" class="btn btn-primary" ng-show="selectedEntity.recordHistory">
+        <button ng-click="selectInstanceHistory(selectedInstance)" type="button" class="btn btn-default" ng-show="selectedEntity.recordHistory">
             {{msg('mds.btn.history')}}
         </button>
         <button ng-click="deleteSelectedInstance()" class="btn btn-danger" ng-show="showDeleteInstanceButton && !shouldHideButton()">

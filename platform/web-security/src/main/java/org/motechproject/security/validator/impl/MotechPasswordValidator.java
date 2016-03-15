@@ -1,7 +1,7 @@
 package org.motechproject.security.validator.impl;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.security.ex.PasswordValidatorException;
+import org.motechproject.security.exception.PasswordValidatorException;
 import org.motechproject.security.validator.PasswordValidator;
 import org.springframework.context.MessageSource;
 
