@@ -98,7 +98,7 @@ public class MdsStressIT extends LoggingPerformanceIT {
         for (Object instance : testInstances) {
             service.create(instance);
         }
-        Long endTime = (System.nanoTime() - startTime) / 1000000;
+        double endTime = (System.nanoTime() - startTime) / 1000000;
 
         LOGGER.info("MDS Service: Creating " + TEST_INSTANCES + " instances took " + endTime + "ms.");
         logToFile(endTime);
@@ -108,7 +108,7 @@ public class MdsStressIT extends LoggingPerformanceIT {
 
         Long startTime = System.nanoTime();
         service.retrieveAll();
-        Long endTime = (System.nanoTime() - startTime) / 1000000;
+        double endTime = (System.nanoTime() - startTime) / 1000000;
 
         LOGGER.info("MDS Service: Retrieving all instances took " + endTime + "ms.");
         logToFile(endTime);
@@ -121,7 +121,7 @@ public class MdsStressIT extends LoggingPerformanceIT {
         for (Object object : allObjects) {
             service.update(object);
         }
-        Long endTime = (System.nanoTime() - startTime) / 1000000;
+        double endTime = (System.nanoTime() - startTime) / 1000000;
 
         LOGGER.info("MDS Service: Updating " + TEST_INSTANCES + " instances took " + endTime + "ms.");
         logToFile(endTime);
@@ -133,7 +133,7 @@ public class MdsStressIT extends LoggingPerformanceIT {
         for (Object object : service.retrieveAll()) {
             service.delete(object);
         }
-        Long endTime = (System.nanoTime() - startTime) / 1000000;
+        double endTime = (System.nanoTime() - startTime) / 1000000;
 
         LOGGER.info("MDS Service: Deleting " + TEST_INSTANCES + " instances took " + endTime + "ms.");
         logToFile(endTime);
