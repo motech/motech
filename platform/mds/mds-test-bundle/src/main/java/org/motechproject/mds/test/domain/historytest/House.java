@@ -6,12 +6,16 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.domain.MdsEntity;
 
 import javax.jdo.annotations.Persistent;
+import java.util.UUID;
 
 /**
  * House and address are 1:1
  */
 @Entity(recordHistory = true, maxFetchDepth = 2)
 public class House extends MdsEntity {
+
+    @Field
+    private UUID uId;
 
     @Field
     private String name;
@@ -23,6 +27,14 @@ public class House extends MdsEntity {
     @Persistent(mappedBy = "house", defaultFetchGroup = "true")
     @Cascade(delete = true)
     private Address address;
+
+    public UUID getuId() {
+        return uId;
+    }
+
+    public void setuId(UUID uId) {
+        this.uId = uId;
+    }
 
     public String getName() {
         return name;

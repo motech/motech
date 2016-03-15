@@ -126,7 +126,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+<<<<<<< HEAD
 import java.util.Collection;
+=======
+>>>>>>> Motech-2134: Add support for UUID type in MDS
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -134,6 +137,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
@@ -1755,8 +1759,9 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         House house = new House();
         house.setName("A house");
-        house.setHouseNumber((short)12);
+        house.setHouseNumber((short) 12);
         house.setAddress(address);
+        house.setuId(UUID.randomUUID());
 
         house = houseDataService.create(house);
 
@@ -1775,7 +1780,8 @@ public class MdsDdeBundleIT extends BasePaxIT {
         Address secondAddress = new Address();
         secondAddress.setStreet("Abbey Road");
         house.setAddress(secondAddress);
-        house.setHouseNumber((short)87);
+        house.setHouseNumber((short) 87);
+        house.setuId(UUID.randomUUID());
         house = houseDataService.update(house);
 
         secondAddress = house.getAddress();
