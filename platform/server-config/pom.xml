@@ -79,7 +79,6 @@
                             org.motechproject.config;version=${project.version},
                             org.motechproject.config.domain;version=${project.version},
                             org.motechproject.config.mds;version=${project.version},
-                            org.motechproject.config.monitor;version=${project.version},
                             org.motechproject.config.service;version=${project.version},
                         </Export-Package>
                         <Import-Package>
