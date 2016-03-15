@@ -1238,7 +1238,7 @@ a, li a {
     margin: 0;
     opacity: 0;
     filter: alpha(opacity=0);
-    transform: translate(-300px, 0) scale(4);
+    transform: translate(0px, 0) scale(4);
     font-size: 23px;
     direction: ltr;
     cursor: pointer;
@@ -2153,8 +2153,4 @@ body {
     color: #224477;
     background: #F9F9F9;
     filter:none !important;
-}
-
-.btn-file > input {
-    transform: translate(0px, 0) scale(4);
 }
