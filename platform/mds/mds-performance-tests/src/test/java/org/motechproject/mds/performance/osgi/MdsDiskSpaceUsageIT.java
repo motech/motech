@@ -90,7 +90,7 @@ public class MdsDiskSpaceUsageIT extends LoggingPerformanceIT {
         WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext, MDS_BUNDLE_SYMBOLIC_NAME);
 
         LocalPersistenceManagerFactoryBean dataPersistenceManagerFactoryBean = (LocalPersistenceManagerFactoryBean) context.getBean( BeanFactory.FACTORY_BEAN_PREFIX + "dataPersistenceManagerFactoryBean");
-        LocalPersistenceManagerFactoryBean schemaPersistenceManagerFactoryBean = (LocalPersistenceManagerFactoryBean) context.getBean( BeanFactory.FACTORY_BEAN_PREFIX + "&persistenceManagerFactoryBean");
+        LocalPersistenceManagerFactoryBean schemaPersistenceManagerFactoryBean = (LocalPersistenceManagerFactoryBean) context.getBean( BeanFactory.FACTORY_BEAN_PREFIX + "persistenceManagerFactoryBean");
 
         PersistenceManagerFactory dataPersistenceManagerFactory = dataPersistenceManagerFactoryBean.getObject();
         PersistenceManagerFactory schemaPersistenceManagerFactory = schemaPersistenceManagerFactoryBean.getObject();
