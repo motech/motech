@@ -51,13 +51,13 @@
             <div class="form-group" ng-if="job['@jobType']">
                 <label for="jobDateFrom" class="control-label col-sm-2" mt-invalid="'JobForm.startDate.$invalid'">{{msg('scheduler.startDate')}}:</label>
                 <div class="col-sm-10">
-                    <input id="jobDateFrom" date-picker="" min="getMinDate(job['@jobType'])" max="job.endDate" type="datetime" class="form-control" name="startDate" ng-required="job['@jobType'] !== 'CRON'" placeholder="{{msg('scheduler.enterStartDate')}}" ng-model="job.startDate">
+                    <input id="jobDateFrom" date-picker="" min="getMinDate(job['@jobType'])" max="dates.endDate" type="datetime" class="form-control" name="startDate" ng-required="job['@jobType'] !== 'CRON'" placeholder="{{msg('scheduler.enterStartDate')}}" ng-model="dates.startDate" parsed="job.startDate">
                 </div>
             </div>
             <div class="form-group" ng-if="job['@jobType'] && job['@jobType'] !== 'RUN_ONCE'">
                 <label for="jobDateTo" class="control-label col-sm-2">{{msg('scheduler.endDate')}}:</label>
                 <div class="col-sm-10">
-                    <input id="jobDateTo" date-picker="" min="job.startDate" type="datetime" class="form-control" placeholder="{{msg('scheduler.enterEndDate')}}" ng-model="job.endDate">
+                    <input id="jobDateTo" date-picker="" min="dates.startDate" type="datetime" class="form-control" placeholder="{{msg('scheduler.enterEndDate')}}" ng-model="dates.endDate" parsed="job.endDate">
                 </div>
             </div>
             <div class="form-group" ng-if="job['@jobType'] === 'CRON'">
@@ -122,8 +122,8 @@
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <button ng-if="action === 'new'" ng-disabled="!JobForm.$valid" class="btn btn-default" ng-click="createOrUpdateJob(action)">{{msg('scheduler.scheduleJob')}}</button>
-                    <button ng-if="action === 'edit'" class="btn btn-default" ng-click="createOrUpdateJob(action)" ng-disabled="!JobForm.$valid" >{{msg('scheduler.updateJob')}}</button>
+                    <button ng-if="action === 'new'" ng-disabled="!JobForm.$valid" class="btn btn-primary" ng-click="createOrUpdateJob(action)">{{msg('scheduler.scheduleJob')}}</button>
+                    <button ng-if="action === 'edit'" class="btn btn-primary" ng-click="createOrUpdateJob(action)" ng-disabled="!JobForm.$valid" >{{msg('scheduler.updateJob')}}</button>
                 </div>
             </div>
         </form>
