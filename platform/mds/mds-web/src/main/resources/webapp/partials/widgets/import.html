@@ -111,7 +111,7 @@
                                 <input type="file" name="file" class="input-file" mds-file-changed="importFileChanged"/>
                             </span>
                     <a target="_self" href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="fa fa-fw fa-trash-o"></i>&nbsp;{{msg('mds.import.remove')}}</a>
-                    <input type="submit" class="offset-1 btn btn-default fileupload-exists" value="{{msg('mds.import.submit')}}" ng-hide="importId" />
+                    <input type="submit" class="offset-1 btn btn-primary fileupload-exists" value="{{msg('mds.import.submit')}}" ng-hide="importId" />
                     <span class="offset-1 btn btn-default" ng-show="importId" ng-click="importSelectedEntities()">{{msg('mds.import.import')}}</span>
                 </div>
             </fieldset>

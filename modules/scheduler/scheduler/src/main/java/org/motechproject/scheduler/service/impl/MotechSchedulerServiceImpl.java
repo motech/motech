@@ -567,20 +567,12 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 .withIdentity(jobKey(jobId.value(), JOB_GROUP_NAME))
                 .build();
 
+        putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
+        jobDetail.getJobDataMap().put(IS_DAY_OF_WEEK, isDayOfWeek);
         jobDetail.getJobDataMap().put(UI_DEFINED, job.isUiDefined());
         jobDetail.getJobDataMap().put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
-        jobDetail.getJobDataMap().put(IS_DAY_OF_WEEK, isDayOfWeek);
 
-        putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
-
-        CronScheduleBuilder cronSchedule;
-        try {
-            cronSchedule = cronSchedule(job.getCronExpression());
-        } catch (RuntimeException e) {
-            throw new MotechSchedulerException(format("Can not schedule job %s; invalid Cron expression: %s",
-                    jobId, job.getCronExpression()),
-                    "scheduler.error.invalidCronExpression", Arrays.asList(job.getCronExpression()), e);
-        }
+        CronScheduleBuilder cronSchedule = cronSchedule(job.getCronExpression());
 
         // TODO: should take readable names rather than integers
         cronSchedule = setMisfirePolicyForCronTrigger(cronSchedule,  schedulerSettings.getProperty("scheduler.cron.trigger.misfire.policy"));
@@ -597,7 +589,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         try {
             existingTrigger = scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
         } catch (SchedulerException e) {
-            throw new MotechSchedulerException(format("Schedule or reschedule the job: %s.\n%s", jobId, e.getMessage()), e);
+            throw new MotechSchedulerException(format("Schedule or reschedule the job: %s.\n%s", jobId, e.getMessage()),
+                    "scheduler.error.cantRescheduleJob", Arrays.asList(jobId.value(), e.getMessage()), e);
         }
         if (existingTrigger != null) {
             unscheduleJob(jobId.value());
@@ -650,6 +643,15 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         jobDetail.getJobDataMap().put(UI_DEFINED, job.isUiDefined());
         jobDetail.getJobDataMap().put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
         jobDetail.getJobDataMap().put(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE, job.isUseOriginalFireTimeAfterMisfire());
+
+        try {
+            if (scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME)) != null) {
+                unscheduleJob(jobId);
+            }
+        } catch (SchedulerException e) {
+            throw new MotechSchedulerException(format("Schedule or reschedule the job: %s.\n%s", jobId, e.getMessage()),
+                    "scheduler.error.cantRescheduleJob", Arrays.asList(jobId.value(), e.getMessage()), e);
+        }
 
         ScheduleBuilder scheduleBuilder;
         if (!job.isUseOriginalFireTimeAfterMisfire()) {
@@ -737,8 +739,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         validateDayOfWeekSchedulableJob(job);
 
         MotechEvent motechEvent = job.getMotechEvent();
-        DateTime startDate = job.getStartDate().toLocalDate().toDateMidnight().toDateTime();
-        DateTime endDate = job.getEndDate();
         Time time = job.getTime();
 
         CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.atHourAndMinuteOnGivenDaysOfWeek(time.getHour(),
@@ -747,8 +747,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         CronTriggerImpl cronTrigger = (CronTriggerImpl) cronScheduleBuilder.build();
         CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, cronTrigger.getCronExpression(),
-                startDate, endDate != null ? endDate.toLocalDate().toDateMidnight().toDateTime() : null,
-                job.isIgnorePastFiresAtStart(), job.isUiDefined());
+                job.getStartDate(), job.getEndDate(), job.isIgnorePastFiresAtStart(), job.isUiDefined());
 
         scheduleCronJob(cronSchedulableJob, true, update);
     }
