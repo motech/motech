@@ -61,9 +61,6 @@ public class SettingsServiceTest {
     MotechSettings motechSettings;
 
     @Mock
-    private ConfigFileMonitor configFileMonitor;
-
-    @Mock
     private EventRelay eventRelay;
 
     @InjectMocks
@@ -129,9 +126,7 @@ public class SettingsServiceTest {
     public void shouldAddSettingsPath() throws IOException {
         final String path = "some-path";
         settingsService.addSettingsPath(path);
-        InOrder inOrder = inOrder(configurationService, configFileMonitor);
-        inOrder.verify(configurationService).updateConfigLocation(path);
-        inOrder.verify(configFileMonitor).updateFileMonitor();
+        verify(configurationService).updateConfigLocation(path);
     }
 
     @Test
