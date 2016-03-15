@@ -13,8 +13,8 @@
 
     <osgi:reference id="coreConfigurationService" interface="org.motechproject.config.core.service.CoreConfigurationService"/>
     <osgi:reference id="cacheManager" interface="org.springframework.cache.CacheManager"/>
-    <osgi:reference id="modulePropertiesRecordService" interface="org.motechproject.config.service.BundlePropertiesService" />
-    <osgi:reference id="settingService" interface="org.motechproject.config.service.SettingService" />
+    <osgi:reference id="modulePropertiesRecordService" interface="org.motechproject.config.mds.BundlePropertiesDataService" />
+    <osgi:reference id="settingsDataService" interface="org.motechproject.config.mds.SettingsDataService" />
     <osgi:reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager" context-class-loader="unmanaged"/>
 
     <osgi:service ref="configurationService" interface="org.motechproject.config.service.ConfigurationService"/>
