@@ -175,7 +175,7 @@
                             net.sf.cglib.core,
                             org.aopalliance.aop,
                             org.eclipse.gemini.blueprint.config,
-                            org.motechproject.server.config,
+                            org.motechproject.config,
                             org.motechproject.config.service,
                             org.openid4java.consumer,
                             org.springframework.aop,

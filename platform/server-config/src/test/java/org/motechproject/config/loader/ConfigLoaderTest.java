@@ -1,4 +1,4 @@
-package org.motechproject.server.config.service;
+package org.motechproject.config.loader;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -6,12 +6,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.domain.ConfigLocation;
+import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.service.CoreConfigurationService;
+import org.motechproject.config.domain.MotechSettings;
 import org.motechproject.config.service.ConfigurationService;
-import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.testing.utils.FileHelper;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.UrlResource;

@@ -1,11 +1,11 @@
-package org.motechproject.server.config;
+package org.motechproject.config;
 
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.osgi.web.util.OSGiServiceUtils;
-import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.config.domain.MotechSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -74,20 +74,14 @@ public class SettingsFacade {
 
     public void setConfigFiles(List<Resource> resources) {
         for (Resource configFile : resources) {
-            InputStream is = null;
-            try {
-                is = configFile.getInputStream();
-
+            try (InputStream inputStream = configFile.getInputStream()) {
                 Properties props = new Properties();
-                props.load(is);
+                props.load(inputStream);
 
                 config.put(getResourceFileName(configFile), props);
                 defaultConfig.put(getResourceFileName(configFile), props);
-
             } catch (IOException e) {
                 throw new MotechException("Cant load config file " + configFile.getFilename(), e);
-            } finally {
-                IOUtils.closeQuietly(is);
             }
         }
         registerAllProperties();

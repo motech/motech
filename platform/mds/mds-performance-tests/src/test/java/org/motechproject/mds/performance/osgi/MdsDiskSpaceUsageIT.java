@@ -22,6 +22,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -47,7 +48,6 @@ public class MdsDiskSpaceUsageIT extends LoggingPerformanceIT {
     private static final int FIELDS = 5;
     private static final int INSTANCES = Integer.parseInt(System.getProperty("mds.performance.quantity"));
     private static final int LOOKUPS = 0;
-
     private static final String SQLQUERY = "select sum((data_length+index_length)/1024/1024) AS MB from information_schema.tables" +
             " where table_schema = \"%s\";";
 
@@ -87,23 +87,32 @@ public class MdsDiskSpaceUsageIT extends LoggingPerformanceIT {
         generator.generateDummyInstances(entityDto.getId(), INSTANCES);
 
         WebApplicationContext context = ServiceRetriever.getWebAppContext(bundleContext, MDS_BUNDLE_SYMBOLIC_NAME);
-        LocalPersistenceManagerFactoryBean localPersistenceManagerFactoryBean = context.getBean(LocalPersistenceManagerFactoryBean.class);
-        PersistenceManagerFactory persistenceManagerFactory = localPersistenceManagerFactoryBean.getObject();
 
-        JDOConnection con = persistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
-        Connection nativeCon = (Connection) con.getNativeConnection();
+        LocalPersistenceManagerFactoryBean dataPersistenceManagerFactoryBean = (LocalPersistenceManagerFactoryBean) context.getBean(BeanFactory.FACTORY_BEAN_PREFIX + "dataPersistenceManagerFactoryBean");
+        LocalPersistenceManagerFactoryBean schemaPersistenceManagerFactoryBean = (LocalPersistenceManagerFactoryBean) context.getBean(BeanFactory.FACTORY_BEAN_PREFIX + "persistenceManagerFactoryBean");
 
-        Statement stmt = nativeCon.createStatement();
-        ResultSet dataResultSet = stmt.executeQuery(String.format(SQLQUERY, "motechdata"));
+        PersistenceManagerFactory dataPersistenceManagerFactory = dataPersistenceManagerFactoryBean.getObject();
+        PersistenceManagerFactory schemaPersistenceManagerFactory = schemaPersistenceManagerFactoryBean.getObject();
+
+        JDOConnection dataCon = dataPersistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
+        JDOConnection schemaCon = schemaPersistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
+
+        Connection dataNativeCon = (Connection) dataCon.getNativeConnection();
+        Connection schemaNativeCon = (Connection) schemaCon.getNativeConnection();
+
+        Statement dataStmt = dataNativeCon.createStatement();
+        Statement schemaStmt = schemaNativeCon.createStatement();
+
+        ResultSet dataResultSet = dataStmt.executeQuery(String.format(SQLQUERY, "motechdata"));
         dataResultSet.absolute(1);
         double spaceUsage = dataResultSet.getDouble("MB");
 
-        ResultSet schemaResultSet = stmt.executeQuery(String.format(SQLQUERY, "motechschema"));
+        ResultSet schemaResultSet = schemaStmt.executeQuery(String.format(SQLQUERY, "motechschema"));
         schemaResultSet.absolute(1);
         spaceUsage += schemaResultSet.getDouble("MB");
 
         LOGGER.info("Disk space usage of Motech Data Services database after creating {} instances is {} MB", INSTANCES, spaceUsage);
-        logToFile((long) spaceUsage);
+        logToFile(spaceUsage);
 
         Bundle entitiesBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, MDS_ENTITIES_SYMBOLIC_NAME);
         MotechDataService service = generator.getService(entitiesBundle.getBundleContext(), entityDto.getClassName());

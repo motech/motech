@@ -1,5 +1,6 @@
 package org.motechproject.security.repository;
 
+import org.motechproject.config.domain.LoginMode;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.exception.EmailExistsException;
 import org.motechproject.security.mds.MotechUsersDataService;
@@ -122,7 +123,7 @@ public class MotechUsersDao {
 
     /**
      * Returns all MotechUsers that comes from
-     * {@link org.motechproject.server.config.domain.LoginMode#REPOSITORY}
+     * {@link LoginMode#REPOSITORY}
      *
      * @return list that contains users
      */
@@ -144,7 +145,7 @@ public class MotechUsersDao {
 
     /**
      * Returns all MotechUsers that comes from
-     * {@link org.motechproject.server.config.domain.LoginMode#OPEN_ID}
+     * {@link LoginMode#OPEN_ID}
      *
      * @return list that contains users
      */

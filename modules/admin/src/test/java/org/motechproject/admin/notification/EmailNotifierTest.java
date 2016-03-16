@@ -14,9 +14,8 @@ import org.mockito.MockitoAnnotations;
 import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
 import org.motechproject.config.service.ConfigurationService;
-import org.motechproject.email.domain.Mail;
 import org.motechproject.email.service.EmailSenderService;
-import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.config.domain.MotechSettings;
 
 import java.util.Map;
 

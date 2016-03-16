@@ -22,7 +22,7 @@ import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.trigger.PeriodIntervalScheduleBuilder;
-import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.config.SettingsFacade;
 import org.quartz.CalendarIntervalScheduleBuilder;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;

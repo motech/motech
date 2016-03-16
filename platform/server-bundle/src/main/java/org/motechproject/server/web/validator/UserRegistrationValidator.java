@@ -1,7 +1,7 @@
 package org.motechproject.server.web.validator;
 
 import org.motechproject.config.core.domain.ConfigSource;
-import org.motechproject.server.config.domain.LoginMode;
+import org.motechproject.config.domain.LoginMode;
 import org.motechproject.server.web.form.StartupForm;
 
 import java.util.List;

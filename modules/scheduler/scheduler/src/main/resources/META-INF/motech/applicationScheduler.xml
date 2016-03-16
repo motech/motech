@@ -42,7 +42,7 @@
         <property name="initOnMigrate" value="true"/>
     </bean>
 
-    <bean id="schedulerSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+    <bean id="schedulerSettings" class="org.motechproject.config.SettingsFacade" autowire="byType">
         <property name="configFiles">
             <list>
                 <value>classpath:quartz.properties</value>
