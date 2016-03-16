@@ -6,7 +6,7 @@
                 <h4 class="modal-title" id="importInstanceModalLabel">{{msg('mds.form.importCsv')}}</h4>
             </div>
             <div class="modal-body">
-                <form id="importInstanceForm" name="importInstanceForm" class="form-horizontal" action="getMdsEntityCsvImportPath(selectedEntity.id)" enctype="multipart/form-data" method="POST">
+                <form id="importInstanceForm" name="importInstanceForm" class="form-horizontal" action="{{getMdsEntityCsvImportPath(selectedEntity.id)}}" enctype="multipart/form-data" method="POST">
                     <div class="form-group fileinput fileinput-new" data-provides="fileinput">
                         <label class="col-sm-3 control-label">{{msg('mds.import.file')}}</label>
                         <div class="form-inline col-sm-9">

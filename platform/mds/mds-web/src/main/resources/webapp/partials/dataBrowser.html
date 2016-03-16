@@ -15,8 +15,8 @@
                     <div class="module-header" ng-if="entities.length">
                         <a ng-click="collapse(entities.$key)"><i class="fa fa-fw fa-lg fa-caret-down" ng-class="arrow(entities.$key)"> </i>{{ entities.$key }}</a>
                     </div>
-                    <div class="entity-entry" ng-repeat="entity in sortInsensitive(entities) | findEntity:entities.$key:searchText:true" ng-if="visible(entities.$key)" id="entity_{{entity}}">
-                        <a class="stripped-link" ng-click="selectEntity(entities.$key, entity)">
+                    <div class="entity-entry" ng-repeat="entity in sortInsensitive(entities) | findEntity:entities.$key:searchText:true" ng-if="visible(entities.$key)">
+                        <a class="stripped-link" ng-click="selectEntity(entities.$key, entity)" id="entity_{{entity}}">
                             <div class="col-lg-9 col-md-8 col-sm-7">{{entity}}</div>
                         </a>
                         <div class="col-lg-3 col-sm-5 col-md-4" align="left">
