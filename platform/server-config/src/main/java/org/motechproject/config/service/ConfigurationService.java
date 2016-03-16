@@ -4,8 +4,8 @@ import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.domain.ModulePropertiesRecord;
-import org.motechproject.server.config.domain.MotechSettings;
-import org.motechproject.server.config.domain.SettingsRecord;
+import org.motechproject.config.domain.MotechSettings;
+import org.motechproject.config.domain.SettingsRecord;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.Resource;
 

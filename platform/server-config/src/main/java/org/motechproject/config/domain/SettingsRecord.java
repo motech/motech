@@ -1,4 +1,4 @@
-package org.motechproject.server.config.domain;
+package org.motechproject.config.domain;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -9,6 +9,7 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.config.wrapper.MotechURL;
 
 import java.io.IOException;
 import java.security.DigestInputStream;

@@ -1,4 +1,4 @@
-package org.motechproject.server.config.domain;
+package org.motechproject.config.wrapper;
 
 import org.apache.commons.lang.StringUtils;
 

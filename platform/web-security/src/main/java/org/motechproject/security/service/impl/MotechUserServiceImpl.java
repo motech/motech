@@ -18,7 +18,7 @@ import org.motechproject.security.service.MotechUserService;
 import org.motechproject.security.service.PasswordRecoveryService;
 import org.motechproject.security.service.UserContextService;
 import org.motechproject.security.validator.PasswordValidator;
-import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

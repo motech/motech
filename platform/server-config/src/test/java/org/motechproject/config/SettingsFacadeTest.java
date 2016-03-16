@@ -1,4 +1,4 @@
-package org.motechproject.server.config;
+package org.motechproject.config;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;

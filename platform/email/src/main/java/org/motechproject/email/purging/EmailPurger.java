@@ -2,7 +2,7 @@ package org.motechproject.email.purging;
 
 import org.eclipse.gemini.blueprint.service.importer.OsgiServiceLifecycleListener;
 import org.motechproject.email.settings.SettingsDto;
-import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.config.SettingsFacade;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;

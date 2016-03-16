@@ -47,6 +47,6 @@
         <property name="cookieMaxAge" value="100000"/>
     </bean>
 
-    <bean id="settingsFacade" class="org.motechproject.server.config.SettingsFacade" autowire="byType" />
+    <bean id="settingsFacade" class="org.motechproject.config.SettingsFacade" autowire="byType" />
 
 </beans>

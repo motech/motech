@@ -1,6 +1,6 @@
 package org.motechproject.security.authentication;
 
-import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.util.Assert;

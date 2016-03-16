@@ -1,6 +1,5 @@
-package org.motechproject.server.config.domain;
+package org.motechproject.config.domain;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
