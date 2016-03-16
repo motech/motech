@@ -1,4 +1,4 @@
-package org.motechproject.server.config.domain;
+package org.motechproject.config.domain;
 
 import org.joda.time.DateTime;
 

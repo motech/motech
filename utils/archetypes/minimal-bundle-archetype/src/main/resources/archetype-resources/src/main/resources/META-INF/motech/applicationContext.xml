@@ -41,7 +41,7 @@
 
 #if ($settings == 'true')
 
-    <bean id="bundleSettings" class="org.motechproject.server.config.SettingsFacade"
+    <bean id="bundleSettings" class="org.motechproject.config.SettingsFacade"
         autowire="byType">
         <property name="configFiles">
             <list>

@@ -341,7 +341,7 @@ Here's a code example:
 
 .. code-block:: xml
 
-    <bean id="settingsFacade" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+    <bean id="settingsFacade" class="org.motechproject.config.SettingsFacade" autowire="byType">
         <property name="rawConfigFiles">
             <list>
                 <value>classpath:custom-ui.js</value>

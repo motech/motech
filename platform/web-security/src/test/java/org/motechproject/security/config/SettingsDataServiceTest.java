@@ -11,7 +11,7 @@ import org.motechproject.security.validator.impl.MinLengthValidatorDecorator;
 import org.motechproject.security.validator.impl.NoneValidator;
 import org.motechproject.security.validator.PasswordValidator;
 import org.motechproject.security.validator.impl.PasswordValidatorManager;
-import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.config.domain.MotechSettings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SettingServiceTest {
+public class SettingsDataServiceTest {
 
     @InjectMocks
     private SettingService settingService = new SettingServiceImpl();
