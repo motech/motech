@@ -1,4 +1,4 @@
-package org.motechproject.mds.web.util;
+package org.motechproject.mds.web.util.query;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
