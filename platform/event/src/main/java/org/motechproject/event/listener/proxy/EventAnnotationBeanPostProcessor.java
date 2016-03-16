@@ -68,40 +68,38 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
         if (bean == null) {
             return;
         }
-        ReflectionUtils.doWithMethods(bean.getClass(), new ReflectionUtils.MethodCallback() {
 
-            @Override
-            public void doWith(Method method) throws IllegalAccessException {
-                Method methodOfOriginalClassIfProxied = ReflectionUtils.findMethod(AopUtils.getTargetClass(bean), method.getName(), method.getParameterTypes());
+        //Get declared methods from class without superclass methods.
+        for (Method method : bean.getClass().getDeclaredMethods()) {
+            Method methodOfOriginalClassIfProxied = ReflectionUtils.findMethod(AopUtils.getTargetClass(bean), method.getName(), method.getParameterTypes());
 
-                if (methodOfOriginalClassIfProxied != null) {
-                    MotechListener annotation = methodOfOriginalClassIfProxied.getAnnotation(MotechListener.class);
-                    if (annotation != null) {
-                        final List<String> subjects = Arrays.asList(annotation.subjects());
-                        MotechListenerAbstractProxy proxy = null;
-                        switch (annotation.type()) {
-                            case MOTECH_EVENT:
-                                proxy = new MotechListenerEventProxy(getFullyQualifiedBeanName(bean.getClass(), beanName), bean, method);
-                                break;
-                            case NAMED_PARAMETERS:
-                                proxy = new MotechListenerNamedParametersProxy(getFullyQualifiedBeanName(bean.getClass(), beanName), bean, method);
-                                break;
-                            default:
-                        }
+            if (methodOfOriginalClassIfProxied != null) {
+                MotechListener annotation = methodOfOriginalClassIfProxied.getAnnotation(MotechListener.class);
+                if (annotation != null) {
+                    final List<String> subjects = Arrays.asList(annotation.subjects());
+                    MotechListenerAbstractProxy proxy = null;
+                    switch (annotation.type()) {
+                        case MOTECH_EVENT:
+                            proxy = new MotechListenerEventProxy(getFullyQualifiedBeanName(bean.getClass(), beanName), bean, method);
+                            break;
+                        case NAMED_PARAMETERS:
+                            proxy = new MotechListenerNamedParametersProxy(getFullyQualifiedBeanName(bean.getClass(), beanName), bean, method);
+                            break;
+                        default:
+                    }
 
-                        LOGGER.info(String.format("Registering listener type(%20s) bean: %s, method: %s, for subjects: "
-                                        + "%s", annotation.type().toString() + ":" + beanName, bean.getClass().getName(),
-                                method.toGenericString(), subjects));
+                    LOGGER.info(String.format("Registering listener type(%20s) bean: %s, method: %s, for subjects: "
+                            + "%s", annotation.type().toString() + ":" + beanName, bean.getClass().getName(),
+                            method.toGenericString(), subjects));
 
-                        if (eventListenerRegistry != null) {
-                            eventListenerRegistry.registerListener(proxy, subjects);
-                        } else {
-                            LOGGER.error("Null eventListenerRegistry.  Unable to register listener");
-                        }
+                    if (eventListenerRegistry != null) {
+                        eventListenerRegistry.registerListener(proxy, subjects);
+                    } else {
+                        LOGGER.error("Null eventListenerRegistry.  Unable to register listener");
                     }
                 }
             }
-        });
+        }
     }
 
     /**
