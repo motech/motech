@@ -36,6 +36,8 @@ import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.web.domain.RelationshipsUpdate;
 import org.motechproject.mds.web.helper.FieldTestHelper;
+import org.motechproject.mds.web.domain.BasicEntityRecord;
+import org.motechproject.mds.web.domain.BasicFieldRecord;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.Records;
@@ -146,7 +148,7 @@ public class InstanceServiceTest {
         assertEquals(Long.valueOf(ENTITY_ID), record.getEntitySchemaId());
         assertNull(record.getId());
 
-        List<FieldRecord> fieldRecords = record.getFields();
+        List<FieldRecord> fieldRecords = record.getFieldRecords();
         assertCommonFieldRecordFields(fieldRecords);
         assertEquals(asList("Default", 7, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
@@ -163,7 +165,7 @@ public class InstanceServiceTest {
 
         EntityRecord record = instanceService.newInstance(ENTITY_ID);
 
-        List<FieldRecord> fieldRecords = record.getFields();
+        List<FieldRecord> fieldRecords = record.getFieldRecords();
         assertEquals(asList("motech", "motech"), extract(fieldRecords, on(FieldRecord.class).getValue()));
     }
 
@@ -180,7 +182,7 @@ public class InstanceServiceTest {
 
         EntityRecord record = instanceService.newInstance(ENTITY_ID);
 
-        List<FieldRecord> fieldRecords = record.getFields();
+        List<FieldRecord> fieldRecords = record.getFieldRecords();
         assertEquals(asList(null, null), extract(fieldRecords, on(FieldRecord.class).getValue()));
     }
 
@@ -198,7 +200,7 @@ public class InstanceServiceTest {
         assertEquals(Long.valueOf(ENTITY_ID), record.getEntitySchemaId());
         assertEquals(Long.valueOf(INSTANCE_ID), record.getId());
 
-        List<FieldRecord> fieldRecords = record.getFields();
+        List<FieldRecord> fieldRecords = record.getFieldRecords();
         assertCommonFieldRecordFields(fieldRecords);
         assertEquals(asList("Hello world", 99, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
@@ -212,7 +214,7 @@ public class InstanceServiceTest {
         QueryParams queryParams = new QueryParams(1, 10);
         when(trashService.getInstancesFromTrash(anyString(), eq(queryParams))).thenReturn(sampleCollection());
 
-        List<EntityRecord> records = instanceService.getTrashRecords(ENTITY_ID, queryParams);
+        List<BasicEntityRecord> records = instanceService.getTrashRecords(ENTITY_ID, queryParams);
         verify(trashService).getInstancesFromTrash(anyString(), eq(queryParams));
         assertNotNull(records);
         assertEquals(records.size(), 1);
@@ -269,17 +271,16 @@ public class InstanceServiceTest {
         Map<String, Object> lookupMap = new HashMap<>();
         lookupMap.put("strField", TestDataService.LOOKUP_1_EXPECTED_PARAM);
 
-        List<EntityRecord> result = instanceService.getEntityRecordsFromLookup(ENTITY_ID, TestDataService.LOOKUP_1_NAME,
+        List<BasicEntityRecord> result = instanceService.getEntityRecordsFromLookup(ENTITY_ID, TestDataService.LOOKUP_1_NAME,
                 lookupMap, queryParams());
 
         assertNotNull(result);
         assertEquals(1, result.size());
 
-        EntityRecord entityRecord = result.get(0);
-        assertEquals(Long.valueOf(ENTITY_ID), entityRecord.getEntitySchemaId());
+        BasicEntityRecord entityRecord = result.get(0);
 
-        List<FieldRecord> fieldRecords = entityRecord.getFields();
-        assertCommonFieldRecordFields(fieldRecords);
+        List<? extends BasicFieldRecord> fieldRecords = entityRecord.getFields();
+        assertCommonBasicFieldRecordFields(fieldRecords);
         assertEquals(asList("strField", 6, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
     }
@@ -294,25 +295,23 @@ public class InstanceServiceTest {
         Map<String, Object> lookupMap = new HashMap<>();
         lookupMap.put("strField", TestDataService.LOOKUP_2_EXPECTED_PARAM);
 
-        List<EntityRecord> result = instanceService.getEntityRecordsFromLookup(ENTITY_ID, TestDataService.LOOKUP_2_NAME,
+        List<BasicEntityRecord> result = instanceService.getEntityRecordsFromLookup(ENTITY_ID, TestDataService.LOOKUP_2_NAME,
                 lookupMap, queryParams());
 
         assertNotNull(result);
         assertEquals(2, result.size());
 
-        EntityRecord entityRecord = result.get(0);
-        assertEquals(Long.valueOf(ENTITY_ID), entityRecord.getEntitySchemaId());
+        BasicEntityRecord entityRecord = result.get(0);
 
-        List<FieldRecord> fieldRecords = entityRecord.getFields();
-        assertCommonFieldRecordFields(fieldRecords);
+        List<? extends BasicFieldRecord> fieldRecords = entityRecord.getFields();
+        assertCommonBasicFieldRecordFields(fieldRecords);
         assertEquals(asList("one", 1, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
 
         entityRecord = result.get(1);
-        assertEquals(Long.valueOf(ENTITY_ID), entityRecord.getEntitySchemaId());
 
         fieldRecords = entityRecord.getFields();
-        assertCommonFieldRecordFields(fieldRecords);
+        assertCommonBasicFieldRecordFields(fieldRecords);
         assertEquals(asList("two", 2, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
     }
@@ -327,25 +326,23 @@ public class InstanceServiceTest {
         Map<String, Object> lookupMap = new HashMap<>();
         lookupMap.put("dtField", null);
 
-        List<EntityRecord> result = instanceService.getEntityRecordsFromLookup(ENTITY_ID,
+        List<BasicEntityRecord> result = instanceService.getEntityRecordsFromLookup(ENTITY_ID,
                 TestDataService.NULL_EXPECTING_LOOKUP_NAME, lookupMap, queryParams());
 
         assertNotNull(result);
         assertEquals(2, result.size());
 
-        EntityRecord entityRecord = result.get(0);
-        assertEquals(Long.valueOf(ENTITY_ID), entityRecord.getEntitySchemaId());
+        BasicEntityRecord entityRecord = result.get(0);
 
-        List<FieldRecord> fieldRecords = entityRecord.getFields();
-        assertCommonFieldRecordFields(fieldRecords);
+        List<? extends BasicFieldRecord> fieldRecords = entityRecord.getFields();
+        assertCommonBasicFieldRecordFields(fieldRecords);
         assertEquals(asList("three", 3, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
 
         entityRecord = result.get(1);
-        assertEquals(Long.valueOf(ENTITY_ID), entityRecord.getEntitySchemaId());
 
         fieldRecords = entityRecord.getFields();
-        assertCommonFieldRecordFields(fieldRecords);
+        assertCommonBasicFieldRecordFields(fieldRecords);
         assertEquals(asList("four", 4, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
     }
@@ -644,7 +641,7 @@ public class InstanceServiceTest {
         when(serviceForAnotherSample.findById(INSTANCE_ID)).thenReturn(sampleForRelationshipTesting());
 
         QueryParams queryParams = new QueryParams(1, 2, new Order(Constants.Util.ID_FIELD_NAME, Order.Direction.ASC));
-        Records<EntityRecord> records = instanceService.getRelatedFieldValue(ANOTHER_ENTITY_ID, INSTANCE_ID,
+        Records<BasicEntityRecord> records = instanceService.getRelatedFieldValue(ANOTHER_ENTITY_ID, INSTANCE_ID,
                 "testClasses", new RelationshipsUpdate(), queryParams);
 
         assertNotNull(records);
@@ -706,7 +703,7 @@ public class InstanceServiceTest {
         entityDto.setSecurityMode(null);
         entityDto.setClassName(TestSample.class.getName());
 
-        EntityRecord entityRecord = new EntityRecord(ENTITY_ID + 1, null, new ArrayList<FieldRecord>());
+        EntityRecord entityRecord = new EntityRecord(ENTITY_ID + 1, null, new ArrayList<>());
 
         when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityDto);
 
@@ -887,6 +884,16 @@ public class InstanceServiceTest {
         assertEquals(asList(String.class.getName(), Integer.class.getName(),
                         DateTime.class.getName(), Time.class.getName(), Long.class.getName()),
                 extract(fieldRecords, on(FieldRecord.class).getType().getTypeClass()));
+    }
+
+    private void assertCommonBasicFieldRecordFields(List<? extends BasicFieldRecord> fieldRecords) {
+        assertNotNull(fieldRecords);
+        assertEquals(5, fieldRecords.size());
+        assertEquals(asList("strField", "intField", "dtField", "timeField", "LongField"),
+                extract(fieldRecords, on(BasicFieldRecord.class).getName()));
+        assertEquals(asList(String.class.getName(), Integer.class.getName(),
+                DateTime.class.getName(), Time.class.getName(), Long.class.getName()),
+                extract(fieldRecords, on(BasicFieldRecord.class).getType().getTypeClass()));
     }
 
     private Collection sampleCollection() {
