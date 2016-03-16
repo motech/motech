@@ -2595,6 +2595,84 @@ copy migration files from installed modules to the :code:`.motech` directory. Fi
 directory(if you are using mysql then use :code:`mysql` instead :code:`default`) in the bundle. Each file muse have
 `a proper name <http://flywaydb.org/documentation/migration/sql.html>`_(e.g. :code:`V1__Description.sql`).
 
+####################
+Schema Import/Export
+####################
+
+This section will explain how to import/export MDS Schema. It is fairly easy and can be done with only few steps using
+the MDS module UI.
+
+Please go to the following subsections to learn how to do that
+
+    - `Schema Import`_
+    - `Schema Export`_
+
+Schema Import
+#############
+
+The first thing you will have to do is to enter the Data Services module UI. You can achieve this by clicking the "Data
+Service" on the left panel.
+
+            .. image:: img/data_services_button.png
+                    :scale: 100 %
+                    :alt: MDS UI button
+                    :align: center
+
+From there you will have to advance to the Settings tab and then enter Import tab.
+
+            .. image:: img/import_schema_tab.png
+                    :scale: 100 %
+                    :alt: MDS Import Schema tab
+                    :align: center
+
+Once in the Import tab, you will have to click the Select file button and choose the file you want to import the schema
+from. Keep in mind that the file must be a valid JSON file. Once you have selected the file, the following screen will
+show up.
+
+            .. image:: img/submit_form.png
+                    :scale: 100 %
+                    :alt: MDS Import submit form
+                    :align: center
+
+Here, all you have to is to click the Submit button. Once the button is clicked the following screen will show up.
+
+            .. image:: img/import_selection.png
+                    :scale: 100 %
+                    :alt: MDS Import selection
+                    :align: center
+
+Now you can select which entities should be imported. You can achieve this by simply ticking or unticking the checkboxes
+next to the entity or module name. Ticking the checkbox next to the module name will result in importing all the
+entities originating from that module, where ticking the checkbox next to the entity name will result in importing only
+that entity. Once you have selected all the entities you want to import simply click the Import button. Keep in mind
+that importing schema for entities that already exists will result in removing data related to those entities.
+
+Schema Export
+#############
+
+The first thing you will have to do is to enter the Data Services module UI. You can achieve this by clicking the "Data
+Service" on the left panel.
+
+            .. image:: img/data_services_button.png
+                    :scale: 100 %
+                    :alt: MDS UI button
+                    :align: center
+
+From there you will have to advance to the Settings tab and then enter Export tab.
+
+            .. image:: img/export_schema_tab.png
+                    :scale: 100 %
+                    :alt: MDS Export Schema tab
+                    :align: center
+                    
+Now you can select which entities you want to export. You can achieve this by simply ticking or unticking the checkboxes
+next to the entity or module name in the Schema column. Ticking the checkbox next to the module name will result in
+exporting all the entities originating from that module, where ticking the checkbox next to the entity name will result
+in exporting only that entity. You can also export the data related to each of the entities. To achieve this simply tick
+the checkbox next to the entity or module name in the Data column. Once you have selected all the entities you want to
+export schema and/or data for simply click the Export Selected button. Once click the button, a JSON file will be
+generated containing all the desired data which you can save under the location of your choice.
+
 #######
 Javadoc
 #######
