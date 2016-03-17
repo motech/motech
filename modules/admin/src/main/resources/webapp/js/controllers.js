@@ -14,7 +14,6 @@
         $scope.invert = false;
         $scope.startUpload = true;
         $scope.versionOrder = ["version.major", "version.minor", "version.micro", "version.qualifier"];
-        $scope.isFileSelected = false;
 
         $scope.refreshModuleList = function () {
             $scope.$emit('module.list.refresh');
@@ -248,53 +247,53 @@
             }
         };
 
-
-
-        $scope.checkFile = function (file) {
-            if (file) {
-                $scope.isFileSelected = true;
-            } else {
-                $scope.isFileSelected = false;
-            }
-        };
-
         $scope.isNoModuleOrFileSelected = function () {
             if ($scope.moduleSource === 'Repository') {
                 return !$scope.module;
             } else if ($scope.moduleSource === 'File') {
-                return !$scope.isFileSelected;
+                if ($("#bundleUploadForm #fileInput").val() == '') {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         };
 
 
         $scope.submitBundle = function () {
-            blockUI();
-            $('#bundleUploadForm').ajaxSubmit({
-                success: function (data, textStatus, jqXHR) {
-                    if (jqXHR.status === 0 && data) {
-                        handleWithStackTrace('admin.error', 'admin.bundles.error.start', data);
-                        unblockUI();
-                    } else {
-                        $scope.bundles = Bundle.query(function () {
-                            if ($scope.startUpload) {
-                                $timeout(function () {
-                                    $scope.$emit('lang.refresh');
-                                    $scope.refreshModuleList();
+            if (!$scope.isNoModuleOrFileSelected()) {
+                blockUI();
+                $('#bundleUploadForm').ajaxSubmit({
+                    success: function (data, textStatus, jqXHR) {
+                        if (jqXHR.status === 0 && data) {
+                            handleWithStackTrace('admin.error', 'admin.bundles.error.start', data);
+                            unblockUI();
+                        } else {
+                            $scope.bundles = Bundle.query(function () {
+                                if ($scope.startUpload) {
+                                    $timeout(function () {
+                                        $scope.$emit('lang.refresh');
+                                        $scope.refreshModuleList();
+                                        unblockUI();
+                                    }, MODULE_LIST_REFRESH_TIMEOUT);
+                                } else {
                                     unblockUI();
-                                }, MODULE_LIST_REFRESH_TIMEOUT);
-                            } else {
-                                unblockUI();
-                            }
-                            $scope.module = "";
-                            $('#bundleUploadForm .fileinput').trigger('reset');
-                        });
+                                }
+                                $scope.module = "";
+                                $('#bundleUploadForm .fileinput').trigger('reset');
+                            });
+                        }
+                    },
+                    error:function (response) {
+                        handleWithStackTrace('admin.error', 'admin.bundles.error.start', response);
+                        unblockUI();
                     }
-                },
-                error:function (response) {
-                    handleWithStackTrace('admin.error', 'admin.bundles.error.start', response);
-                    unblockUI();
-                }
-            });
+                });
+            } else if ($scope.moduleSource === 'Repository') {
+                motechAlert('admin.bundles.error.moduleNotSelected', 'admin.error');
+            } else {
+                motechAlert('admin.bundles.error.fileNotSelected', 'admin.error');
+            }
         };
 
         Bundle.prototype.isActive = function () {
