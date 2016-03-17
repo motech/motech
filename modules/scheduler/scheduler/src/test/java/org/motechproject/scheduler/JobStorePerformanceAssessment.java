@@ -5,14 +5,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.commons.api.NanoStopWatch;
+import org.motechproject.config.SettingsFacade;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.motechproject.scheduler.service.MotechSchedulerService;
-import org.motechproject.scheduler.service.impl.MotechSchedulerServiceImpl;
-import org.motechproject.config.SettingsFacade;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.matchers.GroupMatcher;
@@ -37,16 +36,19 @@ import static org.motechproject.commons.date.util.DateUtil.now;
 public class JobStorePerformanceAssessment {
 
     @Autowired
-    EventListenerRegistryService eventListenerRegistryService;
+    private EventListenerRegistryService eventListenerRegistryService;
 
     @Autowired
-    ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
     @Autowired
     @Qualifier("jdbcSchedulerSettings")
-    SettingsFacade jdbcSettingsFacade;
+    private SettingsFacade jdbcSettingsFacade;
 
-    MotechSchedulerFactoryBean jdbcSchedulerFactoryBean;
+    @Autowired
+    private MotechSchedulerService schedulerService;
+
+    private MotechSchedulerFactoryBean jdbcSchedulerFactoryBean;
 
     @Before
     public void setup() throws IOException {
@@ -78,7 +80,6 @@ public class JobStorePerformanceAssessment {
             Integer repeatInterval = 1;
             System.out.println("startTime: " + startTime);
 
-            MotechSchedulerServiceImpl schedulerService = new MotechSchedulerServiceImpl(schedulerFactoryBean, settings);
             NanoStopWatch timeToSchedule = new NanoStopWatch().start();
             for (int i = 0; i < maxJobs; i++) {
                 params.put(MotechSchedulerService.JOB_ID_KEY, "test_job_" + String.valueOf(i));

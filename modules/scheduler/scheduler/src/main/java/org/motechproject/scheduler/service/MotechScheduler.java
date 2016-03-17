@@ -1,7 +1,6 @@
-package org.motechproject.scheduler.service.impl;
+package org.motechproject.scheduler.service;
 
 import org.motechproject.event.MotechEvent;
-import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.contract.CronJobId;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.slf4j.Logger;
