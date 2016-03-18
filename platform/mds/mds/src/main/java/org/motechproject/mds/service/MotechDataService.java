@@ -40,14 +40,14 @@ public interface MotechDataService<T> {
     T retrieve(String primaryKeyName, Object value);
 
     /**
-     * Retrieves all instances of the {@value T} type.
+     * Retrieves all instances of the {@param <T>} type.
      *
      * @return all instances
      */
     List<T> retrieveAll();
 
     /**
-     * Retrieves all instances of the {@value T} type, that match the provided
+     * Retrieves all instances of the {@param <T>} type, that match the provided
      * parameters.
      *
      * @param queryParams query parameters to be used retrieving instances
@@ -156,7 +156,7 @@ public interface MotechDataService<T> {
     Object getDetachedField(T instance, String fieldName);
 
     /**
-     * Retrieves all instances of type {@value T} from MDS, filtered using specified filters
+     * Retrieves all instances of type {@param <T>} from MDS, filtered using specified filters
      * and query params.
      *
      * @param filters filters to use filtering instances
@@ -174,7 +174,7 @@ public interface MotechDataService<T> {
     long countForFilters(Filters filters);
 
     /**
-     * Removes all instances of type {@value T} from MDS.
+     * Removes all instances of type {@param <T>} from MDS.
      */
     void deleteAll();
 
@@ -185,7 +185,7 @@ public interface MotechDataService<T> {
      *
      * @param queryExecution implementation of the {@link QueryExecution}, with custom behaviour
      * @param <R> type that should be returned from the custom query
-     * @return anything of type {@value R}. Left to the developer, implementing the custom query.
+     * @return anything of type {@param <R>}. Left to the developer, implementing the custom query.
      */
     <R> R executeQuery(QueryExecution<R> queryExecution);
 
@@ -208,7 +208,7 @@ public interface MotechDataService<T> {
     void evictEntityCache(boolean withSubclasses);
 
     /**
-     * Retrieves instance of type {@value T} and given id from MDS.
+     * Retrieves instance of type {@param <T>} and given id from MDS.
      *
      * @param id id of the instance
      * @return instance with the given id
@@ -216,7 +216,7 @@ public interface MotechDataService<T> {
     T findById(Long id);
 
     /**
-     * Retrieves multiple instances of type {@value T} and given ids from MDS. It will not fail
+     * Retrieves multiple instances of type {@param <T>} and given ids from MDS. It will not fail
      * if it is unable to find an instance for one or more IDs and will return a collection of these
      * instances that could be found. If null is passed as keys, it will return an empty list.
      *
@@ -243,7 +243,7 @@ public interface MotechDataService<T> {
      *
      * @param queryExecution implementation of the {@link SqlQueryExecution}
      * @param <R> type that should be returned by the custom sql query
-     * @return anything of type {@value <R>}, left to the developer, implementing the custom sql query.
+     * @return anything of type {@param <R>}, left to the developer, implementing the custom sql query.
      */
     <R> R executeSQLQuery(SqlQueryExecution<R> queryExecution);
 

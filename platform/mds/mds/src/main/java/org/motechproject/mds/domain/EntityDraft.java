@@ -53,10 +53,6 @@ public class EntityDraft extends Entity {
     @Element(column = "fieldName")
     private Set<String> uniqueIndexesToDrop = new HashSet<>();
 
-    public EntityDraft() {
-        fieldNameChanges = new HashMap<>();
-    }
-
     @Override
     public void updateAdvancedSetting(AdvancedSettingsDto advancedSettings) {
         updateIndexes(advancedSettings.getIndexes());
