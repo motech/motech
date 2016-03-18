@@ -11,7 +11,7 @@ import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.service.MotechSchedulerService;
-import org.motechproject.scheduler.service.SchedulerChannelProvider;
+import org.motechproject.scheduler.tasks.SchedulerChannelProvider;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.domain.TriggerEvent;

@@ -84,9 +84,11 @@ public final class SchedulableJobBuilder {
     private static SchedulableJob buildCronSchedulableJob(Trigger trigger, JobDataMap dataMap) {
         CronTrigger cronTrigger = (CronTrigger) trigger;
         CronSchedulableJob job = new CronSchedulableJob();
+
         job.setEndDate(getEndDate(cronTrigger));
         job.setCronExpression(cronTrigger.getCronExpression());
         job.setIgnorePastFiresAtStart(dataMap.getBoolean(IGNORE_PAST_FIRES_AT_START));
+
         return job;
     }
 
@@ -107,16 +109,19 @@ public final class SchedulableJobBuilder {
         job.setRepeatIntervalInSeconds((int) interval);
         job.setIgnorePastFiresAtStart(dataMap.getBoolean(IGNORE_PAST_FIRES_AT_START));
         job.setUseOriginalFireTimeAfterMisfire(dataMap.getBoolean(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE));
+        
         return job;
     }
 
     private static SchedulableJob buildRepeatingPeriodSchedulableJob(Trigger trigger, JobDataMap dataMap) {
         PeriodIntervalTrigger periodTrigger = (PeriodIntervalTrigger) trigger;
         RepeatingPeriodSchedulableJob job = new RepeatingPeriodSchedulableJob();
+
         job.setEndDate(getEndDate(periodTrigger));
         job.setRepeatPeriod(periodTrigger.getRepeatPeriod());
         job.setIgnorePastFiresAtStart(dataMap.getBoolean(IGNORE_PAST_FIRES_AT_START));
         job.setUseOriginalFireTimeAfterMisfire(dataMap.getBoolean(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE));
+
         return job;
     }
 
