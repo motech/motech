@@ -28,11 +28,11 @@ public class House extends MdsEntity {
     @Cascade(delete = true)
     private Address address;
 
-    public UUID getuId() {
+    public UUID getUId() {
         return uId;
     }
 
-    public void setuId(UUID uId) {
+    public void setUId(UUID uId) {
         this.uId = uId;
     }
 

@@ -1759,9 +1759,9 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         House house = new House();
         house.setName("A house");
-        house.setHouseNumber((short) 12);
+        house.setHouseNumber((short)12);
         house.setAddress(address);
-        house.setuId(UUID.randomUUID());
+        house.setUId(UUID.randomUUID());
 
         house = houseDataService.create(house);
 
@@ -1780,8 +1780,8 @@ public class MdsDdeBundleIT extends BasePaxIT {
         Address secondAddress = new Address();
         secondAddress.setStreet("Abbey Road");
         house.setAddress(secondAddress);
-        house.setHouseNumber((short) 87);
-        house.setuId(UUID.randomUUID());
+        house.setHouseNumber((short)87);
+        house.setUId(UUID.randomUUID());
         house = houseDataService.update(house);
 
         secondAddress = house.getAddress();
