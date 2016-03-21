@@ -151,7 +151,7 @@ public class InstanceServiceImpl implements InstanceService {
                 }
             }
 
-            updateFields(instance, entityRecord.getFieldRecords(), service, deleteValueFieldId, !newObject);
+            updateFields(instance, entityRecord.getFields(), service, deleteValueFieldId, !newObject);
 
             if (newObject) {
                 return service.create(instance);
@@ -621,21 +621,22 @@ public class InstanceServiceImpl implements InstanceService {
 
     private BasicEntityRecord instanceToBasicRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
                                                     MotechDataService service, EntityType entityType) {
-        return instanceToRecord(instance, entityDto, fields, service, entityType, true);
+        return instanceToRecord(instance, entityDto, fields, service, entityType, BasicEntityRecord.class);
     }
 
     private EntityRecord instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
                                           MotechDataService service, EntityType entityType) {
-        return (EntityRecord) instanceToRecord(instance, entityDto, fields, service, entityType, false);
+        return instanceToRecord(instance, entityDto, fields, service, entityType, EntityRecord.class);
     }
 
-    private BasicEntityRecord instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
-                                          MotechDataService service, EntityType entityType, boolean basic) {
+    private <T extends BasicEntityRecord> T instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
+                                          MotechDataService service, EntityType entityType, Class<T> clazz) {
         if (instance == null) {
             return null;
         }
         try {
             List fieldRecords = new ArrayList<>();
+            boolean basic = BasicEntityRecord.class.equals(clazz);
 
             for (FieldDto field : fields) {
                 if (entityType != EntityType.STANDARD && field.isVersionField()) {
@@ -655,8 +656,8 @@ public class InstanceServiceImpl implements InstanceService {
 
             Number id = (Number) PropertyUtil.safeGetProperty(instance, ID_FIELD_NAME);
             Long parsedId = id == null ? null : id.longValue();
-            return basic ? new BasicEntityRecord(parsedId, fieldRecords) :
-                    new EntityRecord(parsedId, entityDto.getId(), fieldRecords);
+            return (T) (basic ? new BasicEntityRecord(parsedId, fieldRecords) :
+                    new EntityRecord(parsedId, entityDto.getId(), fieldRecords));
         } catch (Exception e) {
             throw new ObjectReadException(entityDto.getName(), e);
         }
@@ -672,7 +673,7 @@ public class InstanceServiceImpl implements InstanceService {
         Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
 
         return new HistoryRecord(entityRecord.getId(), instanceId,
-                historyInstanceSchemaVersion.equals(currentSchemaVersion), entityRecord.getFieldRecords());
+                historyInstanceSchemaVersion.equals(currentSchemaVersion), entityRecord.getFields());
     }
 
     private BasicHistoryRecord convertToBasicHistoryRecord(Object object, EntityDto entity, Long instanceId,

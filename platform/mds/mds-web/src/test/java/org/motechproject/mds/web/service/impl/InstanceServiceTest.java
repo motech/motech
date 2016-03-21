@@ -144,7 +144,7 @@ public class InstanceServiceTest {
         assertEquals(Long.valueOf(ENTITY_ID), record.getEntitySchemaId());
         assertNull(record.getId());
 
-        List<FieldRecord> fieldRecords = record.getFieldRecords();
+        List<FieldRecord> fieldRecords = record.getFields();
         assertCommonFieldRecordFields(fieldRecords);
         assertEquals(asList("Default", 7, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));
@@ -161,7 +161,7 @@ public class InstanceServiceTest {
 
         EntityRecord record = instanceService.newInstance(ENTITY_ID);
 
-        List<FieldRecord> fieldRecords = record.getFieldRecords();
+        List<FieldRecord> fieldRecords = record.getFields();
         assertEquals(asList("motech", "motech"), extract(fieldRecords, on(FieldRecord.class).getValue()));
     }
 
@@ -178,7 +178,7 @@ public class InstanceServiceTest {
 
         EntityRecord record = instanceService.newInstance(ENTITY_ID);
 
-        List<FieldRecord> fieldRecords = record.getFieldRecords();
+        List<FieldRecord> fieldRecords = record.getFields();
         assertEquals(asList(null, null), extract(fieldRecords, on(FieldRecord.class).getValue()));
     }
 
@@ -196,7 +196,7 @@ public class InstanceServiceTest {
         assertEquals(Long.valueOf(ENTITY_ID), record.getEntitySchemaId());
         assertEquals(Long.valueOf(INSTANCE_ID), record.getId());
 
-        List<FieldRecord> fieldRecords = record.getFieldRecords();
+        List<FieldRecord> fieldRecords = record.getFields();
         assertCommonFieldRecordFields(fieldRecords);
         assertEquals(asList("Hello world", 99, null, null, null),
                 extract(fieldRecords, on(FieldRecord.class).getValue()));

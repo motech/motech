@@ -30,8 +30,8 @@ public class EntityRecord extends BasicEntityRecord {
         this.entitySchemaId = entitySchemaId;
     }
 
-    @JsonProperty("fields")
-    public List<FieldRecord> getFieldRecords() {
+    @Override
+    public List<FieldRecord> getFields() {
         return (List<FieldRecord>) super.getFields();
     }
 
