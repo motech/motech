@@ -135,7 +135,7 @@ public class InstanceServiceImpl implements InstanceService {
                 }
             }
 
-            updateFields(instance, entityRecord.getFieldRecords(), service, deleteValueFieldId, !newObject);
+            updateFields(instance, entityRecord.getFields(), service, deleteValueFieldId, !newObject);
 
             if (newObject) {
                 return service.create(instance);
@@ -551,16 +551,16 @@ public class InstanceServiceImpl implements InstanceService {
 
     private BasicEntityRecord instanceToBasicRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
                                                     MotechDataService service) {
-        return instanceToRecord(instance, entityDto, fields, service, true);
+        return instanceToRecord(instance, entityDto, fields, service, BasicEntityRecord.class);
     }
 
     private EntityRecord instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
                                           MotechDataService service) {
-        return (EntityRecord) instanceToRecord(instance, entityDto, fields, service, false);
+        return instanceToRecord(instance, entityDto, fields, service, EntityRecord.class);
     }
 
-    private BasicEntityRecord instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
-                                          MotechDataService service, boolean basic) {
+    private <T extends BasicEntityRecord> T instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
+                                          MotechDataService service, Class<T> clazz) {
         if (instance == null) {
             return null;
         }
@@ -573,7 +573,7 @@ public class InstanceServiceImpl implements InstanceService {
 
                 value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_CLASS));
 
-                BasicFieldRecord fieldRecord = basic ? new BasicFieldRecord(field) : new FieldRecord(field);
+                BasicFieldRecord fieldRecord = EntityRecord.class.equals(clazz) ? new FieldRecord(field) : new BasicFieldRecord(field);
                 fieldRecord.setValue(value);
                 fieldRecord.setDisplayValue(displayValue);
                 fieldRecords.add(fieldRecord);
@@ -581,8 +581,8 @@ public class InstanceServiceImpl implements InstanceService {
 
             Number id = (Number) PropertyUtil.safeGetProperty(instance, ID);
             Long parsedId = id == null ? null : id.longValue();
-            return basic ? new BasicEntityRecord(parsedId, fieldRecords) :
-                    new EntityRecord(parsedId, entityDto.getId(), fieldRecords);
+            return (T) (EntityRecord.class.equals(clazz) ? new EntityRecord(parsedId, entityDto.getId(), fieldRecords) :
+                    new BasicEntityRecord(parsedId, fieldRecords));
         } catch (Exception e) {
             throw new ObjectReadException(entityDto.getName(), e);
         }
@@ -598,7 +598,7 @@ public class InstanceServiceImpl implements InstanceService {
         Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
 
         return new HistoryRecord(entityRecord.getId(), instanceId,
-                historyInstanceSchemaVersion.equals(currentSchemaVersion), entityRecord.getFieldRecords());
+                historyInstanceSchemaVersion.equals(currentSchemaVersion), entityRecord.getFields());
     }
 
     private BasicHistoryRecord convertToBasicHistoryRecord(Object object, EntityDto entity, Long instanceId,

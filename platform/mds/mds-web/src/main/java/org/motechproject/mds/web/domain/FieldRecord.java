@@ -11,7 +11,7 @@ import org.motechproject.mds.dto.TypeDto;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.motechproject.mds.web.util.Constants.FORM_VALUES;
+import static org.motechproject.mds.util.Constants.Settings.COMBOBOX_VALUES;
 
 /**
  * Represents single field of entity instance.
@@ -158,7 +158,7 @@ public class FieldRecord extends BasicFieldRecord {
         }
 
         // find the correct option
-        SettingDto listValuesOption = getSettingByName(FORM_VALUES);
+        SettingDto listValuesOption = getSettingByName(COMBOBOX_VALUES);
 
         // add the value
         if (listValuesOption != null) {

@@ -295,7 +295,7 @@ public class InstanceController extends MdsController {
     }
 
     private EntityRecord decodeBlobFiles(EntityRecord record) {
-        for (FieldRecord field : record.getFieldRecords()) {
+        for (FieldRecord field : record.getFields()) {
             if (TypeDto.BLOB.getTypeClass().equals(field.getType().getTypeClass())) {
                 byte[] content = field.getValue() != null ?
                         field.getValue().toString().getBytes() :
