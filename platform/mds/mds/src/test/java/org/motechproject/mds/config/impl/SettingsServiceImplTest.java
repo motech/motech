@@ -7,9 +7,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.config.MdsConfig;
 import org.motechproject.mds.config.ModuleSettings;
-import org.motechproject.mds.config.impl.SettingsServiceImpl;
 import org.motechproject.mds.domain.ConfigSettings;
-import org.motechproject.mds.repository.AllConfigSettings;
+import org.motechproject.mds.repository.internal.AllConfigSettings;
 
 import java.util.Properties;
 

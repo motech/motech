@@ -1,4 +1,6 @@
-package org.motechproject.mds.exception;
+package org.motechproject.mds.exception.init;
+
+import org.motechproject.mds.exception.MdsException;
 
 /**
  * This exception singals an issue with starting MDS.

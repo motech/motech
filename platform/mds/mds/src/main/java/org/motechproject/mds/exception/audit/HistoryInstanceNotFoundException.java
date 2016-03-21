@@ -1,4 +1,4 @@
-package org.motechproject.mds.exception;
+package org.motechproject.mds.exception.audit;
 
 /**
  * Signals that a trash instance with the provided id was not found.

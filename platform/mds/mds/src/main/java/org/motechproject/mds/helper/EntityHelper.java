@@ -7,7 +7,7 @@ import org.motechproject.mds.domain.FieldMetadata;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.repository.AllTypes;
+import org.motechproject.mds.repository.internal.AllTypes;
 import org.motechproject.mds.util.Constants;
 
 import java.util.ArrayList;

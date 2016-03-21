@@ -1,9 +1,10 @@
-package org.motechproject.mds.repository;
+package org.motechproject.mds.repository.internal;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mds.domain.BundleFailureReport;
 import org.motechproject.mds.domain.BundleRestartStatus;
 import org.motechproject.mds.query.QueryParams;
+import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.util.Order;
 import org.springframework.stereotype.Repository;
 
