@@ -2,7 +2,6 @@ package org.motechproject.mds.test.domain.validation;
 
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.test.domain.validation.BothNamesOrNoName;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
