@@ -46,6 +46,9 @@ import org.motechproject.mds.util.MemberUtil;
 import org.motechproject.mds.util.PropertyUtil;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.util.TypeHelper;
+import org.motechproject.mds.web.domain.BasicEntityRecord;
+import org.motechproject.mds.web.domain.BasicFieldRecord;
+import org.motechproject.mds.web.domain.BasicHistoryRecord;
 import org.motechproject.mds.web.domain.ComboboxHolder;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
@@ -149,12 +152,12 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    public List<EntityRecord> getEntityRecords(Long entityId) {
+    public List<BasicEntityRecord> getEntityRecords(Long entityId) {
         return getEntityRecords(entityId, null);
     }
 
     @Override
-    public List<EntityRecord> getEntityRecords(Long entityId, QueryParams queryParams) {
+    public List<BasicEntityRecord> getEntityRecords(Long entityId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
         validateCredentialsForReading(entity);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
@@ -163,7 +166,7 @@ public class InstanceServiceImpl implements InstanceService {
         List instances = service.retrieveAll(queryParams);
         updateGridSize(entityId, queryParams);
 
-        return instancesToRecords(instances, entity, fields, service);
+        return instancesToBasicRecords(instances, entity, fields, service);
     }
 
     @Override
@@ -173,7 +176,7 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    public List<EntityRecord> getTrashRecords(Long entityId, QueryParams queryParams) {
+    public List<BasicEntityRecord> getTrashRecords(Long entityId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
         validateCredentialsForReading(entity);
 
@@ -182,7 +185,7 @@ public class InstanceServiceImpl implements InstanceService {
         Collection collection = trashService.getInstancesFromTrash(entity.getClassName(), queryParams);
         updateGridSize(entityId, queryParams);
 
-        return instancesToRecords(collection, entity, fields, service);
+        return instancesToBasicRecords(collection, entity, fields, service);
     }
 
     @Override
@@ -217,7 +220,7 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    public List<EntityRecord> getEntityRecordsFromLookup(Long entityId, String lookupName, Map<String, Object> lookupMap,
+    public List<BasicEntityRecord> getEntityRecordsFromLookup(Long entityId, String lookupName, Map<String, Object> lookupMap,
                                                          QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
         validateCredentialsForReading(entity);
@@ -234,11 +237,11 @@ public class InstanceServiceImpl implements InstanceService {
             Object result = lookupExecutor.execute(lookupMap, queryParams);
 
             if (lookup.isSingleObjectReturn()) {
-                EntityRecord record = instanceToRecord(result, entity, fields, service);
-                return (record == null) ? new ArrayList<EntityRecord>() : Collections.singletonList(record);
+                BasicEntityRecord record = instanceToBasicRecord(result, entity, fields, service);
+                return (record == null) ? new ArrayList<BasicEntityRecord>() : Collections.singletonList(record);
             } else {
                 List instances = (List) result;
-                return instancesToRecords(instances, entity, fields, service);
+                return instancesToBasicRecords(instances, entity, fields, service);
             }
         } catch (RuntimeException e) {
             throw new LookupExecutionException(e);
@@ -246,7 +249,7 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    public List<EntityRecord> getEntityRecordsWithFilter(Long entityId, Filters filters, QueryParams queryParams) {
+    public List<BasicEntityRecord> getEntityRecordsWithFilter(Long entityId, Filters filters, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
         validateCredentialsForReading(entity);
 
@@ -255,7 +258,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         List instances = service.filter(filters, queryParams);
 
-        return instancesToRecords(instances, entity, fields, service);
+        return instancesToBasicRecords(instances, entity, fields, service);
     }
 
     @Override
@@ -323,7 +326,7 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    public List<HistoryRecord> getInstanceHistory(Long entityId, Long instanceId, QueryParams queryParams) {
+    public List<BasicHistoryRecord> getInstanceHistory(Long entityId, Long instanceId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
         validateCredentialsForReading(entity);
         MotechDataService service = getServiceForEntity(entity);
@@ -333,9 +336,9 @@ public class InstanceServiceImpl implements InstanceService {
         List history = historyService.getHistoryForInstance(instance, queryParams);
         updateGridSize(entityId, queryParams);
 
-        List<HistoryRecord> result = new ArrayList<>();
+        List<BasicHistoryRecord> result = new ArrayList<>();
         for (Object o : history) {
-            result.add(convertToHistoryRecord(o, entity, instanceId, service));
+            result.add(convertToBasicHistoryRecord(o, entity, instanceId, service));
         }
         return result;
     }
@@ -536,23 +539,33 @@ public class InstanceServiceImpl implements InstanceService {
         }
     }
 
-    private List<EntityRecord> instancesToRecords(Collection instances, EntityDto entity, List<FieldDto> fields,
+    private List<BasicEntityRecord> instancesToBasicRecords(Collection instances, EntityDto entity, List<FieldDto> fields,
                                                   MotechDataService service) {
-        List<EntityRecord> records = new ArrayList<>();
+        List<BasicEntityRecord> records = new ArrayList<>();
         for (Object instance : instances) {
-            EntityRecord record = instanceToRecord(instance, entity, fields, service);
+            BasicEntityRecord record = instanceToBasicRecord(instance, entity, fields, service);
             records.add(record);
         }
         return records;
     }
 
+    private BasicEntityRecord instanceToBasicRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
+                                                    MotechDataService service) {
+        return instanceToRecord(instance, entityDto, fields, service, BasicEntityRecord.class);
+    }
+
     private EntityRecord instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
                                           MotechDataService service) {
+        return instanceToRecord(instance, entityDto, fields, service, EntityRecord.class);
+    }
+
+    private <T extends BasicEntityRecord> T instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
+                                          MotechDataService service, Class<T> clazz) {
         if (instance == null) {
             return null;
         }
         try {
-            List<FieldRecord> fieldRecords = new ArrayList<>();
+            List fieldRecords = new ArrayList<>();
 
             for (FieldDto field : fields) {
                 Object value = getProperty(instance, field, service);
@@ -560,14 +573,16 @@ public class InstanceServiceImpl implements InstanceService {
 
                 value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_CLASS));
 
-                FieldRecord fieldRecord = new FieldRecord(field);
+                BasicFieldRecord fieldRecord = EntityRecord.class.equals(clazz) ? new FieldRecord(field) : new BasicFieldRecord(field);
                 fieldRecord.setValue(value);
                 fieldRecord.setDisplayValue(displayValue);
                 fieldRecords.add(fieldRecord);
             }
 
             Number id = (Number) PropertyUtil.safeGetProperty(instance, ID);
-            return new EntityRecord(id == null ? null : id.longValue(), entityDto.getId(), fieldRecords);
+            Long parsedId = id == null ? null : id.longValue();
+            return (T) (EntityRecord.class.equals(clazz) ? new EntityRecord(parsedId, entityDto.getId(), fieldRecords) :
+                    new BasicEntityRecord(parsedId, fieldRecords));
         } catch (Exception e) {
             throw new ObjectReadException(entityDto.getName(), e);
         }
@@ -583,6 +598,19 @@ public class InstanceServiceImpl implements InstanceService {
         Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
 
         return new HistoryRecord(entityRecord.getId(), instanceId,
+                historyInstanceSchemaVersion.equals(currentSchemaVersion), entityRecord.getFields());
+    }
+
+    private BasicHistoryRecord convertToBasicHistoryRecord(Object object, EntityDto entity, Long instanceId,
+                                                           MotechDataService service) {
+        Long entityId = entity.getId();
+
+        BasicEntityRecord entityRecord = instanceToBasicRecord(object, entity, entityService.getEntityFields(entityId), service);
+        Long historyInstanceSchemaVersion = (Long) PropertyUtil.safeGetProperty(object,
+                HistoryTrashClassHelper.schemaVersion(object.getClass()));
+        Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
+
+        return new BasicHistoryRecord(entityRecord.getId(), instanceId,
                 historyInstanceSchemaVersion.equals(currentSchemaVersion), entityRecord.getFields());
     }
 
