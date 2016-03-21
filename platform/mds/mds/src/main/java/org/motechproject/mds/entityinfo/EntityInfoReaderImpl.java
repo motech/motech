@@ -2,9 +2,8 @@ package org.motechproject.mds.entityinfo;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.mds.exception.entity.EntityNotFoundException;
-import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.helper.bundle.MdsBundleHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleWiring;
@@ -61,9 +60,8 @@ public class EntityInfoReaderImpl implements EntityInfoReader {
         return idMapping.values();
     }
 
-    // TODO: MOTECH-1466 - use util/helper here after redoing MDS package structure
     private ClassLoader getMdsEntitiesBundleClassLoader() {
-        Bundle bundle =  OsgiBundleUtils.findBundleBySymbolicName(bundleContext, Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME);
+        Bundle bundle = MdsBundleHelper.findMdsEntitiesBundle(bundleContext);
         return bundle.adapt(BundleWiring.class).getClassLoader();
     }
 }

@@ -37,7 +37,7 @@ public interface CsvImportExportService {
      * Exports entity instances to a CSV file.
      * @param entityId id of the entity for which the instances will be exported
      * @param writer the writer that will be used for output
-     * @param exportCustomizer the customizer that will be used during export
+     * @param exportCustomizer customizer, that allows to adjust CSV file output
      * @return number of exported instances
      */
     long exportCsv(long entityId, Writer writer, CsvExportCustomizer exportCustomizer);
@@ -46,7 +46,7 @@ public interface CsvImportExportService {
      * Exports entity instances to a CSV file.
      * @param entityClassName class name of the entity for which the instances will be exported
      * @param writer the writer that will be used for output
-     * @param exportCustomizer the customizer that will be used during export
+     * @param exportCustomizer customizer, that allows to adjust CSV file output
      * @return number of exported instances
      */
     long exportCsv(String entityClassName, Writer writer, CsvExportCustomizer exportCustomizer);
@@ -85,6 +85,7 @@ public interface CsvImportExportService {
      * @param params query parameters to be used retrieving instances
      * @param headers the headers of exported file
      * @param lookupFields the lookupFields used in the lookup
+     * @param exportCustomizer customizer, that allows to adjust CSV file output
      * @return number of exported instances
      */
     long exportCsv(long entityId, Writer writer, String lookupName, QueryParams params, List<String> headers,
@@ -98,7 +99,7 @@ public interface CsvImportExportService {
      * @param params query parameters to be used retrieving instances
      * @param headers the headers of exported file
      * @param lookupFields the lookupFields used in the lookup
-     * @param exportCustomizer the customizer that will be used during export
+     * @param exportCustomizer customizer, that allows to adjust CSV file output
      * @return number of exported instances
      */
     long exportCsv(String entityClassName, Writer writer, String lookupName, QueryParams params, List<String> headers,
@@ -124,7 +125,7 @@ public interface CsvImportExportService {
      * Exports entity instances to a PDF file.
      * @param entityId id of the entity for which the instances will be exported
      * @param outputStream the stream to write the PDF to
-     * @param exportCustomizer the customizer that will be used during export
+     * @param exportCustomizer customizer, that allows to adjust PDF file output
      * @return number of exported instances
      */
     long exportPdf(long entityId, OutputStream outputStream, CsvExportCustomizer exportCustomizer);
@@ -133,7 +134,7 @@ public interface CsvImportExportService {
      * Exports entity instances to a PDF file.
      * @param entityClassName class name of the entity for which the instances will be exported
      * @param outputStream the writer that will be used for output
-     * @param exportCustomizer the customizer that will be used during export
+     * @param exportCustomizer customizer, that allows to adjust PDF file output
      * @return number of exported instances
      */
     long exportPdf(String entityClassName, OutputStream outputStream, CsvExportCustomizer exportCustomizer);
@@ -172,6 +173,7 @@ public interface CsvImportExportService {
      * @param params query parameters to be used retrieving instances
      * @param headers the headers of exported file
      * @param lookupFields the lookupFields used in the lookup
+     * @param exportCustomizer customizer, that allows to adjust PDF file output
      * @return number of exported instances
      */
     long exportPdf(long entityId, OutputStream outputStream, String lookupName, QueryParams params, List<String> headers,
@@ -185,7 +187,7 @@ public interface CsvImportExportService {
      * @param params query parameters to be used retrieving instances
      * @param headers the headers of exported file
      * @param lookupFields the lookupFields used in the lookup
-     * @param exportCustomizer the customizer that will be used during export
+     * @param exportCustomizer customizer, that allows to adjust PDF file output
      * @return number of exported instances
      */
     long exportPdf(String entityClassName, OutputStream outputStream, String lookupName, QueryParams params, List<String> headers,

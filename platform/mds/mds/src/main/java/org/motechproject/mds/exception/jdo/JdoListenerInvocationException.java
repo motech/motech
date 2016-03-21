@@ -1,4 +1,6 @@
-package org.motechproject.mds.exception;
+package org.motechproject.mds.exception.jdo;
+
+import org.motechproject.mds.exception.MdsException;
 
 /**
  * Exception, that signalizes problems invoking method by the JDO lifecycle listener.

@@ -1,4 +1,4 @@
-package org.motechproject.mds.repository;
+package org.motechproject.mds.repository.internal;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -7,6 +7,7 @@ import org.motechproject.mds.domain.Tracking;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.exception.entity.EntityNotFoundException;
 import org.motechproject.mds.exception.entity.EntityReadOnlyException;
+import org.motechproject.mds.repository.MotechDataRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

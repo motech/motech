@@ -5,7 +5,7 @@ import com.google.gson.stream.JsonReader;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDefinitionType;
 import org.motechproject.mds.domain.ImportManifest;
-import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.repository.internal.AllEntities;
 
 import java.io.IOException;
 

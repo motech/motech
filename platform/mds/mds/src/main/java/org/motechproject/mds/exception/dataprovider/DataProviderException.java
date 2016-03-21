@@ -4,7 +4,7 @@ import org.motechproject.mds.exception.MdsException;
 
 /**
  * The <code>DataProviderException</code> exception signals a situation in which there were some
- * problems with executing lookup in <code>MDSDataProvider</code>.
+ * problems with executing lookup in {@link org.motechproject.mds.tasks.MDSDataProvider}.
  */
 public class DataProviderException extends MdsException {
 

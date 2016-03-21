@@ -4,7 +4,7 @@ import java.util.Collection;
 
 /**
  * Responsible for reading entity schema info. Should be used instead of going to the database and
- * creating needless transactions, which slow down startup.
+ * creating needless transactions, which slows down startup.
  */
 public interface EntityInfoReader {
 

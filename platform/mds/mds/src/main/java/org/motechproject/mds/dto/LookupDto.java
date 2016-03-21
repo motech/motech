@@ -223,9 +223,6 @@ public class LookupDto {
         this.fieldsOrder = fieldsOrder;
     }
 
-
-
-
     @JsonIgnore
     public LookupFieldDto getLookupField(String fieldName) {
         for (LookupFieldDto lookupField : lookupFields) {
@@ -235,7 +232,6 @@ public class LookupDto {
         }
         return null;
     }
-
 
     public boolean isIndexRequired() {
         return indexRequired;

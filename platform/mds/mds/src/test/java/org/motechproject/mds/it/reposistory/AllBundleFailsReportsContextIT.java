@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.motechproject.mds.domain.BundleFailureReport;
 import org.motechproject.mds.domain.BundleRestartStatus;
 import org.motechproject.mds.it.BaseIT;
-import org.motechproject.mds.repository.AllBundleFailureReports;
+import org.motechproject.mds.repository.internal.AllBundleFailureReports;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.Assert.assertEquals;

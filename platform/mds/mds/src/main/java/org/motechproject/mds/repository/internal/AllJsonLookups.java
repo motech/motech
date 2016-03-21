@@ -1,7 +1,8 @@
-package org.motechproject.mds.repository;
+package org.motechproject.mds.repository.internal;
 
 import org.motechproject.mds.domain.JsonLookup;
 import org.motechproject.mds.dto.JsonLookupDto;
+import org.motechproject.mds.repository.MotechDataRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

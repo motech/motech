@@ -9,7 +9,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.exception.action.ActionHandlerException;
 import org.motechproject.mds.javassist.MotechClassPool;
-import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.repository.internal.AllEntities;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.util.Constants;
