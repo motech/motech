@@ -105,7 +105,7 @@ public class KeyInformationTest {
 
         assertNull(triggerKey.getObjectId());
         assertNull(triggerKey.getObjectType());
-        assertNull(triggerKey.getDataProviderId());
+        assertNull(triggerKey.getDataProviderName());
 
         assertManipulations(triggerKey);
     }
@@ -118,7 +118,7 @@ public class KeyInformationTest {
         assertTrue(additionalDataKey.fromAdditionalData());
         assertFalse(additionalDataKey.fromTrigger());
 
-        assertEquals(DATA_PROVIDER_ID, additionalDataKey.getDataProviderId());
+        assertEquals(DATA_PROVIDER_ID, additionalDataKey.getDataProviderName());
         assertEquals(objectType, additionalDataKey.getObjectType());
         assertEquals(OBJECT_ID, additionalDataKey.getObjectId());
         assertEquals(KEY_VALUE, additionalDataKey.getKey());

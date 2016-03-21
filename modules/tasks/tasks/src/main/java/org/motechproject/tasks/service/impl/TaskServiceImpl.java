@@ -451,7 +451,7 @@ public class TaskServiceImpl implements TaskService {
         Map<Long, TaskDataProvider> availableDataProviders = new HashMap<>();
 
         for (DataSource dataSource : task.getTaskConfig().getDataSources()) {
-            TaskDataProvider provider = providerService.getProviderById(dataSource.getProviderId());
+            TaskDataProvider provider = providerService.getProvider(dataSource.getProviderName());
 
             errors.addAll(validateProvider(provider, dataSource, task, availableDataProviders));
             if (provider != null) {
