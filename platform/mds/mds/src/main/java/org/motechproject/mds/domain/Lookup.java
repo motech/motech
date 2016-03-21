@@ -96,14 +96,14 @@ public class Lookup {
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly,
                   String methodName) {
         this(lookupName, singleObjectReturn, exposedViaRest, fields, readOnly, methodName, Collections.<String>emptyList(),
-                Collections.<String>emptyList(), new HashMap<String, String>(), new HashMap<String, Boolean>(), new ArrayList<String>());
+                Collections.<String>emptyList(), new HashMap<>(), new HashMap<>(), new ArrayList<>());
     }
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly,
                   String methodName, List<String> rangeLookupFields, List<String> setLookupFields,
                   Map<String, String> customOperators) {
         this(lookupName, singleObjectReturn, exposedViaRest, fields, readOnly, methodName, rangeLookupFields,
-                setLookupFields, customOperators, new HashMap<String, Boolean>(), new ArrayList<String>());
+                setLookupFields, customOperators, new HashMap<>(), new ArrayList<>());
     }
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly,

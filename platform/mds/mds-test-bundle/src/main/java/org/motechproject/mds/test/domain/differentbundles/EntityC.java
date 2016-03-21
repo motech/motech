@@ -2,7 +2,6 @@ package org.motechproject.mds.test.domain.differentbundles;
 
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.test.domain.differentbundles.Animal;
 
 @Entity
 public class EntityC {

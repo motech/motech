@@ -27,7 +27,11 @@ public @interface Lookup {
      */
     String name() default "";
 
-
+    /**
+     * Allows to control, whether a database index will be created for the columns used in this lookup.
+     * By default, the index will be created.
+     *
+     * @return true, if this lookup should create database index, false otherwise
+     */
     boolean indexRequired() default true;
-
 }

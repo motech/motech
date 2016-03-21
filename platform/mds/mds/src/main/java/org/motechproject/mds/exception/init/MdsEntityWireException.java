@@ -1,4 +1,6 @@
-package org.motechproject.mds.exception;
+package org.motechproject.mds.exception.init;
+
+import org.motechproject.mds.exception.MdsException;
 
 /**
  * Exception, that informs about a problem when an entity is outside OSGi exported package.

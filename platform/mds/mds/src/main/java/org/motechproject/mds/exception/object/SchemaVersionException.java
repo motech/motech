@@ -1,4 +1,4 @@
-package org.motechproject.mds.exception;
+package org.motechproject.mds.exception.object;
 
 /**
  * Signals that a record has an outdated schema version.

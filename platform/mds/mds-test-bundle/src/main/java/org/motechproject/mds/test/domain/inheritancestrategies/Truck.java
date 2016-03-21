@@ -2,7 +2,6 @@ package org.motechproject.mds.test.domain.inheritancestrategies;
 
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.test.domain.inheritancestrategies.Car;
 
 import javax.jdo.annotations.Discriminator;
 import javax.jdo.annotations.DiscriminatorStrategy;

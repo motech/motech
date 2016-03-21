@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl.csv.writer;
+package org.motechproject.mds.service;
 
 import java.io.IOException;
 import java.util.Map;

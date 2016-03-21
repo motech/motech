@@ -11,7 +11,7 @@ import org.mockito.MockitoAnnotations;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
-import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.repository.internal.AllEntities;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.testutil.records.Record;

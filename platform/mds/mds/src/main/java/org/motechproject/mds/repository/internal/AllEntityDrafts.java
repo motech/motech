@@ -1,4 +1,4 @@
-package org.motechproject.mds.repository;
+package org.motechproject.mds.repository.internal;
 
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.domain.Entity;
@@ -7,6 +7,7 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.RestOptions;
 import org.motechproject.mds.domain.Tracking;
+import org.motechproject.mds.repository.MotechDataRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;

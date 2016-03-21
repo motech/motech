@@ -1,4 +1,4 @@
-package org.motechproject.mds.repository;
+package org.motechproject.mds.repository.internal;
 
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.util.DateUtil;
