@@ -176,15 +176,14 @@ public class DataSource extends TaskConfigStep {
 
         final DataSource other = (DataSource) obj;
 
-        return objectEquals(other.providerId, other.objectId, other.type)
-                && Objects.equals(this.providerName, other.providerName)
+        return objectEquals(other.providerName, other.objectId, other.type)
                 && Objects.equals(this.lookup, other.lookup)
                 && Objects.equals(this.failIfDataNotFound, other.failIfDataNotFound);
     }
 
     @JsonIgnore
-    public boolean objectEquals(Long providerId, Long objectId, String type) {
-        return Objects.equals(this.providerId, providerId)
+    public boolean objectEquals(String providerName, Long objectId, String type) {
+        return Objects.equals(this.providerName, providerName)
                 && Objects.equals(this.objectId, objectId)
                 && Objects.equals(this.type, type);
     }

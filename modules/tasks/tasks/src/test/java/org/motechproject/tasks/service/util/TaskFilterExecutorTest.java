@@ -62,14 +62,14 @@ public class TaskFilterExecutorTest {
 
         DataSource dataSource = new DataSource(null, 0L, "", "", null, false);
         TaskConfig taskConfig = mock(TaskConfig.class);
-        when(taskConfig.getDataSource(anyLong(), anyLong(), anyString())).thenReturn(dataSource);
+        when(taskConfig.getDataSource(anyString(), anyLong(), anyString())).thenReturn(dataSource);
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
         TaskContext taskContext = new TaskContext(task, null, activityService);
         TaskFilterExecutor taskFilterExecutor = new TaskFilterExecutor();
 
         assertTrue(taskFilterExecutor.checkFilters(null, null, taskContext));
-        assertTrue(taskFilterExecutor.checkFilters(new ArrayList<Filter>(), null, taskContext));
+        assertTrue(taskFilterExecutor.checkFilters(new ArrayList<>(), null, taskContext));
 
         List<Filter> filters = new ArrayList<>();
         filters.add(new Filter(new EventParameter("EventName", "eventName"), true, CONTAINS.getValue(), "ven"));
