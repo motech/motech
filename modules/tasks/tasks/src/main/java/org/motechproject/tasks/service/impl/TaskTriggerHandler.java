@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -58,8 +59,10 @@ import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
  * The <code>TaskTriggerHandler</code> receives events and executes tasks for which the trigger
  * event subject is the same as the received event subject.
  */
-@Service
+@Service("taskTriggerHandler")
 public class TaskTriggerHandler implements TriggerHandler {
+
+    private static final String BEAN_NAME = "taskTriggerHandler";
 
     private static final String TASK_POSSIBLE_ERRORS_KEY = "task.possible.errors";
 
@@ -97,6 +100,11 @@ public class TaskTriggerHandler implements TriggerHandler {
         }
     }
 
+    @PreDestroy
+    public void preDestroy() {
+        registryService.clearListenersForBean(BEAN_NAME);
+    }
+
     @Override
     public void registerHandlerFor(String subject) {
         registerHandlerFor(subject, false);
@@ -106,23 +114,22 @@ public class TaskTriggerHandler implements TriggerHandler {
     public void registerHandlerFor(String subject, boolean isRetryHandler) {
         LOGGER.info("Registering handler for {}", subject);
 
-        String serviceName = "taskTriggerHandler";
         String methodName = isRetryHandler ? "handleRetry" : "handle";
         Method method = ReflectionUtils.findMethod(this.getClass(), methodName, MotechEvent.class);
         Object obj = CollectionUtils.find(
-                registryService.getListeners(subject), withServiceName(serviceName)
+                registryService.getListeners(subject), withServiceName(BEAN_NAME)
         );
 
         try {
             if (method != null && obj == null) {
-                EventListener proxy = new MotechListenerEventProxy(serviceName, this, method);
+                EventListener proxy = new MotechListenerEventProxy(BEAN_NAME, this, method);
 
                 registryService.registerListener(proxy, subject);
-                LOGGER.info(String.format("%s listens on subject %s", serviceName, subject));
+                LOGGER.info(String.format("%s listens on subject %s", BEAN_NAME, subject));
             }
         } catch (RuntimeException exp) {
             LOGGER.error(
-                    String.format("%s can not listen on subject %s due to:", serviceName, subject),
+                    String.format("%s can not listen on subject %s due to:", BEAN_NAME, subject),
                     exp
             );
         }
