@@ -81,7 +81,7 @@ public final class TaskDataProviderValidator extends GeneralValidator {
             Pattern pattern = Pattern.compile("^[A-Za-z0-9\\-_]+$");
             Matcher matcher = pattern.matcher(providerName);
             if (!matcher.matches()) {
-                errors.add(new TaskError("task.validation.provider.name", providerName));
+                errors.add(new TaskError("task.validation.error.provider.name", providerName));
             }
         }
     }
