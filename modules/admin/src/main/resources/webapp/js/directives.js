@@ -60,8 +60,12 @@
     directives.directive('motechFileUploadAdmin', function($http, $templateCache, $compile) {
         return function(scope, element, attrs) {
             $http.get('../server/resources/partials/motech-file-upload.html', { cache: $templateCache }).success(function(response) {
-                var contents = element.html(response).contents();
-                element.replaceWith($compile(contents)(scope));
+                var contents = $compile(element.html(response).contents())(scope),
+                    input = contents.find("input");
+                element.replaceWith(contents);
+                if (attrs.accept !== null &&  attrs.accept !== "") {
+                    input.attr("accept", attrs.accept);
+                }
             });
         };
     });

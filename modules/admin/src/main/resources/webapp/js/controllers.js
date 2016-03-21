@@ -251,7 +251,7 @@
             if ($scope.moduleSource === 'Repository') {
                 return !$scope.module;
             } else if ($scope.moduleSource === 'File') {
-                if ($("#bundleUploadForm #fileInput").val() == '') {
+                if ($("#bundleUploadForm #fileInput").val() === '') {
                     return true;
                 } else {
                     return false;
