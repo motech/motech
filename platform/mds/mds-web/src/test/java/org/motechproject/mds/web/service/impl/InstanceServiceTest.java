@@ -648,7 +648,7 @@ public class InstanceServiceTest {
         assertEquals(Integer.valueOf(1), records.getPage()); // page 1
         assertEquals(Integer.valueOf(2), records.getTotal()); // 2 pages total
         assertEquals(Integer.valueOf(3), records.getRecords()); // 3 records total
-        assertEquals(asList(1L, 2L), extract(records.getRows(), on(EntityRecord.class).getFieldByName("id").getValue()));
+        assertEquals(asList(1L, 2L), extract(records.getRows(), on(BasicEntityRecord.class).getFieldByName("id").getValue()));
 
         RelationshipsUpdate filter = new RelationshipsUpdate();
         filter.setRemovedIds(Arrays.asList(1L, 2L));
@@ -663,7 +663,7 @@ public class InstanceServiceTest {
         assertEquals(Integer.valueOf(1), records.getTotal()); // 1 page total
         assertEquals(Integer.valueOf(2), records.getRecords()); // 2 records total
         // 1L and 2L removed, 50L added
-        assertEquals(asList(3L, 50L), extract(records.getRows(), on(EntityRecord.class).getFieldByName("id").getValue()));
+        assertEquals(asList(3L, 50L), extract(records.getRows(), on(BasicEntityRecord.class).getFieldByName("id").getValue()));
     }
 
     private RelationshipsUpdate buildRelationshipUpdate() {
