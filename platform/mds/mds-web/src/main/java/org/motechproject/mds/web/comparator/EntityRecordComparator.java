@@ -31,7 +31,7 @@ public class EntityRecordComparator implements Comparator<EntityRecord>, Seriali
     }
 
     private FieldRecord findFieldByName(EntityRecord entity, String fieldName) {
-        for (FieldRecord field : entity.getFieldRecords()) {
+        for (FieldRecord field : entity.getFields()) {
             if (field.getDisplayName().equals(fieldName)) {
                 return field;
             }

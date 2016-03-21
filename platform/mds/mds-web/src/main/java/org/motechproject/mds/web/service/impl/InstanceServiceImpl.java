@@ -139,14 +139,14 @@ public class InstanceServiceImpl implements InstanceService {
 
             Object instance;
             if (newObject) {
-                instance = newInstanceFromEntityRecord(entityClass, entityFields, entityRecord.getFieldRecords(), service);
+                instance = newInstanceFromEntityRecord(entityClass, entityFields, entityRecord.getFields(), service);
                 return service.create(instance);
             } else {
                 instance = service.retrieve(ID_FIELD_NAME, entityRecord.getId());
                 if (instance == null) {
                     throw new ObjectNotFoundException(entity.getName(), entityRecord.getId());
                 }
-                updateFields(instance, entityRecord.getFieldRecords(), service, deleteValueFieldId, true);
+                updateFields(instance, entityRecord.getFields(), service, deleteValueFieldId, true);
                 return service.update(instance);
             }
         } catch (Exception e) {
@@ -531,7 +531,7 @@ public class InstanceServiceImpl implements InstanceService {
             });
 
             for (EntityRecord record : filter.getAddedNewRecords()) {
-                relatedAsColl.add(newInstanceFromEntityRecord(getEntityClass(relatedEntity), relatedFields, record.getFieldRecords(), relatedDataService));
+                relatedAsColl.add(newInstanceFromEntityRecord(getEntityClass(relatedEntity), relatedFields, record.getFields(), relatedDataService));
             }
 
             // apply pagination ordering (currently in memory)
@@ -653,21 +653,22 @@ public class InstanceServiceImpl implements InstanceService {
 
     private BasicEntityRecord instanceToBasicRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
                                                     MotechDataService service, EntityType entityType) {
-        return instanceToRecord(instance, entityDto, fields, service, entityType, true);
+        return instanceToRecord(instance, entityDto, fields, service, entityType, BasicEntityRecord.class);
     }
 
     private EntityRecord instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
                                           MotechDataService service, EntityType entityType) {
-        return (EntityRecord) instanceToRecord(instance, entityDto, fields, service, entityType, false);
+        return instanceToRecord(instance, entityDto, fields, service, entityType, EntityRecord.class);
     }
 
-    private BasicEntityRecord instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
-                                          MotechDataService service, EntityType entityType, boolean basic) {
+    private <T extends BasicEntityRecord> T instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
+                                          MotechDataService service, EntityType entityType, Class<T> clazz) {
         if (instance == null) {
             return null;
         }
         try {
             List fieldRecords = new ArrayList<>();
+            boolean basic = BasicEntityRecord.class.equals(clazz);
 
             for (FieldDto field : fields) {
                 if (entityType != EntityType.STANDARD && field.isVersionField()) {
@@ -687,8 +688,8 @@ public class InstanceServiceImpl implements InstanceService {
 
             Number id = (Number) PropertyUtil.safeGetProperty(instance, ID_FIELD_NAME);
             Long parsedId = id == null ? null : id.longValue();
-            return basic ? new BasicEntityRecord(parsedId, fieldRecords) :
-                    new EntityRecord(parsedId, entityDto.getId(), fieldRecords);
+            return (T) (basic ? new BasicEntityRecord(parsedId, fieldRecords) :
+                    new EntityRecord(parsedId, entityDto.getId(), fieldRecords));
         } catch (Exception e) {
             throw new ObjectReadException(entityDto.getName(), e);
         }
@@ -704,7 +705,7 @@ public class InstanceServiceImpl implements InstanceService {
         Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
 
         return new HistoryRecord(entityRecord.getId(), instanceId,
-                historyInstanceSchemaVersion.equals(currentSchemaVersion), entityRecord.getFieldRecords());
+                historyInstanceSchemaVersion.equals(currentSchemaVersion), entityRecord.getFields());
     }
 
     private BasicHistoryRecord convertToBasicHistoryRecord(Object object, EntityDto entity, Long instanceId,
@@ -818,7 +819,7 @@ public class InstanceServiceImpl implements InstanceService {
         if (!relationshipsUpdate.getAddedIds().isEmpty()) {
             parsedValue = findRelatedObjectById(relationshipsUpdate.getAddedIds().get(0), service);
         } else if (!relationshipsUpdate.getAddedNewRecords().isEmpty()) {
-            parsedValue = newInstanceFromEntityRecord(argumentType, entityFields, relationshipsUpdate.getAddedNewRecords().get(0).getFieldRecords(), service);
+            parsedValue = newInstanceFromEntityRecord(argumentType, entityFields, relationshipsUpdate.getAddedNewRecords().get(0).getFields(), service);
         }
 
         return parsedValue;
@@ -849,7 +850,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         // Add new relations, that do not exist in db yet
         for (EntityRecord record : relationshipsUpdate.getAddedNewRecords()) {
-            relatedInstances.add(newInstanceFromEntityRecord(argumentType, entityFields, record.getFieldRecords(), service));
+            relatedInstances.add(newInstanceFromEntityRecord(argumentType, entityFields, record.getFields(), service));
         }
         return relatedInstances;
     }

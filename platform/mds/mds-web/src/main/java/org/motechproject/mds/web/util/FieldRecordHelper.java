@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.motechproject.mds.web.util.Constants.MULTISELECT;
+import static org.motechproject.mds.util.Constants.Settings.ALLOW_MULTIPLE_SELECTIONS;
 
 /**
  * The <code>FieldRecordHelper</code> is an util class for {@link org.motechproject.mds.web.domain.FieldRecord} and
@@ -78,7 +78,7 @@ public final class FieldRecordHelper {
     }
 
     private static boolean isMultiSelect(List<SettingDto> settings) {
-        SettingDto setting = getSettingByName(settings, MULTISELECT);
+        SettingDto setting = getSettingByName(settings, ALLOW_MULTIPLE_SELECTIONS);
         return setting != null && Boolean.TRUE.equals(setting.getValue());
     }
 
