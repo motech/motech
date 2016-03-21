@@ -81,7 +81,7 @@ public class TaskDataProviderValidatorTest {
 
         Set<TaskError> errors = TaskDataProviderValidator.validate(provider);
 
-        assertSingleError(errors, "task.validation.provider.name", name);
+        assertSingleError(errors, "task.validation.error.provider.name", name);
     }
 
     private void assertSingleError(Set<TaskError> errors, String reason, String... args) {

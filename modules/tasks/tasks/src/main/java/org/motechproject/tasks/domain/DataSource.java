@@ -44,22 +44,7 @@ public class DataSource extends TaskConfigStep {
      * Constructor.
      */
     public DataSource() {
-        this(null, null, null, "id", null, false);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param providerId  the provider ID
-     * @param objectId  the object ID
-     * @param type  the data source object
-     * @param name  the data source name
-     * @param lookup  the lookup name
-     * @param failIfDataNotFound  defines if task should fail if no data was found
-     */
-    public DataSource(Long providerId, Long objectId, String type, String name, List<Lookup> lookup,
-                      boolean failIfDataNotFound) {
-        this("", providerId, objectId, type, name, lookup, failIfDataNotFound);
+        this(null, null, null, null, "id", null, false);
     }
 
     /**
