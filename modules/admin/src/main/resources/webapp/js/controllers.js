@@ -6,7 +6,7 @@
 
     var controllers = angular.module('admin.controllers', []);
 
-    controllers.controller('AdminBundleListCtrl', function($scope, Bundle, i18nService, $routeParams, $http, $timeout) {
+    controllers.controller('AdminBundleListCtrl', function($scope, Bundle, i18nService, $stateParams, $http, $timeout) {
 
         var LOADING_STATE = 'LOADING', MODULE_LIST_REFRESH_TIMEOUT = 6000; // milliseconds
 
@@ -58,8 +58,8 @@
 
         $scope.bundles = Bundle.query();
 
-        if ($routeParams.bundleId !== undefined) {
-            $scope.bundle = Bundle.get({ bundleId:$routeParams.bundleId });
+        if ($stateParams.bundleId !== undefined) {
+            $scope.bundle = Bundle.get({ bundleId:$stateParams.bundleId });
         }
 
         $scope.allBundlesCount = function () {
@@ -321,6 +321,12 @@
         Bundle.prototype.isResolved = function () {
             return this.state === 'RESOLVED';
         };
+
+        innerLayout({
+            spacing_closed: 30,
+            east__minSize: 200,
+            east__maxSize: 350
+        });
     });
 
     controllers.controller('AdminStatusMsgCtrl', function($scope, $rootScope, $timeout, StatusMessage, i18nService, $cookieStore, $filter) {
@@ -621,8 +627,8 @@
         };
     });
 
-    controllers.controller('AdminModuleCtrl', function($scope, ModuleSettings, Bundle, i18nService, $routeParams) {
-        $scope.module = Bundle.details({ bundleId:$routeParams.bundleId });
+    controllers.controller('AdminModuleCtrl', function($scope, ModuleSettings, Bundle, i18nService, $stateParams) {
+        $scope.module = Bundle.details({ bundleId:$stateParams.bundleId });
 
         innerLayout({
             spacing_closed: 30,
@@ -631,14 +637,14 @@
         });
     });
 
-    controllers.controller('AdminBundleSettingsCtrl', function($scope, Bundle, ModuleSettings, $routeParams, $http) {
-        $scope.moduleSettings = ModuleSettings.query({ bundleId:$routeParams.bundleId });
+    controllers.controller('AdminBundleSettingsCtrl', function($scope, Bundle, ModuleSettings, $stateParams, $http) {
+        $scope.moduleSettings = ModuleSettings.query({ bundleId:$stateParams.bundleId });
 
-        $http.get('../admin/api/settings/' + $routeParams.bundleId + '/raw').success(function (data) {
+        $http.get('../admin/api/settings/' + $stateParams.bundleId + '/raw').success(function (data) {
             $scope.rawFiles = data;
         });
 
-        $scope.module = Bundle.get({ bundleId:$routeParams.bundleId });
+        $scope.module = Bundle.get({ bundleId:$stateParams.bundleId });
 
         $scope.saveSettings = function (mSettings, doRestart) {
             var successHandler;
@@ -685,24 +691,24 @@
 
     });
 
-    controllers.controller('AdminServerLogCtrl', function($scope, $http) {
+    controllers.controller('AdminServerLogCtrl', function($scope, $rootScope, $http) {
         $scope.refresh = function () {
             blockUI();
-            $http({method:'GET', url:'../admin/api/log'}).
-                success(
-                function (data) {
-                    if (data === 'server.tomcat.error.logFileNotFound') {
-                        $('#logContent').html($scope.msg(data));
+            $http({method:'GET', url:'../admin/api/log'})
+                .then(function (result) {
+                    if (result.data === 'server.tomcat.error.logFileNotFound') {
+                        $('#logContent').html($scope.msg(result.data));
                     } else {
-                        $('#logContent').html(data);
+                        $('#logContent').html(result.data);
                         unblockUI();
                     }
-                }).
-                error(unblockUI());
+                }, function errorCallback(result) {
+                     unblockUI();
+                });
         };
 
         //removing the sidebar from <body> before route change
-        $scope.$on('$routeChangeStart', function(event, next, current) {
+        $rootScope.$on('$stateChangeStart', function(event, next, current) {
             $('div[id^="jquerySideBar"]').remove();
         });
 
@@ -908,9 +914,9 @@
 
     });
 
-    controllers.controller('AdminQueueMessageStatsCtrl', function($scope, $http, $routeParams) {
+    controllers.controller('AdminQueueMessageStatsCtrl', function($scope, $http, $stateParams) {
 
-        var queue = $routeParams.queueName;
+        var queue = $stateParams.queueName;
 
         $scope.dataAvailable = true;
 

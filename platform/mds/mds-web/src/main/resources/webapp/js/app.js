@@ -7,29 +7,88 @@
     $.ajax({
         url:      '../mds/available/mdsTabs',
         success:  function(data) {
-            mds.constant('AVAILABLE_TABS', data);
+            mds.constant('AVAILABLE_TABS', ["dataBrowser","schemaEditor","settings"]);
         },
-        async:    false
+        async:    true
     });
 
     mds.run(function ($rootScope, AVAILABLE_TABS) {
-        $rootScope.AVAILABLE_TABS = AVAILABLE_TABS;
+        $rootScope.AVAILABLE_TABS = ["dataBrowser","schemaEditor","settings"];
     });
 
-    mds.config(function ($routeProvider, AVAILABLE_TABS) {
-        $routeProvider
-            .when('/mds/dataBrowser/:entityId', { templateUrl: '../mds/resources/partials/dataBrowser.html', controller: 'MdsDataBrowserCtrl' })
-            .when('/mds/dataBrowser/:entityId/:moduleName', { templateUrl: '../mds/resources/partials/dataBrowser.html', controller: 'MdsDataBrowserCtrl' })
-            .when('/mds/dataBrowser/:entityId/:instanceId/:moduleName', { templateUrl: '../mds/resources/partials/dataBrowser.html', controller: 'MdsDataBrowserCtrl' });
+    mds.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+        //$urlRouterProvider.when("mds", "/dataBrowser");
 
-        angular.forEach(AVAILABLE_TABS, function (tab) {
-            $routeProvider.when(
-                '/mds/{0}'.format(tab),
-                {
-                    templateUrl: '../mds/resources/partials/{0}.html'.format(tab),
-                    controller: 'Mds{0}Ctrl'.format(tab.capitalize())
+        $stateProvider
+            .state('mds', {
+                url: "/mds",
+                abstract: true,
+                views: {
+                    "moduleToLoad": {
+                        templateUrl: "../mds/resources/index.html"
+                    }
                 }
-            );
-        });
-    });
+            })
+            .state('mds.dataBrowser', {
+                url: '/dataBrowser',
+                parent: 'mds',
+                views: {
+                    'mdsview': {
+                        templateUrl: '../mds/resources/partials/dataBrowser.html',
+                        controller: 'MdsDataBrowserCtrl'
+                    }
+                }
+            })
+            .state('mds.entityId', {
+                url: '/:entityId',
+                parent: 'mds.dataBrowser',
+                views: {
+                    'mdsview': {
+                        templateUrl: '../mds/resources/partials/dataBrowser.html',
+                        controller: 'MdsDataBrowserCtrl'
+                    }
+                }
+            })
+            .state('mds.moduleName', {
+                url: '/:entityId/:moduleName',
+                parent: 'mds.dataBrowser',
+                views: {
+                    'mdsview': {
+                        templateUrl: '../mds/resources/partials/dataBrowser.html',
+                        controller: 'MdsDataBrowserCtrl'
+                    }
+                }
+            })
+            .state('mds.instanceId', {
+                url: '/:entityId/:instanceId/:moduleName',
+                parent: 'mds.dataBrowser',
+                views: {
+                    'mdsview': {
+                        templateUrl: '../mds/resources/partials/dataBrowser.html',
+                        controller: 'MdsDataBrowserCtrl'
+                    }
+                }
+            })
+            .state('mds.schemaEditor', {
+                url: '/schemaEditor',
+                parent: 'mds',
+                views: {
+                    'mdsview': {
+                        templateUrl: '../mds/resources/partials/schemaEditor.html',
+                        controller: 'MdsSchemaEditorCtrl'
+                    }
+                }
+            })
+            .state('mds.settings', {
+                url: '/settings',
+                parent: 'mds',
+                views: {
+                    'mdsview': {
+                        templateUrl: '../mds/resources/partials/settings.html',
+                        controller: 'MdsSettingsCtrl'
+                    }
+                }
+            });
+    }]);
+
 }());
