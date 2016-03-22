@@ -6,7 +6,7 @@
 
     var controllers = angular.module('scheduler.controllers', []);
 
-    controllers.controller('SchedulerCtrl', function($scope, $timeout, $routeParams, JobsService) {
+    controllers.controller('SchedulerCtrl', function($scope, $timeout, $routeParams, JobsService, ModalServ) {
 
         $scope.jobDetails = {};
 
@@ -21,7 +21,7 @@
 
         $scope.$on('jobsFetched', function() {
             $scope.jobs = JobsService.get();
-            unblockUI();
+            ModalServ.unblockUI();
         });
 
         JobsService.setListener($scope);
@@ -59,44 +59,44 @@
         };
 
         $scope.pauseJob = function(job) {
-            motechConfirm("scheduler.confirm.pause", "scheduler.confirm", function(response) {
+            ModalServ.motechConfirm("scheduler.confirm.pause", "scheduler.confirm", function(response) {
                 if (response) {
-                    blockUI();
+                    ModalServ.blockUI();
                     JobsService.pauseJob(job, function(updated) {
                         $scope.updateJob(job, updated);
-                        unblockUI();
+                        ModalServ.unblockUI();
                     });
                 }
             })
         };
 
         $scope.resumeJob = function(job) {
-            motechConfirm("scheduler.confirm.resume", "scheduler.confirm", function(response) {
+            ModalServ.motechConfirm("scheduler.confirm.resume", "scheduler.confirm", function(response) {
                 if (response) {
-                    blockUI();
+                    ModalServ.blockUI();
                     JobsService.resumeJob(job, function(updated) {
                        $scope.updateJob(job, updated);
-                       unblockUI();
+                       ModalServ.unblockUI();
                     });
                 }
             })
         };
 
         $scope.newJob = function() {
-            blockUI();
+            ModalServ.blockUI();
             window.location.href = "#/scheduler/createJob?action=new";
         }
 
         $scope.editJob = function(job) {
             JobsService.setCurrentJob(job);
-            blockUI();
+            ModalServ.blockUI();
             window.location.href = "#/scheduler/createJob?action=edit";
         }
 
         $scope.deleteJob = function(job) {
-            motechConfirm("scheduler.confirm.delete", "scheduler.confirm", function(response) {
+            ModalServ.motechConfirm("scheduler.confirm.delete", "scheduler.confirm", function(response) {
                 if (response) {
-                    blockUI();
+                    ModalServ.blockUI();
                     // Go back to previous page when deleting last record on the given page
                     if ($scope.jobs.rows.length === 1 && $scope.jobs.page > 1) {
                         JobsService.setParam("page", $scope.jobs.page - 1);
@@ -133,7 +133,7 @@
         };
     });
 
-    controllers.controller('SchedulerCreateJobCtrl', function($scope, $timeout, $routeParams, JobsService) {
+    controllers.controller('SchedulerCreateJobCtrl', function($scope, $timeout, $routeParams, JobsService, ModalServ) {
 
         innerLayout({}, {
             show: false,
@@ -164,7 +164,7 @@
 
         $scope.addToMap = function(key, value) {
             if (containsKey($scope.motechEventParameters, key)) {
-                motechAlert("scheduler.keyAlreadyExists", "schedulerKeyAlreadyExists");
+                ModalServ.motechAlert("scheduler.keyAlreadyExists", "schedulerKeyAlreadyExists");
             } else {
                 $scope.motechEventParameters.push({
                     "key": key,
@@ -179,7 +179,7 @@
         };
 
         $scope.resetMap = function() {
-            motechConfirm("scheduler.confirm.resetMap", "scheduler.confirm", function(response) {
+            ModalServ.motechConfirm("scheduler.confirm.resetMap", "scheduler.confirm", function(response) {
                 if (response) {
                     $timeout(function() {
                         $scope.motechEventParameters = [];
@@ -189,7 +189,7 @@
         }
 
         $scope.removeFromMap = function(key) {
-            motechConfirm("scheduler.confirm.removeItem", "scheduler.confirm", function(response) {
+            ModalServ.motechConfirm("scheduler.confirm.removeItem", "scheduler.confirm", function(response) {
                 if (response) {
                     var id;
                     for (var i = 0; i < $scope.motechEventParameters.length; i += 1) {
@@ -231,7 +231,7 @@
 
             if ($scope.dates.startDate && $scope.dates.endDate) {
                 if ($scope.dates.startDate >= $scope.dates.endDate) {
-                    motechAlert("scheduler.error.endDateBeforeStartDate", "scheduler.error", [$scope.dates.startDate, $scope.dates.endDate]);
+                    ModalServ.motechAlert("scheduler.error.endDateBeforeStartDate", "scheduler.error", [$scope.dates.startDate, $scope.dates.endDate]);
                     return;
                 }
             }
@@ -249,21 +249,21 @@
 
             function success() {
                 window.location.href="#/scheduler";
-                unblockUI();
+                ModalServ.unblockUI();
             }
 
             function failure(response) {
-                motechAlert(response.data.key, "scheduler.error", response.data.params);
-                unblockUI();
+                ModalServ.motechAlert(response.data.key, "scheduler.error", response.data.params);
+                ModalServ.unblockUI();
             }
 
             if (action === 'new') {
-                blockUI();
+                ModalServ.blockUI();
                 JobsService.createJob(job, success, failure);
             } else if (action === 'edit'){
-                motechConfirm("scheduler.confirm.updateJob", "scheduler.confirm", function(response) {
+                ModalServ.motechConfirm("scheduler.confirm.updateJob", "scheduler.confirm", function(response) {
                     if (response) {
-                        blockUI();
+                        ModalServ.blockUI();
                         JobsService.updateJob(job, success, failure);
                     }
                 });
@@ -272,12 +272,12 @@
 
         $scope.typeChanged = function() {
             var job = {};
-            blockUI();
+            ModalServ.blockUI();
             job['@jobType'] = $scope.job['@jobType'];
             job.motechEvent = $scope.job.motechEvent;
             job.startDate = $scope.job.startDate;
             $scope.job = job;
-            unblockUI();
+            ModalServ.unblockUI();
         }
 
         $scope.parseDateToString = function(milliseconds) {
@@ -327,7 +327,7 @@
             });
         }
 
-        unblockUI();
+        ModalServ.unblockUI();
     });
 
 }());

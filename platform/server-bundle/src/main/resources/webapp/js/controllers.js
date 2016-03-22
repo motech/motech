@@ -3,7 +3,8 @@
 
     var serverModule = angular.module('motech-dashboard');
 
-    serverModule.controller('MotechMasterCtrl', function ($scope, $http, i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout, $route) {
+    serverModule.controller('MotechMasterCtrl', function ($scope, $http, i18nService, $cookieStore, $q, BrowserDetect,
+        Menu, $location, $timeout, $route, ModalServ) {
 
         var handle = function () {
                 if (!$scope.$$phase) {
@@ -132,14 +133,14 @@
                     }
 
                     moment.locale(lang);
-                    motechAlert('server.success.changed.language', 'server.changed.language',function(){
+                    ModalServ.motechAlert('server.success.changed.language', 'server.changed.language',function(){
                         if (refresh ) {
                             window.location.reload();
                         }
                     });
                 })
                 .error(function (response) {
-                    handleResponse('server.header.error', 'server.error.setLangError', response);
+                    ModalServ.handleResponse('server.header.error', 'server.error.setLangError', response);
                 });
         };
 
@@ -203,24 +204,32 @@
         };
 
         $scope.loadModule = function (moduleName, url) {
-            var refresh, resultScope, reloadModule;
+            var refresh, resultScope, reloadModule, dialog;
             $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
             $scope.activeLink = {moduleName: moduleName, url: url};
             if (moduleName) {
-                blockUI();
+                ModalServ.blockUI();
 
                 $http.get('../server/module/critical/' + moduleName).success(function (data, status) {
                     if (data !== undefined && data !== '' && status !== 408) {
-                        BootstrapDialog.alert({
+                        dialog = new BootstrapDialog ({
                             type: BootstrapDialog.TYPE_DANGER,
-                            message: status + ": " + data.statusText
+                            message: status + ": " + data.statusText,
+                            closable: false,
+                            buttons: [{
+                                label: 'OK',
+                                action: function(dialog) {
+                                    ModalServ.close(dialog);
+                                }
+                            }]
                         });
+                        ModalServ.open(dialog);
                     }
                 });
 
                 if ($scope.moduleToLoad === moduleName || url === '/login') {
                     $location.path(url);
-                    unblockUI();
+                    ModalServ.unblockUI();
                     innerLayout({}, {
                         show: false
                     });
@@ -234,7 +243,7 @@
                         $scope.$on('loadOnDemand.loadContent', function () {
                             if (reloadModule) {
                                 $location.path(url);
-                                unblockUI();
+                                ModalServ.unblockUI();
                                 reloadModule = false;
                                 innerLayout({}, {
                                     show: false
@@ -245,7 +254,7 @@
                             }
                         });
                     } else {
-                        unblockUI();
+                        ModalServ.unblockUI();
                     }
                 }
             }
@@ -437,14 +446,14 @@
 
         //Used when user has forgotten the password
         $scope.submitResetPasswordForm = function() {
-            blockUI();
+            ModalServ.blockUI();
 
             $http({
                 method: 'POST',
                 url: '../server/forgotreset',
                 data: $scope.resetViewData.resetForm
             }).success(function(data) {
-                unblockUI();
+                ModalServ.unblockUI();
 
                 if (data.errors === undefined || data.errors.length === 0) {
                     data.errors = null;
@@ -453,8 +462,8 @@
                 $scope.resetViewData = data;
             })
             .error(function(data) {
-                unblockUI();
-                motechAlert('server.reset.error', 'server.error');
+                ModalServ.unblockUI();
+                ModalServ.motechAlert('server.reset.error', 'server.error');
                 $scope.resetViewData.errors = ['server.reset.error'];
             });
         };
@@ -476,14 +485,14 @@
 
         //Used when user must change the password
         $scope.submitChangePasswordForm = function() {
-            blockUI();
+            ModalServ.blockUI();
 
             $http({
                 method: 'POST',
                 url: '../server/changepassword',
                 data: $scope.changePasswordViewData.changePasswordForm
             }).success(function(data) {
-                unblockUI();
+                ModalServ.unblockUI();
 
                 if (data.userBlocked) {
                     window.location = "./login?blocked=true";
@@ -497,8 +506,8 @@
                 $scope.changePasswordViewData.errors = data.errors;
                 $scope.changePasswordViewData.changeSucceded = data.changeSucceded;
             }).error(function(data) {
-                unblockUI();
-                motechAlert('server.reset.error', 'server.error');
+                ModalServ.unblockUI();
+                ModalServ.motechAlert('server.reset.error', 'server.error');
                 $scope.resetViewData.errors = ['server.reset.error'];
             });
         };
@@ -510,7 +519,7 @@
         };
 
         $scope.submitStartupConfig = function() {
-             blockUI();
+             ModalServ.blockUI();
              $scope.startupViewData.startupSettings.loginMode = $scope.securityMode;
              $http({
                 method: "POST",
@@ -521,12 +530,12 @@
                 if (data.length === 0) {
                     window.location.assign("../server/");
                 } else {
-                    unblockUI();
+                    ModalServ.unblockUI();
                 }
                 $scope.errors = data;
              })
              .error(function(data) {
-                unblockUI();
+                ModalServ.unblockUI();
              });
         };
 

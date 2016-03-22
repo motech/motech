@@ -3,7 +3,7 @@
 
     var controllers = angular.module('webSecurity.controllers', []), index, email;
 
-    controllers.controller('WebSecurityUserCtrl', function ($scope, Roles, Users, $http) {
+    controllers.controller('WebSecurityUserCtrl', function ($scope, Roles, Users, $http, ModalServ) {
            $scope.user = {
                externalId : "",
                userName: "",
@@ -79,13 +79,13 @@
            $scope.saveUser = function() {
                $http.post('../websecurity/api/users/create', $scope.user).
                     success(function(){
-                        motechAlert('security.create.user.saved', 'security.create');
+                        ModalServ.motechAlert('security.create.user.saved', 'security.create');
                         $scope.userList = Users.query();
                         $scope.showUsersView=!$scope.addUserView;
                         $scope.addUserView=!$scope.addUserView;
                     }).
                     error(function(response) {
-                        handleResponse('server.error', 'security.create.user.error', response);
+                        ModalServ.handleResponse('server.error', 'security.create.user.error', response);
                         if (response && response.startsWith('key:security.sendEmailException')) {
                             $scope.userList = Users.query();
                             $scope.showUsersView=!$scope.addUserView;
@@ -118,24 +118,24 @@
 
            $scope.updateUser = function(){
                $http.post('../websecurity/api/users/update', $scope.user).
-                   success(function(){motechAlert('security.update.user.saved', 'security.update');
+                   success(function(){ModalServ.motechAlert('security.update.user.saved', 'security.update');
                        $scope.userList = Users.query();
                        $scope.showUsersView=!$scope.editUserView;
                        $scope.editUserView=!$scope.editUserView;
                        $scope.$emit('module.list.refresh');
                    }).error(function(response) {
-                        handleResponse('server.error', 'security.update.user.error', response);
+                        ModalServ.handleResponse('server.error', 'security.update.user.error', response);
                    });
            };
 
            $scope.deleteUser = function() {
                $http.post('../websecurity/api/users/delete', $scope.user).
                     success(function(){
-                        motechAlert('security.delete.user.saved', 'security.deleted');
+                        ModalServ.motechAlert('security.delete.user.saved', 'security.deleted');
                         $scope.showUsersView=!$scope.editUserView;
                         $scope.editUserView=!$scope.editUserView;
                         $scope.userList = Users.query();
-                    }).error(function(){motechAlert('security.delete.user.error', 'server.error');});
+                    }).error(function(){ModalServ.motechAlert('security.delete.user.error', 'server.error');});
            };
 
            $scope.resetValues = function() {
@@ -193,7 +193,7 @@
           };
     });
 
-    controllers.controller('WebSecurityRolePermissionCtrl', function ($scope, Roles, Permissions, $http) {
+    controllers.controller('WebSecurityRolePermissionCtrl', function ($scope, Roles, Permissions, $http, ModalServ) {
            $scope.role = {
                 roleName : '',
                 originalRoleName:'',
@@ -259,20 +259,20 @@
                     $scope.role.deletable = true;
                     $http.post('../websecurity/api/web-api/roles/create', $scope.role).
                        success(function() {
-                       motechAlert('security.create.role.saved', 'security.create');
+                       ModalServ.motechAlert('security.create.role.saved', 'security.create');
                        $scope.roleList=Roles.query();
                        $scope.addRoleView=!$scope.addRoleView;
                        }).
-                       error(function(){motechAlert('security.create.role.error', 'server.error');});
+                       error(function(){ModalServ.motechAlert('security.create.role.error', 'server.error');});
                 } else {
                     $http.post('../websecurity/api/web-api/roles/update', $scope.role).
                        success(function() {
-                       motechAlert('security.update.role.saved', 'security.update');
+                       ModalServ.motechAlert('security.update.role.saved', 'security.update');
                        $scope.roleList=Roles.query();
                        $scope.addRoleView=!$scope.addRoleView;
                        $scope.$emit('module.list.refresh');
                        }).
-                       error(function(){motechAlert('security.update.role.error', 'server.error');});
+                       error(function(){ModalServ.motechAlert('security.update.role.error', 'server.error');});
                 }
             };
 
@@ -289,11 +289,11 @@
             $scope.deleteRole = function() {
                 $http.post('../websecurity/api/web-api/roles/delete', $scope.role).
                 success(function(){
-                    motechAlert('security.delete.role.saved', 'security.deleted');
+                    ModalServ.motechAlert('security.delete.role.saved', 'security.deleted');
                     $scope.addRoleView=!$scope.addRoleView;
                     $scope.roleList = Roles.query();
                 }).error(function(response){
-                    handleResponse('server.error', 'security.delete.role.error', response);
+                    ModalServ.handleResponse('server.error', 'security.delete.role.error', response);
                 });
             };
 
@@ -332,20 +332,30 @@
             };
 
             $scope.deletePermission = function(permission) {
-                BootstrapDialog.confirm({
+                var dialog;
+                dialog = new BootstrapDialog ({
                     title: $scope.msg('security.confirm'),
                     message: $scope.msg('security.confirm.permissionDelete'),
                     type: BootstrapDialog.TYPE_WARNING,
-                    callback: function(result) {
-                        if (result) {
+                    closable: false,
+                    buttons: [{
+                        label: 'Close',
+                        action: function(dialog) {
+                            ModalServ.close(dialog);
+                        }
+                    }, {
+                        label: 'OK',
+                        action: function(dialog) {
+                            ModalServ.close(dialog);
                             permission.$delete(function() {
                                Permissions.query(function(data) {
                                     $scope.permissionList = data;
                                });
                             }, angularHandler('server.error', 'security.delete.permission.error'));
                         }
-                    }
+                    }]
                 });
+                ModalServ.open(dialog);
             };
 
             $scope.cancelRole=function() {
@@ -371,7 +381,7 @@
             };
     });
 
-    controllers.controller('WebSecurityProfileCtrl', function ($scope, Users, $http, $routeParams) {
+    controllers.controller('WebSecurityProfileCtrl', function ($scope, Users, $http, $routeParams, ModalServ) {
             $http.get('../websecurity/api/users/current').
                 success(function(data) {
                     $scope.userName = data.userName;
@@ -411,34 +421,34 @@
 
         $scope.changeEmail = function () {
             $http.post('../websecurity/api/users/change/email', $scope.email).
-                success(alertHandler('security.update.email.saved', 'security.update')).
+                success(ModalServ.alertHandler('security.update.email.saved', 'security.update')).
                 error(angularHandler('server.error', 'security.update.email.error'));
         };
 
         $scope.changePassword = function () {
             $http.post('../websecurity/api/users/change/password', [$scope.oldPassword, $scope.newPassword]).
                 success(function () {
-                    motechAlert('security.update.userPass.saved', 'security.update');
+                    ModalServ.motechAlert('security.update.userPass.saved', 'security.update');
                     delete $scope.user.oldPassword;
                     delete $scope.user.newPassword;
                     delete $scope.confirmPassword;
                 }).error(function(response) {
-                    handleResponse('security.update.userPass.error', 'server.error', response);
+                    ModalServ.handleResponse('security.update.userPass.error', 'server.error', response);
                 });
         };
     });
 
-    controllers.controller('WebSecurityDynamicCtrl', function ($scope, Users, Permissions, Dynamic) {
+    controllers.controller('WebSecurityDynamicCtrl', function ($scope, Users, Permissions, Dynamic, ModalServ) {
         $scope.users = Users.query();
         $scope.permissions = Permissions.query();
         $scope.savingDynamicURL = false;
 
         $scope.loadDynamicURLs = function () {
             var dynamicURLs;
-            blockUI();
+            ModalServ.blockUI();
             Dynamic.get(function (response) {
                  $scope.config = response;
-                 unblockUI();
+                 ModalServ.unblockUI();
             });
         };
 
@@ -527,17 +537,27 @@
         };
 
         $scope.removeRule = function (idx) {
-            BootstrapDialog.confirm({
+            var dialog;
+            dialog = new BootstrapDialog ({
                 message: $scope.msg('security.warning.removeRule'),
                 type: BootstrapDialog.TYPE_WARNING,
-                callback: function(result) {
-                    if (result) {
+                closable: false,
+                buttons: [{
+                    label: 'Close',
+                    action: function(dialog) {
+                        ModalServ.close(dialog);
+                    }
+                }, {
+                    label: 'OK',
+                    action: function(dialog) {
+                        ModalServ.close(dialog);
                         $scope.safeApply(function () {
                             $scope.config.securityRules.remove(idx);
                         });
                     }
-                }
+                }]
             });
+            ModalServ.open(dialog);
         };
 
         $scope.save = function () {
@@ -562,15 +582,25 @@
         };
 
         $scope.cancel = function () {
-            BootstrapDialog.confirm({
+            var dialog;
+            dialog = new BootstrapDialog ({
                 message: $scope.msg('security.warning.cancel'),
                 type: BootstrapDialog.TYPE_WARNING,
-                callback: function(result) {
-                    if (result) {
+                closable: false,
+                buttons: [{
+                    label: 'Close',
+                    action: function(dialog) {
+                        ModalServ.close(dialog);
+                    }
+                }, {
+                    label: 'OK',
+                    action: function(dialog) {
+                        ModalServ.close(dialog);
                         $scope.config = Dynamic.get();
                     }
-                }
+                }]
             });
+            ModalServ.open(dialog);
         };
 
     });

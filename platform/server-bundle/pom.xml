@@ -128,7 +128,7 @@
                                 $, angular, jQuery, motechAlert,  window, innerLayout,
                                 toLocale, moment, parseUri, handleResponse, angularHandler, blockUI, unblockUI, _,
                                 $rootScope, jgridDefaultSettings, alertHandler, SwaggerUi, getBaseUrl, getServerPrefix,
-                                parseResponse, BootstrapDialog
+                                parseResponse, BootstrapDialog, console
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

@@ -31,16 +31,24 @@ function motechAlertStackTrace(msg, title, response, callback) {
 }
 
 function blockUI() {
-    'use strict';
-    $.blockUI.defaults.css.border = "0px";
-    $.blockUI({theme: false, message :
-        '<div class="splash">' +
-            '<div class="splash-logo"><img src="./../../static/common/img/motech-logo.gif" alt="motech-logo"></div>' +
-            '<div class="clearfix"></div>' +
-            '<div class="splash-loader"><img src="./../../static/common/img/loadingbar.gif" alt="Loading..."></div>' +
-            '<div class="clearfix"></div>' + '<br>' +
-        '</div>'
-    });
+    var dialog = new BootstrapDialog({
+        message: function(dialogRef){
+            var $message = $(
+                '<div class="splash-logo"><img src="./../../static/common/img/motech-logo.gif" alt="motech-logo"></div>' +
+                '<div class="clearfix"></div>' +
+                '<div class="splash-loader"><img src="./../../static/common/img/loadingbar.gif" alt="Loading..."></div>' +
+                '<div class="clearfix"></div>' + '<br>');
+                return $message;
+            },
+            closable: false
+        });
+        dialog.realize();
+        dialog.getModalHeader().hide();
+        dialog.getModalFooter().hide();
+        dialog.getModalContent().addClass('splash');
+        dialog.getModalContent().css('margin-top', '40%');
+        dialog.getModalBody().css('padding', '0px');
+        dialog.open();
 }
 
 function resizeLayout() {
@@ -54,9 +62,9 @@ function resizeLayout() {
 }
 
 function unblockUI() {
-    'use strict';
-    $.unblockUI();
-    resizeLayout();
+    $.each(BootstrapDialog.dialogs, function(id, dialog){
+        dialog.close();
+    });
 }
 
 function getAvailableTabs(moduleName, callback) {

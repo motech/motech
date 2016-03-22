@@ -6,7 +6,7 @@
 
     var controllers = angular.module('tasks.controllers', []);
 
-    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope, $http, ManageTaskUtils) {
+    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope, $http, ManageTaskUtils, ModalServ) {
         var tasks, activities = [],
             searchMatch = function (item, method, searchQuery) {
                 var result;
@@ -110,34 +110,55 @@
             $http.post('../tasks/api/task/' + item.task.id, item.task)
                 .success(dummyHandler)
                 .error(function (response) {
+                    var dialog;
+
                     item.task.enabled = !enabled;
-                    BootstrapDialog.alert({
+                    dialog = new BootstrapDialog ({
                         type: BootstrapDialog.TYPE_DANGER,
                         title: $scope.msg('task.error.actionNotChangeTitle'),
-                        message: $scope.util.createErrorMessage($scope, response, false)
+                        message: $scope.util.createErrorMessage($scope, response, false),
+                        closable: false,
+                        buttons: [{
+                            label: 'OK',
+                            action: function(dialog) {
+                            ModalServ.close(dialog);
+                            }
+                        }]
                     });
+                    ModalServ.open(dialog);
                 });
         };
 
         $scope.deleteTask = function (item) {
-            BootstrapDialog.confirm({
+            var dialog;
+
+            dialog = new BootstrapDialog ({
                 title: $scope.msg('task.header.confirm'),
                 message: $scope.msg('task.confirm.remove'),
                 type: BootstrapDialog.TYPE_WARNING,
-                callback: function(result) {
-                    if (result) {
-                        blockUI();
+                closable: false,
+                buttons: [{
+                    label: 'Close',
+                    action: function(dialog) {
+                        ModalServ.close(dialog);
+                    }
+                }, {
+                    label: 'OK',
+                    action: function(dialog) {
+                        ModalServ.close(dialog);
+                        ModalServ.blockUI();
                         item.task.$remove(function () {
                             $scope.allTasks.removeObject(item);
                             $rootScope.search();
                             $('#inner-center').trigger("change");
-                            unblockUI();
+                            ModalServ.unblockUI();
                         },
-                            alertHandler('task.error.removed', 'task.header.error')
+                        ModalServ.alertHandler('task.error.removed', 'task.header.error')
                         );
                     }
-                }
+                }]
             });
+            ModalServ.open(dialog);
         };
 
         $rootScope.search = function () {
@@ -184,17 +205,17 @@
         };
 
         $scope.importTask = function () {
-            blockUI();
+            ModalServ.blockUI();
 
             $('#importTaskForm').ajaxSubmit({
                 success: function () {
                     $scope.getTasks();
                     $('#importTaskForm').resetForm();
                     $('#importTaskModal').modal('hide');
-                    unblockUI();
+                    ModalServ.unblockUI();
                 },
                 error: function (response) {
-                    handleResponse('task.header.error', 'task.error.import', response);
+                    ModalServ.handleResponse('task.header.error', 'task.error.import', response);
                 }
             });
         };
@@ -282,7 +303,7 @@
 
     });
 
-    controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers, $q, $timeout, $routeParams, $http, $compile, $filter) {
+    controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers, ModalServ, $q, $timeout, $routeParams, $http, $compile, $filter) {
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
         $scope.selectedAction = [];
@@ -294,7 +315,7 @@
         $scope.task.retryTaskOnFailure = false;
 
         $scope.openTriggersModal = function(channel) {
-            blockUI();
+            ModalServ.blockUI();
             $scope.staticTriggersPager = 1;
             $scope.dynamicTriggersPager = 1;
             $scope.selectedChannel = channel;
@@ -319,7 +340,7 @@
                         $scope.divSize = "col-md-12";
                     }
                     $('#triggersModal').modal('show');
-                    unblockUI();
+                    ModalServ.unblockUI();
                 }
             );
         };
@@ -346,7 +367,7 @@
 
         $scope.reloadLists = function(staticTriggersPage, dynamicTriggersPage) {
             if ($scope.validatePages(staticTriggersPage, dynamicTriggersPage)) {
-                blockUI();
+                ModalServ.blockUI();
                 Triggers.get(
                     {
                         moduleName: $scope.selectedChannel.moduleName,
@@ -360,7 +381,7 @@
                         $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
                         $("#staticTriggersPager").val($scope.staticTriggersPage);
                         $("#dynamicTriggersPager").val($scope.dynamicTriggersPage);
-                        unblockUI();
+                        ModalServ.unblockUI();
                     }
                 );
             }
@@ -374,10 +395,10 @@
 
         $scope.filter = $filter('filter');
 
-        blockUI();
+        ModalServ.blockUI();
 
         $q.all([$scope.util.doQuery($q, Channels), $scope.util.doQuery($q, DataSources)]).then(function(data) {
-            blockUI();
+            ModalServ.blockUI();
 
             $scope.channels = data[0];
             $scope.dataSources = data[1];
@@ -491,7 +512,7 @@
                 });
             }
 
-            unblockUI();
+            ModalServ.unblockUI();
         });
 
         $scope.isTaskValid = function() {
@@ -513,7 +534,8 @@
 
         $scope.selectTrigger = function (channel, trigger) {
             if ($scope.task.trigger) {
-                motechConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
+                ModalServ.motechConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
+                    ModalServ.remove();
                     if (val) {
                         $scope.util.trigger.remove($scope);
                         $scope.util.trigger.select($scope, channel, trigger);
@@ -529,7 +551,8 @@
         $scope.removeTrigger = function ($event) {
             $event.stopPropagation();
 
-            motechConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
+            ModalServ.motechConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
+                ModalServ.remove();
                 if (val) {
                     $scope.util.trigger.remove($scope);
                 }
@@ -556,7 +579,8 @@
             };
 
             if ($scope.selectedActionChannel[idx] !== undefined && $scope.selectedActionChannel[idx].displayName !== undefined) {
-                motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
+                ModalServ.motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
+                    ModalServ.remove();
                     if (val) {
                         removeActionSelected(idx);
                     }
@@ -568,7 +592,8 @@
 
         $scope.selectActionChannel = function (idx, channel) {
             if ($scope.selectedActionChannel[idx] && $scope.selectedAction[idx]) {
-                motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
+                ModalServ.motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
+                    ModalServ.remove();
                     if (val) {
                         $scope.task.actions[idx] = {};
                         $scope.selectedActionChannel[idx] = channel;
@@ -590,7 +615,8 @@
 
         $scope.selectAction = function (idx, action) {
             if ($scope.selectedAction[idx]) {
-                motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
+                ModalServ.motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
+                    ModalServ.remove();
                     if (val) {
                         $scope.util.action.select($scope, idx, action);
                     }
@@ -621,7 +647,8 @@
             };
 
             if (data.filters !== undefined && data.filters.length > 0) {
-                motechConfirm('task.confirm.filterSet', "task.header.confirm", function (val) {
+                ModalServ.motechConfirm('task.confirm.filterSet', "task.header.confirm", function (val) {
+                    ModalServ.remove();
                     if (val) {
                         removeFilterSetSelected(data);
                     }
@@ -762,7 +789,8 @@
 
         $scope.removeData = function (dataSource) {
             if (dataSource.type !== undefined || (dataSource.providerName !== undefined && dataSource.providerName !== '')) {
-                motechConfirm('task.confirm.dataSource', "task.header.confirm", function (val) {
+                ModalServ.motechConfirm('task.confirm.dataSource', "task.header.confirm", function (val) {
+                    ModalServ.remove();
                     if (val) {
                         $scope.task.taskConfig.steps.removeObject(dataSource);
 
@@ -831,7 +859,8 @@
 
         $scope.selectDataSource = function (dataSource, selected) {
             if (dataSource.providerId) {
-                motechConfirm('task.confirm.changeDataSource', 'task.header.confirm', function (val) {
+                ModalServ.motechConfirm('task.confirm.changeDataSource', 'task.header.confirm', function (val) {
+                    ModalServ.remove();
                     if (val) {
                         dataSource.name = '';
                         $scope.util.dataSource.select($scope, dataSource, selected);
@@ -844,7 +873,8 @@
 
         $scope.selectObject = function (object, selected) {
             if (object.type) {
-                motechConfirm('task.confirm.changeObject', 'task.header.confirm', function (val) {
+                ModalServ.motechConfirm('task.confirm.changeObject', 'task.header.confirm', function (val) {
+                    ModalServ.remove();
                     if (val) {
                         object.name = '';
                         $scope.util.dataSource.selectObject($scope, object, selected);
@@ -1171,26 +1201,31 @@
         $scope.save = function (enabled) {
             var success = function (response) {
                     var alertMessage = enabled ? $scope.msg('task.success.savedAndEnabled') : $scope.msg('task.success.saved'),
-                    loc, indexOf, errors = response.validationErrors || response;
+                    loc, indexOf, errors = response.validationErrors || response, dialog;
 
                     if (errors.length > 0) {
                         alertMessage = $scope.util.createErrorMessage($scope, errors, true);
                     }
-                    BootstrapDialog.alert({
+                    dialog = new BootstrapDialog ({
                         type: BootstrapDialog.TYPE_SUCCESS,
                         title: $scope.msg('task.header.saved'),
                         message: alertMessage,
-                        callback: function () {
-                            unblockUI();
-                            loc = window.location.toString();
-                            indexOf = loc.indexOf('#');
-
-                            window.location = "{0}#/tasks/dashboard".format(loc.substring(0, indexOf));
-                        }
+                        closable: false,
+                        buttons: [{
+                            label: 'OK',
+                            action: function(dialog){
+                                ModalServ.close(dialog);
+                                ModalServ.unblockUI();
+                                loc = window.location.toString();
+                                indexOf = loc.indexOf('#');
+                                window.location = "{0}#/tasks/dashboard".format(loc.substring(0, indexOf));
+                            }
+                        }]
                     });
+                    ModalServ.open(dialog);
                 },
                 error = function (response) {
-                    var data = (response && response.data) || response;
+                    var data = (response && response.data) || response, dialog;
 
                     angular.forEach($scope.task.actions, function (action) {
                         delete action.values;
@@ -1206,11 +1241,19 @@
 
                     delete $scope.task.enabled;
 
-                    unblockUI();
-                    BootstrapDialog.alert({
+                    ModalServ.unblockUI();
+                    dialog = new BootstrapDialog ({
                         type: BootstrapDialog.TYPE_DANGER,
-                        message: $scope.util.createErrorMessage($scope, data, false)
+                        message: $scope.util.createErrorMessage($scope, data, false),
+                        closable: false,
+                        buttons: [{
+                            label: 'OK',
+                            action:function (dialog) {
+                                ModalServ.close(dialog);
+                            }
+                        }]
                     });
+                    ModalServ.open(dialog);
                 };
 
             $scope.task.enabled = enabled;
@@ -1255,7 +1298,7 @@
                 $scope.task.retryIntervalInMilliseconds = $scope.task.retryIntervalInSeconds * 1000;
             }
 
-            blockUI();
+            ModalServ.blockUI();
 
             if (!$routeParams.taskId) {
                 $http.post('../tasks/api/task/save', $scope.task).success(success).error(error);
@@ -1511,7 +1554,7 @@
         };
     });
 
-    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $routeParams, $filter, $http) {
+    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $routeParams, $filter, $http, ModalServ) {
         var data, task;
 
         $scope.taskId = $routeParams.taskId;
@@ -1566,17 +1609,18 @@
         };
 
         $scope.clearHistory = function () {
-            motechConfirm('task.history.confirm.clearHistory', 'task.history.confirm.clear',function (r) {
+            ModalServ.motechConfirm('task.history.confirm.clearHistory', 'task.history.confirm.clear',function (r) {
+                ModalServ.remove();
                 if (!r) {
                     return;
                 }
-                blockUI();
+                ModalServ.blockUI();
                 Activities.remove({taskId: $routeParams.taskId}, function () {
                      $scope.refresh();
-                     unblockUI();
+                     ModalServ.unblockUI();
                  }, function (response) {
-                     unblockUI();
-                     handleResponse('task.header.error', 'task.history.deleteError', response);
+                     ModalServ.unblockUI();
+                     ModalServ.handleResponse('task.header.error', 'task.history.deleteError', response);
                  });
             });
         };
@@ -1584,16 +1628,18 @@
         $scope.retryTask = function (activityId) {
             $http.post('../tasks/api/activity/retry/' + activityId)
                 .success(function () {
-                    motechAlert('task.retry.info', 'task.retry.header');
+                    ModalServ.motechAlert('task.retry.info', 'task.retry.header');
+                        ModalServ.remove();
                 })
                 .error(function() {
-                    motechAlert('task.retry.failed', 'task.retry.header');
+                    ModalServ.motechAlert('task.retry.failed', 'task.retry.header');
+                        ModalServ.remove();
                 });
         };
     });
 
 
-    controllers.controller('TasksSettingsCtrl', function ($scope, Settings) {
+    controllers.controller('TasksSettingsCtrl', function ($scope, Settings, ModalServ) {
         $scope.settings = Settings.get();
 
         innerLayout({
@@ -1604,9 +1650,11 @@
 
         $scope.submit = function() {
             $scope.settings.$save(function() {
-                motechAlert('task.settings.success.saved', 'server.saved');
+                ModalServ.motechAlert('task.settings.success.saved', 'server.saved');
+                    ModalServ.remove();
             }, function() {
-                motechAlert('task.settings.error.saved', 'server.error');
+                ModalServ.motechAlert('task.settings.error.saved', 'server.error');
+                    ModalServ.remove();
             });
         };
 
@@ -1626,7 +1674,7 @@
 
     });
 
-    controllers.controller('MapsCtrl', function ($scope) {
+    controllers.controller('MapsCtrl', function ($scope, ModalServ) {
         var exp, values, keyValue, dragAndDrop = $scope.BrowserDetect.browser === 'Chrome' || $scope.BrowserDetect.browser === 'Explorer' || $scope.BrowserDetect.browser === 'Firefox';
 
         if (dragAndDrop) {
@@ -1749,7 +1797,8 @@
                 }
             };
 
-            motechConfirm('task.confirm.reset.map', "task.header.confirm", function (val) {
+            ModalServ.motechConfirm('task.confirm.reset.map', "task.header.confirm", function (val) {
+                ModalServ.remove();
                 if (val) {
                     resetMap();
                 }

@@ -4,7 +4,7 @@
     /* App Module */
 
     var app = angular.module('admin', ['motech-dashboard', 'admin.filters', 'admin.controllers',
-        'admin.directives', 'admin.services', 'ngCookies']);
+        'admin.directives', 'admin.services', 'ngCookies', 'uiServices']);
 
     app.config(['$routeProvider', function($routeProvider) {
           $routeProvider.

@@ -108,7 +108,7 @@
                                 $, jQuery, angular, TasksDashboardCtrl, TasksManageCtrl, TasksLogCtrl, moment,
                                 dummyHandler, handleResponse, alertHandler, window,
                                 blockUI, unblockUI, motechAlert, motechConfirm, cloneObj,
-                                isBlank, defaultLayout, innerLayout, BootstrapDialog
+                                isBlank, defaultLayout, innerLayout, BootstrapDialog, console
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                             <excludes>
