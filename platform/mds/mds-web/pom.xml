@@ -80,7 +80,6 @@
                             net.sf.cglib.reflect,
                             org.aopalliance.aop,
                             org.eclipse.gemini.blueprint.config,
-                            org.motechproject.mds.javassist,
                             org.motechproject.mds.service,
                             org.motechproject.osgi.web,
                             org.springframework.aop,

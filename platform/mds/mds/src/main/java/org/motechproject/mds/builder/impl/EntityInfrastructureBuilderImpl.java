@@ -14,7 +14,7 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.exception.entity.EntityInfrastructureException;
-import org.motechproject.mds.helper.MdsBundleHelper;
+import org.motechproject.mds.helper.bundle.MdsBundleHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.service.MotechDataService;

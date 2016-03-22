@@ -1,6 +1,7 @@
-package org.motechproject.mds.repository;
+package org.motechproject.mds.repository.internal;
 
 import org.motechproject.mds.domain.UserPreferences;
+import org.motechproject.mds.repository.MotechDataRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

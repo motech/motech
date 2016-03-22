@@ -1,4 +1,4 @@
-package org.motechproject.mds.helper;
+package org.motechproject.mds.helper.bundle;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.felix.framework.BundleWiringImpl;

@@ -20,6 +20,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface NotInSet {
+
     /**
      * The <code>String</code> array representation of the values in which the value of the given
      * field should not be.
