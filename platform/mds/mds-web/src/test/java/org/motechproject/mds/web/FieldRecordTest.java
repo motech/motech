@@ -11,6 +11,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.motechproject.mds.util.Constants.Settings.ALLOW_MULTIPLE_SELECTIONS;
 import static org.motechproject.mds.util.Constants.Settings.COMBOBOX_VALUES;
 
 public class FieldRecordTest {
@@ -19,7 +20,7 @@ public class FieldRecordTest {
     public void shouldExtendOptionsAndHandleDefListValuesForMultiSelect() {
         FieldDto fieldDto = FieldTestHelper.fieldDto(1L, "name", List.class.getName(), "disp", "[one, two]");
         fieldDto.setSettings(asList(new SettingDto(COMBOBOX_VALUES, asList("one", "two", "three"), null, null),
-                new SettingDto(COMBOBOX_VALUES, true, null, null)));
+                new SettingDto(ALLOW_MULTIPLE_SELECTIONS, true, null, null)));
 
         FieldRecord fieldRecord = new FieldRecord(fieldDto);
         assertEquals(asList("one", "two"), fieldRecord.getValue());

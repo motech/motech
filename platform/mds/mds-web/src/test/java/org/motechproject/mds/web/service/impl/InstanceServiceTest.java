@@ -684,7 +684,7 @@ public class InstanceServiceTest {
         assertEquals(Integer.valueOf(1), records.getPage()); // page 1
         assertEquals(Integer.valueOf(2), records.getTotal()); // 2 pages total
         assertEquals(Integer.valueOf(3), records.getRecords()); // 3 records total
-        assertEquals(asList(1L, 2L), extract(records.getRows(), on(EntityRecord.class).getFieldByName("id").getValue()));
+        assertEquals(asList(1L, 2L), extract(records.getRows(), on(BasicEntityRecord.class).getFieldByName("id").getValue()));
     }
 
     @Test
@@ -694,7 +694,7 @@ public class InstanceServiceTest {
         entityDto.setSecurityMode(null);
         entityDto.setClassName(TestSample.class.getName());
 
-        EntityRecord entityRecord = new EntityRecord(ENTITY_ID + 1, null, new ArrayList<FieldRecord>());
+        EntityRecord entityRecord = new EntityRecord(ENTITY_ID + 1, null, new ArrayList<>());
 
         when(entityService.getEntity(ENTITY_ID + 1)).thenReturn(entityDto);
 
