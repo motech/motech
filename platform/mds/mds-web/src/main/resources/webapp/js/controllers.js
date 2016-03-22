@@ -119,24 +119,25 @@
 
         /**
         * Return available values for combobox field.
+        * value is a parameter to be given to get the display name otherwise it is not needed.
         *
         * @param {Array} setting A array of field settings.
         * @return {Array} A array of possible combobox values.
         */
-        $scope.getComboboxValues = function (settings) {
+        $scope.getComboboxValues = function (settings, value) {
             var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value, keys = [], key;
             // Check the user supplied flag, if true return string set
             if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
-                return labelValues;
+                return value === undefined || value === null ? labelValues : value;
             } else {
                 if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
                     labelValues =  $scope.getAndSplitComboboxValues(labelValues);
                     for(key in labelValues) {
                         keys.push(key);
                     }
-                    return keys;
+                    return value === undefined || value === null ? keys : keys[value];
                 } else {        // there is no colon, so we are dealing with a string set, not a map
-                    return labelValues;
+                    return value === undefined || value === null ? labelValues : value;
                 }
             }
         };
@@ -151,18 +152,7 @@
         };
 
         $scope.getComboboxDisplayName = function (settings, value) {
-            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value;
-            // Check the user supplied flag, if true return string set
-            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
-                return value;
-            } else {
-                if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
-                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
-                    return labelValues[value];
-                } else {         // there is no colon, so we are dealing with a string set, not a map
-                    return value;
-                }
-            }
+            return $scope.getComboboxValues(settings, value);
         };
 
         /**
