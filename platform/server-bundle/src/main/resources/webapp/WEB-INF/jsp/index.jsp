@@ -54,7 +54,7 @@
                         <div class="splash-msg"></div>
                         <div class="clearfix"></div>
                     </div>
-                    <div id="module-content" load-on-demand="moduleToLoad"></div>
+                    <div id="module-content" ui-view="moduleToLoad"></div>
                     </c:otherwise>
                 </c:choose>
             </div>

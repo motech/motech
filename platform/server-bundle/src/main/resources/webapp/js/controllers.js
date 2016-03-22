@@ -3,7 +3,7 @@
 
     var serverModule = angular.module('motech-dashboard');
 
-    serverModule.controller('MotechMasterCtrl', function ($scope, $http, i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout, $route) {
+    serverModule.controller('MotechMasterCtrl', function ($scope, $rootScope, $ocLazyLoad, $state, $stateParams, $http, i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout) {
 
         var handle = function () {
                 if (!$scope.$$phase) {
@@ -203,11 +203,17 @@
         };
 
         $scope.loadModule = function (moduleName, url) {
-            var refresh, resultScope, reloadModule;
+            var refresh, resultScope, reloadModule, convertUrl;
             $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
             $scope.activeLink = {moduleName: moduleName, url: url};
+            convertUrl = function (urlParam) {
+                if(urlParam.indexOf('/') === 0) {urlParam = urlParam.replace('/', '');}
+                if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace('/', '.');}
+                return urlParam;
+            };
             if (moduleName) {
                 blockUI();
+
 
                 $http.get('../server/module/critical/' + moduleName).success(function (data, status) {
                     if (data !== undefined && data !== '' && status !== 408) {
@@ -220,6 +226,7 @@
 
                 if ($scope.moduleToLoad === moduleName || url === '/login') {
                     $location.path(url);
+                    $state.go(convertUrl(url));
                     unblockUI();
                     innerLayout({}, {
                         show: false
@@ -227,22 +234,31 @@
                 } else {
                     refresh = ($scope.moduleToLoad === undefined) ? true : false;
                     $scope.moduleToLoad = moduleName;
+                    if (!$ocLazyLoad.isLoaded(moduleName)) {
+                        $ocLazyLoad.load(moduleName);
+                    }
+                    $scope.$on('ocLazyLoad.moduleLoaded', function(e, params) {
+                       //console.log('event module loaded', params);
+                      });
+                      $scope.$on('ocLazyLoad.componentLoaded', function(e, params) {
+                       //console.log('event component loaded', params);
+                      });
+                      $scope.$on('ocLazyLoad.fileLoaded', function(e, file) {
+                       //console.log('event file loaded', file);
+                      });
 
                     if (url) {
                         reloadModule = true;
                         window.location.hash = "";
-                        $scope.$on('loadOnDemand.loadContent', function () {
-                            if (reloadModule) {
+                        if ($ocLazyLoad.isLoaded(moduleName)) {
+                            $location.path(url);
+                            $state.go(convertUrl(url));
+                            unblockUI();
+                        }
+                        $scope.$on('ocLazyLoad.moduleLoaded', function(e, params) {
                                 $location.path(url);
                                 unblockUI();
                                 reloadModule = false;
-                                innerLayout({}, {
-                                    show: false
-                                });
-                                if (refresh) {
-                                    $route.reload();
-                                }
-                            }
                         });
                     } else {
                         unblockUI();
@@ -250,6 +266,16 @@
                 }
             }
         };
+        $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
+            //console.log('stateChange  Success - event: ', event);
+            //console.log('stateChange  Success - fromState: ', fromState);
+            //console.log('stateChange  Success - toState: ', toState, '---<<<');
+            //console.log('stateChange Success - toParams: ', toParams);
+        });
+        $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error){
+            //console.log('stateChange  Error - fromState: ', fromState);
+            //console.log('stateChange  Error - toState: ', toState);
+        });
 
         $scope.loadI18n = function (data) {
             i18nService.init(data);
@@ -551,9 +577,9 @@
         };
     });
 
-    serverModule.controller('MotechHomeCtrl', function ($scope, $cookieStore, $q, Menu, $rootScope, $http) {
+    serverModule.controller('MotechHomeCtrl', function ($scope, $ocLazyLoad, $cookieStore, $q, Menu, $rootScope, $http) {
         $scope.securityMode = false;
-
+        //$ocLazyLoad.load('testModule.js');
         $scope.moduleMenu = {};
 
         $scope.openInNewTab = function (url) {

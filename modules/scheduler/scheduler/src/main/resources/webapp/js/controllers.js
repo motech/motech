@@ -6,7 +6,7 @@
 
     var controllers = angular.module('scheduler.controllers', []);
 
-    controllers.controller('SchedulerCtrl', function($scope, $timeout, $routeParams, JobsService) {
+    controllers.controller('SchedulerCtrl', function($scope, $timeout, JobsService) {
 
         $scope.jobDetails = {};
 
@@ -133,7 +133,7 @@
         };
     });
 
-    controllers.controller('SchedulerCreateJobCtrl', function($scope, $timeout, $routeParams, JobsService) {
+    controllers.controller('SchedulerCreateJobCtrl', function($scope, $timeout, $stateParams, JobsService) {
 
         innerLayout({}, {
             show: false,
@@ -143,7 +143,7 @@
         $scope.job = {};
         $scope.job.motechEvent = {};
         $scope.motechEventParameters = [];
-        $scope.action = $routeParams.action;
+        $scope.action = $stateParams.action;
         $scope.dates = {};
 
         $scope.jobTypes = [

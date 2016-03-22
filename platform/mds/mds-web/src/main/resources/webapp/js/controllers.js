@@ -290,14 +290,14 @@
         };
     });
 
-    controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, $controller, Entities, MDSUtils) {
-
+    controllers.controller('MdsBasicCtrl', function ($scope, $rootScope, $location, $state, $stateParams, $controller, Entities, MDSUtils) {
+        $scope.AVAILABLE_TABS = ["dataBrowser","schemaEditor","settings"];
         angular.extend(this, $controller('MdsEmbeddableCtrl', {
             $scope: $scope,
             MDSUtils: MDSUtils
         }));
 
-        var schemaEditorPath = '/mds/{0}'.format($scope.AVAILABLE_TABS[1]);
+        var schemaEditorPath = '/mds/{0}'.format('schemaEditor');
 
         $scope.DATA_BROWSER = "dataBrowser";
         $scope.SCHEMA_EDITOR = "schemaEditor";
@@ -333,8 +333,8 @@
         $scope.resumeEdits = function (entityId) {
             if (schemaEditorPath !== $location.path()) {
                 $location.path(schemaEditorPath);
-            } else {
-                $route.reload();
+            } else {//$state.transitionTo($state.current, $stateParams, { reload: true, inherit: false, notify: true });
+                $state.reload();
             }
 
             loadEntity = entityId;
@@ -3229,12 +3229,12 @@
     /**
     * The MdsDataBrowserCtrl controller is used on the 'Data Browser' view.
     */
-    controllers.controller('MdsDataBrowserCtrl', function ($rootScope, $scope, $http, $location, $routeParams, Entities, Instances, History,
+    controllers.controller('MdsDataBrowserCtrl', function ($rootScope, $scope, $http, $location, $state, $stateParams, Entities, Instances, History,
                                 $timeout, MDSUtils, Locale, MDSUsers) {
 
         MDSUtils.setCustomOperatorFunctions($scope);
 
-        workInProgress.setActualEntity(Entities, undefined);
+        //workInProgress.setActualEntity(Entities, undefined);
 
         $scope.modificationFields = ['modificationDate', 'modifiedBy'];
 
@@ -3257,11 +3257,11 @@
 
         // checks if we're using URL with entity id
         $scope.checkForEntityId = function () {
-            if ($routeParams.entityId !== undefined) {
+            if ($stateParams.entityId !== undefined) {
                 $.ajax({
                     async: false,
                     type: "GET",
-                    url: '../mds/entities/getEntityById?entityId=' + $routeParams.entityId,
+                    url: '../mds/entities/getEntityById?entityId=' + $stateParams.entityId,
                     success: function (data) {
                         $scope.selectedEntity = data;
                     }
@@ -3299,7 +3299,7 @@
         /**
         * This variable is set after user clicks "View" button next to chosen entity
         */
-        $scope.selectedEntity = ($routeParams.entityId === undefined) ? undefined : $scope.checkForEntityId();
+        $scope.selectedEntity = ($stateParams.entityId === undefined) ? undefined : $scope.checkForEntityId();
 
         $scope.selectedFields = [];
 
@@ -4279,7 +4279,7 @@
                    $scope.allEntityFields = data;
                    $scope.setAvailableFieldsForDisplay();
 
-                   if ($routeParams.entityId === undefined) {
+                   if ($stateParams.entityId === undefined) {
                       var hash = window.location.hash.substring(2, window.location.hash.length) + "/" + $scope.selectedEntity.id;
                       $location.path(hash);
                       $location.replace();
@@ -4327,9 +4327,9 @@
             });
         };
 
-        $scope.$on('$routeChangeSuccess', function() {
-            if ($routeParams.entityId !== undefined) {
-                $scope.retrieveAndSetEntityData('../mds/entities/getEntityById?entityId=' + $routeParams.entityId);
+        $scope.$on('$stateChangeSuccess', function() {
+            if ($stateParams.entityId !== undefined) {
+                $scope.retrieveAndSetEntityData('../mds/entities/getEntityById?entityId=' + $stateParams.entityId);
             }
         });
 
@@ -5124,11 +5124,11 @@
         };
 
         $scope.checkForModuleConfig = function () {
-            if ($routeParams.moduleName !== undefined) {
+            if ($stateParams.moduleName !== undefined) {
                 $.ajax({
                     async: false,
                     type: "GET",
-                    url: '../' + $routeParams.moduleName + '/mds-databrowser-config',
+                    url: '../' + $stateParams.moduleName + '/mds-databrowser-config',
                     success: function (data) {
                         /*jslint evil:true */
                         function jsEval(src){
@@ -5138,8 +5138,8 @@
                     }
                 });
             }
-            if ($routeParams.instanceId !== undefined) {
-                $scope.editInstance($routeParams.instanceId, $scope.selectedEntity.module, $scope.selectedEntity.name);
+            if ($stateParams.instanceId !== undefined) {
+                $scope.editInstance($stateParams.instanceId, $scope.selectedEntity.module, $scope.selectedEntity.name);
             }
         };
 

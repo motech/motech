@@ -45,7 +45,6 @@
     "jquery-gentleSelect": "git://github.com/shawnchin/jquery-gentleSelect",
     "angular-cookies": "~1.2.29",
     "angular-resource": "~1.2.29",
-    "angular-route": "~1.2.29",
     "angular-sanitize": "~1.2.29",
     "angular-ui": "~0.4.0",
     "font-awesome": "~4.5.0",
@@ -55,7 +54,9 @@
     "jquery-ui": "~1.11.4",
     "bootstrap-multiselect": "~0.9.13",
     "angular-bootstrap": "0.6.0",
-    "bootstrap3-dialog":"1.34.9"
+    "bootstrap3-dialog":"1.34.9",
+    "angular-ui-router":"0.2.18",
+    "oclazyload":"1.0.9"
   },
   "resolutions": {
     "jquery": "1.11.3",
@@ -76,11 +77,17 @@
         "./build/angular-ui.css"
       ]
     },
+    "angular-ui-router": {
+      "main": "release/angular-ui-router.min.js"
+    },
     "font-awesome": {
       "main": "./css/font-awesome.css"
     },
-    "loadOnDemand": {
-      "main": "./loadOnDemand.js"
+    "oclazyload": {
+      "main": "dist/ocLazyLoad.js",
+      "dependencies": {
+        "angular": ">=1.2.0"
+      }
     },
     "livequery": {
       "main": "./jquery.livequery.js"

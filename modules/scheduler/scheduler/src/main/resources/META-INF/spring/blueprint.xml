@@ -25,7 +25,7 @@
                 <value>viewSchedulerJobs</value>
             </list>
         </property>
-        <property name="defaultURL" value="/scheduler"/>
+        <property name="defaultURL" value="/scheduler/dashboard"/>
     </bean>
 
     <osgi:service ref="schedulerService" interface="org.motechproject.scheduler.service.MotechSchedulerService"/>
