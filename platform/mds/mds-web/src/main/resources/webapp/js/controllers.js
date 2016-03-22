@@ -271,10 +271,6 @@
             return mapKey.toString().length > 0 && mapValue.toString().length < 1;
         };
 
-        $scope.getMapLength = function (obj) {
-            return Object.keys(obj).length;
-        };
-
         $scope.getMdsEntityCsvImportPath = function(selectedEntityId) {
             return '../mds/instances/' + selectedEntityId + '/csvimport';
         };
@@ -356,27 +352,6 @@
                     }
                 }
             });
-        };
-
-        /**
-        * Convert string to map.
-        */
-        $scope.stringToMap = function (stringValue) {
-            var resultMaps = [], map = [];
-            if (stringValue !== null && stringValue !== undefined && stringValue.toString().indexOf(':') > 0) {
-                map = stringValue.split('\n');
-                angular.forEach(map, function (map, index) {
-                    var str;
-                    str = map.split(':');
-                    if (str.length > 1) {
-                    resultMaps.push({key: '', value: ''});
-                    resultMaps[index].key = str[0].trim();
-                    resultMaps[index].value = str[1].trim();
-                    }
-                },
-                resultMaps);
-                }
-            return resultMaps;
         };
 
         /**
