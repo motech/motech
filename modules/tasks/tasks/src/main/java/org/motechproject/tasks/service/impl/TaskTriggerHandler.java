@@ -159,9 +159,9 @@ public class TaskTriggerHandler implements TriggerHandler {
         Map<String, Object> eventParams = event.getParameters();
         Task task = taskService.getTask((Long) eventParams.get(TASK_ID));
 
-        if (task == null) {
+        if (task == null || !task.isEnabled()) {
             unscheduleTaskRetry((String) eventParams.get(JOB_SUBJECT));
-        } else if (task.isEnabled()) {
+        } else {
             handleTask(task, eventParams);
         }
     }

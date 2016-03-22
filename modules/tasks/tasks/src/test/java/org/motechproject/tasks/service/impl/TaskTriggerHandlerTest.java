@@ -14,12 +14,13 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.motechproject.commons.api.DataProvider;
 import org.motechproject.commons.api.TasksEventParser;
+import org.motechproject.config.SettingsFacade;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
-import org.motechproject.config.SettingsFacade;
+import org.motechproject.tasks.constants.EventDataKeys;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionEventBuilder;
 import org.motechproject.tasks.domain.ActionParameter;
@@ -35,7 +36,6 @@ import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
-import org.motechproject.tasks.constants.EventDataKeys;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.service.SampleTasksEventParser;
@@ -71,9 +71,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.tasks.constants.EventSubjects.SCHEDULE_REPEATING_JOB;
+import static org.motechproject.tasks.constants.EventSubjects.UNSCHEDULE_REPEATING_JOB;
+import static org.motechproject.tasks.constants.EventSubjects.createHandlerFailureSubject;
+import static org.motechproject.tasks.constants.EventSubjects.createHandlerSuccessSubject;
+import static org.motechproject.tasks.constants.TaskFailureCause.ACTION;
+import static org.motechproject.tasks.constants.TaskFailureCause.DATA_SOURCE;
+import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
 import static org.motechproject.tasks.domain.OperatorType.CONTAINS;
 import static org.motechproject.tasks.domain.OperatorType.ENDSWITH;
 import static org.motechproject.tasks.domain.OperatorType.EQUALS;
@@ -94,13 +100,6 @@ import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
 import static org.motechproject.tasks.domain.ParameterType.TIME;
 import static org.motechproject.tasks.domain.ParameterType.UNICODE;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
-import static org.motechproject.tasks.constants.EventSubjects.SCHEDULE_REPEATING_JOB;
-import static org.motechproject.tasks.constants.EventSubjects.UNSCHEDULE_REPEATING_JOB;
-import static org.motechproject.tasks.constants.EventSubjects.createHandlerFailureSubject;
-import static org.motechproject.tasks.constants.EventSubjects.createHandlerSuccessSubject;
-import static org.motechproject.tasks.constants.TaskFailureCause.ACTION;
-import static org.motechproject.tasks.constants.TaskFailureCause.DATA_SOURCE;
-import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
 import static org.springframework.aop.support.AopUtils.getTargetClass;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
@@ -1611,7 +1610,7 @@ public class TaskTriggerHandlerTest {
     }
 
     @Test
-    public void shouldNotHandleTaskRetryWhenTaskDisabled() throws Exception {
+    public void shouldUnScheduleTaskRetriesWhenTaskDisabled() throws Exception {
         setTriggerEvent();
         setActionEvent();
 
@@ -1626,11 +1625,20 @@ public class TaskTriggerHandlerTest {
 
         MotechEvent event = createEvent();
         event.getParameters().put(EventDataKeys.TASK_ID, 5L);
+        event.getParameters().put(EventDataKeys.JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
 
         handler.setBundleContext(bundleContext);
         handler.handleRetry(event);
 
-        verifyZeroInteractions(eventRelay);
+        ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
+
+        verify(eventRelay).sendEventMessage(captorEvent.capture());
+
+        MotechEvent scheduleJobEvent = captorEvent.getValue();
+        assertEquals(UNSCHEDULE_REPEATING_JOB, scheduleJobEvent.getSubject());
+
+        Map<String, Object> parameters = scheduleJobEvent.getParameters();
+        assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), parameters.get(EventDataKeys.JOB_SUBJECT));
     }
 
     private void initTask() throws Exception {
