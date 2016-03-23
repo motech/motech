@@ -133,7 +133,7 @@
                                                                             <li ng-show="ds.displayName != undefined" class="dropdown-submenu" ng-repeat="ds in task.taskConfig.steps">
                                                                                 <a tabindex="-1">{{taskMsg(ds.displayName)}}#{{ds.objectId}} ({{msg(ds.providerName)}})</a>
                                                                                 <ul class="dropdown-menu">
-                                                                                    <li ng-repeat="field in findObject(ds.providerId, ds.type).fields">
+                                                                                    <li ng-repeat="field in findObject(ds.providerName, ds.type).fields">
                                                                                         <a ng-click="selectParam(filter, 'ad', ds, field)">{{taskMsg(field.displayName)}}</a>
                                                                                     </li>
                                                                                 </ul>
@@ -230,7 +230,7 @@
                                             <div class="form-inline col-md-10 col-sm-9 move-element">
                                                 <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}" data-eventkey="{{i.eventKey}}">{{taskMsg(i.displayName)}}</span>​
                                                 <span ng-repeat="ds in getDataSources() | idLessThan:step.objectId">
-                                                    <span contenteditable="false" ng-repeat="i in findObject(ds.providerId, ds.type).fields" class="badge badge-warning triggerField" draggable
+                                                    <span contenteditable="false" ng-repeat="i in findObject(ds.providerName, ds.type).fields" class="badge badge-warning triggerField" draggable
                                                           data-prefix="ad" data-source="{{ds.providerName}}" data-object="{{ds.displayName}}" data-object-type="{{ds.type}}"
                                                           data-field="{{i.fieldKey}}" data-index="{{$index}}" data-object-id="{{ds.objectId}}" data-type="{{i.type}}">
                                                         {{taskMsg(ds.providerName)}}.{{taskMsg(ds.displayName)}}#{{ds.objectId}}.{{taskMsg(i.displayName)}}
@@ -258,12 +258,12 @@
                                                     <span class="caret"></span>
                                                 </button>
                                                 <ul class="dropdown-menu">
-                                                    <li class="search-data-source" ng-show="findDataSource(step.providerId).objects && findDataSource(step.providerId).objects.length &gt; 8" task-stop-propagation>
+                                                    <li class="search-data-source" ng-show="findDataSource(step.providerName).objects && findDataSource(step.providerName).objects.length &gt; 8" task-stop-propagation>
                                                         <input class="form-control" type="text" ng-model="searchData.displayName" placeholder="{{msg('task.placeholder.searchData')}}">
                                                     </li>
                                                     <li>
                                                         <ul class="select-limit">
-                                                            <li ng-repeat="object in findDataSource(step.providerId).objects | filter:searchData">
+                                                            <li ng-repeat="object in findDataSource(step.providerName).objects | filter:searchData">
                                                                 <a ng-click="selectObject(step, object)">{{taskMsg(object.displayName)}}</a>
                                                             </li>
                                                         </ul>
@@ -280,7 +280,7 @@
                                                         <span class="caret"></span>
                                                     </button>
                                                     <ul class="dropdown-menu">
-                                                        <li ng-repeat="lookup in findObject(step.providerId, step.type).lookupFields">
+                                                        <li ng-repeat="lookup in findObject(step.providerName, step.type).lookupFields">
                                                             <a ng-click="selectLookup(step, lookup)">{{taskMsg(lookup.displayName)}}</a>
                                                         </li>
                                                     </ul>
@@ -331,7 +331,7 @@
                                         <div class="form-group margin-before3 control-section" ng-hide="step.displayName == undefined">
                                             <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.subsubsection.objectFields')}}</label>
                                             <div class="form-inline col-md-10 col-sm-9 move-element">
-                                                <span ng-repeat="field in findObject(step.providerId, step.type).fields" class="badge badge-warning">{{taskMsg(field.displayName)}}</span>​
+                                                <span ng-repeat="field in findObject(step.providerName, step.type).fields" class="badge badge-warning">{{taskMsg(field.displayName)}}</span>​
                                             </div>
                                         </div>
                                     </div>
@@ -373,7 +373,7 @@
                                         <div class="form-inline col-md-10 col-sm-9 move-element">
                                             <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}" data-eventkey="{{i.eventKey}}">{{taskMsg(i.displayName)}}</span>​
                                             <span ng-repeat="ds in getDataSources()">
-                                                <span contenteditable="false" ng-repeat="i in findObject(ds.providerId, ds.type).fields" class="badge badge-warning triggerField" draggable
+                                                <span contenteditable="false" ng-repeat="i in findObject(ds.providerName, ds.type).fields" class="badge badge-warning triggerField" draggable
                                                       data-prefix="ad" data-source="{{ds.providerName}}" data-object="{{ds.displayName}}" data-object-type="{{ds.type}}"
                                                       data-field="{{i.fieldKey}}" data-index="{{$index}}" data-object-id="{{ds.objectId}}" data-type="{{i.type}}">
                                                     {{taskMsg(ds.providerName)}}.{{taskMsg(ds.displayName)}}#{{ds.objectId}}.{{taskMsg(i.displayName)}}

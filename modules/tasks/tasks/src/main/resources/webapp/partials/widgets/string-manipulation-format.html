@@ -11,7 +11,7 @@
                     <div class="move-element col-md-9 col-sm-8">
                         <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters track by $index" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}" data-popover="no">{{taskMsg(i.displayName)}}</span>​
                         <span ng-repeat="ds in getDataSources() track by $index">
-                            <span contenteditable="false" ng-repeat="i in findObject(ds.providerId, ds.type).fields" class="badge badge-warning triggerField" draggable
+                            <span contenteditable="false" ng-repeat="i in findObject(ds.providerName, ds.type).fields" class="badge badge-warning triggerField" draggable
                                 data-prefix="ad" data-source="{{ds.providerName}}" data-object="{{ds.displayName}}" data-object-type="{{ds.type}}"
                                 data-field="{{i.fieldKey}}" data-index="{{$index}}" data-object-id="{{ds.objectId}}" data-type="{{i.type}}" data-popover="no">
                                 {{msg(ds.providerName)}}.{{taskMsg(ds.displayName)}}#{{ds.objectId}}.{{taskMsg(i.displayName)}}
