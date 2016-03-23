@@ -1549,7 +1549,7 @@ public class TaskTriggerHandlerTest {
     }
 
     @Test
-    public void shouldUnScheduleTaskRetriesWhenSuccess() throws Exception {
+    public void shouldUnscheduleTaskRetriesWhenSuccess() throws Exception {
         setTriggerEvent();
         setActionEvent();
 
@@ -1580,7 +1580,7 @@ public class TaskTriggerHandlerTest {
     }
 
     @Test
-    public void shouldUnScheduleTaskRetriesWhenTaskDeleted() throws Exception {
+    public void shouldUnscheduleTaskRetriesWhenTaskDeleted() throws Exception {
         setTriggerEvent();
         setActionEvent();
 
@@ -1610,7 +1610,7 @@ public class TaskTriggerHandlerTest {
     }
 
     @Test
-    public void shouldUnScheduleTaskRetriesWhenTaskDisabled() throws Exception {
+    public void shouldUnscheduleTaskRetriesWhenTaskDisabled() throws Exception {
         setTriggerEvent();
         setActionEvent();
 
