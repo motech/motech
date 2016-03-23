@@ -314,6 +314,7 @@
                             org.motechproject.mds.filter;version=${project.version},
                             org.motechproject.mds.helper;version=${project.version},
                             org.motechproject.mds.helper.bundle;version=${project.version},
+                            org.motechproject.mds.javassist;version=${project.version},
                             org.motechproject.mds.jdo;version=${project.version},
                             org.motechproject.mds.listener;version=${project.version},
                             org.motechproject.mds.listener.proxy;version=${project.version},
