@@ -810,16 +810,31 @@
         };
     });
 
-    widgetModule.directive('motechFileUpload', function($http, $templateCache, $compile) {
-        return function(scope, element, attrs) {
-            $http.get('../server/resources/partials/motech-file-upload.html', { cache: $templateCache }).success(function(response) {
-                var contents = $compile(element.html(response).contents())(scope),
-                    input = contents.find("input");
-                element.replaceWith(contents);
-                if (attrs.accept !== null &&  attrs.accept !== "") {
-                    input.attr("accept", attrs.accept);
-                }
-            });
+    widgetModule.directive('motechFileUpload', ['$compile', '$timeout', '$http', '$templateCache', function ($compile, $timeout, $http, $templateCache) {
+        var templateLoader;
+
+        return {
+            restrict: 'E',
+            replace : true,
+            transclude: true,
+            compile: function (tElement, tAttrs, scope) {
+                var url = '../server/resources/partials/motech-file-upload.html',
+
+                templateLoader = $http.get(url, {cache: $templateCache})
+                    .success(function (html) {
+                        tElement.html(html);
+                    });
+
+                return function (scope, element, attrs) {
+                    templateLoader.then(function () {
+                        element.html($compile(tElement.html())(scope));
+                        var input = element.find("input");
+                        if (attrs.accept !== null &&  attrs.accept !== "") {
+                            input.attr("accept", attrs.accept);
+                        }
+                    });
+                };
+            }
         };
-    });
+    }]);
 }());
