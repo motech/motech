@@ -14,15 +14,12 @@ import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.osgi.web.util.WebBundleUtil;
+import org.motechproject.tasks.compatibility.TaskMigrationManager;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.DataSource;
-import org.motechproject.tasks.domain.Filter;
-import org.motechproject.tasks.domain.FilterSet;
-import org.motechproject.tasks.domain.Lookup;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
-import org.motechproject.tasks.domain.TaskConfigStep;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
@@ -66,11 +63,11 @@ import static java.lang.String.format;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static org.motechproject.tasks.service.util.HandlerPredicates.tasksWithRegisteredChannel;
 import static org.motechproject.tasks.constants.EventDataKeys.CHANNEL_MODULE_NAME;
 import static org.motechproject.tasks.constants.EventDataKeys.DATA_PROVIDER_NAME;
 import static org.motechproject.tasks.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
 import static org.motechproject.tasks.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
+import static org.motechproject.tasks.service.util.HandlerPredicates.tasksWithRegisteredChannel;
 
 /**
  * A {@link TaskService} that manages CRUD operations for a {@link Task}.
@@ -87,6 +84,7 @@ public class TaskServiceImpl implements TaskService {
     private TaskDataProviderService providerService;
     private EventRelay eventRelay;
     private BundleContext bundleContext;
+    private TaskMigrationManager taskMigrationManager;
 
 
     private static final String[] TASK_TRIGGER_VALIDATION_ERRORS = new String[]{"task.validation.error.triggerNotExist",
@@ -205,7 +203,7 @@ public class TaskServiceImpl implements TaskService {
             }
         }
 
-        return list == null ? new ArrayList<Task>() : list;
+        return list == null ? new ArrayList<>() : list;
     }
 
     @Override
@@ -283,7 +281,7 @@ public class TaskServiceImpl implements TaskService {
         LOGGER.debug("Handling a task data provider update: {}", providerName);
 
         for (Task task : getAllTasks()) {
-            SortedSet<DataSource> dataSources = task.getTaskConfig().getDataSources(provider.getId());
+            SortedSet<DataSource> dataSources = task.getTaskConfig().getDataSources(provider.getName());
             if (isNotEmpty(dataSources)) {
                 Set<TaskError> errors = new HashSet<>();
                 for (DataSource dataSource : dataSources) {
@@ -352,22 +350,8 @@ public class TaskServiceImpl implements TaskService {
         removeIgnoredFields(node);
 
         Task task = mapper.readValue(node, Task.class);
-        List<DataSource> sources = task.getTaskConfig().getDataSources();
 
-        // update data provider IDs
-        for (DataSource ds : sources) {
-            TaskDataProvider provider = findProviderByName(ds);
-
-            if (null != provider) {
-                Long oldId = ds.getProviderId();
-                Long newId = provider.getId();
-
-                if (!oldId.equals(newId)) {
-                    replaceProviderId(task, oldId, newId);
-                    ds.setProviderId(newId);
-                }
-            }
-        }
+        taskMigrationManager.migrateTask(task);
 
         save(task);
         return task;
@@ -392,46 +376,6 @@ public class TaskServiceImpl implements TaskService {
         checkChannelAvailableInTasks(tasks);
 
         return tasks;
-    }
-
-    private void replaceProviderId(Task task, Long oldId, Long newId) {
-        for (TaskConfigStep step : task.getTaskConfig().getSteps()) {
-            if (step instanceof DataSource) {
-                DataSource source = (DataSource) step;
-
-                for (Lookup lookup : source.getLookup()) {
-                    lookup.setValue(lookup.getValue().replace(oldId.toString(), newId.toString()));
-                }
-            } else if (step instanceof FilterSet) {
-                FilterSet set = (FilterSet) step;
-
-                for (Filter filter : set.getFilters()) {
-                    filter.setKey(filter.getKey().replace(oldId.toString(), newId.toString()));
-                }
-            }
-        }
-
-        for (TaskActionInformation action : task.getActions()) {
-            for (Map.Entry<String, String> row : action.getValues().entrySet()) {
-                action.getValues().put(
-                        row.getKey(),
-                        row.getValue().replace(oldId.toString(), newId.toString())
-                );
-            }
-        }
-    }
-
-    private TaskDataProvider findProviderByName(DataSource ds) {
-        TaskDataProvider provider = null;
-
-        for (TaskDataProvider p : providerService.getProviders()) {
-            if (p.getName().equalsIgnoreCase(ds.getProviderName())) {
-                provider = p;
-                break;
-            }
-        }
-
-        return provider;
     }
 
     private Set<TaskError> validateTrigger(Task task) {
@@ -560,7 +504,7 @@ public class TaskServiceImpl implements TaskService {
         Map<Long, TaskDataProvider> dataProviders = new HashMap<>();
 
         for (DataSource dataSource : task.getTaskConfig().getDataSources()) {
-            TaskDataProvider provider = providerService.getProviderById(dataSource.getProviderId());
+            TaskDataProvider provider = providerService.getProvider(dataSource.getProviderName());
 
             if (provider != null) {
                 dataProviders.put(provider.getId(), provider);
@@ -724,5 +668,10 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     public void setTriggerEventService(TriggerEventService triggerEventService) {
         this.triggerEventService = triggerEventService;
+    }
+
+    @Autowired
+    public void setTaskMigrationManager(TaskMigrationManager taskMigrationManager) {
+        this.taskMigrationManager = taskMigrationManager;
     }
 }

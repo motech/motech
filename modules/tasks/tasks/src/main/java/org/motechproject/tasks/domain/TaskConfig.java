@@ -82,11 +82,11 @@ public class TaskConfig implements Serializable {
     }
 
     @JsonIgnore
-    public SortedSet<DataSource> getDataSources(Long providerId) {
+    public SortedSet<DataSource> getDataSources(String providerName) {
         SortedSet<DataSource> set = new TreeSet<>();
 
         for (DataSource source : getDataSources()) {
-            if (source.getProviderId().equals(providerId)) {
+            if (source.getProviderName().equals(providerName)) {
                 set.add(source);
             }
         }
