@@ -17,6 +17,7 @@ import org.mockito.verification.VerificationMode;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.query.QueryExecution;
+import org.motechproject.tasks.compatibility.TaskMigrationManager;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionEventBuilder;
 import org.motechproject.tasks.domain.ActionParameterBuilder;
@@ -122,6 +123,9 @@ public class TaskServiceImplTest {
     @Mock
     TriggerHandler triggerHandler;
 
+    @Mock
+    TaskMigrationManager taskMigrationManager;
+
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
@@ -141,6 +145,7 @@ public class TaskServiceImplTest {
         TaskValidator taskValidator = new TaskValidator();
         taskValidator.setTriggerEventService(triggerEventService);
         taskService.setTaskValidator(taskValidator);
+        taskService.setTaskMigrationManager(taskMigrationManager);
 
         when(bundleContext.getBundles()).thenReturn(new Bundle[]{bundleTrigger, bundleAction});
         when(bundleTrigger.getSymbolicName()).thenReturn("test-trigger");
@@ -514,7 +519,7 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void shouldImportTaskAndUpdateDataSourceIDs() throws Exception {
+    public void shouldImportTask() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         action.getValues().put("phone", "{{ad.providerName.Test#1.id}}");
 
@@ -565,10 +570,10 @@ public class TaskServiceImplTest {
                 .isEnabled(true)
                 .build();
 
-        verify(providerService).getProviders();
-
         Task actual = verifyCreateAndCaptureTask();
         assertEquals(expected, actual);
+
+        verify(taskMigrationManager).migrateTask(actual);
     }
 
     @Test
@@ -626,7 +631,7 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldValidateTasksAfterChannelUpdateForInvalidTaskDataProviders() {
-        TaskConfig config = new TaskConfig().add(new DataSource("Te", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
         Task task = new Task("name", trigger, asList(action), config, true, false);
         task.setId(12345l);
         List<LookupFieldsParameter> lookupFields = new ArrayList<>();

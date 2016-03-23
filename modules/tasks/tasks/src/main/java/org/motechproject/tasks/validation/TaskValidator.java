@@ -424,7 +424,6 @@ public class TaskValidator extends GeneralValidator {
                 String objectName = "task." + field;
 
                 checkNullValue(errors, objectName, "objectId", dataSource.getObjectId());
-                checkNullValue(errors, objectName, "providerId", dataSource.getProviderId());
 
                 checkBlankValue(errors, objectName, "type", dataSource.getType());
                 checkBlankValue(errors, objectName, "lookup.field", lookup.getField());
