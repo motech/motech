@@ -1,48 +1,5 @@
     /* Common functions */
 
-function motechAlert(msg, title, params, callback) {
-    'use strict';
-    BootstrapDialog.alert({
-        title: jQuery.i18n.prop(title),
-        message: jQuery.i18n.prop.apply(null, [msg].concat(params)),
-        callback: callback
-    });
-}
-
-function motechConfirm(msg, title, callback) {
-    'use strict';
-    BootstrapDialog.confirm({
-        title: jQuery.i18n.prop(title),
-        message: jQuery.i18n.prop(msg),
-        callback: callback
-    });
-}
-
-function motechAlertStackTrace(msg, title, response, callback) {
-    'use strict';
-    if( title === null || title === '') {
-        title = 'Alert';
-    }
-    BootstrapDialog.alert({
-        title: title,
-        message: jQuery.i18n.prop(msg).bold() + ": \n" + response,
-        callback: callback
-    });
-}
-
-function blockUI() {
-    'use strict';
-    $.blockUI.defaults.css.border = "0px";
-    $.blockUI({theme: false, message :
-        '<div class="splash">' +
-            '<div class="splash-logo"><img src="./../../static/common/img/motech-logo.gif" alt="motech-logo"></div>' +
-            '<div class="clearfix"></div>' +
-            '<div class="splash-loader"><img src="./../../static/common/img/loadingbar.gif" alt="Loading..."></div>' +
-            '<div class="clearfix"></div>' + '<br>' +
-        '</div>'
-    });
-}
-
 function resizeLayout() {
     'use strict';
     setTimeout(function () {
@@ -51,12 +8,6 @@ function resizeLayout() {
             outerCenterElement.layout().resizeAll();
         }
     }, 200);
-}
-
-function unblockUI() {
-    'use strict';
-    $.unblockUI();
-    resizeLayout();
 }
 
 function getAvailableTabs(moduleName, callback) {
@@ -68,16 +19,7 @@ function getAvailableTabs(moduleName, callback) {
     });
 }
 
-var jFormErrorHandler = function(response) {
-        'use strict';
-        unblockUI();
-        BootstrapDialog.alert({
-            type: BootstrapDialog.TYPE_DANGER, //Error type
-            message: response.status + ": " + response.statusText
-        });
-    },
-
-    parseResponse = function (responseData, defaultMsg) {
+var parseResponse = function (responseData, defaultMsg) {
         'use strict';
         var msg = { value: '', literal: false, params: [] };
 
@@ -95,67 +37,6 @@ var jFormErrorHandler = function(response) {
             msg.value = defaultMsg;
         }
         return msg;
-    },
-
-    handleResponse = function(title, defaultMsg, response, callback) {
-        'use strict';
-        var msg = { value: "server.error", literal: false, params: [] },
-            responseData = (typeof(response) === 'string') ? response : response.data;
-
-        unblockUI();
-        msg = parseResponse(responseData, defaultMsg);
-
-        if (callback) {
-            callback(title, msg.value, msg.params);
-        } else if (msg.literal) {
-            BootstrapDialog.alert({
-                type: BootstrapDialog.TYPE_DANGER,
-                title: jQuery.i18n.prop(title),
-                message: msg.value,
-                callback: callback
-            });
-        } else {
-            motechAlert(msg.value, title, msg.params);
-        }
-    },
-
-    angularHandler = function(title, defaultMsg, callback) {
-        'use strict';
-        return function(response) {
-            handleResponse(title, defaultMsg, response, callback);
-        };
-    },
-
-    handleWithStackTrace = function(title, defaultMsg, response) {
-        'use strict';
-        var msg = "server.error";
-        if (response) {
-            if(response.responseText) {
-                response = response.responseText;
-            } else if(response.data) {
-                response = response.data;
-            }
-        }
-        if (defaultMsg) {
-            msg = defaultMsg;
-        }
-        motechAlertStackTrace(msg, title, response);
-    },
-
-    alertHandler = function(msg, title) {
-        'use strict';
-        return function() {
-            unblockUI();
-            motechAlert(msg, title);
-        };
-    },
-
-    alertHandlerWithCallback = function(msg, callback) {
-        'use strict';
-        return function() {
-            unblockUI();
-            motechAlert(msg, 'server.success', callback);
-        };
     },
 
     dummyHandler = function() {'use strict';},
@@ -189,7 +70,6 @@ var jFormErrorHandler = function(response) {
             }
         });
     };
-
 
 function captureTyping(callback) {
     'use strict';
@@ -267,7 +147,6 @@ function innerLayout(conf, eastConfig) {
         element.expire();
     });
 }
-
 
 // Move any modal to top of DOM stack while it is active/shown to avoid overlap.
 jQuery(document).ready(function(){

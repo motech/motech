@@ -6,7 +6,7 @@
 
     var controllers = angular.module('admin.controllers', []);
 
-    controllers.controller('AdminBundleListCtrl', function($scope, Bundle, i18nService, $routeParams, $http, $timeout) {
+    controllers.controller('AdminBundleListCtrl', function($scope, Bundle, i18nService, $routeParams, $http, $timeout, ModalService) {
 
         var LOADING_STATE = 'LOADING', MODULE_LIST_REFRESH_TIMEOUT = 6000; // milliseconds
 
@@ -144,7 +144,7 @@
             bundle.state = LOADING_STATE;
             bundle.$stop($scope.refreshModuleList, function (response) {
                 bundle.state = 'RESOLVED';
-                handleWithStackTrace('admin.error', 'admin.bundles.error.stop', response);
+                ModalService.handleWithStackTrace('admin.error', 'admin.bundles.error.stop', response);
             });
         };
 
@@ -153,7 +153,7 @@
 
             bundle.state = LOADING_STATE;
             bundle.$start(function () {
-                blockUI();
+                ModalService.blockUI();
 
                 $timeout(function () {
                     if (previousState === 'INSTALLED') {
@@ -162,11 +162,11 @@
 
                     $scope.refreshModuleList();
 
-                    unblockUI();
+                    ModalService.unblockUI();
                 }, MODULE_LIST_REFRESH_TIMEOUT);
             }, function (response) {
                 bundle.state = 'RESOLVED';
-                handleWithStackTrace('admin.error', 'admin.bundles.error.start', response);
+                ModalService.handleWithStackTrace('admin.error', 'admin.bundles.error.start', response);
             });
         };
 
@@ -177,7 +177,7 @@
                 $scope.$emit('lang.refresh');
                 $scope.refreshModuleList();
 
-                motechAlert('admin.bundles.error.restart', 'admin.error');
+                ModalService.motechAlert('admin.bundles.error.restart', 'admin.error');
             });
         };
 
@@ -190,7 +190,7 @@
         };
 
         $scope.uninstallBundle = function (bundle, withConfig) {
-            blockUI();
+            ModalService.blockUI();
             var oldState = bundle.state;
             bundle.state = LOADING_STATE;
             if (withConfig) {
@@ -198,22 +198,22 @@
                     // remove bundle from list
                     $scope.bundles.removeObject(bundle);
                     $scope.refreshModuleList();
-                    unblockUI();
+                    ModalService.unblockUI();
                 }, function () {
-                    motechAlert('admin.bundles.error.uninstall', 'admin.error');
+                    ModalService.motechAlert('admin.bundles.error.uninstall', 'admin.error');
                     bundle.state = oldState;
-                    unblockUI();
+                    ModalService.unblockUI();
                 });
             } else {
                 $scope.bundle.$uninstall(function () {
                     // remove bundle from list
                     $scope.bundles.removeObject(bundle);
                     $scope.refreshModuleList();
-                    unblockUI();
+                    ModalService.unblockUI();
                 }, function () {
-                    motechAlert('admin.bundles.error.uninstall', 'admin.error');
+                    ModalService.motechAlert('admin.bundles.error.uninstall', 'admin.error');
                     bundle.state = oldState;
-                    unblockUI();
+                    ModalService.unblockUI();
                 });
             }
         };
@@ -271,22 +271,22 @@
         };
 
         $scope.submitBundle = function () {
-            blockUI();
+            ModalService.blockUI();
             $('#bundleUploadForm').ajaxSubmit({
                 success: function (data, textStatus, jqXHR) {
                     if (jqXHR.status === 0 && data) {
-                        handleWithStackTrace('admin.error', 'admin.bundles.error.start', data);
-                        unblockUI();
+                        ModalService.handleWithStackTrace('admin.error', 'admin.bundles.error.start', data);
+                        ModalService.unblockUI();
                     } else {
                         $scope.bundles = Bundle.query(function () {
                             if ($scope.startUpload) {
                                 $timeout(function () {
                                     $scope.$emit('lang.refresh');
                                     $scope.refreshModuleList();
-                                    unblockUI();
+                                    ModalService.unblockUI();
                                 }, MODULE_LIST_REFRESH_TIMEOUT);
                             } else {
-                                unblockUI();
+                                ModalService.unblockUI();
                             }
                             $scope.module = "";
                             $('#bundleUploadForm .fileupload').trigger('reset');
@@ -294,8 +294,8 @@
                     }
                 },
                 error:function (response) {
-                    handleWithStackTrace('admin.error', 'admin.bundles.error.start', response);
-                    unblockUI();
+                    ModalService.handleWithStackTrace('admin.error', 'admin.bundles.error.start', response);
+                    ModalService.unblockUI();
                 }
             });
         };
@@ -326,7 +326,8 @@
         };
     });
 
-    controllers.controller('AdminStatusMsgCtrl', function($scope, $rootScope, $timeout, StatusMessage, i18nService, $cookieStore, $filter) {
+    controllers.controller('AdminStatusMsgCtrl', function($scope, $rootScope, $timeout, StatusMessage, i18nService,
+                                                                $cookieStore, $filter, ModalService) {
         var UPDATE_INTERVAL = 1000 * 30, searchQuery = '',
         IGNORED_MSGS = 'ignoredMsgs',
         checkLevel = function (messageLevel, filterLevel) {
@@ -527,7 +528,7 @@
         };
 
         $rootScope.search = function () {
-            unblockUI();
+            ModalService.unblockUI();
             $scope.filteredItems = $filter('filter')($scope.messages, function (item) {
                 return item && searchMatch(item, $rootScope.query);
             });
@@ -538,7 +539,7 @@
         $timeout(update, UPDATE_INTERVAL);
     });
 
-    controllers.controller('AdminSettingsCtrl', function($scope, PlatformSettings, i18nService, $http) {
+    controllers.controller('AdminSettingsCtrl', function($scope, PlatformSettings, i18nService, $http, ModalService) {
         $scope.comboboxValues = { "security.password.validator" : ["none", "lower_upper", "lower_upper_digit", "lower_upper_digit_special"],
                                   "system.language" : ["en", "pl"] };
 
@@ -549,42 +550,42 @@
         };
 
         $scope.saveSettings = function (settings) {
-            blockUI();
+            ModalService.blockUI();
             $http.post('../admin/api/settings/platform', settings).
-                success(alertHandler('admin.settings.saved', 'admin.success')).
-                error(alertHandler('admin.settings.error.location'));
+                success(ModalService.alertHandler('admin.settings.saved', 'admin.success')).
+                error(ModalService.alertHandler('admin.settings.error.location'));
         };
 
         $scope.saveNewSettings = function () {
-            blockUI();
+            ModalService.blockUI();
             $('#noSettingsForm').ajaxSubmit({
-                success:alertHandlerWithCallback('admin.settings.saved', function () {
+                success:ModalService.alertHandlerWithCallback('admin.settings.saved', function () {
                     $scope.platformSettings = PlatformSettings.get();
                 }),
-                error:jFormErrorHandler
+                error:ModalService.jFormErrorHandler
             });
         };
 
         $scope.uploadSettings = function () {
             $("#settingsFileForm").ajaxSubmit({
-                success:alertHandlerWithCallback('admin.settings.saved', function () {
+                success:ModalService.alertHandlerWithCallback('admin.settings.saved', function () {
                     $scope.platformSettings = PlatformSettings.get();
                 }),
-                error:jFormErrorHandler
+                error:ModalService.jFormErrorHandler
             });
         };
 
         $scope.uploadFileLocation = function () {
             $http({method:'POST', url:'../admin/api/settings/platform/location', params:{location:this.location}}).
-                success(alertHandler('admin.settings.saved', 'admin.success')).
-                error(alertHandler('admin.settings.error.location'));
+                success(ModalService.alertHandler('admin.settings.saved', 'admin.success')).
+                error(ModalService.alertHandler('admin.settings.error.location'));
         };
 
         $scope.saveAll = function () {
-            blockUI();
+            ModalService.blockUI();
             $http.post('../admin/api/settings/platform/list', $scope.platformSettings.settingsList).
-                success(alertHandler('admin.settings.saved', 'admin.success')).
-                error(alertHandler('admin.settings.error.location'));
+                success(ModalService.alertHandler('admin.settings.saved', 'admin.success')).
+                error(ModalService.alertHandler('admin.settings.error.location'));
         };
 
         $scope.exportConfig = function () {
@@ -592,7 +593,7 @@
             success(function () {
                 window.location.replace("../admin/api/settings/platform/export");
             }).
-            error(alertHandler('admin.settings.error.export', 'admin.error'));
+            error(ModalService.alertHandler('admin.settings.error.export', 'admin.error'));
         };
 
         innerLayout({
@@ -634,7 +635,7 @@
         });
     });
 
-    controllers.controller('AdminBundleSettingsCtrl', function($scope, Bundle, ModuleSettings, $routeParams, $http) {
+    controllers.controller('AdminBundleSettingsCtrl', function($scope, Bundle, ModuleSettings, $routeParams, $http, ModalService) {
         $scope.moduleSettings = ModuleSettings.query({ bundleId:$routeParams.bundleId });
 
         $http.get('../admin/api/settings/' + $routeParams.bundleId + '/raw').success(function (data) {
@@ -648,11 +649,11 @@
             if (doRestart === true) {
                 successHandler = restartBundleHandler;
             } else {
-                successHandler = alertHandler('admin.settings.saved', 'admin.success');
+                successHandler = ModalService.alertHandler('admin.settings.saved', 'admin.success');
             }
 
-            blockUI();
-            mSettings.$save({bundleId:$scope.module.bundleId}, successHandler, angularHandler('admin.error', 'admin.settings.error'));
+            ModalService.blockUI();
+            mSettings.$save({bundleId:$scope.module.bundleId}, successHandler, ModalService.angularHandler('admin.error', 'admin.settings.error'));
         };
 
         $scope.uploadRaw = function (filename, doRestart) {
@@ -662,22 +663,22 @@
             if (doRestart === true) {
                 successHandler = restartBundleHandler;
             } else {
-                successHandler = alertHandler('admin.settings.saved', 'admin.success');
+                successHandler = ModalService.alertHandler('admin.settings.saved', 'admin.success');
             }
 
-            blockUI();
+            ModalService.blockUI();
 
             $(id).ajaxSubmit({
                 success:successHandler,
-                error:jFormErrorHandler
+                error:ModalService.jFormErrorHandler
             });
         };
 
         var restartBundleHandler = function () {
             $scope.module.$restart(function () {
-                unblockUI();
-                motechAlert('admin.settings.saved', 'admin.success');
-            }, alertHandler('admin.bundles.error.restart', 'admin.error'));
+                ModalService.unblockUI();
+                ModalService.motechAlert('admin.settings.saved', 'admin.success');
+            }, ModalService.alertHandler('admin.bundles.error.restart', 'admin.error'));
         };
 
         innerLayout({
@@ -688,9 +689,9 @@
 
     });
 
-    controllers.controller('AdminServerLogCtrl', function($scope, $http) {
+    controllers.controller('AdminServerLogCtrl', function($scope, $http, ModalService) {
         $scope.refresh = function () {
-            blockUI();
+            ModalService.blockUI();
             $http({method:'GET', url:'../admin/api/log'}).
                 success(
                 function (data) {
@@ -698,10 +699,10 @@
                         $('#logContent').html($scope.msg(data));
                     } else {
                         $('#logContent').html(data);
-                        unblockUI();
+                        ModalService.unblockUI();
                     }
                 }).
-                error(unblockUI());
+                error(ModalService.unblockUI());
         };
 
         //removing the sidebar from <body> before route change
@@ -719,7 +720,7 @@
 
     });
 
-    controllers.controller('AdminServerLogOptionsCtrl', function($scope, LogService, $http) {
+    controllers.controller('AdminServerLogOptionsCtrl', function($scope, LogService, $http, ModalService) {
         $scope.availableLevels = ['off', 'trace', 'debug', 'info', 'warn', 'error', 'fatal', 'all'];
         $scope.logs = [{name: "", level: "off"}];
 
@@ -738,9 +739,9 @@
             });
             $scope.logs = [];
             $scope.logs = [{name: "", level: "off"}];
-            $scope.config.$save({}, alertHandlerWithCallback('admin.log.changedLevel', function () {
+            $scope.config.$save({}, ModalService.alertHandlerWithCallback('admin.log.changedLevel', function () {
             }), function () {
-                motechAlert('admin.log.changedLevelError', 'admin.error');
+                ModalService.motechAlert('admin.log.changedLevelError', 'admin.error');
             });
         };
 
@@ -834,7 +835,7 @@
 
     });
 
-    controllers.controller('AdminNotificationRuleCtrl', function($scope, NotificationRule, NotificationRuleDto, $location, Bundle) {
+    controllers.controller('AdminNotificationRuleCtrl', function($scope, NotificationRule, NotificationRuleDto, $location, Bundle, ModalService) {
         $scope.notificationRuleDto = new NotificationRuleDto();
         $scope.notificationRuleDto.notificationRules = NotificationRule.query();
         $scope.notificationRuleDto.idsToRemove = [];
@@ -874,9 +875,9 @@
 
         $scope.save = function () {
             $scope.notificationRuleDto.$save(function () {
-                motechAlert('admin.messages.notifications.saved', 'admin.success');
+                ModalService.motechAlert('admin.messages.notifications.saved', 'admin.success');
                 $location.path('/admin/messages');
-            }, angularHandler('admin.error', 'admin.messages.notifications.errorSave'));
+            }, ModalService.angularHandler('admin.error', 'admin.messages.notifications.errorSave'));
         };
 
         innerLayout({

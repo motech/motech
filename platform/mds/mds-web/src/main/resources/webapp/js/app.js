@@ -2,7 +2,7 @@
     'use strict';
 
     var mds = angular.module('data-services', [ 'motech-dashboard', 'data-services.services', 'webSecurity.services',
-        'data-services.controllers', 'data-services.directives', 'data-services.utils', 'ui.directives']);
+        'data-services.controllers', 'data-services.directives', 'data-services.utils', 'ui.directives', 'uiServices']);
 
     $.ajax({
         url:      '../mds/available/mdsTabs',
