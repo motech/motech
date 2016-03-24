@@ -99,6 +99,6 @@ public class ProviderNameTaskMigrator implements TaskMigrator {
                 return dataSource.getProviderName();
             }
         }
-        throw new ProviderNotFoundException(providerId);
+        throw new ProviderNotFoundException(task.getName(), providerId);
     }
 }
