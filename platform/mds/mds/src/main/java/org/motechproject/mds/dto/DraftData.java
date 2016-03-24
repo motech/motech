@@ -21,7 +21,6 @@ public class DraftData {
     public static final String FIELD = "field";
 
     public static final String ADD_NEW_INDEX = "$addNewIndex";
-    public static final String ADD_NEW_FIELD = "indexes.0.$addField";
     public static final String REMOVE_INDEX = "$removeIndex";
 
     private boolean create;
