@@ -44,22 +44,7 @@ public class DataSource extends TaskConfigStep {
      * Constructor.
      */
     public DataSource() {
-        this(null, null, null, "id", null, false);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param providerId  the provider ID
-     * @param objectId  the object ID
-     * @param type  the data source object
-     * @param name  the data source name
-     * @param lookup  the lookup name
-     * @param failIfDataNotFound  defines if task should fail if no data was found
-     */
-    public DataSource(Long providerId, Long objectId, String type, String name, List<Lookup> lookup,
-                      boolean failIfDataNotFound) {
-        this("", providerId, objectId, type, name, lookup, failIfDataNotFound);
+        this(null, null, null, null, "id", null, false);
     }
 
     /**
@@ -176,15 +161,14 @@ public class DataSource extends TaskConfigStep {
 
         final DataSource other = (DataSource) obj;
 
-        return objectEquals(other.providerId, other.objectId, other.type)
-                && Objects.equals(this.providerName, other.providerName)
+        return objectEquals(other.providerName, other.objectId, other.type)
                 && Objects.equals(this.lookup, other.lookup)
                 && Objects.equals(this.failIfDataNotFound, other.failIfDataNotFound);
     }
 
     @JsonIgnore
-    public boolean objectEquals(Long providerId, Long objectId, String type) {
-        return Objects.equals(this.providerId, providerId)
+    public boolean objectEquals(String providerName, Long objectId, String type) {
+        return Objects.equals(this.providerName, providerName)
                 && Objects.equals(this.objectId, objectId)
                 && Objects.equals(this.type, type);
     }
