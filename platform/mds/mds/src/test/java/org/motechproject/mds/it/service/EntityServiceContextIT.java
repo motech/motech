@@ -209,7 +209,6 @@ public class EntityServiceContextIT extends BaseIT {
         entityDto = entityService.createEntity(entityDto);
 
         entityService.saveDraftEntityChanges(entityDto.getId(), draftData);
-
         entityService.commitChanges(entityDto.getId());
 
         assertTrue(containsLookup("Lookup 1", entityDto.getId()));
@@ -217,37 +216,32 @@ public class EntityServiceContextIT extends BaseIT {
 
     @Test
     public void shouldAddNewFieldForLookupAndSaveEntity() throws IOException {
-
         EntityDto entityDto = new EntityDto();
         entityDto.setName("myEntity");
 
         Map<String, Object> values = new HashMap<>();
-        values.put("path", DraftData.ADD_NEW_FIELD);
+        values.put("path", "indexes.0.$addField");
         values.put("advanced", true);
-
         DraftData draftData = new DraftData();
         draftData.setEdit(true);
         draftData.setValues(values);
         entityDto = entityService.createEntity(entityDto);
 
         FieldDto testField = FieldTestHelper.fieldDto("firstField", Boolean.class);
-        entityService.addFields(entityDto, asList(testField));
+        entityService.addFields(entityDto, Collections.singletonList(testField));
         List<LookupFieldDto> lookupFieldDtos = lookupFieldsFromNames("firstField");
         LookupDto lookup = new LookupDto("lookup", false, false, lookupFieldDtos, true);
-        entityService.addLookups(entityDto.getId(), asList(lookup));
-
-        entityService.saveDraftEntityChanges(entityDto.getId(),
-                DraftBuilder.forNewField("disp", "f1name", Long.class.getName()));
+        entityService.addLookups(entityDto.getId(), Collections.singletonList(lookup));
+        entityService.saveDraftEntityChanges(entityDto.getId(), DraftBuilder.forNewField("disp", "f1name", Long.class.getName()));
         entityService.getFields(entityDto.getId());
         FieldDto field = selectFirst(entityService.getFields(entityDto.getId()),
                 having(on(FieldDto.class).getBasic().getName(), equalTo("f1name")));
+        values.put("value", Collections.singletonList(field.getId()));
 
-        values.put("value", asList(field.getId()));
         entityService.saveDraftEntityChanges(entityDto.getId(), draftData);
         entityService.commitChanges(entityDto.getId());
 
-        assertEquals(entityService.getLookupByName(entityDto.getId(),"lookup").getLookupField("f1name").getName(), "f1name");
-
+        assertEquals("f1name", entityService.getLookupByName(entityDto.getId(),"lookup").getLookupField("f1name").getName());
     }
 
     @Test
