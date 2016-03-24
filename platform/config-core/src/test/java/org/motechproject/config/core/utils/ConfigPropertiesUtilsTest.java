@@ -1,4 +1,4 @@
-package org.motechproject.config.core.filestore;
+package org.motechproject.config.core.utils;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

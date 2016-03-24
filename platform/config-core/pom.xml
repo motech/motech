@@ -86,6 +86,7 @@
                             org.motechproject.config.core.exception;version=${project.version},
                             org.motechproject.config.core.filters;version=${project.version},
                             org.motechproject.config.core.service;version=${project.version},
+                            org.motechproject.config.core.utils; version=${project.version},
                             org.motechproject.config.core.validator;version=${project.version}
                        </Export-Package>
                         <Import-Package>
