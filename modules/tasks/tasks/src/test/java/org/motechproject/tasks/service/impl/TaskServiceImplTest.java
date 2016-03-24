@@ -17,6 +17,7 @@ import org.mockito.verification.VerificationMode;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.query.QueryExecution;
+import org.motechproject.tasks.compatibility.TaskMigrationManager;
 import org.motechproject.tasks.domain.ActionEventBuilder;
 import org.motechproject.tasks.domain.ActionParameterBuilder;
 import org.motechproject.tasks.domain.ActionEvent;
@@ -115,6 +116,9 @@ public class TaskServiceImplTest {
     @Mock
     TriggerHandler triggerHandler;
 
+    @Mock
+    TaskMigrationManager taskMigrationManager;
+
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
@@ -130,6 +134,7 @@ public class TaskServiceImplTest {
         taskService.setEventRelay(eventRelay);
         taskService.setProviderService(providerService);
         taskService.setTasksDataService(tasksDataService);
+        taskService.setTaskMigrationManager(taskMigrationManager);
 
         when(bundleContext.getBundles()).thenReturn(new Bundle[]{bundleTrigger, bundleAction});
         when(bundleTrigger.getSymbolicName()).thenReturn("test-trigger");
@@ -172,7 +177,7 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        TaskConfig config = new TaskConfig().add(new DataSource(1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
 
         action.setValues(map);
 
@@ -218,7 +223,7 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        TaskConfig config = new TaskConfig().add(new DataSource(1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
 
         action.setValues(map);
 
@@ -236,7 +241,7 @@ public class TaskServiceImplTest {
         when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
         when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
 
-        when(providerService.getProviderById(1234L)).thenReturn(provider);
+        when(providerService.getProvider("TestProvider")).thenReturn(provider);
 
         taskService.save(task);
         verify(triggerHandler).registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
@@ -450,7 +455,7 @@ public class TaskServiceImplTest {
                 .withName("test")
                 .withTrigger(trigger)
                 .addAction(action)
-                .addDataSource(new DataSource(1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true))
+                .addDataSource(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true))
                 .isEnabled(true)
                 .build();
 
@@ -463,7 +468,7 @@ public class TaskServiceImplTest {
         notContainsIgnoreFields(node);
 
         // should preserve action values
-        assertNotNull(((ObjectNode) node).findValue("id"));
+        assertNotNull((node).findValue("id"));
 
         assertEquals(expected, mapper.readValue(node, Task.class));
     }
@@ -499,16 +504,16 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void shouldImportTaskAndUpdateDataSourceIDs() throws Exception {
+    public void shouldImportTask() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        action.getValues().put("phone", "{{ad.1234.Test#1.id}}");
+        action.getValues().put("phone", "{{ad.providerName.Test#1.id}}");
 
         Task given = new TaskBuilder()
                 .withName("test")
                 .withTrigger(trigger)
                 .addAction(action)
                 .addDataSource(new DataSource("providerName", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true))
-                .addFilterSet(new FilterSet(asList(new Filter("displayName", "ad.1234.Test#1.id", UNICODE, true, OperatorType.EXIST.getValue(), ""))))
+                .addFilterSet(new FilterSet(asList(new Filter("displayName", "ad.providerName.Test#1.id", UNICODE, true, OperatorType.EXIST.getValue(), ""))))
                 .isEnabled(true)
                 .build();
 
@@ -532,27 +537,27 @@ public class TaskServiceImplTest {
         when(providerService.getProviders()).thenReturn(asList(provider));
         when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
         when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
-        when(providerService.getProviderById(56789L)).thenReturn(provider);
+        when(providerService.getProvider("providerName")).thenReturn(provider);
 
         String json = mapper.writeValueAsString(given);
 
         taskService.importTask(json);
 
-        action.getValues().put("phone", "{{ad.56789.Test#1.id}}");
+        action.getValues().put("phone", "{{ad.providerName.Test#1.id}}");
 
         Task expected = new TaskBuilder()
                 .withName("test")
                 .withTrigger(trigger)
                 .addAction(action)
                 .addDataSource(new DataSource("providerName", 56789L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true))
-                .addFilterSet(new FilterSet(asList(new Filter("displayName", "ad.56789.Test#1.id", UNICODE, true, OperatorType.EXIST.getValue(), ""))))
+                .addFilterSet(new FilterSet(asList(new Filter("displayName", "ad.providerName.Test#1.id", UNICODE, true, OperatorType.EXIST.getValue(), ""))))
                 .isEnabled(true)
                 .build();
 
-        verify(providerService).getProviders();
-
         Task actual = verifyCreateAndCaptureTask();
         assertEquals(expected, actual);
+
+        verify(taskMigrationManager).migrateTask(actual);
     }
 
     @Test
@@ -607,7 +612,7 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldValidateTasksAfterChannelUpdateForInvalidTaskDataProviders() {
-        TaskConfig config = new TaskConfig().add(new DataSource(1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
         Task task = new Task("name", trigger, asList(action), config, true, false);
         task.setId(12345l);
         List<LookupFieldsParameter> lookupFields = new ArrayList<>();
@@ -661,7 +666,7 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldValidateTasksAfterChannelUpdateForValidTaskDataProviders() {
-        TaskConfig config = new TaskConfig().add(new DataSource(1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
         Task task = new Task("name", trigger, asList(action), config, true, false);
         Set<TaskError> existingErrors = new HashSet<>();
         existingErrors.add(new TaskError("task.validation.error.providerObjectLookupNotExist"));
@@ -695,7 +700,7 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldNotValidateTasksAfterChannelUpdateIfDataSourceDoesNotExistForGivenProvider() {
-        TaskConfig config = new TaskConfig().add(new DataSource(1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
         Task task = new Task("name", trigger, asList(action), config, true, false);
 
         TaskDataProvider dataProvider = new TaskDataProvider("abc", null);

@@ -409,7 +409,7 @@
 
                     replaced.push({
                         find: '{{ad.{0}{1}}}'.format(found[1], found[3]),
-                        value: '{{ad.{0}{1}}}'.format(ds.providerId, found[3])
+                        value: '{{ad.{0}{1}}}'.format(ds.providerName, found[3])
                     });
                 }
 
