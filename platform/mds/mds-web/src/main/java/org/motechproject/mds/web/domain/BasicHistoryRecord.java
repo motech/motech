@@ -4,30 +4,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents single entity instance revision.
+ * Represents simplified revision of an entity instance (used in grids)
  */
-public class HistoryRecord {
+public class BasicHistoryRecord {
+
     private Long id;
     private Long instanceId;
     private boolean revertable;
-    private List<FieldRecord> fields;
+    private List<? extends BasicFieldRecord> fields;
 
-    public HistoryRecord(Long id, Long instanceId, boolean revertable, List<FieldRecord> fields) {
+    public BasicHistoryRecord(Long id, Long instanceId, boolean revertable, List<? extends BasicFieldRecord> fields) {
         this.id = id;
         this.instanceId = instanceId;
         this.revertable = revertable;
         this.fields = fields;
     }
 
-    public HistoryRecord() {
+    public BasicHistoryRecord() {
         fields = new ArrayList<>();
     }
 
-    public List<FieldRecord> getFields() {
+    public List<? extends BasicFieldRecord> getFields() {
         return fields;
     }
 
-    public void setFields(List<FieldRecord> fields) {
+    public void setFields(List<? extends BasicFieldRecord> fields) {
         this.fields = fields;
     }
 

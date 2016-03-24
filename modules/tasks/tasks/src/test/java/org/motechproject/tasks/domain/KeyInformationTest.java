@@ -14,7 +14,7 @@ import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 
 public class KeyInformationTest {
     private static final String KEY_VALUE = "key";
-    private static final Long DATA_PROVIDER_ID = 12345L;
+    private static final String DATA_PROVIDER_NAME = "data-services";
     private static final String OBJECT_TYPE = "Test";
     private static final String OBJECT_TYPE_2 = "Test_Data";
     private static final Long OBJECT_ID = 1L;
@@ -37,12 +37,12 @@ public class KeyInformationTest {
 
     @Test
     public void shouldGetInformationFromAdditionalDataKey() {
-        String original = String.format("%s.%s.%s#%d.%s", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_ID, OBJECT_TYPE, OBJECT_ID, KEY_VALUE);
+        String original = String.format("%s.%s.%s#%d.%s", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_NAME, OBJECT_TYPE, OBJECT_ID, KEY_VALUE);
         KeyInformation key = KeyInformation.parse(original);
 
         assertKeyFromAdditionalData(original, key);
 
-        original = String.format("%s.%s.%s#%d.%s", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_ID, OBJECT_TYPE_2, OBJECT_ID, KEY_VALUE);
+        original = String.format("%s.%s.%s#%d.%s", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_NAME, OBJECT_TYPE_2, OBJECT_ID, KEY_VALUE);
         key = KeyInformation.parse(original);
 
         assertKeyFromAdditionalData(original, key, OBJECT_TYPE_2);
@@ -50,12 +50,12 @@ public class KeyInformationTest {
 
     @Test
     public void shouldGetInformationFromAdditionalDataKeyWithManipulations() {
-        String original = String.format("%s.%s.%s#%d.%s?toupper?join(-)", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_ID, OBJECT_TYPE, OBJECT_ID, KEY_VALUE);
+        String original = String.format("%s.%s.%s#%d.%s?toupper?join(-)", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_NAME, OBJECT_TYPE, OBJECT_ID, KEY_VALUE);
         KeyInformation key = KeyInformation.parse(original);
 
         assertKeyFromAdditionalData(original, key);
 
-        original = String.format("%s.%s.%s#%d.%s?toupper?join(-)", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_ID, OBJECT_TYPE_2, OBJECT_ID, KEY_VALUE);
+        original = String.format("%s.%s.%s#%d.%s?toupper?join(-)", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_NAME, OBJECT_TYPE_2, OBJECT_ID, KEY_VALUE);
         key = KeyInformation.parse(original);
         assertKeyFromAdditionalData(original, key, OBJECT_TYPE_2);
     }
@@ -63,7 +63,7 @@ public class KeyInformationTest {
     @Test
     public void shouldFindAllKeysInString() {
         String trigger = String.format("%s.%s?toupper?join(-)", TRIGGER_PREFIX, KEY_VALUE);
-        String additionalData = String.format("%s.%s.%s#%d.%s?toupper?join(-)", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_ID, OBJECT_TYPE, OBJECT_ID, KEY_VALUE);
+        String additionalData = String.format("%s.%s.%s#%d.%s?toupper?join(-)", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_NAME, OBJECT_TYPE, OBJECT_ID, KEY_VALUE);
         String original = String.format("Trigger: {{%s}} Additional data: {{%s}}", trigger, additionalData);
 
         List<KeyInformation> keys = KeyInformation.parseAll(original);
@@ -80,7 +80,7 @@ public class KeyInformationTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenAdditionalDataKeyHasIncorrectFormat() {
-        String original = String.format("%s.%s.%s#.%s?toupper?join(-)", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_ID, OBJECT_TYPE, KEY_VALUE);
+        String original = String.format("%s.%s.%s#.%s?toupper?join(-)", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_NAME, OBJECT_TYPE, KEY_VALUE);
         KeyInformation.parse(original);
     }
 
@@ -105,7 +105,7 @@ public class KeyInformationTest {
 
         assertNull(triggerKey.getObjectId());
         assertNull(triggerKey.getObjectType());
-        assertNull(triggerKey.getDataProviderId());
+        assertNull(triggerKey.getDataProviderName());
 
         assertManipulations(triggerKey);
     }
@@ -118,7 +118,7 @@ public class KeyInformationTest {
         assertTrue(additionalDataKey.fromAdditionalData());
         assertFalse(additionalDataKey.fromTrigger());
 
-        assertEquals(DATA_PROVIDER_ID, additionalDataKey.getDataProviderId());
+        assertEquals(DATA_PROVIDER_NAME, additionalDataKey.getDataProviderName());
         assertEquals(objectType, additionalDataKey.getObjectType());
         assertEquals(OBJECT_ID, additionalDataKey.getObjectId());
         assertEquals(KEY_VALUE, additionalDataKey.getKey());
