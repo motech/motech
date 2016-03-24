@@ -75,17 +75,19 @@
                             org.motechproject.mds.web.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            net.sf.cglib.core,
-                            net.sf.cglib.proxy,
-                            net.sf.cglib.reflect,
                             org.aopalliance.aop,
+                            org.apache.bval.jsr303,
+                            org.apache.bval.constraints,
                             org.eclipse.gemini.blueprint.config,
                             org.motechproject.mds.service,
                             org.motechproject.osgi.web,
                             org.springframework.aop,
                             org.springframework.aop.aspectj.annotation,
                             org.springframework.aop.framework,
+                            org.springframework.cglib.core,
+                            org.springframework.cglib.proxy,
                             org.springframework.context.support,
+                            org.springframework.validation.beanvalidation,
                             org.springframework.web.multipart.commons,
                             org.springframework.transaction,
                             *

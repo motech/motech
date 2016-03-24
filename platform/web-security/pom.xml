@@ -57,6 +57,10 @@
         </dependency>
         <!-- OSGI dependencies -->
         <dependency>
+            <groupId>org.apache.bval</groupId>
+            <artifactId>org.apache.bval.bundle</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.velocity</artifactId>
         </dependency>
@@ -69,16 +73,20 @@
             <artifactId>spring-security-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-security-config</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-expression</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
@@ -176,12 +184,20 @@
                             org.aopalliance.aop,
                             org.eclipse.gemini.blueprint.config,
                             org.motechproject.config,
+                            org.apache.bval.jsr303,
+                            org.apache.bval.constraints,
+                            org.eclipse.gemini.blueprint.config,
+                            org.motechproject.server.config,
                             org.motechproject.config.service,
                             org.openid4java.consumer,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.xml,
+                            org.springframework.cglib.core,
+                            org.springframework.cglib.proxy,
+                            org.springframework.cglib.reflect,
                             org.springframework.context.config,
+                            org.springframework.transaction,
                             org.springframework.security.core,
                             org.springframework.security.config,
                             org.springframework.security.openid,
@@ -193,6 +209,12 @@
                             org.springframework.transaction,
                             org.springframework.web.servlet.config,
                             org.springframework.web.servlet.view,
+                            org.springframework.validation.beanvalidation,
+                            org.springframework.web.servlet.config,
+                            org.springframework.web.servlet.view,
+                            org.springframework.security.openid,
+                            org.springframework.security.web.authentication.www,
+                            org.openid4java.consumer,
                             org.motechproject.scheduler.contract;resolution:=optional,
                             org.motechproject.scheduler.service;resolution:=optional,
                             *
