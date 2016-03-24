@@ -283,7 +283,7 @@ public class TaskValidator extends GeneralValidator {
         String field = String.format("taskConfig.filterSet[%d].filters[%d]", setOrder, index);
         KeyInformation key = parse(filter.getKey());
         DataSource dataSource = config.getDataSource(
-                key.getDataProviderId(), key.getObjectId(), key.getObjectType()
+                key.getDataProviderName(), key.getObjectId(), key.getObjectType()
         );
 
         checkNullValue(errors, TASK, field, filter);
@@ -323,11 +323,11 @@ public class TaskValidator extends GeneralValidator {
                         fieldType
                 ));
             }
-        } else if (key.fromAdditionalData() && providers.containsKey(key.getDataProviderId()) && providers.get(key.getDataProviderId()).containsProviderObjectField(key.getObjectType(), key.getKey()) && key.hasManipulations()) {
+        } else if (key.fromAdditionalData() && providers.containsKey(key.getDataProviderName()) && providers.get(key.getDataProviderName()).containsProviderObjectField(key.getObjectType(), key.getKey()) && key.hasManipulations()) {
             for (String manipulations : key.getManipulations()) {
                 errors.addAll(validateManipulations(manipulations,
                         key,
-                        ParameterType.fromString(providers.get(key.getDataProviderId()).getKeyType(key.getKey())),
+                        ParameterType.fromString(providers.get(key.getDataProviderName()).getKeyType(key.getKey())),
                         fieldType
                 ));
             }
@@ -424,7 +424,6 @@ public class TaskValidator extends GeneralValidator {
                 String objectName = "task." + field;
 
                 checkNullValue(errors, objectName, "objectId", dataSource.getObjectId());
-                checkNullValue(errors, objectName, "providerId", dataSource.getProviderId());
 
                 checkBlankValue(errors, objectName, "type", dataSource.getType());
                 checkBlankValue(errors, objectName, "lookup.field", lookup.getField());
