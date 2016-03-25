@@ -16,13 +16,16 @@ import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.web.domain.BasicEntityRecord;
+import org.motechproject.mds.web.domain.BasicFieldRecord;
+import org.motechproject.mds.web.domain.BasicHistoryRecord;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
 import org.motechproject.mds.web.service.InstanceService;
-import org.motechproject.mds.web.util.QueryParamsBuilder;
+import org.motechproject.mds.web.util.query.QueryParamsBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -138,15 +141,14 @@ public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/history", method = RequestMethod.GET)
     @ResponseBody
-    public Records<HistoryRecord> getHistory(@PathVariable Long entityId, @PathVariable Long instanceId,
-                                             GridSettings settings) {
+    public Records<BasicHistoryRecord> getHistory(@PathVariable Long entityId, @PathVariable Long instanceId, GridSettings settings) {
         QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
-        List<HistoryRecord> historyRecordsList = instanceService.getInstanceHistory(entityId, instanceId, queryParams);
+        List<BasicHistoryRecord> historyRecordsList = instanceService.getInstanceHistory(entityId, instanceId, queryParams);
 
         long recordCount = instanceService.countHistoryRecords(entityId, instanceId);
         int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
 
-        Records<HistoryRecord> records = new Records<>(queryParams.getPage(), rowCount, (int) recordCount,
+        Records<BasicHistoryRecord> records = new Records<>(queryParams.getPage(), rowCount, (int) recordCount,
                 historyRecordsList);
         processFieldsForUIinHistoryRecords(records);
         return records;
@@ -160,7 +162,7 @@ public class InstanceController extends MdsController {
         if (historyRecord == null) {
             throw new EntityNotFoundException(entityId);
         }
-        processFieldsForUIInHistoryRecord(historyRecord);
+        processFieldsForUIInHistoryRecord(historyRecord.getFields());
         return historyRecord;
     }
 
@@ -181,10 +183,10 @@ public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/instances/{entityId}/instance/{instanceId}/{fieldName}", method = RequestMethod.GET)
     @ResponseBody
-    public Records<EntityRecord> getRelatedValues(@PathVariable Long entityId, @PathVariable Long instanceId,
+    public Records<BasicEntityRecord> getRelatedValues(@PathVariable Long entityId, @PathVariable Long instanceId,
                                     @PathVariable String fieldName, GridSettings settings) {
         QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
-        Records<EntityRecord> records = instanceService.getRelatedFieldValue(entityId, instanceId, fieldName,
+        Records<BasicEntityRecord> records = instanceService.getRelatedFieldValue(entityId, instanceId, fieldName,
                 queryParams);
         processFieldsForUI(records);
         return records;
@@ -210,14 +212,14 @@ public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/entities/{entityId}/trash", method = RequestMethod.GET)
     @ResponseBody
-    public Records<EntityRecord> getTrash(@PathVariable Long entityId, GridSettings settings) {
+    public Records<BasicEntityRecord> getTrash(@PathVariable Long entityId, GridSettings settings) {
         QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
-        List<EntityRecord> trashRecordsList = instanceService.getTrashRecords(entityId, queryParams);
+        List<BasicEntityRecord> trashRecordsList = instanceService.getTrashRecords(entityId, queryParams);
 
         long recordCount = instanceService.countTrashRecords(entityId);
         int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
 
-        Records<EntityRecord> records = new Records<>(queryParams.getPage(), rowCount, (int) recordCount,
+        Records<BasicEntityRecord> records = new Records<>(queryParams.getPage(), rowCount, (int) recordCount,
                 trashRecordsList);
         processFieldsForUI(records);
         return records;
@@ -266,14 +268,14 @@ public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
     @ResponseBody
-    public Records<EntityRecord> getInstances(@PathVariable Long entityId, GridSettings settings) throws IOException {
+    public Records<BasicEntityRecord> getInstances(@PathVariable Long entityId, GridSettings settings) throws IOException {
         String lookup = settings.getLookup();
         String filterStr = settings.getFilter();
         Map<String, Object> fieldMap = getFields(settings);
 
         QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings, fieldMap);
 
-        List<EntityRecord> entityRecords;
+        List<BasicEntityRecord> entityRecords;
         long recordCount;
 
         if (StringUtils.isNotBlank(lookup)) {
@@ -292,7 +294,7 @@ public class InstanceController extends MdsController {
 
         int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
 
-        Records<EntityRecord> records = new Records<>(queryParams.getPage(), rowCount, (int) recordCount, entityRecords);
+        Records<BasicEntityRecord> records = new Records<>(queryParams.getPage(), rowCount, (int) recordCount, entityRecords);
         processFieldsForUI(records);
         return records;
     }
@@ -350,31 +352,31 @@ public class InstanceController extends MdsController {
         return ArrayUtils.toObject(decoder.decode(ArrayUtils.subarray(content, index, content.length)));
     }
 
-    private void processFieldsForUI(Records<EntityRecord> records) {
-        for (EntityRecord record : records.getRows()) {
+    private void processFieldsForUI(Records<BasicEntityRecord> records) {
+        for (BasicEntityRecord record : records.getRows()) {
             processFieldsForUI(record);
         }
     }
 
-    private void processFieldsForUIinHistoryRecords(Records<HistoryRecord> records) {
-        for (HistoryRecord record : records.getRows()) {
-            processFieldsForUIInHistoryRecord(record);
+    private void processFieldsForUIinHistoryRecords(Records<BasicHistoryRecord> records) {
+        for (BasicHistoryRecord record : records.getRows()) {
+            processFieldsForUIInHistoryRecord(record.getFields());
         }
     }
 
-    private void processFieldsForUIInHistoryRecord(HistoryRecord record) {
-        for (FieldRecord fieldRecord : record.getFields()) {
+    private void processFieldsForUIInHistoryRecord(List<? extends BasicFieldRecord> records) {
+        for (BasicFieldRecord fieldRecord : records) {
             processFieldForUI(fieldRecord);
         }
     }
 
-    private void processFieldsForUI(EntityRecord entityRecord) {
-        for (FieldRecord fieldRecord : entityRecord.getFields()) {
+    private void processFieldsForUI(BasicEntityRecord entityRecord) {
+        for (BasicFieldRecord fieldRecord : entityRecord.getFields()) {
             processFieldForUI(fieldRecord);
         }
     }
 
-    private void processFieldForUI(FieldRecord fieldRecord) {
+    private void processFieldForUI(BasicFieldRecord fieldRecord) {
         SettingDto textAreaSetting = fieldRecord.getSettingByName(Constants.Settings.STRING_TEXT_AREA);
         if (textAreaSetting != null && Constants.Util.TRUE.equalsIgnoreCase(textAreaSetting.getValueAsString())) {
             fieldRecord.setType(textAreaUIType());

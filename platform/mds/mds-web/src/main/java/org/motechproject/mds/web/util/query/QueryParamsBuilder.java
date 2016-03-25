@@ -1,4 +1,4 @@
-package org.motechproject.mds.web.util;
+package org.motechproject.mds.web.util.query;
 
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Constants;

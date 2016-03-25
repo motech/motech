@@ -5,6 +5,8 @@ import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.QueryParams;
+import org.motechproject.mds.web.domain.BasicEntityRecord;
+import org.motechproject.mds.web.domain.BasicHistoryRecord;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
@@ -63,7 +65,7 @@ public interface InstanceService {
      * @param queryParams query parameters to use, retrieving instances
      * @return a list of instances
      */
-    List<EntityRecord> getEntityRecords(Long entityId, QueryParams queryParams);
+    List<BasicEntityRecord> getEntityRecords(Long entityId, QueryParams queryParams);
 
     /**
      * Returns all instances of the entity, that the current user has access to.
@@ -73,7 +75,7 @@ public interface InstanceService {
      * @param entityId id of the entity
      * @return a list of instances
      */
-    List<EntityRecord> getEntityRecords(Long entityId);
+    List<BasicEntityRecord> getEntityRecords(Long entityId);
 
     /**
      * Retrieves all fields of the entity. This will not include draft fields, created, modified
@@ -100,7 +102,7 @@ public interface InstanceService {
      * @param queryParams query parameters to use, retrieving instances
      * @return a list of instances, retrieved using the given lookup
      */
-    List<EntityRecord> getEntityRecordsFromLookup(Long entityId, String lookupName, Map<String, Object> lookupMap,
+    List<BasicEntityRecord> getEntityRecordsFromLookup(Long entityId, String lookupName, Map<String, Object> lookupMap,
                                                   QueryParams queryParams);
 
     /**
@@ -114,7 +116,7 @@ public interface InstanceService {
      * @param queryParams query parameters to use, retrieving instances
      * @return a list of instances, matching given filters
      */
-    List<EntityRecord> getEntityRecordsWithFilter(Long entityId, Filters filters, QueryParams queryParams);
+    List<BasicEntityRecord> getEntityRecordsWithFilter(Long entityId, Filters filters, QueryParams queryParams);
 
     /**
      * Returns field definitions of the given entity, assigned to the given instance.
@@ -137,7 +139,7 @@ public interface InstanceService {
      * @param queryParams query parameters to use, retrieving instances
      * @return a list of historical revisions for the instance
      */
-    List<HistoryRecord> getInstanceHistory(Long entityId, Long instanceId, QueryParams queryParams);
+    List<BasicHistoryRecord> getInstanceHistory(Long entityId, Long instanceId, QueryParams queryParams);
 
     /**
      * Retrieves a single, historical revision of an instance, by its id.
@@ -252,7 +254,7 @@ public interface InstanceService {
      * @param queryParams query parameters to use, retrieving instances from trash
      * @return list of instances, placed in trash
      */
-    List<EntityRecord> getTrashRecords(Long entityId, QueryParams queryParams);
+    List<BasicEntityRecord> getTrashRecords(Long entityId, QueryParams queryParams);
 
     /**
      * Returns total count of the instances of the given entity, placed in trash. This will only consider instances,
@@ -307,5 +309,5 @@ public interface InstanceService {
      * @param queryParams the query params which will be used for retrieval
      * @return the records object containing the values for the related field
      */
-    Records<EntityRecord> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName, QueryParams queryParams);
+    Records<BasicEntityRecord> getRelatedFieldValue(Long entityId, Long instanceId, String fieldName, QueryParams queryParams);
 }

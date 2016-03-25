@@ -47,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,7 +59,10 @@ import static java.lang.String.format;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.scheduler.constants.SchedulerConstants.EVENT_TYPE_KEY_NAME;
+import static org.motechproject.scheduler.constants.SchedulerConstants.IGNORE_PAST_FIRES_AT_START;
+import static org.motechproject.scheduler.constants.SchedulerConstants.IS_DAY_OF_WEEK;
 import static org.motechproject.scheduler.constants.SchedulerConstants.UI_DEFINED;
+import static org.motechproject.scheduler.constants.SchedulerConstants.USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE;
 import static org.motechproject.scheduler.validation.SchedulableJobValidator.validateCronSchedulableJob;
 import static org.motechproject.scheduler.validation.SchedulableJobValidator.validateDayOfWeekSchedulableJob;
 import static org.motechproject.scheduler.validation.SchedulableJobValidator.validateRepeatingPeriodSchedulableJob;
@@ -102,7 +106,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     @Override
     public void scheduleJob(CronSchedulableJob cronSchedulableJob) {
-        scheduleCronJob(cronSchedulableJob, false);
+        scheduleCronJob(cronSchedulableJob, false, false);
     }
 
     @Override
@@ -550,7 +554,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
     }
 
-    private void scheduleCronJob(CronSchedulableJob job, boolean update) {
+    private void scheduleCronJob(CronSchedulableJob job, boolean isDayOfWeek, boolean update) {
         logObjectIfNotNull(job);
 
         validateCronSchedulableJob(job);
@@ -563,17 +567,12 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 .withIdentity(jobKey(jobId.value(), JOB_GROUP_NAME))
                 .build();
 
-        jobDetail.getJobDataMap().put(UI_DEFINED, job.isUiDefined());
-
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
+        jobDetail.getJobDataMap().put(IS_DAY_OF_WEEK, isDayOfWeek);
+        jobDetail.getJobDataMap().put(UI_DEFINED, job.isUiDefined());
+        jobDetail.getJobDataMap().put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
 
-        CronScheduleBuilder cronSchedule;
-        try {
-            cronSchedule = cronSchedule(job.getCronExpression());
-        } catch (RuntimeException e) {
-            throw new MotechSchedulerException(format("Can not schedule job %s; invalid Cron expression: %s",
-                    jobId, job.getCronExpression()), e);
-        }
+        CronScheduleBuilder cronSchedule = cronSchedule(job.getCronExpression());
 
         // TODO: should take readable names rather than integers
         cronSchedule = setMisfirePolicyForCronTrigger(cronSchedule,  schedulerSettings.getProperty("scheduler.cron.trigger.misfire.policy"));
@@ -590,7 +589,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         try {
             existingTrigger = scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
         } catch (SchedulerException e) {
-            throw new MotechSchedulerException(format("Schedule or reschedule the job: %s.\n%s", jobId, e.getMessage()), e);
+            throw new MotechSchedulerException(format("Schedule or reschedule the job: %s.\n%s", jobId, e.getMessage()),
+                    "scheduler.error.cantRescheduleJob", Arrays.asList(jobId.value(), e.getMessage()), e);
         }
         if (existingTrigger != null) {
             unscheduleJob(jobId.value());
@@ -598,7 +598,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         DateTime now = now();
 
-        if (job.isIgnorePastFiresAtStart() && job.getStartDate().isBefore(now)) {
+        if (job.isIgnorePastFiresAtStart() && (job.getStartDate() == null || job.getStartDate().isBefore(now))) {
 
             Date newStartTime = trigger.getFireTimeAfter(now.toDate());
             if (newStartTime == null) {
@@ -641,6 +641,17 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
         jobDetail.getJobDataMap().put(UI_DEFINED, job.isUiDefined());
+        jobDetail.getJobDataMap().put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
+        jobDetail.getJobDataMap().put(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE, job.isUseOriginalFireTimeAfterMisfire());
+
+        try {
+            if (scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME)) != null) {
+                unscheduleJob(jobId);
+            }
+        } catch (SchedulerException e) {
+            throw new MotechSchedulerException(format("Schedule or reschedule the job: %s.\n%s", jobId, e.getMessage()),
+                    "scheduler.error.cantRescheduleJob", Arrays.asList(jobId.value(), e.getMessage()), e);
+        }
 
         ScheduleBuilder scheduleBuilder;
         if (!job.isUseOriginalFireTimeAfterMisfire()) {
@@ -680,6 +691,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
         jobDetail.getJobDataMap().put(UI_DEFINED, job.isUiDefined());
+        jobDetail.getJobDataMap().put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
+        jobDetail.getJobDataMap().put(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE, job.isUseOriginalFireTimeAfterMisfire());
 
         ScheduleBuilder scheduleBuilder = PeriodIntervalScheduleBuilder.periodIntervalSchedule()
                 .withRepeatPeriod(job.getRepeatPeriod())
@@ -726,8 +739,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         validateDayOfWeekSchedulableJob(job);
 
         MotechEvent motechEvent = job.getMotechEvent();
-        DateTime startDate = job.getStartDate().toLocalDate().toDateMidnight().toDateTime();
-        DateTime endDate = job.getEndDate();
         Time time = job.getTime();
 
         CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.atHourAndMinuteOnGivenDaysOfWeek(time.getHour(),
@@ -736,15 +747,14 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         CronTriggerImpl cronTrigger = (CronTriggerImpl) cronScheduleBuilder.build();
         CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, cronTrigger.getCronExpression(),
-                startDate, endDate != null ? endDate.toLocalDate().toDateMidnight().toDateTime() : null,
-                job.isIgnorePastFiresAtStart(), job.isUiDefined());
+                job.getStartDate(), job.getEndDate(), job.isIgnorePastFiresAtStart(), job.isUiDefined());
 
-        scheduleCronJob(cronSchedulableJob, update);
+        scheduleCronJob(cronSchedulableJob, true, update);
     }
 
     private void scheduleJob(SchedulableJob job, boolean update) {
         if (job instanceof CronSchedulableJob) {
-            scheduleCronJob((CronSchedulableJob) job, update);
+            scheduleCronJob((CronSchedulableJob) job, false, update);
         } else if (job instanceof DayOfWeekSchedulableJob) {
             scheduleDayOfWeekJob((DayOfWeekSchedulableJob) job, update);
         } else if (job instanceof RepeatingSchedulableJob) {
@@ -770,7 +780,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             scheduler.scheduleJob(jobDetail, triggerSet, update);
         } catch (SchedulerException e) {
             throw new MotechSchedulerException(String.format("Can not schedule the job:\n %s\n%s\n%s",
-                    jobDetail.toString(), trigger.toString(), e.getMessage()), e);
+                    jobDetail.toString(), trigger.toString(), e.getMessage()),
+                    "scheduler.error.schedulerError", Arrays.asList(e.getMessage()), e);
         }
     }
 
