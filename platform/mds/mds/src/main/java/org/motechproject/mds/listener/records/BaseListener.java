@@ -1,15 +1,22 @@
 package org.motechproject.mds.listener.records;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.helper.bundle.MdsBundleHelper;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A base class for listeners in MDS. Since listeners get constructed by JDO,
@@ -23,6 +30,9 @@ import org.springframework.context.ApplicationContext;
  * @param <T> the type of the service which is used by the implementing listener
  */
 public abstract class BaseListener<T> implements ServiceListener {
+
+    private static final String ENTITIES_BUNDLE_SYMBOLIC_NAME = "org.motechproject.motech-platform-dataservices-entities";
+    private static final String BUNDLE_SYMBOLIC_NAME_FILTER = "(Bundle-SymbolicName=%s)";
 
     private static final int CTX_WAIT_TIME_MS = 5 * 60 * 1000; // 5 min
 
@@ -63,12 +73,75 @@ public abstract class BaseListener<T> implements ServiceListener {
 
     public ApplicationContext getApplicationContext() {
         if (applicationContext == null) {
-            waitForCtx();
+            applicationContext = getApplicationContextFromBundleContext();
             if (applicationContext == null) {
-                throw new IllegalStateException("Entities application context unavailable in: " + getClass());
+                waitForCtx();
+                if (applicationContext == null) {
+                    throw new IllegalStateException("Entities application context unavailable in: " + getClass());
+                }
             }
         }
         return applicationContext;
+    }
+
+    private ApplicationContext getApplicationContextFromBundleContext() {
+        ApplicationContext applicationContext = null;
+
+        try {
+            applicationContext = getEntitiesBundleApplicationContext(getEntitiesBundle());
+        } catch (InvalidSyntaxException e) {
+            logger.error("Invalid syntax of the filter passed to the bundle context");
+        }
+
+        return applicationContext;
+    }
+
+    private Bundle getEntitiesBundle() {
+        for (Bundle bundle : bundleContext.getBundles()) {
+            if (StringUtils.equals(bundle.getSymbolicName(), ENTITIES_BUNDLE_SYMBOLIC_NAME)) {
+                return bundle;
+            }
+        }
+        return null;
+    }
+
+    private ApplicationContext getEntitiesBundleApplicationContext(Bundle entitiesBundle)
+            throws InvalidSyntaxException {
+
+        ApplicationContext context = null;
+
+        if (entitiesBundle != null) {
+
+            BundleContext bundleContext = entitiesBundle.getBundleContext();
+            List<ServiceReference<?>> references = getApplicationContextReferences(bundleContext);
+
+            if (references.size() == 1) {
+                context = (ApplicationContext) bundleContext.getService(references.get(0));
+            } else if (references.size() > 1) {
+                logger.warn("Multiple entities bundle application contexts found");
+            } else {
+                logger.debug("No entities bundle application context found");
+            }
+        } else {
+            logger.debug("Entities bundle not found");
+        }
+
+        return context;
+    }
+
+    private List<ServiceReference<?>> getApplicationContextReferences(BundleContext bundleContext)
+            throws InvalidSyntaxException {
+
+        List<ServiceReference<?>> references = new ArrayList<>();
+
+        if (bundleContext != null) {
+            references.addAll(bundleContext.getServiceReferences(
+                    ConfigurableApplicationContext.class,
+                    String.format(BUNDLE_SYMBOLIC_NAME_FILTER, ENTITIES_BUNDLE_SYMBOLIC_NAME)
+            ));
+        }
+
+        return references;
     }
 
 
