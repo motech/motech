@@ -215,6 +215,34 @@ public class EntityServiceContextIT extends BaseIT {
     }
 
     @Test
+    public void shouldAddNewFieldForLookupAndSaveEntity() throws IOException {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setName("myEntity");
+        entityDto = entityService.createEntity(entityDto);
+
+        //add a new field to draft
+        EntityDraft entityDraft = entityService.getEntityDraft(entityDto.getId());
+        entityService.saveDraftEntityChanges(entityDraft.getId(), DraftBuilder.forNewField("disp", "testFieldName", Long.class.getName()));
+        FieldDto field = selectFirst(entityService.getFields(entityDraft.getId()), having(on(FieldDto.class).getBasic().getName(), equalTo("testFieldName")));
+
+        LookupDto lookup = new LookupDto("lookup", false, false, null, true);
+        entityService.addLookups(entityDraft.getId(), Collections.singletonList(lookup));
+
+        Map<String, Object> values = new HashMap<>();
+        values.put("path", "indexes.0.$addField");
+        values.put("advanced", true);
+        values.put("value", Collections.singletonList(field.getId()));
+        DraftData draftData = new DraftData();
+        draftData.setEdit(true);
+        draftData.setValues(values);
+
+        entityService.saveDraftEntityChanges(entityDraft.getId(), draftData);
+        entityService.commitChanges(entityDto.getId());
+
+        assertNotNull(entityService.getLookupByName(entityDto.getId(),"lookup").getLookupField("testFieldName"));
+    }
+
+    @Test
     public void shouldRetrieveAllEntities() throws IOException {
         entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME_2, null, null, SecurityMode.EVERYONE, null));
         entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME_3, null, null, SecurityMode.EVERYONE, null));
