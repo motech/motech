@@ -13,7 +13,8 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.Order;
-import org.motechproject.mds.web.domain.EntityRecord;
+import org.motechproject.mds.web.domain.BasicEntityRecord;
+import org.motechproject.mds.web.domain.BasicFieldRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.domain.Records;
@@ -125,7 +126,7 @@ public class InstanceControllerTest {
 
     @Test
     public void shouldRetrieveRelatedFieldValues() throws Exception {
-        Records<EntityRecord> records = new Records<>(2, 5, 7, recordsList());
+        Records<BasicEntityRecord> records = new Records<>(2, 5, 7, recordsList());
 
         when(instanceService.getRelatedFieldValue(eq(1L), eq(6L), eq("relField"), any(RelationshipsUpdate.class), any(QueryParams.class)))
                 .thenReturn(records);
@@ -150,8 +151,8 @@ public class InstanceControllerTest {
         assertEquals(Order.Direction.ASC, queryParams.getOrderList().get(1).getDirection());
     }
 
-    private List<EntityRecord> recordsList() {
-        List<EntityRecord> records = new ArrayList<>();
+    private List<BasicEntityRecord> recordsList() {
+        List<BasicEntityRecord> records = new ArrayList<>();
 
         records.add(testRecordAsEntityRecord("n1", 22, 1));
         records.add(testRecordAsEntityRecord("test", 7, 2));
@@ -159,10 +160,10 @@ public class InstanceControllerTest {
         return records;
     }
 
-    private EntityRecord testRecordAsEntityRecord(String name, int val, long id) {
-        FieldRecord nameField = new FieldRecord("name", "Name", name, TypeDto.STRING);
-        FieldRecord valField = new FieldRecord("val", "Val", val, TypeDto.INTEGER);
+    private BasicEntityRecord testRecordAsEntityRecord(String name, int val, long id) {
+        BasicFieldRecord nameField = new FieldRecord("name", name, TypeDto.STRING);
+        BasicFieldRecord valField = new FieldRecord("val", val, TypeDto.INTEGER);
 
-        return new EntityRecord(id, 1L, asList(nameField, valField));
+        return new BasicEntityRecord(id, asList(nameField, valField));
     }
 }
