@@ -255,7 +255,7 @@
             return function(response) {
                 this.handleResponse(title, defaultMsg, response, callback);
             };
-        },
+        };
 
         this.handleWithStackTrace = function(title, defaultMsg, response) {
             var msg = "server.error";
@@ -270,6 +270,6 @@
                 msg = defaultMsg;
             }
             this.motechAlertStackTrace(msg, title, response);
-        },
+        };
     });
 }());

@@ -327,7 +327,7 @@
     });
 
     controllers.controller('AdminStatusMsgCtrl', function($scope, $rootScope, $timeout, StatusMessage, i18nService,
-                                                                $cookieStore, $filter, ModalService) {
+            $cookieStore, $filter, ModalService) {
         var UPDATE_INTERVAL = 1000 * 30, searchQuery = '',
         IGNORED_MSGS = 'ignoredMsgs',
         checkLevel = function (messageLevel, filterLevel) {

@@ -1579,23 +1579,6 @@
                      ModalService.handleResponse('task.header.error', 'task.history.deleteError', response);
                  });
             });
-//            ModalService.confirm2 ({
-//                title: 'task.history.confirm.clear',
-//                message: 'task.history.confirm.clearHistory',
-//                callback: function (r) {
-//                    if (!r) {
-//                        return;
-//                    }
-//                    ModalService.blockUI();
-//                    Activities.remove({taskId: $routeParams.taskId}, function () {
-//                        $scope.refresh();
-//                        ModalService.unblockUI();
-//                    }, function (response) {
-//                        ModalService.unblockUI();
-//                        ModalService.handleResponse('task.header.error', 'task.history.deleteError', response);
-//                    });
-//                }
-//            });
         };
 
         $scope.retryTask = function (activityId) {
