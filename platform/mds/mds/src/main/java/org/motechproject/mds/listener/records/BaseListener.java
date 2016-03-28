@@ -85,15 +85,15 @@ public abstract class BaseListener<T> implements ServiceListener {
     }
 
     private ApplicationContext getApplicationContextFromBundleContext() {
-        ApplicationContext applicationContext = null;
+        ApplicationContext entitiesBundleApplicationContext = null;
 
         try {
-            applicationContext = getEntitiesBundleApplicationContext(getEntitiesBundle());
+            entitiesBundleApplicationContext = getEntitiesBundleApplicationContext(getEntitiesBundle());
         } catch (InvalidSyntaxException e) {
             logger.error("Invalid syntax of the filter passed to the bundle context");
         }
 
-        return applicationContext;
+        return entitiesBundleApplicationContext;
     }
 
     private Bundle getEntitiesBundle() {
@@ -112,11 +112,11 @@ public abstract class BaseListener<T> implements ServiceListener {
 
         if (entitiesBundle != null) {
 
-            BundleContext bundleContext = entitiesBundle.getBundleContext();
-            List<ServiceReference<?>> references = getApplicationContextReferences(bundleContext);
+            BundleContext entitiesbundleContext = entitiesBundle.getBundleContext();
+            List<ServiceReference<?>> references = getApplicationContextReferences(entitiesbundleContext);
 
             if (references.size() == 1) {
-                context = (ApplicationContext) bundleContext.getService(references.get(0));
+                context = (ApplicationContext) entitiesbundleContext.getService(references.get(0));
             } else if (references.size() > 1) {
                 logger.warn("Multiple entities bundle application contexts found");
             } else {
