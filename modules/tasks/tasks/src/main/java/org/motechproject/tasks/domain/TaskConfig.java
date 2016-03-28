@@ -82,11 +82,11 @@ public class TaskConfig implements Serializable {
     }
 
     @JsonIgnore
-    public SortedSet<DataSource> getDataSources(Long providerId) {
+    public SortedSet<DataSource> getDataSources(String providerName) {
         SortedSet<DataSource> set = new TreeSet<>();
 
         for (DataSource source : getDataSources()) {
-            if (source.getProviderId().equals(providerId)) {
+            if (source.getProviderName().equals(providerName)) {
                 set.add(source);
             }
         }
@@ -97,19 +97,19 @@ public class TaskConfig implements Serializable {
     /**
      * Returns the data source for the given information.
      *
-     * @param providerId  the provider ID
+     * @param providerName  the provider name
      * @param objectId  the object ID
      * @param objectType  the object type
      * @return the object matching the given data.
      */
     @JsonIgnore
-    public DataSource getDataSource(final Long providerId, final Long objectId,
+    public DataSource getDataSource(final String providerName, final Long objectId,
                                     final String objectType) {
         return (DataSource) CollectionUtils.find(getDataSources(), new Predicate() {
             @Override
             public boolean evaluate(Object object) {
                 return object instanceof DataSource
-                        && ((DataSource) object).objectEquals(providerId, objectId, objectType);
+                        && ((DataSource) object).objectEquals(providerName, objectId, objectType);
             }
         });
     }

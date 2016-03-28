@@ -32,14 +32,14 @@ public final class KeyInformation {
      */
     public static final String ADDITIONAL_DATA_PREFIX = "ad";
 
-    private static final int DATA_PROVIDER_ID_IDX = 1;
+    private static final int DATA_PROVIDER_NAME_IDX = 1;
     private static final int OBJECT_TYPE_IDX = 2;
     private static final int OBJECT_ID_IDX = 3;
     private static final int EVENT_KEY_IDX = 4;
 
     private String originalKey;
     private String prefix;
-    private Long dataProviderId;
+    private String dataProviderName;
     private String objectType;
     private Long objectId;
     private String key;
@@ -52,11 +52,11 @@ public final class KeyInformation {
         this.manipulations = manipulations;
     }
 
-    private KeyInformation(String originalKey, String prefix, Long dataProviderId, String objectType,
+    private KeyInformation(String originalKey, String prefix, String dataProviderName, String objectType,
                            Long objectId, String key, List<String> manipulations) {
         this.originalKey = originalKey;
         this.prefix = prefix;
-        this.dataProviderId = dataProviderId;
+        this.dataProviderName = dataProviderName;
         this.objectType = objectType;
         this.objectId = objectId;
         this.key = key;
@@ -111,16 +111,16 @@ public final class KeyInformation {
         if (prefix.equalsIgnoreCase(TRIGGER_PREFIX)) {
             key = new KeyInformation(input, prefix, withoutManipulation, manipulations);
         } else if (prefix.equalsIgnoreCase(ADDITIONAL_DATA_PREFIX)) {
-            Pattern pattern = Pattern.compile("([a-zA-Z0-9]+)\\.([\\.a-zA-Z0-9\\-_]+)#(\\d+)\\.(.+)");
+            Pattern pattern = Pattern.compile("([a-zA-Z0-9\\-_]+)\\.([\\.a-zA-Z0-9\\-_]+)#([a-zA-Z0-9])\\.(.+)");
             Matcher matcher = pattern.matcher(withoutManipulation);
 
             if (matcher.matches()) {
-                String dataProviderId = matcher.group(DATA_PROVIDER_ID_IDX);
+                String dataProviderName = matcher.group(DATA_PROVIDER_NAME_IDX);
                 String objectType = matcher.group(OBJECT_TYPE_IDX);
                 Long objectId = Long.valueOf(matcher.group(OBJECT_ID_IDX));
                 String eventKey = matcher.group(EVENT_KEY_IDX);
 
-                key = new KeyInformation(input, prefix, Long.parseLong(dataProviderId), objectType, objectId, eventKey, manipulations);
+                key = new KeyInformation(input, prefix, dataProviderName, objectType, objectId, eventKey, manipulations);
             } else {
                 throw new IllegalArgumentException("Incorrect format for key from additional data");
             }
@@ -207,8 +207,8 @@ public final class KeyInformation {
         return originalKey;
     }
 
-    public Long getDataProviderId() {
-        return dataProviderId;
+    public String getDataProviderName() {
+        return dataProviderName;
     }
 
     public String getObjectType() {
@@ -243,7 +243,7 @@ public final class KeyInformation {
 
     @Override
     public int hashCode() {
-        return Objects.hash(originalKey, prefix, dataProviderId, objectType, objectId, key, manipulations);
+        return Objects.hash(originalKey, prefix, dataProviderName, objectType, objectId, key, manipulations);
     }
 
     @Override
@@ -260,7 +260,7 @@ public final class KeyInformation {
 
         return Objects.equals(this.originalKey, other.originalKey) &&
             Objects.equals(this.prefix, other.prefix) &&
-            Objects.equals(this.dataProviderId, other.dataProviderId) &&
+            Objects.equals(this.dataProviderName, other.dataProviderName) &&
             Objects.equals(this.objectType, other.objectType) &&
             Objects.equals(this.objectId, other.objectId) &&
             Objects.equals(this.key, other.key) &&
