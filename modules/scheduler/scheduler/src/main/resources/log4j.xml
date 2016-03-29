@@ -10,7 +10,7 @@
         </layout>
     </appender>
 
-    <logger name="org.motechproject.scheduler.service.impl.MotechScheduler">
+    <logger name="org.motechproject.scheduler.service.MotechScheduler">
         <level value="ERROR"/>
     </logger>
     <logger name="org.springframework.web">

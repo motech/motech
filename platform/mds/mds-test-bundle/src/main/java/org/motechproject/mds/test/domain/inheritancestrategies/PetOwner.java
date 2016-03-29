@@ -2,8 +2,6 @@ package org.motechproject.mds.test.domain.inheritancestrategies;
 
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.test.domain.inheritancestrategies.Person;
-import org.motechproject.mds.test.domain.inheritancestrategies.Pet;
 
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;

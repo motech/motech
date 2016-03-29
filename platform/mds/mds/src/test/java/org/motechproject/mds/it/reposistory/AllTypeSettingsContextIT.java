@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.motechproject.mds.it.BaseIT;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.domain.TypeSettingOption;
-import org.motechproject.mds.repository.AllTypeSettings;
+import org.motechproject.mds.repository.internal.AllTypeSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;

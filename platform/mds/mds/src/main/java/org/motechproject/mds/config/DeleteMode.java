@@ -9,14 +9,14 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  * {@link org.motechproject.mds.util.Constants.Config#MDS_DELETE_MODE}.
  * <p/>
  * The {@link #UNKNOWN} value should not be used in code as appropriate value. It was added to
- * ensure that the {@link #fromString(String)} method will not return {@value null} value.
+ * ensure that the {@link #fromString(String)} method will not return {@literal null} value.
  */
 public enum DeleteMode {
     DELETE, TRASH, UNKNOWN;
 
     /**
      * Converts the given string to appropriate delete mode. This method will never return
-     * {@value null} value. If the appropriate mode doesn't exists then the {@link #UNKNOWN} mode
+     * {@literal null} value. If the appropriate mode doesn't exists then the {@link #UNKNOWN} mode
      * will be returned.
      *
      * @param string the string representation of the delede mode.

@@ -20,6 +20,10 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * This helper class is responsible for the parsing of relationship and combobox values
+ * to display-friendly formats.
+ */
 public final class DisplayHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DisplayHelper.class);
@@ -28,10 +32,35 @@ public final class DisplayHelper {
 
     public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z");
 
+    /**
+     * Parses provided relationship or combobox value to display-friendly format. The type of
+     * the value is determined by the {@code field} parameter. Depending on the type of the field,
+     * a different representation will be returned.
+     *
+     * @param field field definition, that contains the type of the field
+     * @param value the value to be parsed
+     * @return depending on the field type, it returns {@link String} representation for one-to-one relationship
+     *         {@link Map} representation for the one-to-many and many-to-many relationships
+     *         {@link String} or {@link Collection} representation for comboboxes, depending on their settings
+     */
     public static Object getDisplayValueForField(FieldDto field, Object value) {
         return getDisplayValueForField(field, value, null);
     }
 
+    /**
+     * Parses provided relationship or combobox value to display-friendly format. The type of
+     * the value is determined by the {@code field} parameter. Depending on the type of the field,
+     * a different representation will be returned. Moreover, it limits the length of the parsed values,
+     * in case they exceed the provided limit.
+     *
+     * @param field field definition, that contains the type of the field
+     * @param value the value to be parsed
+     * @param maxLength the number of characters, after which the values will be trimmed; for map representation
+     *                  this is a maximum number of characters for each value in the map
+     * @return depending on the field type, it returns {@link String} representation for one-to-one relationship
+     *         {@link Map} representation for the one-to-many and many-to-many relationships
+     *         {@link String} or {@link Collection} representation for comboboxes, depending on their settings
+     */
     public static Object getDisplayValueForField(FieldDto field, Object value, Integer maxLength) {
         Object displayValue = null;
 

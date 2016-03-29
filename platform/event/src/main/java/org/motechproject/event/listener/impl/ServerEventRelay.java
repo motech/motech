@@ -113,6 +113,7 @@ public class ServerEventRelay implements EventRelay, EventHandler {
      * Receives an OSGi event with the proxy topic. This event is then proxied as a regular Motech event.
      * This allows sending Motech events without having a dependency on Event itself -  which is used by MDS.
      * Unless necessary using the proxy mechanism should be avoided.
+     *
      * @param osgiEvent the OSGi event to be proxied
      */
     @Override

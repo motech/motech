@@ -4,8 +4,8 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.exception.type.NoSuchTypeException;
-import org.motechproject.mds.repository.AllTypeValidations;
-import org.motechproject.mds.repository.AllTypes;
+import org.motechproject.mds.repository.internal.AllTypeValidations;
+import org.motechproject.mds.repository.internal.AllTypes;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.TypeHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +54,7 @@ public class TypeServiceImpl implements TypeService {
     @Transactional
     public List<TypeValidation> findValidations(TypeDto type, Class<? extends Annotation> aClass) {
         Type typeSource = allTypes.retrieveByClassName(type.getTypeClass());
-        List<TypeValidation> list = null == typeSource ? new ArrayList<TypeValidation>() : typeSource.getValidations();
+        List<TypeValidation> list = null == typeSource ? new ArrayList<>() : typeSource.getValidations();
         List<TypeValidation> validations = new ArrayList<>();
 
         for (TypeValidation validation : list) {

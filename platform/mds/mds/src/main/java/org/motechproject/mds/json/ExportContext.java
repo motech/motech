@@ -3,7 +3,7 @@ package org.motechproject.mds.json;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.ImportExportBlueprint;
 import org.motechproject.mds.helper.DataServiceHelper;
-import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.repository.internal.AllEntities;
 import org.motechproject.mds.service.MotechDataService;
 import org.osgi.framework.BundleContext;
 

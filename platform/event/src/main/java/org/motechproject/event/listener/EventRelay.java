@@ -6,7 +6,6 @@ import org.motechproject.event.MotechEvent;
  * The <code>EventRelay</code> interface provides methods that allow sending {@link org.motechproject.event.MotechEvent}
  * via ActiveMQ, either to the queue (ActiveMQ selects the subscriber that will handle the event) or to the topic (event
  * is sent to every registered subscriber).
- *
  */
 public interface EventRelay {
 

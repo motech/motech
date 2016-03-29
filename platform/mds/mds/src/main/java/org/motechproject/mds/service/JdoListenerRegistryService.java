@@ -22,7 +22,6 @@ public interface JdoListenerRegistryService {
 
     /**
      * Updates entity names for package listeners
-     *
      */
     void updateEntityNames();
 
