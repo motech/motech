@@ -4,10 +4,9 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.security.ex.VelocityTemplateParsingException;
-import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.config.SettingsFacade;
+import org.motechproject.security.exception.VelocityTemplateParsingException;
 import org.motechproject.testing.utils.FileHelper;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;

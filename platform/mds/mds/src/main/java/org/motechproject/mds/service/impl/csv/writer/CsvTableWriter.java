@@ -1,6 +1,7 @@
 package org.motechproject.mds.service.impl.csv.writer;
 
 import org.apache.commons.io.IOUtils;
+import org.motechproject.mds.service.TableWriter;
 import org.supercsv.io.CsvMapWriter;
 import org.supercsv.prefs.CsvPreference;
 

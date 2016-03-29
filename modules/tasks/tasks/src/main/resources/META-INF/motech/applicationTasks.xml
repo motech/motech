@@ -16,7 +16,7 @@
     <mvc:annotation-driven/>
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
-    <bean id="tasksSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+    <bean id="tasksSettings" class="org.motechproject.config.SettingsFacade" autowire="byType">
         <property name="configFiles">
             <list>
                 <value>classpath:handler-settings.properties</value>

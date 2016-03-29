@@ -95,14 +95,14 @@ public class TasksBundleIT extends BasePaxIT {
         int tries = 0;
 
         do {
-            fromFile = taskDataProviderService.getProvider("mrs.name");
+            fromFile = taskDataProviderService.getProvider("mrs-name");
             ++tries;
             Thread.sleep(500);
         } while (fromFile == null && tries < TRIES_COUNT);
 
         assertNotNull(fromFile);
 
-        TaskDataProvider fromDB = dataProviderDataService.findByName("mrs.name");
+        TaskDataProvider fromDB = dataProviderDataService.findByName("mrs-name");
 
         assertNotNull(fromDB);
         assertEquals(fromDB, fromFile);

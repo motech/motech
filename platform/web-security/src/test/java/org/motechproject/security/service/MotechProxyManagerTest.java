@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.security.builder.SecurityRuleBuilder;
 import org.motechproject.security.domain.MotechURLSecurityRule;
-import org.motechproject.security.repository.AllMotechSecurityRules;
+import org.motechproject.security.repository.MotechSecurityRulesDao;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +28,7 @@ public class MotechProxyManagerTest {
     private MotechProxyManager motechProxyManager = new MotechProxyManager();
 
     @Mock
-    private AllMotechSecurityRules allSecurityRules;
+    private MotechSecurityRulesDao allSecurityRules;
 
     @Mock
     private SecurityRuleBuilder securityRuleBuilder;

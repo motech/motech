@@ -1,6 +1,5 @@
 package org.motechproject.scheduler.tasks;
 
-import org.motechproject.scheduler.service.SchedulerChannelProvider;
 import org.motechproject.tasks.service.DynamicChannelProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;

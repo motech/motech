@@ -1,7 +1,7 @@
 package org.motechproject.security.authentication;
 
 import org.junit.Test;
-import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.config.SettingsFacade;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;

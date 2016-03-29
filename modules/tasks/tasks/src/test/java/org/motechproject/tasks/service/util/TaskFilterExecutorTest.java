@@ -59,9 +59,9 @@ public class TaskFilterExecutorTest {
     public void testcheckFilters() throws TaskHandlerException {
         DateTime dateTime = DateTime.now().minusDays(2);
 
-        DataSource dataSource = new DataSource(null, 0L, "", "", null, false);
+        DataSource dataSource = new DataSource("ProviderName", null, 0L, "", "", null, false);
         TaskConfig taskConfig = mock(TaskConfig.class);
-        when(taskConfig.getDataSource(anyLong(), anyLong(), anyString())).thenReturn(dataSource);
+        when(taskConfig.getDataSource(anyString(), anyLong(), anyString())).thenReturn(dataSource);
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
         TaskContext taskContext = new TaskContext(task, null, activityService);

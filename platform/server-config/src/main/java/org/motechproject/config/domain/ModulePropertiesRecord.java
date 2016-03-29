@@ -107,9 +107,7 @@ public class ModulePropertiesRecord {
      * @return the instance of {@code ModulePropertiesRecord}, null if error occurred
      */
     public static ModulePropertiesRecord buildFrom(File file) {
-        InputStream inputStream = null;
-        try {
-            inputStream = FileUtils.openInputStream(file);
+        try (InputStream inputStream = FileUtils.openInputStream(file)) {
             final String fileName = file.getName();
             boolean raw = !isExtension(fileName, PROPERTIES_FILE_EXTENSION);
             Properties properties = buildProperties(inputStream, raw);
@@ -118,8 +116,6 @@ public class ModulePropertiesRecord {
         } catch (IOException e) {
             LOGGER.error(String.format("Error reading config file %s", file.getAbsolutePath()), e);
             return null;
-        } finally {
-            IOUtils.closeQuietly(inputStream);
         }
     }
 

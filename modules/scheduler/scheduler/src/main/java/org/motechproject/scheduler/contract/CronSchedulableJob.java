@@ -115,12 +115,14 @@ public class CronSchedulableJob extends EndingSchedulableJob {
 
     @Override
     public String toString() {
-        return "SchedulableJob{" +
-                "motechEvent=" + getMotechEvent() +
-                ", startTime=" + getStartDate() +
-                ", endTime=" + getEndDate() +
-                ", cronExpression='" + cronExpression + '\'' +
-                ", ignorePastFiresAtStart='" + isIgnorePastFiresAtStart() + '\'' +
-                '}';
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("SchedulableJob{motechEvent=").append(getMotechEvent())
+                .append(", startTime=").append(getStartDate())
+                .append(", endTime=").append(getEndDate())
+                .append(", cronExpression='").append(cronExpression)
+                .append("', ignorePastFiresAtStart='").append(isIgnorePastFiresAtStart()).append("'}");
+
+        return builder.toString();
     }
 }

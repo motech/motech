@@ -6,11 +6,11 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.security.ex.UserNotFoundException;
+import org.motechproject.security.exception.UserNotFoundException;
 import org.motechproject.security.service.PasswordRecoveryService;
-import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.server.config.domain.LoginMode;
-import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.config.SettingsFacade;
+import org.motechproject.config.domain.LoginMode;
+import org.motechproject.config.domain.MotechSettings;
 import org.motechproject.server.web.dto.ForgotViewData;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 

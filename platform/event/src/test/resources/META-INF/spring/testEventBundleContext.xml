@@ -5,7 +5,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
-
     <bean id="testEventListenerOsgi" class="org.motechproject.event.osgi.TestEventListenerOsgi"/>
 
     <osgi:reference id="eventListenerRegistry"
@@ -14,5 +13,15 @@
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
 
     <bean id="testHandler" class="org.motechproject.event.osgi.TestHandler"/>
+
+    <bean id="testHandlerProxied" class="org.motechproject.event.osgi.TestHandlerProxied"/>
+
+    <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames">
+            <list>
+                <value>*Proxied</value>
+            </list>
+        </property>
+    </bean>
 
 </beans>

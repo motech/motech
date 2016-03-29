@@ -61,11 +61,6 @@ public class EntityDraft extends Entity {
         updateTracking(advancedSettings);
     }
 
-
-    public EntityDraft() {
-        fieldNameChanges = new HashMap<>();
-    }
-
     public String getDraftOwnerUsername() {
         return draftOwnerUsername;
     }

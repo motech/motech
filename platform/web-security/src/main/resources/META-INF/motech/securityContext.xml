@@ -27,7 +27,7 @@
         <constructor-arg ref="basicAuthenticationEntryPoint"/>
     </bean>
 
-    <bean id="webSecuritySettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+    <bean id="webSecuritySettings" class="org.motechproject.config.SettingsFacade" autowire="byType">
         <property name="configFiles">
             <list>
                 <value>classpath:security.properties</value>

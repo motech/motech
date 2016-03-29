@@ -1,9 +1,9 @@
 package org.motechproject.security.service.impl;
 
-import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
-import org.motechproject.security.repository.AllMotechRoles;
+import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.AuthoritiesService;
+import org.motechproject.security.service.MotechRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,24 +15,20 @@ import java.util.List;
 
 
 /**
- * Implementation for @AuthoritiesService.Given a MotechUser, retrieves the roles granted to that user
+ * Implementation for {@link AuthoritiesService}. Given a MotechUser, retrieves the roles granted to that user
  * and for each role collects permissions associated with the role.
  */
 @Service
 public class AuthoritiesServiceImpl implements AuthoritiesService {
-    private AllMotechRoles allMotechRoles;
 
-    @Autowired
-    public AuthoritiesServiceImpl(AllMotechRoles allMotechRoles) {
-        this.allMotechRoles = allMotechRoles;
-    }
+    private MotechRoleService motechRoleService;
 
     @Override
     @Transactional
     public List<GrantedAuthority> authoritiesFor(MotechUser user) {
-        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> authorities = new ArrayList<>();
         for (String role : user.getRoles()) {
-            MotechRole motechRole = allMotechRoles.findByRoleName(role);
+            RoleDto motechRole = motechRoleService.getRole(role);
             if (motechRole != null) {
                 for (String permission : motechRole.getPermissionNames()) {
                     authorities.add(new SimpleGrantedAuthority(permission));
@@ -41,4 +37,10 @@ public class AuthoritiesServiceImpl implements AuthoritiesService {
         }
         return authorities;
     }
+
+    @Autowired
+    public void setMotechRoleService(MotechRoleService motechRoleService) {
+        this.motechRoleService = motechRoleService;
+    }
+
 }

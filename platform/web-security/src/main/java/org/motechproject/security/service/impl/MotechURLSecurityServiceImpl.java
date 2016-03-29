@@ -10,7 +10,7 @@ import org.motechproject.security.domain.SecurityRuleComparator;
 import org.motechproject.security.helper.IDTransformer;
 import org.motechproject.security.model.SecurityConfigDto;
 import org.motechproject.security.model.SecurityRuleDto;
-import org.motechproject.security.repository.AllMotechSecurityRules;
+import org.motechproject.security.repository.MotechSecurityRulesDao;
 import org.motechproject.security.service.MotechProxyManager;
 import org.motechproject.security.service.MotechURLSecurityService;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ import java.util.List;
 public class MotechURLSecurityServiceImpl implements MotechURLSecurityService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechURLSecurityServiceImpl.class);
 
-    private AllMotechSecurityRules allSecurityRules;
+    private MotechSecurityRulesDao allSecurityRules;
     private MotechProxyManager proxyManager;
 
     @Override
@@ -161,7 +161,7 @@ public class MotechURLSecurityServiceImpl implements MotechURLSecurityService {
     }
 
     @Autowired
-    public void setAllSecurityRules(AllMotechSecurityRules allSecurityRules) {
+    public void setAllSecurityRules(MotechSecurityRulesDao allSecurityRules) {
         this.allSecurityRules = allSecurityRules;
     }
 

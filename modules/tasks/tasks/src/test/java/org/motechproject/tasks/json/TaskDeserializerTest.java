@@ -45,7 +45,7 @@ public class TaskDeserializerTest {
 
         Map<String, String> actionValues = new HashMap<>();
         actionValues.put("delivery_time", "12:00");
-        actionValues.put("message", "Congratulations,    {{ad.6899548.Person#1.firstName}}, your pregnancy test was positive. Please reply to schedule a clinic visit with your midwife.");
+        actionValues.put("message", "Congratulations,    {{ad.ProviderName.Person#1.firstName}}, your pregnancy test was positive. Please reply to schedule a clinic visit with your midwife.");
         actionValues.put("message", "{{trigger.PatientId}}");
 
         TaskActionInformation actionInformation = new TaskActionInformation(null, "sms.api", "motech-sms-api-bundle", "0.19.0.SNAPSHOT", "SendSMS", actionValues);
@@ -56,7 +56,7 @@ public class TaskDeserializerTest {
 
         EXPECTED_TASK = new Task();
         EXPECTED_TASK.getTaskConfig().add(new FilterSet(filters));
-        EXPECTED_TASK.getTaskConfig().add(new DataSource(6899548L, 1L, "Person", "id", asList(new Lookup("mrs.person.lookupField.id", "trigger.PatientId")), false));
+        EXPECTED_TASK.getTaskConfig().add(new DataSource("ProviderName", 6899548L, 1L, "Person", "id", asList(new Lookup("mrs.person.lookupField.id", "trigger.PatientId")), false));
         EXPECTED_TASK.setName(name);
         EXPECTED_TASK.setEnabled(false);
         EXPECTED_TASK.setHasRegisteredChannel(true);

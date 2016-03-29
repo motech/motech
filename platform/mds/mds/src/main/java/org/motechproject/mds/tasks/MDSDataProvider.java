@@ -64,24 +64,50 @@ public class MDSDataProvider extends AbstractDataProvider {
         }
     }
 
-    private Object findById(String type, String idParam) {
-        Long id = parseId(idParam);
-        String serviceName = MotechClassPool.getInterfaceName(type);
-        MotechDataService service = OSGiServiceUtils.findService(bundleContext, serviceName);
-        if (null != service) {
-            return service.findById(id);
-        } else {
-            getLogger().error("Service %s not found", serviceName);
-            return null;
+    @Override
+    public boolean supports(String type) {
+        return entityService.getEntityByClassName(type) != null;
+    }
+
+    @Override
+    public String getPackageRoot() {
+        return "org.motechproject.mds.entity";
+    }
+
+    @Override
+    public List<Class<?>> getSupportClasses() {
+        List<EntityDto> dtos = entityService.listEntities();
+        List<Class<?>> classes = new ArrayList<>();
+
+        for (EntityDto dto : dtos) {
+            try {
+                classes.add(getClassForType(dto.getName()));
+            } catch (ClassNotFoundException e) {
+                getLogger().error(e.getMessage(), e);
+            }
+        }
+
+        return classes;
+    }
+
+    public void updateDataProvider(SchemaHolder schemaHolder) {
+        setBody(mdsDataProviderBuilder.generateDataProvider(schemaHolder));
+        // we unregister the service, then register again
+        if (serviceRegistration != null) {
+            serviceRegistration.unregister();
+            serviceRegistration = null;
+        }
+        // only register if we actually have entities
+        if (CollectionUtils.isNotEmpty(schemaHolder.getAllEntities())) {
+            serviceRegistration = bundleContext.registerService(DataProvider.class.getName(), this, null);
         }
     }
 
-    private Long parseId(String idParam) {
-        try {
-            return Long.parseLong(idParam);
-        } catch (NumberFormatException e) {
-            throw new DataProviderException("Invalid lookup parameter [id]: " + idParam, e);
-        }
+    @Override
+    protected Class<?> getClassForType(String type) throws ClassNotFoundException {
+        Bundle entitiesBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext,
+                Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME);
+        return (entitiesBundle != null) ? entitiesBundle.loadClass(type) : null;
     }
 
     private Object findUsingLookup(String type, String lookupName, Map<String, String> lookupMap) {
@@ -127,49 +153,23 @@ public class MDSDataProvider extends AbstractDataProvider {
         return result;
     }
 
-    @Override
-    protected Class<?> getClassForType(String type) throws ClassNotFoundException {
-        Bundle entitiesBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext,
-                Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME);
-        return (entitiesBundle != null) ? entitiesBundle.loadClass(type) : null;
-    }
-
-    @Override
-    public List<Class<?>> getSupportClasses() {
-        List<EntityDto> dtos = entityService.listEntities();
-        List<Class<?>> classes = new ArrayList<>();
-
-        for (EntityDto dto : dtos) {
-            try {
-                classes.add(getClassForType(dto.getName()));
-            } catch (ClassNotFoundException e) {
-                getLogger().error(e.getMessage(), e);
-            }
+    private Object findById(String type, String idParam) {
+        Long id = parseId(idParam);
+        String serviceName = MotechClassPool.getInterfaceName(type);
+        MotechDataService service = OSGiServiceUtils.findService(bundleContext, serviceName);
+        if (null != service) {
+            return service.findById(id);
+        } else {
+            getLogger().error("Service %s not found", serviceName);
+            return null;
         }
-
-        return classes;
     }
 
-    @Override
-    public boolean supports(String type) {
-        return entityService.getEntityByClassName(type) != null;
-    }
-
-    @Override
-    public String getPackageRoot() {
-        return "org.motechproject.mds.entity";
-    }
-
-    public void updateDataProvider(SchemaHolder schemaHolder) {
-        setBody(mdsDataProviderBuilder.generateDataProvider(schemaHolder));
-        // we unregister the service, then register again
-        if (serviceRegistration != null) {
-            serviceRegistration.unregister();
-            serviceRegistration = null;
-        }
-        // only register if we actually have entities
-        if (CollectionUtils.isNotEmpty(schemaHolder.getAllEntities())) {
-            serviceRegistration = bundleContext.registerService(DataProvider.class.getName(), this, null);
+    private Long parseId(String idParam) {
+        try {
+            return Long.parseLong(idParam);
+        } catch (NumberFormatException e) {
+            throw new DataProviderException("Invalid lookup parameter [id]: " + idParam, e);
         }
     }
 
