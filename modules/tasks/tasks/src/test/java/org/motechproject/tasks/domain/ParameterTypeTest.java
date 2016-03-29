@@ -3,13 +3,14 @@ package org.motechproject.tasks.domain;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.commons.date.util.DateTimeSourceUtil;
+import org.motechproject.tasks.domain.enums.ParameterType;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
-import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
+import static org.motechproject.tasks.domain.enums.ParameterType.TEXTAREA;
+import static org.motechproject.tasks.domain.enums.TaskActivityType.ERROR;
 
 public class
     ParameterTypeTest {

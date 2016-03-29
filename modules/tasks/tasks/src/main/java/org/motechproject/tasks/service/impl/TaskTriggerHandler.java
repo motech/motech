@@ -136,6 +136,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     }
 
     @Override
+    @Transactional
     public void handle(MotechEvent event) {
         LOGGER.info("Handling the motech event with subject: {}", event.getSubject());
 
@@ -160,6 +161,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     }
 
     @Override
+    @Transactional
     public void handleRetry(MotechEvent event) {
         LOGGER.info("Handling the motech event with subject: {} for task retry", event.getSubject());
 

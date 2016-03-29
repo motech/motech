@@ -6,6 +6,8 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.domain.enums.ParameterType;
+import org.motechproject.tasks.dto.FieldParameterDto;
 
 import java.util.Objects;
 
@@ -56,6 +58,10 @@ public class FieldParameter extends Parameter {
 
     public void setFieldKey(final String fieldKey) {
         this.fieldKey = fieldKey;
+    }
+
+    public FieldParameterDto toDto() {
+        return new FieldParameterDto(getDisplayName(), getType(), fieldKey);
     }
 
     @Override

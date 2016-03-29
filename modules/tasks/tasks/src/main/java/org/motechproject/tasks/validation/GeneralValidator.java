@@ -4,7 +4,7 @@ import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.FieldParameter;
 import org.motechproject.tasks.domain.ActionParameter;
-import org.motechproject.tasks.domain.ParameterType;
+import org.motechproject.tasks.domain.enums.ParameterType;
 import org.motechproject.tasks.domain.Parameter;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
@@ -16,10 +16,10 @@ import java.util.Set;
 
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.motechproject.tasks.domain.TaskErrorType.BLANK;
-import static org.motechproject.tasks.domain.TaskErrorType.EMPTY_COLLECTION;
-import static org.motechproject.tasks.domain.TaskErrorType.NULL;
-import static org.motechproject.tasks.domain.TaskErrorType.VERSION;
+import static org.motechproject.tasks.domain.enums.TaskErrorType.BLANK;
+import static org.motechproject.tasks.domain.enums.TaskErrorType.EMPTY_COLLECTION;
+import static org.motechproject.tasks.domain.enums.TaskErrorType.NULL;
+import static org.motechproject.tasks.domain.enums.TaskErrorType.VERSION;
 
 /**
  * General class providing utility methods for validating fields for being null, blank or missing. This is an abstract

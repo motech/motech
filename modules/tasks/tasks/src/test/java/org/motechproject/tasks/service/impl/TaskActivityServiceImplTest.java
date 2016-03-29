@@ -8,7 +8,7 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
-import org.motechproject.tasks.domain.TaskActivityType;
+import org.motechproject.tasks.domain.enums.TaskActivityType;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.repository.TaskActivitiesDataService;
 import org.motechproject.tasks.service.TaskActivityService;
@@ -32,9 +32,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
-import static org.motechproject.tasks.domain.TaskActivityType.SUCCESS;
-import static org.motechproject.tasks.domain.TaskActivityType.WARNING;
+import static org.motechproject.tasks.domain.enums.TaskActivityType.ERROR;
+import static org.motechproject.tasks.domain.enums.TaskActivityType.SUCCESS;
+import static org.motechproject.tasks.domain.enums.TaskActivityType.WARNING;
 import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
 
 public class TaskActivityServiceImplTest {

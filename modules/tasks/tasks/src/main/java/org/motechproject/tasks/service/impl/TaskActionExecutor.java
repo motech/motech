@@ -7,21 +7,22 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.KeyInformation;
-import org.motechproject.tasks.domain.ParameterType;
+import org.motechproject.tasks.domain.enums.ParameterType;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 import org.motechproject.tasks.exception.TaskHandlerException;
-import org.motechproject.tasks.service.util.KeyEvaluator;
 import org.motechproject.tasks.service.TaskActivityService;
-import org.motechproject.tasks.service.util.TaskContext;
 import org.motechproject.tasks.service.TaskService;
+import org.motechproject.tasks.service.util.KeyEvaluator;
+import org.motechproject.tasks.service.util.TaskContext;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,10 +33,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import static org.motechproject.tasks.domain.ParameterType.LIST;
-import static org.motechproject.tasks.domain.ParameterType.MAP;
 import static org.motechproject.tasks.constants.TaskFailureCause.ACTION;
 import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
+import static org.motechproject.tasks.domain.enums.ParameterType.LIST;
+import static org.motechproject.tasks.domain.enums.ParameterType.MAP;
 
 /**
  * Builds action parameters from  {@link TaskContext} and executes the action by invoking its service or raising its event.
@@ -51,14 +52,6 @@ public class TaskActionExecutor {
     private TaskActivityService activityService;
     private KeyEvaluator keyEvaluator;
 
-    @Autowired
-    public TaskActionExecutor(TaskService taskService, TaskActivityService activityService,
-                       EventRelay eventRelay) {
-        this.eventRelay = eventRelay;
-        this.taskService = taskService;
-        this.activityService = activityService;
-    }
-
     /**
      * Executes the action for the given task.
      *
@@ -67,6 +60,7 @@ public class TaskActionExecutor {
      * @param taskContext  the context of the current task execution, not null
      * @throws TaskHandlerException when the task couldn't be executed
      */
+    @Transactional
     public void execute(Task task, TaskActionInformation actionInformation, TaskContext taskContext) throws TaskHandlerException {
         LOGGER.info("Executing task action: {} from task: {}", actionInformation.getName(), task.getName());
         this.keyEvaluator = new KeyEvaluator(taskContext);
@@ -256,5 +250,20 @@ public class TaskActionExecutor {
 
     void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    @Autowired
+    public void setEventRelay(EventRelay eventRelay) {
+        this.eventRelay = eventRelay;
+    }
+
+    @Autowired
+    public void setTaskService(TaskService taskService) {
+        this.taskService = taskService;
+    }
+
+    @Autowired
+    public void setActivityService(TaskActivityService activityService) {
+        this.activityService = activityService;
     }
 }

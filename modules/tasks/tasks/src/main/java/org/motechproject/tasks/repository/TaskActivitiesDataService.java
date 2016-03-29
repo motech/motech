@@ -5,7 +5,7 @@ import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.tasks.domain.TaskActivity;
-import org.motechproject.tasks.domain.TaskActivityType;
+import org.motechproject.tasks.domain.enums.TaskActivityType;
 
 import java.util.List;
 import java.util.Set;

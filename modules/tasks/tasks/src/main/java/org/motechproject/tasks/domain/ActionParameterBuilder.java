@@ -1,6 +1,7 @@
 package org.motechproject.tasks.domain;
 
 import org.motechproject.tasks.contract.ActionParameterRequest;
+import org.motechproject.tasks.domain.enums.ParameterType;
 
 import java.util.SortedSet;
 

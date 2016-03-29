@@ -132,6 +132,8 @@
                             org.motechproject.tasks.contract.builder;version=${project.version},
                             org.motechproject.tasks.contract.json;version=${project.version},
                             org.motechproject.tasks.domain;version=${project.version},
+                            org.motechproject.tasks.domain.enums;version=${project.version},
+                            org.motechproject.tasks.dto;version=${project.version},
                             org.motechproject.tasks.repository;version=${project.version},
                             org.motechproject.tasks.annotations;version=${project.version},
                             org.motechproject.tasks.exception;version=${project.version},

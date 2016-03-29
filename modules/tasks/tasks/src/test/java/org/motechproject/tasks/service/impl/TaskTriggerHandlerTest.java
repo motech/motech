@@ -89,17 +89,17 @@ import static org.motechproject.tasks.domain.OperatorType.EXIST;
 import static org.motechproject.tasks.domain.OperatorType.GT;
 import static org.motechproject.tasks.domain.OperatorType.LT;
 import static org.motechproject.tasks.domain.OperatorType.STARTSWITH;
-import static org.motechproject.tasks.domain.ParameterType.BOOLEAN;
-import static org.motechproject.tasks.domain.ParameterType.DATE;
-import static org.motechproject.tasks.domain.ParameterType.DOUBLE;
-import static org.motechproject.tasks.domain.ParameterType.INTEGER;
-import static org.motechproject.tasks.domain.ParameterType.LIST;
-import static org.motechproject.tasks.domain.ParameterType.LONG;
-import static org.motechproject.tasks.domain.ParameterType.MAP;
-import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
-import static org.motechproject.tasks.domain.ParameterType.TIME;
-import static org.motechproject.tasks.domain.ParameterType.UNICODE;
-import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
+import static org.motechproject.tasks.domain.enums.ParameterType.BOOLEAN;
+import static org.motechproject.tasks.domain.enums.ParameterType.DATE;
+import static org.motechproject.tasks.domain.enums.ParameterType.DOUBLE;
+import static org.motechproject.tasks.domain.enums.ParameterType.INTEGER;
+import static org.motechproject.tasks.domain.enums.ParameterType.LIST;
+import static org.motechproject.tasks.domain.enums.ParameterType.LONG;
+import static org.motechproject.tasks.domain.enums.ParameterType.MAP;
+import static org.motechproject.tasks.domain.enums.ParameterType.TEXTAREA;
+import static org.motechproject.tasks.domain.enums.ParameterType.TIME;
+import static org.motechproject.tasks.domain.enums.ParameterType.UNICODE;
+import static org.motechproject.tasks.domain.enums.TaskActivityType.ERROR;
 import static org.springframework.aop.support.AopUtils.getTargetClass;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
@@ -163,7 +163,7 @@ public class TaskTriggerHandlerTest {
 
     @Spy
     @InjectMocks
-    TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, taskActivityService, eventRelay);
+    TaskActionExecutor taskActionExecutor = new TaskActionExecutor();
 
     @Captor
     ArgumentCaptor<TaskHandlerException> exceptionCaptor;

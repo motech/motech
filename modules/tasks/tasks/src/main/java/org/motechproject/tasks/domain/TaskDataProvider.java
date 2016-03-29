@@ -6,6 +6,8 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.dto.TaskDataProviderDto;
+import org.motechproject.tasks.dto.TaskDataProviderObjectDto;
 
 import javax.jdo.annotations.Unique;
 import java.util.ArrayList;
@@ -120,6 +122,17 @@ public class TaskDataProvider {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public TaskDataProviderDto toDto() {
+        List<TaskDataProviderObjectDto> objectDtos = new ArrayList<>();
+
+        if (objects != null) {
+            for (TaskDataProviderObject object : objects) {
+                objectDtos.add(object.toDto());
+            }
+        }
+        return new TaskDataProviderDto(id, name, objectDtos);
     }
 
     @Override

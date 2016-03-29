@@ -25,7 +25,7 @@ import static org.motechproject.tasks.domain.OperatorType.MORE_MONTHS_FROM_NOW;
 import static org.motechproject.tasks.domain.OperatorType.STARTSWITH;
 import static org.motechproject.tasks.domain.OperatorType.fromString;
 import static org.motechproject.tasks.domain.OperatorType.needExpression;
-import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
+import static org.motechproject.tasks.domain.enums.TaskActivityType.ERROR;
 
 public class OperatorTypeTest {
 

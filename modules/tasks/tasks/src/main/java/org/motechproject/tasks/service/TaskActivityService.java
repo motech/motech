@@ -3,7 +3,7 @@ package org.motechproject.tasks.service;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
-import org.motechproject.tasks.domain.TaskActivityType;
+import org.motechproject.tasks.domain.enums.TaskActivityType;
 import org.motechproject.tasks.exception.TaskHandlerException;
 
 import java.util.List;
