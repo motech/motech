@@ -13,7 +13,7 @@ import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.tasks.domain.mds.channel.EventParameter;
 import org.motechproject.scheduler.tasks.SchedulerChannelProvider;
-import org.motechproject.tasks.domain.TaskTriggerInformation;
+import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;

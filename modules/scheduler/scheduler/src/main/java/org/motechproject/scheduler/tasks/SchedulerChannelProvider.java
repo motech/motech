@@ -7,7 +7,7 @@ import org.motechproject.scheduler.constants.SchedulerConstants;
 import org.motechproject.tasks.service.DynamicChannelProvider;
 import org.motechproject.tasks.domain.mds.channel.EventParameter;
 import org.motechproject.scheduler.service.MotechSchedulerService;
-import org.motechproject.tasks.domain.TaskTriggerInformation;
+import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.exception.TriggerRetrievalException;
 import org.quartz.JobDataMap;

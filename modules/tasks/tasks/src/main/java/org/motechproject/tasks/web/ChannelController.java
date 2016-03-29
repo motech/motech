@@ -1,10 +1,10 @@
 package org.motechproject.tasks.web;
 
 import org.motechproject.tasks.domain.mds.channel.Channel;
-import org.motechproject.tasks.domain.TaskTriggerInformation;
+import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
-import org.motechproject.tasks.domain.TriggersList;
-import org.motechproject.tasks.domain.TriggersLists;
+import org.motechproject.tasks.web.domain.TriggersList;
+import org.motechproject.tasks.web.domain.TriggersLists;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TriggerEventService;
 import org.springframework.beans.factory.annotation.Autowired;

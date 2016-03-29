@@ -13,7 +13,7 @@ import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.tasks.domain.mds.channel.MethodCallManner;
 import org.motechproject.tasks.contract.builder.TestActionEventRequestBuilder;
 import org.motechproject.tasks.contract.builder.ActionParameterRequestBuilder;
-import org.motechproject.tasks.domain.ParameterType;
+import org.motechproject.tasks.domain.mds.ParameterType;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;
 

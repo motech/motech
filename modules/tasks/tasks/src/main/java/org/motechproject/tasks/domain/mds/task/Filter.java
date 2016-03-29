@@ -1,4 +1,4 @@
-package org.motechproject.tasks.domain;
+package org.motechproject.tasks.domain.mds.task;
 
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.CrudEvents;
@@ -7,6 +7,7 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.domain.mds.ParameterType;
 
 import java.io.Serializable;
 import java.util.Objects;

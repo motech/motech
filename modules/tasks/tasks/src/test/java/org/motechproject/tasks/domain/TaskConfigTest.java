@@ -1,6 +1,10 @@
 package org.motechproject.tasks.domain;
 
 import org.junit.Test;
+import org.motechproject.tasks.domain.mds.task.DataSource;
+import org.motechproject.tasks.domain.mds.task.FilterSet;
+import org.motechproject.tasks.domain.mds.task.TaskConfig;
+import org.motechproject.tasks.domain.mds.task.TaskConfigStep;
 
 import java.util.ArrayList;
 import java.util.List;

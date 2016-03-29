@@ -17,12 +17,12 @@ import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.Channel;
 import org.motechproject.tasks.compatibility.TaskMigrationManager;
-import org.motechproject.tasks.domain.DataSource;
-import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.domain.TaskActionInformation;
-import org.motechproject.tasks.domain.TaskDataProvider;
-import org.motechproject.tasks.domain.TaskError;
-import org.motechproject.tasks.domain.TaskTriggerInformation;
+import org.motechproject.tasks.domain.mds.task.DataSource;
+import org.motechproject.tasks.domain.mds.task.Task;
+import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
+import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
+import org.motechproject.tasks.domain.mds.task.TaskError;
+import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 import org.motechproject.tasks.exception.CustomParserNotFoundException;
@@ -35,8 +35,6 @@ import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TriggerEventService;
 import org.motechproject.tasks.service.TriggerHandler;
-import org.motechproject.tasks.util.ActionEventUtils;
-import org.motechproject.tasks.util.ChannelUtils;
 import org.motechproject.tasks.validation.TaskValidator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -141,7 +139,7 @@ public class TaskServiceImpl implements TaskService {
         ActionEvent event = null;
 
         for (ActionEvent action : channel.getActionTaskEvents()) {
-            if (ActionEventUtils.accept(action, taskActionInformation)) {
+            if (action.accept(taskActionInformation)) {
                 event = action;
                 break;
             }
@@ -471,7 +469,7 @@ public class TaskServiceImpl implements TaskService {
             errors.addAll(taskValidator.validateAction(action, channel));
             TriggerEvent trigger = triggerEventService.getTrigger(task.getTrigger());
             Map<Long, TaskDataProvider> providers = getProviders(task);
-            ActionEvent actionEvent = ChannelUtils.getAction(channel, action);
+            ActionEvent actionEvent = channel.getAction(action);
             if (actionEvent != null) {
                 errors.addAll(taskValidator.validateActionFields(action, actionEvent, trigger, providers));
             }

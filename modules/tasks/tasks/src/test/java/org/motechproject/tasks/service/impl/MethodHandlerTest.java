@@ -6,7 +6,7 @@ import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.builder.ActionEventBuilder;
 import org.motechproject.tasks.domain.mds.channel.builder.ActionParameterBuilder;
 import org.motechproject.tasks.domain.mds.channel.MethodCallManner;
-import org.motechproject.tasks.domain.ParameterType;
+import org.motechproject.tasks.domain.mds.ParameterType;
 import org.motechproject.tasks.exception.TaskHandlerException;
 
 import java.util.ArrayList;

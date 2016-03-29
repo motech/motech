@@ -1,4 +1,4 @@
-package org.motechproject.tasks.domain;
+package org.motechproject.tasks.web.domain;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;

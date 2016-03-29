@@ -7,8 +7,8 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
-import org.motechproject.tasks.domain.Parameter;
-import org.motechproject.tasks.domain.ParameterType;
+import org.motechproject.tasks.domain.mds.Parameter;
+import org.motechproject.tasks.domain.mds.ParameterType;
 
 import java.util.Objects;
 

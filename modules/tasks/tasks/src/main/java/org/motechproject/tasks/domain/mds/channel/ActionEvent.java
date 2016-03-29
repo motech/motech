@@ -1,5 +1,7 @@
 package org.motechproject.tasks.domain.mds.channel;
 
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.CrudEvents;
@@ -8,6 +10,7 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -75,6 +78,25 @@ public class ActionEvent extends TaskEvent {
         this(actionEvent.getName(), actionEvent.getDescription(), actionEvent.getDisplayName(),
                 actionEvent.getSubject(), actionEvent.getServiceInterface(), actionEvent.getServiceMethod(),
                 actionEvent.getServiceMethodCallManner(), copyActionParameters(actionEvent.getActionParameters()));
+    }
+
+    @JsonIgnore
+    public boolean accept(TaskActionInformation info) {
+        boolean result = false;
+
+        if (null != info.getName() && null != getName()) {
+            if (StringUtils.equals(info.getName(), getName())) {
+                result = true;
+            }
+        } else {
+            if (hasService() && info.hasService() && equalsService(info.getServiceInterface(), info.getServiceMethod())) {
+                result = true;
+            } else if (hasSubject() && info.hasSubject() && equalsSubject(info.getSubject())) {
+                result = true;
+            }
+        }
+
+        return result;
     }
 
     @Override

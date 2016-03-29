@@ -1,4 +1,4 @@
-package org.motechproject.tasks.domain;
+package org.motechproject.tasks.domain.mds.task;
 
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.util.DateTimeSourceUtil;

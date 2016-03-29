@@ -1,4 +1,4 @@
-package org.motechproject.tasks.domain;
+package org.motechproject.tasks.domain.mds.task;
 
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;

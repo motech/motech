@@ -1,4 +1,4 @@
-package org.motechproject.tasks.domain;
+package org.motechproject.tasks.domain.mds.task;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mds.annotations.Access;

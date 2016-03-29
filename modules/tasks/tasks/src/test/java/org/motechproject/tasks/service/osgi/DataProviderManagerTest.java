@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.commons.api.DataProvider;
-import org.motechproject.tasks.domain.TaskDataProvider;
+import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.impl.TaskTriggerHandler;
 

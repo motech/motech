@@ -1,4 +1,11 @@
-package org.motechproject.tasks.domain;
+package org.motechproject.tasks.domain.mds.task.builder;
+
+import org.motechproject.tasks.domain.mds.task.TaskConfig;
+import org.motechproject.tasks.domain.mds.task.DataSource;
+import org.motechproject.tasks.domain.mds.task.FilterSet;
+import org.motechproject.tasks.domain.mds.task.Task;
+import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
+import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 
 import java.util.ArrayList;
 import java.util.List;

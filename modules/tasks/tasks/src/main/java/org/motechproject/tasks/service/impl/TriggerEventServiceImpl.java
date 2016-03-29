@@ -1,8 +1,8 @@
 package org.motechproject.tasks.service.impl;
 
 import org.motechproject.mds.query.QueryParams;
-import org.motechproject.tasks.domain.TaskError;
-import org.motechproject.tasks.domain.TaskTriggerInformation;
+import org.motechproject.tasks.domain.mds.task.TaskError;
+import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.repository.TriggerEventsDataService;

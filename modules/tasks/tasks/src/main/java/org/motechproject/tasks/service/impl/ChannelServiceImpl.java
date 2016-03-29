@@ -11,7 +11,7 @@ import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.domain.mds.channel.Channel;
-import org.motechproject.tasks.domain.TaskError;
+import org.motechproject.tasks.domain.mds.task.TaskError;
 import org.motechproject.tasks.domain.mds.channel.builder.ChannelBuilder;
 import org.motechproject.tasks.contract.json.ActionEventRequestDeserializer;
 import org.motechproject.tasks.exception.ValidationException;

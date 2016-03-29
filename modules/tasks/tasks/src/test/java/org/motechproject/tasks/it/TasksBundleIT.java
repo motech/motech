@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.tasks.domain.mds.channel.Channel;
-import org.motechproject.tasks.domain.TaskDataProvider;
+import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
 import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.repository.DataProviderDataService;
 import org.motechproject.tasks.repository.TasksDataService;

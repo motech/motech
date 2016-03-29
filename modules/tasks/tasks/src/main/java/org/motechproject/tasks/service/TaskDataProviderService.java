@@ -1,6 +1,6 @@
 package org.motechproject.tasks.service;
 
-import org.motechproject.tasks.domain.TaskDataProvider;
+import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
 
 import java.io.InputStream;
 import java.util.List;

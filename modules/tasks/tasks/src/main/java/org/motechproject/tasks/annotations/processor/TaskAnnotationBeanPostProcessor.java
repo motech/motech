@@ -3,14 +3,13 @@ package org.motechproject.tasks.annotations.processor;
 import org.motechproject.tasks.annotations.TaskAction;
 import org.motechproject.tasks.annotations.TaskActionParam;
 import org.motechproject.tasks.annotations.TaskChannel;
-import org.motechproject.tasks.domain.mds.channel.builder.ActionEventBuilder;
-import org.motechproject.tasks.domain.mds.channel.builder.ActionParameterBuilder;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.ActionParameter;
 import org.motechproject.tasks.domain.mds.channel.Channel;
-import org.motechproject.tasks.domain.TaskActionInformation;
+import org.motechproject.tasks.domain.mds.channel.builder.ActionEventBuilder;
+import org.motechproject.tasks.domain.mds.channel.builder.ActionParameterBuilder;
+import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 import org.motechproject.tasks.service.ChannelService;
-import org.motechproject.tasks.util.ActionEventUtils;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,7 +152,7 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
         ActionEvent actionEvent = null;
 
         for (ActionEvent action : channel.getActionTaskEvents()) {
-            if (ActionEventUtils.accept(action, info)) {
+            if (action.accept(info)) {
                 actionEvent = action;
                 break;
             }

@@ -1,7 +1,7 @@
 package org.motechproject.tasks.domain.mds.channel.builder;
 
 import org.motechproject.tasks.contract.ActionParameterRequest;
-import org.motechproject.tasks.domain.ParameterType;
+import org.motechproject.tasks.domain.mds.ParameterType;
 import org.motechproject.tasks.domain.mds.channel.ActionParameter;
 
 import java.util.SortedSet;

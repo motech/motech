@@ -9,6 +9,7 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.Unique;
@@ -92,6 +93,32 @@ public class Channel {
             this.triggerTaskEvents.addAll(triggerTaskEvents);
         }
         this.providesTriggers = CollectionUtils.isNotEmpty(triggerTaskEvents);
+    }
+
+    public boolean containsAction(TaskActionInformation actionInformation) {
+        boolean found = false;
+
+        for (ActionEvent action : getActionTaskEvents()) {
+            if (action.accept(actionInformation)) {
+                found = true;
+                break;
+            }
+        }
+
+        return found;
+    }
+
+    public ActionEvent getAction(TaskActionInformation actionInformation) {
+        ActionEvent found = null;
+
+        for (ActionEvent action : getActionTaskEvents()) {
+            if (action.accept(actionInformation)) {
+                found = action;
+                break;
+            }
+        }
+
+        return found;
     }
 
     public void addActionTaskEvent(ActionEvent actionEvent) {
