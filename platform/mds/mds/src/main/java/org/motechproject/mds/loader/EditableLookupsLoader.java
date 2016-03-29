@@ -26,7 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Responsible for loading editable
+ * Responsible for loading editable lookups. Editable lookups are defined in JSON files,
+ * placed in module resources directory.
  */
 @Component
 public class EditableLookupsLoader {
@@ -44,6 +45,13 @@ public class EditableLookupsLoader {
 
     private JsonLookupService jsonLookupService;
 
+    /**
+     * Scans the given bundle for mds-lookups.json file and if it finds one, it
+     * adds or updates lookups defined there.
+     *
+     * @param output annotation processor output, containing the results of bundle scan
+     * @param bundle the bundle to scan for editable lookups
+     */
     public void addEditableLookups(MDSProcessorOutput output, Bundle bundle) {
         List<EntityLookups> entitiesLookups = loadEntitiesLookups(bundle);
         addEditableEntitiesLookups(output, bundle, entitiesLookups);

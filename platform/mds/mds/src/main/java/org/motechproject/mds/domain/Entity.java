@@ -641,6 +641,7 @@ public class Entity {
                 }
                 String lookupFieldName = LookupName.buildLookupFieldName(field.getName(), lookupField.getRelatedName());
                 lookupFieldsOrder.add(lookupFieldName);
+                lookupField.setName(lookupFieldName);
             }
             lookupDto.setFieldsOrder(lookupFieldsOrder);
 

@@ -20,5 +20,11 @@ import java.lang.annotation.Target;
 @Documented
 public @interface NonEditable {
 
+    /**
+     * Allows to control, whether this non-editable field will be shown on the UI (rendered as blocked).
+     * By default, non-editable fields are displayed.
+     *
+     * @return true, if this non-editable field should be displayed, false otherwise
+     */
     boolean display() default true;
 }

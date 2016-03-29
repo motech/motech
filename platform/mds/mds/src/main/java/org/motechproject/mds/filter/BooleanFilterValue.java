@@ -9,6 +9,8 @@ import java.util.List;
  */
 public class BooleanFilterValue extends FilterValue {
 
+    public static final List<String> BOOLEAN_FILTER_VALUES = Arrays.asList(YES, NO);
+
     public BooleanFilterValue(String value) {
         super.setValue(value);
     }

@@ -11,31 +11,33 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.motechproject.mds.util.Constants.Settings.ALLOW_MULTIPLE_SELECTIONS;
+import static org.motechproject.mds.util.Constants.Settings.COMBOBOX_VALUES;
 
 public class FieldRecordTest {
 
     @Test
     public void shouldExtendOptionsAndHandleDefListValuesForMultiSelect() {
         FieldDto fieldDto = FieldTestHelper.fieldDto(1L, "name", List.class.getName(), "disp", "[one, two]");
-        fieldDto.setSettings(asList(new SettingDto(FieldRecord.FORM_VALUES, asList("one", "two", "three"), null, null),
-                new SettingDto(FieldRecord.MULTISELECT, true, null, null)));
+        fieldDto.setSettings(asList(new SettingDto(COMBOBOX_VALUES, asList("one", "two", "three"), null, null),
+                new SettingDto(ALLOW_MULTIPLE_SELECTIONS, true, null, null)));
 
         FieldRecord fieldRecord = new FieldRecord(fieldDto);
         assertEquals(asList("one", "two"), fieldRecord.getValue());
 
         fieldRecord.setValue(asList("defVal", "secondVal", "two"));
         assertEquals(asList("one", "two", "three", "defVal", "secondVal"),
-                fieldRecord.getSettingByName(FieldRecord.FORM_VALUES).getValue());
+                fieldRecord.getSettingByName(COMBOBOX_VALUES).getValue());
 
         fieldRecord = new FieldRecord(fieldDto);
         fieldRecord.setValue("testSingleObject");
         assertEquals(asList("one", "two", "three", "testSingleObject"),
-                fieldRecord.getSettingByName(FieldRecord.FORM_VALUES).getValue());
+                fieldRecord.getSettingByName(COMBOBOX_VALUES).getValue());
 
         fieldRecord.setValue("[one, two]");
         assertEquals(asList("one", "two"), fieldRecord.getValue());
         assertEquals(asList("one", "two", "three", "testSingleObject"),
-                fieldRecord.getSettingByName(FieldRecord.FORM_VALUES).getValue());
+                fieldRecord.getSettingByName(COMBOBOX_VALUES).getValue());
 
         fieldRecord.setValue("[one, two]");
         assertEquals(asList("one", "two"), fieldRecord.getValue());
@@ -61,7 +63,7 @@ public class FieldRecordTest {
     @Test
     public void shouldHandleSingleSelectComboBoxes() {
         FieldDto fieldDto = FieldTestHelper.fieldDto(1L, "name", List.class.getName(), "disp", "[one, two]");
-        fieldDto.setSettings(asList(new SettingDto(FieldRecord.FORM_VALUES, asList("one", "two", "three"), null, null)));
+        fieldDto.setSettings(asList(new SettingDto(COMBOBOX_VALUES, asList("one", "two", "three"), null, null)));
 
         FieldRecord fieldRecord = new FieldRecord(fieldDto);
 

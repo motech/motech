@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.mds.exception.MdsEntityWireException;
+import org.motechproject.mds.exception.init.MdsEntityWireException;
 import org.motechproject.mds.exception.MdsException;
 import org.motechproject.mds.util.Constants;
 import org.osgi.framework.Bundle;

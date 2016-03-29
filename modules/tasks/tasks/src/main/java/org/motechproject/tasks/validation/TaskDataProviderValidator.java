@@ -1,11 +1,14 @@
 package org.motechproject.tasks.validation;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskDataProviderObject;
 import org.motechproject.tasks.domain.TaskError;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 
@@ -32,7 +35,7 @@ public final class TaskDataProviderValidator extends GeneralValidator {
     public static Set<TaskError> validate(TaskDataProvider provider) {
         Set<TaskError> errors = new HashSet<>();
 
-        checkBlankValue(errors, TASK_DATA_PROVIDER, "name", provider.getName());
+        validateProviderName(errors, provider.getName());
 
         boolean empty = checkEmpty(errors, TASK_DATA_PROVIDER, "objects", provider.getObjects());
 
@@ -70,4 +73,16 @@ public final class TaskDataProviderValidator extends GeneralValidator {
         return errors;
     }
 
+    private static void validateProviderName(Set<TaskError> errors, String providerName) {
+        checkBlankValue(errors, TASK_DATA_PROVIDER, "name", providerName);
+
+        // check only non-blank, we already validated against blank names one line above
+        if (StringUtils.isNotBlank(providerName)) {
+            Pattern pattern = Pattern.compile("^[A-Za-z0-9\\-_]+$");
+            Matcher matcher = pattern.matcher(providerName);
+            if (!matcher.matches()) {
+                errors.add(new TaskError("task.validation.error.provider.name", providerName));
+            }
+        }
+    }
 }

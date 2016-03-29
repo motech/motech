@@ -3,6 +3,7 @@ package org.motechproject.mds.service;
 import org.motechproject.mds.query.QueryParams;
 
 import java.util.Collection;
+
 /**
  * The <code>TrashService</code> provides methods related with the module trash mode (by default
  * the mode is active and it can be turned off by the user).

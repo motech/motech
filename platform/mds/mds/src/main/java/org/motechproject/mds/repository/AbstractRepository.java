@@ -30,10 +30,19 @@ public abstract class AbstractRepository {
                 : null;
     }
 
+    /**
+     * Simple util method that determines the database in use, based on the chosen connection driver.
+     * @return true, if the driver in use belongs to PostgreSQL, false otherwise
+     */
     public boolean usingPsql() {
         return Drivers.POSTGRESQL_DRIVER.equals(persistenceManagerFactory.getConnectionDriverName());
     }
 
+    /**
+     * Simple util method that wraps the given {@link String} in double quotes.
+     * @param str the text to wrap in double quotes
+     * @return the text wrapped in double quotes
+     */
     protected String doubleQuote(String str) {
         return str == null ? null : '"' + str + '"';
     }

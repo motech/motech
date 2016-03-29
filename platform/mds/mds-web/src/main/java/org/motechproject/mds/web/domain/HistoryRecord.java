@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents single entity instance (used in jqGrid)
+ * Represents single entity instance revision.
  */
 public class HistoryRecord {
     private Long id;

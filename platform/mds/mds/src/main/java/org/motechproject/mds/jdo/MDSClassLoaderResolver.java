@@ -3,7 +3,7 @@ package org.motechproject.mds.jdo;
 import org.apache.felix.framework.BundleWiringImpl;
 import org.datanucleus.ClassLoaderResolver;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
-import org.motechproject.mds.helper.MdsBundleHelper;
+import org.motechproject.mds.helper.bundle.MdsBundleHelper;
 import org.motechproject.mds.util.Constants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;

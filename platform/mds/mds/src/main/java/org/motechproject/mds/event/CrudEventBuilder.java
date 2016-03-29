@@ -29,7 +29,6 @@ public final class CrudEventBuilder {
      * @param namespace namespace of an entity
      * @param entity entity name
      * @param entityClassName entity class name
-     * @param action an action that took place
      * @param id id of the affected instance
      * @return constructed parameters for the events
      */
