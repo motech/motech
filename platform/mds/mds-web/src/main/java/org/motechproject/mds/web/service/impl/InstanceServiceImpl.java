@@ -970,6 +970,10 @@ public class InstanceServiceImpl implements InstanceService {
             return ArrayUtils.EMPTY_BYTE_OBJECT_ARRAY;
         }
 
+        if (isSCOField(field.getType().getTypeClass())) {
+            return service.getDetachedField(instance, fieldName);
+        }
+
         try {
             return readMethod.invoke(instance);
         } catch (InvocationTargetException e) {
@@ -979,6 +983,10 @@ public class InstanceServiceImpl implements InstanceService {
             Long id = (Long) PropertyUtil.safeGetProperty(instance, ID_FIELD_NAME);
             return service.getDetachedField(id == null ? instance : service.findById(id), fieldName);
         }
+    }
+
+    private boolean isSCOField(String typeClass) {
+        return TypeDto.COLLECTION.getTypeClass().equals(typeClass) || TypeDto.MAP.getTypeClass().equals(typeClass);
     }
 
     private Object parseValueForDisplay(Object value, MetadataDto relatedClassMetadata)

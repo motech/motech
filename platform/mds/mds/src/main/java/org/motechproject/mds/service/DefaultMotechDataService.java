@@ -355,6 +355,9 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Override
     @Transactional
     public Object getDetachedField(T instance, String fieldName) {
+        if (JDOHelper.getObjectState(instance) == ObjectState.TRANSIENT) {
+            return repository.getDetachedField(findById((Long) getId(instance)), fieldName);
+        }
         return repository.getDetachedField(instance, fieldName);
     }
 
