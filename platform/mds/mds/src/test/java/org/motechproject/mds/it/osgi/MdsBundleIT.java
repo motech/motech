@@ -392,7 +392,7 @@ public class MdsBundleIT extends BasePaxIT {
         generator.regenerateMdsDataBundle(schemaHolder, true);
         service = (MotechDataService) ServiceRetriever.getService(bundleContext, ClassName.getInterfaceName(FOO_CLASS), true);
 
-        assertValuesEqual(getExpectedComboboxValues(), getValues(service.retrieveAll()));
+        assertValuesEqual(getExpectedComboboxValues(), getValues(service.detachedCopyAll(service.retrieveAll())));
     }
 
     private void assertValuesEqual(List<List<Object>> expected, List<List<Object>> result) {
@@ -1118,7 +1118,6 @@ public class MdsBundleIT extends BasePaxIT {
         assertEquals(boolField, PropertyUtils.getProperty(instance, "someBoolean"));
         assertEquals(stringField, PropertyUtils.getProperty(instance, "someString"));
         assertEquals(capitalizedStrField, PropertyUtil.safeGetProperty(instance, "CapitalName"));
-        assertEquals(listField, PropertyUtils.getProperty(instance, "someList"));
         assertEquals(dateTimeField, PropertyUtils.getProperty(instance, "someDateTime"));
         assertEquals(map, PropertyUtils.getProperty(instance, "someMap"));
         assertEquals(period, PropertyUtils.getProperty(instance, "somePeriod"));
@@ -1134,6 +1133,9 @@ public class MdsBundleIT extends BasePaxIT {
         // assert blob
         Object blobValue = service.getDetachedField(instance, "someBlob");
         assertEquals(Arrays.toString(blob), Arrays.toString((Byte[]) blobValue));
+
+        Object comboboxValue = service.getDetachedField(instance, "someList");
+        assertEquals(listField, comboboxValue);
     }
 
     private Object toEnum(Class entityClass, String str) throws NoSuchFieldException {
