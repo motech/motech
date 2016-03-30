@@ -1,7 +1,6 @@
 package org.motechproject.tasks.domain;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
@@ -12,6 +11,8 @@ import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.contract.TriggerEventRequest;
+import org.motechproject.tasks.dto.ActionEventDto;
+import org.motechproject.tasks.dto.ChannelDto;
 
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.Unique;
@@ -33,7 +34,6 @@ public class Channel {
     private List<ActionEvent> actionTaskEvents = new ArrayList<>();
 
     @Field
-    @JsonIgnore
     @Cascade(delete = true)
     @Persistent(mappedBy = "channel")
     private List<TriggerEvent> triggerTaskEvents = new ArrayList<>();
@@ -222,6 +222,16 @@ public class Channel {
 
     public void setProvidesTriggers(boolean providesTriggers) {
         this.providesTriggers = providesTriggers;
+    }
+
+    public ChannelDto toDto() {
+        List<ActionEventDto> actionEventDtos = new ArrayList<>();
+
+        for (ActionEvent actionEvent : actionTaskEvents) {
+            actionEventDtos.add(actionEvent.toDto());
+        }
+
+        return new ChannelDto(actionEventDtos, description, displayName, moduleName, moduleVersion, providesTriggers);
     }
 
     @Override

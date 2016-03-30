@@ -5,8 +5,8 @@ import org.junit.Test;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionEventBuilder;
 import org.motechproject.tasks.domain.ActionParameterBuilder;
-import org.motechproject.tasks.domain.MethodCallManner;
-import org.motechproject.tasks.domain.ParameterType;
+import org.motechproject.tasks.domain.enums.MethodCallManner;
+import org.motechproject.tasks.domain.enums.ParameterType;
 import org.motechproject.tasks.exception.TaskHandlerException;
 
 import java.util.ArrayList;

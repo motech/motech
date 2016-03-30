@@ -9,7 +9,7 @@ import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
-import org.motechproject.tasks.domain.LogicalOperator;
+import org.motechproject.tasks.domain.enums.LogicalOperator;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskBuilder;
@@ -45,10 +45,10 @@ import static org.motechproject.tasks.domain.OperatorType.LT;
 import static org.motechproject.tasks.domain.OperatorType.MORE_DAYS_FROM_NOW;
 import static org.motechproject.tasks.domain.OperatorType.MORE_MONTHS_FROM_NOW;
 import static org.motechproject.tasks.domain.OperatorType.STARTSWITH;
-import static org.motechproject.tasks.domain.ParameterType.DATE;
-import static org.motechproject.tasks.domain.ParameterType.INTEGER;
-import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
-import static org.motechproject.tasks.domain.ParameterType.UNICODE;
+import static org.motechproject.tasks.domain.enums.ParameterType.DATE;
+import static org.motechproject.tasks.domain.enums.ParameterType.INTEGER;
+import static org.motechproject.tasks.domain.enums.ParameterType.TEXTAREA;
+import static org.motechproject.tasks.domain.enums.ParameterType.UNICODE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskFilterExecutorTest {

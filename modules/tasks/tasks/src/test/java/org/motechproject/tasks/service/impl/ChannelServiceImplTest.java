@@ -7,14 +7,14 @@ import org.mockito.Mock;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.query.QueryExecution;
-import org.motechproject.tasks.domain.ActionEventBuilder;
-import org.motechproject.tasks.contract.builder.TestActionEventRequestBuilder;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.contract.EventParameterRequest;
 import org.motechproject.tasks.contract.TriggerEventRequest;
+import org.motechproject.tasks.contract.builder.TestActionEventRequestBuilder;
 import org.motechproject.tasks.domain.ActionEvent;
+import org.motechproject.tasks.domain.ActionEventBuilder;
 import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.EventParameter;
@@ -29,7 +29,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.transaction.support.TransactionCallback;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -110,10 +109,6 @@ public class ChannelServiceImplTest {
 
         channelService.registerChannel(stream, BUNDLE_SYMBOLIC_NAME, VERSION);
 
-        ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
-        verify(channelsDataService).doInTransaction(transactionCaptor.capture());
-        transactionCaptor.getValue().doInTransaction(null);
-
         ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
         verify(channelsDataService).create(captor.capture());
 
@@ -136,10 +131,6 @@ public class ChannelServiceImplTest {
         ChannelRequest channelRequest = new ChannelRequest(BUNDLE_SYMBOLIC_NAME, BUNDLE_SYMBOLIC_NAME, VERSION, "", triggerEventsRequest, actionEventRequests);
 
         channelService.registerChannel(channelRequest);
-
-        ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
-        verify(channelsDataService).doInTransaction(transactionCaptor.capture());
-        transactionCaptor.getValue().doInTransaction(null);
 
         ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
         verify(channelsDataService).create(captor.capture());
@@ -173,10 +164,6 @@ public class ChannelServiceImplTest {
 
         channelService.unregisterChannel(channel.getModuleName());
 
-        ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
-        verify(channelsDataService).doInTransaction(transactionCaptor.capture());
-        transactionCaptor.getValue().doInTransaction(null);
-
         ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
         verify(channelsDataService).delete(captor.capture());
 
@@ -199,9 +186,6 @@ public class ChannelServiceImplTest {
         Channel deletedChannel = new Channel("displayName2", BUNDLE_SYMBOLIC_NAME, VERSION);
         channelService.delete(deletedChannel.getModuleName());
 
-        ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
-        verify(channelsDataService).doInTransaction(transactionCaptor.capture());
-        transactionCaptor.getValue().doInTransaction(null);
         verify(channelsDataService).delete(channel);
 
         verify(eventRelay).sendEventMessage(captor.capture());
@@ -231,9 +215,6 @@ public class ChannelServiceImplTest {
         updatedChannel.getTriggerTaskEvents().add(triggerEvent);
         channelService.addOrUpdate(updatedChannel);
 
-        ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
-        verify(channelsDataService).doInTransaction(transactionCaptor.capture());
-        transactionCaptor.getValue().doInTransaction(null);
         verify(channelsDataService).update(channel);
 
         verify(eventRelay).sendEventMessage(captor.capture());

@@ -41,7 +41,7 @@ public class ActionEventRequest {
      * @param description  the event description
      * @param serviceInterface  the event service interface
      * @param serviceMethod  the event service method
-     * @param serviceMethodCallManner  the event service method call manner, for supported values check {@see org.motechproject.tasks.domain.MethodCallManner}
+     * @param serviceMethodCallManner  the event service method call manner, for supported values check {@see org.motechproject.tasks.domain.enums.MethodCallManner}
      * @param actionParameters  the action parameters
      */
     public ActionEventRequest(String name, String displayName, String subject, String description,

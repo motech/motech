@@ -12,8 +12,8 @@ import org.mockito.Mock;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.tasks.contract.builder.TestActionEventRequestBuilder;
 import org.motechproject.tasks.contract.builder.ActionParameterRequestBuilder;
-import org.motechproject.tasks.domain.MethodCallManner;
-import org.motechproject.tasks.domain.ParameterType;
+import org.motechproject.tasks.domain.enums.MethodCallManner;
+import org.motechproject.tasks.domain.enums.ParameterType;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;
 

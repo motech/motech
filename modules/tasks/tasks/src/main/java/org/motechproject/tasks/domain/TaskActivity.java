@@ -10,6 +10,8 @@ import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.domain.enums.TaskActivityType;
+import org.motechproject.tasks.dto.TaskActivityDto;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -186,6 +188,10 @@ public class TaskActivity implements Comparable<TaskActivity> {
 
     public void setParameters(Map<String, Object> parameters) {
         this.parameters = parameters;
+    }
+
+    public TaskActivityDto toDto() {
+        return new TaskActivityDto(message, task, fields, date, activityType, stackTraceElement, parameters);
     }
 
     @Override
