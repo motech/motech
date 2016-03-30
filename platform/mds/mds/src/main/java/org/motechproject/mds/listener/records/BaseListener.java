@@ -1,7 +1,5 @@
 package org.motechproject.mds.listener.records;
 
-import org.motechproject.mds.helper.MdsBundleHelper;
-import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -18,6 +16,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.motechproject.mds.helper.MdsBundleHelper.findMdsEntitiesBundle;
+import static org.motechproject.mds.helper.MdsBundleHelper.isMdsEntitiesBundle;
+
 /**
  * A base class for listeners in MDS. Since listeners get constructed by JDO,
  * we don't normally have access to the spring context of MDS entities. This class
@@ -31,7 +32,7 @@ import java.util.List;
  */
 public abstract class BaseListener<T> implements ServiceListener {
 
-    private static final String ENTITIES_BUNDLE_SYMBOLIC_NAME = "org.motechproject.motech-platform-dataservices-entities";
+    private static final String MDS_ENTITIES_SYMBOLIC_NAME = "org.motechproject.motech-platform-dataservices-entities";
     private static final String BUNDLE_SYMBOLIC_NAME_FILTER = "(Bundle-SymbolicName=%s)";
 
     private static final int CTX_WAIT_TIME_MS = 5 * 60 * 1000; // 5 min
@@ -58,7 +59,7 @@ public abstract class BaseListener<T> implements ServiceListener {
 
     @Override
     public void serviceChanged(ServiceEvent event) {
-        if (MdsBundleHelper.isMdsEntitiesBundle(event.getServiceReference().getBundle())) {
+        if (isMdsEntitiesBundle(event.getServiceReference().getBundle())) {
             if (event.getType() == ServiceEvent.REGISTERED) {
                 synchronized (ctxWaitLock) {
                     applicationContext = (ApplicationContext) bundleContext.getService(event.getServiceReference());
@@ -88,21 +89,12 @@ public abstract class BaseListener<T> implements ServiceListener {
         ApplicationContext entitiesBundleApplicationContext = null;
 
         try {
-            entitiesBundleApplicationContext = getEntitiesBundleApplicationContext(getEntitiesBundle());
+            entitiesBundleApplicationContext = getEntitiesBundleApplicationContext(findMdsEntitiesBundle(bundleContext));
         } catch (InvalidSyntaxException e) {
             logger.error("Invalid syntax of the filter passed to the bundle context");
         }
 
         return entitiesBundleApplicationContext;
-    }
-
-    private Bundle getEntitiesBundle() {
-        for (Bundle bundle : bundleContext.getBundles()) {
-            if (StringUtils.equals(bundle.getSymbolicName(), ENTITIES_BUNDLE_SYMBOLIC_NAME)) {
-                return bundle;
-            }
-        }
-        return null;
     }
 
     private ApplicationContext getEntitiesBundleApplicationContext(Bundle entitiesBundle)
@@ -137,7 +129,7 @@ public abstract class BaseListener<T> implements ServiceListener {
         if (bundleContext != null) {
             references.addAll(bundleContext.getServiceReferences(
                     ConfigurableApplicationContext.class,
-                    String.format(BUNDLE_SYMBOLIC_NAME_FILTER, ENTITIES_BUNDLE_SYMBOLIC_NAME)
+                    String.format(BUNDLE_SYMBOLIC_NAME_FILTER, MDS_ENTITIES_SYMBOLIC_NAME)
             ));
         }
 
