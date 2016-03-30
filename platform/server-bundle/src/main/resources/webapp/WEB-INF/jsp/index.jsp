@@ -54,7 +54,10 @@
                         <div class="splash-msg"></div>
                         <div class="clearfix"></div>
                     </div>
-                    <div id="module-content" ui-view="moduleToLoad"></div>
+                    <div id="module-content" ui-view="moduleToLoad">
+                        <!-- default view -->
+                        <div ng-include="'../server/resources/partials/main.html'"></div>
+                    </div>
                     </c:otherwise>
                 </c:choose>
             </div>

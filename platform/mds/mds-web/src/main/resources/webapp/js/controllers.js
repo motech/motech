@@ -291,13 +291,13 @@
     });
 
     controllers.controller('MdsBasicCtrl', function ($scope, $rootScope, $location, $state, $stateParams, $controller, Entities, MDSUtils) {
-        $scope.AVAILABLE_TABS = ["dataBrowser","schemaEditor","settings"];
+
         angular.extend(this, $controller('MdsEmbeddableCtrl', {
             $scope: $scope,
             MDSUtils: MDSUtils
         }));
 
-        var schemaEditorPath = '/mds/{0}'.format('schemaEditor');
+        var schemaEditorPath = '/mds/{0}'.format($scope.AVAILABLE_TABS[1]);
 
         $scope.DATA_BROWSER = "dataBrowser";
         $scope.SCHEMA_EDITOR = "schemaEditor";
@@ -333,7 +333,7 @@
         $scope.resumeEdits = function (entityId) {
             if (schemaEditorPath !== $location.path()) {
                 $location.path(schemaEditorPath);
-            } else {//$state.transitionTo($state.current, $stateParams, { reload: true, inherit: false, notify: true });
+            } else {
                 $state.reload();
             }
 
@@ -3234,7 +3234,7 @@
 
         MDSUtils.setCustomOperatorFunctions($scope);
 
-        //workInProgress.setActualEntity(Entities, undefined);
+        workInProgress.setActualEntity(Entities, undefined);
 
         $scope.modificationFields = ['modificationDate', 'modifiedBy'];
 
@@ -5181,6 +5181,7 @@
     */
     controllers.controller('MdsFilterCtrl', function ($rootScope, $scope) {
         var filtersDate;
+        innerLayout({});
     });
 
     /**

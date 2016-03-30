@@ -371,7 +371,7 @@
             };
     });
 
-    controllers.controller('WebSecurityProfileCtrl', function ($scope, Users, $http, $routeParams) {
+    controllers.controller('WebSecurityProfileCtrl', function ($scope, Users, $http, $stateParams) {
             $http.get('../websecurity/api/users/current').
                 success(function(data) {
                     $scope.userName = data.userName;

@@ -1,7 +1,7 @@
 <div id="inner-center" class="tasks inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
     <div class="header-footer-breadcrumb">
         <ul class="breadcrumb" role="navigation">
-            <li><a role="menu" ui-sref=".">{{msg('server.home')}}</a></li>
+            <li><a role="menu" ui-sref="home">{{msg('server.home')}}</a></li>
             <li><a role="menu" ui-sref="tasks.dashboard">{{msg('task.tab')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'dashboard'" ng-class="{'active': selectedTabState.selectedTab === 'dashboard'}">{{msg('task.tab')}} list</li>
             <li ng-show="selectedTabState.selectedTab === 'settings'" ng-class="{'active': selectedTabState.selectedTab === 'settings'}">{{msg('task.tab.settings')}}</li>

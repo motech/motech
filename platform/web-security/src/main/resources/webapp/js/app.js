@@ -22,7 +22,7 @@
                 url: '/users',
                 parent: 'webSecurity',
                 views: {
-                    'websecurityview': {
+                    'websecurityView': {
                         templateUrl: '../websecurity/partials/user.html',
                         controller: 'WebSecurityUserCtrl'
                     }
@@ -32,7 +32,7 @@
                 url: '/roles',
                 parent: 'webSecurity',
                 views: {
-                    'websecurityview': {
+                    'websecurityView': {
                         templateUrl: '../websecurity/partials/role.html',
                         controller: 'WebSecurityRolePermissionCtrl'
                     }
@@ -42,7 +42,7 @@
                 url: '/permissions',
                 parent: 'webSecurity',
                 views: {
-                    'websecurityview': {
+                    'websecurityView': {
                         templateUrl: '../websecurity/partials/permission.html',
                         controller: 'WebSecurityRolePermissionCtrl'
                     }
@@ -52,7 +52,17 @@
                 url: '/profile',
                 parent: 'webSecurity',
                 views: {
-                    'websecurityview': {
+                    'websecurityView': {
+                        templateUrl: '../websecurity/partials/profile.html',
+                        controller: 'WebSecurityProfileCtrl'
+                    }
+                }
+            })
+            .state('webSecurity.profile.username', {
+                url: '/:username',
+                parent: 'webSecurity.profile',
+                views: {
+                    'websecurityView': {
                         templateUrl: '../websecurity/partials/profile.html',
                         controller: 'WebSecurityProfileCtrl'
                     }
@@ -62,20 +72,12 @@
                 url: '/dynamicURL',
                 parent: 'webSecurity',
                 views: {
-                    'websecurityview': {
+                    'websecurityView': {
                         templateUrl: '../websecurity/partials/dynamic.html',
                         controller: 'WebSecurityDynamicCtrl'
                     }
                 }
             });
-
-        /*$routeProvider.
-            when('/webSecurity/users', {templateUrl: '../websecurity/partials/user.html', controller: 'WebSecurityUserCtrl'}).
-            when('/webSecurity/roles', {templateUrl: '../websecurity/partials/role.html', controller: 'WebSecurityRolePermissionCtrl'}).
-            when('/webSecurity/permissions', {templateUrl: '../websecurity/partials/permission.html', controller: 'WebSecurityRolePermissionCtrl'}).
-            when('/webSecurity/profile', {templateUrl: '../websecurity/partials/profile.html', controller: 'WebSecurityProfileCtrl'}).
-            when('/webSecurity/profile/:username', {templateUrl: '../websecurity/partials/profile.html', controller: 'WebSecurityProfileCtrl'}).
-            when('/webSecurity/dynamicURL', {templateUrl: '../websecurity/partials/dynamic.html', controller: 'WebSecurityDynamicCtrl'});*/
     }]);
 
 }());

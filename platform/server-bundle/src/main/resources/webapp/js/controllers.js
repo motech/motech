@@ -203,7 +203,7 @@
         };
 
         $scope.loadModule = function (moduleName, url) {
-            var refresh, resultScope, reloadModule, convertUrl;
+            var refresh, resultScope, convertUrl;
             $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
             $scope.activeLink = {moduleName: moduleName, url: url};
             convertUrl = function (urlParam) {
@@ -228,27 +228,15 @@
                     $location.path(url);
                     $state.go(convertUrl(url));
                     unblockUI();
-                    innerLayout({}, {
-                        show: false
-                    });
+                    innerLayout({}, { show: false });
                 } else {
                     refresh = ($scope.moduleToLoad === undefined) ? true : false;
                     $scope.moduleToLoad = moduleName;
                     if (!$ocLazyLoad.isLoaded(moduleName)) {
                         $ocLazyLoad.load(moduleName);
                     }
-                    $scope.$on('ocLazyLoad.moduleLoaded', function(e, params) {
-                       //console.log('event module loaded', params);
-                      });
-                      $scope.$on('ocLazyLoad.componentLoaded', function(e, params) {
-                       //console.log('event component loaded', params);
-                      });
-                      $scope.$on('ocLazyLoad.fileLoaded', function(e, file) {
-                       //console.log('event file loaded', file);
-                      });
 
                     if (url) {
-                        reloadModule = true;
                         window.location.hash = "";
                         if ($ocLazyLoad.isLoaded(moduleName)) {
                             $location.path(url);
@@ -256,9 +244,10 @@
                             unblockUI();
                         }
                         $scope.$on('ocLazyLoad.moduleLoaded', function(e, params) {
+                            if ($ocLazyLoad.isLoaded(moduleName)) {
                                 $location.path(url);
                                 unblockUI();
-                                reloadModule = false;
+                            }
                         });
                     } else {
                         unblockUI();
@@ -266,15 +255,9 @@
                 }
             }
         };
-        $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
-            //console.log('stateChange  Success - event: ', event);
-            //console.log('stateChange  Success - fromState: ', fromState);
-            //console.log('stateChange  Success - toState: ', toState, '---<<<');
-            //console.log('stateChange Success - toParams: ', toParams);
-        });
-        $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error){
-            //console.log('stateChange  Error - fromState: ', fromState);
-            //console.log('stateChange  Error - toState: ', toState);
+
+        $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+            innerLayout({}, { show: false });//console.log('$stateChangeSuccess');
         });
 
         $scope.loadI18n = function (data) {
