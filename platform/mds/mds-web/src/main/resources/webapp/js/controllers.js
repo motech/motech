@@ -877,7 +877,8 @@
             $scope.advancedSettings = Entities.getAdvanced({id: $scope.selectedEntity.id},
                 function () {
                     $scope.blockLookups = false;
-                    $scope.notDisabled = true;
+                    $scope.isNewLookupFieldButtonDisabled = false;
+                    $scope.isNewLookupButtonDisabled = false;
                     checkActiveIndex(true);
                     setRest();
                     setBrowsing();
@@ -2002,28 +2003,27 @@
         * Adds a new index and sets it as the active one
         */
         $scope.addNewIndex = function () {
-            if($scope.notDisabled === true) {
-                $scope.notDisabled = false;
-                var newLookup = {
-                    lookupName: $scope.getLookupNameForNewLookup(),
-                    singleObjectReturn: true,
-                    indexRequired: true,
-                    lookupFields: []
-                };
+            $scope.isNewLookupButtonDisabled = true;
+            var newLookup = {
+                lookupName: $scope.getLookupNameForNewLookup(),
+                singleObjectReturn: true,
+                indexRequired: true,
+                lookupFields: []
+            };
 
-                $scope.draft({
-                    edit: true,
-                    values: {
-                        path: '$addNewIndex',
-                        advanced: true,
-                        value: [newLookup.lookupName]
-                    }
-                }, function () {
-                    $scope.advancedSettings.indexes.push(newLookup);
-                    $scope.setActiveIndex($scope.advancedSettings.indexes.length-1);
-                    $scope.notDisabled = true;
-                });
-            }
+            $scope.draft({
+                edit: true,
+                values: {
+                    path: '$addNewIndex',
+                    advanced: true,
+                    value: [newLookup.lookupName]
+                }
+            }, function () {
+                $scope.advancedSettings.indexes.push(newLookup);
+                $scope.setActiveIndex($scope.advancedSettings.indexes.length-1);
+                $scope.isNewLookupButtonDisabled = false;
+            });
+
         };
         $scope.blockLookups = false;
         $scope.$watch('lookup.lookupName', function () {
@@ -2140,26 +2140,23 @@
         */
 
         $scope.addLookupField = function () {
-            if($scope.notDisabled === true) {
-                $scope.notDisabled = false;
-                var value = $scope.availableFields[0] && $scope.availableFields[0].id;
-                    $scope.draft({
-                        edit: true,
-                        values: {
-                            path: 'indexes.{0}.$addField'.format($scope.activeIndex),
-                            advanced: true,
-                            value: [value]
-                        }
-                    }, function () {
-                        $scope.advancedSettings.indexes[$scope.activeIndex].lookupFields.push({
-                            id: value,
-                            type: "VALUE"
-                        });
-                        $scope.setAvailableFields();
-                        $scope.notDisabled = true;
-                    });
-
-            }
+            $scope.isNewLookupFieldButtonDisabled = true;
+            var value = $scope.availableFields[0] && $scope.availableFields[0].id;
+            $scope.draft({
+                edit: true,
+                values: {
+                    path: 'indexes.{0}.$addField'.format($scope.activeIndex),
+                    advanced: true,
+                    value: [value]
+                }
+            }, function () {
+                $scope.advancedSettings.indexes[$scope.activeIndex].lookupFields.push({
+                    id: value,
+                    type: "VALUE"
+                });
+                $scope.setAvailableFields();
+                $scope.isNewLookupFieldButtonDisabled = false;
+            });
         };
 
         /**
