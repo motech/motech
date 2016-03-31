@@ -226,8 +226,8 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                _, $, angular, angularHandler, isBlank, handleResponse, blockUI, FileReader,
-                                motechAlert, unblockUI, cloneArray, cloneObj, arraysEqual, resizeLayout,
+                                _, $, angular, angularHandler, isBlank, handleResponse, FileReader,
+                                motechAlert, cloneArray, cloneObj, arraysEqual, resizeLayout,
                                 defaultLayout, innerLayout, alertHandler, window, moment, FormData, BootstrapDialog
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>

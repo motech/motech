@@ -2,34 +2,46 @@
     'use strict';
 
     var uiServices = angular.module('uiServices', ['ngResource']);
-
     uiServices.factory('Menu', function($resource) {
         return $resource('module/menu');
     });
 
-    uiServices.service('ModalService', function () {
-        var modals = [], blocked = [];
+    uiServices.service('BootstrapDialogManager', function () {
+        var modals2 = [];
 
-        this.open = function (dialog) {
-            modals.push(dialog);
-            blocked.push(false);
-            if (modals.length > 1) {
-                modals[modals.length-2].close();
+        this.open = function (dialog, isThisLoadingModal) {
+            modals2.push(dialog);
+            console.log("open"+modals2.length);
+            if (modals2.length > 1) {
+                modals2[modals2.length-2].close();
             }
             dialog.open();
         };
 
         this.close = function (dialog) {
             dialog.close();
-            modals.splice(modals.length-1);
-            blocked.splice(blocked.length-1);
-            if (modals.length > 0) {
-                modals[modals.length-1].open();
+            modals2.splice(modals2.length-1);
+            console.log("close"+modals2.length);
+            if (modals2.length > 0) {
+                modals2[modals2.length-1].open();
             }
         };
 
-        this.blockUI = function () {
-            if (!blocked[blocked.length-1]) {
+        this.remove = function () {
+            modals2[modals2.length-1].close();
+            modals2.splice(modals2.length-1);
+            console.log("remove"+modals2.length);
+            if (modals2.length > 0) {
+                modals2[modals2.length-1].open();
+            }
+        };
+    });
+
+    uiServices.service('LoadingModal', function (BootstrapDialogManager) {
+        var open = false;
+
+        this.open = function () {
+            if (!open) {
                 var dialog = new BootstrapDialog({
                     message: function(dialogRef){
                         var $message = $(
@@ -39,7 +51,8 @@
                             '<div class="clearfix"></div>' + '<br>');
                         return $message;
                     },
-                    closable: false
+                    closable: false,
+                    draggable: false
                 });
                 dialog.realize();
                 dialog.getModalHeader().hide();
@@ -47,22 +60,25 @@
                 dialog.getModalContent().addClass('splash');
                 dialog.getModalContent().css('margin-top', '40%');
                 dialog.getModalBody().css('padding', '0px');
-                modals.push(dialog);
-                if (modals.length > 1) {
-                    modals[modals.length-2].close();
-                }
-                dialog.open();
-                blocked.push(true);
+
+                BootstrapDialogManager.open(dialog, true);
+                open = true;
             }
         };
 
-        this.unblockUI = function () {
-            if (blocked[blocked.length-1]) {
-                modals[modals.length-1].close();
-                modals.splice(modals.length-1);
-                blocked.splice(blocked.length-1);
+        this.close = function () {
+            if (open) {
+                BootstrapDialogManager.remove();
             }
+            open = false;
         };
+
+        this.isOpen = function () {
+            return open;
+        };
+    });
+
+    uiServices.service('Modal', function (LoadingModal, BootstrapDialogManager) {
 
         this.alert = function () {
             var options = {}, dialog,
@@ -97,12 +113,7 @@
                 buttons: [{
                         label: options.buttonLabel,
                         action: function (dialog) {
-                            dialog.close();
-                            modals.splice(modals.length-1);
-                            blocked.splice(blocked.length-1);
-                            if (modals.length > 0) {
-                                modals[modals.length-1].open();
-                            }
+                            BootstrapDialogManager.close(dialog);
                             dialog.setData('btnClicked', true);
                             if (typeof dialog.getData('callback') === 'function' && dialog.getData('callback').call(this, true) === false) {
                                 return false;
@@ -110,7 +121,7 @@
                         }
                     }]
             });
-            this.open(dialog);
+            BootstrapDialogManager.open(dialog, false);
         };
 
         this.confirm = function () {
@@ -152,12 +163,7 @@
                 buttons: [{
                     label: options.btnCancelLabel,
                     action: function (dialog) {
-                        dialog.close();
-                        modals.splice(modals.length-1);
-                        blocked.splice(blocked.length-1);
-                        if (modals.length > 0) {
-                            modals[modals.length-1].open();
-                        }
+                        BootstrapDialogManager.close(dialog);
                         if (typeof dialog.getData('callback') === 'function' && dialog.getData('callback').call(this, false) === false) {
                             return false;
                         }
@@ -166,33 +172,28 @@
                     label: options.btnOKLabel,
                     cssClass: options.btnOKClass,
                     action: function (dialog) {
-                        dialog.close();
-                        modals.splice(modals.length-1);
-                        blocked.splice(blocked.length-1);
-                        if (modals.length > 0) {
-                            modals[modals.length-1].open();
-                        }
+                        BootstrapDialogManager.close(dialog);
                         if (typeof dialog.getData('callback') === 'function' && dialog.getData('callback').call(this, true) === false) {
                             return false;
                         }
                     }
                 }]
             });
-            this.open(dialog);
+            BootstrapDialogManager.open(dialog, false);
+        };
+
+        this.openLoadingModal = function () {
+            LoadingModal.open();
+        };
+
+        this.closeLoadingModal = function () {
+            LoadingModal.close();
         };
 
         this.motechAlert = function (msg, title, params, callback) {
             this.alert({
                 title: jQuery.i18n.prop(title),
                 message: jQuery.i18n.prop.apply(null, [msg].concat(params)),
-                callback: callback
-            });
-        };
-
-        this.motechConfirm = function (msg, title, callback) {
-            this.confirm({
-                title: jQuery.i18n.prop(title),
-                message: jQuery.i18n.prop(msg),
                 callback: callback
             });
         };
@@ -208,8 +209,16 @@
             });
         };
 
+        this.motechConfirm = function (msg, title, callback) {
+            this.confirm({
+                title: jQuery.i18n.prop(title),
+                message: jQuery.i18n.prop(msg),
+                callback: callback
+            });
+        };
+
         this.jFormErrorHandler = function (response) {
-            this.unblockUI();
+            this.closeLoadingModal();
             this.alert({
                 type: BootstrapDialog.TYPE_DANGER, //Error type
                 message: response.status + ": " + response.statusText
@@ -220,7 +229,7 @@
             var msg = { value: "server.error", literal: false, params: [] },
                 responseData = (typeof(response) === 'string') ? response : response.data;
 
-            this.unblockUI();
+            this.closeLoadingModal();
             msg = parseResponse(responseData, defaultMsg);
 
             if (callback) {
@@ -237,17 +246,10 @@
             }
         };
 
-        this.alertHandler = function (msg, title) {
+        this.alertHandler = function (msg, title, callback) {
             return function() {
-                this.unblockUI();
-                this.motechAlert(msg, title);
-            };
-        };
-
-        this.alertHandlerWithCallback = function (msg, callback) {
-            return function() {
-                this.unblockUI();
-                this.motechAlert(msg, 'server.success', callback);
+                this.closeLoadingModal();
+                this.motechAlert(msg, title, callback);
             };
         };
 
@@ -271,5 +273,6 @@
             }
             this.motechAlertStackTrace(msg, title, response);
         };
+
     });
 }());

@@ -4,7 +4,7 @@
     var serverModule = angular.module('motech-dashboard');
 
     serverModule.controller('MotechMasterCtrl', function ($scope, $http, i18nService, $cookieStore, $q, BrowserDetect,
-        Menu, $location, $timeout, $route, ModalService) {
+        Menu, $location, $timeout, $route, Modal) {
 
         var handle = function () {
                 if (!$scope.$$phase) {
@@ -133,14 +133,14 @@
                     }
 
                     moment.locale(lang);
-                    ModalService.motechAlert('server.success.changed.language', 'server.changed.language',function(){
+                    Modal.motechAlert('server.success.changed.language', 'server.changed.language',function(){
                         if (refresh ) {
                             window.location.reload();
                         }
                     });
                 })
                 .error(function (response) {
-                    ModalService.handleResponse('server.header.error', 'server.error.setLangError', response);
+                    Modal.handleResponse('server.header.error', 'server.error.setLangError', response);
                 });
         };
 
@@ -208,11 +208,11 @@
             $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
             $scope.activeLink = {moduleName: moduleName, url: url};
             if (moduleName) {
-                ModalService.blockUI();
+                Modal.openLoadingModal();
 
                 $http.get('../server/module/critical/' + moduleName).success(function (data, status) {
                     if (data !== undefined && data !== '' && status !== 408) {
-                        ModalService.alert({
+                        Modal.alert({
                             type: BootstrapDialog.TYPE_DANGER,
                             message: status + ": " + data.statusText
                         });
@@ -221,7 +221,7 @@
 
                 if ($scope.moduleToLoad === moduleName || url === '/login') {
                     $location.path(url);
-                    ModalService.unblockUI();
+                    Modal.closeLoadingModal();
                     innerLayout({}, {
                         show: false
                     });
@@ -235,7 +235,7 @@
                         $scope.$on('loadOnDemand.loadContent', function () {
                             if (reloadModule) {
                                 $location.path(url);
-                                ModalService.unblockUI();
+                                Modal.closeLoadingModal();
                                 reloadModule = false;
                                 innerLayout({}, {
                                     show: false
@@ -246,7 +246,7 @@
                             }
                         });
                     } else {
-                        ModalService.unblockUI();
+                        Modal.closeLoadingModal();
                     }
                 }
             }
@@ -438,14 +438,14 @@
 
         //Used when user has forgotten the password
         $scope.submitResetPasswordForm = function() {
-            ModalService.blockUI();
+            Modal.openLoadingModal();
 
             $http({
                 method: 'POST',
                 url: '../server/forgotreset',
                 data: $scope.resetViewData.resetForm
             }).success(function(data) {
-                ModalService.unblockUI();
+                Modal.closeLoadingModal();
 
                 if (data.errors === undefined || data.errors.length === 0) {
                     data.errors = null;
@@ -454,8 +454,8 @@
                 $scope.resetViewData = data;
             })
             .error(function(data) {
-                ModalService.unblockUI();
-                ModalService.motechAlert('server.reset.error', 'server.error');
+                Modal.closeLoadingModal();
+                Modal.motechAlert('server.reset.error', 'server.error');
                 $scope.resetViewData.errors = ['server.reset.error'];
             });
         };
@@ -477,14 +477,14 @@
 
         //Used when user must change the password
         $scope.submitChangePasswordForm = function() {
-            ModalService.blockUI();
+            Modal.openLoadingModal();
 
             $http({
                 method: 'POST',
                 url: '../server/changepassword',
                 data: $scope.changePasswordViewData.changePasswordForm
             }).success(function(data) {
-                ModalService.unblockUI();
+                Modal.closeLoadingModal();
 
                 if (data.userBlocked) {
                     window.location = "./login?blocked=true";
@@ -498,8 +498,8 @@
                 $scope.changePasswordViewData.errors = data.errors;
                 $scope.changePasswordViewData.changeSucceded = data.changeSucceded;
             }).error(function(data) {
-                ModalService.unblockUI();
-                ModalService.motechAlert('server.reset.error', 'server.error');
+                Modal.closeLoadingModal();
+                Modal.motechAlert('server.reset.error', 'server.error');
                 $scope.resetViewData.errors = ['server.reset.error'];
             });
         };
@@ -511,7 +511,7 @@
         };
 
         $scope.submitStartupConfig = function() {
-             ModalService.blockUI();
+             Modal.openLoadingModal();
              $scope.startupViewData.startupSettings.loginMode = $scope.securityMode;
              $http({
                 method: "POST",
@@ -522,12 +522,12 @@
                 if (data.length === 0) {
                     window.location.assign("../server/");
                 } else {
-                    ModalService.unblockUI();
+                    Modal.closeLoadingModal();
                 }
                 $scope.errors = data;
              })
              .error(function(data) {
-                ModalService.unblockUI();
+                Modal.closeLoadingModal();
              });
         };
 
@@ -552,7 +552,7 @@
         };
     });
 
-    serverModule.controller('MotechHomeCtrl', function ($scope, $cookieStore, $q, Menu, $rootScope, $http, ModalService) {
+    serverModule.controller('MotechHomeCtrl', function ($scope, $cookieStore, $q, Menu, $rootScope, $http, Modal) {
         $scope.securityMode = false;
 
         $scope.moduleMenu = {};
@@ -612,7 +612,7 @@
         $q.all([
             $scope.moduleMenu = Menu.get(function(data) {
                 $scope.moduleMenu = data;
-            }, ModalService.angularHandler('error', 'server.error.cantLoadMenu')),
+            }, Modal.angularHandler('error', 'server.error.cantLoadMenu')),
 
             $scope.doAJAXHttpRequest('POST', 'getUser', function (data) {
                 var scope = angular.element("body").scope();
@@ -638,7 +638,7 @@
         $scope.$on('module.list.refresh', function () {
             Menu.get(function(data) {
                 $scope.moduleMenu = data;
-            }, ModalService.angularHandler('error', 'server.error.cantLoadMenu'));
+            }, Modal.angularHandler('error', 'server.error.cantLoadMenu'));
         });
 
         jgridDefaultSettings();

@@ -10,7 +10,7 @@
                                                       controller: 'ServerRestDocsCtrl'});
     }]);
 
-    restDocModule.controller('ServerRestDocsCtrl', function ($scope, $location, $http, ModalService) {
+    restDocModule.controller('ServerRestDocsCtrl', function ($scope, $location, $http, Modal) {
 
         $scope.getRestModuleName = function() {
             $scope.before = $location.path();
@@ -26,7 +26,7 @@
                 dom_id: "swagger-ui-container",
                 supportedSubmitMethods: ['get', 'post', 'put', 'delete'],
                 onFailure: function(data) {
-                    ModalService.motechAlert(data, "error");
+                    Modal.motechAlert(data, "error");
                 },
                 onComplete: function() {
                     // remove hrefs starting with hashbang (no need for them anyway)
@@ -41,7 +41,6 @@
             });
 
             window.swaggerUi.load();
-        }).error(ModalService.alertHandler('server.error', 'server.error.rest.url'));
+        }).error(Modal.alertHandler('server.error', 'server.error.rest.url'));
     });
-
 }());

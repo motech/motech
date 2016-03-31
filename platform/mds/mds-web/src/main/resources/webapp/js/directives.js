@@ -1435,7 +1435,7 @@
     /**
     * Displays related instances data using jqGrid
     */
-    directives.directive('entityInstancesBrowserGrid', function ($timeout, $http, ModalService) {
+    directives.directive('entityInstancesBrowserGrid', function ($timeout, $http, Modal) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -1533,10 +1533,10 @@
                 } else if (scope.relatedMode.isNested) {
                     relatedClass = scope.getRelatedClass(scope.field);
                     if (relatedClass !== undefined && scope.relatedMode.isNested) {
-                        ModalService.blockUI();
+                        Modal.openLoadingModal();
                         $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
                             relatedEntityId = data.id;
-                            ModalService.unblockUI();
+                            Modal.closeLoadingModal();
                             showGrid();
                             if (scope.currentRelationRecord !== undefined) {
                                 selectedEntityNested = {id: scope.currentRelationRecord.entitySchemaId};
@@ -1568,7 +1568,7 @@
     /**
     * Displays related instances data using jqGrid
     */
-    directives.directive('entityRelationsGrid', function ($timeout, $http, MDSUtils, ModalService) {
+    directives.directive('entityRelationsGrid', function ($timeout, $http, MDSUtils, Modal) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -1584,11 +1584,11 @@
                     selectedInstance = (scope.selectedInstance !== undefined && angular.isNumber(parseInt(scope.selectedInstance, 10)))? parseInt(scope.selectedInstance, 10) : undefined;
 
                 relatedClass = scope.getRelatedClass(scope.field);
-                    ModalService.blockUI();
+                    Modal.openLoadingModal();
                     $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
                         scope.relatedEntity = data;
                         relatedEntityId = data.id;
-                        ModalService.unblockUI();
+                        Modal.closeLoadingModal();
                         $.ajax({
                             type: "GET",
                             url: "../mds/entities/" + scope.relatedEntity.id + "/entityFields",
@@ -1715,7 +1715,7 @@
                             }
                         });
                     }).error(function (response) {
-                        ModalService.handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
+                        Modal.handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
                     });
 
                 elem.on('jqGridSortCol', function (e, fieldName) {
