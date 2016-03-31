@@ -7,13 +7,13 @@
     $.ajax({
         url:      '../mds/available/mdsTabs',
         success:  function(data) {
-            mds.constant('AVAILABLE_TABS', data);
+            mds.constant('MDS_AVAILABLE_TABS', data);
         },
-        async:    true
+        async:    false
     });
 
-    mds.run(function ($rootScope, AVAILABLE_TABS) {
-        $rootScope.AVAILABLE_TABS = AVAILABLE_TABS;
+    mds.run(function ($rootScope, MDS_AVAILABLE_TABS) {
+        $rootScope.MDS_AVAILABLE_TABS = MDS_AVAILABLE_TABS;
     });
 
     mds.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {

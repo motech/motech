@@ -257,7 +257,7 @@
         };
 
         $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
-            innerLayout({}, { show: false });//console.log('$stateChangeSuccess');
+            innerLayout({}, { show: false });
         });
 
         $scope.loadI18n = function (data) {

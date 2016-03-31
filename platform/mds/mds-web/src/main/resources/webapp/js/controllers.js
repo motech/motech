@@ -290,14 +290,14 @@
         };
     });
 
-    controllers.controller('MdsBasicCtrl', function ($scope, $rootScope, $location, $state, $stateParams, $controller, Entities, MDSUtils) {
+    controllers.controller('MdsBasicCtrl', function ($scope, $location, $state, $stateParams, $controller, Entities, MDSUtils) {
 
         angular.extend(this, $controller('MdsEmbeddableCtrl', {
             $scope: $scope,
             MDSUtils: MDSUtils
         }));
 
-        var schemaEditorPath = '/mds/{0}'.format($scope.AVAILABLE_TABS[1]);
+        var schemaEditorPath = '/mds/{0}'.format($scope.MDS_AVAILABLE_TABS[1]);
 
         $scope.DATA_BROWSER = "dataBrowser";
         $scope.SCHEMA_EDITOR = "schemaEditor";
@@ -609,7 +609,7 @@
         * Checks whether the user has access to the given functionality.
         */
         $scope.hasAccessTo = function (functionality) {
-            return $scope.AVAILABLE_TABS.indexOf(functionality) !== -1;
+            return $scope.MDS_AVAILABLE_TABS.indexOf(functionality) !== -1;
         };
 
         $scope.selectedEntity = undefined;
