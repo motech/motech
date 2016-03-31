@@ -2138,7 +2138,6 @@
         /**
         * Adds new lookup field to the currently active index
         */
-
         $scope.addLookupField = function () {
             $scope.isNewLookupFieldButtonDisabled = true;
             var value = $scope.availableFields[0] && $scope.availableFields[0].id;
