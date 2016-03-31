@@ -708,9 +708,9 @@
         return {
             restrict: 'A',
             scope: {
-                min: "=",
-                max: "=",
-                parsed: "="
+                min: "=?",
+                max: "=?",
+                parsed: "=?"
             },
             link: function(scope, element, attrs, ngModel) {
                 element.datetimepicker({
@@ -722,12 +722,10 @@
                         if (scope.min) {
                             var parts = scope.min.split(' ');
                             element.datetimepicker('option', 'minDate', parts[0]);
-                            element.datetimepicker('option', 'minTime', parts[1]);
                         }
                         if (scope.max) {
                             var parts = scope.max.split(' ');
                             element.datetimepicker('option', 'maxDate', parts[0]);
-                            element.datetimepicker('option', 'maxTime', parts[1]);
                         }
                     },
                     onSelect: function() {
