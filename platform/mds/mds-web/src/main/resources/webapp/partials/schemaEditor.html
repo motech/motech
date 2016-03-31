@@ -48,10 +48,10 @@
         <div ng-include="'../mds/resources/partials/widgets/fields.html'"></div>
         <div class="inside">
             <div class="btn-group pull-right">
-                <button class="btn btn-danger" ng-disabled="!selectedEntity.modified" ng-click="abandonChanges()">
+                <button id="abandon-changes-button" class="btn btn-danger" ng-disabled="!selectedEntity.modified" ng-click="abandonChanges()">
                     <i class="fa fa-fw fa-trash-o"></i> {{msg('mds.btn.abandonChanges')}}
                 </button>
-                <button class="btn btn-primary" ng-disabled="!selectedEntity.modified || !canSaveChanges()" ng-click="saveChanges()">
+                <button id="save-changes-button" class="btn btn-primary" ng-disabled="!selectedEntity.modified || !canSaveChanges()" ng-click="saveChanges()">
                     <i class="fa fa-fw fa-save"></i> {{msg('mds.btn.saveChanges')}}
                 </button>
             </div>
