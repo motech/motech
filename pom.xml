@@ -1446,9 +1446,15 @@
         </plugins>
     </build>
 
+    <!-- By default the datanucleus property detachAllOnCommit is switched off in IT profile, however you can switch on this property
+     by setting detach environment to detach-true, for example: mvn clean install -PIT -Ddetach=detach-true
+     -->
     <profiles>
         <profile>
             <id>IT</id>
+            <properties>
+                <detach>detach-false</detach>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -1472,6 +1478,14 @@
                                         <resource>
                                             <directory>${modules.root.dir}/testdata/${motech.sql.dbtype}</directory>
                                             <include>bootstrap.properties</include>
+                                        </resource>
+                                        <resource>
+                                            <directory>${modules.root.dir}/testdata/${detach}</directory>
+                                            <include>datanucleus_data.properties</include>
+                                        </resource>
+                                        <resource>
+                                            <directory>${modules.root.dir}/testdata/${detach}</directory>
+                                            <include>datanucleus_schema.properties</include>
                                         </resource>
                                     </resources>
                                 </configuration>
