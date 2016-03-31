@@ -113,7 +113,7 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
         Query query = createQuery(properties, values, restriction);
         Collection collection = (Collection) QueryExecutor.executeWithArray(query, values, restriction);
 
-        return new ArrayList<T>(collection);
+        return new ArrayList<>(collection);
     }
 
     public List<T> retrieveAll(String[] properties, Object[] values, QueryParams queryParams,
@@ -123,7 +123,7 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
 
         Collection collection = (Collection) QueryExecutor.executeWithArray(query, values, restriction);
 
-        return new ArrayList<T>(collection);
+        return new ArrayList<>(collection);
     }
 
     public List<T> retrieveAll(QueryParams queryParams, InstanceSecurityRestriction restriction) {
@@ -131,7 +131,24 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
         QueryUtil.setQueryParams(query, queryParams);
         Collection collection = (Collection) QueryExecutor.execute(query, restriction);
 
-        return new ArrayList<T>(collection);
+        return new ArrayList<>(collection);
+    }
+
+    public List<T> retrieveAll(List<Property> properties, InstanceSecurityRestriction restriction) {
+        Query query = createQuery(properties, restriction);
+
+        Collection collection = (Collection) QueryExecutor.executeWithArray(query, properties);
+
+        return new ArrayList<>(collection);
+    }
+
+    public List<T> retrieveAll(List<Property> properties, QueryParams queryParams, InstanceSecurityRestriction restriction) {
+        Query query = createQuery(properties, restriction);
+        QueryUtil.setQueryParams(query, queryParams);
+
+        Collection collection = (Collection) QueryExecutor.executeWithArray(query, properties);
+
+        return new ArrayList<>(collection);
     }
 
     public T retrieve(String property, Object value) {
@@ -151,6 +168,13 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
         query.setUnique(true);
 
         return (T) QueryExecutor.executeWithArray(query, values, restriction);
+    }
+
+    public T retrieveUnique(List<Property> properties, InstanceSecurityRestriction restriction) {
+        Query query = createQuery(properties, restriction);
+        query.setUnique(true);
+
+        return (T) QueryExecutor.executeWithArray(query, properties);
     }
 
     public boolean exists(String property, Object value) {
@@ -202,7 +226,7 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
 
         Collection collection = (Collection) QueryExecutor.executeWithFilters(query, filters, restriction);
 
-        return new ArrayList<T>(collection);
+        return new ArrayList<>(collection);
     }
 
     public long countForFilters(Filters filters, InstanceSecurityRestriction restriction) {
@@ -210,6 +234,13 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
         QueryUtil.setCountResult(query);
 
         return (long) QueryExecutor.executeWithFilters(query, filters, restriction);
+    }
+
+    public long count(List<Property> properties, InstanceSecurityRestriction restriction) {
+        Query query = createQuery(properties, restriction);
+        QueryUtil.setCountResult(query);
+
+        return (long) QueryExecutor.executeWithArray(query, properties);
     }
 
     private Query createQuery(String[] properties, Object[] values, InstanceSecurityRestriction restriction) {
@@ -232,36 +263,5 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
         QueryUtil.useFilters(query, filters);
 
         return query;
-    }
-
-    public List<T> retrieveAll(List<Property> properties, InstanceSecurityRestriction restriction) {
-        Query query = createQuery(properties, restriction);
-
-        Collection collection = (Collection) QueryExecutor.executeWithArray(query, properties);
-
-        return new ArrayList<T>(collection);
-    }
-
-    public List<T> retrieveAll(List<Property> properties, QueryParams queryParams, InstanceSecurityRestriction restriction) {
-        Query query = createQuery(properties, restriction);
-        QueryUtil.setQueryParams(query, queryParams);
-
-        Collection collection = (Collection) QueryExecutor.executeWithArray(query, properties);
-
-        return new ArrayList<T>(collection);
-    }
-
-    public T retrieveUnique(List<Property> properties, InstanceSecurityRestriction restriction) {
-        Query query = createQuery(properties, restriction);
-        query.setUnique(true);
-
-        return (T) QueryExecutor.executeWithArray(query, properties);
-    }
-
-    public long count(List<Property> properties, InstanceSecurityRestriction restriction) {
-        Query query = createQuery(properties, restriction);
-        QueryUtil.setCountResult(query);
-
-        return (long) QueryExecutor.executeWithArray(query, properties);
     }
 }

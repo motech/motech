@@ -1,8 +1,8 @@
 package org.motechproject.mds.osgi;
 
-import org.motechproject.mds.exception.MdsEntityWireException;
+import org.motechproject.mds.exception.init.MdsEntityWireException;
 import org.motechproject.mds.exception.MdsException;
-import org.motechproject.mds.helper.MdsBundleHelper;
+import org.motechproject.mds.helper.bundle.MdsBundleHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;

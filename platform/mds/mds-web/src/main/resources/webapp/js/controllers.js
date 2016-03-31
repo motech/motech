@@ -1234,7 +1234,9 @@
                         ? angular.element('<div>').append(description)
                         : undefined,
                     parent = (name || info)
-                        ? angular.element('<div>').append(name).append(info)
+                        ? angular.element('<div>', {
+                            id: 'field-type-'+$scope.msg(type.displayName)
+                        }).append(name).append(info)
                         : undefined;
 
                 return parent || $scope.msg('mds.error');

@@ -14,5 +14,12 @@ import javax.jdo.Query;
  */
 public interface QueryExecution<T> {
 
+    /**
+     * The implementation of this method is supposed to run the JDO query on the
+     * provided {@link Query} object.
+     * @param query the query object that is supposed to be executed
+     * @param restriction the entity instances restrictions put on this query
+     * @return defining the return type is left to whoever implements this interface
+     */
     T execute(Query query, InstanceSecurityRestriction restriction);
 }

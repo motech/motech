@@ -87,13 +87,13 @@
         <div class="panel-heading clearfix">
             <div class="col-sm-1 row"></div>
             <div class="col-sm-3 form-group" id="new-field-displayName" ng-class="{'has-error': tryToCreate && !newField.displayName}">
-                <input class="form-control input-large-fluid form-inline" type="text" ng-model="newField.displayName" mds-camel-case="new">
+                <input class="form-control input-large-fluid form-inline" id="new-field-displayName-input" type="text" ng-model="newField.displayName" mds-camel-case="new">
                 <span class="form-hint form-hint-bottom" ng-class="{hide: !tryToCreate || newField.displayName}">
                     {{msg('mds.error.fieldIsRequired')}}
                 </span>
             </div>
             <div class="col-sm-3 form-group" id="new-field-name" ng-class="{'has-error': tryToCreate && (!newField.name || findFieldsByName(newField.name).length > 0)}">
-                <input class="form-control input-large-fluid form-inline" type="text" ng-model="newField.name" mds-camel-case="new">
+                <input class="form-control input-large-fluid form-inline" id="new-field-name-input" type="text" ng-model="newField.name" mds-camel-case="new">
                 <span class="form-hint form-hint-bottom" ng-class="{hide: !tryToCreate || newField.name}">
                     {{msg('mds.error.fieldIsRequired')}}
                 </span>
@@ -111,7 +111,7 @@
                 </span>
             </div>
             <div class="col-sm-1 form-group">
-                <a class="btn btn-sm btn-success" ng-click="createField()">
+                <a id="add-new-field" class="btn btn-sm btn-success" ng-click="createField()">
                     <i class="fa fa-lg fa-plus"></i>
                 </a>
             </div>

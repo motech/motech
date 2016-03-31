@@ -15,8 +15,8 @@ import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.UserPreferences;
 import org.motechproject.mds.dto.UserPreferencesDto;
 import org.motechproject.mds.exception.field.FieldNotFoundException;
-import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.repository.AllUserPreferences;
+import org.motechproject.mds.repository.internal.AllEntities;
+import org.motechproject.mds.repository.internal.AllUserPreferences;
 import org.motechproject.mds.service.UserPreferencesService;
 
 import java.util.ArrayList;

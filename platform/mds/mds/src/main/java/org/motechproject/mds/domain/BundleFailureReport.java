@@ -36,6 +36,7 @@ public class BundleFailureReport {
     private BundleRestartStatus bundleRestartStatus;
 
     public BundleFailureReport() {
+        this(null, null, null, null, null);
     }
 
     public BundleFailureReport(DateTime reportDate, String nodeName, String bundleSymbolicName, String errorMessage, BundleRestartStatus bundleRestartStatus) {

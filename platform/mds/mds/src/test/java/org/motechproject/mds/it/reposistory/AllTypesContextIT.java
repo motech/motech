@@ -11,7 +11,7 @@ import org.motechproject.mds.domain.Relationship;
 import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.domain.TypeSetting;
 import org.motechproject.mds.domain.TypeValidation;
-import org.motechproject.mds.repository.AllTypes;
+import org.motechproject.mds.repository.internal.AllTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
