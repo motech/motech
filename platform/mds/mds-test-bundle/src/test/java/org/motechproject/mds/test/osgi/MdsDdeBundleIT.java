@@ -18,8 +18,10 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.test.domain.Actor;
 import org.motechproject.mds.test.domain.Movie;
+import org.motechproject.mds.test.domain.RevertFromTrash;
 import org.motechproject.mds.test.domain.TestLookup;
 import org.motechproject.mds.test.domain.TestMdsEntity;
 import org.motechproject.mds.test.domain.TestSingleReturnLookup;
@@ -67,6 +69,7 @@ import org.motechproject.mds.test.service.ActorDataService;
 import org.motechproject.mds.test.service.MovieDataService;
 import org.motechproject.mds.test.service.TestLookupService;
 import org.motechproject.mds.test.service.TestMdsEntityService;
+import org.motechproject.mds.test.service.TestRevertFromTrashService;
 import org.motechproject.mds.test.service.TestSingleReturnLookupService;
 import org.motechproject.mds.test.service.TransactionTestService;
 import org.motechproject.mds.test.service.cascadedelete.CityDataService;
@@ -157,10 +160,16 @@ public class MdsDdeBundleIT extends BasePaxIT {
     private static final QueryParams ASC_ID = QueryParams.ascOrder(ID_FIELD_NAME);
 
     @Inject
+    private TrashService trashService;
+
+    @Inject
     private TestMdsEntityService testMdsEntityService;
 
     @Inject
     private TestLookupService testLookupService;
+
+    @Inject
+    private TestRevertFromTrashService testRevertFromTrashService;
 
     @Inject
     private BookDataService bookDataService;
@@ -304,6 +313,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
     private void clearDB() {
         testMdsEntityService.deleteAll();
         testLookupService.deleteAll();
+        testRevertFromTrashService.deleteAll();
         bookDataService.deleteAll();
         authorDataService.deleteAll();
         subclassADataService.deleteAll();
@@ -1982,6 +1992,18 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals("Jack", safeGetProperty(secondVersion, "name"));
         assertEquals(asSet(googleId, microsoftId), safeGetProperty(secondVersion, "companies"));
         assertEquals(jackDt2, safeGetProperty(secondVersion, "modificationDate"));
+    }
+
+    @Test
+    public void shouldRevertFromTrash() {
+        RevertFromTrash testRevert = testRevertFromTrashService.create(new RevertFromTrash("revertTest"));
+        Long testSchemaVersion = testRevertFromTrashService.getSchemaVersion();
+
+        trashService.moveToTrash(testRevert, testSchemaVersion);
+        assertNotNull("Instance is not in trash", testRevertFromTrashService.findTrashInstanceById(testRevert.getId()));
+
+        testRevertFromTrashService.revertFromTrash(testRevert.getId());
+        assertNull("Instance is still in the trash.",testRevertFromTrashService.findTrashInstanceById(testRevert.getId()));
     }
 
     private void assertDefaultConstructorPresent() throws ClassNotFoundException {
