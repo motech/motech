@@ -2599,8 +2599,8 @@ directory(if you are using mysql then use :code:`mysql` instead :code:`default`)
 Schema Import/Export
 ####################
 
-This section explains how to `import`_ and `export`_ MDS Schema. It can be done with only few steps using the MDS module
-UI.
+This section explains how to `import`_ and `export`_ MDS Schema. It can be done with only a few steps using the MDS
+module UI.
 
 Schema Import
 #############
@@ -2636,8 +2636,8 @@ in importing only that entity. If the given JSON contains instances of the entit
 can also import them by ticking the checkboxes next to the entity or module name in the data column. Once you have
 selected all the entities you want to import schema and/or instances for, simply click the Import button. Keep in mind
 that importing schema for entities that already exist will result in removing data related to those entities. Two
-entities are equal if they have the same class name. For information on how relationships are handled please visit
-the `Relationship handling`_ section.
+entities are considered equal if they have the same class name. For information on how relationships are handled please
+visit the `Relationship handling`_ section.
 
 Schema Export
 #############
@@ -2662,7 +2662,7 @@ section.
 Relationship handling
 #####################
 
-There are few things related to the relationships that you need to remember about during schema export. If there is a
+There are a few things related to the relationships that you need to remember about during schema export. If there is a
 relation between two entities both of them must be exported. Also, if you want to export instances of an entity that has
 relationship with other one you may want to export instances of the second entity as well. If you don't do this the
 fields pointing to the other entity will be set to null and may potentially break the database integrity if the
