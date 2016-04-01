@@ -5,8 +5,8 @@ import org.eclipse.gemini.blueprint.service.importer.OsgiServiceLifecycleListene
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.tasks.domain.TaskDataProvider;
-import org.motechproject.tasks.domain.TaskError;
+import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
+import org.motechproject.tasks.domain.mds.task.TaskError;
 import org.motechproject.tasks.exception.ValidationException;
 import org.motechproject.tasks.repository.DataProviderDataService;
 import org.motechproject.tasks.service.TaskDataProviderService;

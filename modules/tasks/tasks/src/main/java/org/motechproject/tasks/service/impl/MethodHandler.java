@@ -1,8 +1,8 @@
 package org.motechproject.tasks.service.impl;
 
-import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionParameter;
-import org.motechproject.tasks.domain.MethodCallManner;
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.channel.ActionParameter;
+import org.motechproject.tasks.domain.mds.channel.MethodCallManner;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -6,14 +6,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.tasks.domain.DataSource;
-import org.motechproject.tasks.domain.EventParameter;
-import org.motechproject.tasks.domain.Filter;
-import org.motechproject.tasks.domain.LogicalOperator;
-import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.domain.TaskActionInformation;
-import org.motechproject.tasks.domain.TaskBuilder;
-import org.motechproject.tasks.domain.TaskConfig;
+import org.motechproject.tasks.domain.mds.task.DataSource;
+import org.motechproject.tasks.domain.mds.task.Filter;
+import org.motechproject.tasks.domain.mds.task.LogicalOperator;
+import org.motechproject.tasks.domain.mds.task.Task;
+import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
+import org.motechproject.tasks.domain.mds.task.builder.TaskBuilder;
+import org.motechproject.tasks.domain.mds.task.TaskConfig;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.service.TaskActivityService;
 
@@ -28,27 +27,27 @@ import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.motechproject.tasks.domain.OperatorType.AFTER;
-import static org.motechproject.tasks.domain.OperatorType.AFTER_NOW;
-import static org.motechproject.tasks.domain.OperatorType.BEFORE;
-import static org.motechproject.tasks.domain.OperatorType.BEFORE_NOW;
-import static org.motechproject.tasks.domain.OperatorType.CONTAINS;
-import static org.motechproject.tasks.domain.OperatorType.ENDSWITH;
-import static org.motechproject.tasks.domain.OperatorType.EQUALS;
-import static org.motechproject.tasks.domain.OperatorType.EQUALS_IGNORE_CASE;
-import static org.motechproject.tasks.domain.OperatorType.EQ_NUMBER;
-import static org.motechproject.tasks.domain.OperatorType.EXIST;
-import static org.motechproject.tasks.domain.OperatorType.GT;
-import static org.motechproject.tasks.domain.OperatorType.LESS_DAYS_FROM_NOW;
-import static org.motechproject.tasks.domain.OperatorType.LESS_MONTHS_FROM_NOW;
-import static org.motechproject.tasks.domain.OperatorType.LT;
-import static org.motechproject.tasks.domain.OperatorType.MORE_DAYS_FROM_NOW;
-import static org.motechproject.tasks.domain.OperatorType.MORE_MONTHS_FROM_NOW;
-import static org.motechproject.tasks.domain.OperatorType.STARTSWITH;
-import static org.motechproject.tasks.domain.ParameterType.DATE;
-import static org.motechproject.tasks.domain.ParameterType.INTEGER;
-import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
-import static org.motechproject.tasks.domain.ParameterType.UNICODE;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.AFTER;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.AFTER_NOW;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.BEFORE;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.BEFORE_NOW;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.CONTAINS;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.ENDSWITH;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.EQUALS;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.EQUALS_IGNORE_CASE;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.EQ_NUMBER;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.EXIST;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.GT;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.LESS_DAYS_FROM_NOW;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.LESS_MONTHS_FROM_NOW;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.LT;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.MORE_DAYS_FROM_NOW;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.MORE_MONTHS_FROM_NOW;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.STARTSWITH;
+import static org.motechproject.tasks.domain.mds.ParameterType.DATE;
+import static org.motechproject.tasks.domain.mds.ParameterType.INTEGER;
+import static org.motechproject.tasks.domain.mds.ParameterType.TEXTAREA;
+import static org.motechproject.tasks.domain.mds.ParameterType.UNICODE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskFilterExecutorTest {
@@ -72,20 +71,20 @@ public class TaskFilterExecutorTest {
         assertTrue(taskFilterExecutor.checkFilters(new ArrayList<>(), null, taskContext));
 
         List<Filter> filters = new ArrayList<>();
-        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, CONTAINS.getValue(), "ven"));
-        filters.add(new Filter(new EventParameter("EventName", "eventName", TEXTAREA), true, EXIST.getValue(), ""));
-        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, EQUALS.getValue(), "event name"));
-        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, EQUALS_IGNORE_CASE.getValue(), "EvEnT nAmE"));
-        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, STARTSWITH.getValue(), "ev"));
-        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, ENDSWITH.getValue(), "me"));
+        filters.add(new Filter("EventName", "trigger.eventName", UNICODE, true, CONTAINS.getValue(), "ven"));
+        filters.add(new Filter("EventName", "trigger.eventName", TEXTAREA, true, EXIST.getValue(), ""));
+        filters.add(new Filter("EventName", "trigger.eventName", UNICODE, true, EQUALS.getValue(), "event name"));
+        filters.add(new Filter("EventName", "trigger.eventName", UNICODE, true, EQUALS_IGNORE_CASE.getValue(), "EvEnT nAmE"));
+        filters.add(new Filter("EventName", "trigger.eventName", UNICODE, true, STARTSWITH.getValue(), "ev"));
+        filters.add(new Filter("EventName", "trigger.eventName", UNICODE, true, ENDSWITH.getValue(), "me"));
 
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, GT.getValue(), "19"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), false, GT.getValue(), "1234567891"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, LT.getValue(), "1234567891"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), false, LT.getValue(), "123"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, EQ_NUMBER.getValue(), "123456789"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), false, EQ_NUMBER.getValue(), "789"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, EXIST.getValue(), ""));
+        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, true, GT.getValue(), "19"));
+        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, false, GT.getValue(), "1234567891"));
+        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, true, LT.getValue(), "1234567891"));
+        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, false, LT.getValue(), "123"));
+        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, true, EQ_NUMBER.getValue(), "123456789"));
+        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, false, EQ_NUMBER.getValue(), "789"));
+        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, true, EXIST.getValue(), ""));
 
         filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, CONTAINS.getValue(), "am"));
         filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, EXIST.getValue(), ""));
@@ -100,7 +99,7 @@ public class TaskFilterExecutorTest {
         filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, EXIST.getValue(), ""));
         filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, false, GT.getValue(), "100"));
 
-        taskContext = new TaskContext(task, new HashMap<String, Object>(), activityService);
+        taskContext = new TaskContext(task, new HashMap<>(), activityService);
         assertFalse(taskFilterExecutor.checkFilters(filters, LogicalOperator.AND, taskContext));
         assertTrue(taskFilterExecutor.checkFilters(filters, LogicalOperator.OR, taskContext));
 
@@ -121,20 +120,20 @@ public class TaskFilterExecutorTest {
         taskContext.addDataSourceObject("1", new Person(46), false);
         assertTrue(taskFilterExecutor.checkFilters(filters, LogicalOperator.AND, taskContext));
 
-        Filter equals = new Filter(new EventParameter("Test date", "test_date", DATE), true, EQUALS.getValue(), dateTime.toString());
-        Filter after = new Filter(new EventParameter("Test date", "test_date", DATE), false, AFTER.getValue(), DateUtil.now().toString());
-        Filter afterNow = new Filter(new EventParameter("Test date", "test_date", DATE), false, AFTER_NOW.getValue(), "");
-        Filter before = new Filter(new EventParameter("Test date", "test_date", DATE), true, BEFORE.getValue(), DateUtil.now().toString());
-        Filter beforeNow = new Filter(new EventParameter("Test date", "test_date", DATE), true, BEFORE_NOW.getValue(), "");
-        Filter lessDays = new Filter(new EventParameter("Test date", "test_date", DATE), true, LESS_DAYS_FROM_NOW.getValue(), "3");
-        Filter moreDays = new Filter(new EventParameter("Test date", "test_date", DATE), true, MORE_DAYS_FROM_NOW.getValue(), "0");
+        Filter equals = new Filter("Test date", "trigger.test_date", DATE, true, EQUALS.getValue(), dateTime.toString());
+        Filter after = new Filter("Test date", "trigger.test_date", DATE, false, AFTER.getValue(), DateUtil.now().toString());
+        Filter afterNow = new Filter("Test date", "trigger.test_date", DATE, false, AFTER_NOW.getValue(), "");
+        Filter before = new Filter("Test date", "trigger.test_date", DATE, true, BEFORE.getValue(), DateUtil.now().toString());
+        Filter beforeNow = new Filter("Test date", "trigger.test_date", DATE, true, BEFORE_NOW.getValue(), "");
+        Filter lessDays = new Filter("Test date", "trigger.test_date", DATE, true, LESS_DAYS_FROM_NOW.getValue(), "3");
+        Filter moreDays = new Filter("Test date", "trigger.test_date", DATE, true, MORE_DAYS_FROM_NOW.getValue(), "0");
 
         filters.add(equals);
         filters.add(after);
         filters.add(afterNow);
         filters.add(before);
         filters.add(beforeNow);
-        filters.add(new Filter(new EventParameter("Test date", "test_date", DATE), true, EXIST.getValue(), ""));
+        filters.add(new Filter("Test date", "trigger.test_date", DATE, true, EXIST.getValue(), ""));
         filters.add(lessDays);
         filters.add(moreDays);
 
@@ -154,8 +153,8 @@ public class TaskFilterExecutorTest {
         filters.remove(beforeNow);
         filters.remove(lessDays);
         filters.remove(moreDays);
-        filters.add(new Filter(new EventParameter("Test date", "test_date", DATE), true, LESS_MONTHS_FROM_NOW.getValue(), "5"));
-        filters.add(new Filter(new EventParameter("Test date", "test_date", DATE), true, MORE_MONTHS_FROM_NOW.getValue(), "1"));
+        filters.add(new Filter("Test date", "trigger.test_date", DATE, true, LESS_MONTHS_FROM_NOW.getValue(), "5"));
+        filters.add(new Filter("Test date", "trigger.test_date", DATE, true, MORE_MONTHS_FROM_NOW.getValue(), "1"));
         dateTime = DateTime.now().minusMonths(3);
 
         triggerParameters.put("test_date", dateTime.toString());
@@ -212,7 +211,7 @@ public class TaskFilterExecutorTest {
         filters.add(new Filter("MRS.Person#2.Age", "ad.2.Person#2.age", INTEGER, false, EXIST.getValue(), ""));
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
-        TaskContext taskContext = new TaskContext(task, new HashMap<String, Object>(), activityService);
+        TaskContext taskContext = new TaskContext(task, new HashMap<>(), activityService);
         new TaskFilterExecutor().checkFilters(filters, LogicalOperator.AND, taskContext);
     }
 
