@@ -23,7 +23,7 @@ public class MotechOsgiApplicationContextCreator implements OsgiApplicationConte
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechOsgiApplicationContextCreator.class);
 
-    private ConfigurationScanner configurationScanner = new DefaultConfigurationScanner();
+    private ConfigurationScanner configurationScanner = new DefaultConfigurationScanner(); //new MotechConfigurationScanner();
 
     public DelegatedExecutionOsgiBundleApplicationContext createApplicationContext(BundleContext bundleContext) {
         if (null == bundleContext) {
@@ -45,6 +45,7 @@ public class MotechOsgiApplicationContextCreator implements OsgiApplicationConte
         LOGGER.info("Discovered configurations {} in bundle [{}]",
                 ObjectUtils.nullSafeToString(config.getConfigurationLocations()),
                 OsgiStringUtils.nullSafeNameAndSymName(bundle));
+
 
         DelegatedExecutionOsgiBundleApplicationContext motechOsgiConfigurableApplicationContext =
                 new MotechOsgiConfigurableApplicationContext(config.getConfigurationLocations());
