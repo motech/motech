@@ -74,6 +74,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -204,8 +205,9 @@ public class InstanceServiceImpl implements InstanceService {
         MotechDataService service = getServiceForEntity(entity);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         Object instance = trashService.findTrashById(instanceId, entityId);
+        Map<String, List<FieldDto>> relatedEntitiesFields = getRelatedEntitiesFields(fields);
 
-        return instanceToRecord(instance, entity, fields, service);
+        return instanceToRecord(instance, entity, fields, service, relatedEntitiesFields);
     }
 
     @Override
@@ -237,7 +239,8 @@ public class InstanceServiceImpl implements InstanceService {
             Object result = lookupExecutor.execute(lookupMap, queryParams);
 
             if (lookup.isSingleObjectReturn()) {
-                BasicEntityRecord record = instanceToBasicRecord(result, entity, fields, service);
+                Map<String, List<FieldDto>> relatedEntitiesFields = getRelatedEntitiesFields(fields);
+                BasicEntityRecord record = instanceToBasicRecord(result, entity, fields, service, relatedEntitiesFields);
                 return (record == null) ? new ArrayList<BasicEntityRecord>() : Collections.singletonList(record);
             } else {
                 List instances = (List) result;
@@ -394,15 +397,15 @@ public class InstanceServiceImpl implements InstanceService {
         }
 
         List<FieldDto> fields = entityService.getEntityFields(entityId);
+        Map<String, List<FieldDto>> relatedEntitiesFields = getRelatedEntitiesFields(fields);
 
-        return instanceToRecord(instance, entity, fields, service);
+        return instanceToRecord(instance, entity, fields, service, relatedEntitiesFields);
     }
 
     @Override
     public FieldRecord getInstanceValueAsRelatedField(Long entityId, Long fieldId, Long instanceId) {
         validateCredentialsForReading(getEntity(entityId));
         try {
-            FieldRecord fieldRecord;
             FieldDto field = entityService.getEntityFieldById(entityId, fieldId);
             MotechDataService service = DataServiceHelper.getDataService(bundleContext, field.getMetadata(RELATED_CLASS).getValue());
 
@@ -410,8 +413,12 @@ public class InstanceServiceImpl implements InstanceService {
             if (instance == null) {
                 throw new ObjectNotFoundException(service.getClassType().getName(), instanceId);
             }
+
+            List<FieldDto> relatedEntityFields = getEntityFieldsByClassName(field.getMetadata(RELATED_CLASS).getValue());
+
+            FieldRecord fieldRecord;
             fieldRecord = new FieldRecord(field);
-            fieldRecord.setValue(parseValueForDisplay(instance, field.getMetadata(Constants.MetadataKeys.RELATED_CLASS)));
+            fieldRecord.setValue(parseValueForDisplay(instance, relatedEntityFields));
             fieldRecord.setDisplayValue(instance.toString());
             return fieldRecord;
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -542,25 +549,30 @@ public class InstanceServiceImpl implements InstanceService {
     private List<BasicEntityRecord> instancesToBasicRecords(Collection instances, EntityDto entity, List<FieldDto> fields,
                                                   MotechDataService service) {
         List<BasicEntityRecord> records = new ArrayList<>();
+
+        Map<String, List<FieldDto>> relatedEntitiesFields = getRelatedEntitiesFields(fields);
+
         for (Object instance : instances) {
-            BasicEntityRecord record = instanceToBasicRecord(instance, entity, fields, service);
+            BasicEntityRecord record = instanceToBasicRecord(instance, entity, fields, service, relatedEntitiesFields);
             records.add(record);
         }
         return records;
     }
 
     private BasicEntityRecord instanceToBasicRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
-                                                    MotechDataService service) {
-        return instanceToRecord(instance, entityDto, fields, service, BasicEntityRecord.class);
+                                                    MotechDataService service,
+                                                    Map<String, List<FieldDto>> relatedEntitiesFields) {
+        return instanceToRecord(instance, entityDto, fields, service, BasicEntityRecord.class, relatedEntitiesFields);
     }
 
     private EntityRecord instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
-                                          MotechDataService service) {
-        return instanceToRecord(instance, entityDto, fields, service, EntityRecord.class);
+                                          MotechDataService service, Map<String, List<FieldDto>> relatedEntitiesFields) {
+        return instanceToRecord(instance, entityDto, fields, service, EntityRecord.class, relatedEntitiesFields);
     }
 
     private <T extends BasicEntityRecord> T instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields,
-                                          MotechDataService service, Class<T> clazz) {
+                                                             MotechDataService service, Class<T> clazz,
+                                                             Map<String, List<FieldDto>> relatedEntitiesFields) {
         if (instance == null) {
             return null;
         }
@@ -571,7 +583,7 @@ public class InstanceServiceImpl implements InstanceService {
                 Object value = getProperty(instance, field, service);
                 Object displayValue = DisplayHelper.getDisplayValueForField(field, value, MAX_LENGTH);
 
-                value = parseValueForDisplay(value, field.getMetadata(Constants.MetadataKeys.RELATED_CLASS));
+                value = parseValueForDisplay(value, relatedEntitiesFields.get(field.getMetadata(Constants.MetadataKeys.RELATED_CLASS)));
 
                 BasicFieldRecord fieldRecord = EntityRecord.class.equals(clazz) ? new FieldRecord(field) : new BasicFieldRecord(field);
                 fieldRecord.setValue(value);
@@ -591,10 +603,15 @@ public class InstanceServiceImpl implements InstanceService {
     private HistoryRecord convertToHistoryRecord(Object object, EntityDto entity, Long instanceId,
                                                  MotechDataService service) {
         Long entityId = entity.getId();
+        List<FieldDto> fields = getEntityFields(entityId);
+        Map<String, List<FieldDto>> relatedEntitiesFields = getRelatedEntitiesFields(fields);
 
-        EntityRecord entityRecord = instanceToRecord(object, entity, entityService.getEntityFields(entityId), service);
+        EntityRecord entityRecord = instanceToRecord(object, entity, entityService.getEntityFields(entityId), service,
+                relatedEntitiesFields);
+
         Long historyInstanceSchemaVersion = (Long) PropertyUtil.safeGetProperty(object,
                 HistoryTrashClassHelper.schemaVersion(object.getClass()));
+
         Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
 
         return new HistoryRecord(entityRecord.getId(), instanceId,
@@ -604,10 +621,15 @@ public class InstanceServiceImpl implements InstanceService {
     private BasicHistoryRecord convertToBasicHistoryRecord(Object object, EntityDto entity, Long instanceId,
                                                            MotechDataService service) {
         Long entityId = entity.getId();
+        List<FieldDto> fields = getEntityFields(entityId);
+        Map<String, List<FieldDto>> relatedEntitiesFields = getRelatedEntitiesFields(fields);
 
-        BasicEntityRecord entityRecord = instanceToBasicRecord(object, entity, entityService.getEntityFields(entityId), service);
+        BasicEntityRecord entityRecord = instanceToBasicRecord(object, entity, entityService.getEntityFields(entityId),
+                service, relatedEntitiesFields);
+
         Long historyInstanceSchemaVersion = (Long) PropertyUtil.safeGetProperty(object,
                 HistoryTrashClassHelper.schemaVersion(object.getClass()));
+
         Long currentSchemaVersion = entityService.getCurrentSchemaVersion(entity.getClassName());
 
         return new BasicHistoryRecord(entityRecord.getId(), instanceId,
@@ -843,7 +865,7 @@ public class InstanceServiceImpl implements InstanceService {
         }
     }
 
-    private Object parseValueForDisplay(Object value, MetadataDto relatedClassMetadata)
+    private Object parseValueForDisplay(Object value, List<FieldDto> relatedEntityFields)
             throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Object parsedValue = value;
 
@@ -855,14 +877,27 @@ public class InstanceServiceImpl implements InstanceService {
             parsedValue = ((Time) parsedValue).timeStr();
         } else if (parsedValue instanceof LocalDate) {
             parsedValue = parsedValue.toString();
-        } else if (relatedClassMetadata != null) {
+        } else if (relatedEntityFields != null) {
             // We do not want to return the whole chain of relationships for UI display, but just the first level.
             // Fetching whole relationship tree may cause trouble when serializing
-            parsedValue = displayUtil.breakDeepRelationChainForDisplay(
-                    parsedValue, getEntityFieldsByClassName(relatedClassMetadata.getValue()));
+            parsedValue = displayUtil.breakDeepRelationChainForDisplay(parsedValue, relatedEntityFields);
         }
 
         return parsedValue;
+    }
+
+    private Map<String, List<FieldDto>> getRelatedEntitiesFields(List<FieldDto> fields) {
+        Map<String, List<FieldDto>> relatedEntitiesFields = new HashMap<>();
+
+        for (FieldDto field : fields) {
+            MetadataDto entityMetadata = field.getMetadata(Constants.MetadataKeys.RELATED_CLASS);
+            if (entityMetadata != null) {
+                String className = entityMetadata.getValue();
+                relatedEntitiesFields.put(className, getEntityFieldsByClassName(className));
+            }
+        }
+
+        return relatedEntitiesFields;
     }
 
     private Class<?> getEntityClass(EntityDto entity) throws ClassNotFoundException {
