@@ -8,6 +8,4 @@
 
     <bean id="extenderProperties" class="org.motechproject.bundle.extender.MotechExtenderConfigFactory"/>
 
-    <bean id="validationProviderBeanPostProcessor" class="org.motechproject.bundle.extender.ValidationProviderBeanFactoryPostProcessor"/>
-
 </beans>
