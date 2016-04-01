@@ -8,7 +8,7 @@ Add CORS headers to server configuration
 Overview
 ========
 
-If the MOTECH-UI is hosted separately from MOTECH-CORE, we have to share resources between different domains.
+If the MOTECH-UI is hosted on different a domain than MOTECH-CORE, we have to share resources between different domains.
 XMLHttpRequest requests have traditionally been limited to accessing the same domain as the parent web page (as per the same-origin security policy).
 Cross-site requests are forbidden by default because of their ability to perform advanced requests that introduce many cross-site scripting security issues.
 Cross-Origin Resource Sharing (CORS) can define a way in which MOTECH-UI and MOTECH-CORE interact to determine safely whether or not to allow the cross-origin request.
@@ -20,7 +20,7 @@ Cross-site requests
 
 If we want to share resources, the MOTECH-CORE(server) must enable CORS.
 However sending a cross-site request does not require setting any cross-origing sharing request headers programmatically.
-CORS headers are set for you when making invocations to server. Here you can find more information about `the HTTP request headers <https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#The_HTTP_request_headers>`_.
+CORS headers are set for you when making invocations to the server. Here you can find more information about it `the HTTP request headers <https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#The_HTTP_request_headers>`_.
 
 Enable CORS in MOTECH-CORE
 ==========================
@@ -31,7 +31,7 @@ By default when a cross-site request is sent to MOTECH-CORE, the following error
 
 	Origin http://example.domain.com is not allowed by Access-Control-Allow-Origin.
 
-To enable CORS we have to change configuration in used web server. We can add the following CORS headers :
+To enable CORS we have to change configuration in the web server on which MOTECH-CORE is hosted. We can add the following CORS headers :
 
 Access-Control-Allow-Origin
 ----------------------------
@@ -57,7 +57,7 @@ Comma-delimited list of the supported HTTP methods (`GET`, `HEAD`, `POST`, `CONN
 Access-Control-Allow-Headers
 ----------------------------
 
-This header specifies which not simple HTTP headers can be used in a request to MOTECH-CORE. Example :
+This header specifies which complex HTTP headers can be used in a request to MOTECH-CORE. Example :
 
 .. code-block::
 
@@ -83,7 +83,7 @@ If you want clients to be able to access other headers, you have to use the Acce
 Apache Config
 =============
 
-Apache includes support for CORS. To enable CORS support we have to running the following command which enable necessary for CORS mod headers :
+Apache Web Server includes support for CORS. To enable CORS support we have to running the following command which enable necessary for CORS mod headers :
 
 	a2enmod headers
 
@@ -97,7 +97,7 @@ Here is a config example "allow-all-origins":
         Header always set Access-Control-Allow-Origin "*"
     </directory>
 
-Here is other config example (let's assume that http://motech-ui.example is an url to MOTECH-UI application):
+Here is a different config example (let's assume that http://motech-ui.example is an url to MOTECH-UI application):
 
 .. code-block::
 
@@ -108,14 +108,16 @@ Here is other config example (let's assume that http://motech-ui.example is an u
         Header always set Access-Control-Allow-Methods "POST, GET, OPTIONS, DELETE, PUT"
     </directory>
 
-If changes are made while the Apache server was running, you should restart apache.
+If changes are made while the Apache server was running, you should restart Apache.
 
 Tomcat Config
 =============
 
 Tomcat includes support for CORS (starting from Tomcat version 7.0.41). To enable CORS support we have to use CORS Filter.
 
-If you want to enable CORS for all webapps, add the filter into **$CATALINA_BASE/conf/web.xml**. For only MOTECH application, add the filter into **$CATALINA_BASE/webapps/motech-platform-server/WEB-INF/web.xml**.
+If you want to enable CORS for all webapps, add the filter into **$CATALINA_BASE/conf/web.xml**.
+
+If you want to enable them only for the MOTECH application, add the filter into **$CATALINA_BASE/webapps/motech-platform-server/WEB-INF/web.xml**.
 
 If you have not configured Tomcat for multiple instances by setting a CATALINA_BASE directory, then $CATALINA_BASE will be set to the value of $CATALINA_HOME, the directory into which you have installed Tomcat.
 
@@ -141,7 +143,7 @@ By default CORS headers will be set like the following :
  Access-Control-Allow-Headers: Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers
  Access-Control-Expose-Headers:  (Non-simple headers are not exposed by default)
 
-Here is other config example (let's assume that http://motech-ui.example is an url to MOTECH-UI application):
+Here is a different config example (let's assume that http://motech-ui.example is an url to MOTECH-UI application):
 
 .. code-block::
 
