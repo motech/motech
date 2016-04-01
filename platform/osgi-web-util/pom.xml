@@ -85,7 +85,6 @@
                         <Import-Package>
                             org.osgi.util.tracker;version="0.0.0",
                             org.osgi.framework;version="0.0.0",
-                            org.motechproject.server.api,
                             *
                         </Import-Package>
                         <Bundle-Activator>

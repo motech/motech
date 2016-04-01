@@ -1,8 +1,8 @@
 package org.motechproject.mds.display;
 
-import org.apache.bsf.util.MethodUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.mds.domain.ManyToManyRelationship;
@@ -144,12 +144,12 @@ public final class DisplayHelper {
     }
 
     private static boolean hasCustomToString(Object value) {
-        try {
-            Method toStringMethod = MethodUtils.getMethod(value, "toString", new Class[0]);
-            return !StringUtils.equals(Object.class.getName(), toStringMethod.getDeclaringClass().getName());
-        } catch (NoSuchMethodException e) {
-            LOGGER.error("Unable to retrieve toString() method for {}", value, e);
+        Method toStringMethod = MethodUtils.getAccessibleMethod(value.getClass(), "toString", new Class[0]);
+        if (toStringMethod == null ) {
+            LOGGER.error("Unable to retrieve toString() method for {}", value);
             return false;
+        } else {
+            return !StringUtils.equals(Object.class.getName(), toStringMethod.getDeclaringClass().getName());
         }
     }
 
