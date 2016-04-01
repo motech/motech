@@ -11,13 +11,13 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.motechproject.mds.helper.bundle.MdsBundleHelper.findMdsEntitiesBundle;
 import static org.motechproject.mds.helper.bundle.MdsBundleHelper.isMdsEntitiesBundle;
+import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
 
 /**
  * A base class for listeners in MDS. Since listeners get constructed by JDO,
@@ -32,7 +32,6 @@ import static org.motechproject.mds.helper.bundle.MdsBundleHelper.isMdsEntitiesB
  */
 public abstract class BaseListener<T> implements ServiceListener {
 
-    private static final String MDS_ENTITIES_SYMBOLIC_NAME = "org.motechproject.motech-platform-dataservices-entities";
     private static final String BUNDLE_SYMBOLIC_NAME_FILTER = "(Bundle-SymbolicName=%s)";
 
     private static final int CTX_WAIT_TIME_MS = 5 * 60 * 1000; // 5 min
@@ -104,11 +103,11 @@ public abstract class BaseListener<T> implements ServiceListener {
 
         if (entitiesBundle != null) {
 
-            BundleContext entitiesbundleContext = entitiesBundle.getBundleContext();
-            List<ServiceReference<?>> references = getApplicationContextReferences(entitiesbundleContext);
+            BundleContext entitiesBundleContext = entitiesBundle.getBundleContext();
+            List<ServiceReference<ApplicationContext>> references = getApplicationContextReferences(entitiesBundleContext);
 
             if (references.size() == 1) {
-                context = (ApplicationContext) entitiesbundleContext.getService(references.get(0));
+                context = entitiesBundleContext.getService(references.get(0));
             } else if (references.size() > 1) {
                 logger.warn("Multiple entities bundle application contexts found");
             } else {
@@ -121,14 +120,14 @@ public abstract class BaseListener<T> implements ServiceListener {
         return context;
     }
 
-    private List<ServiceReference<?>> getApplicationContextReferences(BundleContext bundleContext)
+    private List<ServiceReference<ApplicationContext>> getApplicationContextReferences(BundleContext bundleContext)
             throws InvalidSyntaxException {
 
-        List<ServiceReference<?>> references = new ArrayList<>();
+        List<ServiceReference<ApplicationContext>> references = new ArrayList<>();
 
         if (bundleContext != null) {
             references.addAll(bundleContext.getServiceReferences(
-                    ConfigurableApplicationContext.class,
+                    ApplicationContext.class,
                     String.format(BUNDLE_SYMBOLIC_NAME_FILTER, MDS_ENTITIES_SYMBOLIC_NAME)
             ));
         }
