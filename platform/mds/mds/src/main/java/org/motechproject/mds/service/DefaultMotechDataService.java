@@ -317,7 +317,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
             T newInstance = getClassType().newInstance();
 
             copyValuesFromRecord(newInstance, trashRecord);
-            newInstance = repository.create(newInstance);
+            newInstance = create(newInstance);
 
             trashService.moveFromTrash(newInstance, trashRecord, recordHistory);
 
