@@ -4,7 +4,7 @@ import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 
 import java.util.List;
 

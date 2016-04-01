@@ -1102,7 +1102,7 @@ Example :code:`mds-lookups.json` file.
 
     [
         {
-            "entityClassName" : "org.motechproject.tasks.domain.Task",
+            "entityClassName" : "org.motechproject.tasks.domain.mds.task.Task",
             "lookups" : [
                 {
                     "lookupName" : "Find Task by Owner",

@@ -1,13 +1,14 @@
 package org.motechproject.tasks.contract;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * Service layer object denoting a {@link org.motechproject.tasks.domain.TriggerEvent}. It is a part of the
+ * Service layer object denoting a {@link TriggerEvent}. It is a part of the
  * {@link org.motechproject.tasks.contract.ChannelRequest} and is used by
  * {@link org.motechproject.tasks.service.ChannelService} for adding new or updating already existent trigger events.
  */
