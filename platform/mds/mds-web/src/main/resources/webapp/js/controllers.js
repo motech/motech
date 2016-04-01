@@ -540,14 +540,7 @@
         * Gets criterion values list.
         */
         $scope.getCriterionValues = function (fieldId, criterionName) {
-            var result = [];
-            fieldId = parseInt(fieldId, 10);
-            angular.forEach($scope.criterionValuesList, function (list, index) {
-                if (list !== undefined && list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
-                    result = list.values.join(' ');
-                }
-            }, result);
-            return result;
+            $scope.getCriterionValuesList(fieldId, criterionName).join(' ');
         };
 
         /**
@@ -606,7 +599,6 @@
     * The MdsSchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
     controllers.controller('MdsSchemaEditorCtrl', function ($scope, $timeout, $http, Entities, MDSUsers, Permissions, MDSUtils, Locale, ModalFactory, LoadingModal) {
-
         MDSUtils.setCustomOperatorFunctions($scope);
 
         var setAdvancedSettings, updateAdvancedSettings, setRest, setBrowsing, setSecuritySettings, setIndexesLookupsTab, checkLookupName, checkActiveIndex;
@@ -2454,11 +2446,8 @@
         * Function moving "Fields to display" item up (in model).
         */
         $scope.targetItemMoveUp = function(index) {
-            var tmp;
             if (index > 0) {
-                tmp = $scope.browsingDisplayed[index];
-                $scope.browsingDisplayed[index] = $scope.browsingDisplayed[index - 1];
-                $scope.browsingDisplayed[index - 1] = tmp;
+                MDSUtils.moveItems($scope, index);
             }
         };
 
@@ -2466,11 +2455,8 @@
         * Function moving "Fields to display" item down (in model).
         */
         $scope.targetItemMoveDown = function(index) {
-            var tmp;
             if (index < $scope.browsingDisplayed.length - 1) {
-                tmp = $scope.browsingDisplayed[index + 1];
-                $scope.browsingDisplayed[index + 1] = $scope.browsingDisplayed[index];
-                $scope.browsingDisplayed[index] = tmp;
+                MDSUtils.moveItems($scope, index + 1);
             }
         };
 
@@ -2498,27 +2484,7 @@
                 $scope.targetItemMoveUp(index);
             });
 
-            angular.forEach($scope.browsingDisplayed, function (item) {
-                array.push(item.id);
-            });
-
-            $scope.draft({
-                edit: true,
-                values: {
-                    path: 'browsing.$setDisplayedFields',
-                    advanced: true,
-                    value: [array]
-                }
-            }, function () {
-                // restore 'selected' state
-                $timeout(function() {
-                    $(".connected-list-target.browsing").children().each(function(index) {
-                        if(selected[$scope.browsingDisplayed[index].id]) {
-                            $(this).addClass('selected');
-                        }
-                    });
-                });
-            });
+            MDSUtils.draftForFields($scope, array, selected, $timeout);
         };
 
         /**
@@ -2545,67 +2511,23 @@
                 $scope.targetItemMoveDown(index);
             });
 
-            angular.forEach($scope.browsingDisplayed, function (item) {
-                array.push(item.id);
-            });
-
-            $scope.draft({
-                edit: true,
-                values: {
-                    path: 'browsing.$setDisplayedFields',
-                    advanced: true,
-                    value: [array]
-                }
-            }, function () {
-                // restore 'selected' state
-                $timeout(function() {
-                    $(".connected-list-target.browsing").children().each(function(index) {
-                        if(selected[$scope.browsingDisplayed[index].id]) {
-                            $(this).addClass('selected');
-                        }
-                    });
-                });
-            });
+            MDSUtils.draftForFields($scope, array, selected, $timeout);
         };
 
         /**
         * Checks if there are fields allowed to move up in 'Browsing Settings' view.
         */
         $scope.canMoveUp = function() {
-            var items = $('.target-item.browsing'),
-                wasLastSelected = true,
-                ret = false;
-            if (items.filter('.selected').size() === 0) {
-                return false;
-            }
-            items.each(function() {
-                var isThisSelected = $(this).hasClass('selected');
-                if (!wasLastSelected && isThisSelected) {
-                    ret = true;
-                }
-                wasLastSelected = isThisSelected;
-            });
-            return ret;
+            var isDown = false;
+            return MDSUtils.canMoveUpOrDown($scope, isDown);
         };
 
         /**
         * Checks if there are fields allowed to move up in 'Browsing Settings' view.
         */
         $scope.canMoveDown = function() {
-            var items = $('.target-item.browsing'),
-                wasLastSelected = true,
-                ret = false;
-            if (items.filter('.selected').size() === 0) {
-                return false;
-            }
-            $(items.get().reverse()).each(function() {
-                var isThisSelected = $(this).hasClass('selected');
-                if (!wasLastSelected && isThisSelected) {
-                    ret = true;
-                }
-                wasLastSelected = isThisSelected;
-            });
-            return ret;
+            var isDown = true;
+            return MDSUtils.canMoveUpOrDown($scope, isDown);
         };
 
         /**

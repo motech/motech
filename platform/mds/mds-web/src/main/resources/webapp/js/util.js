@@ -201,6 +201,58 @@
                        return scope.msg("mds.form.operator.none");
                    }
                };
+            },
+            
+            moveItems : function($scope, index) {
+                var tmp;
+                tmp = $scope.browsingDisplayed[index];
+                $scope.browsingDisplayed[index] = $scope.browsingDisplayed[index - 1];
+                $scope.browsingDisplayed[index - 1] = tmp;
+            },
+            
+            draftForFields : function($scope, array, selected, $timeout) {
+                angular.forEach($scope.browsingDisplayed, function (item) {
+                            array.push(item.id);
+                        });
+
+                        $scope.draft({
+                            edit: true,
+                            values: {
+                                path: 'browsing.$setDisplayedFields',
+                                advanced: true,
+                                value: [array]
+                            }
+                        }, function () {
+                            // restore 'selected' state
+                            $timeout(function() {
+                                $(".connected-list-target.browsing").children().each(function(index) {
+                                    if(selected[$scope.browsingDisplayed[index].id]) {
+                                        $(this).addClass('selected');
+                                    }
+                                });
+                            });
+                        });
+            },
+            
+            canMoveUpOrDown : function($scope, isDown) {
+                var items = $('.target-item.browsing'),
+                            wasLastSelected = true,
+                            ret = false;
+                if (items.filter('.selected').size() === 0) {
+                    return false;
+                }
+
+                if(isDown) {
+                    items = $(items.get().reverse());
+                }
+                items.each(function() {
+                    var isThisSelected = $(this).hasClass('selected');
+                    if (!wasLastSelected && isThisSelected) {
+                        ret = true;
+                    }
+                    wasLastSelected = isThisSelected;
+                });
+                return ret;
             }
         };
     });
