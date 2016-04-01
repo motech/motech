@@ -4,9 +4,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.mds.query.QueryParams;
-import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.domain.TaskActivity;
-import org.motechproject.tasks.domain.TaskActivityType;
+import org.motechproject.tasks.domain.mds.task.Task;
+import org.motechproject.tasks.domain.mds.task.TaskActivity;
+import org.motechproject.tasks.domain.mds.task.TaskActivityType;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.impl.TaskTriggerHandler;
 
@@ -25,9 +25,9 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
-import static org.motechproject.tasks.domain.TaskActivityType.SUCCESS;
-import static org.motechproject.tasks.domain.TaskActivityType.WARNING;
+import static org.motechproject.tasks.domain.mds.task.TaskActivityType.ERROR;
+import static org.motechproject.tasks.domain.mds.task.TaskActivityType.SUCCESS;
+import static org.motechproject.tasks.domain.mds.task.TaskActivityType.WARNING;
 
 public class ActivityControllerTest {
 

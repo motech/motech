@@ -1,6 +1,6 @@
 package org.motechproject.tasks.exception;
 
-import org.motechproject.tasks.domain.TaskError;
+import org.motechproject.tasks.domain.mds.task.TaskError;
 
 
 import java.text.MessageFormat;

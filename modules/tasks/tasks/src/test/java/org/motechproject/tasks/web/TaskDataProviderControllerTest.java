@@ -3,7 +3,7 @@ package org.motechproject.tasks.web;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.tasks.domain.TaskDataProvider;
+import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
 import org.motechproject.tasks.service.TaskDataProviderService;
 
 import java.util.ArrayList;

@@ -5,8 +5,7 @@ import org.junit.Test;
 import org.motechproject.event.listener.annotations.MotechListenerAbstractProxy;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.event.listener.annotations.MotechListenerNamedParametersProxy;
-import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.service.util.HandlerPredicates;
+import org.motechproject.tasks.domain.mds.task.Task;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -7,8 +7,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Order;
-import org.motechproject.tasks.domain.TaskActivity;
-import org.motechproject.tasks.domain.TaskActivityType;
+import org.motechproject.tasks.domain.mds.task.TaskActivity;
+import org.motechproject.tasks.domain.mds.task.TaskActivityType;
 import org.motechproject.tasks.repository.TaskActivitiesDataService;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
@@ -25,9 +25,9 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
-import static org.motechproject.tasks.domain.TaskActivityType.SUCCESS;
-import static org.motechproject.tasks.domain.TaskActivityType.WARNING;
+import static org.motechproject.tasks.domain.mds.task.TaskActivityType.ERROR;
+import static org.motechproject.tasks.domain.mds.task.TaskActivityType.SUCCESS;
+import static org.motechproject.tasks.domain.mds.task.TaskActivityType.WARNING;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)

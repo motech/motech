@@ -11,10 +11,10 @@ import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.service.MotechSchedulerService;
+import org.motechproject.tasks.domain.mds.channel.EventParameter;
 import org.motechproject.scheduler.tasks.SchedulerChannelProvider;
-import org.motechproject.tasks.domain.EventParameter;
-import org.motechproject.tasks.domain.TaskTriggerInformation;
-import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.ops4j.pax.exam.ExamFactory;
@@ -52,7 +52,7 @@ public class SchedulerChannelProviderBundleIT extends BasePaxIT {
     public void setUp() {
         if (channelProvider == null) {
             channelProvider = (SchedulerChannelProvider) bundleContext.getService(
-                    bundleContext.getServiceReference("org.motechproject.tasks.domain.DynamicChannelProvider")
+                    bundleContext.getServiceReference("org.motechproject.tasks.service.DynamicChannelProvider")
             );
         }
 

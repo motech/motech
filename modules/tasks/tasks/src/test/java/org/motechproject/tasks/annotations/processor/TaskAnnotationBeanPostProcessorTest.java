@@ -9,12 +9,12 @@ import org.mockito.Mock;
 import org.motechproject.tasks.annotations.TaskAction;
 import org.motechproject.tasks.annotations.TaskActionParam;
 import org.motechproject.tasks.annotations.TaskChannel;
-import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionEventBuilder;
-import org.motechproject.tasks.domain.ActionParameter;
-import org.motechproject.tasks.domain.ActionParameterBuilder;
-import org.motechproject.tasks.domain.Channel;
-import org.motechproject.tasks.domain.ParameterType;
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.channel.builder.ActionEventBuilder;
+import org.motechproject.tasks.domain.mds.channel.ActionParameter;
+import org.motechproject.tasks.domain.mds.channel.builder.ActionParameterBuilder;
+import org.motechproject.tasks.domain.mds.channel.Channel;
+import org.motechproject.tasks.domain.mds.ParameterType;
 import org.motechproject.tasks.service.ChannelService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -152,10 +152,10 @@ public class TaskAnnotationBeanPostProcessorTest {
     public void shouldAddActionWithParams() throws Exception {
         Channel channel = new Channel(CHANNEL_NAME, MODULE_NAME, MODULE_VERSION);
         channel.addActionTaskEvent(new ActionEventBuilder().setDisplayName(ACTION_DISPLAY_NAME).setSubject(ACTION_DISPLAY_NAME)
-                .setDescription("").setActionParameters(null).createActionEvent());
+                .setDescription("").setActionParameters(null).build());
         channel.addActionTaskEvent(new ActionEventBuilder().setDisplayName(ACTION_DISPLAY_NAME)
                 .setDescription("").setServiceInterface(TestAction.class.getName()).setServiceMethod("action")
-                .setActionParameters(null).createActionEvent());
+                .setActionParameters(null).build());
 
         when(channelService.getChannel(MODULE_NAME)).thenReturn(channel);
 
@@ -235,10 +235,10 @@ public class TaskAnnotationBeanPostProcessorTest {
         SortedSet<ActionParameter> set = new TreeSet<>();
 
         set.add(new ActionParameterBuilder().setDisplayName(EXTERNAL_DISPLAY_NAME)
-                .setKey(EXTERNAL_KEY).setOrder(0).createActionParameter());
+                .setKey(EXTERNAL_KEY).setOrder(0).build());
 
         set.add(new ActionParameterBuilder().setDisplayName(MOTECH_DISPLAY_NAME)
-                .setKey(MOTECH_KEY).setOrder(1).setType(ParameterType.INTEGER).createActionParameter());
+                .setKey(MOTECH_KEY).setOrder(1).setType(ParameterType.INTEGER).build());
 
         return set;
     }
