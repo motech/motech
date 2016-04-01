@@ -1,10 +1,10 @@
 package org.motechproject.tasks.service.impl;
 
 import org.motechproject.commons.api.DataProvider;
-import org.motechproject.tasks.domain.DataSource;
-import org.motechproject.tasks.domain.FilterSet;
-import org.motechproject.tasks.domain.Lookup;
-import org.motechproject.tasks.domain.TaskConfigStep;
+import org.motechproject.tasks.domain.mds.task.DataSource;
+import org.motechproject.tasks.domain.mds.task.FilterSet;
+import org.motechproject.tasks.domain.mds.task.Lookup;
+import org.motechproject.tasks.domain.mds.task.TaskConfigStep;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.service.util.KeyEvaluator;
 import org.motechproject.tasks.service.util.TaskContext;

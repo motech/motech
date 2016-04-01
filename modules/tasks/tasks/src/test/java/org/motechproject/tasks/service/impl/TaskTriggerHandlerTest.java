@@ -20,22 +20,22 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.channel.builder.ActionEventBuilder;
+import org.motechproject.tasks.domain.mds.channel.ActionParameter;
+import org.motechproject.tasks.domain.mds.channel.builder.ActionParameterBuilder;
 import org.motechproject.tasks.constants.EventDataKeys;
-import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionEventBuilder;
-import org.motechproject.tasks.domain.ActionParameter;
-import org.motechproject.tasks.domain.ActionParameterBuilder;
-import org.motechproject.tasks.domain.DataSource;
-import org.motechproject.tasks.domain.EventParameter;
-import org.motechproject.tasks.domain.Filter;
-import org.motechproject.tasks.domain.FilterSet;
-import org.motechproject.tasks.domain.Lookup;
-import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.domain.TaskActionInformation;
-import org.motechproject.tasks.domain.TaskActivity;
-import org.motechproject.tasks.domain.TaskConfig;
-import org.motechproject.tasks.domain.TaskTriggerInformation;
-import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.domain.mds.task.DataSource;
+import org.motechproject.tasks.domain.mds.channel.EventParameter;
+import org.motechproject.tasks.domain.mds.task.Filter;
+import org.motechproject.tasks.domain.mds.task.FilterSet;
+import org.motechproject.tasks.domain.mds.task.Lookup;
+import org.motechproject.tasks.domain.mds.task.Task;
+import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
+import org.motechproject.tasks.domain.mds.task.TaskActivity;
+import org.motechproject.tasks.domain.mds.task.TaskConfig;
+import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.service.SampleTasksEventParser;
@@ -80,26 +80,26 @@ import static org.motechproject.tasks.constants.EventSubjects.createHandlerSucce
 import static org.motechproject.tasks.constants.TaskFailureCause.ACTION;
 import static org.motechproject.tasks.constants.TaskFailureCause.DATA_SOURCE;
 import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
-import static org.motechproject.tasks.domain.OperatorType.CONTAINS;
-import static org.motechproject.tasks.domain.OperatorType.ENDSWITH;
-import static org.motechproject.tasks.domain.OperatorType.EQUALS;
-import static org.motechproject.tasks.domain.OperatorType.EQUALS_IGNORE_CASE;
-import static org.motechproject.tasks.domain.OperatorType.EQ_NUMBER;
-import static org.motechproject.tasks.domain.OperatorType.EXIST;
-import static org.motechproject.tasks.domain.OperatorType.GT;
-import static org.motechproject.tasks.domain.OperatorType.LT;
-import static org.motechproject.tasks.domain.OperatorType.STARTSWITH;
-import static org.motechproject.tasks.domain.ParameterType.BOOLEAN;
-import static org.motechproject.tasks.domain.ParameterType.DATE;
-import static org.motechproject.tasks.domain.ParameterType.DOUBLE;
-import static org.motechproject.tasks.domain.ParameterType.INTEGER;
-import static org.motechproject.tasks.domain.ParameterType.LIST;
-import static org.motechproject.tasks.domain.ParameterType.LONG;
-import static org.motechproject.tasks.domain.ParameterType.MAP;
-import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
-import static org.motechproject.tasks.domain.ParameterType.TIME;
-import static org.motechproject.tasks.domain.ParameterType.UNICODE;
-import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.CONTAINS;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.ENDSWITH;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.EQUALS;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.EQUALS_IGNORE_CASE;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.EQ_NUMBER;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.EXIST;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.GT;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.LT;
+import static org.motechproject.tasks.domain.mds.task.OperatorType.STARTSWITH;
+import static org.motechproject.tasks.domain.mds.ParameterType.BOOLEAN;
+import static org.motechproject.tasks.domain.mds.ParameterType.DATE;
+import static org.motechproject.tasks.domain.mds.ParameterType.DOUBLE;
+import static org.motechproject.tasks.domain.mds.ParameterType.INTEGER;
+import static org.motechproject.tasks.domain.mds.ParameterType.LIST;
+import static org.motechproject.tasks.domain.mds.ParameterType.LONG;
+import static org.motechproject.tasks.domain.mds.ParameterType.MAP;
+import static org.motechproject.tasks.domain.mds.ParameterType.TEXTAREA;
+import static org.motechproject.tasks.domain.mds.ParameterType.TIME;
+import static org.motechproject.tasks.domain.mds.ParameterType.UNICODE;
+import static org.motechproject.tasks.domain.mds.task.TaskActivityType.ERROR;
 import static org.springframework.aop.support.AopUtils.getTargetClass;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
@@ -495,10 +495,10 @@ public class TaskTriggerHandlerTest {
 
         task.getActions().get(0).getValues().put("date1", "2012-12-21 21:21 +0100");
         actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Date1").setKey("date1")
-                .setType(DATE).createActionParameter(), true);
+                .setType(DATE).build(), true);
         task.getActions().get(0).getValues().put("date2", "{{trigger.startDate?datetime(yyyyy.MMMMM.dd GGG hh:mm aaa)}}");
         actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Date2").setKey("date2")
-                .setType(UNICODE).createActionParameter(), true);
+                .setType(UNICODE).build(), true);
 
         handler.handle(createEvent());
 
@@ -589,11 +589,11 @@ public class TaskTriggerHandlerTest {
         triggerEventParameters.add(new EventParameter("patientId", "123"));
         trigger.setEventParameters(triggerEventParameters);
 
-        ActionEvent action = new ActionEventBuilder().createActionEvent();
+        ActionEvent action = new ActionEventBuilder().build();
         action.setSubject("action");
         SortedSet<ActionParameter> actionEventParameters = new TreeSet<>();
         actionEventParameters.add(new ActionParameterBuilder().setDisplayName("Patient ID").setKey("patientId")
-                .setType(UNICODE).setOrder(0).createActionParameter());
+                .setType(UNICODE).setOrder(0).build());
         action.setActionParameters(actionEventParameters);
 
         Task task = new Task();
@@ -646,11 +646,11 @@ public class TaskTriggerHandlerTest {
         triggerEventParameters.add(new EventParameter("patientId", "123"));
         trigger.setEventParameters(triggerEventParameters);
 
-        ActionEvent action = new ActionEventBuilder().createActionEvent();
+        ActionEvent action = new ActionEventBuilder().build();
         action.setSubject("action");
         SortedSet<ActionParameter> actionEventParameters = new TreeSet<>();
         actionEventParameters.add(new ActionParameterBuilder().setDisplayName("Patient ID")
-                .setKey("patientId").setType(UNICODE).setOrder(0).createActionParameter());
+                .setKey("patientId").setType(UNICODE).setOrder(0).build());
         action.setActionParameters(actionEventParameters);
 
         Task task = new Task();
@@ -1006,7 +1006,7 @@ public class TaskTriggerHandlerTest {
         setActionEvent();
         setFilters();
 
-        task.getTaskConfig().add(new FilterSet(asList(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), false, EXIST.getValue(), ""))));
+        task.getTaskConfig().add(new FilterSet(asList(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, false, EXIST.getValue(), ""))));
 
         when(taskService.findActiveTasksForTriggerSubject(TRIGGER_SUBJECT)).thenReturn(tasks);
         when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(actionEvent);
@@ -1669,55 +1669,55 @@ public class TaskTriggerHandlerTest {
     private void setManipulation() {
         task.getActions().get(0).getValues().put("manipulations", "String manipulation: {{trigger.eventName?toUpper?toLower?capitalize?join(-)}}, Date manipulation: {{trigger.startDate?dateTime(yyyyMMdd)}}");
         actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Manipulations").setKey("manipulations")
-                .setType(TEXTAREA).createActionParameter(), true);
+                .setType(TEXTAREA).build(), true);
     }
 
     private void setFormatManipulation() {
         task.getActions().get(0).getValues().put("format", "{{trigger.format?format({{trigger.externalId}},{{ad.12345.TestObject#2.field.id}},YourName)}}");
         actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Format").setKey("format")
-                .createActionParameter(), true);
+                .build(), true);
     }
 
     private void setDateField() {
         task.getActions().get(0).getValues().put("date", "2012-12-21 21:21 +0100");
         actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Date").setKey("date")
-                .setType(DATE).createActionParameter(), true);
+                .setType(DATE).build(), true);
     }
 
     private void setTimeField() {
         task.getActions().get(0).getValues().put("time", "21:21 +0100");
         actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Time").setKey("time")
-                .setType(TIME).createActionParameter(), true);
+                .setType(TIME).build(), true);
     }
 
     private void setLongField() {
         task.getActions().get(0).getValues().put("long", "10000000000");
         actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Long").setKey("long")
-                .setType(LONG).createActionParameter(), true);
+                .setType(LONG).build(), true);
     }
 
     private void setBooleanField() {
         task.getActions().get(0).getValues().put("boolean", "true");
         actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Boolean").setKey("boolean")
-                .setType(BOOLEAN).createActionParameter(), true);
+                .setType(BOOLEAN).build(), true);
     }
 
     private void setDoubleField() {
         task.getActions().get(0).getValues().put("double", "123.5");
         actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Double").setKey("double")
-                .setType(DOUBLE).createActionParameter(), true);
+                .setType(DOUBLE).build(), true);
     }
 
     private void setListField() {
         task.getActions().get(0).getValues().put("list", "4\n5\n{{trigger.list}}\n{{trigger.externalId}}\n{{ad.12345.TestObjectField#1.id}}");
         actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("List").setKey("list")
-                .setType(LIST).createActionParameter(), true);
+                .setType(LIST).build(), true);
     }
 
     private void setMapField() {
         task.getActions().get(0).getValues().put("map", "key1:value\n{{trigger.map}}\n{{trigger.eventName}}:{{ad.12345.TestObjectField#1.id}}");
         actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Map").setKey("map")
-                .setType(MAP).createActionParameter(), true);
+                .setType(MAP).build(), true);
     }
 
     private void setAdditionalData(boolean isFail) {
@@ -1725,9 +1725,9 @@ public class TaskTriggerHandlerTest {
         task.getActions().get(0).getValues().put("dataSourceObject", "test: {{ad.12345.TestObject#2.field.id}}");
 
         actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Data source by trigger")
-                .setKey("dataSourceTrigger").createActionParameter(), true);
+                .setKey("dataSourceTrigger").build(), true);
         actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Data source by data source object")
-                .setKey("dataSourceObject").createActionParameter(), true);
+                .setKey("dataSourceObject").build(), true);
 
         task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "TestObjectField", "id", asList(new Lookup("id", "{{trigger.externalId}}")), isFail));
         task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 2L, "TestObject", "id", asList(new Lookup("id", "{{trigger.externalId}}-{{ad.12345.TestObjectField#1.id}}")), isFail));
@@ -1754,12 +1754,12 @@ public class TaskTriggerHandlerTest {
         SortedSet<ActionParameter> actionEventParameters = new TreeSet<>();
 
         actionEventParameters.add(new ActionParameterBuilder().setDisplayName("Phone").setKey("phone")
-                .setType(INTEGER).setOrder(0).createActionParameter());
+                .setType(INTEGER).setOrder(0).build());
 
         actionEventParameters.add(new ActionParameterBuilder().setDisplayName("Message").setKey("message")
-                .setType(TEXTAREA).setOrder(1).createActionParameter());
+                .setType(TEXTAREA).setOrder(1).build());
 
-        actionEvent = new ActionEventBuilder().createActionEvent();
+        actionEvent = new ActionEventBuilder().build();
         actionEvent.setSubject(ACTION_SUBJECT);
         actionEvent.setActionParameters(actionEventParameters);
     }
@@ -1774,24 +1774,24 @@ public class TaskTriggerHandlerTest {
 
     private void setFilters() {
         List<Filter> filters = new ArrayList<>();
-        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, CONTAINS.getValue(), "ven"));
-        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, EXIST.getValue(), ""));
-        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, EQUALS.getValue(), "event name"));
-        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, EQUALS_IGNORE_CASE.getValue(), "EvEnT nAmE"));
-        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, STARTSWITH.getValue(), "ev"));
-        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, ENDSWITH.getValue(), "me"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, GT.getValue(), "19"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, LT.getValue(), "1234567891"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, EQ_NUMBER.getValue(), "123456789"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, EXIST.getValue(), ""));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), false, GT.getValue(), "1234567891"));
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, CONTAINS.getValue(), "ven"));
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, EXIST.getValue(), ""));
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, EQUALS.getValue(), "event name"));
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, EQUALS_IGNORE_CASE.getValue(), "EvEnT nAmE"));
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, STARTSWITH.getValue(), "ev"));
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, ENDSWITH.getValue(), "me"));
+        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, GT.getValue(), "19"));
+        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, LT.getValue(), "1234567891"));
+        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, EQ_NUMBER.getValue(), "123456789"));
+        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, EXIST.getValue(), ""));
+        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, false, GT.getValue(), "1234567891"));
 
         task.getTaskConfig().add(new FilterSet(filters));
     }
 
     private void setNonRequiredField() {
         actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Delivery time").setKey("delivery_time")
-                .setType(DATE).setRequired(false).createActionParameter(), true);
+                .setType(DATE).setRequired(false).build(), true);
     }
 
     private MotechEvent createEvent() {

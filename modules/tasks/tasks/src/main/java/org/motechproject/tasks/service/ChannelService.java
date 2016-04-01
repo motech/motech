@@ -1,7 +1,7 @@
 package org.motechproject.tasks.service;
 
 import org.motechproject.tasks.contract.ChannelRequest;
-import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.mds.channel.Channel;
 
 import java.io.InputStream;
 import java.util.List;

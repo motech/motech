@@ -3,7 +3,7 @@ package org.motechproject.tasks.web;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.mds.channel.Channel;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TriggerEventService;
 
