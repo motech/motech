@@ -23,7 +23,7 @@ public class MotechOsgiApplicationContextCreator implements OsgiApplicationConte
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechOsgiApplicationContextCreator.class);
 
-    private ConfigurationScanner configurationScanner = new DefaultConfigurationScanner(); //new MotechConfigurationScanner();
+    private ConfigurationScanner configurationScanner = new DefaultConfigurationScanner();
 
     public DelegatedExecutionOsgiBundleApplicationContext createApplicationContext(BundleContext bundleContext) {
         if (null == bundleContext) {
