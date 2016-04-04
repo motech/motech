@@ -8,9 +8,7 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * This weaving hook is in charge of making sure that the META-INF.services package is imported by bundles.
@@ -26,23 +24,17 @@ public class ValidationWeavingHook implements WeavingHook {
     private static final String SERVICES_FILE = "META-INF/services/javax.validation.spi.ValidationProvider";
     private static final String FILTER = "filter";
 
-    private Set<Long> processedBundleIds = new HashSet<>();
-
     @Override
     public void weave(WovenClass wovenClass) {
         BundleWiring wiring = wovenClass.getBundleWiring();
 
-        long bundleId = wiring.getBundle().getBundleId();
-
-        if (!processedBundleIds.contains(bundleId) && !hasRequirement(wiring, SERVICES_FILE_PACKAGE)
-                && !hasFile(wiring, SERVICES_FILE)) {
+        if (!wovenClass.getDynamicImports().contains(SERVICES_FILE_PACKAGE) &&
+                !hasRequirement(wiring, SERVICES_FILE_PACKAGE) && !hasFile(wiring, SERVICES_FILE)) {
 
             LOGGER.debug("Adding a {} dynamic import to {}", SERVICES_FILE_PACKAGE,
                     wiring.getBundle().getSymbolicName());
 
             wovenClass.getDynamicImports().add(SERVICES_FILE_PACKAGE);
-
-            processedBundleIds.add(bundleId);
         }
     }
 
