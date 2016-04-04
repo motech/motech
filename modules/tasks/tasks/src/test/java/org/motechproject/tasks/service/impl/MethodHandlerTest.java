@@ -2,11 +2,11 @@ package org.motechproject.tasks.service.impl;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionEventBuilder;
-import org.motechproject.tasks.domain.ActionParameterBuilder;
-import org.motechproject.tasks.domain.MethodCallManner;
-import org.motechproject.tasks.domain.ParameterType;
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.channel.builder.ActionEventBuilder;
+import org.motechproject.tasks.domain.mds.channel.builder.ActionParameterBuilder;
+import org.motechproject.tasks.domain.mds.channel.MethodCallManner;
+import org.motechproject.tasks.domain.mds.ParameterType;
 import org.motechproject.tasks.exception.TaskHandlerException;
 
 import java.util.ArrayList;
@@ -72,15 +72,15 @@ public class MethodHandlerTest {
     }
 
     private ActionEvent getActionEvent(MethodCallManner callManner) {
-        ActionEvent action = new ActionEventBuilder().setServiceMethodCallManner(callManner).createActionEvent();
-        action.addParameter(new ActionParameterBuilder().setDisplayName("String").setKey("string").createActionParameter(), true);
-        action.addParameter(new ActionParameterBuilder().setDisplayName("Integer").setKey("integer").setType(ParameterType.INTEGER).createActionParameter(), true);
-        action.addParameter(new ActionParameterBuilder().setDisplayName("Long").setKey("long").setType(ParameterType.LONG).createActionParameter(), true);
-        action.addParameter(new ActionParameterBuilder().setDisplayName("Double").setKey("double").setType(ParameterType.DOUBLE).createActionParameter(), true);
-        action.addParameter(new ActionParameterBuilder().setDisplayName("Boolean").setKey("boolean").setType(ParameterType.BOOLEAN).createActionParameter(), true);
-        action.addParameter(new ActionParameterBuilder().setDisplayName("Date").setKey("date").setType(ParameterType.DATE).createActionParameter(), true);
-        action.addParameter(new ActionParameterBuilder().setDisplayName("Map").setKey("map").setType(ParameterType.MAP).createActionParameter(), true);
-        action.addParameter(new ActionParameterBuilder().setDisplayName("List").setKey("list").setType(ParameterType.LIST).createActionParameter(), true);
+        ActionEvent action = new ActionEventBuilder().setServiceMethodCallManner(callManner).build();
+        action.addParameter(new ActionParameterBuilder().setDisplayName("String").setKey("string").build(), true);
+        action.addParameter(new ActionParameterBuilder().setDisplayName("Integer").setKey("integer").setType(ParameterType.INTEGER).build(), true);
+        action.addParameter(new ActionParameterBuilder().setDisplayName("Long").setKey("long").setType(ParameterType.LONG).build(), true);
+        action.addParameter(new ActionParameterBuilder().setDisplayName("Double").setKey("double").setType(ParameterType.DOUBLE).build(), true);
+        action.addParameter(new ActionParameterBuilder().setDisplayName("Boolean").setKey("boolean").setType(ParameterType.BOOLEAN).build(), true);
+        action.addParameter(new ActionParameterBuilder().setDisplayName("Date").setKey("date").setType(ParameterType.DATE).build(), true);
+        action.addParameter(new ActionParameterBuilder().setDisplayName("Map").setKey("map").setType(ParameterType.MAP).build(), true);
+        action.addParameter(new ActionParameterBuilder().setDisplayName("List").setKey("list").setType(ParameterType.LIST).build(), true);
         return action;
     }
 

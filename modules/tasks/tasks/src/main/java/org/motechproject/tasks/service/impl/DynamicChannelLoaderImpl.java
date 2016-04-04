@@ -1,9 +1,9 @@
 package org.motechproject.tasks.service.impl;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.tasks.domain.DynamicChannelProvider;
-import org.motechproject.tasks.domain.TaskTriggerInformation;
-import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.service.DynamicChannelProvider;
+import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.service.DynamicChannelLoader;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;

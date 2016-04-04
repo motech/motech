@@ -2,7 +2,7 @@ package org.motechproject.tasks.service.util;
 
 import org.apache.commons.collections.Predicate;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
-import org.motechproject.tasks.domain.Task;
+import org.motechproject.tasks.domain.mds.task.Task;
 
 /**
  * Utility class defining filters over some collections.
