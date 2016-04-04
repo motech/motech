@@ -116,7 +116,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
         }
 
         if (!getElements().containsKey(returnClassName)) {
-            put(returnClassName, new ArrayList<LookupDto>());
+            put(returnClassName, new ArrayList<>());
         }
 
         getElement(returnClassName).add(lookup);
@@ -189,12 +189,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
         try {
             methodParameterNames.addAll(Arrays.asList(paranamer.lookupParameterNames(method)));
         } catch (RuntimeException e) {
-            if (LOGGER.isTraceEnabled()) {
-                // Print with stacktrace
-                LOGGER.trace("Unable to read method {} names using Paranamer", method.toString(), e);
-            } else {
-                LOGGER.debug("Unable to read method {} names using Paranamer", method.toString());
-            }
+            logParanamerError(method.toString(), e);
         }
 
         for (int i = 0; i < paramAnnotations.length; i++) {
@@ -252,12 +247,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
         try {
             methodParameterNames.addAll(Arrays.asList(paranamer.lookupParameterNames(method)));
         } catch (RuntimeException e) {
-            if (LOGGER.isTraceEnabled()) {
-                // Print with stacktrace
-                LOGGER.trace("Unable to read method {} names using Paranamer", method.toString(), e);
-            } else {
-                LOGGER.debug("Unable to read method {} names using Paranamer", method.toString(), e);
-            }
+            logParanamerError(method.toString(), e);
         }
 
         for (int i = 0; i < paramAnnotations.length; i++) {
@@ -353,6 +343,15 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, String, List<LookupDt
         } else {
             RestOptionsDto restOptionsDto = advancedSettings.getRestOptions();
             return restOptionsDto.isModifiedByUser();
+        }
+    }
+
+    private void logParanamerError(String methodName, Exception exception) {
+        if (LOGGER.isTraceEnabled()) {
+            // Print with stacktrace
+            LOGGER.trace("Unable to read method {} parameter names using Paranamer", methodName, exception);
+        } else {
+            LOGGER.debug("Unable to read method {} parameter names using Paranamer", methodName);
         }
     }
 
