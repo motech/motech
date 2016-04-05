@@ -1,10 +1,10 @@
 package org.motechproject.tasks.validation;
 
-import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionParameter;
-import org.motechproject.tasks.domain.Channel;
-import org.motechproject.tasks.domain.TaskError;
-import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.channel.ActionParameter;
+import org.motechproject.tasks.domain.mds.channel.Channel;
+import org.motechproject.tasks.domain.mds.task.TaskError;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 
 import java.util.HashSet;
 import java.util.Set;

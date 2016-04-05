@@ -1,12 +1,14 @@
 package org.motechproject.tasks.contract;
 
+import org.motechproject.tasks.domain.mds.channel.Channel;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * Service layer object denoting a {@link org.motechproject.tasks.domain.Channel}. Used by
- * {@link org.motechproject.tasks.service.ChannelService}. It is used for registering new and updating already existent
+ * Service layer object denoting a {@link Channel}. Used by {@link org.motechproject.tasks.service.ChannelService}. It
+ * is used for registering new and updating already existent
  * channels.
  */
 public class ChannelRequest {
@@ -41,8 +43,8 @@ public class ChannelRequest {
         this.moduleName = moduleName;
         this.moduleVersion = moduleVersion;
         this.description = description;
-        this.triggerTaskEvents = triggerTaskEvents != null ? triggerTaskEvents : new ArrayList<TriggerEventRequest>();
-        this.actionTaskEvents = actionTaskEvents != null ? actionTaskEvents : new ArrayList<ActionEventRequest>();
+        this.triggerTaskEvents = triggerTaskEvents != null ? triggerTaskEvents : new ArrayList<>();
+        this.actionTaskEvents = actionTaskEvents != null ? actionTaskEvents : new ArrayList<>();
     }
 
     /**
