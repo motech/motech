@@ -6,8 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.config.SettingsFacade;
+import org.motechproject.config.domain.MotechSettings;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.osgi.web.service.LocaleService;
 import org.osgi.framework.BundleContext;

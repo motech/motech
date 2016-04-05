@@ -4,8 +4,8 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.tasks.domain.Channel;
-import org.motechproject.tasks.domain.TaskDataProvider;
+import org.motechproject.tasks.domain.mds.channel.Channel;
+import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
 import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.repository.DataProviderDataService;
 import org.motechproject.tasks.repository.TasksDataService;
@@ -95,14 +95,14 @@ public class TasksBundleIT extends BasePaxIT {
         int tries = 0;
 
         do {
-            fromFile = taskDataProviderService.getProvider("mrs.name");
+            fromFile = taskDataProviderService.getProvider("mrs-name");
             ++tries;
             Thread.sleep(500);
         } while (fromFile == null && tries < TRIES_COUNT);
 
         assertNotNull(fromFile);
 
-        TaskDataProvider fromDB = dataProviderDataService.findByName("mrs.name");
+        TaskDataProvider fromDB = dataProviderDataService.findByName("mrs-name");
 
         assertNotNull(fromDB);
         assertEquals(fromDB, fromFile);

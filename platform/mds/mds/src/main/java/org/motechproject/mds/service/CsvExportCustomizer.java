@@ -14,8 +14,8 @@ public interface CsvExportCustomizer {
     /**
      * Formats the field value for CSV display.
      *
-     * @param object the object to format
      * @param fieldDto the field to format
+     * @param object the object to format
      *
      * @return the formatted string that will represent the value in CSV data
      */

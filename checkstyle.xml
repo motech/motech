@@ -266,5 +266,6 @@
         <module name="CyclomaticComplexity">
             <property name="max" value="10"/>
         </module>
+        <module name="RedundantImport"/>
     </module>
 </module>

@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class DateFilterValue extends FilterValue {
 
+    public static final List<String> DATE_FILTER_VALUES = Arrays.asList(TODAY, PAST_7_DAYS, THIS_MONTH, THIS_YEAR);
+
     public DateFilterValue(String value) {
         super.setValue(value);
     }

@@ -88,7 +88,6 @@ public final class EntitySorter {
                 }
             }
         }
-
         return sorted;
     }
 

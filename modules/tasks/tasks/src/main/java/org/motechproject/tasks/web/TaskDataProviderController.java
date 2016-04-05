@@ -1,6 +1,6 @@
 package org.motechproject.tasks.web;
 
-import org.motechproject.tasks.domain.TaskDataProvider;
+import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

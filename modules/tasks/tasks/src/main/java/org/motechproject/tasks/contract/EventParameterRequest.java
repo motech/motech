@@ -1,11 +1,13 @@
 package org.motechproject.tasks.contract;
 
+import org.motechproject.tasks.domain.mds.channel.EventParameter;
+
 import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
- * Service layer object denoting a {@link org.motechproject.tasks.domain.EventParameter}. It is a part of the
+ * Service layer object denoting a {@link EventParameter}. It is a part of the
  * {@link org.motechproject.tasks.contract.TriggerEventRequest} and is used by
  * {@link org.motechproject.tasks.service.ChannelService} for adding new or updating already existent trigger event
  * parameters.

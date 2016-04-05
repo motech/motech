@@ -19,7 +19,6 @@ public final class ComboboxHelper {
      * Utility class, should not be instantiated.
      */
     private ComboboxHelper() {
-
     }
 
     /**

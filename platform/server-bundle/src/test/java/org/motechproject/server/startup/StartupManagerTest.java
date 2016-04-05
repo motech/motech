@@ -6,9 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.service.ConfigurationService;
-import org.motechproject.server.config.domain.LoginMode;
-import org.motechproject.server.config.domain.SettingsRecord;
-import org.motechproject.server.config.service.ConfigLoader;
+import org.motechproject.config.domain.LoginMode;
+import org.motechproject.config.domain.MotechSettings;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 
@@ -24,16 +23,13 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class StartupManagerTest {
 
     @Mock
-    ConfigLoader configLoader;
-
-    @Mock
     ConfigurationService configurationService;
 
     @Mock
     private EventAdmin eventAdmin;
 
     @Mock
-    SettingsRecord settingsRecord;
+    MotechSettings motechSettings;
 
     @InjectMocks
     StartupManager startupManager = new StartupManager();
@@ -45,10 +41,7 @@ public class StartupManagerTest {
 
     @Test
     public void testNoSettings() {
-        when(configLoader.loadMotechSettings()).thenReturn(null);
-        when(configurationService.getPlatformSettings()).thenReturn(new SettingsRecord());
-        when(configLoader.loadMotechSettings()).thenReturn(settingsRecord);
-        when(settingsRecord.getLoginMode()).thenReturn(LoginMode.REPOSITORY);
+        when(motechSettings.getLoginMode()).thenReturn(LoginMode.REPOSITORY);
 
         startupManager.startup();
 

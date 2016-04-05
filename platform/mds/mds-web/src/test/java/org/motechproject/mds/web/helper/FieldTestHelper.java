@@ -22,14 +22,16 @@ public final class FieldTestHelper {
         return fieldDto;
     }
 
-    public static FieldRecord fieldRecord(String name, String className, String displayName,
-                                          Object value) {
+    public static FieldRecord fieldRecord(String name, String className, String displayName, Object value) {
         TypeDto type = new TypeDto(className, "", "", className);
-        return new FieldRecord(name, displayName, value, type);
+        return fieldRecord(type, name, displayName, value);
     }
 
     public static FieldRecord fieldRecord(TypeDto type, String name, String displayName, Object value) {
-        return new FieldRecord(name, displayName, value, type);
+        FieldRecord record = new FieldRecord(name, value, type);
+        record.setDisplayName(displayName);
+
+        return record;
     }
 
     public static LookupFieldDto lookupFieldDto(Long id, String name) {

@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.motechproject.email.domain.Mail;
 import org.motechproject.email.service.EmailRecordService;
 import org.motechproject.email.service.EmailSenderService;
-import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.config.SettingsFacade;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import static org.mockito.Matchers.anyString;
