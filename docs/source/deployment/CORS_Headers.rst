@@ -130,6 +130,7 @@ By default CORS headers will be set like the following :
 .. code-block::
 
  Access-Control-Allow-Origin: * (any domain)
+ Access-Control-Allow-Methods: GET, POST, HEAD, OPTIONS
  Access-Control-Allow-Headers: Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers
  Access-Control-Expose-Headers:  (Non-simple headers are not exposed by default)
 
