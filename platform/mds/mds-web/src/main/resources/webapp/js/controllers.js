@@ -1086,6 +1086,8 @@
             },
             errorHandler = function(title, msg, params) {
                 $scope.setError(msg, params);
+                $scope.isNewLookupFieldButtonDisabled = false;
+                $scope.isNewLookupButtonDisabled = false;
             };
 
             Entities.draft(pre, data, func, angularHandler('mds.error', 'mds.error.draftSave', errorHandler));
