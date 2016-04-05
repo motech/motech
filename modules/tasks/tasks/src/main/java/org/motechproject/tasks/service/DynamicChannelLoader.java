@@ -1,13 +1,13 @@
 package org.motechproject.tasks.service;
 
-import org.motechproject.tasks.domain.TaskTriggerInformation;
-import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 
 import java.util.List;
 
 /**
  * Service responsible for loading dynamic triggers and action from modules which provides an instance of the
- * {@link org.motechproject.tasks.domain.DynamicChannelProvider}.
+ * {@link DynamicChannelProvider}.
  */
 public interface DynamicChannelLoader {
 
@@ -47,7 +47,7 @@ public interface DynamicChannelLoader {
 
     /**
      * Checks whether module with the given {@code moduleName} provides an implementation of the
-     * {@link org.motechproject.tasks.domain.DynamicChannelProvider}.
+     * {@link DynamicChannelProvider}.
      *
      * @param moduleName  the name of the module
      * @return true if module provides the implementation, false otherwise

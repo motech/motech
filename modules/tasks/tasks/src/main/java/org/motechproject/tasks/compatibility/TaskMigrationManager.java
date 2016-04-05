@@ -1,6 +1,6 @@
 package org.motechproject.tasks.compatibility;
 
-import org.motechproject.tasks.domain.Task;
+import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.repository.TasksDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

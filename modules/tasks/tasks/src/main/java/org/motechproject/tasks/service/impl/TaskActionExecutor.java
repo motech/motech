@@ -4,12 +4,12 @@ import com.google.common.collect.Multimap;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionParameter;
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.channel.ActionParameter;
 import org.motechproject.tasks.domain.KeyInformation;
-import org.motechproject.tasks.domain.ParameterType;
-import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.domain.TaskActionInformation;
+import org.motechproject.tasks.domain.mds.ParameterType;
+import org.motechproject.tasks.domain.mds.task.Task;
+import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.service.util.KeyEvaluator;
@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import static org.motechproject.tasks.domain.ParameterType.LIST;
-import static org.motechproject.tasks.domain.ParameterType.MAP;
+import static org.motechproject.tasks.domain.mds.ParameterType.LIST;
+import static org.motechproject.tasks.domain.mds.ParameterType.MAP;
 import static org.motechproject.tasks.constants.TaskFailureCause.ACTION;
 import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
 
