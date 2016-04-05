@@ -6,8 +6,8 @@ import org.codehaus.jackson.ObjectCodec;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.motechproject.tasks.domain.TaskConfig;
-import org.motechproject.tasks.domain.TaskConfigStep;
+import org.motechproject.tasks.domain.mds.task.TaskConfig;
+import org.motechproject.tasks.domain.mds.task.TaskConfigStep;
 
 import java.io.IOException;
 import java.util.Iterator;

@@ -2,12 +2,12 @@ package org.motechproject.tasks.compatibility.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.tasks.compatibility.TaskMigrator;
-import org.motechproject.tasks.domain.DataSource;
-import org.motechproject.tasks.domain.Filter;
-import org.motechproject.tasks.domain.FilterSet;
-import org.motechproject.tasks.domain.Lookup;
-import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.domain.TaskActionInformation;
+import org.motechproject.tasks.domain.mds.task.DataSource;
+import org.motechproject.tasks.domain.mds.task.Filter;
+import org.motechproject.tasks.domain.mds.task.FilterSet;
+import org.motechproject.tasks.domain.mds.task.Lookup;
+import org.motechproject.tasks.domain.mds.task.Task;
+import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 import org.motechproject.tasks.ex.ProviderNotFoundException;
 import org.springframework.stereotype.Component;
 

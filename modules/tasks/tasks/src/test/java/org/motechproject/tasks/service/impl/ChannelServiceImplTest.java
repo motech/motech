@@ -7,18 +7,17 @@ import org.mockito.Mock;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.query.QueryExecution;
-import org.motechproject.tasks.domain.ActionEventBuilder;
 import org.motechproject.tasks.contract.builder.TestActionEventRequestBuilder;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.contract.EventParameterRequest;
 import org.motechproject.tasks.contract.TriggerEventRequest;
-import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionParameter;
-import org.motechproject.tasks.domain.Channel;
-import org.motechproject.tasks.domain.EventParameter;
-import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.channel.Channel;
+import org.motechproject.tasks.domain.mds.channel.EventParameter;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
+import org.motechproject.tasks.domain.mds.channel.builder.ActionEventBuilder;
 import org.motechproject.tasks.exception.ValidationException;
 import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.repository.TasksDataService;
@@ -158,7 +157,7 @@ public class ChannelServiceImplTest {
         assertEquals(1, channelToBeCreated.getActionTaskEvents().size());
         ActionEvent expectedAction = new ActionEventBuilder().setDisplayName("actionName").setSubject("subject.foo")
                 .setDescription("action description").setServiceInterface("some.interface").setServiceMethod("method")
-                .setActionParameters(new TreeSet<ActionParameter>()).createActionEvent();
+                .setActionParameters(new TreeSet<>()).build();
         ActionEvent actualAction = channelToBeCreated.getActionTaskEvents().get(0);
         assertEquals(expectedAction, actualAction);
     }

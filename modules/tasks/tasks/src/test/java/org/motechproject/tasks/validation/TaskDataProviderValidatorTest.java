@@ -4,10 +4,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.tasks.domain.LookupFieldsParameter;
-import org.motechproject.tasks.domain.TaskDataProvider;
-import org.motechproject.tasks.domain.TaskDataProviderObject;
-import org.motechproject.tasks.domain.TaskError;
+import org.motechproject.tasks.domain.mds.task.LookupFieldsParameter;
+import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
+import org.motechproject.tasks.domain.mds.task.TaskDataProviderObject;
+import org.motechproject.tasks.domain.mds.task.TaskError;
 
 import java.util.Set;
 

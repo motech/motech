@@ -2,7 +2,7 @@ package org.motechproject.tasks.web;
 
 import org.motechproject.config.SettingsFacade;
 import org.motechproject.tasks.constants.TasksRoles;
-import org.motechproject.tasks.domain.SettingsDto;
+import org.motechproject.tasks.web.domain.SettingsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -3,12 +3,12 @@ package org.motechproject.tasks.annotations.processor;
 import org.motechproject.tasks.annotations.TaskAction;
 import org.motechproject.tasks.annotations.TaskActionParam;
 import org.motechproject.tasks.annotations.TaskChannel;
-import org.motechproject.tasks.domain.ActionEventBuilder;
-import org.motechproject.tasks.domain.ActionParameterBuilder;
-import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionParameter;
-import org.motechproject.tasks.domain.Channel;
-import org.motechproject.tasks.domain.TaskActionInformation;
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.channel.ActionParameter;
+import org.motechproject.tasks.domain.mds.channel.Channel;
+import org.motechproject.tasks.domain.mds.channel.builder.ActionEventBuilder;
+import org.motechproject.tasks.domain.mds.channel.builder.ActionParameterBuilder;
+import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 import org.motechproject.tasks.service.ChannelService;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -112,7 +112,7 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
         boolean foundAction = action != null;
 
         if (!foundAction) {
-            action = new ActionEventBuilder().createActionEvent();
+            action = new ActionEventBuilder().build();
         }
 
         action.setDisplayName(taskAction.displayName());
@@ -173,7 +173,7 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
                     LOGGER.debug("Task action parameter: {} added", param.displayName());
 
                     parameters.add(new ActionParameterBuilder().setDisplayName(param.displayName()).setKey(param.key())
-                            .setType(param.type()).setOrder(order).setRequired(param.required()).createActionParameter());
+                            .setType(param.type()).setOrder(order).setRequired(param.required()).build());
                     ++order;
                 }
             }
