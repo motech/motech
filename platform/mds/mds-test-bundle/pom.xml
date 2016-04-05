@@ -61,6 +61,7 @@
                             org.motechproject.mds.test.domain.manytomany;version=${project.version},
                             org.motechproject.mds.test.domain.qa;version=${project.version},
                             org.motechproject.mds.test.domain.relationshipswithhistory;version=${project.version},
+                            org.motechproject.mds.test.domain.revertFromTrash;version=${project.version},
                             org.motechproject.mds.test.domain.setofenumandstring;version=${project.version},
                             org.motechproject.mds.test.domain.validation;version=${project.version},
                             org.motechproject.mds.test.domain.lookupcomboboxrelation;version=${project.version},
@@ -81,7 +82,8 @@
                             org.motechproject.mds.test.service.lookupcomboboxrelation;version=${project.version},
                             org.motechproject.mds.test.service.editablelookups;version=${project.version},
                             org.motechproject.mds.test.service.mapdeserialisation;version=${project.version},
-                            org.motechproject.mds.test.service.optimisticlocking;version=${project.version}
+                            org.motechproject.mds.test.service.optimisticlocking;version=${project.version},
+                            org.motechproject.mds.test.service.revertFromTrash;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,

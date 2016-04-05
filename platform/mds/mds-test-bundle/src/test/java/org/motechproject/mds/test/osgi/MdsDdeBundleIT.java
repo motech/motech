@@ -18,6 +18,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MDSLookupService;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.test.domain.Actor;
 import org.motechproject.mds.test.domain.Movie;
 import org.motechproject.mds.test.domain.TestLookup;
@@ -59,6 +60,7 @@ import org.motechproject.mds.test.domain.optimisticlocking.TestMdsVersionedEntit
 import org.motechproject.mds.test.domain.relationshipswithhistory.District;
 import org.motechproject.mds.test.domain.relationshipswithhistory.Language;
 import org.motechproject.mds.test.domain.relationshipswithhistory.State;
+import org.motechproject.mds.test.domain.revertFromTrash.HomeAddress;
 import org.motechproject.mds.test.domain.setofenumandstring.Channel;
 import org.motechproject.mds.test.domain.setofenumandstring.Message;
 import org.motechproject.mds.test.domain.transactions.Department;
@@ -67,6 +69,7 @@ import org.motechproject.mds.test.service.ActorDataService;
 import org.motechproject.mds.test.service.MovieDataService;
 import org.motechproject.mds.test.service.TestLookupService;
 import org.motechproject.mds.test.service.TestMdsEntityService;
+import org.motechproject.mds.test.service.revertFromTrash.RevertFromTrashService;
 import org.motechproject.mds.test.service.TestSingleReturnLookupService;
 import org.motechproject.mds.test.service.TransactionTestService;
 import org.motechproject.mds.test.service.cascadedelete.CityDataService;
@@ -123,6 +126,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -157,10 +161,16 @@ public class MdsDdeBundleIT extends BasePaxIT {
     private static final QueryParams ASC_ID = QueryParams.ascOrder(ID_FIELD_NAME);
 
     @Inject
+    private TrashService trashService;
+
+    @Inject
     private TestMdsEntityService testMdsEntityService;
 
     @Inject
     private TestLookupService testLookupService;
+
+    @Inject
+    private RevertFromTrashService revertFromTrashService;
 
     @Inject
     private BookDataService bookDataService;
@@ -304,6 +314,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
     private void clearDB() {
         testMdsEntityService.deleteAll();
         testLookupService.deleteAll();
+        revertFromTrashService.deleteAll();
         bookDataService.deleteAll();
         authorDataService.deleteAll();
         subclassADataService.deleteAll();
@@ -1982,6 +1993,24 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals("Jack", safeGetProperty(secondVersion, "name"));
         assertEquals(asSet(googleId, microsoftId), safeGetProperty(secondVersion, "companies"));
         assertEquals(jackDt2, safeGetProperty(secondVersion, "modificationDate"));
+    }
+
+    @Test
+    public void shouldRevertFromTrash() {
+        HomeAddress homeAddress1 = revertFromTrashService.create(new HomeAddress("street1","city1"));
+        HomeAddress homeAddress2 = revertFromTrashService.create(new HomeAddress("street2","city2"));
+
+        revertFromTrashService.delete(homeAddress1);
+        revertFromTrashService.delete(homeAddress2);
+
+        revertFromTrashService.revertFromTrash(homeAddress1.getId());
+
+        QueryParams q = new QueryParams(1,10);
+        Collection instancesInTrash = trashService.getInstancesFromTrash(HomeAddress.class.getName(), q);
+        Collection<HomeAddress> instancesOutsideTrash = revertFromTrashService.retrieveAll();
+
+        assertEquals(1, instancesInTrash.size());
+        assertEquals(1, instancesOutsideTrash.size());
     }
 
     private void assertDefaultConstructorPresent() throws ClassNotFoundException {
