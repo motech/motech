@@ -83,7 +83,7 @@
                             org.motechproject.mds.test.service.editablelookups;version=${project.version},
                             org.motechproject.mds.test.service.mapdeserialisation;version=${project.version},
                             org.motechproject.mds.test.service.optimisticlocking;version=${project.version},
-                            org.motechproject.mds.test.service.restoreInstanceFromTrash;version=${project.version}
+                            org.motechproject.mds.test.service.revertFromTrash;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,

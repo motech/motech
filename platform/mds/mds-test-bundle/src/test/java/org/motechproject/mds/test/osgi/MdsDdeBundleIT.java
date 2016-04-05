@@ -69,7 +69,7 @@ import org.motechproject.mds.test.service.ActorDataService;
 import org.motechproject.mds.test.service.MovieDataService;
 import org.motechproject.mds.test.service.TestLookupService;
 import org.motechproject.mds.test.service.TestMdsEntityService;
-import org.motechproject.mds.test.service.restoreInstanceFromTrash.RevertFromTrashService;
+import org.motechproject.mds.test.service.revertFromTrash.RevertFromTrashService;
 import org.motechproject.mds.test.service.TestSingleReturnLookupService;
 import org.motechproject.mds.test.service.TransactionTestService;
 import org.motechproject.mds.test.service.cascadedelete.CityDataService;
