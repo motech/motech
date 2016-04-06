@@ -817,6 +817,67 @@
         };
     });
 
+    directives.directive('datetimePicker', function () {
+            return {
+                restrict: 'A',
+                link: function(scope, element, attrs) {
+                    element.click(function () {
+                        $(this).prev('input').datetimepicker('show');
+                    });
+                }
+            };
+        });
+
+        directives.directive('datetimePickerInput', function () {
+            return {
+                restrict: 'A',
+                link: function (scope, element, attrs) {
+                    var parent = scope;
+
+                    while (parent.selectedAction === undefined) {
+                        parent = parent.$parent;
+                    }
+
+                    element.datetimepicker({
+                        showTimezone: true,
+                        useLocalTimezone: true,
+                        dateFormat: 'yy-mm-dd',
+                        timeFormat: 'HH:mm z',
+                        showOn: true,
+                        constrainInput: false,
+                        onSelect: function (dateTex) {
+                            parent.filter(parent.selectedAction[$(this).data('action')].actionParameters, {hidden: false})[$(this).data('index')].value = dateTex;
+                            parent.$apply();
+                        }
+                    });
+                }
+            };
+        });
+
+        directives.directive('timePickerInput', function () {
+            return {
+                restrict: 'A',
+                link: function (scope, element, attrs) {
+                    var parent = scope;
+
+                    while (parent.selectedAction === undefined) {
+                        parent = parent.$parent;
+                    }
+
+                    element.datetimepicker({
+                        showTimezone: true,
+                        timeOnly: true,
+                        useLocalTimezone: true,
+                        timeFormat: 'HH:mm z',
+                        onSelect: function (dateTex) {
+                            parent.filter(parent.selectedAction[$(this).data('action')].actionParameters, {hidden: false})[$(this).data('index')].value = dateTex;
+                            parent.$apply();
+                        }
+                    });
+                }
+            };
+        });
+
     directives.directive('helpPopover', function($compile, $http) {
         return function(scope, element, attrs) {
             var msgScope = scope;
