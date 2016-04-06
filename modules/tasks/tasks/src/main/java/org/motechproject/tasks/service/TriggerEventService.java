@@ -1,8 +1,8 @@
 package org.motechproject.tasks.service;
 
-import org.motechproject.tasks.domain.TaskError;
-import org.motechproject.tasks.domain.TaskTriggerInformation;
-import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.domain.mds.task.TaskError;
+import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 
 import java.util.List;
 import java.util.Set;

@@ -10,11 +10,11 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
 import org.codehaus.jackson.type.JavaType;
 import org.joda.time.DateTime;
-import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.domain.TaskActionInformation;
-import org.motechproject.tasks.domain.TaskConfig;
-import org.motechproject.tasks.domain.TaskError;
-import org.motechproject.tasks.domain.TaskTriggerInformation;
+import org.motechproject.tasks.domain.mds.task.Task;
+import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
+import org.motechproject.tasks.domain.mds.task.TaskConfig;
+import org.motechproject.tasks.domain.mds.task.TaskError;
+import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

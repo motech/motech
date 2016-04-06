@@ -1,11 +1,11 @@
 package org.motechproject.tasks.service;
 
 import org.motechproject.commons.api.TasksEventParser;
-import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.domain.TaskActionInformation;
-import org.motechproject.tasks.domain.TaskError;
-import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.task.Task;
+import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
+import org.motechproject.tasks.domain.mds.task.TaskError;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 
 import java.io.IOException;

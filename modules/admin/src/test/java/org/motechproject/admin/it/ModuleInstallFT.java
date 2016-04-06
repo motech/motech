@@ -52,6 +52,13 @@ public class ModuleInstallFT extends BasePaxIT {
                 "on","org.motechproject.cms-lite");
     }
 
+    //MOTECH-2259
+    @Test
+    public void testUploadAtomClientBundleFromRepository() throws IOException, InterruptedException {
+        uploadBundle("Repository", "org.motechproject:atom-client:LATEST", null,
+                "on","org.motechproject.atom-client");
+    }
+
     @Test
     public void testUploadBundleFromFile() throws IOException, InterruptedException {
         File file = new File("target/test-bundle/motech-upload-test-bundle.jar");

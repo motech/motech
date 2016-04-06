@@ -2,4 +2,4 @@
 <button class="btn btn-default" data-toggle="modal" data-backdrop="static" ng-disabled="shouldHideEdition(field)">{{msg('mds.form.changePeriod')}}</button>
 <span class="glyphicon glyphicon-info-sign" data-trigger="hover" data-placement="bottom" bs-popover="{{msg('mds.tooltip.period')}}" data-original-title=""></span>
 <span class="form-hint" ng-show="( {{field.name}}.$error.period || !{{field.name}}.$valid ) && !{{field.name}}.$pristine">{{msg('mds.error.incorrectValuePeriod')}}</span>
-<div period-modal-mds></div>
+<period-modal></period-modal>

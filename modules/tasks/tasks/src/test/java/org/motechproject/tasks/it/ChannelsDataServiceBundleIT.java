@@ -8,7 +8,8 @@ import org.junit.runner.RunWith;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ChannelRequest;
-import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.mds.channel.Channel;
+import org.motechproject.tasks.domain.mds.channel.builder.ChannelBuilder;
 import org.motechproject.tasks.contract.json.ActionEventRequestDeserializer;
 import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.testing.osgi.BasePaxIT;
@@ -94,7 +95,7 @@ public class ChannelsDataServiceBundleIT extends BasePaxIT {
             ChannelRequest channelRequest = (ChannelRequest) motechJsonReader.readFromString(writer.toString(), type, typeAdapters);
             channelRequest.setModuleName(channelRequest.getDisplayName());
             channelRequest.setModuleVersion("1.0");
-            channelRequests.add(new Channel(channelRequest));
+            channelRequests.add(ChannelBuilder.fromChannelRequest(channelRequest).build());
         }
 
         return channelRequests;
