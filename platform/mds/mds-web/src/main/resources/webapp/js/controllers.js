@@ -1068,8 +1068,7 @@
             $scope.currentError = undefined;
         };
 
-        $scope.draft = function (data, callback) {
-
+        $scope.draft = function (data, callback, errorCallback) {
             var pre = { id: $scope.selectedEntity.id },
             func = function (data) {
                 $scope.unsetError();
@@ -1086,8 +1085,7 @@
             },
             errorHandler = function(title, msg, params) {
                 $scope.setError(msg, params);
-                $scope.isNewLookupFieldButtonDisabled = false;
-                $scope.isNewLookupButtonDisabled = false;
+                errorCallback();
             };
 
             Entities.draft(pre, data, func, angularHandler('mds.error', 'mds.error.draftSave', errorHandler));
@@ -2024,6 +2022,8 @@
                 $scope.advancedSettings.indexes.push(newLookup);
                 $scope.setActiveIndex($scope.advancedSettings.indexes.length-1);
                 $scope.isNewLookupButtonDisabled = false;
+            }, function () {
+                $scope.isNewLookupButtonDisabled = false;
             });
 
         };
@@ -2156,6 +2156,8 @@
                     type: "VALUE"
                 });
                 $scope.setAvailableFields();
+                $scope.isNewLookupFieldButtonDisabled = false;
+            }, function () {
                 $scope.isNewLookupFieldButtonDisabled = false;
             });
         };
