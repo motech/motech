@@ -678,14 +678,29 @@
             };
         });
 
-        widgetModule.directive('periodModal', function($http, $templateCache, $compile) {
-            return function(scope, element, attrs) {
-                $http.get('../server/resources/partials/period-modal.html', { cache: $templateCache }).success(function(response) {
-                    var contents = element.html(response).contents();
-                    element.replaceWith($compile(contents)(scope));
-                });
+        widgetModule.directive('periodModal', ['$compile', '$timeout', '$http', '$templateCache', function ($compile, $timeout, $http, $templateCache) {
+            var templateLoader;
+
+            return {
+                restrict: 'E',
+                replace : true,
+                transclude: true,
+                compile: function (tElement, tAttrs, scope) {
+                    var url = '../server/resources/partials/period-modal.html',
+
+                    templateLoader = $http.get(url, {cache: $templateCache})
+                        .success(function (html) {
+                            tElement.html(html);
+                        });
+
+                    return function (scope, element, attrs) {
+                        templateLoader.then(function () {
+                            element.html($compile(tElement.html())(scope));
+                        });
+                    };
+                }
             };
-        });
+        }]);
 
     // code for date-picker
     
