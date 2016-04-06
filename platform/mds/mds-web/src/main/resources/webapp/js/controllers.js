@@ -3084,12 +3084,8 @@
         *                   otherwise false.
         */
         $scope.checkMax = function (viewValue, field) {
-            var max = $scope.getValidationCriteria(field, 1),
-            enabled = false;
-            if (field.validation !== null && max !== '' && (field.validation.criteria[1].enabled && viewValue !== null && viewValue !== undefined && viewValue !== '')) {
-                enabled = true;
-            }
-            return enabled
+            var max = $scope.getValidationCriteria(field, 1);
+            return MDSUtils.isEnabled(viewValue, field, max, 1)
                 ? MDSUtils.validateMaxLength(parseFloat(viewValue), parseFloat(max))
                 : false;
         };
@@ -3103,12 +3099,8 @@
         *                   otherwise false.
         */
         $scope.checkMin = function (viewValue, field) {
-            var min = $scope.getValidationCriteria(field, 0),
-            enabled = false;
-            if (field.validation !== null && min !== '' && (field.validation.criteria[0].enabled && viewValue !== null && viewValue !== undefined && viewValue !== '')) {
-                enabled = true;
-            }
-            return enabled
+            var min = $scope.getValidationCriteria(field, 0);
+            return MDSUtils.isEnabled(viewValue, field, min, 0)
                 ? MDSUtils.validateMin(parseFloat(viewValue), parseFloat(min))
                 : false;
         };
@@ -3122,12 +3114,8 @@
         *                   otherwise false.
         */
         $scope.checkInSet = function (viewValue, field) {
-            var inset = $scope.getValidationCriteria(field, 2),
-            enabled = false;
-            if (field.validation !== null && inset !== '' && (field.validation.criteria[2].enabled && viewValue !== null && viewValue !== undefined && viewValue !== '')) {
-                enabled = true;
-            }
-            return enabled
+            var inset = $scope.getValidationCriteria(field, 2);
+            return MDSUtils.isEnabled(viewValue, field, inset, 2)
                 ? MDSUtils.validateInSet(viewValue, inset)
                 : false;
         };
@@ -3141,12 +3129,8 @@
         *                   otherwise false.
         */
         $scope.checkOutSet = function (viewValue, field) {
-            var outset = $scope.getValidationCriteria(field, 3),
-            enabled = false;
-            if (field.validation !== null && outset !== '' && (field.validation.criteria[3].enabled && viewValue !== null && viewValue !== undefined && viewValue !== '')) {
-                enabled = true;
-            }
-            return enabled
+            var outset = $scope.getValidationCriteria(field, 3);            
+            return MDSUtils.isEnabled(viewValue, field, outset, 3)
                 ? MDSUtils.validateOutSet(viewValue, outset)
                 : false;
         };
@@ -4770,7 +4754,7 @@
         /*
         * Return string with information about CRUD action
         */
-        $scope.getMsg = function(name,field) {
+        $scope.getMsg = function(name, field) {
             var answer = "";
             angular.forEach(field.fields,function(row) {
                     if(_.isEqual(name,row.name )) {
@@ -5445,19 +5429,7 @@
         * after clicking on button 'Collapse All'.
         */
         $scope.collapseAll = function (tableName) {
-            var i, modulesLength;
-
-            if (tableName !== 'export-module') {
-                modulesLength = $scope.groupedImportEntitiesLength;
-            } else {
-                modulesLength = $scope.groupedExportEntitiesLength;
-            }
-
-            for (i = 0; i < modulesLength; i += 1) {
-                if ($("#" + tableName + ' .moduleDetails' + i + ":hidden").length <= 0) {
-                    $scope.hideModule(i, tableName);
-                }
-            }
+            MDSUtils.collapseOrExpandAll($scope, tableName, true);
         };
 
         /**
@@ -5465,19 +5437,7 @@
         * after clicking on button 'Expand All'.
         */
         $scope.expandAll = function (tableName) {
-            var i, modulesLength;
-
-            if (tableName !== 'export-module') {
-                modulesLength = $scope.groupedImportEntitiesLength;
-            } else {
-                modulesLength = $scope.groupedExportEntitiesLength;
-            }
-
-            for (i = 0; i < modulesLength; i += 1) {
-                if ($("#" + tableName + ' .moduleDetails' + i + ":hidden").length > 0) {
-                    $scope.showModule(i, tableName);
-                }
-            }
+            MDSUtils.collapseOrExpandAll($scope, tableName, false);
         };
     });
 }());

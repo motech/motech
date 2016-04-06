@@ -253,6 +253,34 @@
                     wasLastSelected = isThisSelected;
                 });
                 return ret;
+            },
+            
+            isEnabled : function(viewValue, field, criterion, criterionNum) {
+                var enabled = false;
+                if (field.validation !== null && criterion !== '' && (field.validation.criteria[criterionNum].enabled && viewValue !== null && viewValue !== undefined && viewValue !== '')) {
+                    enabled = true;
+                }
+                return enabled;
+            },
+            
+            collapseOrExpandAll : function($scope, tableName, toCollapse) {
+                var i, modulesLength;
+
+                if (tableName !== 'export-module') {
+                    modulesLength = $scope.groupedImportEntitiesLength;
+                } else {
+                    modulesLength = $scope.groupedExportEntitiesLength;
+                }
+                
+                for (i = 0; i < modulesLength; i += 1) {
+                    if (!toCollapse && $("#" + tableName + ' .moduleDetails' + i + ":hidden").length > 0) {
+                        $scope.showModule(i, tableName);
+                    }
+                    
+                    else if (toCollapse && $("#" + tableName + ' .moduleDetails' + i + ":hidden").length <= 0) {
+                        $scope.hideModule(i, tableName);
+                    }
+                }
             }
         };
     });
