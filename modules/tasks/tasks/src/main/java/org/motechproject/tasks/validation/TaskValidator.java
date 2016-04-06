@@ -2,25 +2,25 @@ package org.motechproject.tasks.validation;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
-import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionParameter;
-import org.motechproject.tasks.domain.Channel;
-import org.motechproject.tasks.domain.DataSource;
-import org.motechproject.tasks.domain.Filter;
-import org.motechproject.tasks.domain.FilterSet;
 import org.motechproject.tasks.domain.KeyInformation;
-import org.motechproject.tasks.domain.Lookup;
 import org.motechproject.tasks.domain.ManipulationTarget;
 import org.motechproject.tasks.domain.ManipulationType;
-import org.motechproject.tasks.domain.OperatorType;
-import org.motechproject.tasks.domain.ParameterType;
-import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.domain.TaskActionInformation;
-import org.motechproject.tasks.domain.TaskConfig;
-import org.motechproject.tasks.domain.TaskDataProvider;
-import org.motechproject.tasks.domain.TaskError;
-import org.motechproject.tasks.domain.TaskTriggerInformation;
-import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.domain.mds.ParameterType;
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.channel.ActionParameter;
+import org.motechproject.tasks.domain.mds.channel.Channel;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
+import org.motechproject.tasks.domain.mds.task.DataSource;
+import org.motechproject.tasks.domain.mds.task.Filter;
+import org.motechproject.tasks.domain.mds.task.FilterSet;
+import org.motechproject.tasks.domain.mds.task.Lookup;
+import org.motechproject.tasks.domain.mds.task.OperatorType;
+import org.motechproject.tasks.domain.mds.task.Task;
+import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
+import org.motechproject.tasks.domain.mds.task.TaskConfig;
+import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
+import org.motechproject.tasks.domain.mds.task.TaskError;
+import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 import org.motechproject.tasks.service.TriggerEventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -283,7 +283,7 @@ public class TaskValidator extends GeneralValidator {
         String field = String.format("taskConfig.filterSet[%d].filters[%d]", setOrder, index);
         KeyInformation key = parse(filter.getKey());
         DataSource dataSource = config.getDataSource(
-                key.getDataProviderId(), key.getObjectId(), key.getObjectType()
+                key.getDataProviderName(), key.getObjectId(), key.getObjectType()
         );
 
         checkNullValue(errors, TASK, field, filter);
@@ -323,11 +323,11 @@ public class TaskValidator extends GeneralValidator {
                         fieldType
                 ));
             }
-        } else if (key.fromAdditionalData() && providers.containsKey(key.getDataProviderId()) && providers.get(key.getDataProviderId()).containsProviderObjectField(key.getObjectType(), key.getKey()) && key.hasManipulations()) {
+        } else if (key.fromAdditionalData() && providers.containsKey(key.getDataProviderName()) && providers.get(key.getDataProviderName()).containsProviderObjectField(key.getObjectType(), key.getKey()) && key.hasManipulations()) {
             for (String manipulations : key.getManipulations()) {
                 errors.addAll(validateManipulations(manipulations,
                         key,
-                        ParameterType.fromString(providers.get(key.getDataProviderId()).getKeyType(key.getKey())),
+                        ParameterType.fromString(providers.get(key.getDataProviderName()).getKeyType(key.getKey())),
                         fieldType
                 ));
             }
@@ -424,7 +424,6 @@ public class TaskValidator extends GeneralValidator {
                 String objectName = "task." + field;
 
                 checkNullValue(errors, objectName, "objectId", dataSource.getObjectId());
-                checkNullValue(errors, objectName, "providerId", dataSource.getProviderId());
 
                 checkBlankValue(errors, objectName, "type", dataSource.getType());
                 checkBlankValue(errors, objectName, "lookup.field", lookup.getField());

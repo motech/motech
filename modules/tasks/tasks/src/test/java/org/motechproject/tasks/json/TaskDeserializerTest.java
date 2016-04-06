@@ -8,15 +8,14 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.motechproject.tasks.domain.DataSource;
-import org.motechproject.tasks.domain.EventParameter;
-import org.motechproject.tasks.domain.Filter;
-import org.motechproject.tasks.domain.FilterSet;
-import org.motechproject.tasks.domain.Lookup;
-import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.domain.TaskActionInformation;
-import org.motechproject.tasks.domain.TaskError;
-import org.motechproject.tasks.domain.TaskTriggerInformation;
+import org.motechproject.tasks.domain.mds.task.DataSource;
+import org.motechproject.tasks.domain.mds.task.Filter;
+import org.motechproject.tasks.domain.mds.task.FilterSet;
+import org.motechproject.tasks.domain.mds.task.Lookup;
+import org.motechproject.tasks.domain.mds.task.Task;
+import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
+import org.motechproject.tasks.domain.mds.task.TaskError;
+import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -30,6 +29,7 @@ import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.junit.runners.Parameterized.Parameters;
+import static org.motechproject.tasks.domain.mds.ParameterType.UNICODE;
 
 @RunWith(Parameterized.class)
 public class TaskDeserializerTest {
@@ -38,14 +38,14 @@ public class TaskDeserializerTest {
 
     static {
         List<Filter> filters = new ArrayList<>();
-        filters.add(new Filter(new EventParameter("Concept name", "ObservationConceptName"), true, "equals", "pregnancy_urine_test"));
-        filters.add(new Filter(new EventParameter("Observation value", "ObservationValue"), true, "equals", "positive"));
+        filters.add(new Filter("Concept name (Trigger)", "trigger.ObservationConceptName", UNICODE, true, "equals", "pregnancy_urine_test"));
+        filters.add(new Filter("Observation value (Trigger)", "trigger.ObservationValue", UNICODE, true, "equals", "positive"));
 
         String name = "Pregnancy SMS";
 
         Map<String, String> actionValues = new HashMap<>();
         actionValues.put("delivery_time", "12:00");
-        actionValues.put("message", "Congratulations,    {{ad.6899548.Person#1.firstName}}, your pregnancy test was positive. Please reply to schedule a clinic visit with your midwife.");
+        actionValues.put("message", "Congratulations,    {{ad.ProviderName.Person#1.firstName}}, your pregnancy test was positive. Please reply to schedule a clinic visit with your midwife.");
         actionValues.put("message", "{{trigger.PatientId}}");
 
         TaskActionInformation actionInformation = new TaskActionInformation(null, "sms.api", "motech-sms-api-bundle", "0.19.0.SNAPSHOT", "SendSMS", actionValues);
@@ -56,7 +56,7 @@ public class TaskDeserializerTest {
 
         EXPECTED_TASK = new Task();
         EXPECTED_TASK.getTaskConfig().add(new FilterSet(filters));
-        EXPECTED_TASK.getTaskConfig().add(new DataSource(6899548L, 1L, "Person", "id", asList(new Lookup("mrs.person.lookupField.id", "trigger.PatientId")), false));
+        EXPECTED_TASK.getTaskConfig().add(new DataSource("ProviderName", 6899548L, 1L, "Person", "id", asList(new Lookup("mrs.person.lookupField.id", "trigger.PatientId")), false));
         EXPECTED_TASK.setName(name);
         EXPECTED_TASK.setEnabled(false);
         EXPECTED_TASK.setHasRegisteredChannel(true);

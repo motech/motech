@@ -3,6 +3,7 @@ package org.motechproject.mds.service;
 import org.motechproject.mds.query.QueryParams;
 
 import java.util.Collection;
+
 /**
  * The <code>TrashService</code> provides methods related with the module trash mode (by default
  * the mode is active and it can be turned off by the user).
@@ -38,14 +39,11 @@ public interface TrashService {
     Object findTrashById(Long trashId, String entityClassName);
 
     /**
-     * Sets history for given trashed instance to match the new one
-     * and deletes trashed one from trash.
+     * Deletes trashed instance from trash.
      *
-     * @param newInstance instance to be returned from trash
      * @param trash trashed instance to be removed
-     * @param recordHistory true if entity has active history recording ; otherwise false
      */
-    void moveFromTrash(Object newInstance, Object trash, boolean recordHistory);
+    void removeFromTrash(Object trash);
 
     /**
      * Sets the repeating schedule job that will be executed from time to time. Execution time

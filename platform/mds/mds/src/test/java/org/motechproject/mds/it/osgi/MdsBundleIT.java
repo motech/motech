@@ -20,7 +20,7 @@ import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.commons.sql.service.SqlDBManager;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.service.CoreConfigurationService;
-import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.dto.CsvImportResults;
 import org.motechproject.mds.dto.DraftData;
@@ -36,14 +36,12 @@ import org.motechproject.mds.dto.SchemaHolder;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.UserPreferencesDto;
-import org.motechproject.mds.jdo.MdsTransactionManager;
 import org.motechproject.mds.osgi.TestClass;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.SqlQueryExecution;
 import org.motechproject.mds.service.ComboboxValueService;
-import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.JarGeneratorService;
@@ -68,9 +66,6 @@ import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
@@ -159,8 +154,6 @@ public class MdsBundleIT extends BasePaxIT {
     private MotechDataService service;
     private File configurationFile;
     private String startingCacheType;
-    private AllEntities allEntities;
-    private MdsTransactionManager mdsTransactionManager;
 
     @Inject
     private SqlDBManager sqlDBManager;
@@ -186,8 +179,6 @@ public class MdsBundleIT extends BasePaxIT {
 
         entityService = context.getBean(EntityService.class);
         generator = context.getBean(JarGeneratorService.class);
-        allEntities = context.getBean(AllEntities.class);
-        mdsTransactionManager = context.getBean("transactionManager", MdsTransactionManager.class);
 
         clearEntities();
         setUpSecurityContextForDefaultUser("mdsSchemaAccess");
@@ -334,17 +325,13 @@ public class MdsBundleIT extends BasePaxIT {
         assertEquals(0, userPreferencesDto.getUnselectedFields().size());
 
         // if field will be removed from entity then it should be removed also from preferences (CASCADE)
-        TransactionTemplate transactionTemplate = new TransactionTemplate(mdsTransactionManager);
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                Entity entity = allEntities.retrieveByClassName(CLASS_NAME);
-                List<Field> fields = entity.getFields();
-                fields.remove(entity.getField("someInteger"));
-                entity.setFields(fields);
-                allEntities.update(entity);
-            }
-        });
+        EntityDraft draft = entityService.getEntityDraft(entityDto.getId());
+        List<FieldDto> fields1 = entityService.getEntityFields(draft.getId());
+        Long someIntegerId = getFieldIdByName(fields1, "someInteger");
+
+        DraftData draftData = DraftBuilder.forFieldRemoval(someIntegerId);
+        entityService.saveDraftEntityChanges(entityDto.getId(), draftData);
+        entityService.commitChanges(entityDto.getId());
 
         userPreferencesDto = userPreferencesService.getUserPreferences(entityDto.getId(), USERNAME);
         assertEquals(9, userPreferencesDto.getVisibleFields().size());
@@ -381,17 +368,12 @@ public class MdsBundleIT extends BasePaxIT {
 
         entityService.addFields(entityDto, fields);
 
-        TransactionTemplate transactionTemplate = new TransactionTemplate(mdsTransactionManager);
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                Entity entity = allEntities.retrieveByClassName(CLASS_NAME);
-                entity.getField("someInteger").setUIDisplayable(true);
-                entity.getField("someString").setUIDisplayable(true);
-                entity.getField("someBoolean").setUIDisplayable(true);
-                allEntities.update(entity);
-            }
-        });
+        Map<String, Long> displayedFields = new HashMap<>();
+        displayedFields.put("someInteger", 1L);
+        displayedFields.put("someBoolean", 2L);
+        displayedFields.put("someString", 3L);
+
+        entityService.addDisplayedFields(entityDto, displayedFields);
 
         return entityDto;
     }
@@ -471,16 +453,13 @@ public class MdsBundleIT extends BasePaxIT {
     }
 
     private Long getFieldIdByName(List<FieldDto> fields, String name) {
-        Long fieldId = null;
-
         for (FieldDto field : fields) {
             if(field.getBasic().getName().equals(name)) {
-                fieldId = field.getId();
-                break;
+                return field.getId();
             }
         }
 
-        return  fieldId;
+        return null;
     }
 
     private void clearInstances() {

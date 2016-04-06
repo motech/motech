@@ -44,7 +44,7 @@ import java.util.Set;
  * retrieves REST related metadata on initialization. It uses an instance of
  * {@link org.motechproject.mds.service.MotechDataService} for operations and
  * the jackson JSON library for parsing InputStreams.
- * @param <T>
+ * @param <T> the entity class
  */
 public class MdsRestFacadeImpl<T> implements MdsRestFacade<T> {
 

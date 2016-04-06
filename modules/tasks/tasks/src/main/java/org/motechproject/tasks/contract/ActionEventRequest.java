@@ -1,5 +1,7 @@
 package org.motechproject.tasks.contract;
 
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+
 import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -8,7 +10,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 /**
- * Service layer object denoting a {@link org.motechproject.tasks.domain.ActionEvent}. It is a part of the
+ * Service layer object denoting a {@link ActionEvent}. It is a part of the
  * {@link org.motechproject.tasks.contract.ChannelRequest} and is used by
  * {@link org.motechproject.tasks.service.ChannelService} for adding new or updating already existent action events.
  */
@@ -41,7 +43,7 @@ public class ActionEventRequest {
      * @param description  the event description
      * @param serviceInterface  the event service interface
      * @param serviceMethod  the event service method
-     * @param serviceMethodCallManner  the event service method call manner, for supported values check {@see org.motechproject.tasks.domain.MethodCallManner}
+     * @param serviceMethodCallManner  the event service method call manner, for supported values check {@see org.motechproject.tasks.domain.mds.channel.MethodCallManner}
      * @param actionParameters  the action parameters
      */
     public ActionEventRequest(String name, String displayName, String subject, String description,

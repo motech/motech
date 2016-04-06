@@ -7,8 +7,8 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.helper.DataServiceHelper;
 import org.motechproject.mds.helper.EntityHelper;
 import org.motechproject.mds.helper.RelationshipResolver;
-import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.repository.AllTypes;
+import org.motechproject.mds.repository.internal.AllEntities;
+import org.motechproject.mds.repository.internal.AllTypes;
 import org.motechproject.mds.service.MotechDataService;
 import org.osgi.framework.BundleContext;
 

@@ -294,105 +294,6 @@
 
                 return $('<div/>').append(span).html();
             },
-            createDraggableSpan: function (data) {
-                var removeButton, span = $('<span/>');
-
-                span.attr('unselectable', 'on');
-                span.attr('contenteditable', 'false');
-
-                if (data.fieldType !== undefined && data.fieldType === 'format') {
-                    span.addClass('nonEditable triggerField pointer badge');
-                } else {
-                    span.addClass('popoverEvent nonEditable triggerField pointer badge');
-                }
-
-                if (data.param.type === 'UNKNOWN') {
-                    span.addClass('badge-unknown');
-                } else {
-                    switch (data.prefix) {
-                    case this.TRIGGER_PREFIX:
-                        span.attr('data-eventkey', data.param.eventKey);
-                        span.addClass('badge-info');
-                        break;
-                    case this.DATA_SOURCE_PREFIX:
-                        span.addClass('badge-warning');
-                        break;
-                    }
-                }
-
-                if (this.isText(data.param.type)) {
-                    if (data.fieldType !== undefined && data.fieldType === 'format') {
-                        span.attr('data-popover', 'no');
-                    } else {
-                        span.attr('manipulationpopover', 'STRING');
-                    }
-                } else if (this.isDate(data.param.type)) {
-                    if (this.isDate(data.fieldType)) {
-                        span.attr('manipulationpopover', 'DATE2DATE');
-                    } else {
-                        span.attr('manipulationpopover', 'DATE');
-                    }
-                }
-
-                if (data.manipulations && data.manipulations.length > 0) {
-                    span.attr('manipulate', data.manipulations.join(" "));
-                }
-
-                span.attr('data-prefix', data.prefix);
-                span.attr('data-type', data.param.type);
-                span.attr('data-object', data.param.displayName);
-
-                if (data.providerName) {
-                    span.attr('data-source', data.providerName);
-                }
-
-                if (data.object) {
-                    span.attr('data-object-id', data.object.id);
-                    span.attr('data-object-type', data.object.type);
-                    span.attr('data-field', data.object.field);
-                }
-
-                if (data.popover === 'true') {
-                    span.attr('data-popover', 'no');
-                }
-
-                span.css('position', 'relative');
-
-                switch (data.prefix) {
-                case this.TRIGGER_PREFIX:
-                    if(data.msg) {
-                        span.text(data.msg(data.param.displayName));
-                    } else {
-                        span.text(data.param.displayName);
-                    }
-                    break;
-                case this.DATA_SOURCE_PREFIX:
-                    span.text("{0}.{1}#{2}.{3}".format(
-                        data.msg(data.providerName),
-                        data.msg(data.object.displayName),
-                        data.object.id,
-                        data.msg(data.param.displayName)
-                    ));
-                    break;
-                default:
-                    span.text(data.param.displayName);
-                }
-
-                if (span.attr('manipulationpopover') === undefined) {
-                    span.attr('manipulationpopover', 'NONE');
-                }
-                span.append(" &nbsp;");
-                span.append(" &nbsp;");
-                removeButton = $('<button/>', {
-                        text: 'x',
-                        type: 'button'
-                });
-                removeButton.addClass('close');
-                removeButton.addClass('badge-close');
-                span.append(removeButton);
-
-                return $('<div/>').append(span).html();
-            },
             createErrorMessage: function (scope, response, warning) {
                 var msg;
                 if (warning) {
@@ -410,59 +311,6 @@
                 }
 
                 return msg;
-            },
-            convertToView: function (scope, type, value) {
-                var val = value || '';
-
-                if (this.isBoolean(type) && (val === 'true' || val === 'false')) {
-                    val = val === 'true';
-                    val = this.createBooleanSpan(scope, val);
-                }
-
-                val = scope.createDraggableElement(val, type, 'convert');
-
-                return val;
-            },
-            convertToServer: function (scope, value) {
-                var val = value || '',
-                    regex = new RegExp('\\{\\{ad\\.(.+?(\\.name)?)(\\..*?)\\}\\}', "g"),
-                    replaced = [],
-                    found,
-                    ds;
-
-                val = scope.refactorDivEditable(val);
-
-                while ( (found = regex.exec(val)) !== null )  {
-                    ds = this.find({
-                        msg: scope.msg,
-                        where: scope.task.taskConfig.steps,
-                        by: [{
-                            what: '@type',
-                            equalTo: 'DataSource'
-                        }, {
-                            what: 'providerName',
-                            equalTo: found[1]
-                        }]
-                    });
-
-                    if (ds === undefined) {
-                        BootstrapDialog.alert({
-                            type: BootstrapDialog.TYPE_DANGER,
-                            message: 'Data source cannot be resolved'
-                        });
-                    }
-
-                    replaced.push({
-                        find: '{{ad.{0}{1}}}'.format(found[1], found[3]),
-                        value: '{{ad.{0}{1}}}'.format(ds.providerId, found[3])
-                    });
-                }
-
-                angular.forEach(replaced, function (item) {
-                    val = val.replace(item.find, item.value);
-                });
-
-                return val;
             },
             doQuery: function (q, resource) {
                 var defer = q.defer(), result;
@@ -484,7 +332,7 @@
                     str = "{0}.{1}".format(utils.TRIGGER_PREFIX, field.eventKey);
                     break;
                 case utils.DATA_SOURCE_PREFIX:
-                    str = "{0}.{1}.{2}#{3}.{4}".format(utils.DATA_SOURCE_PREFIX, field.providerId, field.providerType, field.objectId, field.fieldKey);
+                    str = "{0}.{1}.{2}#{3}.{4}".format(utils.DATA_SOURCE_PREFIX, field.providerName, field.providerType, field.objectId, field.fieldKey);
                     break;
                 default:
                     str = field.displayName;

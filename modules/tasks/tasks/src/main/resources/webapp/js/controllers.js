@@ -421,7 +421,7 @@
                             });
 
                             if (step['@type'] === 'DataSource') {
-                                source = $scope.findDataSource(step.providerId);
+                                source = $scope.findDataSource(step.providerName);
                                 object = $scope.util.find({
                                     where: source.objects,
                                     by: {
@@ -687,7 +687,7 @@
                     });
 
                     if (select) {
-                        text = $scope.findObject(select.providerId, text[0]);
+                        text = $scope.findObject(select.providerName, text[0]);
                         text = $scope.util.find({
                             msg: $scope.msg,
                             where: text.fields,
@@ -720,7 +720,7 @@
                 filter.type = select.type;
                 break;
             case $scope.util.DATA_SOURCE_PREFIX:
-                filter.key = "{0}.{1}.{2}#{3}.{4}".format($scope.util.DATA_SOURCE_PREFIX, select.providerId, select.type, select.objectId, field.fieldKey);
+                filter.key = "{0}.{1}.{2}#{3}.{4}".format($scope.util.DATA_SOURCE_PREFIX, select.providerName, select.type, select.objectId, field.fieldKey);
                 filter.displayName = "{0}.{1}.{2}#{3}.{4}".format($scope.util.DATA_SOURCE_PREFIX, select.providerName, select.type, select.objectId, field.fieldKey);
                 filter.type = field.type;
                 break;
@@ -789,18 +789,18 @@
             });
         };
 
-        $scope.findDataSource = function (providerId) {
+        $scope.findDataSource = function (providerName) {
             return $scope.util.find({
                 where: $scope.dataSources,
                 by: {
-                    what: 'id',
-                    equalTo: providerId
+                    what: 'name',
+                    equalTo: providerName
                 }
             });
         };
 
-        $scope.findObject = function (providerId, type, id) {
-            var dataSource = $scope.findDataSource(providerId),
+        $scope.findObject = function (providerName, type, id) {
+            var dataSource = $scope.findDataSource(providerName),
                 by,
                 found;
 
@@ -825,7 +825,7 @@
         };
 
         $scope.selectDataSource = function (dataSource, selected) {
-            if (dataSource.providerId) {
+            if (dataSource.providerName) {
                 motechConfirm('task.confirm.changeDataSource', 'task.header.confirm', function (val) {
                     if (val) {
                         dataSource.name = '';
@@ -924,14 +924,6 @@
 
                     angular.forEach($scope.task.actions, function (action) {
                         delete action.values;
-                    });
-
-                    angular.forEach($scope.task.taskConfig.steps, function (step) {
-                        if (step['@type'] === 'DataSource') {
-                            angular.forEach(step.lookup, function(lookupField) {
-                                lookupField.value = $scope.util.convertToView($scope, 'UNICODE', lookupField.value);
-                            });
-                        }
                     });
 
                     delete $scope.task.enabled;

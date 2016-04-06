@@ -7,7 +7,7 @@ import org.motechproject.mds.domain.RelationshipHolder;
 import org.motechproject.mds.exception.action.ActionHandlerException;
 import org.motechproject.mds.exception.entity.ServiceNotFoundException;
 import org.motechproject.mds.helper.DataServiceHelper;
-import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.repository.internal.AllEntities;
 import org.motechproject.mds.service.ActionHandlerService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.Constants;

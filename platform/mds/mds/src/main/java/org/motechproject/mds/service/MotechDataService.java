@@ -1,5 +1,7 @@
 package org.motechproject.mds.service;
 
+import org.motechproject.mds.exception.audit.HistoryInstanceNotFoundException;
+import org.motechproject.mds.exception.audit.TrashInstanceNotFoundException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryParams;
@@ -38,14 +40,14 @@ public interface MotechDataService<T> {
     T retrieve(String primaryKeyName, Object value);
 
     /**
-     * Retrieves all instances of the {@value T} type.
+     * Retrieves all instances of the {@param <T>} type.
      *
      * @return all instances
      */
     List<T> retrieveAll();
 
     /**
-     * Retrieves all instances of the {@value T} type, that match the provided
+     * Retrieves all instances of the {@param <T>} type, that match the provided
      * parameters.
      *
      * @param queryParams query parameters to be used retrieving instances
@@ -123,7 +125,7 @@ public interface MotechDataService<T> {
      * Brings an instance back from trash.
      * @param trashId the id of the trash instance
      * @return the brought back instance
-     * @throws org.motechproject.mds.exception.TrashInstanceNotFoundException if the trash instance with the given id was not found
+     * @throws TrashInstanceNotFoundException if the trash instance with the given id was not found
      */
     T revertFromTrash(Long trashId);
 
@@ -132,7 +134,7 @@ public interface MotechDataService<T> {
      * @param instanceId the id of the instance which will be reverted
      * @param historicalId the id of the historical revision that we are reverting to
      * @return the reverted instance
-     * @throws org.motechproject.mds.exception.HistoryInstanceNotFoundException if the historical instance with historicalId was not found
+     * @throws HistoryInstanceNotFoundException if the historical instance with historicalId was not found
      * @throws org.motechproject.mds.exception.object.ObjectNotFoundException if entity with instanceId was not found
      */
     T revertToHistoricalRevision(Long instanceId, Long historicalId);
@@ -154,7 +156,7 @@ public interface MotechDataService<T> {
     Object getDetachedField(T instance, String fieldName);
 
     /**
-     * Retrieves all instances of type {@value T} from MDS, filtered using specified filters
+     * Retrieves all instances of type {@param <T>} from MDS, filtered using specified filters
      * and query params.
      *
      * @param filters filters to use filtering instances
@@ -172,7 +174,7 @@ public interface MotechDataService<T> {
     long countForFilters(Filters filters);
 
     /**
-     * Removes all instances of type {@value T} from MDS.
+     * Removes all instances of type {@param <T>} from MDS.
      */
     void deleteAll();
 
@@ -183,7 +185,7 @@ public interface MotechDataService<T> {
      *
      * @param queryExecution implementation of the {@link QueryExecution}, with custom behaviour
      * @param <R> type that should be returned from the custom query
-     * @return anything of type {@value R}. Left to the developer, implementing the custom query.
+     * @return anything of type {@param <R>}. Left to the developer, implementing the custom query.
      */
     <R> R executeQuery(QueryExecution<R> queryExecution);
 
@@ -206,7 +208,7 @@ public interface MotechDataService<T> {
     void evictEntityCache(boolean withSubclasses);
 
     /**
-     * Retrieves instance of type {@value T} and given id from MDS.
+     * Retrieves instance of type {@param <T>} and given id from MDS.
      *
      * @param id id of the instance
      * @return instance with the given id
@@ -214,7 +216,7 @@ public interface MotechDataService<T> {
     T findById(Long id);
 
     /**
-     * Retrieves multiple instances of type {@value T} and given ids from MDS. It will not fail
+     * Retrieves multiple instances of type {@param <T>} and given ids from MDS. It will not fail
      * if it is unable to find an instance for one or more IDs and will return a collection of these
      * instances that could be found. If null is passed as keys, it will return an empty list.
      *
@@ -231,7 +233,7 @@ public interface MotechDataService<T> {
      *
      * @param transactionCallback implementation of the {@link TransactionCallback}
      * @param <R> type that should be returned from the transaction
-     * @return anything of type {@value R}. Left to the developer, implementing the transaction
+     * @return anything of type {@param <R>}. Left to the developer, implementing the transaction
      */
     <R> R doInTransaction(TransactionCallback<R> transactionCallback);
 
@@ -241,7 +243,7 @@ public interface MotechDataService<T> {
      *
      * @param queryExecution implementation of the {@link SqlQueryExecution}
      * @param <R> type that should be returned by the custom sql query
-     * @return anything of type {@value R}, left to the developer, implementing the custom sql query.
+     * @return anything of type {@param <R>}, left to the developer, implementing the custom sql query.
      */
     <R> R executeSQLQuery(SqlQueryExecution<R> queryExecution);
 

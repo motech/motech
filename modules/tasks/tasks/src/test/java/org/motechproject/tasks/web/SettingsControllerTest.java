@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.config.SettingsFacade;
-import org.motechproject.tasks.domain.SettingsDto;
+import org.motechproject.tasks.web.domain.SettingsDto;
 import org.osgi.framework.BundleException;
 import org.powermock.modules.junit4.PowerMockRunner;
 
