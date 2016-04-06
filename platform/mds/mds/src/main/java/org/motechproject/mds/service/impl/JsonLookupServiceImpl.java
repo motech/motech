@@ -1,7 +1,7 @@
 package org.motechproject.mds.service.impl;
 
 import org.motechproject.mds.dto.JsonLookupDto;
-import org.motechproject.mds.repository.AllJsonLookups;
+import org.motechproject.mds.repository.internal.AllJsonLookups;
 import org.motechproject.mds.service.JsonLookupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

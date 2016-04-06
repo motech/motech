@@ -83,7 +83,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="toolbox">
+            <div class="toolbox btn-group">
                 <input ng-show="role.deletable" ng-disabled="roleForm.$invalid" class="btn btn-primary" type="submit" value="{{msg('security.save')}}" ng-click="saveRole()"/>
                 <input class="btn btn-default" type="submit" value="{{msg('security.cancel')}}" ng-click="cancelRole()"/>
             </div>
@@ -105,7 +105,7 @@
             <div ng-show="role.deletable && deleteR && isEdit == true" class="form-group">
                 <div class="controls">
                     <span>
-                        <input class="btn btn-primary" type="button" value="{{msg('security.delete')}}" ng-click="deleteRole()" />
+                        <input class="btn btn-danger" type="button" value="{{msg('security.delete')}}" ng-click="deleteRole()" />
                     </span>
                 </div>
             </div>

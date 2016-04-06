@@ -2,6 +2,7 @@ package org.motechproject.scheduler.tasks;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.scheduler.constants.SchedulerConstants;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 
 import java.util.HashMap;
@@ -13,7 +14,6 @@ public class SchedulerEventParserTest {
 
     private static final String SUBJECT = "some-subject";
     private static final String TRIGGER_LISTENER_SUBJECT = "trigger-listener-subject";
-    private static final String PARSER_NAME = "SchedulerJobs";
 
     private SchedulerEventParser eventParser;
 
@@ -44,7 +44,7 @@ public class SchedulerEventParserTest {
 
     @Test
     public void shouldGetName() throws Exception {
-        assertEquals(PARSER_NAME, eventParser.getName());
+        assertEquals(SchedulerConstants.PARSER_NAME, eventParser.getName());
     }
 
     private Map<String, Object> prepareParameter(String expectedSubject) {

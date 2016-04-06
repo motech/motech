@@ -4,7 +4,7 @@ import org.motechproject.mds.exception.MdsException;
 
 /**
  * The <code>ActionHandlerException</code> exception signals a situation in which there were some
- * problems with executing action in <code>ActionHandlerService</code>.
+ * problems with executing action in {@link org.motechproject.mds.service.ActionHandlerService}.
  *
  * @see org.motechproject.mds.service.ActionHandlerService
  */

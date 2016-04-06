@@ -9,7 +9,7 @@ import org.motechproject.security.email.EmailSender;
 import org.motechproject.security.exception.ServerUrlIsEmptyException;
 import org.motechproject.security.exception.VelocityTemplateParsingException;
 import org.motechproject.security.velocity.VelocityTemplateParser;
-import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,7 +3,7 @@ package org.motechproject.tasks.repository;
 import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.mds.channel.Channel;
 
 /**
  * Data service for channels.

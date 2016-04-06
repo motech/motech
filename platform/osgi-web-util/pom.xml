@@ -4,14 +4,14 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.29-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
 
     <artifactId>motech-platform-osgi-web-util</artifactId>
     <name>MOTECH OSGI Web Util</name>
     <description>MOTECH Osgi Web Util</description>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.29-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
@@ -32,11 +32,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-osgi-extender-fragment</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -90,7 +85,6 @@
                         <Import-Package>
                             org.osgi.util.tracker;version="0.0.0",
                             org.osgi.framework;version="0.0.0",
-                            org.motechproject.server.api,
                             *
                         </Import-Package>
                         <Bundle-Activator>

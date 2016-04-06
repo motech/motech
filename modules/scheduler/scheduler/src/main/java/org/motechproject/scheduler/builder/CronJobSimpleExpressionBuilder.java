@@ -42,6 +42,7 @@ public class CronJobSimpleExpressionBuilder {
      */
     public String build() {
         String day = dayOfMonth == 0 ? "*" : "*/" + dayOfMonth;
+
         return String.format(CRON_JOB_EXPR, startTime.getMinute(), startTime.getHour(), day);
     }
 }

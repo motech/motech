@@ -54,6 +54,5 @@ public final class EntityDefaultFieldsHelper {
     }
 
     private EntityDefaultFieldsHelper() {
-
     }
 }

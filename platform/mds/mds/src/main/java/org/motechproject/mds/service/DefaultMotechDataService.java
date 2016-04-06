@@ -7,9 +7,9 @@ import org.motechproject.mds.entityinfo.EntityInfo;
 import org.motechproject.mds.entityinfo.EntityInfoReader;
 import org.motechproject.mds.entityinfo.FieldInfo;
 import org.motechproject.mds.event.CrudEventType;
-import org.motechproject.mds.exception.HistoryInstanceNotFoundException;
-import org.motechproject.mds.exception.SchemaVersionException;
-import org.motechproject.mds.exception.TrashInstanceNotFoundException;
+import org.motechproject.mds.exception.audit.HistoryInstanceNotFoundException;
+import org.motechproject.mds.exception.object.SchemaVersionException;
+import org.motechproject.mds.exception.audit.TrashInstanceNotFoundException;
 import org.motechproject.mds.exception.object.ObjectNotFoundException;
 import org.motechproject.mds.exception.object.ObjectUpdateException;
 import org.motechproject.mds.exception.object.SecurityException;
@@ -317,8 +317,11 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
             T newInstance = getClassType().newInstance();
 
             copyValuesFromRecord(newInstance, trashRecord);
+            newInstance = create(newInstance);
 
-            return create(newInstance);
+            trashService.removeFromTrash(trashRecord);
+
+            return newInstance;
         } catch (InstantiationException | IllegalAccessException e) {
             throw new ObjectUpdateException(trashRecord.getClass().getName(), trashId, e);
         }

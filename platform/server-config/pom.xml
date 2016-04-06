@@ -3,7 +3,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.29-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -11,7 +11,7 @@
     <name>MOTECH Platform Server Config</name>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-server-config</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.29-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
@@ -76,12 +76,10 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.server.config;version=${project.version},
-                            org.motechproject.server.config.domain;version=${project.version},
-                            org.motechproject.server.config.service;version=${project.version},
-                            org.motechproject.config.service;version=${project.version},
+                            org.motechproject.config;version=${project.version},
                             org.motechproject.config.domain;version=${project.version},
-                            org.motechproject.config.monitor;version=${project.version}
+                            org.motechproject.config.mds;version=${project.version},
+                            org.motechproject.config.service;version=${project.version},
                         </Export-Package>
                         <Import-Package>
                             net.sf.cglib.proxy,

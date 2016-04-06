@@ -30,7 +30,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.RestOptions;
-import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.repository.internal.AllEntities;
 import org.motechproject.mds.testutil.FieldTestHelper;
 import org.motechproject.mds.util.Constants;
 import org.springframework.context.MessageSource;

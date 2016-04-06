@@ -2,7 +2,7 @@ package org.motechproject.email.settings;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.config.SettingsFacade;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;

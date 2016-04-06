@@ -13,7 +13,17 @@ import javax.jdo.Query;
  */
 public interface SqlQueryExecution<T> {
 
+    /**
+     * The implementation of this method should prepare the {@link Query} object for the
+     * SQL query execution (eg. by inserting the necessary params).
+     *
+     * @param query query object, that will be used during query execution
+     * @return defining the return type is left to whoever implements this interface
+     */
     T execute(Query query);
 
+    /**
+     * @return raw SQL query that will be executed
+     */
     String getSqlQuery();
 }

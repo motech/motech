@@ -7,7 +7,7 @@ import org.motechproject.mds.config.ModuleSettings;
 import org.motechproject.mds.config.SettingsService;
 import org.motechproject.mds.config.TimeUnit;
 import org.motechproject.mds.domain.ConfigSettings;
-import org.motechproject.mds.repository.AllConfigSettings;
+import org.motechproject.mds.repository.internal.AllConfigSettings;
 import org.motechproject.mds.service.TrashService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
