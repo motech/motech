@@ -281,19 +281,6 @@
             needExpression: function (param) {
                 return param && $.inArray(param, ['task.exist', 'task.afterNow', 'task.beforeNow']) === -1;
             },
-            createBooleanSpan: function (scope, value) {
-                var badgeType = (value ? 'success' : 'important'),
-                    msg = (value ? scope.msg('yes') : scope.msg('no')),
-                    span = $('<span/>');
-
-                span.attr('contenteditable', 'false');
-                span.attr('data-value', value);
-                span.attr('data-prefix', 'other');
-                span.addClass('badge badge-' + badgeType);
-                span.text(msg);
-
-                return $('<div/>').append(span).html();
-            },
             createErrorMessage: function (scope, response, warning) {
                 var msg;
                 if (warning) {

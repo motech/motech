@@ -1007,21 +1007,6 @@
             return expression;
         };
 
-        $scope.getBooleanValue = function (value) {
-            return (value === 'true' || value === 'false') ? null : value;
-        };
-
-        $scope.setBooleanValue = function (action, index, value) {
-            $scope.filter($scope.selectedAction[action].actionParameters, {hidden: false})[index].value = $scope.util.createBooleanSpan($scope, value);
-        };
-
-        $scope.checkedBoolean = function (action, index, val) {
-            var prop = $scope.filter($scope.selectedAction[action].actionParameters, {hidden: false})[index],
-                value = $scope.refactorDivEditable(prop.value === undefined ? '' : prop.value);
-
-            return value === val;
-        };
-
         $scope.getTaskValidationError = function (error) {
             var array = [], i;
 
@@ -1060,7 +1045,7 @@
             dataSources = $scope.getDataSources();
             if(dataSources && Array.isArray(dataSources)){
                 dataSources.forEach(function (source) {
-                    var service = $scope.findObject(source.providerId, source.type);
+                    var service = $scope.findObject(source.providerName, source.type);
                     if (!service || !service.fields){
                         return false;
                     }
@@ -1070,7 +1055,6 @@
                         field.serviceName = service.displayName;
                         field.providerName = source.providerName;
                         field.providerType = source.type;
-                        field.providerId = source.providerId;
                         field.objectId = source.objectId;
                         fields.push(field);
                     });

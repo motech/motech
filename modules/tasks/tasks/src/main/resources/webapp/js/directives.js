@@ -226,11 +226,15 @@
             restrict: 'E',
             replace: false,
             scope:{
-                field: "=",
-                editable: "=?"
+                field: "=?",
+                editable: "=?",
+                boolean: "@?"
             },
             link: function (scope, element, attrs) {
                 scope.msg = scope.$parent.taskMsg || scope.$parent.msg;
+                if(!scope.field) {
+                    scope.field = {};
+                }
                 if(!scope.field.manipulations || !Array.isArray(scope.field.manipulations)){
                     scope.field.manipulations = [];
                 }
@@ -242,11 +246,23 @@
                         scope.field.objectId,
                         scope.msg(scope.field.displayName)
                     );
+                } else if (scope.boolean) {
+                    if(scope.boolean === 'true') {
+                        scope.displayName = scope.msg("yes");
+                        scope.field.prefix = 'boolean';
+                    } else if (scope.boolean === 'false') {
+                        scope.displayName = scope.msg("no");
+                        scope.field.prefix = 'boolean';
+                    }
                 } else {
                     scope.displayName = scope.msg(scope.field.displayName);
                 }
-
-                element.data('value', scope.field);
+                if(scope.boolean) {
+                    element.data('value', scope.boolean);
+                } else {
+                    element.data('value', scope.field);
+                }
+                element.attr('contenteditable', false);
 
                 element.click(function (event) {
                     if($(event.target).hasClass("field-remove")){
@@ -341,8 +357,12 @@
             element.contents().each(function(){
                 var field, ele = $(this);
                 if(this.tagName && this.tagName.toLowerCase() === 'field'){
-                    field = ele.data('value');
-                    container.append(formatField(field));
+                    if(ele.attr("boolean")){
+                        container.append(ele.attr("boolean"));
+                    }else{
+                        field = ele.data('value');
+                        container.append(formatField(field));
+                    }
                 }else{
                     container.append(ele.text());
                 }
@@ -396,7 +416,14 @@
             fieldScope.$on('field.changed', function (event) { // Added because scope.$on wasn't catching field.changed event (this might be a 1.2x bug)
                 scope.$emit('field.changed');
             });
-            return $compile('<field field="field" editable="true" contenteditable="false" />')(fieldScope);
+            return $compile('<field field="field" editable="true" />')(fieldScope);
+        }
+        function makeBooleanFieldElement (str, scope) {
+            var fieldScope = scope.$parent.$new(false, scope);
+            fieldScope.$on('field.changed', function (event) { // Added because scope.$on wasn't catching field.changed event (this might be a 1.2x bug)
+                scope.$emit('field.changed');
+            });
+            return $compile('<field boolean="'+str+'" />')(fieldScope);
         }
 
         return {
@@ -442,16 +469,15 @@
                     if(!ngModel.$viewValue){
                         return false;
                     }
-                    parsedValue = parseField(ngModel.$viewValue);
-                    if (parsedValue) {
-                        parsedValue.forEach(function(str){
-                            if(findField(str)){
-                                element.append(makeFieldElement(str, scope));
-                            } else {
-                                element.append(str);
-                            }
-                        });
-                    }
+                    parseField(ngModel.$viewValue).forEach(function(str){
+                        if(findField(str)){
+                            element.append(makeFieldElement(str, scope));
+                        } else if (element.data('type') === 'BOOLEAN' && (str === 'true' || str === 'false')){
+                            element.append(makeBooleanFieldElement(str, scope));
+                        } else {
+                            element.append(str);
+                        }
+                    });
                 };
 
                 scope.$on('field.dropped', function(event, field) {

@@ -104,10 +104,10 @@
                         </div>
                         <div ui-if="i.type == 'BOOLEAN'">
                             <label class="radio-inline">
-                                <input type="radio" class=" " ng-checked="checkedBoolean($parent.$parent.$parent.$index, $index, 'true')" ng-click="setBooleanValue($parent.$parent.$parent.$index, $index, true)"/> {{msg('yes')}}
+                                <input type="radio" class="" ng-checked="i.value==='true'" ng-click="i.value='true'"/> {{msg('yes')}}
                             </label>
                             <label class="radio-inline">
-                                <input type="radio" class="" ng-checked="checkedBoolean($parent.$parent.$parent.$index, $index, 'false')" ng-click="setBooleanValue($parent.$parent.$parent.$index, $index, false)"/> {{msg('no')}}
+                                <input type="radio" class="" ng-checked="i.value==='false'" ng-click="i.value='false'"/> {{msg('no')}}
                             </label>
                             <label class="radio-inline">
                                 <editable-content data="i" index="$index" type="BOOLEAN"></editable-content>
