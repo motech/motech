@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.server.commons.PlatformCommons;
+import org.motechproject.server.commons.impl.PlatformCommonsImpl;
 import org.springframework.core.io.ResourceLoader;
 
 import java.util.HashMap;

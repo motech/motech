@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.HttpStatus;
+import org.motechproject.server.commons.PlatformCommons;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.utils.TestContext;
@@ -19,6 +20,9 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -34,11 +38,15 @@ import static org.junit.Assert.fail;
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class ModuleInstallFT extends BasePaxIT {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String HOST = "localhost";
     private static final int PORT = TestContext.getJettyPort();
 
     @Inject
     private BundleContext bundleContext;
+
+    @Inject
+    private PlatformCommons platformCommons;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -48,14 +56,14 @@ public class ModuleInstallFT extends BasePaxIT {
 
     @Test
     public void testUploadBundleFromRepository() throws IOException, InterruptedException {
-        uploadBundle("Repository", "org.motechproject:cms-lite:LATEST", null,
+        uploadBundle("Repository", "org.motechproject:cms-lite:" + platformCommons.getMotechVersion(), null,
                 "on","org.motechproject.cms-lite");
     }
 
     //MOTECH-2259
     @Test
     public void testUploadAtomClientBundleFromRepository() throws IOException, InterruptedException {
-        uploadBundle("Repository", "org.motechproject:atom-client:LATEST", null,
+        uploadBundle("Repository", "org.motechproject:atom-client:" + platformCommons.getMotechVersion(), null,
                 "on","org.motechproject.atom-client");
     }
 
