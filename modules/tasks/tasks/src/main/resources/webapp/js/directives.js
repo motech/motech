@@ -270,42 +270,21 @@
                         scope.$emit('field.changed');
                     }
                 });
+
+                if(attrs.draggable !== undefined) {
+                    element.draggable({
+                        revert: true,
+                        start: function () {
+                            if (element.hasClass('draggable')) {
+                                element.find("div:first-child").popover('hide');
+                            }
+                        }
+                    });
+                }
             },
             templateUrl: '../tasks/partials/field.html'
         };
     }]);
-
-    directives.directive('draggable', function () {
-        return {
-            restrict: 'A',
-            link: function (scope, element, attrs) {
-                element
-                  .draggable({
-                    revert: true,
-                    start: function () {
-                        if (element.hasClass('draggable')) {
-                            element.find("div:first-child").popover('hide');
-                        }
-                    }
-                });
-            }
-        };
-    });
-
-
-    directives.directive('droppable', function (ManageTaskUtils, $compile) {
-        return {
-            restrict: 'A',
-            link: function (scope, element, attrs) {
-                element.droppable({
-                    drop: function (event, ui) {
-                        var field = ui.draggable.data('value');
-                        scope.$emit('field.dropped', field);
-                    }
-                });
-            }
-        };
-    });
 
     directives.directive('integer', function () {
         return {
@@ -480,33 +459,38 @@
                     });
                 };
 
-                scope.$on('field.dropped', function(event, field) {
-                    var offset,
-                        selection = rangy.getSelection(),
-                        anchorText = false;
-                    event.stopPropagation();
+                if(attrs.droppable !== undefined) {
+                    element.droppable({
+                        drop: function (event, ui) {
+                            var field = ui.draggable.data('value'),
+                            offset,
+                            selection = rangy.getSelection(),
+                            anchorText = false;
+                            event.stopPropagation();
 
-                    // Test anchorNode existance, because it might not exist
-                    if (selection && selection.anchorNode) {
-                        anchorText = selection.anchorNode.wholeText;
-                    }
+                            // Test anchorNode existance, because it might not exist
+                            if (selection && selection.anchorNode) {
+                                anchorText = selection.anchorNode.wholeText;
+                            }
 
-                    if(!field){
-                        return false;
-                    }
-                    field = formatField(field);
-                    if(element[0].contains(selection.anchorNode) && anchorText){
-                        $(selection.anchorNode).before(
-                            anchorText.substring(0, selection.anchorOffset)
-                            + field
-                            + anchorText.substring(selection.anchorOffset)
-                        ).remove();
-                    } else {
-                        element.append(field);
-                    }
-                    ngModel.$setViewValue(readContent(element));
-                    scope.$apply();
-                });
+                            if(!field){
+                                return false;
+                            }
+                            field = formatField(field);
+                            if(element[0].contains(selection.anchorNode) && anchorText){
+                                $(selection.anchorNode).before(
+                                    anchorText.substring(0, selection.anchorOffset)
+                                    + field
+                                    + anchorText.substring(selection.anchorOffset)
+                                ).remove();
+                            } else {
+                                element.append(field);
+                            }
+                            ngModel.$setViewValue(readContent(element));
+                            scope.$apply();
+                        }
+                    });
+                }
             }
         };
     });
