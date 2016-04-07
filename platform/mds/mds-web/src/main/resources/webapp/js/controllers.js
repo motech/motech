@@ -877,6 +877,8 @@
             $scope.advancedSettings = Entities.getAdvanced({id: $scope.selectedEntity.id},
                 function () {
                     $scope.blockLookups = false;
+                    $scope.isNewLookupFieldButtonDisabled = false;
+                    $scope.isNewLookupButtonDisabled = false;
                     checkActiveIndex(true);
                     setRest();
                     setBrowsing();
@@ -1066,8 +1068,7 @@
             $scope.currentError = undefined;
         };
 
-        $scope.draft = function (data, callback) {
-
+        $scope.draft = function (data, callback, errorCallback) {
             var pre = { id: $scope.selectedEntity.id },
             func = function (data) {
                 $scope.unsetError();
@@ -1084,6 +1085,7 @@
             },
             errorHandler = function(title, msg, params) {
                 $scope.setError(msg, params);
+                errorCallback();
             };
 
             Entities.draft(pre, data, func, angularHandler('mds.error', 'mds.error.draftSave', errorHandler));
@@ -1995,6 +1997,7 @@
         * Adds a new index and sets it as the active one
         */
         $scope.addNewIndex = function () {
+            $scope.isNewLookupButtonDisabled = true;
             var newLookup = {
                 lookupName: $scope.getLookupNameForNewLookup(),
                 singleObjectReturn: true,
@@ -2012,6 +2015,9 @@
             }, function () {
                 $scope.advancedSettings.indexes.push(newLookup);
                 $scope.setActiveIndex($scope.advancedSettings.indexes.length-1);
+                $scope.isNewLookupButtonDisabled = false;
+            }, function () {
+                $scope.isNewLookupButtonDisabled = false;
             });
         };
         $scope.blockLookups = false;
@@ -2128,8 +2134,8 @@
         * Adds new lookup field to the currently active index
         */
         $scope.addLookupField = function () {
+            $scope.isNewLookupFieldButtonDisabled = true;
             var value = $scope.availableFields[0] && $scope.availableFields[0].id;
-
             $scope.draft({
                 edit: true,
                 values: {
@@ -2143,7 +2149,11 @@
                     type: "VALUE"
                 });
                 $scope.setAvailableFields();
+                $scope.isNewLookupFieldButtonDisabled = false;
+            }, function () {
+                $scope.isNewLookupFieldButtonDisabled = false;
             });
+
         };
 
         /**
