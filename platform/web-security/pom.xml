@@ -182,8 +182,6 @@
                             net.sf.cglib.reflect,
                             net.sf.cglib.core,
                             org.aopalliance.aop,
-                            org.apache.bval.constraints,
-                            org.apache.bval.jsr303,
                             org.eclipse.gemini.blueprint.config,
                             org.motechproject.config,
                             org.motechproject.config.service,

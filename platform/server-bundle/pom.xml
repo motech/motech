@@ -157,8 +157,6 @@
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,
-                            org.apache.bval.jsr303,
-                            org.apache.bval.constraints,
                             org.motechproject.config.service,
                             org.motechproject.security.domain,
                             org.osgi.framework;version="0.0.0",

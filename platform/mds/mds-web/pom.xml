@@ -76,8 +76,6 @@
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,
-                            org.apache.bval.jsr303,
-                            org.apache.bval.constraints,
                             org.eclipse.gemini.blueprint.config,
                             org.motechproject.mds.service,
                             org.motechproject.osgi.web,

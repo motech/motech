@@ -150,8 +150,6 @@
                             org.motechproject.scheduler.tasks;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            org.apache.bval.jsr303,
-                            org.apache.bval.constraints,
                             org.apache.commons.dbcp,
                             org.eclipse.gemini.blueprint.config,
                             com.mysql.jdbc,

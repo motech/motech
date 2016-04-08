@@ -174,8 +174,6 @@
                             net.sf.cglib.proxy,
                             net.sf.cglib.reflect,
                             org.aopalliance.aop,
-                            org.apache.bval.jsr303,
-                            org.apache.bval.constraints,
                             org.motechproject.config.service,
                             org.springframework.aop,
                             org.springframework.aop.framework,
