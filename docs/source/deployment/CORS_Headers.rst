@@ -44,6 +44,16 @@ In this header we can specify which domains have access to resources. We can all
    Access-Control-Allow-Origin: "http://motech-ui.example" (allow access from only "http://motech-ui.example" origin)
    Access-Control-Allow-Origin: "http://motech-ui.example | http://other.domain" (allow access from two mentioned origins)
 
+Access-Control-Allow-Methods
+-----------------------------
+
+Comma-delimited list of the supported HTTP methods (`GET`, `POST`, `PUT`, `DELETE`, `HEAD`,  `OPTIONS`). Examples:
+GET, POST, PUT, DELETE, HEAD, OPTIONS
+.. code-block::
+
+   Access-Control-Allow-Methods: "GET" (only GET method is allowed in request)
+   Access-Control-Allow-Methods: "POST, GET" (POST and GET are allowed in request)
+
 Access-Control-Allow-Headers
 ----------------------------
 
@@ -93,6 +103,7 @@ Here is a different config example (let's assume that http://motech-ui.example i
 
     <directory /var/www/>
         Header always set Access-Control-Allow-Origin "http://motech-ui.example"
+        Header always set Access-Control-Allow-Methods "GET,POST,PUT,DELETE,HEAD,OPTIONS"
         Header always set Access-Control-Allow-Headers "Content-Type,X-Requested-With,Accept,Authorization,Origin,Access-Control-Request-Method,Access-Control-Request-Headers"
         Header always set Access-Control-Expose-Headers "Access-Control-Allow-Origin,Access-Control-Allow-Credentials"
     </directory>
@@ -144,6 +155,10 @@ Here is a different config example (let's assume that http://motech-ui.example i
         <init-param>
             <param-name>cors.allowed.origins</param-name>
             <param-value>http://motech-ui.example</param-value>
+        </init-param>
+        <init-param>
+            <param-name>cors.allowed.methods</param-name>
+            <param-value>GET,POST,PUT,DELETE,HEAD,OPTIONS</param-value>
         </init-param>
         <init-param>
             <param-name>cors.allowed.headers</param-name>
