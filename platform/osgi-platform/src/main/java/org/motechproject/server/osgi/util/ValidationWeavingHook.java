@@ -24,6 +24,9 @@ public class ValidationWeavingHook implements WeavingHook {
     private static final String SERVICES_FILE = "META-INF/services/javax.validation.spi.ValidationProvider";
     private static final String FILTER = "filter";
 
+    private static final String JSR_303_IMPORT = "org.apache.bval.jsr303";
+    private static final String CONSTRAINTS_IMPORT = "org.apache.bval.constraints";
+
     @Override
     public void weave(WovenClass wovenClass) {
         BundleWiring wiring = wovenClass.getBundleWiring();
@@ -35,6 +38,13 @@ public class ValidationWeavingHook implements WeavingHook {
                     wiring.getBundle().getSymbolicName());
 
             wovenClass.getDynamicImports().add(SERVICES_FILE_PACKAGE);
+
+            if (!wovenClass.getDynamicImports().contains(JSR_303_IMPORT)) {
+                wovenClass.getDynamicImports().add(JSR_303_IMPORT);
+            }
+            if (!wovenClass.getDynamicImports().contains(CONSTRAINTS_IMPORT)) {
+                wovenClass.getDynamicImports().add(CONSTRAINTS_IMPORT);
+            }
         }
     }
 
