@@ -167,7 +167,6 @@
                             org.aopalliance.aop,
                             org.apache.commons.fileupload,
                             org.motechproject.event.listener,
-                            org.motechproject.server.commons,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.config,
