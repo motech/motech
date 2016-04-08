@@ -31,6 +31,9 @@
     <osgi:service id="commonsDataProviderOsgi" auto-export="interfaces" ref="commonsDataProvider"
                   interface="org.motechproject.commons.api.DataProvider"/>
 
+    <osgi:service id="platformCommonsOsgi" auto-export="interfaces" ref="platformCommons"
+                  interface="org.motechproject.server.commons.PlatformCommons"/>
+
     <osgi:reference id="userService" interface="org.motechproject.security.service.MotechUserService"/>
 
     <osgi:reference id="roleService" interface="org.motechproject.security.service.MotechRoleService"/>
