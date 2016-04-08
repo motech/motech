@@ -48,7 +48,7 @@ Access-Control-Allow-Methods
 -----------------------------
 
 Comma-delimited list of the supported HTTP methods (`GET`, `POST`, `PUT`, `DELETE`, `HEAD`,  `OPTIONS`). Examples:
-GET, POST, PUT, DELETE, HEAD, OPTIONS
+
 .. code-block::
 
    Access-Control-Allow-Methods: "GET" (only GET method is allowed in request)
@@ -87,26 +87,26 @@ Apache Web Server includes support for CORS. To enable CORS support we have to r
 
 	a2enmod headers
 
-Now we can add the CORS headers into server configuration (usually /etc/apache*/apache*.conf). Inside a tag '<directory /var/www/>', we set up CORS headers which we want to add into server configuration.
+Now we can add the CORS headers into server configuration (usually /etc/apache*/apache*.conf). Inside a tag '<LocationMatch "/path">', we set up CORS headers which we want to add into server configuration.
 
 Here is a config example "allow-all-origins":
 
 .. code-block::
 
-    <directory /var/www/>
+    <LocationMatch "/motech-platform-server">
         Header always set Access-Control-Allow-Origin "*"
-    </directory>
+    </LocationMatch>
 
 Here is a different config example (let's assume that http://motech-ui.example is an url to MOTECH-UI application):
 
 .. code-block::
 
-    <directory /var/www/>
+    <LocationMatch "/motech-platform-server">
         Header always set Access-Control-Allow-Origin "http://motech-ui.example"
         Header always set Access-Control-Allow-Methods "GET,POST,PUT,DELETE,HEAD,OPTIONS"
         Header always set Access-Control-Allow-Headers "Content-Type,X-Requested-With,Accept,Authorization,Origin,Access-Control-Request-Method,Access-Control-Request-Headers"
         Header always set Access-Control-Expose-Headers "Access-Control-Allow-Origin,Access-Control-Allow-Credentials"
-    </directory>
+    </LocationMatch>
 
 If changes are made while the Apache server was running, you should restart Apache.
 
