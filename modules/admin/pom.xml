@@ -177,6 +177,7 @@
                             org.springframework.web.servlet.config,
                             org.eclipse.gemini.blueprint.config,
                             org.springframework.security.config,
+                            org.motechproject.server.commons,
                             *
                         </Import-Package>
                         <Export-Package>
