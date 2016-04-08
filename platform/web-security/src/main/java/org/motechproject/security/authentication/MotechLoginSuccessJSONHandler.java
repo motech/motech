@@ -10,6 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Class is responsible for returning successful login attempts
+ * as JSON objects instead of a redirect if the request was Ajax
+ */
+
 public class MotechLoginSuccessJSONHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     @Override

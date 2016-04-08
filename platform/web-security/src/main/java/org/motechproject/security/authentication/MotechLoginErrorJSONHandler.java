@@ -13,6 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Class is responsible for checking login error responses,
+ * and returning a JSON response rather than a redirect
+ * if the response type is Ajax
+ */
+
 public class MotechLoginErrorJSONHandler extends ExceptionMappingAuthenticationFailureHandler {
 
     @Override

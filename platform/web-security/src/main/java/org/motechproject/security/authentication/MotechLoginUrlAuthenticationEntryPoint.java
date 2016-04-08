@@ -11,7 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Used to commence a form login authentication.
+ * Used to commence a form login authentication. Will redirect
+ * if the reqeust wasn't an Ajax request.
  */
 public class MotechLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
 
