@@ -167,6 +167,7 @@
                             org.aopalliance.aop,
                             org.apache.commons.fileupload,
                             org.motechproject.event.listener,
+                            org.motechproject.server.commons,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.config,
@@ -177,7 +178,6 @@
                             org.springframework.web.servlet.config,
                             org.eclipse.gemini.blueprint.config,
                             org.springframework.security.config,
-                            org.motechproject.server.commons,
                             *
                         </Import-Package>
                         <Export-Package>

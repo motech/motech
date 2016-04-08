@@ -9,21 +9,15 @@ import org.springframework.stereotype.Service;
 import java.util.ResourceBundle;
 
 /**
- * Class used with {@link org.motechproject.server.CommonsDataProvider} to provide common
- * values as a data source in Tasks module.
+ * Default implementation of {@link PlatformCommons}.
  */
-@Service
-public class PlatformCommonsImpl implements PlatformCommons{
-
-    public PlatformCommonsImpl() {
-
-    }
+@Service("platformCommons")
+public class PlatformCommonsImpl implements PlatformCommons {
 
     /**
      * Gets current MOTECH version
      * @return version of MOTECH
      */
-
     public String getMotechVersion() {
         return ResourceBundle.getBundle("webapp/messages.messages").getString("server.version");
     }

@@ -20,9 +20,6 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -38,7 +35,6 @@ import static org.junit.Assert.fail;
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class ModuleInstallFT extends BasePaxIT {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String HOST = "localhost";
     private static final int PORT = TestContext.getJettyPort();
 
@@ -60,7 +56,6 @@ public class ModuleInstallFT extends BasePaxIT {
                 "on","org.motechproject.cms-lite");
     }
 
-    //MOTECH-2259
     @Test
     public void testUploadAtomClientBundleFromRepository() throws IOException, InterruptedException {
         uploadBundle("Repository", "org.motechproject:atom-client:" + platformCommons.getMotechVersion(), null,
@@ -95,15 +90,11 @@ public class ModuleInstallFT extends BasePaxIT {
                 fail("Wrong module source.");
                 break;
         }
+
         entity.addTextBody("startBundle", startBundle, ContentType.MULTIPART_FORM_DATA);
         httpPost.setEntity(entity.build());
-
-
-        int bundlesCountBeforeUpload = bundleContext.getBundles().length;
         HttpResponse response = getHttpClient().execute(httpPost);
         EntityUtils.consume(response.getEntity());
-        int bundlesCountAfterUpload = bundleContext.getBundles().length;
-
         assertEquals(HttpStatus.ORDINAL_200_OK, response.getStatusLine().getStatusCode());
 
         Bundle uploadedBundle = getBundleFromBundlesArray(bundleSymbolicName);
