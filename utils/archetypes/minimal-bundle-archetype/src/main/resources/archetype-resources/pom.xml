@@ -180,8 +180,6 @@
                         </Export-Package>
                         <Import-Package>
 #if ($http == 'true')
-                            org.apache.bval.jsr303,
-                            org.apache.bval.constraints,
                             org.motechproject.osgi.web,
                             org.springframework.validation.beanvalidation,
 #end
