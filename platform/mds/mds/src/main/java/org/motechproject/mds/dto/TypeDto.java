@@ -123,7 +123,7 @@ public class TypeDto {
      * Constant <code>CHARACTER</code> is a representation of the MDS Character type.
      */
     public static final TypeDto CHARACTER = new TypeDto(
-            "mds.field.character", "mds.field.description.character", "char", Character.class.getName()
+            "mds.field.character", "mds.field.description.character", "character", Character.class.getName()
     );
     
     /**

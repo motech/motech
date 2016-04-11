@@ -118,9 +118,10 @@
         $scope.modules[$scope.mavenStr('dhis2')] = 'DHIS2';
         $scope.modules[$scope.mavenStr('event-logging')] = 'Event Logging';
         $scope.modules[$scope.mavenStr('http-agent')] = 'Http Agent';
+        $scope.modules[$scope.mavenStr('ihe-interop')] = 'IHE Interop';
         $scope.modules[$scope.mavenStr('ivr')] = 'IVR';
         $scope.modules[$scope.mavenStr('message-campaign')] = 'Message Campaign';
-        $scope.modules[$scope.mavenStr('motech-metrics')] = 'Metrics';
+        $scope.modules[$scope.mavenStr('metrics')] = 'Metrics';
         $scope.modules[$scope.mavenStr('mtraining')] = 'mTraining';
         $scope.modules[$scope.mavenStr('motech-tasks')] = 'Tasks';
         $scope.modules[$scope.mavenStr('odk')] = 'Open Data Kit';

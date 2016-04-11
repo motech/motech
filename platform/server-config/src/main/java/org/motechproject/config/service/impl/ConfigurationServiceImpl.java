@@ -309,7 +309,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             //Persist only non-default properties in database
             toPersist = new Properties();
             for (Map.Entry<Object, Object> entry : newProperties.entrySet()) {
-                if (!defaultProperties.containsKey(entry.getKey()) ||
+                if (defaultProperties == null || !defaultProperties.containsKey(entry.getKey()) ||
                         (!defaultProperties.get(entry.getKey()).equals(newProperties.get(entry.getKey())))) {
                     toPersist.put(entry.getKey(), entry.getValue());
                 }

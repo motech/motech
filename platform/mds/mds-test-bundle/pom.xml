@@ -4,14 +4,14 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.29-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>motech-platform-dataservices-test-bundle</artifactId>
     <name>MOTECH Platform Data Services Test Bundle</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.29-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
@@ -61,6 +61,7 @@
                             org.motechproject.mds.test.domain.manytomany;version=${project.version},
                             org.motechproject.mds.test.domain.qa;version=${project.version},
                             org.motechproject.mds.test.domain.relationshipswithhistory;version=${project.version},
+                            org.motechproject.mds.test.domain.revertFromTrash;version=${project.version},
                             org.motechproject.mds.test.domain.setofenumandstring;version=${project.version},
                             org.motechproject.mds.test.domain.validation;version=${project.version},
                             org.motechproject.mds.test.domain.lookupcomboboxrelation;version=${project.version},
@@ -81,15 +82,16 @@
                             org.motechproject.mds.test.service.lookupcomboboxrelation;version=${project.version},
                             org.motechproject.mds.test.service.editablelookups;version=${project.version},
                             org.motechproject.mds.test.service.mapdeserialisation;version=${project.version},
-                            org.motechproject.mds.test.service.optimisticlocking;version=${project.version}
+                            org.motechproject.mds.test.service.optimisticlocking;version=${project.version},
+                            org.motechproject.mds.test.service.revertFromTrash;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            org.aopalliance.aop,
-                            org.springframework.aop,
-                            org.springframework.aop.framework,
                             net.sf.cglib.core,
                             net.sf.cglib.proxy,
                             net.sf.cglib.reflect,
+                            org.aopalliance.aop,
+                            org.springframework.aop,
+                            org.springframework.aop.framework,
                             org.springframework.transaction,
                             org.motechproject.event.listener,
                             *

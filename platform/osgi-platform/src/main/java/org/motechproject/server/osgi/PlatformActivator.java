@@ -11,6 +11,7 @@ import org.motechproject.server.osgi.status.PlatformStatusManager;
 import org.motechproject.server.osgi.status.PlatformStatusManagerImpl;
 import org.motechproject.server.osgi.util.BundleType;
 import org.motechproject.server.osgi.util.PlatformConstants;
+import org.motechproject.server.osgi.util.ValidationWeavingHook;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -20,6 +21,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
@@ -75,6 +77,9 @@ public class PlatformActivator implements BundleActivator {
         startBundles(BundleType.THIRD_PARTY_BUNDLE);
 
         registerEventProxy();
+
+        // register OSGi hooks
+        registerOSGiHooks();
 
         // start the http bridge
         startBundles(BundleType.HTTP_BUNDLE);
@@ -134,6 +139,10 @@ public class PlatformActivator implements BundleActivator {
         }
     }
 
+    private void registerOSGiHooks() {
+        bundleContext.registerService(WeavingHook.class, new ValidationWeavingHook(), new Hashtable<>());
+    }
+
     private void registerListeners() throws InvalidSyntaxException, ClassNotFoundException {
         // HTTP service and the startup event coming from the server-bundle are required for booting up modules
         registerHttpServiceListener();
@@ -145,7 +154,6 @@ public class PlatformActivator implements BundleActivator {
         // this is for monitoring the startup status
         registerStatusManager();
     }
-
     private void registerHttpServiceListener() throws InvalidSyntaxException {
         bundleContext.addServiceListener(new ServiceListener() {
             @Override
@@ -309,7 +317,7 @@ public class PlatformActivator implements BundleActivator {
             BundleType type = BundleType.forBundle(bundle);
 
             if (!bundlesByType.containsKey(type)) {
-                bundlesByType.put(type, new ArrayList<Bundle>());
+                bundlesByType.put(type, new ArrayList<>());
             }
 
             bundlesByType.get(type).add(bundle);

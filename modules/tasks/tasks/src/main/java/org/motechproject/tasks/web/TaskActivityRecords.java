@@ -1,6 +1,6 @@
 package org.motechproject.tasks.web;
 
-import org.motechproject.tasks.domain.TaskActivity;
+import org.motechproject.tasks.domain.mds.task.TaskActivity;
 
 import java.io.Serializable;
 import java.util.List;

@@ -3,13 +3,13 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.29-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>motech-osgi-platform</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.29-SNAPSHOT</version>
     <name>MOTECH OSGi Platform</name>
     <packaging>bundle</packaging>
 
@@ -31,6 +31,14 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-context-support</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -44,10 +52,14 @@
                             org.motechproject.server.osgi.PlatformActivator
                         </Bundle-Activator>
                         <Export-Package>
+                            META-INF.services;version=${project.version},
                             org.motechproject.server.osgi.event;version=${project.version},
                             org.motechproject.server.osgi.status;version=${project.version},
                             org.motechproject.server.osgi.util;version=${project.version}
                         </Export-Package>
+                        <Import-Package>
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
