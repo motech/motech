@@ -3,7 +3,7 @@
 
     /* Services */
 
-    angular.module('tasks.utils', []).factory('ManageTaskUtils', function () {
+    angular.module('tasks.utils', []).factory('ManageTaskUtils', function (ModalFactory) {
         return {
             TRIGGER_PREFIX: 'trigger',
             DATA_SOURCE_PREFIX: 'ad',
@@ -386,8 +386,8 @@
                     });
 
                     if (ds === undefined) {
-                        BootstrapDialog.alert({
-                            type: BootstrapDialog.TYPE_DANGER,
+                        ModalFactory.alert({
+                            type: 'type-danger',
                             message: 'Data source cannot be resolved'
                         });
                     }

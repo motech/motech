@@ -6,7 +6,7 @@
 
     var controllers = angular.module('scheduler.controllers', []);
 
-    controllers.controller('SchedulerCtrl', function($scope, $timeout, $routeParams, JobsService, Modal) {
+    controllers.controller('SchedulerCtrl', function($scope, $timeout, $routeParams, JobsService, ModalFactory, LoadingModal) {
 
         $scope.jobDetails = {};
 
@@ -21,7 +21,7 @@
 
         $scope.$on('jobsFetched', function() {
             $scope.jobs = JobsService.get();
-            Modal.closeLoadingModal();
+            LoadingModal.close();
         });
 
         JobsService.setListener($scope);
@@ -59,44 +59,44 @@
         };
 
         $scope.pauseJob = function(job) {
-            Modal.motechConfirm("scheduler.confirm.pause", "scheduler.confirm", function(response) {
+            ModalFactory.motechConfirm("scheduler.confirm.pause", "scheduler.confirm", function(response) {
                 if (response) {
-                    Modal.openLoadingModal();
+                    LoadingModal.open();
                     JobsService.pauseJob(job, function(updated) {
                         $scope.updateJob(job, updated);
-                        Modal.closeLoadingModal();
+                        LoadingModal.close();
                     });
                 }
             })
         };
 
         $scope.resumeJob = function(job) {
-            Modal.motechConfirm("scheduler.confirm.resume", "scheduler.confirm", function(response) {
+            ModalFactory.motechConfirm("scheduler.confirm.resume", "scheduler.confirm", function(response) {
                 if (response) {
-                    Modal.openLoadingModal();
+                    LoadingModal.open();
                     JobsService.resumeJob(job, function(updated) {
                        $scope.updateJob(job, updated);
-                       Modal.closeLoadingModal();
+                       LoadingModal.close();
                     });
                 }
             })
         };
 
         $scope.newJob = function() {
-            Modal.openLoadingModal();
+            LoadingModal.open();;
             window.location.href = "#/scheduler/createJob?action=new";
         }
 
         $scope.editJob = function(job) {
             JobsService.setCurrentJob(job);
-            Modal.openLoadingModal();
+            LoadingModal.open();;
             window.location.href = "#/scheduler/createJob?action=edit";
         }
 
         $scope.deleteJob = function(job) {
-            Modal.motechConfirm("scheduler.confirm.delete", "scheduler.confirm", function(response) {
+            ModalFactory.motechConfirm("scheduler.confirm.delete", "scheduler.confirm", function(response) {
                 if (response) {
-                    Modal.openLoadingModal();
+                    LoadingModal.open();;
                     // Go back to previous page when deleting last record on the given page
                     if ($scope.jobs.rows.length === 1 && $scope.jobs.page > 1) {
                         JobsService.setParam("page", $scope.jobs.page - 1);
@@ -133,7 +133,7 @@
         };
     });
 
-    controllers.controller('SchedulerCreateJobCtrl', function($scope, $timeout, $routeParams, JobsService, Modal) {
+    controllers.controller('SchedulerCreateJobCtrl', function($scope, $timeout, $routeParams, JobsService, ModalFactory, LoadingModal) {
 
         innerLayout({}, {
             show: false,
@@ -164,7 +164,7 @@
 
         $scope.addToMap = function(key, value) {
             if (containsKey($scope.motechEventParameters, key)) {
-                Modal.motechAlert("scheduler.keyAlreadyExists", "schedulerKeyAlreadyExists");
+                ModalFactory.motechAlert("scheduler.keyAlreadyExists", "schedulerKeyAlreadyExists");
             } else {
                 $scope.motechEventParameters.push({
                     "key": key,
@@ -179,7 +179,7 @@
         };
 
         $scope.resetMap = function() {
-            Modal.motechConfirm("scheduler.confirm.resetMap", "scheduler.confirm", function(response) {
+            ModalFactory.motechConfirm("scheduler.confirm.resetMap", "scheduler.confirm", function(response) {
                 if (response) {
                     $timeout(function() {
                         $scope.motechEventParameters = [];
@@ -189,7 +189,7 @@
         }
 
         $scope.removeFromMap = function(key) {
-            Modal.motechConfirm("scheduler.confirm.removeItem", "scheduler.confirm", function(response) {
+            ModalFactory.motechConfirm("scheduler.confirm.removeItem", "scheduler.confirm", function(response) {
                 if (response) {
                     var id;
                     for (var i = 0; i < $scope.motechEventParameters.length; i += 1) {
@@ -231,7 +231,7 @@
 
             if ($scope.dates.startDate && $scope.dates.endDate) {
                 if ($scope.dates.startDate >= $scope.dates.endDate) {
-                    Modal.motechAlert("scheduler.error.endDateBeforeStartDate", "scheduler.error", [$scope.dates.startDate, $scope.dates.endDate]);
+                    ModalFactory.motechAlert("scheduler.error.endDateBeforeStartDate", "scheduler.error", [$scope.dates.startDate, $scope.dates.endDate]);
                     return;
                 }
             }
@@ -249,21 +249,21 @@
 
             function success() {
                 window.location.href="#/scheduler";
-                Modal.closeLoadingModal();
+                LoadingModal.close();
             }
 
             function failure(response) {
-                Modal.motechAlert(response.data.key, "scheduler.error", response.data.params);
-                Modal.closeLoadingModal();
+                ModalFactory.motechAlert(response.data.key, "scheduler.error", response.data.params);
+                LoadingModal.close();
             }
 
             if (action === 'new') {
-                Modal.openLoadingModal();
+                LoadingModal.open();;
                 JobsService.createJob(job, success, failure);
             } else if (action === 'edit'){
-                Modal.motechConfirm("scheduler.confirm.updateJob", "scheduler.confirm", function(response) {
+                ModalFactory.motechConfirm("scheduler.confirm.updateJob", "scheduler.confirm", function(response) {
                     if (response) {
-                        Modal.openLoadingModal();
+                        LoadingModal.open();;
                         JobsService.updateJob(job, success, failure);
                     }
                 });
@@ -272,12 +272,12 @@
 
         $scope.typeChanged = function() {
             var job = {};
-            Modal.openLoadingModal();
+            LoadingModal.open();;
             job['@jobType'] = $scope.job['@jobType'];
             job.motechEvent = $scope.job.motechEvent;
             job.startDate = $scope.job.startDate;
             $scope.job = job;
-            Modal.closeLoadingModal();
+            LoadingModal.close();
         }
 
         $scope.parseDateToString = function(milliseconds) {
@@ -327,7 +327,7 @@
             });
         }
 
-        Modal.closeLoadingModal();
+        LoadingModal.close();
     });
 
 }());

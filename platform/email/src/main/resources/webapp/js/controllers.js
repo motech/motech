@@ -4,7 +4,7 @@
     /* Controllers */
     var controllers = angular.module('email.controllers', []);
 
-    controllers.controller('EmailSendCtrl', function ($scope, SendEmailService, Modal) {
+    controllers.controller('EmailSendCtrl', function ($scope, SendEmailService, ModalFactory) {
         $scope.mail = {};
 
         $scope.sendEmail = function () {
@@ -15,10 +15,10 @@
                     {},
                     $scope.mail,
                     function () {
-                        Modal.motechAlert('email.header.success', 'email.sent');
+                        ModalFactory.motechAlert('email.header.success', 'email.sent');
                     },
                     function (response) {
-                        Modal.handleWithStackTrace('email.header.error', 'server.error', response);
+                        ModalFactory.handleWithStackTrace('email.header.error', 'server.error', response);
                     }
                 );
             }
@@ -30,10 +30,10 @@
                 {},
                 $scope.mail,
                 function () {
-                    Modal.motechAlert('email.header.success', 'email.sent');
+                    ModalFactory.motechAlert('email.header.success', 'email.sent');
                 },
                 function (response) {
-                    Modal.handleWithStackTrace('email.header.error', 'server.error', response);
+                    ModalFactory.handleWithStackTrace('email.header.error', 'server.error', response);
                 }
             );
         };
@@ -97,7 +97,7 @@
         });
     });
 
-    controllers.controller('EmailSettingsCtrl', function ($scope, SettingsService, Modal) {
+    controllers.controller('EmailSettingsCtrl', function ($scope, SettingsService, ModalFactory) {
         $scope.settings = SettingsService.get();
 
         $scope.add = function (property) {
@@ -105,7 +105,7 @@
                 $scope.settings.additionalProperties[property.name] = property.value;
                 $scope.property = {};
             } else {
-                Modal.motechAlert('email.header.error', 'email.settings.alreadyExist');
+                ModalFactory.motechAlert('email.header.error', 'email.settings.alreadyExist');
             }
         };
 
@@ -135,11 +135,11 @@
                 {},
                 $scope.settings,
                 function () {
-                    Modal.motechAlert('email.header.success', 'email.settings.saved');
+                    ModalFactory.motechAlert('email.header.success', 'email.settings.saved');
                     $scope.settings = SettingsService.get();
                 },
                 function (response) {
-                    Modal.handleWithStackTrace('email.header.error', 'server.error', response);
+                    ModalFactory.handleWithStackTrace('email.header.error', 'server.error', response);
                 }
             );
         };

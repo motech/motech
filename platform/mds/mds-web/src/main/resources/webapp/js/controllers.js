@@ -290,7 +290,7 @@
         };
     });
 
-    controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, $controller, Entities, MDSUtils, Modal) {
+    controllers.controller('MdsBasicCtrl', function ($scope, $location, $route, $controller, Entities, MDSUtils, ModalFactory) {
 
         angular.extend(this, $controller('MdsEmbeddableCtrl', {
             $scope: $scope,
@@ -341,10 +341,10 @@
         };
 
         $scope.discard = function (entityId) {
-            Modal.confirm({
+            ModalFactory.confirm({
                 title: $scope.msg('mds.warning'),
                 message: $scope.msg('mds.wip.info.discard'),
-                type: BootstrapDialog.TYPE_WARNING,
+                type: 'type-warning',
                 callback: function(result) {
                     if (result) {
                         Entities.abandon({id: entityId}, function () {
@@ -625,7 +625,7 @@
     /**
     * The MdsSchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
-    controllers.controller('MdsSchemaEditorCtrl', function ($scope, $timeout, $http, Entities, MDSUsers, Permissions, MDSUtils, Locale, Modal) {
+    controllers.controller('MdsSchemaEditorCtrl', function ($scope, $timeout, $http, Entities, MDSUsers, Permissions, MDSUtils, Locale, ModalFactory, LoadingModal) {
 
         MDSUtils.setCustomOperatorFunctions($scope);
 
@@ -739,21 +739,21 @@
         workInProgress.setList(Entities);
 
         if (loadEntity) {
-            Modal.openLoadingModal();
+            LoadingModal.open();
             $.ajax("../mds/entities/" + loadEntity).done(function (data) {
                 $scope.selectedEntity = data;
                 loadEntity = undefined;
-                Modal.closeLoadingModal();
+                LoadingModal.close();
             });
         }
 
         if ($scope.$parent.selectedEntity) {
-            Modal.openLoadingModal();
+            LoadingModal.open();
             $.ajax("../mds/entities/getEntity/" + $scope.$parent.selectedEntity.module + "/" + $scope.$parent.selectedEntity.name).done(function (data) {
                 $scope.selectedEntity = data;
                 $scope.$parent.selectedEntity = undefined;
                 $scope.selectedEntityChanged();
-                Modal.closeLoadingModal();
+                LoadingModal.close();
             });
         }
 
@@ -1088,7 +1088,7 @@
                 errorCallback();
             };
 
-            Entities.draft(pre, data, func, Modal.angularHandler('mds.error', 'mds.error.draftSave', errorHandler));
+            Entities.draft(pre, data, func, ModalFactory.angularHandler('mds.error', 'mds.error.draftSave', errorHandler));
         };
 
         $scope.dateDefaultValueChange = function (val, id) {
@@ -1411,15 +1411,15 @@
                 help.removeClass('hide');
             } else {
                 entity.name = value;
-                Modal.openLoadingModal();
+                LoadingModal.open();
                 $scope.clearEntityModal();
                 Entities.save({}, entity, function (response) {
                     $scope.selectedEntity = response;
                     angular.element('#selectEntity').select2('val', response.id);
-                    Modal.closeLoadingModal();
+                    LoadingModal.close();
                 }, function (response) {
-                    Modal.handleResponse('mds.error', 'mds.error.cantSaveEntity', response);
-                    Modal.closeLoadingModal();
+                    ModalFactory.handleResponse('mds.error', 'mds.error.cantSaveEntity', response);
+                    LoadingModal.close();
                 });
             }
         };
@@ -1453,9 +1453,9 @@
             if ($scope.selectedEntity !== null) {
                 Entities.remove({id: $scope.selectedEntity.id}, function () {
                     $scope.selectedEntity = null;
-                    Modal.handleResponse('mds.success', 'mds.delete.success', '');
+                    ModalFactory.handleResponse('mds.success', 'mds.delete.success', '');
                 }, function (response) {
-                    Modal.handleResponse('mds.error', 'mds.error.cantDeleteEntity', response);
+                    ModalFactory.handleResponse('mds.error', 'mds.error.cantDeleteEntity', response);
                 });
             }
         };
@@ -1624,9 +1624,9 @@
         * @param {object} field The field which should be removed.
         */
         $scope.removeField = function (field) {
-            Modal.confirm({
+            ModalFactory.confirm({
                 message: $scope.msg('mds.warning.removeField'),
-                type: BootstrapDialog.TYPE_WARNING,
+                type: 'type-warning',
                 callback: function(result) {
                     if (result) {
                         $scope.draft({
@@ -1669,7 +1669,7 @@
         $scope.abandonChanges = function () {
             $scope.unsetError();
 
-            Modal.openLoadingModal();
+            LoadingModal.open();
 
             $scope.selectedEntity.outdated = false;
 
@@ -1688,7 +1688,7 @@
         $scope.updateDraft = function () {
             var entity;
 
-            Modal.openLoadingModal();
+            LoadingModal.open();
 
             $scope.unsetError();
             $scope.selectedEntity.outdated = false;
@@ -1959,7 +1959,7 @@
                     var pre = {id: $scope.selectedEntity.id},
                         successCallback = function () {
                             setAdvancedSettings();
-                            Modal.closeLoadingModal();
+                            LoadingModal.close();
                         };
 
                     $scope.selectedEntity.modified = false;
@@ -1970,10 +1970,10 @@
                 },
                 errorCallback = function (data) {
                     $scope.setErrorFromData(data);
-                    Modal.closeLoadingModal();
+                    LoadingModal.close();
                 };
 
-            Modal.openLoadingModal();
+            LoadingModal.open();
             Entities.commit(pre, data, successCallback, errorCallback);
         };
 
@@ -2032,9 +2032,9 @@
             var exists;
 
             if ($scope.advancedSettings !== null && $scope.lookup !== undefined && $scope.lookup.lookupName !== undefined) {
-                Modal.openLoadingModal();
+                LoadingModal.open();
                 $scope.validateLookupName($scope.lookup.lookupName);
-                Modal.closeLoadingModal();
+                LoadingModal.close();
             }
         });
 
@@ -2916,7 +2916,7 @@
         $scope.selectedEntityChanged = function() {
             if ($scope.selectedEntity && $scope.selectedEntity.id) {
                 if (!$scope.waitForResponse) {
-                    Modal.openLoadingModal();
+                    LoadingModal.open();
                     workInProgress.setActualEntity(Entities, $scope.selectedEntity.id);
                     $scope.waitForResponse = true;
                     $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
@@ -2925,7 +2925,7 @@
                         $scope.draft({});
                         $scope.waitForResponse = false;
                     });
-                    Modal.closeLoadingModal();
+                    LoadingModal.close();
                 }
             } else {
                 workInProgress.setActualEntity(Entities, undefined);
@@ -3242,7 +3242,7 @@
     * The MdsDataBrowserCtrl controller is used on the 'Data Browser' view.
     */
     controllers.controller('MdsDataBrowserCtrl', function ($rootScope, $scope, $http, $location, $routeParams, Entities, Instances, History,
-                                $timeout, MDSUtils, Locale, MDSUsers, Modal) {
+                                $timeout, MDSUtils, Locale, MDSUsers, ModalFactory, LoadingModal) {
 
         MDSUtils.setCustomOperatorFunctions($scope);
 
@@ -3399,7 +3399,7 @@
         * Initializes a map of all entities in MDS indexed by module name
         */
         $scope.setEntities = function () {
-            Modal.openLoadingModal();
+            LoadingModal.open();
             $http.get('../mds/entities/byModule').success(function (data) {
                 angular.forEach(data, function (entitiesList, moduleName) {
                     $scope.modules[moduleName] = [];
@@ -3410,7 +3410,7 @@
                     });
                 });
 
-                Modal.closeLoadingModal();
+                LoadingModal.close();
             });
         };
 
@@ -3497,7 +3497,7 @@
         * Sets selected entity by module and entity name
         */
         $scope.addInstance = function(module, entityName) {
-            Modal.openLoadingModal();
+            LoadingModal.open();
             $scope.setHiddenFilters();
 
             // load the entity if coming from the 'Add' link in the main DataBrowser page
@@ -3530,7 +3530,7 @@
                             field.value = null;
                         }
                     });
-                    Modal.closeLoadingModal();
+                    LoadingModal.close();
                 });
             });
         };
@@ -3556,10 +3556,10 @@
                             field.value = null;
                         }
                     });
-                    Modal.closeLoadingModal();
+                    LoadingModal.close();
                 });
             }).error(function(response) {
-                Modal.handleResponse('mds.error', 'mds.error.instancesList', response);
+                ModalFactory.handleResponse('mds.error', 'mds.error.instancesList', response);
             });
 
         };
@@ -3580,7 +3580,7 @@
         * Sets selected entity by module and entity name
         */
         $scope.editInstance = function(id, module, entityName) {
-            Modal.openLoadingModal();
+            LoadingModal.open();
             $scope.setHiddenFilters();
             $scope.instanceEditMode = true;
             $scope.setModuleEntity(module, entityName);
@@ -3592,12 +3592,12 @@
                     $scope.selectedInstance = id;
                     $scope.currentRecord = data;
                     $scope.fields = data.fields;
-                    Modal.closeLoadingModal();
-                }, Modal.angularHandler('mds.error', 'mds.error.cannotUpdateInstance'));
+                    LoadingModal.close();
+                }, ModalFactory.angularHandler('mds.error', 'mds.error.cannotUpdateInstance'));
         };
 
         $scope.editInstanceOfEntity = function(instanceId, entityClassName) {
-            Modal.confirm({
+            ModalFactory.confirm({
                 title: $scope.msg('mds.confirm'),
                 message: $scope.msg('mds.confirm.disabledInstanceChanges'),
                 callback: function(result) {
@@ -3629,7 +3629,7 @@
                     $http.get('../mds/instances/' + relatedEntityId + '/instance/' + instanceId).success(function (data) {
                         $scope.editRelatedFields = angular.copy(data.fields);
                     }).error(function(response) {
-                        Modal.handleResponse('mds.error', 'mds.error.instancesList', response);
+                        ModalFactory.handleResponse('mds.error', 'mds.error.instancesList', response);
                     });
                 },
                 setExistingWithoutId = function () {
@@ -3637,9 +3637,9 @@
                     $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
                         relatedEntityId = data.id;
                         setExisting();
-                        Modal.closeLoadingModal();
+                        LoadingModal.close();
                     }).error(function(response) {
-                        Modal.handleResponse('mds.error', 'mds.error.instancesList', response);
+                        ModalFactory.handleResponse('mds.error', 'mds.error.instancesList', response);
                     });
                 };
 
@@ -3691,7 +3691,7 @@
         };
 
         $scope.addRelatedInstance = function(id, entity, field) {
-            Modal.openLoadingModal();
+            LoadingModal.open();
             id = parseInt(id, 10);
             $http.get('../mds/instances/' + entity.id + '/field/' + field.id + '/instance/' + id).success(function (data) {
                 var closeModal = false;
@@ -3710,7 +3710,7 @@
                         $scope.relatedData.addExisting(field, data.value.id);
                         closeModal = true;
                     } else {
-                        Modal.motechAlert('mds.info.instanceAlreadyRelated', 'mds.info');
+                        ModalFactory.motechAlert('mds.info.instanceAlreadyRelated', 'mds.info');
                     }
                 } else {
                     if ($scope.editedField.value === null || $scope.editedField.value === undefined || $scope.editedField.value.addedIds === undefined) {
@@ -3724,15 +3724,15 @@
                     $scope.editedField.displayValue = id;
                     closeModal = true;
                     } else {
-                        Modal.motechAlert('mds.info.instanceAlreadyRelated', 'mds.info');
+                        ModalFactory.motechAlert('mds.info.instanceAlreadyRelated', 'mds.info');
                     }
                 }
-                Modal.closeLoadingModal();
+                LoadingModal.close();
                 if (closeModal === true) {
                     $scope.closeRelatedEntityModal(field.id);
                 }
             }).error(function (response) {
-                Modal.handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
+                ModalFactory.handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
             });
         };
 
@@ -3970,7 +3970,7 @@
 
             relatedClass = $scope.getRelatedClass(field);
             if (relatedClass !== undefined) {
-                Modal.openLoadingModal();
+                LoadingModal.open();
                 $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
                     $scope.relatedEntity = data;
                     $scope.editedField = field;
@@ -3987,14 +3987,14 @@
                             $scope.allEntityFields = data;
                         },
                         function (response) {
-                            Modal.handleResponse('mds.error', 'mds.error.instancesList', response);
+                            ModalFactory.handleResponse('mds.error', 'mds.error.instancesList', response);
                         }
                     );
-                    Modal.closeLoadingModal();
+                    LoadingModal.close();
 
                 }).error(function(response)
                 {
-                    Modal.handleResponse('mds.error', 'mds.error.instancesList', response);
+                    ModalFactory.handleResponse('mds.error', 'mds.error.instancesList', response);
                 });
             }
         };
@@ -4004,14 +4004,14 @@
             .success(function (data) {
                 window.location.replace("../mds/instances/" + $scope.selectedEntity.id + "/" + $scope.selectedInstance + "/" + fieldName);
             })
-            .error(Modal.alertHandler('mds.error', 'mds.error.cannotDownloadBlob'));
+            .error( ModalFactory.alertHandler('mds.error', 'mds.error.cannotDownloadBlob'));
         };
 
         $scope.deleteBlobContent = function() {
-            Modal.openLoadingModal();
+            LoadingModal.open();
             $http.get('../mds/instances/deleteBlob/' + $scope.selectedEntity.id + '/' + $scope.selectedInstance + '/' + $scope.selectedFieldId)
-            .success(Modal.alertHandler('mds.success', 'mds.delete.deleteBlobContent.success'))
-            .error(Modal.alertHandler('mds.error', 'mds.error.cannotDeleteBlobContent'));
+            .success( ModalFactory.alertHandler('mds.success', 'mds.delete.deleteBlobContent.success'))
+            .error( ModalFactory.alertHandler('mds.error', 'mds.error.cannotDeleteBlobContent'));
         };
 
         $scope.selectField = function (fieldId) {
@@ -4023,7 +4023,7 @@
         * of the instance is revertable.
         */
         $scope.historyInstance = function(id) {
-            Modal.openLoadingModal();
+            LoadingModal.open();
             if($scope.selectedEntity !== null) {
             $scope.loadedFields = History.getPreviousVersion(
                 {
@@ -4034,13 +4034,13 @@
                     $scope.previousInstance = id;
                     $scope.fields = data.fields;
                     $scope.instanceRevertable = data.revertable;
-                    Modal.closeLoadingModal();
+                    LoadingModal.close();
                 });
             }
         };
 
         $scope.revertPreviousVersion = function() {
-           Modal.openLoadingModal();
+           LoadingModal.open();
            if($scope.selectedEntity !== null) {
                $scope.loadedFields = History.revertPreviousVersion(
                {
@@ -4050,8 +4050,8 @@
                },
                function (data) {
                    $scope.previousInstance = undefined;
-                   Modal.closeLoadingModal();
-               }, Modal.angularHandler('mds.error', 'mds.error.cannotRevert'));
+                   LoadingModal.close();
+               }, ModalFactory.angularHandler('mds.error', 'mds.error.cannotRevert'));
            }
         };
 
@@ -4067,19 +4067,19 @@
         * Revert selected instance from trash
         */
         $scope.revertFromTrash = function(selected) {
-            Modal.openLoadingModal();
+            LoadingModal.open();
             $scope.setVisibleIfExistFilters();
             $scope.loadedFields = Instances.revertInstanceFromTrash({
                 id: $scope.selectedEntity.id,
                 param: selected
             }, function() {
-               Modal.closeLoadingModal();
+               LoadingModal.close();
                $scope.selectedInstance = undefined;
                $scope.previousInstance = undefined;
                $scope.showTrashInstance = false;
             }, function() {
-               Modal.closeLoadingModal();
-               Modal.motechAlert('mds.error.cannotRestoreInstance', 'mds.error');
+               LoadingModal.close();
+               ModalFactory.motechAlert('mds.error.cannotRestoreInstance', 'mds.error');
             });
         };
 
@@ -4087,7 +4087,7 @@
         * Get selected instance from trash
         */
         $scope.trashInstance = function(id) {
-            Modal.openLoadingModal();
+            LoadingModal.open();
             if($scope.selectedEntity !== null) {
                 $scope.instanceEditMode = true;
                 $http.get('../mds/entities/' + $scope.selectedEntity.id + '/trash/' + id)
@@ -4098,7 +4098,7 @@
                         $scope.selectedInstance = id;
                         $scope.currentRecord = data;
                         $scope.fields = data.fields;
-                        Modal.closeLoadingModal();
+                        LoadingModal.close();
                     }
                 );
             }
@@ -4140,7 +4140,7 @@
         *
         */
         $scope.addEntityInstance = function () {
-            Modal.openLoadingModal();
+            LoadingModal.open();
 
             var values = $scope.currentRecord.fields;
             angular.forEach (values, function(value, key) {
@@ -4149,22 +4149,22 @@
 
             $scope.currentRecord.$save(function() {
                 $scope.unselectInstance();
-                Modal.closeLoadingModal();
-            }, Modal.angularHandler('mds.error', 'mds.error.cannotAddInstance'));
+                LoadingModal.close();
+            }, ModalFactory.angularHandler('mds.error', 'mds.error.cannotAddInstance'));
         };
 
         /**
         * Deletes an instance of the currently selected entity, with id "selected".
         */
         $scope.deleteInstance = function (selected) {
-            Modal.openLoadingModal();
+            LoadingModal.open();
             Instances.deleteInstance({
                 id: $scope.selectedEntity.id,
                 param: selected
             }, function() {
                 $scope.unselectInstance();
-                Modal.closeLoadingModal();
-            }, Modal.angularHandler('mds.error', 'mds.error.cannotDeleteInstance'));
+                LoadingModal.close();
+            }, ModalFactory.angularHandler('mds.error', 'mds.error.cannotDeleteInstance'));
         };
 
         /**
@@ -4182,15 +4182,15 @@
         * Sets selected instance history by id
         */
         $scope.selectInstanceHistory = function (instanceId) {
-            Modal.openLoadingModal();
+            LoadingModal.open();
             History.getHistory({
                 entityId: $scope.selectedEntity.id,
                 instanceId: instanceId
             }, function () {
-                Modal.closeLoadingModal();
+                LoadingModal.close();
                 $scope.previousInstance = undefined;
                 $scope.instanceId = instanceId;
-            }, Modal.angularHandler('mds.error', 'mds.error.historyRetrievalError'));
+            }, ModalFactory.angularHandler('mds.error', 'mds.error.historyRetrievalError'));
         };
 
         $scope.backToInstance = function() {
@@ -4280,7 +4280,7 @@
           $scope.lookupFields = [];
           $scope.allEntityFields = [];
 
-          Modal.openLoadingModal();
+          LoadingModal.open();
 
           $http.get(entityUrl).success(function (data) {
               $scope.selectedEntity = data;
@@ -4333,7 +4333,7 @@
                           callback();
                       }
 
-                      Modal.closeLoadingModal();
+                      LoadingModal.close();
                    });
                 });
             });
@@ -4426,8 +4426,8 @@
 
             $http.post('../mds/entities/' + $scope.selectedEntity.id + "/preferences/fields", fieldsData)
             .error(function () {
-                Modal.handleResponse('mds.error', 'mds.preferences.error.fields', '');
-                Modal.closeLoadingModal();
+                ModalFactory.handleResponse('mds.error', 'mds.preferences.error.fields', '');
+                LoadingModal.close();
             });
         };
 
@@ -4460,8 +4460,8 @@
 
             $http.post('../mds/entities/' + $scope.selectedEntity.id + "/preferences/fields", fieldsData)
             .error(function () {
-                Modal.handleResponse('mds.error', 'mds.preferences.error.fields', '');
-                Modal.closeLoadingModal();
+                ModalFactory.handleResponse('mds.error', 'mds.preferences.error.fields', '');
+                LoadingModal.close();
             });
         };
 
@@ -4628,9 +4628,9 @@
             } else {
                 $scope.removeFilter(field);
             }
-            Modal.openLoadingModal();
+            LoadingModal.open();
             $scope.refreshGrid();
-            Modal.closeLoadingModal();
+            LoadingModal.close();
         };
 
         $scope.updateFilter = function(field, value, type) {
@@ -4765,7 +4765,7 @@
                 window.location.replace(url);
             })
             .error(function (response) {
-                Modal.handleResponse('mds.error', 'mds.error.exportData', response);
+                ModalFactory.handleResponse('mds.error', 'mds.error.exportData', response);
             });
         };
 
@@ -5094,7 +5094,7 @@
         };
 
         $scope.importInstance = function () {
-            Modal.openLoadingModal();
+            LoadingModal.open();
 
             $('#importInstanceForm').ajaxSubmit({
                 success: function (response) {
@@ -5102,10 +5102,10 @@
                     $('#importInstanceForm').resetForm();
                     $('#importInstanceModal').modal('hide');
                     $scope.printResult(response);
-                    Modal.closeLoadingModal();
+                    LoadingModal.close();
                 },
                 error: function (response) {
-                    Modal.handleResponse('mds.error', 'mds.error.importCsv', response);
+                    ModalFactory.handleResponse('mds.error', 'mds.error.importCsv', response);
                 }
             });
         };
@@ -5198,7 +5198,7 @@
     /**
     * The MdsSettingsCtrl controller is used on the 'Settings' view.
     */
-    controllers.controller('MdsSettingsCtrl', function ($scope, $http, Entities, MdsSettings, FileUpload, Modal) {
+    controllers.controller('MdsSettingsCtrl', function ($scope, $http, Entities, MdsSettings, FileUpload, ModalFactory, LoadingModal) {
         var getExportEntities, groupByModule;
 
         innerLayout({
@@ -5295,7 +5295,7 @@
         * based on returned data.
         */
         $scope.importUploadFile = function () {
-            Modal.openLoadingModal();
+            LoadingModal.open();
             FileUpload.upload($scope.importFile, '../mds/settings/importUploadFile',
             function(data) {
                 $scope.importId = data.importId;
@@ -5306,11 +5306,11 @@
                 });
                 $scope.groupedImportEntities = groupByModule($scope.importEntities);
                 $scope.groupedImportEntitiesLength = $scope.groupedLength;
-                Modal.closeLoadingModal();
+                LoadingModal.close();
             },
             function() {
-                Modal.handleResponse('mds.error', 'mds.import.file.error', '');
-                Modal.closeLoadingModal();
+                ModalFactory.handleResponse('mds.error', 'mds.import.file.error', '');
+                LoadingModal.close();
             });
         };
 
@@ -5329,7 +5329,7 @@
          */
         $scope.importSelectedEntities = function () {
             var blueprint = [];
-            Modal.openLoadingModal();
+            LoadingModal.open();
             angular.forEach($scope.importEntities, function (entity) {
                 blueprint.push({
                     entityName: entity.entityName,
@@ -5340,12 +5340,12 @@
 
             $http.post('../mds/settings/import/' + $scope.importId, blueprint)
             .success(function () {
-                Modal.handleResponse('mds.success', 'mds.import.success', '');
-                Modal.closeLoadingModal();
+                ModalFactory.handleResponse('mds.success', 'mds.import.success', '');
+                LoadingModal.close();
             })
             .error(function () {
-                Modal.handleResponse('mds.error', 'mds.import.error', '');
-                Modal.closeLoadingModal();
+                ModalFactory.handleResponse('mds.error', 'mds.import.error', '');
+                LoadingModal.close();
             });
         };
 
@@ -5353,14 +5353,14 @@
         * Sends new settings to controller
         */
         $scope.saveSettings = function () {
-            Modal.openLoadingModal();
+            LoadingModal.open();
             MdsSettings.saveSettings({}, $scope.settings,
                 function () {
-                    Modal.handleResponse('mds.success', 'mds.dataRetention.success', '');
-                    Modal.closeLoadingModal();
+                    ModalFactory.handleResponse('mds.success', 'mds.dataRetention.success', '');
+                    LoadingModal.close();
                 }, function (response) {
-                    Modal.handleResponse('mds.error', 'mds.dataRetention.error', response);
-                    Modal.closeLoadingModal();
+                    ModalFactory.handleResponse('mds.error', 'mds.dataRetention.error', response);
+                    LoadingModal.close();
                 });
         };
 

@@ -142,10 +142,10 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                $, jQuery, angular, angularHandler, jFormErrorHandler,
-                                dummyHandler, alertHandler, window, module,
-                                motechAlert, handleWithStackTrace, restartBundleHandler, parseUri,
-                                defaultLayout, innerLayout, moment
+                                $, jQuery, angular,
+                                dummyHandler, innerLayout, window, module,
+                                restartBundleHandler, parseUri,
+                                defaultLayout, moment
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

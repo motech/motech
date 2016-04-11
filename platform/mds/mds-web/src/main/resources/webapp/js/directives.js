@@ -1533,10 +1533,10 @@
                 } else if (scope.relatedMode.isNested) {
                     relatedClass = scope.getRelatedClass(scope.field);
                     if (relatedClass !== undefined && scope.relatedMode.isNested) {
-                        Modal.openLoadingModal();
+                        LoadingModal.open();
                         $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
                             relatedEntityId = data.id;
-                            Modal.closeLoadingModal();
+                            LoadingModal.close();
                             showGrid();
                             if (scope.currentRelationRecord !== undefined) {
                                 selectedEntityNested = {id: scope.currentRelationRecord.entitySchemaId};
@@ -1584,11 +1584,11 @@
                     selectedInstance = (scope.selectedInstance !== undefined && angular.isNumber(parseInt(scope.selectedInstance, 10)))? parseInt(scope.selectedInstance, 10) : undefined;
 
                 relatedClass = scope.getRelatedClass(scope.field);
-                    Modal.openLoadingModal();
+                    LoadingModal.open();
                     $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
                         scope.relatedEntity = data;
                         relatedEntityId = data.id;
-                        Modal.closeLoadingModal();
+                        LoadingModal.close();
                         $.ajax({
                             type: "GET",
                             url: "../mds/entities/" + scope.relatedEntity.id + "/entityFields",
@@ -1715,7 +1715,7 @@
                             }
                         });
                     }).error(function (response) {
-                        Modal.handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
+                        ModalFactory.handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
                     });
 
                 elem.on('jqGridSortCol', function (e, fieldName) {

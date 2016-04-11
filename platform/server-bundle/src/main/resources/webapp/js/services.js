@@ -7,68 +7,68 @@
     });
 
     uiServices.service('BootstrapDialogManager', function () {
-        var modals2 = [];
+        var modalsList = [];
 
-        this.open = function (dialog, isThisLoadingModal) {
-            modals2.push(dialog);
-            console.log("open"+modals2.length);
-            if (modals2.length > 1) {
-                modals2[modals2.length-2].close();
+        this.open = function (dialog) {
+            modalsList.push(dialog);
+            if (modalsList.length > 1) {
+                modalsList[modalsList.length-2].close();
             }
             dialog.open();
         };
 
         this.close = function (dialog) {
             dialog.close();
-            modals2.splice(modals2.length-1);
-            console.log("close"+modals2.length);
-            if (modals2.length > 0) {
-                modals2[modals2.length-1].open();
+            modalsList.splice(modalsList.length-1);
+            if (modalsList.length > 0) {
+                modalsList[modalsList.length-1].open();
             }
         };
 
         this.remove = function () {
-            modals2[modals2.length-1].close();
-            modals2.splice(modals2.length-1);
-            console.log("remove"+modals2.length);
-            if (modals2.length > 0) {
-                modals2[modals2.length-1].open();
+            modalsList[modalsList.length-1].close();
+            modalsList.splice(modalsList.length-1);
+            if (modalsList.length > 0) {
+                modalsList[modalsList.length-1].open();
             }
         };
     });
 
-    uiServices.service('LoadingModal', function (BootstrapDialogManager) {
-        var open = false;
+    uiServices.service('LoadingModal', function () {
+        var dialog, open = false;
 
         this.open = function () {
             if (!open) {
-                var dialog = new BootstrapDialog({
-                    message: function(dialogRef){
-                        var $message = $(
-                            '<div class="splash-logo"><img src="./../../static/common/img/motech-logo.gif" alt="motech-logo"></div>' +
-                            '<div class="clearfix"></div>' +
-                            '<div class="splash-loader"><img src="./../../static/common/img/loadingbar.gif" alt="Loading..."></div>' +
-                            '<div class="clearfix"></div>' + '<br>');
+                dialog = new BootstrapDialog({
+                    message: function(dialogRef) {
+                        var $message = $('<div></div>'),
+                        pageToLoad = dialog.getData('pageToLoad');
+                        $message.load(pageToLoad);
+
                         return $message;
+                    },
+                    data: {
+                        'pageToLoad': '../server/resources/partials/loading-splash.html'
                     },
                     closable: false,
                     draggable: false
                 });
+
                 dialog.realize();
                 dialog.getModalHeader().hide();
                 dialog.getModalFooter().hide();
                 dialog.getModalContent().addClass('splash');
                 dialog.getModalContent().css('margin-top', '40%');
-                dialog.getModalBody().css('padding', '0px');
+                dialog.getModalBody().css('padding', '0');
 
-                BootstrapDialogManager.open(dialog, true);
+                dialog.open();
                 open = true;
             }
         };
 
         this.close = function () {
             if (open) {
-                BootstrapDialogManager.remove();
+                dialog.close();
             }
             open = false;
         };
@@ -78,28 +78,28 @@
         };
     });
 
-    uiServices.service('Modal', function (LoadingModal, BootstrapDialogManager) {
+    uiServices.factory('ModalFactory', function (LoadingModal, BootstrapDialogManager) {
 
-        this.alert = function () {
-            var options = {}, dialog,
-            defaultOptions = {
-                type: BootstrapDialog.TYPE_PRIMARY,
-                title: null,
-                message: null,
-                closable: false,
-                draggable: false,
-                buttonLabel: BootstrapDialog.DEFAULT_TEXTS.OK,
-                callback: null
-            };
+        var modalFactory = {},
 
-            if (typeof arguments[0] === 'object' && arguments[0].constructor === {}.constructor) {
-                options = $.extend(true, defaultOptions, arguments[0]);
-            } else {
-                options = $.extend(true, defaultOptions, {
-                    message: arguments[0],
-                    callback: typeof arguments[1] !== 'undefined' ? arguments[1] : null
-                });
-            }
+        defaultOptions = {
+            type: 'type-primary',
+            title: null,
+            message: null,
+            closable: false,
+            draggable: false,
+            buttonLabel: BootstrapDialog.DEFAULT_TEXTS.OK,
+            btnCancelLabel: BootstrapDialog.DEFAULT_TEXTS.CANCEL,
+            btnOKLabel: BootstrapDialog.DEFAULT_TEXTS.OK,
+            btnOKClass: null,
+            callback: null
+        },
+
+        makeAlert = function (paramOptions) {
+            var dialog,
+                options = angular.copy(defaultOptions);
+
+            options = $.extend(true, options, paramOptions);
 
             dialog = new BootstrapDialog({
                 type: options.type,
@@ -113,40 +113,24 @@
                 buttons: [{
                         label: options.buttonLabel,
                         action: function (dialog) {
-                            BootstrapDialogManager.close(dialog);
                             dialog.setData('btnClicked', true);
                             if (typeof dialog.getData('callback') === 'function' && dialog.getData('callback').call(this, true) === false) {
                                 return false;
                             }
+                            return BootstrapDialogManager.close(dialog);
                         }
                     }]
             });
             BootstrapDialogManager.open(dialog, false);
-        };
+            return dialog;
+        },
 
-        this.confirm = function () {
-            var options = {}, dialog,
-            defaultOptions = {
-                type: BootstrapDialog.TYPE_PRIMARY,
-                title: null,
-                message: null,
-                closable: false,
-                draggable: false,
-                btnCancelLabel: BootstrapDialog.DEFAULT_TEXTS.CANCEL,
-                btnOKLabel: BootstrapDialog.DEFAULT_TEXTS.OK,
-                btnOKClass: null,
-                callback: null
-            };
-            if (typeof arguments[0] === 'object' && arguments[0].constructor === {}.constructor) {
-                options = $.extend(true, defaultOptions, arguments[0]);
-            } else {
-                options = $.extend(true, defaultOptions, {
-                    message: arguments[0],
-                    closable: false,
-                    buttonLabel: BootstrapDialog.DEFAULT_TEXTS.OK,
-                    callback: typeof arguments[1] !== 'undefined' ? arguments[1] : null
-                });
-            }
+        makeConfirm = function (paramOptions) {
+            var dialog,
+                options = angular.copy(defaultOptions);
+
+            options = $.extend(true, options, paramOptions);
+
             if (options.btnOKClass === null) {
                 options.btnOKClass = ['btn', options.type.split('-')[1]].join('-');
             }
@@ -163,103 +147,114 @@
                 buttons: [{
                     label: options.btnCancelLabel,
                     action: function (dialog) {
-                        BootstrapDialogManager.close(dialog);
                         if (typeof dialog.getData('callback') === 'function' && dialog.getData('callback').call(this, false) === false) {
                             return false;
                         }
+                        return BootstrapDialogManager.close(dialog);
                     }
                 }, {
                     label: options.btnOKLabel,
                     cssClass: options.btnOKClass,
                     action: function (dialog) {
-                        BootstrapDialogManager.close(dialog);
                         if (typeof dialog.getData('callback') === 'function' && dialog.getData('callback').call(this, true) === false) {
                             return false;
                         }
+                        return BootstrapDialogManager.close(dialog);
                     }
                 }]
             });
             BootstrapDialogManager.open(dialog, false);
+            return dialog;
         };
 
-        this.openLoadingModal = function () {
-            LoadingModal.open();
+        modalFactory.alert = function (msg, title, callback) {
+            if (typeof msg === 'object' && msg.constructor === {}.constructor) {
+                return makeAlert(msg);
+            } else {
+                return makeAlert({
+                    message: msg,
+                    title: title && title !== undefined ? title : jQuery.i18n.prop('server.bootstrapDialog.alert'),
+                    callback: callback && callback !== undefined ? callback : null
+                });
+            }
         };
 
-        this.closeLoadingModal = function () {
-            LoadingModal.close();
-        };
-
-        this.motechAlert = function (msg, title, params, callback) {
-            this.alert({
+        modalFactory.motechAlert = function (msg, title, params, callback) {
+            return modalFactory.alert({
                 title: jQuery.i18n.prop(title),
                 message: jQuery.i18n.prop.apply(null, [msg].concat(params)),
-                callback: callback
+                callback: callback && callback !== undefined ? callback : null
             });
         };
 
-        this.motechAlertStackTrace = function (msg, title, response, callback) {
-            if( title === null || title === '') {
-                title = 'Alert';
+        modalFactory.motechAlertStackTrace = function (msg, title, response, callback) {
+            if (title === null || title === '') {
+                title = 'server.bootstrapDialog.alert';
             }
-            this.alert({
-                title: title,
+            return modalFactory.alert({
+                type: 'type-danger', //Error type
+                title: jQuery.i18n.prop(title),
                 message: jQuery.i18n.prop(msg).bold() + ": \n" + response,
                 callback: callback
             });
         };
 
-        this.motechConfirm = function (msg, title, callback) {
-            this.confirm({
-                title: jQuery.i18n.prop(title),
-                message: jQuery.i18n.prop(msg),
-                callback: callback
-            });
+        modalFactory.confirm = function (msg, title, callback) {
+            if (typeof msg === 'object' && msg.constructor === {}.constructor) {
+                return makeConfirm(msg);
+            } else {
+                return makeConfirm({
+                    message: jQuery.i18n.prop(msg),
+                    title: title && title !== undefined ? jQuery.i18n.prop(title) : jQuery.i18n.prop('server.bootstrapDialog.confirm'),
+                    callback: callback && callback !== undefined ? callback : null
+                });
+            }
         };
 
-        this.jFormErrorHandler = function (response) {
-            this.closeLoadingModal();
-            this.alert({
-                type: BootstrapDialog.TYPE_DANGER, //Error type
+        modalFactory.errorAlert = function (response) {
+            LoadingModal.close();
+            return modalFactory.alert({
+                type: 'type-danger', //Error type
+                title: jQuery.i18n.prop('server.error'),
                 message: response.status + ": " + response.statusText
             });
         };
 
-        this.handleResponse = function (title, defaultMsg, response, callback) {
+        modalFactory.handleResponse = function (title, defaultMsg, response, callback) {
             var msg = { value: "server.error", literal: false, params: [] },
                 responseData = (typeof(response) === 'string') ? response : response.data;
 
-            this.closeLoadingModal();
+            LoadingModal.close();
             msg = parseResponse(responseData, defaultMsg);
 
             if (callback) {
                 callback(title, msg.value, msg.params);
             } else if (msg.literal) {
-                this.alert({
-                    type: BootstrapDialog.TYPE_DANGER,
+                return modalFactory.alert({
+                    type: 'type-danger',
                     title: jQuery.i18n.prop(title),
                     message: msg.value,
                     callback: callback
                 });
             } else {
-                this.motechAlert(msg.value, title, msg.params);
+                return modalFactory.motechAlert(msg.value, title, msg.params);
             }
         };
 
-        this.alertHandler = function (msg, title, callback) {
+        modalFactory.alertHandler = function (msg, title, callback) {
             return function() {
-                this.closeLoadingModal();
-                this.motechAlert(msg, title, callback);
+                LoadingModal.close();
+                return modalFactory.alert(msg, title, callback);
             };
         };
 
-        this.angularHandler = function(title, defaultMsg, callback) {
+        modalFactory.angularHandler = function(title, defaultMsg, callback) {
             return function(response) {
-                this.handleResponse(title, defaultMsg, response, callback);
+                return modalFactory.handleResponse(title, defaultMsg, response, callback);
             };
         };
 
-        this.handleWithStackTrace = function(title, defaultMsg, response) {
+        modalFactory.handleWithStackTrace = function(title, defaultMsg, response) {
             var msg = "server.error";
             if (response) {
                 if(response.responseText) {
@@ -271,8 +266,10 @@
             if (defaultMsg) {
                 msg = defaultMsg;
             }
-            this.motechAlertStackTrace(msg, title, response);
+            return modalFactory.motechAlertStackTrace(msg, title, response);
         };
+
+        return modalFactory;
 
     });
 }());

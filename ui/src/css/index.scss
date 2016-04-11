@@ -2164,3 +2164,8 @@ body {
     filter:none !important;
 }
 
+/* ----- Override default BootstrapDialog style----- */
+
+.bootstrap-dialog .bootstrap-dialog-message.stacks {
+    word-wrap: break-word;
+}
