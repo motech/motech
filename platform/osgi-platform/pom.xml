@@ -58,16 +58,6 @@
                             org.motechproject.server.osgi.util;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            org.eclipse.gemini.blueprint,
-                            org.eclipse.gemini.blueprint.context.event,
-                            org.eclipse.gemini.blueprint.extender.support.scanning,
-                            org.eclipse.gemini.blueprint.util,
-                            org.osgi.framework,
-                            org.osgi.service.event,
-                            org.osgi.service.http,
-                            org.slf4j,
-                            org.springframework.aop,
-                            org.springframework.aop.framework,
                             *
                         </Import-Package>
                     </instructions>
