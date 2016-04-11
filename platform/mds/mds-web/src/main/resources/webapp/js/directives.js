@@ -1435,7 +1435,7 @@
     /**
     * Displays related instances data using jqGrid
     */
-    directives.directive('entityInstancesBrowserGrid', function ($timeout, $http, Modal) {
+    directives.directive('entityInstancesBrowserGrid', function ($timeout, $http, LoadingModal) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -1568,7 +1568,7 @@
     /**
     * Displays related instances data using jqGrid
     */
-    directives.directive('entityRelationsGrid', function ($timeout, $http, MDSUtils, Modal) {
+    directives.directive('entityRelationsGrid', function ($timeout, $http, MDSUtils, ModalFactory, LoadingModal) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
