@@ -41,17 +41,4 @@
                 }
             });
     });
-
-        /*scheduler.config( function ($routeProvider) {
-
-        $routeProvider
-            .when('/scheduler', {
-                templateUrl: '../scheduler/partials/scheduler.html',
-                controller: 'SchedulerCtrl'
-            })
-            .when('/scheduler/createJob', {
-                templateUrl: '../scheduler/partials/createJob.html',
-                controller: 'SchedulerCreateJobCtrl'
-            });*/
-
 }());
