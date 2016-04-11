@@ -7,9 +7,26 @@
     /* App Module */
 
     angular.module('${artifactId}HelloWorld', ['motech-dashboard', '${artifactId}HelloWorld.controllers', '${artifactId}HelloWorld.directives', '${artifactId}HelloWorld.services', 'ngCookies'])
-        .config(['$routeProvider',
-        function ($routeProvider) {
-            $routeProvider.
-                when('/${artifactId}/helloWorld', {templateUrl: '../${artifactId}/resources/partials/say-hello.html', controller: 'HelloWorldController'});
-    }]);
+        .config(['$stateProvider', function ($stateProvider) {
+            $stateProvider
+                .state('${artifactId}', {
+                    abstract: true,
+                    url: '/${artifactId}',
+                    views: {
+                        'moduleToLoad': {
+                            templateUrl: '../${artifactId}/resources/index.html'
+                        }
+                    }
+                })
+                .state('${artifactId}.helloWorld', {
+                    url: '/helloWorld',
+                    views: {
+                        '${artifactId}View': {
+                            templateUrl: '../${artifactId}/resources/partials/say-hello.html',
+                            controller: 'HelloWorldController'
+                        }
+                    }
+                });
+        }]
+    );
 }());
