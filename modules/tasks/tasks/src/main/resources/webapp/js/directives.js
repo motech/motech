@@ -483,7 +483,7 @@
                                     + field
                                     + anchorText.substring(selection.anchorOffset)
                                 ).remove();
-                            } else if (!ngModel.viewValue || ngModel.viewValue==="") {
+                            } else if (!ngModel.$viewValue || ngModel.$viewValue==="") {
                                 element.html(field);
                             } else {
                                 element.append(field);
