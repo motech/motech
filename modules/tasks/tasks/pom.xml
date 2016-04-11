@@ -33,6 +33,10 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.bval</groupId>
+            <artifactId>org.apache.bval.bundle</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
         </dependency>
@@ -153,8 +157,14 @@
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.config,
                             org.springframework.beans.factory.xml,
+                            org.springframework.cglib.core,
+                            org.springframework.cglib.proxy,
+                            org.springframework.cglib.reflect,
                             org.springframework.context.config,
+                            org.springframework.security.core,
+                            org.springframework.security.config,
                             org.springframework.transaction,
+                            org.springframework.validation.beanvalidation,
                             org.springframework.web.multipart.commons,
                             org.springframework.web.servlet.config,
                             *
