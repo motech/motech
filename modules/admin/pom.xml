@@ -143,8 +143,8 @@
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
                                 $, jQuery, angular, angularHandler, jFormErrorHandler,
-                                dummyHandler, alertHandler, window, alertHandlerWithCallback, module,
-                                blockUI, unblockUI, motechAlert, handleWithStackTrace, restartBundleHandler, parseUri,
+                                dummyHandler, alertHandler, window, module,
+                                motechAlert, handleWithStackTrace, restartBundleHandler, parseUri,
                                 defaultLayout, innerLayout, moment
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
