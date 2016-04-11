@@ -2,13 +2,13 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.29-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>motech-platform-dataservices-web</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.29-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>MOTECH Platform Data Services Web</name>
     <properties>
@@ -75,9 +75,6 @@
                             org.motechproject.mds.web.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            net.sf.cglib.core,
-                            net.sf.cglib.proxy,
-                            net.sf.cglib.reflect,
                             org.aopalliance.aop,
                             org.eclipse.gemini.blueprint.config,
                             org.motechproject.mds.service,
@@ -85,7 +82,10 @@
                             org.springframework.aop,
                             org.springframework.aop.aspectj.annotation,
                             org.springframework.aop.framework,
+                            org.springframework.cglib.core,
+                            org.springframework.cglib.proxy,
                             org.springframework.context.support,
+                            org.springframework.validation.beanvalidation,
                             org.springframework.web.multipart.commons,
                             org.springframework.transaction,
                             *

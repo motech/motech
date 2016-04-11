@@ -170,7 +170,7 @@ public class TrashServiceTest {
         doReturn(entity).when(allEntities).retrieveByClassName(anyString());
         doReturn(true).when(entity).isRecordHistory();
 
-        trashService.moveFromTrash(instance, trash, true);
+        trashService.removeFromTrash(trash);
 
         verify(manager).deletePersistent(trashCaptor.capture());
 

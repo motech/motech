@@ -2,13 +2,13 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.29-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>motech-platform-dataservices</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.29-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>MOTECH Platform Data Services</name>
     <properties>
@@ -67,8 +67,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-context-support</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.transaction</groupId>
@@ -132,19 +140,15 @@
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-orm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
+            <artifactId>org.motechproject.spring-orm</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
+            <artifactId>org.apache.servicemix.bundles.spring-tx</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-aop</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
@@ -163,8 +167,8 @@
             <artifactId>spring-security-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-security-config</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -364,6 +368,9 @@
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.config,
                             org.springframework.beans.factory.xml,
+                            org.springframework.cglib.core,
+                            org.springframework.cglib.proxy,
+                            org.springframework.cglib.reflect,
                             org.springframework.context.config,
                             org.springframework.context.support,
                             org.springframework.orm.jdo,

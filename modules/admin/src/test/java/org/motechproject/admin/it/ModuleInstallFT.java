@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.HttpStatus;
+import org.motechproject.server.commons.PlatformCommons;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.utils.TestContext;
@@ -40,6 +41,9 @@ public class ModuleInstallFT extends BasePaxIT {
     @Inject
     private BundleContext bundleContext;
 
+    @Inject
+    private PlatformCommons platformCommons;
+
     @BeforeClass
     public static void beforeClass() throws Exception {
         createAdminUser();
@@ -48,8 +52,14 @@ public class ModuleInstallFT extends BasePaxIT {
 
     @Test
     public void testUploadBundleFromRepository() throws IOException, InterruptedException {
-        uploadBundle("Repository", "org.motechproject:cms-lite:LATEST", null,
+        uploadBundle("Repository", "org.motechproject:cms-lite:" + platformCommons.getMotechVersion(), null,
                 "on","org.motechproject.cms-lite");
+    }
+
+    @Test
+    public void testUploadAtomClientBundleFromRepository() throws IOException, InterruptedException {
+        uploadBundle("Repository", "org.motechproject:atom-client:" + platformCommons.getMotechVersion(), null,
+                "on","org.motechproject.atom-client");
     }
 
     @Test
@@ -80,15 +90,11 @@ public class ModuleInstallFT extends BasePaxIT {
                 fail("Wrong module source.");
                 break;
         }
+
         entity.addTextBody("startBundle", startBundle, ContentType.MULTIPART_FORM_DATA);
         httpPost.setEntity(entity.build());
-
-
-        int bundlesCountBeforeUpload = bundleContext.getBundles().length;
         HttpResponse response = getHttpClient().execute(httpPost);
         EntityUtils.consume(response.getEntity());
-        int bundlesCountAfterUpload = bundleContext.getBundles().length;
-
         assertEquals(HttpStatus.ORDINAL_200_OK, response.getStatusLine().getStatusCode());
 
         Bundle uploadedBundle = getBundleFromBundlesArray(bundleSymbolicName);

@@ -7,12 +7,12 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.29-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
 
     <artifactId>motech-scheduler</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.29-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <name>MOTECH Scheduler</name>
@@ -51,8 +51,12 @@
             <artifactId>joda-time</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
+            <groupId>org.apache.bval</groupId>
+            <artifactId>org.apache.bval.bundle</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-context-support</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
@@ -147,6 +151,7 @@
                         </Export-Package>
                         <Import-Package>
                             org.apache.commons.dbcp,
+                            org.eclipse.gemini.blueprint.config,
                             com.mysql.jdbc,
                             org.postgresql,
                             javax.ejb;resolution:=optional,
@@ -173,7 +178,14 @@
                             org.apache.velocity.*,
                             org.springframework.aop,
                             org.springframework.aop.framework,
+                            org.springframework.cglib.core,
+                            org.springframework.cglib.proxy,
+                            org.springframework.cglib.reflect,
+                            org.springframework.context.config,
                             org.springframework.jdbc.*;resolution:=optional,
+                            org.springframework.security.config,
+                            org.springframework.validation.beanvalidation,
+                            org.springframework.web.servlet.config,
                             org.motechproject.config.service,
                             org.motechproject.commons.sql.service,
                             com.googlecode.flyway.core,

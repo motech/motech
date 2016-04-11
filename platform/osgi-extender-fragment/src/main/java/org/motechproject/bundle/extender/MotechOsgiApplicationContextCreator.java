@@ -46,6 +46,7 @@ public class MotechOsgiApplicationContextCreator implements OsgiApplicationConte
                 ObjectUtils.nullSafeToString(config.getConfigurationLocations()),
                 OsgiStringUtils.nullSafeNameAndSymName(bundle));
 
+
         DelegatedExecutionOsgiBundleApplicationContext motechOsgiConfigurableApplicationContext =
                 new MotechOsgiConfigurableApplicationContext(config.getConfigurationLocations());
 

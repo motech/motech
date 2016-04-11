@@ -4,14 +4,14 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.29-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>motech-platform-dataservices-secondary-test-bundle</artifactId>
     <name>MOTECH Platform Data Services Secondary Test Bundle</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.29-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
@@ -59,9 +59,6 @@
                             org.motechproject.mds.test.secondary.service;version=${project.version},
                         </Export-Package>
                         <Import-Package>
-                            net.sf.cglib.core,
-                            net.sf.cglib.proxy,
-                            net.sf.cglib.reflect,
                             org.motechproject.event.listener,
                             org.motechproject.mds.test.domain.differentbundles,
                             org.motechproject.mds.test.domain.differentbundles.type,
