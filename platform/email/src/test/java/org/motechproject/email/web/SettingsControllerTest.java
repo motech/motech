@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.email.purging.EmailPurger;
 import org.motechproject.email.settings.SettingsDto;
-import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.config.SettingsFacade;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.web.server.MockMvc;
 import org.springframework.test.web.server.setup.MockMvcBuilders;

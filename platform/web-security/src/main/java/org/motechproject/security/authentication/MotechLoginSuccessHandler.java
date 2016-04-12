@@ -3,7 +3,7 @@ package org.motechproject.security.authentication;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.helper.SessionHandler;
 import org.motechproject.security.config.SettingService;
-import org.motechproject.security.repository.AllMotechUsers;
+import org.motechproject.security.repository.MotechUsersDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import java.io.IOException;
  * sessions that started with the server before web-security was started.
  * @see org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
  */
-public class MotechLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+public class MotechLoginSuccessHandler extends MotechLoginSuccessJSONHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechLoginSuccessHandler.class);
 
@@ -34,7 +34,7 @@ public class MotechLoginSuccessHandler extends SavedRequestAwareAuthenticationSu
     private SettingService settingService;
 
     @Autowired
-    private AllMotechUsers allMotechUsers;
+    private MotechUsersDao motechUsersDao;
 
     @Override
     @Transactional
@@ -45,9 +45,9 @@ public class MotechLoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         LOGGER.info("User {} logged in", authentication.getName());
         LOGGER.debug("Authorities for {}: {}", authentication.getName(), authentication.getAuthorities());
 
-        MotechUser motechUser = allMotechUsers.findByUserName(authentication.getName());
+        MotechUser motechUser = motechUsersDao.findByUserName(authentication.getName());
         motechUser.setFailureLoginCounter(0);
-        allMotechUsers.update(motechUser);
+        motechUsersDao.update(motechUser);
 
         HttpSession session = request.getSession();
         // set session timeout

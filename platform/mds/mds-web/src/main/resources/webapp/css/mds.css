@@ -469,6 +469,13 @@
     display: inline-block;
 }
 
+.mds-import {
+    display:inline-block;
+    width:360px;
+    white-space: nowrap;
+    overflow:hidden !important;
+    text-overflow: ellipsis;
+}
 .form-inline .form-control.input-records {
     width: auto;
     min-width: 40px;

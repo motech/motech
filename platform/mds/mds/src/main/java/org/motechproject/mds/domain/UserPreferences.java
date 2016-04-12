@@ -41,6 +41,7 @@ public class UserPreferences {
     private Set<Field> unselectedFields;
 
     public UserPreferences() {
+        this(null, null, null, null, null);
     }
 
     public UserPreferences(String username, String className, Integer gridRowsNumber, Set<Field> selectedFields, Set<Field> unselectedFields) {

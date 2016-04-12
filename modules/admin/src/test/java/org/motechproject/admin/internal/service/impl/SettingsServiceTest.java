@@ -12,7 +12,7 @@ import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.config.monitor.ConfigFileMonitor;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.config.domain.MotechSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.springframework.security.web.savedrequest.Enumerator;
@@ -59,9 +59,6 @@ public class SettingsServiceTest {
 
     @Mock
     MotechSettings motechSettings;
-
-    @Mock
-    private ConfigFileMonitor configFileMonitor;
 
     @Mock
     private EventRelay eventRelay;
@@ -129,9 +126,7 @@ public class SettingsServiceTest {
     public void shouldAddSettingsPath() throws IOException {
         final String path = "some-path";
         settingsService.addSettingsPath(path);
-        InOrder inOrder = inOrder(configurationService, configFileMonitor);
-        inOrder.verify(configurationService).updateConfigLocation(path);
-        inOrder.verify(configFileMonitor).updateFileMonitor();
+        verify(configurationService).updateConfigLocation(path);
     }
 
     @Test

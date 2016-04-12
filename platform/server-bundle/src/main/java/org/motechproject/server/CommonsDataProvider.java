@@ -45,7 +45,7 @@ public class CommonsDataProvider extends AbstractDataProvider {
 
     @Override
     public String getName() {
-        return "MOTECH Commons";
+        return "MOTECH-Commons";
     }
 
     @Override

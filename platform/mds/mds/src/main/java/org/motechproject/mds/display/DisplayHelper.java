@@ -1,8 +1,8 @@
 package org.motechproject.mds.display;
 
-import org.apache.bsf.util.MethodUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.mds.domain.ManyToManyRelationship;
@@ -20,6 +20,10 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * This helper class is responsible for the parsing of relationship and combobox values
+ * to display-friendly formats.
+ */
 public final class DisplayHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DisplayHelper.class);
@@ -28,10 +32,35 @@ public final class DisplayHelper {
 
     public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z");
 
+    /**
+     * Parses provided relationship or combobox value to display-friendly format. The type of
+     * the value is determined by the {@code field} parameter. Depending on the type of the field,
+     * a different representation will be returned.
+     *
+     * @param field field definition, that contains the type of the field
+     * @param value the value to be parsed
+     * @return depending on the field type, it returns {@link String} representation for one-to-one relationship
+     *         {@link Map} representation for the one-to-many and many-to-many relationships
+     *         {@link String} or {@link Collection} representation for comboboxes, depending on their settings
+     */
     public static Object getDisplayValueForField(FieldDto field, Object value) {
         return getDisplayValueForField(field, value, null);
     }
 
+    /**
+     * Parses provided relationship or combobox value to display-friendly format. The type of
+     * the value is determined by the {@code field} parameter. Depending on the type of the field,
+     * a different representation will be returned. Moreover, it limits the length of the parsed values,
+     * in case they exceed the provided limit.
+     *
+     * @param field field definition, that contains the type of the field
+     * @param value the value to be parsed
+     * @param maxLength the number of characters, after which the values will be trimmed; for map representation
+     *                  this is a maximum number of characters for each value in the map
+     * @return depending on the field type, it returns {@link String} representation for one-to-one relationship
+     *         {@link Map} representation for the one-to-many and many-to-many relationships
+     *         {@link String} or {@link Collection} representation for comboboxes, depending on their settings
+     */
     public static Object getDisplayValueForField(FieldDto field, Object value, Integer maxLength) {
         Object displayValue = null;
 
@@ -115,12 +144,12 @@ public final class DisplayHelper {
     }
 
     private static boolean hasCustomToString(Object value) {
-        try {
-            Method toStringMethod = MethodUtils.getMethod(value, "toString", new Class[0]);
-            return !StringUtils.equals(Object.class.getName(), toStringMethod.getDeclaringClass().getName());
-        } catch (NoSuchMethodException e) {
-            LOGGER.error("Unable to retrieve toString() method for {}", value, e);
+        Method toStringMethod = MethodUtils.getAccessibleMethod(value.getClass(), "toString", new Class[0]);
+        if (toStringMethod == null ) {
+            LOGGER.error("Unable to retrieve toString() method for {}", value);
             return false;
+        } else {
+            return !StringUtils.equals(Object.class.getName(), toStringMethod.getDeclaringClass().getName());
         }
     }
 

@@ -1102,7 +1102,7 @@ Example :code:`mds-lookups.json` file.
 
     [
         {
-            "entityClassName" : "org.motechproject.tasks.domain.Task",
+            "entityClassName" : "org.motechproject.tasks.domain.mds.task.Task",
             "lookups" : [
                 {
                     "lookupName" : "Find Task by Owner",
@@ -2247,9 +2247,9 @@ MDS transaction manager and uses it when declaring annotation driven transaction
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
            xmlns:tx="http://www.springframework.org/schema/tx"
-           xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+           xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
             http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
-            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
 
         <tx:annotation-driven transaction-manager="transactionManager"/>
 
@@ -2269,12 +2269,12 @@ might be required to explicitly import the following packages (example of the bu
 .. code-block:: xml
 
        <Import-Package>
-            net.sf.cglib.core,
-            net.sf.cglib.proxy,
-            net.sf.cglib.reflect,
             org.aopalliance.aop,
             org.springframework.aop,
             org.springframework.aop.framework,
+            org.springframework.cglib.core,
+            org.springframework.cglib.proxy,
+            org.springframework.cglib.reflect,
             org.springframework.transaction,
             *
         </Import-Package>
@@ -2595,6 +2595,79 @@ copy migration files from installed modules to the :code:`.motech` directory. Fi
 directory(if you are using mysql then use :code:`mysql` instead :code:`default`) in the bundle. Each file muse have
 `a proper name <http://flywaydb.org/documentation/migration/sql.html>`_(e.g. :code:`V1__Description.sql`).
 
+####################
+Schema Import/Export
+####################
+
+This section explains how to `import`_ and `export`_ MDS Schema. It can be done with only a few steps using the MDS
+module UI.
+
+Schema Import
+#############
+
+The first thing you need to do is to enter Import tab under the Settings.
+
+            .. image:: img/import_schema_tab.png
+                    :scale: 100 %
+                    :alt: MDS Import Schema tab
+                    :align: center
+
+Once in the Import tab, you will have to click the "Select file" button and choose the file you want to import the
+schema from. It must be a valid JSON file that contains a valid schema definition, otherwise an error will occur while
+parsing it.
+
+            .. image:: img/submit_form.png
+                    :scale: 100 %
+                    :alt: MDS Import submit form
+                    :align: center
+
+Here, all you have to do is to click the Submit button. MDS will now parse the JSON file and display entities for review
+on the following screen.
+
+            .. image:: img/import_selection.png
+                    :scale: 100 %
+                    :alt: MDS Import selection
+                    :align: center
+
+Now you can select which entities you want to import. You can achieve this by simply ticking or unticking the checkboxes
+next to the entity or module name in the Schema column. Ticking the checkbox next to the module name will result in
+importing all the entities originating from that module, while ticking the checkbox next to the entity name will result
+in importing only that entity. If the given JSON contains instances of the entities you are importing schema for, you
+can also import them by ticking the checkboxes next to the entity or module name in the data column. Once you have
+selected all the entities you want to import schema and/or instances for, simply click the Import button. Keep in mind
+that importing schema for entities that already exist will result in removing data related to those entities. Two
+entities are considered equal if they have the same class name. For information on how relationships are handled please
+visit the `Relationship handling`_ section.
+
+Schema Export
+#############
+
+The first thing you need to do is to enter Export tab under the Settings.
+
+            .. image:: img/export_schema_tab.png
+                    :scale: 100 %
+                    :alt: MDS Export Schema tab
+                    :align: center
+                    
+Now you can select which entities you want to export. You can achieve this by simply ticking or unticking the checkboxes
+next to the entity or module name in the Schema column. Ticking the checkbox next to the module name will result in
+exporting all the entities originating from that module, while ticking the checkbox next to the entity name will result
+in exporting only that entity. You can also export the instances of each of the entities. To achieve this simply tick
+the checkbox next to the entity or module name in the Data column. Once you have selected all the entities you want to
+export schema and/or instances for, simply click the Export Selected button. This will generate the JSON file that you
+can save under the location of your choice. Keep in mind that you can't export instances of certain entities without
+exporting their schema. For information on how relationships are handled please visi the `Relationship handling`_
+section.
+
+Relationship handling
+#####################
+
+There are a few things related to the relationships that you need to remember about during schema export. If there is a
+relation between two entities both of them must be exported. Also, if you want to export instances of an entity that has
+relationship with other one you may want to export instances of the second entity as well. If you don't do this the
+fields pointing to the other entity will be set to null and may potentially break the database integrity if the
+field is required.
+
 #######
 Javadoc
 #######
@@ -2624,3 +2697,7 @@ Javadoc
 :doc:`/org/motechproject/mds/util/package-index`
 
 :doc:`/org/motechproject/mds/web/package-index`
+
+.. _import: `Schema Import`_
+
+.. _export: `Schema Export`_

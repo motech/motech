@@ -111,15 +111,20 @@
         $scope.modules = {};
         $scope.modules[$scope.mavenStr('alerts')] = 'Alerts';
         $scope.modules[$scope.mavenStr('appointments')] = 'Appointments';
+        $scope.modules[$scope.mavenStr('atom-client')] = 'Atom Client';
         $scope.modules[$scope.mavenStr('csd')] = 'Care Services Directory';
         $scope.modules[$scope.mavenStr('cms-lite')] = 'CMS Lite';
         $scope.modules[$scope.mavenStr('commcare')] = 'Commcare';
         $scope.modules[$scope.mavenStr('dhis2')] = 'DHIS2';
         $scope.modules[$scope.mavenStr('event-logging')] = 'Event Logging';
         $scope.modules[$scope.mavenStr('http-agent')] = 'Http Agent';
+        $scope.modules[$scope.mavenStr('ihe-interop')] = 'IHE Interop';
         $scope.modules[$scope.mavenStr('ivr')] = 'IVR';
         $scope.modules[$scope.mavenStr('message-campaign')] = 'Message Campaign';
+        $scope.modules[$scope.mavenStr('metrics')] = 'Metrics';
+        $scope.modules[$scope.mavenStr('mtraining')] = 'mTraining';
         $scope.modules[$scope.mavenStr('motech-tasks')] = 'Tasks';
+        $scope.modules[$scope.mavenStr('odk')] = 'Open Data Kit';
         $scope.modules[$scope.mavenStr('openmrs-19')] = 'OpenMRS 1.9';
         $scope.modules[$scope.mavenStr('pill-reminder')] = 'Pill Reminder';
         $scope.modules[$scope.mavenStr('motech-scheduler')] = 'Scheduler';
@@ -265,7 +270,6 @@
                 return !$scope.isFileSelected;
             }
         };
-
 
         $scope.submitBundle = function () {
             blockUI();

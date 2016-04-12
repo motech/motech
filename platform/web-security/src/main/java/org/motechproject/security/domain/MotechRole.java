@@ -60,14 +60,4 @@ public class MotechRole {
         this.deletable = deletable;
     }
 
-    public void removePermission(String permissionName) {
-        if (permissionNames != null) {
-            permissionNames.remove(permissionName);
-        }
-    }
-
-    public boolean hasPermission(String permissionName) {
-        return permissionNames != null && permissionNames.contains(permissionName);
-    }
-
 }

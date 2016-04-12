@@ -115,7 +115,7 @@
             </span>
             <div class="clearfix"></div>
             <div class="margin-before" ui-if="!field.readOnly && getTypeSingleClassName(criterion.type) === 'string' && (getTypeSingleClassName(field.type) === 'integer' || getTypeSingleClassName(field.type) === 'decimal')">
-                <button class="btn btn-default btn-sm" ng-click="addValue(field.id, criterion)" ng-disabled="field.readOnly || !criterion.enabled || validateCriterion(field, criterion, field.validation.criteria) ">
+                <button class="btn btn-success btn-sm" ng-click="addValue(field.id, criterion)" ng-disabled="field.readOnly || !criterion.enabled || validateCriterion(field, criterion, field.validation.criteria) ">
                     <span class="fa fa-fw fa-plus"></span>&nbsp;{{msg('mds.btn.newValue')}}
                 </button>
             </div>

@@ -43,6 +43,7 @@ public class WeeklyCronJobExpressionBuilder {
     public WeeklyCronJobExpressionBuilder withTime(Time time) {
         this.hour = time.getHour();
         this.minute = time.getMinute();
+
         return this;
     }
 
@@ -53,6 +54,7 @@ public class WeeklyCronJobExpressionBuilder {
      */
     public String build() {
         final String cronExpression = "0 %d %d ? * %d";
+
         return String.format(cronExpression, minute, hour, quartzDayOfWeek);
     }
 }

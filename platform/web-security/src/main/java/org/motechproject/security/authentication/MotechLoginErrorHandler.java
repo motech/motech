@@ -3,7 +3,7 @@ package org.motechproject.security.authentication;
 import org.motechproject.security.config.SettingService;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.UserStatus;
-import org.motechproject.security.repository.AllMotechUsers;
+import org.motechproject.security.repository.MotechUsersDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
-import org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,12 +28,12 @@ import java.util.Map;
  * It also redirect user to error login page.
  * @see org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
  */
-public class MotechLoginErrorHandler extends ExceptionMappingAuthenticationFailureHandler {
+public class MotechLoginErrorHandler extends MotechLoginErrorJSONHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechLoginErrorHandler.class);
 
     @Autowired
-    private AllMotechUsers allMotechUsers;
+    private MotechUsersDao motechUsersDao;
 
     @Autowired
     private SettingService settingService;
@@ -47,7 +46,7 @@ public class MotechLoginErrorHandler extends ExceptionMappingAuthenticationFailu
         super();
         this.userBlockedUrl = userBlockedUrl;
 
-        Map<String, String> failureUrlMap = new HashMap<String, String>();
+        Map<String, String> failureUrlMap = new HashMap<>();
         failureUrlMap.put(CredentialsExpiredException.class.getName(), changePasswordBaseUrl);
         failureUrlMap.put(BadCredentialsException.class.getName(), defaultFailureUrl);
         failureUrlMap.put(LockedException.class.getName(), userBlockedUrl);
@@ -61,7 +60,7 @@ public class MotechLoginErrorHandler extends ExceptionMappingAuthenticationFailu
             throws IOException, ServletException {
         //Wrong password or username
         if (exception instanceof BadCredentialsException) {
-            MotechUser motechUser = allMotechUsers.findByUserName(exception.getAuthentication().getName());
+            MotechUser motechUser = motechUsersDao.findByUserName(exception.getAuthentication().getName());
             int failureLoginLimit = settingService.getFailureLoginLimit();
             if (motechUser != null && failureLoginLimit > 0) {
                 int failureLoginCounter = motechUser.getFailureLoginCounter();
@@ -72,7 +71,7 @@ public class MotechLoginErrorHandler extends ExceptionMappingAuthenticationFailu
                     LOGGER.debug("User {} has been blocked", motechUser.getUserName());
                 }
                 motechUser.setFailureLoginCounter(failureLoginCounter);
-                allMotechUsers.update(motechUser);
+                motechUsersDao.update(motechUser);
             }
 
             if (motechUser != null && !motechUser.isActive()) {

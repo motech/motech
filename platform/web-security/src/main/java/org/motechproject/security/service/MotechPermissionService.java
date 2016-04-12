@@ -7,7 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 /**
- * Service for managing Motech permissions.
+ * Service for managing MOTECH permissions.
  */
 public interface MotechPermissionService {
 
@@ -18,6 +18,14 @@ public interface MotechPermissionService {
      */
     @PreAuthorize("hasAnyRole('manageRoleAndPermission', 'manageURL', 'mdsSchemaAccess')")
     List<PermissionDto> getPermissions();
+
+    /**
+     * Finds permission by its name.
+     *
+     * @param name of the permission
+     * @return permission of the given name
+     */
+    PermissionDto findPermissionByName(String name);
 
     /**
      * Adds a new permission

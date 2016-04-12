@@ -5,7 +5,7 @@ import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.validator.PasswordValidator;
 import org.motechproject.security.validator.impl.MinLengthValidatorDecorator;
 import org.motechproject.security.validator.impl.PasswordValidatorManager;
-import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.config.domain.MotechSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

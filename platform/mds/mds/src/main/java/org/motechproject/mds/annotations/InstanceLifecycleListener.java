@@ -24,7 +24,15 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface InstanceLifecycleListener {
+
+    /**
+     * An array of instance lifecycle transitions, that will trigger method execution.
+     */
     InstanceLifecycleListenerType[] value();
 
+    /**
+     * If specified, the listener will be registered for all persistable classes
+     * within the provided package.
+     */
     String packageName() default "";
 }

@@ -678,14 +678,29 @@
             };
         });
 
-        widgetModule.directive('periodModal', function($http, $templateCache, $compile) {
-            return function(scope, element, attrs) {
-                $http.get('../server/resources/partials/period-modal.html', { cache: $templateCache }).success(function(response) {
-                    var contents = element.html(response).contents();
-                    element.replaceWith($compile(contents)(scope));
-                });
+        widgetModule.directive('periodModal', ['$compile', '$timeout', '$http', '$templateCache', function ($compile, $timeout, $http, $templateCache) {
+            var templateLoader;
+
+            return {
+                restrict: 'E',
+                replace : true,
+                transclude: true,
+                compile: function (tElement, tAttrs, scope) {
+                    var url = '../server/resources/partials/period-modal.html',
+
+                    templateLoader = $http.get(url, {cache: $templateCache})
+                        .success(function (html) {
+                            tElement.html(html);
+                        });
+
+                    return function (scope, element, attrs) {
+                        templateLoader.then(function () {
+                            element.html($compile(tElement.html())(scope));
+                        });
+                    };
+                }
             };
-        });
+        }]);
 
     // code for date-picker
     
@@ -693,29 +708,30 @@
         return {
             restrict: 'A',
             scope: {
-                min: "=",
-                max: "="
+                min: "=?",
+                max: "=?",
+                parsed: "=?"
             },
-            link: function(scope, element, attrs) {
+            link: function(scope, element, attrs, ngModel) {
                 element.datetimepicker({
-                    dateFormat: "yy-mm-dd",
+                    dateFormat: 'yy-mm-dd',
+                    timeFormat: 'HH:mm:ss',
                     changeMonth: true,
                     changeYear: true,
-                    timeFormat: "HH:mm:ss",
-                    beforeShow: function () {
-                        element.datetimepicker('option', 'minDate', scope.min);
-                        element.datetimepicker('option', 'maxDate', scope.max);
+                    beforeShow: function() {
+                        if (scope.min) {
+                            var parts = scope.min.split(' ');
+                            element.datetimepicker('option', 'minDate', parts[0]);
+                        }
+                        if (scope.max) {
+                            var parts = scope.max.split(' ');
+                            element.datetimepicker('option', 'maxDate', parts[0]);
+                        }
                     },
-                    onChangeMonthYear: function (year, month, inst) {
-                        var curDate = $(this).datepicker("getDate");
-                        if (curDate === null) {
-                            return;
-                        }
-                        if (curDate.getFullYear() !== year || curDate.getMonth() !== month - 1) {
-                            curDate.setYear(year);
-                            curDate.setMonth(month - 1);
-                            $(this).datepicker("setDate", curDate);
-                        }
+                    onSelect: function() {
+                        scope.$apply(function() {
+                            scope.parsed = moment(element.datetimepicker('getDate')).format("YYYY-MM-DDTHH:mm:ssZZ");
+                        });
                     }
                 });
             }

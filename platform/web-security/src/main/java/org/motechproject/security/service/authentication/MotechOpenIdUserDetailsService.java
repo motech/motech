@@ -1,11 +1,11 @@
 package org.motechproject.security.service.authentication;
 
-import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.UserStatus;
-import org.motechproject.security.repository.AllMotechRoles;
-import org.motechproject.security.repository.AllMotechUsers;
+import org.motechproject.security.model.RoleDto;
+import org.motechproject.security.repository.MotechUsersDao;
 import org.motechproject.security.service.AuthoritiesService;
+import org.motechproject.security.service.MotechRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.User;
@@ -23,12 +23,12 @@ import java.util.Locale;
  * authentication
  */
 public class MotechOpenIdUserDetailsService implements AuthenticationUserDetailsService<OpenIDAuthenticationToken> {
-    private AllMotechRoles allMotechRoles;
-    private AllMotechUsers allMotechUsers;
+    private MotechRoleService motechRoleService;
+    private MotechUsersDao motechUsersDao;
     private AuthoritiesService authoritiesService;
 
     /**
-     * Adds user for given OpenId to {@link org.motechproject.security.repository.AllMotechUsers}
+     * Adds user for given OpenId to {@link MotechUsersDao}
      * and return his {@link org.springframework.security.core.userdetails.UserDetails}
      *
      * @param token for OpenId
@@ -37,16 +37,16 @@ public class MotechOpenIdUserDetailsService implements AuthenticationUserDetails
     @Override
     @Transactional
     public UserDetails loadUserDetails(OpenIDAuthenticationToken token) {
-        MotechUser user = allMotechUsers.findUserByOpenId(token.getName());
+        MotechUser user = motechUsersDao.findUserByOpenId(token.getName());
         if (user == null) {
-            List<String> roles = new ArrayList<String>();
-            if (allMotechUsers.getOpenIdUsers().isEmpty()) {
-                for (MotechRole role : allMotechRoles.getRoles()) {
+            List<String> roles = new ArrayList<>();
+            if (motechUsersDao.getOpenIdUsers().isEmpty()) {
+                for (RoleDto role : motechRoleService.getRoles()) {
                     roles.add(role.getRoleName());
                 }
             }
             user = new MotechUser(getAttribute(token.getAttributes(), "Email"), "", getAttribute(token.getAttributes(), "Email"), "", roles, token.getName(), Locale.getDefault());
-            allMotechUsers.addOpenIdUser(user);
+            motechUsersDao.addOpenIdUser(user);
         }
 
         return new User(user.getUserName(), user.getPassword(), user.isActive(), true, !UserStatus.MUST_CHANGE_PASSWORD.equals(user.getUserStatus()),
@@ -72,13 +72,13 @@ public class MotechOpenIdUserDetailsService implements AuthenticationUserDetails
     }
 
     @Autowired
-    public void setAllMotechRoles(AllMotechRoles allMotechRoles) {
-        this.allMotechRoles = allMotechRoles;
+    public void setMotechRoleService(MotechRoleService motechRoleService) {
+        this.motechRoleService = motechRoleService;
     }
 
     @Autowired
-    public void setAllMotechUsers(AllMotechUsers allMotechUsers) {
-        this.allMotechUsers = allMotechUsers;
+    public void setMotechUsersDao(MotechUsersDao motechUsersDao) {
+        this.motechUsersDao = motechUsersDao;
     }
 
     @Autowired

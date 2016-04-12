@@ -18,6 +18,9 @@ public final class DayOfWeekSchedulableJob extends EndingSchedulableJob {
     private List<DayOfWeek> days;
     private Time time;
 
+    /**
+     * Default constructor.
+     */
     public DayOfWeekSchedulableJob() {
         this(null, null, null, null, null, false, false);
     }
@@ -69,16 +72,40 @@ public final class DayOfWeekSchedulableJob extends EndingSchedulableJob {
         this.time = time;
     }
 
+    /**
+     * Returns the time of the job execution.
+     *
+     * @return the execution time
+     */
     public Time getTime() {
         return time;
     }
 
+    /**
+     * Return the list of days the job will be executed at.
+     *
+     * @return the list of days
+     */
     public List<DayOfWeek> getDays() {
         return days;
     }
 
+    /**
+     * Sets the list of days the job will be executed at.
+     *
+     * @param days  the list of days
+     */
     public void setDays(List<DayOfWeek> days) {
         this.days = days;
+    }
+
+    /**
+     * Set the time of the job execution.
+     *
+     * @param time  the execution time
+     */
+    public void setTime(Time time) {
+        this.time = time;
     }
 
     /**
@@ -89,7 +116,7 @@ public final class DayOfWeekSchedulableJob extends EndingSchedulableJob {
     public List<Integer> getCronDays() {
         List<Integer> cronDays = new ArrayList<>();
         for (DayOfWeek day : days) {
-            cronDays.add(Integer.valueOf(day.getCronValue()));
+            cronDays.add(day.getCronValue());
         }
         return cronDays;
     }
