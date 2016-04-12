@@ -824,6 +824,8 @@
                 element.datetimepicker({
                     showTimezone: true,
                     useLocalTimezone: true,
+                    changeMonth: true,
+                    changeYear: true,
                     dateFormat: 'yy-mm-dd',
                     timeFormat: 'HH:mm z',
                     showOn: true,
