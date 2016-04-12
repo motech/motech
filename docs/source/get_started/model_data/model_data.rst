@@ -2247,9 +2247,9 @@ MDS transaction manager and uses it when declaring annotation driven transaction
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
            xmlns:tx="http://www.springframework.org/schema/tx"
-           xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+           xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
             http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
-            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
 
         <tx:annotation-driven transaction-manager="transactionManager"/>
 
@@ -2269,12 +2269,12 @@ might be required to explicitly import the following packages (example of the bu
 .. code-block:: xml
 
        <Import-Package>
-            net.sf.cglib.core,
-            net.sf.cglib.proxy,
-            net.sf.cglib.reflect,
             org.aopalliance.aop,
             org.springframework.aop,
             org.springframework.aop.framework,
+            org.springframework.cglib.core,
+            org.springframework.cglib.proxy,
+            org.springframework.cglib.reflect,
             org.springframework.transaction,
             *
         </Import-Package>

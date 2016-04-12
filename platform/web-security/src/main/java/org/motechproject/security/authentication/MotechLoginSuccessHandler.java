@@ -23,7 +23,7 @@ import java.io.IOException;
  * sessions that started with the server before web-security was started.
  * @see org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
  */
-public class MotechLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+public class MotechLoginSuccessHandler extends MotechLoginSuccessJSONHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechLoginSuccessHandler.class);
 
