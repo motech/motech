@@ -362,7 +362,6 @@ manipulation-sorter .manipulation .remove:before {
 }
 
 .tasks .tasks-list .task-element.task-long-name {
-    max-width: 200px;
     white-space: nowrap;
     text-align: left;
 }

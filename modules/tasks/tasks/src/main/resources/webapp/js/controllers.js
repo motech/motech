@@ -1113,6 +1113,7 @@
                 $scope.description = task.description;
                 $scope.enabled = task.enabled;
                 $scope.name = task.name;
+                $('#inner-center').trigger("change");
             });
         }
 

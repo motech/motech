@@ -65,18 +65,18 @@ public class TaskController {
     }
 
     /**
-     * Imports the task from the given file. The file must be specified as the "jsonFile" parameter in the form body and
+     * Imports the task from the given file. The file must be specified as the "file" parameter in the form body and
      * must be JSON file containing valid task definitions.
      *
-     * @param jsonFile  the file to import task from, not null
+     * @param file  the file to import task from, not null
      * @throws IOException  when there were problems while reading file
      */
     @RequestMapping(value = "/task/import", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void importTask(@RequestParam(value = "jsonFile") MultipartFile jsonFile)
+    public void importTask(@RequestParam(value = "file") MultipartFile file)
             throws IOException {
         StringWriter writer = new StringWriter();
-        IOUtils.copy(jsonFile.getInputStream(), writer);
+        IOUtils.copy(file.getInputStream(), writer);
 
         taskService.importTask(writer.toString());
     }
