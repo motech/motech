@@ -1,0 +1,6 @@
+<ol title="{{msg('task.infoChangeOrder')}}" class="sortable" >
+    <manipulation ng-repeat="man in manipulations" type="{{man.type}}" argument="man.argument" active="true" />
+</ol>
+<ul class="available">
+    <manipulation ng-repeat="man in manipulationTypes" type="{{man}}" />
+</ul>

@@ -1,3 +1,7 @@
+.ui-draggable-handle{
+    z-index:100;
+}
+
 .tasks .btn-in-frame-header {
     margin:-15px -10px;
     font-weight: normal;
@@ -29,7 +33,49 @@
     font-size: 1.2em;
 }
 
-.tasks #sortable-no li {
+.tasks .field-bubble{
+    display: inline-block;
+    min-width: 10px;
+    padding: 3px 7px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    background-color: #777;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.tasks .field-trigger{
+    background-color: #3a87ad;
+}
+.tasks .field-ad{
+    background-color: #f89406;
+}
+
+.tasks .field-bubble .badge{
+    border-radius: 5px;
+    font-size: 0.8em;
+    background-color: #FFF;
+    color: #F4F4F4;
+}
+.tasks .field-trigger .badge{
+    color: #3a87ad;
+}
+.tasks .field-ad .badge{
+    color: #f89406;
+}
+
+manipulation-sorter ol.sortable li.ui-state-highlight{
+    list-style: none;
+    height: 15px;
+}
+
+manipulation-sorter .manipulation{
+    display: block;
+    position:relative;
     color: #333333;
     text-decoration: none;
     list-style: none;
@@ -37,19 +83,73 @@
     border-radius: 3px;
     background-color: #F4F4F4;
     padding: 2px 6px;
-    height: 28px;
-    margin: 2px 2px 2px 25px;
+    margin: 2px 2px 2px 2px;
 }
 
-.tasks #sortable-no li:hover {
+manipulation-sorter .manipulation:hover {
     color: #046FD3;
     border-color: #046FD3;
 }
 
-.tasks #sortable li span[unselectable="on"]:before {
-    content: "\2611";
+manipulation-sorter .manipulation.active {
+    cursor: move;
+    border: 1px solid #92C7E3;
+    border-radius: 3px;
+    color: #224477;
+    background: #ebf1f6;
+    padding-right: 20px;
+}
+
+manipulation-sorter .manipulation.active.invalid {
+    cursor: move;
+    border: 1px solid #e3ae92;
+    border-radius: 3px;
+    color: #7F2419;
+    background: #FCEDE1;
+}
+
+manipulation-sorter .manipulation:before{
+    content: "\F067"; /* icon-plus */
+    font:normal normal normal 14px/1 FontAwesome;
     margin-right: 5px;
-    font-size: 1.2em;
+}
+
+manipulation-sorter .manipulation.active:before {
+    content: "\F0DC"; /* icon-sort */
+}
+
+manipulation-sorter .manipulation .remove {
+    display: block;
+    width: 12px;
+    height: 20px;
+    overflow: hidden;
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    background: transparent;
+    border: 0px;
+}
+
+manipulation-sorter .manipulation .remove:hover {
+    color: #CF0000;
+}
+
+manipulation-sorter .manipulation .remove:before {
+    content: "\f057"; /* icon-times */
+    font:normal normal normal 14px/1 FontAwesome;
+}
+
+.manipulation input {
+    line-height: 1em;
+    padding: 0 6px;
+    width: 50px;
+    margin: 0px 8px;
+}
+
+.manipulation button.edit:after {
+    content: "\f08e"; /* External Link */
+    font:normal normal normal 14px/1 FontAwesome;
+    margin-left: 0px 5px;
 }
 
 .tasks #sortable > li.ui-sortable-helper {
@@ -75,29 +175,6 @@
 
 .tasks #sortable li:nth-last-child(1) {
     margin-bottom: 15px;
-}
-
-#sortable li.active {
-    cursor: move;
-    border: 1px solid #92C7E3;
-    border-radius: 3px;
-    color: #224477;
-    background: #ebf1f6;
-}
-
-.tasks #sortable li.invalid {
-    cursor: move;
-    border: 1px solid #e3ae92;
-    border-radius: 3px;
-    color: #7F2419;
-    background: #FCEDE1;
-}
-
-.tasks #sortable input {
-    line-height: 1em;
-    padding: 0 6px;
-    width: 50px;
-    margin: 0px 8px;
 }
 
 .tasks #sortable span > span {
@@ -213,6 +290,16 @@
 .tasks .badge-close {
     float: none; !important;
     font-size: 12px; !important;
+    text-shadow: 0px 0px #FFF;
+    color: #FFF;
+    opacity: 1;
+    width: 12px;
+    overflow:hidden;
+}
+
+.tasks .badge-close:before {
+    content: "\F057";
+    font:normal normal normal 14px/1 FontAwesome;
 }
 
 .tasks editable-content > div[contenteditable] {
