@@ -1,2 +1,2 @@
-
+-- change job_class_name value for jobs created before scheduler API clean up --
 UPDATE "QRTZ_JOB_DETAILS" SET "JOB_CLASS_NAME"='org.motechproject.scheduler.service.MotechScheduledJob' WHERE "JOB_CLASS_NAME" LIKE 'org.motechproject.scheduler.service.impl.MotechScheduledJob'
