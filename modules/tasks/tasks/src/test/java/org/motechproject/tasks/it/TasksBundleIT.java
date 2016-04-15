@@ -1,6 +1,7 @@
 package org.motechproject.tasks.it;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.event.listener.EventRelay;
@@ -29,8 +30,10 @@ import java.io.InputStream;
 import java.util.Collection;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
@@ -54,35 +57,45 @@ public class TasksBundleIT extends BasePaxIT {
     @Inject
     private BundleContext bundleContext;
 
+    private Channel fromFileChannel;
+
+    private String testBundleName;
+
     @Override
     protected Collection<String> getAdditionalTestDependencies() {
         return singletonList("org.motechproject:motech-tasks-test-bundle");
     }
 
-    @Test
-    public void testChannelService() throws InterruptedException {
-        Channel fromFile;
+    @Before
+    public void setUp() throws InterruptedException {
         int tries = 0;
-
-        String testBundleName = bundleContext.getBundle().getSymbolicName();
+        testBundleName = bundleContext.getBundle().getSymbolicName();
         do {
-            fromFile = channelService.getChannel(testBundleName);
+            fromFileChannel = channelService.getChannel(testBundleName);
             ++tries;
             Thread.sleep(500);
-        } while (fromFile == null && tries < TRIES_COUNT);
+        } while (fromFileChannel == null && tries < TRIES_COUNT);
+    }
 
-        assertNotNull(fromFile);
+    @Test
+    public void testTaskBundle() throws InterruptedException {
+        testChannelService();
+        testDataProviderService();
+        testChannelDelete();
+    }
+
+    private void testChannelService() throws InterruptedException {
+        assertNotNull(fromFileChannel);
 
         ChannelsDataService channelsDataService = getTasksContext().getBean(ChannelsDataService.class);
         Channel fromDB = channelsDataService.findByModuleName(testBundleName);
 
         assertNotNull(fromDB);
-        assertEquals(fromDB, fromFile);
+        assertEquals(fromDB, fromFileChannel);
     }
 
-    @Test
-    public void testDataProviderService() throws InterruptedException {
-        Resource resource = ServiceRetriever.getWebAppContext(bundleContext)
+    private void testDataProviderService() throws InterruptedException {
+        Resource resource = ServiceRetriever.getWebAppContext(bundleContext)git
                 .getResource("classpath:task-data-provider.json");
 
         try (InputStream in = resource.getInputStream()) {
@@ -106,6 +119,16 @@ public class TasksBundleIT extends BasePaxIT {
 
         assertNotNull(fromDB);
         assertEquals(fromDB, fromFile);
+    }
+
+    private void testChannelDelete() {
+        boolean moduleExistsBeforeDeletion = channelService.channelExists(fromFileChannel.getModuleName());
+        assertTrue(moduleExistsBeforeDeletion);
+
+        channelService.delete(fromFileChannel.getModuleName());
+
+        boolean moduleExistsAfterDeletion = channelService.channelExists(fromFileChannel.getModuleName());
+        assertFalse(moduleExistsAfterDeletion);
     }
 
     private ApplicationContext getTasksContext() {
