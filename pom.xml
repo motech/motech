@@ -1720,6 +1720,7 @@
                                     <sqlCommand>
                                         DROP DATABASE IF EXISTS motechdata;
                                         DROP DATABASE IF EXISTS motechschema;
+                                        DROP DATABASE IF EXISTS motechquartz;
                                     </sqlCommand>
                                     <onError>continue</onError>
                                 </configuration>
@@ -1736,6 +1737,7 @@
                                     <sqlCommand>
                                         CREATE DATABASE motechdata;
                                         CREATE DATABASE motechschema;
+                                        CREATE DATABASE motechquartz;
                                     </sqlCommand>
                                 </configuration>
                             </execution>

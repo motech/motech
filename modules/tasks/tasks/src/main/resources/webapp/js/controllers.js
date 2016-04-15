@@ -433,9 +433,6 @@
                                 if (source && object) {
                                     step.providerName = source.name;
                                     step.displayName = object.displayName;
-                                    angular.forEach(step.lookup, function(lookupField) {
-                                        lookupField.value = $scope.util.convertToView($scope, 'UNICODE', lookupField.value);
-                                    });
                                 }
                             }
                         });
@@ -478,10 +475,8 @@
                                     $timeout(function () {
                                         $scope.util.action.select($scope, idx, action);
                                         angular.element('#collapse-action-' + idx).collapse('hide');
-
                                         angular.forEach($scope.selectedAction[idx].actionParameters, function (param) {
                                             param.value = info.values[param.key] || '';
-                                            param.value = $scope.util.convertToView($scope, param.type, param.value);
                                         });
                                     });
                                 }
@@ -864,107 +859,6 @@
 
         };
 
-        $scope.refactorDivEditable = function (value) {
-            var result = $('<div/>').append(value),
-                isChrome = $scope.util.isChrome($scope),
-                isIE = $scope.util.isIE($scope),
-                isFirefox = $scope.util.isFirefox($scope);
-
-            result.find('em').remove();
-
-            result.find('span[data-prefix]').replaceWith(function () {
-                var span = $(this), prefix = span.data('prefix'),
-                    manipulations = span.attr('manipulate') || '',
-                    type = span.data('type'),
-                    object = {}, key, source, array, val, i;
-
-                switch (prefix) {
-                case $scope.util.TRIGGER_PREFIX:
-                    key = span.data('eventkey');
-                    break;
-                case $scope.util.DATA_SOURCE_PREFIX:
-                    source = span.data('source');
-                    object.type = span.data('object-type');
-                    object.id = span.data('object-id');
-                    key = span.data('field');
-                    break;
-                default:
-                    key = span.data('value').toString();
-                }
-
-                if (manipulations !== "") {
-                    if ($scope.util.isText(type) || $scope.util.isDate(type) || $scope.util.isDate2Date(type) ) {
-                        array = $scope.extractManipulations(manipulations);
-
-                        for (i = 0; i < array.length; i += 1) {
-                            key = key.concat("?" + array[i]);
-                        }
-                    }
-                }
-
-                key = key.replace(/\?+(?=\?)/g, '');
-
-                switch (prefix) {
-                case $scope.util.TRIGGER_PREFIX:
-                    val = '{{{0}.{1}}}'.format(prefix, key);
-                    break;
-                case $scope.util.DATA_SOURCE_PREFIX:
-                    val = '{{{0}.{1}.{2}#{3}.{4}}}'.format(prefix, source, object.type, object.id, key);
-                    break;
-                default:
-                    val = key;
-                }
-
-                return val;
-            });
-
-            if (isIE) {
-                result.find("p").replaceWith(function () {
-                    return "{0}<br>".format(this.innerHTML);
-                });
-
-                result.find("br").last().remove();
-            } else {
-                result.find("div").replaceWith(function () {
-                    return "\n{0}".format(this.innerHTML);
-                });
-            }
-
-            if (result[0].childNodes[result[0].childNodes.length - 1] === '<br>') {
-                result[0].childNodes[result[0].childNodes.length - 1].remove();
-            }
-
-            result.find("br").replaceWith("\n");
-
-            return result.text();
-        };
-
-        $scope.extractManipulations = function (manipulations) {
-            var extractedManipulations = [], insideManipulation = false, builtManipulation = "", i;
-
-            for (i = 0; i < manipulations.length; i += 1) {
-                if (manipulations[i] === "(") {
-                    insideManipulation = true;
-                } else if (manipulations[i] === ")") {
-                    insideManipulation = false;
-                }
-
-                if (manipulations[i] === " " && !insideManipulation) {
-                    extractedManipulations.push(builtManipulation);
-                    builtManipulation = "";
-                } else {
-                    builtManipulation += manipulations[i];
-                }
-            }
-
-            // we must add last manipulation to the array
-            if (builtManipulation !== "") {
-                extractedManipulations.push(builtManipulation);
-            }
-
-            return extractedManipulations;
-        };
-
         $scope.hasUnknownTrigger = function (value) {
             var unknown = false,
                 regex, found, data, indexOf, prefix, dataArray, key, param;
@@ -1004,170 +898,6 @@
             return unknown;
         };
 
-        $scope.createDraggableElement = function (value, fieldType, forFormat) {
-            var regex, element, manipulateAttributes, joinSeparator, ds, values, splittedValue, newValue;
-
-            if (value.length !== 0 && forFormat === 'convert') {
-                regex = new RegExp('format(.*)', "g");
-                manipulateAttributes = value.match(regex);
-                if (manipulateAttributes) {
-                    manipulateAttributes = manipulateAttributes[0].substr(0, manipulateAttributes[0].indexOf(")") + 1);
-                    regex = new RegExp(' {{', "g");
-                    joinSeparator = manipulateAttributes.replace(regex, '{');
-                    regex = new RegExp('{{', "g");
-                    joinSeparator = joinSeparator.replace(regex, '{');
-                    regex = new RegExp('}}', "g");
-                    joinSeparator = joinSeparator.replace(regex, '}');
-
-                    regex = new RegExp("\\{ad([^)]+)\\}", "g");
-                    values = joinSeparator.match(regex);
-
-                    if (values) {
-                        regex = new RegExp('{', "g");
-                        values = values[0].replace(regex, '');
-                        regex = new RegExp('}', "g");
-                        values = values.replace(regex, '');
-                        values = values.split('ad');
-
-                        angular.forEach(values, function (element) {
-                            if (element.length > 0) {
-                                newValue = ($scope.createDraggableElement(element, forFormat));
-                                splittedValue = element.split('.');
-
-                                ds = $scope.util.find({
-                                    msg: $scope.msg,
-                                    where: $scope.task.taskConfig.steps,
-                                    by: [{
-                                        what: '@type',
-                                        equalTo: 'DataSource'
-                                    }, {
-                                        what: 'providerName',
-                                        equalTo: splittedValue[1]
-                                    }]
-                                });
-
-                                if (ds) {
-                                    newValue = element.replace(splittedValue[1], ds.providerName);
-                                    joinSeparator = joinSeparator.replace(element, newValue);
-                                }
-                            }
-                        });
-                    }
-
-                    value = value.replace(manipulateAttributes, joinSeparator);
-                }
-            }
-
-            if (forFormat === 'true') {
-                regex = new RegExp("\\{.*?\\}", "g");
-            } else {
-                regex = new RegExp("\\{\\{.*?\\}\\}", "g");
-            }
-
-            element = value.replace(regex, function (data) {
-                var indexOf = data.indexOf('.'),
-                    prefix, dataArray, key, manipulations,
-                    span, cuts = {dot: [], hash: []}, param, type, field, dataSource, providerName, object, id;
-
-                    if (forFormat === 'true') {
-                        prefix = data.slice(1, indexOf);
-                        dataArray = data.slice(indexOf + 1, -1).split("?");
-                    } else {
-                        prefix = data.slice(2, indexOf);
-                        dataArray = data.slice(indexOf + 1, -2).split("?");
-                    }
-
-                    key = dataArray[0];
-                    manipulations = dataArray.slice(1);
-
-                switch (prefix) {
-                case $scope.util.TRIGGER_PREFIX:
-                    param = $scope.util.find({
-                        where: $scope.selectedTrigger.eventParameters,
-                        by: {
-                            what: 'eventKey',
-                            equalTo: key
-                        }
-                    });
-
-                    if (!param) {
-                        param = {
-                            type: 'UNKNOWN',
-                            displayName: key
-                        };
-                    }
-
-                    span = $scope.util.createDraggableSpan({
-                        msg: $scope.taskMsg,
-                        param: param,
-                        prefix: prefix,
-                        manipulations: manipulations,
-                        fieldType: fieldType,
-                        popover: forFormat
-                    });
-                    break;
-                case $scope.util.DATA_SOURCE_PREFIX:
-                    cuts.hash = key.split('#');
-                    cuts.dot[0] = cuts.hash[0].split('.');
-                    cuts.dot[1] = cuts.hash[1].split('.');
-
-                    providerName = cuts.dot[0][0];
-                    id = cuts.dot[1][0];
-
-                    type = cuts.dot[0].slice(1).join('.');
-                    field = cuts.dot[1].slice(1).join('.');
-
-                    dataSource = $scope.util.find({
-                        where: $scope.task.taskConfig.steps,
-                        by: [{
-                            what: '@type',
-                            equalTo: 'DataSource'
-                        }, {
-                            what: 'providerName',
-                            equalTo: providerName
-                        }]
-                    });
-
-                    object = dataSource && $scope.findObject(dataSource.providerName, dataSource.type);
-
-                    param = object && $scope.util.find({
-                        where: object.fields,
-                        by: {
-                            what: 'fieldKey',
-                            equalTo: field
-                        }
-                    });
-
-                    if (!param) {
-                        param = {
-                            type: 'UNKNOWN',
-                            displayName: field
-                        };
-                    }
-
-                    span = $scope.util.createDraggableSpan({
-                        msg: $scope.taskMsg,
-                        param: param,
-                        prefix: prefix,
-                        manipulations: manipulations,
-                        fieldType: fieldType,
-                        providerName: dataSource.providerName,
-                        object: {
-                            id: id,
-                            type: type,
-                            field: field,
-                            displayName: object.displayName
-                        }
-                    });
-                    break;
-                }
-
-                return span || '';
-            });
-
-            return element.replace(/\n/g, "<br>");
-        };
-
         $scope.save = function (enabled) {
             var success = function (response) {
                     var alertMessage = enabled ? $scope.msg('task.success.savedAndEnabled') : $scope.msg('task.success.saved'),
@@ -1196,14 +926,6 @@
                         delete action.values;
                     });
 
-                    angular.forEach($scope.task.taskConfig.steps, function (step) {
-                        if (step['@type'] === 'DataSource') {
-                            angular.forEach(step.lookup, function(lookupField) {
-                                lookupField.value = $scope.util.convertToView($scope, 'UNICODE', lookupField.value);
-                            });
-                        }
-                    });
-
                     delete $scope.task.enabled;
 
                     unblockUI();
@@ -1225,7 +947,7 @@
                 }
 
                 angular.forEach(action.actionParameters, function (param) {
-                    $scope.task.actions[idx].values[param.key] = $scope.addDoubleBrackets($scope.util.convertToServer($scope, param.value));
+                    $scope.task.actions[idx].values[param.key] = param.value;
 
                     if (!param.required && isBlank($scope.task.actions[idx].values[param.key])) {
                         delete $scope.task.actions[idx].values[param.key];
@@ -1238,10 +960,6 @@
                     if (step.lookup === undefined) {
                         step.lookup = [];
                     }
-                    angular.forEach(step.lookup, function(lookupField) {
-                        lookupField.value = $scope.util.convertToServer($scope, lookupField.value || '');
-                    });
-
                 }
             });
 
@@ -1282,27 +1000,11 @@
                 return expression;
             } else if ($scope.selectedTrigger !== undefined) {
                 value = prop.value === undefined ? '' : prop.value;
-                value = $scope.refactorDivEditable(value);
 
                 expression = !value || value.length === 0 || value === "\n";
             }
 
             return expression;
-        };
-
-        $scope.getBooleanValue = function (value) {
-            return (value === 'true' || value === 'false') ? null : value;
-        };
-
-        $scope.setBooleanValue = function (action, index, value) {
-            $scope.filter($scope.selectedAction[action].actionParameters, {hidden: false})[index].value = $scope.util.createBooleanSpan($scope, value);
-        };
-
-        $scope.checkedBoolean = function (action, index, val) {
-            var prop = $scope.filter($scope.selectedAction[action].actionParameters, {hidden: false})[index],
-                value = $scope.refactorDivEditable(prop.value === undefined ? '' : prop.value);
-
-            return value === val;
         };
 
         $scope.getTaskValidationError = function (error) {
@@ -1319,185 +1021,6 @@
             $('#helpModalDate').modal();
         };
 
-        $scope.changeFormatInput = function (newData) {
-            $timeout(function() {
-                $scope.formatInput = [];
-                $scope.formatInput = newData;
-                $scope.$apply();
-            }, 1);
-
-            if (!$scope.$$phase) { // check if we are in digest
-                $scope.$digest(); // run digest
-            }
-        };
-
-        $scope.showFormatManipulation = function () {
-            $scope.changeFormatInput($scope.getValues('true'));
-            $('#formatManipulation').modal({keyboard: false});
-        };
-
-        $scope.getValues = function(forFormat) {
-            var manipulateElement = $("[ismanipulate=true]"), joinSeparator = "", manipulation, manipulateAttributes, manipulationAttributesIndex, convertedValues = [], reg;
-            manipulation = "format";
-            manipulateAttributes = manipulateElement.attr("manipulate") || "";
-
-            if ((manipulateAttributes.indexOf(manipulation) !== -1) && (manipulation === "format")) {
-                manipulateAttributes = manipulateAttributes.match('format(.*)');
-                reg = manipulateAttributes[1];
-                if ((reg.indexOf("(") + 1) !== reg.indexOf(")")) {
-                    joinSeparator = reg.substr(reg.indexOf("(") + 1, reg.indexOf(")") - 1);
-                    reg = joinSeparator.split(",");
-                } else {
-                    reg = convertedValues;
-                }
-            }
-
-            angular.forEach(reg, function (value) {
-                convertedValues.push($scope.createDraggableElement(value, manipulation, forFormat));
-            });
-
-            return convertedValues;
-        };
-
-        $scope.addFormatInput = function () {
-
-            $scope.tempSaveInput();
-
-            $timeout(function() {
-                $scope.formatInput.push('');
-                $scope.$apply();
-            }, 0);
-        };
-
-        $scope.deleteFormatInput = function (indexToRemove) {
-            var tempArray = [];
-
-            $scope.tempSaveInput();
-
-            angular.forEach($scope.formatInput, function (value, index) {
-                if  (indexToRemove !== index) {
-                    tempArray.push(value);
-                }
-            });
-
-            $scope.changeFormatInput(tempArray);
-        };
-
-        $scope.tempSaveInput = function () {
-            var inputFields = $("[data-type=format]"), tempArray = [];
-
-            angular.forEach(inputFields, function (value) {
-                tempArray.push(value.innerHTML);
-            });
-
-            $scope.formatInput = tempArray;
-        };
-
-        $scope.saveInput = function () {
-            var inputFields = $("[data-type=format]"), tempArray = [];
-
-            angular.forEach(inputFields, function (value) {
-                tempArray.push($scope.removeDoubleBrackets($scope.util.convertToServer($scope, value.innerHTML)));
-            });
-
-            $scope.formatInput = tempArray;
-            $scope.changeFormatManipulation();
-        };
-
-        $scope.changeFormatManipulation = function () {
-            var manipulation = "format(",
-                manipulateElement = $("[ismanipulate=true]"),
-                elementManipulation = manipulateElement.attr("manipulate"),
-                regex = new RegExp("format\\(.*?\\)", "g");
-
-            angular.forEach($scope.formatInput, function(value, index) {
-
-                manipulation = manipulation + value;
-                if (index !== $scope.formatInput.length - 1) {
-                    manipulation = manipulation + ",";
-                }
-            });
-
-            manipulation = manipulation + ")";
-            manipulation = manipulation.replace(/\s+/g,"");
-
-            elementManipulation = elementManipulation.replace(regex, manipulation);
-            manipulateElement.attr("manipulate", elementManipulation);
-            $timeout(function() {
-                manipulateElement[0].focus();
-            }, 0);
-        };
-
-        $scope.removeDoubleBrackets = function (value) {
-            var tempValue = "", reg;
-
-            if (value.length !== 0) {
-                reg = new RegExp('{{', "g");
-                tempValue = value.replace(reg, '{');
-                reg = new RegExp('}}', "g");
-                tempValue = tempValue.replace(reg, '}');
-                value = value.replace(value, tempValue);
-            }
-
-            return value;
-        };
-
-        $scope.addDoubleBrackets = function (value) {
-            var manipulateAttributes, reg = "", joinSeparator, splittedValue, newValue, values, ds;
-
-            if (value.length !== 0) {
-                reg = new RegExp("format\\(.*?\\)", "g");
-                manipulateAttributes = value.match(reg);
-                if (manipulateAttributes) {
-                    manipulateAttributes = manipulateAttributes[0].substr(0, manipulateAttributes[0].indexOf(")") + 1);
-                    reg = new RegExp('{', "g");
-                    joinSeparator = manipulateAttributes.replace(reg, '{{');
-                    reg = new RegExp('{{3,}', "g");
-                    joinSeparator = joinSeparator.replace(reg, '{{');
-                    reg = new RegExp('}', "g");
-                    joinSeparator = joinSeparator.replace(reg, '}}');
-                    reg = new RegExp('}{3,}', "g");
-                    joinSeparator = joinSeparator.replace(reg, '}}');
-                    reg = new RegExp("\\{ad([^)]+)\\}", "g");
-                    values = joinSeparator.match(reg);
-
-                    if (values) {
-                        reg = new RegExp('{', "g");
-                        values = values[0].replace(reg, '');
-                        reg = new RegExp('}', "g");
-                        values = values.replace(reg, '');
-                        values = values.split('ad');
-
-                        angular.forEach(values, function (element) {
-                            if (element.length > 0) {
-                                splittedValue = element.split('.');
-
-                                ds = $scope.util.find({
-                                    msg: $scope.msg,
-                                    where: $scope.task.taskConfig.steps,
-                                    by: [{
-                                        what: '@type',
-                                        equalTo: 'DataSource'
-                                    }, {
-                                        what: 'providerName',
-                                        equalTo: splittedValue[1]
-                                    }]
-                                });
-
-                                if (ds) {
-                                    joinSeparator = joinSeparator.replace(splittedValue[1], $scope.msg(ds.providerName));
-                                }
-                            }
-                        });
-                    }
-
-                    value = value.replace(manipulateAttributes, joinSeparator);
-                }
-            }
-
-            return value;
-        };
-
         $scope.taskMsg = function(message) {
             if (message === undefined) {
                 return "";
@@ -1509,6 +1032,46 @@
                 return message;
             }
         };
+
+        $scope.getAvailableFields = function () {
+            var dataSources, fields = [];
+            if($scope.selectedTrigger) {
+                $scope.selectedTrigger.eventParameters.forEach(function (_field) {
+                    var field = JSON.parse(JSON.stringify(_field));
+                    field.prefix = ManageTaskUtils.TRIGGER_PREFIX;
+                    fields.push(field);
+                });
+            }
+            dataSources = $scope.getDataSources();
+            if(dataSources && Array.isArray(dataSources)){
+                dataSources.forEach(function (source) {
+                    var service = $scope.findObject(source.providerName, source.type);
+                    if (!service || !service.fields){
+                        return false;
+                    }
+                    service.fields.forEach(function (_field) {
+                        var field =  JSON.parse(JSON.stringify(_field));
+                        field.prefix = ManageTaskUtils.DATA_SOURCE_PREFIX;
+                        field.serviceName = service.displayName;
+                        field.providerName = source.providerName;
+                        field.providerType = source.type;
+                        field.objectId = source.objectId;
+                        fields.push(field);
+                    });
+                });
+            }
+            return fields;
+        };
+
+        $scope.$watchCollection(function(){
+            var fieldIds = [];
+            $scope.getAvailableFields().forEach(function(field){
+                fieldIds.push(field.id);
+            });
+            return fieldIds;
+        }, function() {
+           $scope.fields = $scope.getAvailableFields();
+        });
     });
 
     controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $routeParams, $filter, $http) {
@@ -1550,6 +1113,7 @@
                 $scope.description = task.description;
                 $scope.enabled = task.enabled;
                 $scope.name = task.name;
+                $('#inner-center').trigger("change");
             });
         }
 

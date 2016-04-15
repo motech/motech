@@ -166,8 +166,11 @@ public class BundleAdminController {
                                           @RequestParam(required = false) String moduleId,
                                           @RequestParam(required = false) MultipartFile file,
                                           @RequestParam(required = false) String startBundle) {
-        boolean start = (StringUtils.isBlank(startBundle) ? false : "on".equals(startBundle));
+        boolean start = (StringUtils.isNotBlank(startBundle) && "on".equals(startBundle));
         if ("File".equals(moduleSource)) {
+            if (file == null) {
+                throw new IllegalArgumentException("No file passed in the request - invalid upload");
+            }
             return moduleAdminService.installBundle(file, start);
         } else {
             if (isBlank(moduleId)) {

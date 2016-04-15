@@ -84,7 +84,7 @@ public class ModuleInstallFT extends BasePaxIT {
                 break;
             case "File":
                 assertNotNull(bundleFile);
-                entity.addBinaryBody("bundleFile", bundleFile);
+                entity.addBinaryBody("file", bundleFile);
                 break;
             default:
                 fail("Wrong module source.");
