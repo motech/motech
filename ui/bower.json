@@ -56,7 +56,7 @@
     "bootstrap-multiselect": "~0.9.13",
     "angular-bootstrap": "0.6.0",
     "bootstrap3-dialog":"1.34.9",
-    "jasny-bootstrap":"git://github.com/jasny/bootstrap"
+    "jasny-bootstrap":"3.1.0"
   },
   "resolutions": {
     "jquery": "1.11.3",
