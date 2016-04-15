@@ -74,9 +74,13 @@ public class EventParameter extends Parameter {
         this.eventKey = eventKey;
     }
 
-    public TriggerEvent getTriggerEvent() { return triggerEvent; }
+    public TriggerEvent getTriggerEvent() {
+        return triggerEvent;
+    }
 
-    public void setTriggerEvent(TriggerEvent triggerEvent) { this.triggerEvent = triggerEvent; }
+    public void setTriggerEvent(TriggerEvent triggerEvent) {
+        this.triggerEvent = triggerEvent;
+    }
 
     @Override
     public boolean equals(Object obj) {

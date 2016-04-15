@@ -32,9 +32,7 @@ import java.io.InputStream;
 import java.util.Collection;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
@@ -59,7 +57,9 @@ public class TasksBundleIT extends BasePaxIT {
     private BundleContext bundleContext;
 
     private Channel fromFileChannel;
+
     private String testBundleName;
+
     @Override
     protected Collection<String> getAdditionalTestDependencies() {
         return singletonList("org.motechproject:motech-tasks-test-bundle");
@@ -121,16 +121,18 @@ public class TasksBundleIT extends BasePaxIT {
     }
 
     private void testChannelDelete() {
-        channelService.delete(fromFileChannel.getModuleName());
-        boolean doesModuleExistsAfterDeletion = channelService.channelExists(fromFileChannel.getModuleName());
+        boolean moduleExistsBeforeDeletion = channelService.channelExists(fromFileChannel.getModuleName());
+        assertTrue(moduleExistsBeforeDeletion);
 
-        assertFalse(doesModuleExistsAfterDeletion);
+        channelService.delete(fromFileChannel.getModuleName());
+
+        boolean moduleExistsAfterDeletion = channelService.channelExists(fromFileChannel.getModuleName());
+        assertFalse(moduleExistsAfterDeletion);
     }
 
     private ApplicationContext getTasksContext() {
         return ServiceRetriever.getWebAppContext(bundleContext, "org.motechproject.motech-tasks");
     }
-
 
     @After
     public void tearDown() {
