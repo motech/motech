@@ -145,7 +145,7 @@
             bundle.state = LOADING_STATE;
             bundle.$stop($scope.refreshModuleList, function (response) {
                 bundle.state = 'RESOLVED';
-                ModalFactory.handleWithStackTrace('admin.error', 'admin.bundles.error.stop', response);
+                ModalFactory.showErrorWithStackTrace('admin.bundles.error.stop', 'admin.error', response);
             });
         };
 
@@ -167,7 +167,7 @@
                 }, MODULE_LIST_REFRESH_TIMEOUT);
             }, function (response) {
                 bundle.state = 'RESOLVED';
-                ModalFactory.handleWithStackTrace('admin.error', 'admin.bundles.error.start', response);
+                ModalFactory.showErrorWithStackTrace('admin.bundles.error.start', 'admin.error', response);
             });
         };
 
@@ -178,7 +178,7 @@
                 $scope.$emit('lang.refresh');
                 $scope.refreshModuleList();
 
-                ModalFactory.motechAlert('admin.bundles.error.restart', 'admin.error');
+                ModalFactory.showErrorAlert('admin.bundles.error.restart', 'admin.error');
             });
         };
 
@@ -201,7 +201,7 @@
                     $scope.refreshModuleList();
                     LoadingModal.close();
                 }, function () {
-                    ModalFactory.motechAlert('admin.bundles.error.uninstall', 'admin.error');
+                    ModalFactory.showErrorAlert('admin.bundles.error.uninstall', 'admin.error');
                     bundle.state = oldState;
                     LoadingModal.close();
                 });
@@ -212,7 +212,7 @@
                     $scope.refreshModuleList();
                     LoadingModal.close();
                 }, function () {
-                    ModalFactory.motechAlert('admin.bundles.error.uninstall', 'admin.error');
+                    ModalFactory.showErrorAlert('admin.bundles.error.uninstall', 'admin.error');
                     bundle.state = oldState;
                     LoadingModal.close();
                 });
@@ -276,7 +276,7 @@
             $('#bundleUploadForm').ajaxSubmit({
                 success: function (data, textStatus, jqXHR) {
                     if (jqXHR.status === 0 && data) {
-                        ModalFactory.handleWithStackTrace('admin.error', 'admin.bundles.error.start', data);
+                        ModalFactory.showErrorWithStackTrace('admin.bundles.error.start', 'admin.error', data);
                         LoadingModal.close();
                     } else {
                         $scope.bundles = Bundle.query(function () {
@@ -295,7 +295,7 @@
                     }
                 },
                 error:function (response) {
-                    ModalFactory.handleWithStackTrace('admin.error', 'admin.bundles.error.start', response);
+                    ModalFactory.showErrorWithStackTrace('admin.bundles.error.start', 'admin.error', response);
                     LoadingModal.close();
                 }
             });
@@ -552,53 +552,82 @@
 
         $scope.saveSettings = function (settings) {
             LoadingModal.open();
-            $http.post('../admin/api/settings/platform', settings).
-                success( ModalFactory.alertHandler('admin.settings.saved', 'admin.success') ).
-                error( ModalFactory.alertHandler('admin.settings.error.location') );
+            $http.post('../admin/api/settings/platform', settings)
+                .success( function() {
+                    LoadingModal.close();
+                    ModalFactory.showSuccessAlert('admin.settings.saved');
+                })
+                .error( function() {
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlert('admin.settings.error.location');
+                });
         };
 
         $scope.saveNewSettings = function () {
             LoadingModal.open();
             $('#noSettingsForm').ajaxSubmit({
-                success:ModalFactory.alertHandler('admin.settings.saved', $scope.msg('server.success'), function () {
-                    $scope.platformSettings = PlatformSettings.get();
-                }),
+                success: function () {
+                    LoadingModal.close();
+                    ModalFactory.alert('admin.settings.saved', $scope.msg('server.success'), function () {
+                        $scope.platformSettings = PlatformSettings.get();
+                    });
+                },
                 error: function (response) {
-                    ModalFactory.errorAlert(response);
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlert(null, null, response.status + ": " + response.statusText);
                 }
             });
         };
 
         $scope.uploadSettings = function () {
             $("#settingsFileForm").ajaxSubmit({
-                success:ModalFactory.alertHandler('admin.settings.saved', $scope.msg('server.success'), function () {
-                    $scope.platformSettings = PlatformSettings.get();
-                }),
+                success: function () {
+                    LoadingModal.close();
+                    ModalFactory.alert('admin.settings.saved', 'server.success', function () {
+                        $scope.platformSettings = PlatformSettings.get();
+                    });
+                },
                 error: function (response) {
-                    ModalFactory.errorAlert(response);
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlert(null, null, response.status + ": " + response.statusText);
                 }
             });
         };
 
         $scope.uploadFileLocation = function () {
-            $http({method:'POST', url:'../admin/api/settings/platform/location', params:{location:this.location}}).
-                success( ModalFactory.alertHandler('admin.settings.saved', 'admin.success') ).
-                error( ModalFactory.alertHandler('admin.settings.error.location') );
+            $http({method:'POST', url:'../admin/api/settings/platform/location', params:{location:this.location}})
+                .success( function () {
+                    LoadingModal.close();
+                    ModalFactory.showSuccessAlert('admin.settings.saved');
+                })
+                .error( function () {
+                   LoadingModal.close();
+                   ModalFactory.showErrorAlert('admin.settings.error.location');
+                });
         };
 
         $scope.saveAll = function () {
             LoadingModal.open();
-            $http.post('../admin/api/settings/platform/list', $scope.platformSettings.settingsList).
-                success( ModalFactory.alertHandler('admin.settings.saved', 'admin.success') ).
-                error( ModalFactory.alertHandler('admin.settings.error.location') );
+            $http.post('../admin/api/settings/platform/list', $scope.platformSettings.settingsList)
+                .success( function () {
+                    LoadingModal.close();
+                    ModalFactory.showSuccessAlert('admin.settings.saved');
+                })
+                .error( function () {
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlert('admin.settings.error.location');
+                });
         };
 
         $scope.exportConfig = function () {
-            $http.get('../admin/api/settings/platform/export').
-            success(function () {
+            $http.get('../admin/api/settings/platform/export')
+            .success(function () {
                 window.location.replace("../admin/api/settings/platform/export");
-            }).
-            error( ModalFactory.alertHandler('admin.settings.error.export', 'admin.error') );
+            })
+            .error( function () {
+                LoadingModal.close();
+                ModalFactory.showErrorAlert('admin.settings.error.export');
+            });
         };
 
         innerLayout({
@@ -654,11 +683,19 @@
             if (doRestart === true) {
                 successHandler = restartBundleHandler;
             } else {
-                successHandler = ModalFactory.alertHandler('admin.settings.saved', 'admin.success');
+                successHandler = function () {
+                    LoadingModal.close();
+                    ModalFactory.showSuccessAlert('admin.settings.saved');
+                };
             }
 
             LoadingModal.open();
-            mSettings.$save({bundleId:$scope.module.bundleId}, successHandler, ModalFactory.angularHandler('admin.error', 'admin.settings.error'));
+            mSettings.$save({bundleId:$scope.module.bundleId}, successHandler,
+                function(response) {
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlertWithResponse('admin.settings.error', 'admin.error', response);
+                }
+            );
         };
 
         $scope.uploadRaw = function (filename, doRestart) {
@@ -668,7 +705,10 @@
             if (doRestart === true) {
                 successHandler = restartBundleHandler;
             } else {
-                successHandler = ModalFactory.alertHandler('admin.settings.saved', 'admin.success');
+                successHandler = function () {
+                    LoadingModal.close();
+                    ModalFactory.showSuccessAlert('admin.settings.saved');
+                };
             }
 
             LoadingModal.open();
@@ -676,16 +716,23 @@
             $(id).ajaxSubmit({
                 success:successHandler,
                 error: function (response) {
-                    ModalFactory.errorAlert(response);
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlert(null, null, response.status + ": " + response.statusText);
                 }
             });
         };
 
         var restartBundleHandler = function () {
-            $scope.module.$restart(function () {
-                LoadingModal.close();
-                ModalFactory.motechAlert('admin.settings.saved', 'admin.success');
-            }, ModalFactory.alertHandler('admin.bundles.error.restart', 'admin.error'));
+            $scope.module.$restart(
+                function () {
+                    LoadingModal.close();
+                    ModalFactory.showSuccessAlert('admin.settings.saved');
+                },
+                function () {
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlert('admin.bundles.error.restart');
+                }
+            );
         };
 
         innerLayout({
@@ -727,7 +774,7 @@
 
     });
 
-    controllers.controller('AdminServerLogOptionsCtrl', function($scope, LogService, $http, ModalFactory) {
+    controllers.controller('AdminServerLogOptionsCtrl', function($scope, LogService, $http, ModalFactory, LoadingModal) {
         $scope.availableLevels = ['off', 'trace', 'debug', 'info', 'warn', 'error', 'fatal', 'all'];
         $scope.logs = [{name: "", level: "off"}];
 
@@ -746,10 +793,16 @@
             });
             $scope.logs = [];
             $scope.logs = [{name: "", level: "off"}];
-            $scope.config.$save({}, ModalFactory.alertHandler('admin.log.changedLevel', $scope.msg('server.success'),function () {
-            }), function () {
-                ModalFactory.motechAlert('admin.log.changedLevelError', 'admin.error');
-            });
+            $scope.config.$save({},
+                function () {
+                    LoadingModal.close();
+                    ModalFactory.showSuccessAlert('admin.log.changedLevel');
+                },
+                function () {
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlert('admin.log.changedLevelError');
+                }
+            );
         };
 
         $scope.add = function () {
@@ -882,9 +935,11 @@
 
         $scope.save = function () {
             $scope.notificationRuleDto.$save(function () {
-                ModalFactory.motechAlert('admin.messages.notifications.saved', 'admin.success');
+                ModalFactory.showSuccessAlert('admin.messages.notifications.saved');
                 $location.path('/admin/messages');
-            }, ModalFactory.angularHandler('admin.error', 'admin.messages.notifications.errorSave'));
+            }, function () {
+                ModalFactory.showErrorAlert('admin.messages.notifications.errorSave');
+            });
         };
 
         innerLayout({

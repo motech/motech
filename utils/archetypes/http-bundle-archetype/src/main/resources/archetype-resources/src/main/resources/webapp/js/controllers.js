@@ -18,7 +18,7 @@
             HelloWorld.get({}, function(response) {
                 $scope.sayHelloResult = response.message;
                 messageKey = '${artifactId}.info.serviceResponse';
-                ModalFactory.motechAlert(response.message, messageKey);
+                ModalFactory.showAlert({ message: response.message, title: messageKey });
                 $scope.sayHelloCount++;
             });
         };

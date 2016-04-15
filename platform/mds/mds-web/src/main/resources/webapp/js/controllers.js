@@ -341,7 +341,7 @@
         };
 
         $scope.discard = function (entityId) {
-            ModalFactory.confirm({
+            ModalFactory.showConfirm({
                 title: $scope.msg('mds.warning'),
                 message: $scope.msg('mds.wip.info.discard'),
                 type: 'type-warning',
@@ -1083,12 +1083,17 @@
                 // update advanced settings
                 updateAdvancedSettings();
             },
-            errorHandler = function(title, msg, params) {
+            errorHandler = function(msg, title, params) {
                 $scope.setError(msg, params);
                 errorCallback();
             };
 
-            Entities.draft(pre, data, func, ModalFactory.angularHandler('mds.error', 'mds.error.draftSave', errorHandler));
+            Entities.draft(pre, data, func,
+                function (response) {
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlertWithResponse('mds.error.draftSave', 'mds.error', response, errorHandler);
+                }
+            );
         };
 
         $scope.dateDefaultValueChange = function (val, id) {
@@ -1418,8 +1423,8 @@
                     angular.element('#selectEntity').select2('val', response.id);
                     LoadingModal.close();
                 }, function (response) {
-                    ModalFactory.handleResponse('mds.error', 'mds.error.cantSaveEntity', response);
                     LoadingModal.close();
+                    ModalFactory.showErrorAlertWithResponse('mds.error.cantSaveEntity', 'mds.error', response);
                 });
             }
         };
@@ -1453,9 +1458,11 @@
             if ($scope.selectedEntity !== null) {
                 Entities.remove({id: $scope.selectedEntity.id}, function () {
                     $scope.selectedEntity = null;
-                    ModalFactory.handleResponse('mds.success', 'mds.delete.success', '');
+                    LoadingModal.close();
+                    ModalFactory.showSuccessAlert('mds.delete.success');
                 }, function (response) {
-                    ModalFactory.handleResponse('mds.error', 'mds.error.cantDeleteEntity', response);
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlertWithResponse('mds.error.cantDeleteEntity', 'mds.error', response);
                 });
             }
         };
@@ -1624,7 +1631,7 @@
         * @param {object} field The field which should be removed.
         */
         $scope.removeField = function (field) {
-            ModalFactory.confirm({
+            ModalFactory.showConfirm({
                 message: $scope.msg('mds.warning.removeField'),
                 type: 'type-warning',
                 callback: function(result) {
@@ -3559,7 +3566,8 @@
                     LoadingModal.close();
                 });
             }).error(function(response) {
-                ModalFactory.handleResponse('mds.error', 'mds.error.instancesList', response);
+                LoadingModal.close();
+                ModalFactory.showErrorAlertWithResponse('mds.error.instancesList', 'mds.error', response);
             });
 
         };
@@ -3593,11 +3601,14 @@
                     $scope.currentRecord = data;
                     $scope.fields = data.fields;
                     LoadingModal.close();
-                }, ModalFactory.angularHandler('mds.error', 'mds.error.cannotUpdateInstance'));
+                }, function (response) {
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlertWithResponse('mds.error.cannotUpdateInstance', 'mds.error', response);
+                });
         };
 
         $scope.editInstanceOfEntity = function(instanceId, entityClassName) {
-            ModalFactory.confirm({
+            ModalFactory.showConfirm({
                 title: $scope.msg('mds.confirm'),
                 message: $scope.msg('mds.confirm.disabledInstanceChanges'),
                 callback: function(result) {
@@ -3629,7 +3640,8 @@
                     $http.get('../mds/instances/' + relatedEntityId + '/instance/' + instanceId).success(function (data) {
                         $scope.editRelatedFields = angular.copy(data.fields);
                     }).error(function(response) {
-                        ModalFactory.handleResponse('mds.error', 'mds.error.instancesList', response);
+                        LoadingModal.close();
+                        ModalFactory.showErrorAlertWithResponse('mds.error.instancesList', 'mds.error', response);
                     });
                 },
                 setExistingWithoutId = function () {
@@ -3639,7 +3651,8 @@
                         setExisting();
                         LoadingModal.close();
                     }).error(function(response) {
-                        ModalFactory.handleResponse('mds.error', 'mds.error.instancesList', response);
+                        LoadingModal.close();
+                        ModalFactory.showErrorAlertWithResponse('mds.error.instancesList', 'mds.error', response);
                     });
                 };
 
@@ -3710,7 +3723,7 @@
                         $scope.relatedData.addExisting(field, data.value.id);
                         closeModal = true;
                     } else {
-                        ModalFactory.motechAlert('mds.info.instanceAlreadyRelated', 'mds.info');
+                        ModalFactory.showAlert('mds.info.instanceAlreadyRelated', 'mds.info');
                     }
                 } else {
                     if ($scope.editedField.value === null || $scope.editedField.value === undefined || $scope.editedField.value.addedIds === undefined) {
@@ -3724,7 +3737,7 @@
                     $scope.editedField.displayValue = id;
                     closeModal = true;
                     } else {
-                        ModalFactory.motechAlert('mds.info.instanceAlreadyRelated', 'mds.info');
+                        ModalFactory.showAlert('mds.info.instanceAlreadyRelated', 'mds.info');
                     }
                 }
                 LoadingModal.close();
@@ -3732,7 +3745,8 @@
                     $scope.closeRelatedEntityModal(field.id);
                 }
             }).error(function (response) {
-                ModalFactory.handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
+                LoadingModal.close();
+                ModalFactory.showErrorAlertWithResponse('mds.error.cannotAddRelatedInstance', 'mds.error', response);
             });
         };
 
@@ -3987,14 +4001,14 @@
                             $scope.allEntityFields = data;
                         },
                         function (response) {
-                            ModalFactory.handleResponse('mds.error', 'mds.error.instancesList', response);
+                            LoadingModal.close();
+                            ModalFactory.showErrorAlertWithResponse('mds.error.instancesList', 'mds.error', response);
                         }
                     );
                     LoadingModal.close();
 
-                }).error(function(response)
-                {
-                    ModalFactory.handleResponse('mds.error', 'mds.error.instancesList', response);
+                }).error(function(response) {
+                    ModalFactory.showErrorAlertWithResponse('mds.error.instancesList', 'mds.error', response);
                 });
             }
         };
@@ -4004,14 +4018,23 @@
             .success(function (data) {
                 window.location.replace("../mds/instances/" + $scope.selectedEntity.id + "/" + $scope.selectedInstance + "/" + fieldName);
             })
-            .error( ModalFactory.alertHandler('mds.error', 'mds.error.cannotDownloadBlob'));
+            .error( function () {
+                LoadingModal.close();
+                ModalFactory.showErrorAlert('mds.error.cannotDownloadBlob');
+            });
         };
 
         $scope.deleteBlobContent = function() {
             LoadingModal.open();
             $http.get('../mds/instances/deleteBlob/' + $scope.selectedEntity.id + '/' + $scope.selectedInstance + '/' + $scope.selectedFieldId)
-            .success( ModalFactory.alertHandler('mds.success', 'mds.delete.deleteBlobContent.success'))
-            .error( ModalFactory.alertHandler('mds.error', 'mds.error.cannotDeleteBlobContent'));
+            .success( function () {
+                LoadingModal.close();
+                ModalFactory.showSuccessAlert('mds.delete.deleteBlobContent.success');
+            })
+            .error( function () {
+                LoadingModal.close();
+                ModalFactory.showErrorAlert('mds.error.cannotDeleteBlobContent');
+            });
         };
 
         $scope.selectField = function (fieldId) {
@@ -4051,7 +4074,10 @@
                function (data) {
                    $scope.previousInstance = undefined;
                    LoadingModal.close();
-               }, ModalFactory.angularHandler('mds.error', 'mds.error.cannotRevert'));
+               }, function (response) {
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlertWithResponse('mds.error.cannotRevert', 'mds.error', response);
+               });
            }
         };
 
@@ -4079,7 +4105,7 @@
                $scope.showTrashInstance = false;
             }, function() {
                LoadingModal.close();
-               ModalFactory.motechAlert('mds.error.cannotRestoreInstance', 'mds.error');
+               ModalFactory.showErrorAlert('mds.error.cannotRestoreInstance', 'mds.error');
             });
         };
 
@@ -4150,7 +4176,10 @@
             $scope.currentRecord.$save(function() {
                 $scope.unselectInstance();
                 LoadingModal.close();
-            }, ModalFactory.angularHandler('mds.error', 'mds.error.cannotAddInstance'));
+            }, function (response) {
+                LoadingModal.close();
+                ModalFactory.showErrorAlertWithResponse('mds.error.cannotAddInstance', 'mds.error', response);
+            });
         };
 
         /**
@@ -4164,7 +4193,10 @@
             }, function() {
                 $scope.unselectInstance();
                 LoadingModal.close();
-            }, ModalFactory.angularHandler('mds.error', 'mds.error.cannotDeleteInstance'));
+            }, function (response) {
+                LoadingModal.close();
+                ModalFactory.showErrorAlertWithResponse('mds.error.cannotDeleteInstance', 'mds.error', response);
+            });
         };
 
         /**
@@ -4190,7 +4222,10 @@
                 LoadingModal.close();
                 $scope.previousInstance = undefined;
                 $scope.instanceId = instanceId;
-            }, ModalFactory.angularHandler('mds.error', 'mds.error.historyRetrievalError'));
+            }, function (response) {
+                LoadingModal.close();
+                ModalFactory.showErrorAlertWithResponse('mds.error.historyRetrievalError', 'mds.error', response);
+            });
         };
 
         $scope.backToInstance = function() {
@@ -4426,8 +4461,8 @@
 
             $http.post('../mds/entities/' + $scope.selectedEntity.id + "/preferences/fields", fieldsData)
             .error(function () {
-                ModalFactory.handleResponse('mds.error', 'mds.preferences.error.fields', '');
                 LoadingModal.close();
+                ModalFactory.showErrorAlert('mds.preferences.error.fields');
             });
         };
 
@@ -4460,8 +4495,8 @@
 
             $http.post('../mds/entities/' + $scope.selectedEntity.id + "/preferences/fields", fieldsData)
             .error(function () {
-                ModalFactory.handleResponse('mds.error', 'mds.preferences.error.fields', '');
                 LoadingModal.close();
+                ModalFactory.showErrorAlert('mds.preferences.error.fields');
             });
         };
 
@@ -4765,7 +4800,8 @@
                 window.location.replace(url);
             })
             .error(function (response) {
-                ModalFactory.handleResponse('mds.error', 'mds.error.exportData', response);
+                LoadingModal.close();
+                ModalFactory.showErrorAlertWithResponse('mds.error.exportData', 'mds.error', response);
             });
         };
 
@@ -5105,7 +5141,8 @@
                     LoadingModal.close();
                 },
                 error: function (response) {
-                    ModalFactory.handleResponse('mds.error', 'mds.error.importCsv', response);
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlertWithResponse('mds.error.importCsv', 'mds.error', response);
                 }
             });
         };
@@ -5309,8 +5346,8 @@
                 LoadingModal.close();
             },
             function() {
-                ModalFactory.handleResponse('mds.error', 'mds.import.file.error', '');
                 LoadingModal.close();
+                ModalFactory.showErrorAlert('mds.import.file.error');
             });
         };
 
@@ -5340,12 +5377,12 @@
 
             $http.post('../mds/settings/import/' + $scope.importId, blueprint)
             .success(function () {
-                ModalFactory.handleResponse('mds.success', 'mds.import.success', '');
                 LoadingModal.close();
+                ModalFactory.showSuccessAlert('mds.import.success');
             })
             .error(function () {
-                ModalFactory.handleResponse('mds.error', 'mds.import.error', '');
                 LoadingModal.close();
+                ModalFactory.showErrorAlert('mds.import.error');
             });
         };
 
@@ -5356,11 +5393,11 @@
             LoadingModal.open();
             MdsSettings.saveSettings({}, $scope.settings,
                 function () {
-                    ModalFactory.handleResponse('mds.success', 'mds.dataRetention.success', '');
                     LoadingModal.close();
+                    ModalFactory.showSuccessAlert('mds.dataRetention.success');
                 }, function (response) {
-                    ModalFactory.handleResponse('mds.error', 'mds.dataRetention.error', response);
                     LoadingModal.close();
+                    ModalFactory.showErrorAlertWithResponse('mds.dataRetention.error', 'mds.error', response);
                 });
         };
 

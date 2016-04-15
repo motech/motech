@@ -2,39 +2,60 @@
     'use strict';
 
     var uiServices = angular.module('uiServices', ['ngResource']);
+
     uiServices.factory('Menu', function($resource) {
         return $resource('module/menu');
     });
 
-    uiServices.service('BootstrapDialogManager', function () {
-        var modalsList = [];
+    uiServices.service('BootstrapDialogManager', ['LoadingModal', '$rootScope', function (LoadingModal, $rootScope) {
+        var that = this, modalsList = [];
+
+        LoadingModal.openEvent($rootScope, function(event) { that.hide(); });
+        LoadingModal.closeEvent($rootScope, function(event) { that.show(); });
 
         this.open = function (dialog) {
             modalsList.push(dialog);
             if (modalsList.length > 1) {
                 modalsList[modalsList.length-2].close();
             }
-            dialog.open();
+            if (!LoadingModal.isOpen()) {
+                dialog.open();
+            }
         };
 
         this.close = function (dialog) {
             dialog.close();
-            modalsList.splice(modalsList.length-1);
+            that.remove(dialog);
             if (modalsList.length > 0) {
                 modalsList[modalsList.length-1].open();
             }
         };
 
-        this.remove = function () {
-            modalsList[modalsList.length-1].close();
-            modalsList.splice(modalsList.length-1);
-            if (modalsList.length > 0) {
+        this.remove = function (dialog) {
+            var i, modalsListLength = modalsList.length;
+
+            for (i = 0; i < modalsListLength; i += 1) {
+                if (modalsList[i].options.id === dialog.options.id) {
+                    modalsList.splice(i, 1);
+                    break;
+                }
+            }
+        };
+
+        this.show = function () {
+            if (modalsList.length > 0 && !LoadingModal.isOpen()) {
                 modalsList[modalsList.length-1].open();
             }
         };
-    });
 
-    uiServices.service('LoadingModal', function () {
+        this.hide = function () {
+            if (modalsList.length > 0) {
+                modalsList[modalsList.length-1].close();
+            }
+        };
+    }]);
+
+    uiServices.service('LoadingModal', ['$rootScope', function ($rootScope) {
         var dialog, open = false;
 
         this.open = function () {
@@ -63,12 +84,14 @@
 
                 dialog.open();
                 open = true;
+                $rootScope.$emit('loadingModalOpen');
             }
         };
 
         this.close = function () {
             if (open) {
                 dialog.close();
+                $rootScope.$emit('loadingModalClose');
             }
             open = false;
         };
@@ -76,9 +99,20 @@
         this.isOpen = function () {
             return open;
         };
-    });
 
-    uiServices.factory('ModalFactory', function (LoadingModal, BootstrapDialogManager) {
+        this.openEvent = function (scope, callback) {
+            var handler = $rootScope.$on('loadingModalOpen', callback);
+            scope.$on('$destroy', handler);
+        };
+
+        this.closeEvent = function (scope, callback) {
+            var handler = $rootScope.$on('loadingModalClose', callback);
+            scope.$on('$destroy', handler);
+        };
+
+    }]);
+
+    uiServices.factory('ModalFactory', ['BootstrapDialogManager', function (BootstrapDialogManager) {
 
         var modalFactory = {},
 
@@ -119,7 +153,7 @@
                             }
                             return BootstrapDialogManager.close(dialog);
                         }
-                    }]
+                    }].concat(options.buttons)
             });
             BootstrapDialogManager.open(dialog, false);
             return dialog;
@@ -167,39 +201,7 @@
             return dialog;
         };
 
-        modalFactory.alert = function (msg, title, callback) {
-            if (typeof msg === 'object' && msg.constructor === {}.constructor) {
-                return makeAlert(msg);
-            } else {
-                return makeAlert({
-                    message: msg,
-                    title: title && title !== undefined ? title : jQuery.i18n.prop('server.bootstrapDialog.alert'),
-                    callback: callback && callback !== undefined ? callback : null
-                });
-            }
-        };
-
-        modalFactory.motechAlert = function (msg, title, params, callback) {
-            return modalFactory.alert({
-                title: jQuery.i18n.prop(title),
-                message: jQuery.i18n.prop.apply(null, [msg].concat(params)),
-                callback: callback && callback !== undefined ? callback : null
-            });
-        };
-
-        modalFactory.motechAlertStackTrace = function (msg, title, response, callback) {
-            if (title === null || title === '') {
-                title = 'server.bootstrapDialog.alert';
-            }
-            return modalFactory.alert({
-                type: 'type-danger', //Error type
-                title: jQuery.i18n.prop(title),
-                message: jQuery.i18n.prop(msg).bold() + ": \n" + response,
-                callback: callback
-            });
-        };
-
-        modalFactory.confirm = function (msg, title, callback) {
+        modalFactory.showConfirm = function (msg, title, callback) {
             if (typeof msg === 'object' && msg.constructor === {}.constructor) {
                 return makeConfirm(msg);
             } else {
@@ -211,51 +213,63 @@
             }
         };
 
-        modalFactory.errorAlert = function (response) {
-            LoadingModal.close();
-            return modalFactory.alert({
-                type: 'type-danger', //Error type
-                title: jQuery.i18n.prop('server.error'),
-                message: response.status + ": " + response.statusText
+        modalFactory.showAlert = function (msg, title, callback) {
+            if (typeof msg === 'object' && msg.constructor === {}.constructor) {
+                return makeAlert(msg);
+            } else {
+                return makeAlert({
+                    message: jQuery.i18n.prop(msg),
+                    title: title && title !== undefined ? jQuery.i18n.prop(title) : jQuery.i18n.prop('server.bootstrapDialog.alert'),
+                    callback: callback && callback !== undefined ? callback : null
+                });
+            }
+        };
+
+        modalFactory.showSuccessAlert = function (msg, title) {
+            return makeAlert({
+                type: 'type-success',
+                title: title && title !== undefined ? jQuery.i18n.prop(title) : jQuery.i18n.prop('server.success'),
+                message: jQuery.i18n.prop(msg)
             });
         };
 
-        modalFactory.handleResponse = function (title, defaultMsg, response, callback) {
+        modalFactory.showErrorAlert = function (msg, title, rawMsg) {
+            if (!msg && !rawMsg) {
+                msg = 'server.error.errorUnknown';
+            }
+            return makeAlert({
+                type: 'type-danger', //Error type
+                title: title && title !== undefined ? jQuery.i18n.prop(title) : jQuery.i18n.prop('server.error'),
+                message: msg && msg !== undefined ? jQuery.i18n.prop(msg) : rawMsg
+            });
+        };
+
+        modalFactory.showErrorAlertWithResponse = function (defaultMsg, title, response, callback) {
             var msg = { value: "server.error", literal: false, params: [] },
                 responseData = (typeof(response) === 'string') ? response : response.data;
 
-            LoadingModal.close();
             msg = parseResponse(responseData, defaultMsg);
 
             if (callback) {
-                callback(title, msg.value, msg.params);
+                callback(msg.value, title, msg.params);
             } else if (msg.literal) {
-                return modalFactory.alert({
+                return makeAlert({
                     type: 'type-danger',
-                    title: jQuery.i18n.prop(title),
+                    title: title && title !== undefined ? jQuery.i18n.prop(title) : jQuery.i18n.prop('server.error'),
                     message: msg.value,
                     callback: callback
                 });
             } else {
-                return modalFactory.motechAlert(msg.value, title, msg.params);
+                return makeAlert({
+                    type: 'type-danger', //Error type
+                    title: title && title !== undefined ? jQuery.i18n.prop(title) : jQuery.i18n.prop('server.error'),
+                    message: jQuery.i18n.prop.apply(null, [msg.value].concat(msg.params))
+                });
             }
         };
 
-        modalFactory.alertHandler = function (msg, title, callback) {
-            return function() {
-                LoadingModal.close();
-                return modalFactory.alert(msg, title, callback);
-            };
-        };
-
-        modalFactory.angularHandler = function(title, defaultMsg, callback) {
-            return function(response) {
-                return modalFactory.handleResponse(title, defaultMsg, response, callback);
-            };
-        };
-
-        modalFactory.handleWithStackTrace = function(title, defaultMsg, response) {
-            var msg = "server.error";
+        modalFactory.showErrorWithStackTrace = function(msg, title, response) {
+            var defaultMsg = 'server.error';
             if (response) {
                 if(response.responseText) {
                     response = response.responseText;
@@ -263,13 +277,17 @@
                     response = response.data;
                 }
             }
-            if (defaultMsg) {
+            if (!msg) {
                 msg = defaultMsg;
             }
-            return modalFactory.motechAlertStackTrace(msg, title, response);
+            return makeAlert({
+                type: 'type-danger', //Error type
+                title: title && title !== undefined ? jQuery.i18n.prop(title) : jQuery.i18n.prop('server.error'),
+                message: jQuery.i18n.prop(msg).bold() + ": \n" + response
+            });
         };
 
         return modalFactory;
 
-    });
+    }]);
 }());

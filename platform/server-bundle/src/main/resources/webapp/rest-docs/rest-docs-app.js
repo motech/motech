@@ -26,7 +26,7 @@
                 dom_id: "swagger-ui-container",
                 supportedSubmitMethods: ['get', 'post', 'put', 'delete'],
                 onFailure: function(data) {
-                    ModalFactory.motechAlert(data, "error");
+                    ModalFactory.showErrorAlert(null, "server.error", data);
                 },
                 onComplete: function() {
                     // remove hrefs starting with hashbang (no need for them anyway)
@@ -41,6 +41,9 @@
             });
 
             window.swaggerUi.load();
-        }).error( ModalFactory.alertHandler('server.error', 'server.error.rest.url'));
+        }).error( function () {
+            LoadingModal.close();
+            ModalFactory.showErrorAlert('server.error.rest.url');
+        });
     });
 }());

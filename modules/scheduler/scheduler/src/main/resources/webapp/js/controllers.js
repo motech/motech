@@ -59,7 +59,7 @@
         };
 
         $scope.pauseJob = function(job) {
-            ModalFactory.motechConfirm("scheduler.confirm.pause", "scheduler.confirm", function(response) {
+            ModalFactory.showConfirm("scheduler.confirm.pause", "scheduler.confirm", function(response) {
                 if (response) {
                     LoadingModal.open();
                     JobsService.pauseJob(job, function(updated) {
@@ -71,7 +71,7 @@
         };
 
         $scope.resumeJob = function(job) {
-            ModalFactory.motechConfirm("scheduler.confirm.resume", "scheduler.confirm", function(response) {
+            ModalFactory.showConfirm("scheduler.confirm.resume", "scheduler.confirm", function(response) {
                 if (response) {
                     LoadingModal.open();
                     JobsService.resumeJob(job, function(updated) {
@@ -94,7 +94,7 @@
         }
 
         $scope.deleteJob = function(job) {
-            ModalFactory.motechConfirm("scheduler.confirm.delete", "scheduler.confirm", function(response) {
+            ModalFactory.showConfirm("scheduler.confirm.delete", "scheduler.confirm", function(response) {
                 if (response) {
                     LoadingModal.open();;
                     // Go back to previous page when deleting last record on the given page
@@ -164,7 +164,7 @@
 
         $scope.addToMap = function(key, value) {
             if (containsKey($scope.motechEventParameters, key)) {
-                ModalFactory.motechAlert("scheduler.keyAlreadyExists", "schedulerKeyAlreadyExists");
+                ModalFactory.showAlert("scheduler.keyAlreadyExists", "schedulerKeyAlreadyExists");
             } else {
                 $scope.motechEventParameters.push({
                     "key": key,
@@ -179,7 +179,7 @@
         };
 
         $scope.resetMap = function() {
-            ModalFactory.motechConfirm("scheduler.confirm.resetMap", "scheduler.confirm", function(response) {
+            ModalFactory.showConfirm("scheduler.confirm.resetMap", "scheduler.confirm", function(response) {
                 if (response) {
                     $timeout(function() {
                         $scope.motechEventParameters = [];
@@ -189,7 +189,7 @@
         }
 
         $scope.removeFromMap = function(key) {
-            ModalFactory.motechConfirm("scheduler.confirm.removeItem", "scheduler.confirm", function(response) {
+            ModalFactory.showConfirm("scheduler.confirm.removeItem", "scheduler.confirm", function(response) {
                 if (response) {
                     var id;
                     for (var i = 0; i < $scope.motechEventParameters.length; i += 1) {
@@ -231,7 +231,10 @@
 
             if ($scope.dates.startDate && $scope.dates.endDate) {
                 if ($scope.dates.startDate >= $scope.dates.endDate) {
-                    ModalFactory.motechAlert("scheduler.error.endDateBeforeStartDate", "scheduler.error", [$scope.dates.startDate, $scope.dates.endDate]);
+                    ModalFactory.showAlert({
+                        title: $scope.msg("scheduler.error"),
+                        message: jQuery.i18n.prop.apply(null, ["scheduler.error.endDateBeforeStartDate"].concat([$scope.dates.startDate, $scope.dates.endDate]))
+                    });
                     return;
                 }
             }
@@ -253,7 +256,10 @@
             }
 
             function failure(response) {
-                ModalFactory.motechAlert(response.data.key, "scheduler.error", response.data.params);
+                ModalFactory.showAlert({
+                    title: $scope.msg("scheduler.error"),
+                    message: jQuery.i18n.prop.apply(null, [response.data.key].concat(response.data.params))
+                });
                 LoadingModal.close();
             }
 
@@ -261,7 +267,7 @@
                 LoadingModal.open();;
                 JobsService.createJob(job, success, failure);
             } else if (action === 'edit'){
-                ModalFactory.motechConfirm("scheduler.confirm.updateJob", "scheduler.confirm", function(response) {
+                ModalFactory.showConfirm("scheduler.confirm.updateJob", "scheduler.confirm", function(response) {
                     if (response) {
                         LoadingModal.open();;
                         JobsService.updateJob(job, success, failure);

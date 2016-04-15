@@ -15,10 +15,10 @@
                     {},
                     $scope.mail,
                     function () {
-                        ModalFactory.motechAlert('email.header.success', 'email.sent');
+                        ModalFactory.showSuccessAlert('email.header.success', 'email.sent');
                     },
                     function (response) {
-                        ModalFactory.handleWithStackTrace('email.header.error', 'server.error', response);
+                        ModalFactory.showErrorWithStackTrace('email.header.error', 'server.error', response);
                     }
                 );
             }
@@ -30,10 +30,10 @@
                 {},
                 $scope.mail,
                 function () {
-                    ModalFactory.motechAlert('email.header.success', 'email.sent');
+                    ModalFactory.showSuccessAlert('email.header.success', 'email.sent');
                 },
                 function (response) {
-                    ModalFactory.handleWithStackTrace('email.header.error', 'server.error', response);
+                    ModalFactory.showErrorWithStackTrace('email.header.error', 'server.error', response);
                 }
             );
         };
@@ -105,7 +105,7 @@
                 $scope.settings.additionalProperties[property.name] = property.value;
                 $scope.property = {};
             } else {
-                ModalFactory.motechAlert('email.header.error', 'email.settings.alreadyExist');
+                ModalFactory.showErrorAlert('email.settings.alreadyExist', 'email.header.error');
             }
         };
 
@@ -135,11 +135,11 @@
                 {},
                 $scope.settings,
                 function () {
-                    ModalFactory.motechAlert('email.header.success', 'email.settings.saved');
+                    ModalFactory.showSuccessAlert('email.header.success', 'email.settings.saved');
                     $scope.settings = SettingsService.get();
                 },
                 function (response) {
-                    ModalFactory.handleWithStackTrace('email.header.error', 'server.error', response);
+                    ModalFactory.showErrorWithStackTrace('email.header.error', 'server.error', response);
                 }
             );
         };

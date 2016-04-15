@@ -79,13 +79,13 @@
            $scope.saveUser = function() {
                $http.post('../websecurity/api/users/create', $scope.user).
                     success(function(){
-                        ModalFactory.motechAlert('security.create.user.saved', 'security.create');
+                        ModalFactory.showSuccessAlert('security.create.user.saved', 'security.create');
                         $scope.userList = Users.query();
                         $scope.showUsersView=!$scope.addUserView;
                         $scope.addUserView=!$scope.addUserView;
                     }).
                     error(function(response) {
-                        ModalFactory.handleResponse('server.error', 'security.create.user.error', response);
+                        ModalFactory.showErrorAlertWithResponse('security.create.user.error', 'server.error', response);
                         if (response && response.startsWith('key:security.sendEmailException')) {
                             $scope.userList = Users.query();
                             $scope.showUsersView=!$scope.addUserView;
@@ -119,24 +119,27 @@
            $scope.updateUser = function(){
                 $http.post('../websecurity/api/users/update', $scope.user)
                     .success(function() {
-                       ModalFactory.motechAlert('security.update.user.saved', 'security.update');
+                       ModalFactory.showSuccessAlert('security.update.user.saved', 'security.update');
                        $scope.userList = Users.query();
                        $scope.showUsersView=!$scope.editUserView;
                        $scope.editUserView=!$scope.editUserView;
                        $scope.$emit('module.list.refresh');
                     }).error(function(response) {
-                        ModalFactory.handleResponse('server.error', 'security.update.user.error', response);
+                        ModalFactory.showErrorAlertWithResponse('security.update.user.error', 'server.error', response);
                     });
            };
 
            $scope.deleteUser = function() {
-               $http.post('../websecurity/api/users/delete', $scope.user).
-                    success(function(){
-                        ModalFactory.motechAlert('security.delete.user.saved', 'security.deleted');
+               $http.post('../websecurity/api/users/delete', $scope.user)
+                    .success(function() {
+                        ModalFactory.showSuccessAlert('security.delete.user.saved', 'security.deleted');
                         $scope.showUsersView=!$scope.editUserView;
                         $scope.editUserView=!$scope.editUserView;
                         $scope.userList = Users.query();
-                    }).error(function(){ ModalFactory.motechAlert('security.delete.user.error', 'server.error');});
+                    })
+                    .error(function() {
+                        ModalFactory.showErrorAlert('security.delete.user.error', 'server.error');
+                    });
            };
 
            $scope.resetValues = function() {
@@ -258,22 +261,26 @@
             $scope.saveRole = function() {
                 if ($scope.isEdit===false) {
                     $scope.role.deletable = true;
-                    $http.post('../websecurity/api/web-api/roles/create', $scope.role).
-                       success(function() {
-                       ModalFactory.motechAlert('security.create.role.saved', 'security.create');
-                       $scope.roleList=Roles.query();
-                       $scope.addRoleView=!$scope.addRoleView;
-                       }).
-                       error(function(){ ModalFactory.motechAlert('security.create.role.error', 'server.error');});
+                    $http.post('../websecurity/api/web-api/roles/create', $scope.role)
+                        .success(function() {
+                            ModalFactory.showSuccessAlert('security.create.role.saved', 'security.create');
+                            $scope.roleList=Roles.query();
+                            $scope.addRoleView=!$scope.addRoleView;
+                        })
+                        .error(function(){
+                            ModalFactory.showErrorAlert('security.create.role.error', 'server.error');
+                        });
                 } else {
-                    $http.post('../websecurity/api/web-api/roles/update', $scope.role).
-                       success(function() {
-                       ModalFactory.motechAlert('security.update.role.saved', 'security.update');
-                       $scope.roleList=Roles.query();
-                       $scope.addRoleView=!$scope.addRoleView;
-                       $scope.$emit('module.list.refresh');
-                       }).
-                       error(function(){ ModalFactory.motechAlert('security.update.role.error', 'server.error');});
+                    $http.post('../websecurity/api/web-api/roles/update', $scope.role)
+                        .success(function() {
+                            ModalFactory.showSuccessAlert('security.update.role.saved', 'security.update');
+                            $scope.roleList=Roles.query();
+                            $scope.addRoleView=!$scope.addRoleView;
+                            $scope.$emit('module.list.refresh');
+                        })
+                        .error(function() {
+                            ModalFactory.showErrorAlert('security.update.role.error', 'server.error');
+                        });
                 }
             };
 
@@ -290,11 +297,11 @@
             $scope.deleteRole = function() {
                 $http.post('../websecurity/api/web-api/roles/delete', $scope.role).
                 success(function(){
-                    ModalFactory.motechAlert('security.delete.role.saved', 'security.deleted');
+                    ModalFactory.showSuccessAlert('security.delete.role.saved', 'security.deleted');
                     $scope.addRoleView=!$scope.addRoleView;
                     $scope.roleList = Roles.query();
                 }).error(function(response){
-                    ModalFactory.handleResponse('server.error', 'security.delete.role.error', response);
+                    ModalFactory.showErrorAlertWithResponse('security.delete.role.error', 'server.error', response);
                 });
             };
 
@@ -329,11 +336,14 @@
                    Permissions.query(function(data) {
                         $scope.permissionList = data;
                    });
-                }, ModalFactory.angularHandler('server.error', 'security.create.permission.error'));
+                }, function(response) {
+                        ModalFactory.showErrorAlertWithResponse('security.create.permission.error', 'server.error', response);
+                    }
+                );
             };
 
             $scope.deletePermission = function(permission) {
-                ModalFactory.confirm({
+                ModalFactory.showConfirm({
                     title: $scope.msg('security.confirm'),
                     message: $scope.msg('security.confirm.permissionDelete'),
                     type: 'type-warning',
@@ -343,7 +353,9 @@
                                Permissions.query(function(data) {
                                     $scope.permissionList = data;
                                });
-                            }, ModalFactory.angularHandler('server.error', 'security.delete.permission.error'));
+                            }, function(response) {
+                                    ModalFactory.showErrorAlertWithResponse('security.delete.permission.error', 'server.error', response);
+                            });
                         }
                     }
                 });
@@ -411,20 +423,24 @@
         };
 
         $scope.changeEmail = function () {
-            $http.post('../websecurity/api/users/change/email', $scope.email).
-                success( ModalFactory.alertHandler('security.update.email.saved', 'security.update')).
-                error( ModalFactory.angularHandler('server.error', 'security.update.email.error'));
+            $http.post('../websecurity/api/users/change/email', $scope.email)
+                .success( function () {
+                    ModalFactory.showSuccessAlert('security.update.email.saved', 'security.update');
+                })
+                .error( function () {
+                    ModalFactory.showErrorAlert('security.update.email.error');
+                });
         };
 
         $scope.changePassword = function () {
             $http.post('../websecurity/api/users/change/password', [$scope.oldPassword, $scope.newPassword]).
                 success(function () {
-                    ModalFactory.motechAlert('security.update.userPass.saved', 'security.update');
+                    ModalFactory.showSuccessAlert('security.update.userPass.saved', 'security.update');
                     delete $scope.user.oldPassword;
                     delete $scope.user.newPassword;
                     delete $scope.confirmPassword;
                 }).error(function(response) {
-                    ModalFactory.handleResponse('security.update.userPass.error', 'server.error', response);
+                    ModalFactory.showErrorAlertWithResponse('security.update.userPass.error', 'server.error', response);
                 });
         };
     });
@@ -528,7 +544,7 @@
         };
 
         $scope.removeRule = function (idx) {
-            ModalFactory.confirm({
+            ModalFactory.showConfirm({
                 message: $scope.msg('security.warning.removeRule'),
                 type: 'type-warning',
                 callback: function(result) {
@@ -557,13 +573,13 @@
                     $("#dynamicURLSaveButtonTop").button('reset');
                     $("#dynamicURLSaveButtonBottom").button('reset');
                     $scope.savingDynamicURL = false;
-                    ModalFactory.angularHandler('security.error', 'security.error.save');
+                    ModalFactory.showErrorAlert('security.error.save');
                 }
             );
         };
 
         $scope.cancel = function () {
-            ModalFactory.confirm({
+            ModalFactory.showConfirm({
                 message: $scope.msg('security.warning.cancel'),
                 type: 'type-warning',
                 callback: function(result) {

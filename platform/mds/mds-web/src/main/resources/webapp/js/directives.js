@@ -1715,7 +1715,8 @@
                             }
                         });
                     }).error(function (response) {
-                        ModalFactory.handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
+                        LoadingModal.close();
+                        ModalFactory.showErrorAlertWithResponse('mds.error.cannotAddRelatedInstance', 'mds.error', response);
                     });
 
                 elem.on('jqGridSortCol', function (e, fieldName) {

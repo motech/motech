@@ -120,7 +120,7 @@
         };
 
         $scope.deleteTask = function (item) {
-            ModalFactory.confirm({
+            ModalFactory.showConfirm({
                 title: $scope.msg('task.header.confirm'),
                 message: $scope.msg('task.confirm.remove'),
                 type: 'type-warning',
@@ -132,9 +132,10 @@
                             $rootScope.search();
                             $('#inner-center').trigger("change");
                             LoadingModal.close();
-                        },
-                            ModalFactory.alertHandler('task.error.removed', 'task.header.error')
-                        );
+                        }, function () {
+                            LoadingModal.close();
+                            ModalFactory.showErrorAlert('task.error.removed');
+                        });
                     }
                 }
             });
@@ -194,7 +195,8 @@
                     LoadingModal.close();
                 },
                 error: function (response) {
-                    ModalFactory.handleResponse('task.header.error', 'task.error.import', response);
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlertWithResponse('task.error.import', 'task.header.error', response);
                 }
             });
         };
@@ -513,7 +515,7 @@
 
         $scope.selectTrigger = function (channel, trigger) {
             if ($scope.task.trigger) {
-                ModalFactory.motechConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
+                ModalFactory.showConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
                     if (val) {
                         $scope.util.trigger.remove($scope);
                         $scope.util.trigger.select($scope, channel, trigger);
@@ -529,7 +531,7 @@
         $scope.removeTrigger = function ($event) {
             $event.stopPropagation();
 
-            ModalFactory.motechConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
+            ModalFactory.showConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
                 if (val) {
                     $scope.util.trigger.remove($scope);
                 }
@@ -556,7 +558,7 @@
             };
 
             if ($scope.selectedActionChannel[idx] !== undefined && $scope.selectedActionChannel[idx].displayName !== undefined) {
-                ModalFactory.motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
+                ModalFactory.showConfirm('task.confirm.action', "task.header.confirm", function (val) {
                     if (val) {
                         removeActionSelected(idx);
                     }
@@ -568,7 +570,7 @@
 
         $scope.selectActionChannel = function (idx, channel) {
             if ($scope.selectedActionChannel[idx] && $scope.selectedAction[idx]) {
-                ModalFactory.motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
+                ModalFactory.showConfirm('task.confirm.action', "task.header.confirm", function (val) {
                     if (val) {
                         $scope.task.actions[idx] = {};
                         $scope.selectedActionChannel[idx] = channel;
@@ -590,7 +592,7 @@
 
         $scope.selectAction = function (idx, action) {
             if ($scope.selectedAction[idx]) {
-                ModalFactory.motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
+                ModalFactory.showConfirm('task.confirm.action', "task.header.confirm", function (val) {
                     if (val) {
                         $scope.util.action.select($scope, idx, action);
                     }
@@ -621,7 +623,7 @@
             };
 
             if (data.filters !== undefined && data.filters.length > 0) {
-                ModalFactory.motechConfirm('task.confirm.filterSet', "task.header.confirm", function (val) {
+                ModalFactory.showConfirm('task.confirm.filterSet', "task.header.confirm", function (val) {
                     if (val) {
                         removeFilterSetSelected(data);
                     }
@@ -762,7 +764,7 @@
 
         $scope.removeData = function (dataSource) {
             if (dataSource.type !== undefined || (dataSource.providerName !== undefined && dataSource.providerName !== '')) {
-                ModalFactory.motechConfirm('task.confirm.dataSource', "task.header.confirm", function (val) {
+                ModalFactory.showConfirm('task.confirm.dataSource', "task.header.confirm", function (val) {
                     if (val) {
                         $scope.task.taskConfig.steps.removeObject(dataSource);
 
@@ -831,7 +833,7 @@
 
         $scope.selectDataSource = function (dataSource, selected) {
             if (dataSource.providerName) {
-                ModalFactory.motechConfirm('task.confirm.changeDataSource', 'task.header.confirm', function (val) {
+                ModalFactory.showConfirm('task.confirm.changeDataSource', 'task.header.confirm', function (val) {
                     if (val) {
                         dataSource.name = '';
                         $scope.util.dataSource.select($scope, dataSource, selected);
@@ -844,7 +846,7 @@
 
         $scope.selectObject = function (object, selected) {
             if (object.type) {
-                ModalFactory.motechConfirm('task.confirm.changeObject', 'task.header.confirm', function (val) {
+                ModalFactory.showConfirm('task.confirm.changeObject', 'task.header.confirm', function (val) {
                     if (val) {
                         object.name = '';
                         $scope.util.dataSource.selectObject($scope, object, selected);
@@ -1566,7 +1568,7 @@
         };
 
         $scope.clearHistory = function () {
-            ModalFactory.motechConfirm('task.history.confirm.clearHistory', 'task.history.confirm.clear',function (r) {
+            ModalFactory.showConfirm('task.history.confirm.clearHistory', 'task.history.confirm.clear',function (r) {
                 if (!r) {
                     return;
                 }
@@ -1576,7 +1578,7 @@
                      LoadingModal.close();
                  }, function (response) {
                      LoadingModal.close();
-                     ModalFactory.handleResponse('task.header.error', 'task.history.deleteError', response);
+                     ModalFactory.showErrorAlertWithResponse('task.history.deleteError', 'task.header.error', response);
                  });
             });
         };
@@ -1584,10 +1586,10 @@
         $scope.retryTask = function (activityId) {
             $http.post('../tasks/api/activity/retry/' + activityId)
                 .success(function () {
-                    ModalFactory.motechAlert('task.retry.info', 'task.retry.header');
+                    ModalFactory.showSuccessAlert('task.retry.info', 'task.retry.header');
                 })
                 .error(function() {
-                    ModalFactory.motechAlert('task.retry.failed', 'task.retry.header');
+                    ModalFactory.showErrorAlert('task.retry.failed', 'task.retry.header');
                 });
         };
     });
@@ -1604,9 +1606,9 @@
 
         $scope.submit = function() {
             $scope.settings.$save(function() {
-                ModalFactory.motechAlert('task.settings.success.saved', 'server.saved');
+                ModalFactory.showSuccessAlert('task.settings.success.saved', 'server.saved');
             }, function() {
-                ModalFactory.motechAlert('task.settings.error.saved', 'server.error');
+                ModalFactory.showErrorAlert('task.settings.error.saved', 'server.error');
             });
         };
 
@@ -1749,7 +1751,7 @@
                 }
             };
 
-            ModalFactory.motechConfirm('task.confirm.reset.map', "task.header.confirm", function (val) {
+            ModalFactory.showConfirm('task.confirm.reset.map', "task.header.confirm", function (val) {
                 if (val) {
                     resetMap();
                 }

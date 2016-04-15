@@ -133,14 +133,14 @@
                     }
 
                     moment.locale(lang);
-                    ModalFactory.motechAlert('server.success.changed.language', 'server.changed.language',function(){
+                    ModalFactory.showAlert('server.success.changed.language', 'server.changed.language', function(){
                         if (refresh ) {
                             window.location.reload();
                         }
                     });
                 })
                 .error(function (response) {
-                    ModalFactory.handleResponse('server.header.error', 'server.error.setLangError', response);
+                    ModalFactory.showErrorAlertWithResponse('server.error.setLangError', 'server.error', response);
                 });
         };
 
@@ -212,10 +212,7 @@
 
                 $http.get('../server/module/critical/' + moduleName).success(function (response) {
                     if (response.data !== undefined && response.data !== '' && response.status !== 408) {
-                        ModalFactory.alert({
-                            type: 'type-danger',
-                            message: response.status + ": " + response.data.statusText
-                        });
+                        ModalFactory.showErrorAlert(null, null, response.status + ": " + response.statusText);
                         LoadingModal.close();
                     }
                 });
@@ -456,7 +453,7 @@
             })
             .error(function(data) {
                 LoadingModal.close();
-                ModalFactory.motechAlert('server.reset.error', 'server.error');
+                ModalFactory.showErrorAlert('server.reset.error', 'server.error');
                 $scope.resetViewData.errors = ['server.reset.error'];
             });
         };
@@ -500,7 +497,7 @@
                 $scope.changePasswordViewData.changeSucceded = data.changeSucceded;
             }).error(function(data) {
                 LoadingModal.close();
-                ModalFactory.motechAlert('server.reset.error', 'server.error');
+                ModalFactory.showErrorAlert('server.reset.error', 'server.error');
                 $scope.resetViewData.errors = ['server.reset.error'];
             });
         };
@@ -553,7 +550,7 @@
         };
     });
 
-    serverModule.controller('MotechHomeCtrl', function ($scope, $cookieStore, $q, Menu, $rootScope, $http, ModalFactory) {
+    serverModule.controller('MotechHomeCtrl', function ($scope, $cookieStore, $q, Menu, $rootScope, $http, ModalFactory, LoadingModal) {
         $scope.securityMode = false;
 
         $scope.moduleMenu = {};
@@ -613,7 +610,10 @@
         $q.all([
             $scope.moduleMenu = Menu.get(function(data) {
                 $scope.moduleMenu = data;
-            }, ModalFactory.angularHandler('error', 'server.error.cantLoadMenu')),
+            }, function(response) {
+                    ModalFactory.showErrorAlertWithResponse('server.error.cantLoadMenu', 'server.error', response);
+                }
+            ),
 
             $scope.doAJAXHttpRequest('POST', 'getUser', function (data) {
                 var scope = angular.element("body").scope();
@@ -639,7 +639,11 @@
         $scope.$on('module.list.refresh', function () {
             Menu.get(function(data) {
                 $scope.moduleMenu = data;
-            }, ModalFactory.angularHandler('error', 'server.error.cantLoadMenu'));
+            }, function(response) {
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlertWithResponse('server.error.cantLoadMenu', 'server.error', response);
+                }
+            );
         });
 
         jgridDefaultSettings();
