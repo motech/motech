@@ -1,5 +1,6 @@
 package org.motechproject.tasks.domain.mds.channel;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
@@ -10,6 +11,7 @@ import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.domain.mds.Parameter;
 import org.motechproject.tasks.domain.mds.ParameterType;
 
+import javax.jdo.annotations.Persistent;
 import java.util.Objects;
 
 /**
@@ -25,6 +27,11 @@ public class EventParameter extends Parameter {
 
     @Field(required = true)
     private String eventKey;
+
+    @Field
+    @JsonIgnore
+    @Persistent(defaultFetchGroup = "false")
+    private TriggerEvent triggerEvent;
 
     /**
      * Constructor.
@@ -66,6 +73,10 @@ public class EventParameter extends Parameter {
     public void setEventKey(final String eventKey) {
         this.eventKey = eventKey;
     }
+
+    public TriggerEvent getTriggerEvent() { return triggerEvent; }
+
+    public void setTriggerEvent(TriggerEvent triggerEvent) { this.triggerEvent = triggerEvent; }
 
     @Override
     public boolean equals(Object obj) {
