@@ -6,8 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.tasks.domain.mds.channel.Channel;
-import org.motechproject.tasks.domain.mds.channel.EventParameter;
-import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
 import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.repository.DataProviderDataService;
@@ -32,7 +30,10 @@ import java.io.InputStream;
 import java.util.Collection;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
