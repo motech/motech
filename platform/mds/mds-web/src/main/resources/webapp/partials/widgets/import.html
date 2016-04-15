@@ -104,13 +104,7 @@
             <fieldset>
                 <div class="form-group fileinput fileinput-new" data-provides="fileinput">
                     <label class="control-label">{{msg('mds.import.file')}}</label>
-                    <div class="form-control input-auto uneditable-input input-large fileinput-exists"><span class="glyphicon glyphicon-file"></span>&nbsp;<span class="fileinput-preview"></span></div>
-                        <span class="btn btn-default btn-file">
-                            <span class="fileinput-new">{{msg('mds.import.selectFile')}}</span>
-                            <span class="fileinput-exists">{{msg('mds.import.changeFile')}}</span>
-                            <input type="file" name="file" class="input-file" mds-file-changed="importFileChanged"/>
-                        </span>
-                    <a target="_self" href="#" class="btn btn-danger fileinput-exists" data-dismiss="fileinput"><i class="fa fa-fw fa-trash-o"></i>&nbsp;{{msg('mds.import.remove')}}</a>
+                    <motech-file-upload additional="mds-file-changed:importFileChanged"></motech-file-upload>
                     <input type="submit" class="offset-1 btn btn-primary fileinput-exists" value="{{msg('mds.import.submit')}}" ng-hide="importId" />
                     <span class="offset-1 btn btn-default" ng-show="importId" ng-click="importSelectedEntities()">{{msg('mds.import.import')}}</span>
                 </div>

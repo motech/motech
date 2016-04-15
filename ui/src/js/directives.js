@@ -841,8 +841,18 @@
                 return function (scope, element, attrs) {
                     templateLoader.then(function () {
                         var $input = element.find("#fileInput");
-                        if (attrs.accept) {
-                            $input.attr('accept', attrs.accept);
+                        if (attrs.additional) {
+                            var additionalAttributes = attrs.additional.replace(/\s+/g, '').split(',');
+                            var i = 0;
+                            for (i = 0; i < additionalAttributes.length; i++) {
+                                var parts = additionalAttributes[i].split(':');
+                                if (parts.length > 1) {
+                                    $input.attr(parts[0], parts[1]);
+                                } else {
+                                    $input.attr(parts[0], '');
+                                }
+                            }
+                            element.removeAttr("additionalAttributes");
                         }
                         element.html($compile(tElement.html())(scope));
                     });
