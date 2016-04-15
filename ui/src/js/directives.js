@@ -829,7 +829,7 @@
         return {
             restrict: 'E',
             replace : true,
-            transclude: true,
+            transclude: false,
             compile: function (tElement, tAttrs, scope) {
                 var url = '../server/resources/partials/motech-file-upload.html',
 
