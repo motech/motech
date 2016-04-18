@@ -122,6 +122,8 @@
             message: null,
             closable: false,
             draggable: false,
+            onhide: null,
+            onshow: null,
             buttonLabel: BootstrapDialog.DEFAULT_TEXTS.OK,
             btnCancelLabel: BootstrapDialog.DEFAULT_TEXTS.CANCEL,
             btnOKLabel: BootstrapDialog.DEFAULT_TEXTS.OK,
@@ -131,7 +133,17 @@
 
         makeAlert = function (paramOptions) {
             var dialog,
-                options = angular.copy(defaultOptions);
+                options = angular.copy(defaultOptions),
+                defaultButtons = [{
+                    label: options.buttonLabel,
+                    action: function (dialogRef) {
+                        dialogRef.setData('btnClicked', true);
+                        if (typeof dialogRef.getData('callback') === 'function' && dialogRef.getData('callback').call(this, true) === false) {
+                            return false;
+                        }
+                        return BootstrapDialogManager.close(dialogRef);
+                    }
+                }];
 
             options = $.extend(true, options, paramOptions);
 
@@ -141,19 +153,12 @@
                 message: options.message,
                 closable: options.closable,
                 draggable: options.draggable,
+                onhide: options.onhide,
+                onshow: options.onshow,
                 data: {
                     callback: options.callback
                 },
-                buttons: [{
-                        label: options.buttonLabel,
-                        action: function (dialog) {
-                            dialog.setData('btnClicked', true);
-                            if (typeof dialog.getData('callback') === 'function' && dialog.getData('callback').call(this, true) === false) {
-                                return false;
-                            }
-                            return BootstrapDialogManager.close(dialog);
-                        }
-                    }].concat(options.buttons)
+                buttons: options.buttons && options.buttons !== undefined ? options.buttons : defaultButtons
             });
             BootstrapDialogManager.open(dialog, false);
             return dialog;
@@ -161,7 +166,25 @@
 
         makeConfirm = function (paramOptions) {
             var dialog,
-                options = angular.copy(defaultOptions);
+                options = angular.copy(defaultOptions),
+                defaultButtons = [{
+                    label: options.btnCancelLabel,
+                    action: function (dialogRef) {
+                        if (typeof dialogRef.getData('callback') === 'function' && dialogRef.getData('callback').call(this, false) === false) {
+                            return false;
+                        }
+                        return BootstrapDialogManager.close(dialogRef);
+                    }
+                }, {
+                    label: options.btnOKLabel,
+                    cssClass: options.btnOKClass,
+                    action: function (dialogRef) {
+                        if (typeof dialogRef.getData('callback') === 'function' && dialogRef.getData('callback').call(this, true) === false) {
+                            return false;
+                        }
+                        return BootstrapDialogManager.close(dialogRef);
+                    }
+                }];
 
             options = $.extend(true, options, paramOptions);
 
@@ -175,27 +198,12 @@
                 message: options.message,
                 closable: options.closable,
                 draggable: options.draggable,
+                onhide: options.onhide,
+                onshow: options.onshow,
                 data: {
                     callback: options.callback
                 },
-                buttons: [{
-                    label: options.btnCancelLabel,
-                    action: function (dialog) {
-                        if (typeof dialog.getData('callback') === 'function' && dialog.getData('callback').call(this, false) === false) {
-                            return false;
-                        }
-                        return BootstrapDialogManager.close(dialog);
-                    }
-                }, {
-                    label: options.btnOKLabel,
-                    cssClass: options.btnOKClass,
-                    action: function (dialog) {
-                        if (typeof dialog.getData('callback') === 'function' && dialog.getData('callback').call(this, true) === false) {
-                            return false;
-                        }
-                        return BootstrapDialogManager.close(dialog);
-                    }
-                }]
+                buttons: options.buttons && options.buttons !== undefined ? options.buttons : defaultButtons
             });
             BootstrapDialogManager.open(dialog, false);
             return dialog;
