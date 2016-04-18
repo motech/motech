@@ -113,7 +113,7 @@
         var intervalWidthResize, tableWidth;
         clearInterval(intervalWidthResize);
         intervalWidthResize = setInterval( function () {
-            tableWidth = $('#' + gridId).parent().width();
+            tableWidth = $('#gbox_' + gridId).parent().width();
             $('#' + gridId).jqGrid("setGridWidth", tableWidth);
             clearInterval(intervalWidthResize);
         }, 200);
