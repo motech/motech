@@ -14,7 +14,6 @@
         $scope.invert = false;
         $scope.startUpload = true;
         $scope.versionOrder = ["version.major", "version.minor", "version.micro", "version.qualifier"];
-        $scope.isFileSelected = false;
 
         $scope.refreshModuleList = function () {
             $scope.$emit('module.list.refresh');
@@ -253,52 +252,52 @@
             }
         };
 
-
-
-        $scope.checkFile = function (file) {
-            if (file) {
-                $scope.isFileSelected = true;
-            } else {
-                $scope.isFileSelected = false;
-            }
-        };
-
         $scope.isNoModuleOrFileSelected = function () {
             if ($scope.moduleSource === 'Repository') {
                 return !$scope.module;
             } else if ($scope.moduleSource === 'File') {
-                return !$scope.isFileSelected;
+                if ($("#bundleUploadForm #fileInput").val() === '') {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         };
 
         $scope.submitBundle = function () {
-            LoadingModal.open();
-            $('#bundleUploadForm').ajaxSubmit({
-                success: function (data, textStatus, jqXHR) {
-                    if (jqXHR.status === 0 && data) {
-                        ModalFactory.showErrorWithStackTrace('admin.bundles.error.start', 'admin.error', data);
-                        LoadingModal.close();
-                    } else {
-                        $scope.bundles = Bundle.query(function () {
-                            if ($scope.startUpload) {
-                                $timeout(function () {
-                                    $scope.$emit('lang.refresh');
-                                    $scope.refreshModuleList();
+            if (!$scope.isNoModuleOrFileSelected()) {
+                LoadingModal.open();
+                $('#bundleUploadForm').ajaxSubmit({
+                    success: function (data, textStatus, jqXHR) {
+                        if (jqXHR.status === 0 && data) {
+                            handleWithStackTrace('admin.error', 'admin.bundles.error.start', data);
+                            LoadingModal.close();
+                        } else {
+                            $scope.bundles = Bundle.query(function () {
+                                if ($scope.startUpload) {
+                                    $timeout(function () {
+                                        $scope.$emit('lang.refresh');
+                                        $scope.refreshModuleList();
+                                        LoadingModal.close();
+                                    }, MODULE_LIST_REFRESH_TIMEOUT);
+                                } else {
                                     LoadingModal.close();
-                                }, MODULE_LIST_REFRESH_TIMEOUT);
-                            } else {
-                                LoadingModal.close();
-                            }
-                            $scope.module = "";
-                            $('#bundleUploadForm .fileupload').trigger('reset');
-                        });
+                                }
+                                $scope.module = "";
+                                $('#bundleUploadForm .fileinput').trigger('reset');
+                            });
+                        }
+                    },
+                    error:function (response) {
+                        handleWithStackTrace('admin.error', 'admin.bundles.error.start', response);
+                        LoadingModal.close();
                     }
-                },
-                error:function (response) {
-                    ModalFactory.showErrorWithStackTrace('admin.bundles.error.start', 'admin.error', response);
-                    LoadingModal.close();
-                }
-            });
+                });
+            } else if ($scope.moduleSource === 'Repository') {
+                showErrorAlert('admin.bundles.error.moduleNotSelected', 'admin.error');
+            } else {
+                showErrorAlert('admin.bundles.error.fileNotSelected', 'admin.error');
+            }
         };
 
         Bundle.prototype.isActive = function () {

@@ -105,8 +105,7 @@
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
                                 $, jQuery, angular, TasksDashboardCtrl, TasksManageCtrl, TasksLogCtrl, moment,
-                                dummyHandler, handleResponse, window, innerLayout,
-                                cloneObj, isBlank, defaultLayout, console
+                                dummyHandler, window, innerLayout, cloneObj, isBlank, defaultLayout, rangy
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                             <excludes>
