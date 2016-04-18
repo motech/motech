@@ -270,7 +270,7 @@
                 $('#bundleUploadForm').ajaxSubmit({
                     success: function (data, textStatus, jqXHR) {
                         if (jqXHR.status === 0 && data) {
-                            handleWithStackTrace('admin.error', 'admin.bundles.error.start', data);
+                            ModalFactory.showErrorWithStackTrace('admin.error', 'admin.bundles.error.start', data);
                             LoadingModal.close();
                         } else {
                             $scope.bundles = Bundle.query(function () {
@@ -289,14 +289,14 @@
                         }
                     },
                     error:function (response) {
-                        handleWithStackTrace('admin.error', 'admin.bundles.error.start', response);
+                        ModalFactory.showErrorWithStackTrace('admin.error', 'admin.bundles.error.start', response);
                         LoadingModal.close();
                     }
                 });
             } else if ($scope.moduleSource === 'Repository') {
-                showErrorAlert('admin.bundles.error.moduleNotSelected', 'admin.error');
+                ModalFactory.showErrorAlert('admin.bundles.error.moduleNotSelected', 'admin.error');
             } else {
-                showErrorAlert('admin.bundles.error.fileNotSelected', 'admin.error');
+                ModalFactory.showErrorAlert('admin.bundles.error.fileNotSelected', 'admin.error');
             }
         };
 
