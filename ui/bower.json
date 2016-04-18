@@ -56,7 +56,8 @@
     "angular-bootstrap": "0.6.0",
     "bootstrap3-dialog":"1.34.9",
     "angular-ui-router":"0.2.18",
-    "oclazyload":"1.0.9"
+    "oclazyload":"1.0.9",
+    "jasny-bootstrap":"git://github.com/jasny/bootstrap"
   },
   "resolutions": {
     "jquery": "1.11.3",
@@ -166,6 +167,12 @@
         "jquery": "~1",
         "jquery-ui": "~1"
       }
+    },
+    "jasny-bootstrap": {
+      "main": [
+        "./dist/css/jasny-bootstrap.css",
+        "./js/fileinput.js"
+      ]
     }
   }
 }

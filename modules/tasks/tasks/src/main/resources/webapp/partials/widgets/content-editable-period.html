@@ -2,13 +2,7 @@
 <button class="btn-sm btn btn-default">
     {{msg('task.btn.changePeriod')}}
 </button>
-<div contenteditable ng-model="i.value" droppable class="actionField period-input period-field word-wrap input-extra-fluid" data-index="{{index}}" data-type="{{i.type}}">
-    <span ng-bind-html-unsafe="i.value" ng-model="i.value" class="html">
-        <h1 contentEditable="false">
-            <span class="editable"></span>
-        </h1>
-    </span>
-</div>
+<div contenteditable ng-model="i.value" droppable class="actionField period-input period-field word-wrap input-extra-fluid" data-index="{{index}}" data-type="{{i.type}}"></div>
 <div id="periodModal" class="tasks modal fade" tabindex="-1" role="dialog" aria-hidden="true" data-index="{{index}}" data-action="{{action}}">
     <div class="modal-dialog">
         <div class="modal-content">

@@ -128,12 +128,12 @@ public class SettingsController {
 
     /**
      * Handles platform settings update through file upload.
-     * @param settingsFile the representation of the file being uploaded
+     * @param file the representation of the file being uploaded
      */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/platform/upload", method = RequestMethod.POST)
-    public void uploadSettingsFile(@RequestParam(required = true) MultipartFile settingsFile) {
-        settingsService.saveSettingsFile(settingsFile);
+    public void uploadSettingsFile(@RequestParam(required = true) MultipartFile file) {
+        settingsService.saveSettingsFile(file);
         statusMessageService.info(PLATFORM_SETTINGS_SAVED, ADMIN_MODULE_NAME);
     }
 

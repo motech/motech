@@ -321,59 +321,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>sql-maven-plugin</artifactId>
-                        <version>1.5</version>
-                        <dependencies>
-                            <dependency>
-                                <groupId>mysql</groupId>
-                                <artifactId>mysql-connector-java</artifactId>
-                                <version>${mysql.version}</version>
-                            </dependency>
-                            <dependency>
-                                <groupId>org.postgresql</groupId>
-                                <artifactId>org.motechproject.org.postgresql</artifactId>
-                                <version>${postgres.version}</version>
-                            </dependency>
-                        </dependencies>
-                        <configuration>
-                            <driver>${motech.sql.driver}</driver>
-                            <username>${motech.sql.user}</username>
-                            <password>${motech.sql.password}</password>
-                            <url>${motech.sql.url}</url>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>drop-db</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>execute</goal>
-                                </goals>
-                                <configuration>
-                                    <autocommit>true</autocommit>
-                                    <sqlCommand>
-                                        DROP DATABASE IF EXISTS motechquartz;
-                                    </sqlCommand>
-                                    <onError>continue</onError>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>create-db</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>execute</goal>
-                                </goals>
-                                <configuration>
-                                    <autocommit>true</autocommit>
-                                    <orderFile>ascending</orderFile>
-                                    <sqlCommand>
-                                        CREATE DATABASE motechquartz;
-                                    </sqlCommand>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
