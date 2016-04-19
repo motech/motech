@@ -95,8 +95,7 @@ public class TasksBundleIT extends BasePaxIT {
     }
 
     private void testDataProviderService() throws InterruptedException {
-        Resource resource = ServiceRetriever.getWebAppContext(bundleContext)git
-                .getResource("classpath:task-data-provider.json");
+        Resource resource = ServiceRetriever.getWebAppContext(bundleContext).getResource("classpath:task-data-provider.json");
 
         try (InputStream in = resource.getInputStream()) {
             taskDataProviderService.registerProvider(in);
