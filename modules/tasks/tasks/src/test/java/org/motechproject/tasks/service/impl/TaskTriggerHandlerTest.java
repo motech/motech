@@ -1517,7 +1517,6 @@ public class TaskTriggerHandlerTest {
 
         handler.setBundleContext(bundleContext);
         handler.handleRetry(event);
-        ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
 
         assertEquals(1, task.getFailuresInRow());
         // since we already scheduled task retries, we should not send once again schedule job event
@@ -1639,6 +1638,32 @@ public class TaskTriggerHandlerTest {
 
         Map<String, Object> parameters = scheduleJobEvent.getParameters();
         assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), parameters.get(EventDataKeys.JOB_SUBJECT));
+    }
+
+    @Test
+    public void shouldNotDisableTaskWhenNumberPossibleErrorsIsExceededAndTaskRetriesOnFailure() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+
+        task.setNumberOfRetries(15);
+        task.setRetryIntervalInMilliseconds(5000);
+        task.setFailuresInRow(4);
+
+        actionEvent.setServiceInterface("TestService");
+        actionEvent.setServiceMethod("abc");
+
+        when(taskService.getTask(5L)).thenReturn(task);
+        when(taskService.getActionEventFor(task.getActions().get(0))).thenThrow(new RuntimeException());
+
+        MotechEvent event = createEvent();
+        event.getParameters().put(EventDataKeys.TASK_ID, 5L);
+
+        handler.setBundleContext(bundleContext);
+        handler.handleRetry(event);
+
+        assertEquals(5, task.getFailuresInRow());
+        assertTrue(task.isEnabled());
+        verify(taskActivityService, never()).addWarning(any(Task.class));
     }
 
     private void initTask() throws Exception {

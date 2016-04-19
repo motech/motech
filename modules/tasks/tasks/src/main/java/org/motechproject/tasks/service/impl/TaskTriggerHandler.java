@@ -247,7 +247,8 @@ public class TaskTriggerHandler implements TriggerHandler {
         int failureNumber = task.getFailuresInRow();
         int possibleErrorsNumber = getPossibleErrorsNumber();
 
-        if (failureNumber >= possibleErrorsNumber) {
+        // Retry count for task failure has higher priority than possible errors number in settings
+        if (!task.retryTaskOnFailure() && failureNumber >= possibleErrorsNumber) {
             task.setEnabled(false);
 
             activityService.addWarning(task);
