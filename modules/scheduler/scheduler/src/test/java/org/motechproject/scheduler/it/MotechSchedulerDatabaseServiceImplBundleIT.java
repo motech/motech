@@ -155,7 +155,6 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                     )
             );
 
-
             for (String groupName : scheduler.getJobGroupNames()) {
                 for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
                     if (jobKey.getName().equals("test_event_2-job_id")) {
@@ -208,7 +207,6 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                             JobBasicInfo.JOBTYPE_PERIOD, "", false
                     )
             );
-
 
             List<JobBasicInfo> jobBasicInfos;
             JobsSearchSettings jobsSearchSettings = getGridSettings(0, 10, "name", "asc");
