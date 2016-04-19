@@ -38,6 +38,7 @@ public class TriggerEvent extends TaskEvent {
 
     @Field
     @Cascade(delete = true)
+    @Persistent(mappedBy = "triggerEvent")
     private List<EventParameter> eventParameters;
 
     @Field
