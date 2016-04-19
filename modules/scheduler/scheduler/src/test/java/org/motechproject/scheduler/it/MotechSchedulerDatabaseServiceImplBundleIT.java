@@ -3,6 +3,7 @@ package org.motechproject.scheduler.it;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
+import org.joda.time.Period;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +18,7 @@ import org.motechproject.scheduler.contract.JobDetailedInfo;
 import org.motechproject.scheduler.contract.JobsSearchSettings;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
 import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
+import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
 import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.motechproject.scheduler.service.MotechSchedulerDatabaseService;
 import org.motechproject.scheduler.service.MotechSchedulerService;
@@ -144,6 +146,16 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                     )
             );
 
+            schedulerService.scheduleRepeatingPeriodJob(
+                    new RepeatingPeriodSchedulableJob(
+                            new MotechEvent("test_event_2", params),
+                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0).toDate(),
+                            newDateTime(CURRENT_YEAR + 6, 7, 18, 12, 0, 0).toDate(),
+                            new Period(4, 0, 0, 0),
+                            false
+                    )
+            );
+
 
             for (String groupName : scheduler.getJobGroupNames()) {
                 for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
@@ -183,6 +195,16 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                             JobBasicInfo.JOBTYPE_REPEATING, ""
                     )
             );
+            expectedJobBasicInfos.add(
+                    new JobBasicInfo(
+                            JobBasicInfo.ACTIVITY_NOTSTARTED, JobBasicInfo.STATUS_OK,
+                            "test_event_2-job_id-period",
+                            format("%s-07-15 12:00:00", CURRENT_YEAR +6),
+                            format("%s-07-15 12:00:00", CURRENT_YEAR +6),
+                            format("%s-07-18 12:00:00", CURRENT_YEAR +6),
+                            JobBasicInfo.JOBTYPE_PERIOD, ""
+                    )
+            );
 
 
             List<JobBasicInfo> jobBasicInfos;
@@ -203,7 +225,7 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
                     }
                 }
             }
-            assertEquals(3, testJobsCount);
+            assertEquals(4, testJobsCount);
         } finally {
             stopFakingTime();
         }
