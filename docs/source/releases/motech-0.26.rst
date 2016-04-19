@@ -69,7 +69,7 @@ This version also adds support for creating relationships among Data Services en
 MDS Schema Import/Export
 ------------------------
 
-MOTECH added the ability to import/export MDS entities in version 0.25. TODO: add link to doc
+MOTECH adds the ability to import/export MDS entities in version 0.26. This feature allows an implementer to export his/her end-user-defined entities (EUDEs) to a file so they may be imported into another MOTECH server. You can read more about this feature :std:ref:`here <schema_import_export>`.
 
 REST API Documentation
 ----------------------

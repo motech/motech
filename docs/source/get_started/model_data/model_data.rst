@@ -2598,6 +2598,8 @@ copy migration files from installed modules to the :code:`.motech` directory. Fi
 directory(if you are using mysql then use :code:`mysql` instead :code:`default`) in the bundle. Each file muse have
 `a proper name <http://flywaydb.org/documentation/migration/sql.html>`_(e.g. :code:`V1__Description.sql`).
 
+.. _schema_import_export:
+
 ####################
 Schema Import/Export
 ####################
