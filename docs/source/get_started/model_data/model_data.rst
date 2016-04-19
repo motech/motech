@@ -575,6 +575,7 @@ The **@Ignore** annotation can be used for marking such field as not persistent:
 The name field in the example above will not become a database field and no MDS schema will be generated for it. This
 field will also not be accessible through the data browser.
 
+.. _dde-relationships:
 
 DDE relationships
 #################
@@ -1593,6 +1594,8 @@ The following code presents the usage of the annotation
     public String displayValue() {
             return "Sample Display Value";
     }
+
+.. _rest-api:
 
 ############
 The REST API
