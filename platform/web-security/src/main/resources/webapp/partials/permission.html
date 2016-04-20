@@ -59,8 +59,12 @@
                 <td>{{permission.permissionName}}</td>
                 <td>{{permission.bundleName}}</td>
                 <td>
-                    <a href="" ng-click="deletePermission(permission)" ui-if="!permission.bundleName">
-                        <i class="fa fa-fw fa-trash-o"></i> {{msg('security.delete')}}
+                    <a href="" ng-if="!permission.bundleName" ng-click="deletePermission(permission)">
+                        <i class="fa fa-fw fa-trash-o" ></i> {{msg('security.delete')}}
+                    </a>
+                    <a class="disabled-link" ng-if="permission.bundleName" bs-popover="{{msg('security.defaultPermission')}}"
+                       data-toggle="popover" data-placement="left" data-trigger="hover">
+                        <i class="fa fa-fw fa-trash-o" ></i> {{msg('security.delete')}}
                     </a>
                 </td>
             </tr>
