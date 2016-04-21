@@ -112,7 +112,7 @@
                                     '<pre id="stackTraceElement' + k + '" class="collapse">' + stackTraceElement + '</pre>'
                                     ,'ok',{ },'');
                             } else if (message !== undefined) {
-                                $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',scope.msg(message),'ok',{ },'');
+                                $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',scope.msg(messageToShow),'ok',{ },'');
                             }
                         }
                     },
@@ -827,6 +827,8 @@
                     element.datetimepicker({
                         showTimezone: true,
                         useLocalTimezone: true,
+                        changeMonth: true,
+                        changeYear: true,
                         dateFormat: 'yy-mm-dd',
                         timeFormat: 'HH:mm z',
                         showOn: true,
