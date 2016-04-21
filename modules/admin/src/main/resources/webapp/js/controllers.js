@@ -567,7 +567,7 @@
             $('#noSettingsForm').ajaxSubmit({
                 success: function () {
                     LoadingModal.close();
-                    ModalFactory.alert('admin.settings.saved', $scope.msg('server.success'), function () {
+                    ModalFactory.showSuccessAlert('admin.settings.saved', 'server.success', function () {
                         $scope.platformSettings = PlatformSettings.get();
                     });
                 },
@@ -582,7 +582,7 @@
             $("#settingsFileForm").ajaxSubmit({
                 success: function () {
                     LoadingModal.close();
-                    ModalFactory.alert('admin.settings.saved', 'server.success', function () {
+                    ModalFactory.showSuccessAlert('admin.settings.saved', 'server.success', function () {
                         $scope.platformSettings = PlatformSettings.get();
                     });
                 },

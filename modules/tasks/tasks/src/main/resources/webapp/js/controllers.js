@@ -111,11 +111,7 @@
                 .success(dummyHandler)
                 .error(function (response) {
                     item.task.enabled = !enabled;
-                    ModalFactory.alert({
-                        type: 'type-danger',
-                        title: $scope.msg('task.error.actionNotChangeTitle'),
-                        message: $scope.util.createErrorMessage($scope, response, false)
-                    });
+                    ModalFactory.showErrorAlert(null, 'task.error.actionNotChangeTitle', $scope.util.createErrorMessage($scope, response, false));
                 });
         };
 
@@ -909,7 +905,7 @@
                     alertMessage = $scope.util.createErrorMessage($scope, errors, true);
                 }
                 LoadingModal.close();
-                ModalFactory.alert({
+                ModalFactory.showAlert({
                     type: 'type-success',
                     message: alertMessage,
                     callback: function () {
@@ -931,10 +927,7 @@
                 delete $scope.task.enabled;
 
                 LoadingModal.close();
-                ModalFactory.alert({
-                    type: 'type-danger',
-                    message: $scope.util.createErrorMessage($scope, data, false)
-                });
+                ModalFactory.showErrorAlert(null, 'task.header.error', $scope.util.createErrorMessage($scope, data, false));
             };
 
             $scope.task.enabled = enabled;

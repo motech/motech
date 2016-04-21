@@ -233,11 +233,12 @@
             }
         };
 
-        modalFactory.showSuccessAlert = function (msg, title) {
+        modalFactory.showSuccessAlert = function (msg, title, callback) {
             return makeAlert({
                 type: 'type-success',
                 title: title && title !== undefined ? jQuery.i18n.prop(title) : jQuery.i18n.prop('server.success'),
-                message: jQuery.i18n.prop(msg)
+                message: jQuery.i18n.prop(msg),
+                callback: callback && callback !== undefined ? callback : null
             });
         };
 
