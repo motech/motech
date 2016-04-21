@@ -10,6 +10,7 @@ public class DataSourceObject {
     private String objectId;
     private Object objectValue;
     private boolean failIfNotFound;
+    private boolean nullWarningPublished;
 
     /**
      * Class constructor.
@@ -22,6 +23,7 @@ public class DataSourceObject {
         this.objectId = objectId;
         this.objectValue = objectValue;
         this.failIfNotFound = failIfNotFound;
+        this.nullWarningPublished = false;
     }
 
     public String getObjectId() {
@@ -35,6 +37,10 @@ public class DataSourceObject {
     public boolean isFailIfNotFound() {
         return failIfNotFound;
     }
+
+    public boolean isNullWarningPublished() { return nullWarningPublished; }
+
+    public void setNullWarningPublished(boolean nullWarningPublished) { this.nullWarningPublished = nullWarningPublished; }
 
     @Override
     public boolean equals(Object o) {
