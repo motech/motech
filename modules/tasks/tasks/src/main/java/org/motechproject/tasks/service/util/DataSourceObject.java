@@ -38,9 +38,13 @@ public class DataSourceObject {
         return failIfNotFound;
     }
 
-    public boolean isNullWarningPublished() { return nullWarningPublished; }
+    public boolean isNullWarningPublished() {
+        return nullWarningPublished;
+    }
 
-    public void setNullWarningPublished(boolean nullWarningPublished) { this.nullWarningPublished = nullWarningPublished; }
+    public void setNullWarningPublished(boolean nullWarningPublished) {
+        this.nullWarningPublished = nullWarningPublished;
+    }
 
     @Override
     public boolean equals(Object o) {
