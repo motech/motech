@@ -6,7 +6,7 @@
     var app = angular.module('admin', ['motech-dashboard', 'admin.filters', 'admin.controllers',
         'admin.directives', 'admin.services', 'ngCookies']);
 
-    app.config(['$stateProvider', function ($stateProvider, $urlRouterProvider) {
+    app.config(['$stateProvider', function ($stateProvider) {
         $stateProvider
             .state('admin', {
                url: "/admin",
@@ -21,7 +21,7 @@
                url: '/bundles',
                parent: 'admin',
                views: {
-                   'adminview': {
+                   'adminView': {
                        templateUrl: '../admin/partials/bundles.html',
                        controller: 'AdminBundleListCtrl'
                    }
@@ -31,7 +31,7 @@
                url: '/messages',
                parent: 'admin',
                views: {
-                   'adminview': {
+                   'adminView': {
                        templateUrl: '../admin/partials/messages.html',
                        controller: 'AdminStatusMsgCtrl'
                    }
@@ -41,7 +41,7 @@
                url: '/platform-settings',
                parent: 'admin',
                views: {
-                   'adminview': {
+                   'adminView': {
                        templateUrl: '../admin/partials/settings.html',
                        controller: 'AdminSettingsCtrl'
                    }
@@ -51,7 +51,7 @@
                url: '/bundle/:bundleId',
                parent: 'admin',
                views: {
-                   'adminview': {
+                   'adminView': {
                        templateUrl: '../admin/partials/bundle.html',
                        controller: 'AdminModuleCtrl'
                    }
@@ -61,7 +61,7 @@
                url: '/bundleSettings/:bundleId',
                parent: 'admin',
                views: {
-                   'adminview': {
+                   'adminView': {
                        templateUrl: '../admin/partials/bundleSettings.html',
                        controller: 'AdminBundleSettingsCtrl'
                    }
@@ -71,7 +71,7 @@
                url: '/log',
                parent: 'admin',
                views: {
-                   'adminview': {
+                   'adminView': {
                        templateUrl: '../admin/partials/log.html',
                        controller: 'AdminServerLogCtrl'
                    }
@@ -81,7 +81,7 @@
                url: '/log/logOptions',
                parent: 'admin',
                views: {
-                   'adminview': {
+                   'adminView': {
                        templateUrl: '../admin/partials/logOptions.html',
                        controller: 'AdminServerLogOptionsCtrl'
                    }
@@ -91,7 +91,7 @@
                url: '/topics',
                parent: 'admin',
                views: {
-                   'adminview': {
+                   'adminView': {
                        templateUrl: '../admin/partials/topic_stats.html',
                        controller: 'AdminTopicStatsCtrl'
                    }
@@ -101,17 +101,17 @@
                url: '/queues',
                parent: 'admin',
                views: {
-                   'adminview': {
+                   'adminView': {
                        templateUrl: '../admin/partials/queue_stats.html',
                        controller: 'AdminQueueStatsCtrl'
                    }
                }
             })
             .state('admin.browse', {
-               url: '/queues/browse',
+               url: '/browse',
                parent: 'admin',
                views: {
-                   'adminview': {
+                   'adminView': {
                        templateUrl: '../admin/partials/queue_message_stats.html',
                        controller: 'AdminQueueMessageStatsCtrl'
                    }
@@ -121,7 +121,7 @@
                url: '/messagesSettings',
                parent: 'admin',
                views: {
-                   'adminview': {
+                   'adminView': {
                        templateUrl: '../admin/partials/notificationRules.html',
                        controller: 'AdminNotificationRuleCtrl'
                    }

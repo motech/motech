@@ -16,7 +16,7 @@
             <li ng-show="selectedTabState.selectedTab === 'logOptions'" ng-class="{'active': selectedTabState.selectedTab === 'logOptions'}">{{msg('admin.log.options')}}</li>
             <li ng-show="selectedTabState.selectedTab === 'topics'" ng-class="{'active': selectedTabState.selectedTab === 'topics'}">{{msg('admin.topics')}}</li>
             <li ng-show="selectedTabState.selectedTab === 'queues'" ng-class="{'active': selectedTabState.selectedTab === 'queues'}">{{msg('admin.queues')}}</li>
-            <li ng-show="selectedTabState.selectedTab === 'browse'"> <a role="menu" ui-sref="admin.queues">{{msg('admin.queues')}}</a></li>
+            <li ng-show="selectedTabState.selectedTab === 'browse'"> <a role="menu" ui-sref="admin.browse">{{msg('admin.queues')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'browse'" ng-class="{'active': selectedTabState.selectedTab === 'browse'}">{{msg('admin.queue.messages.pending')}}</li>
         </ul>
     </div>
@@ -46,7 +46,7 @@
             <li ng-show="selectedTabState.selectedTab === 'queues'" ng-class="{'active': selectedTabState.selectedTab === 'queues'}">
                 <a ui-sref="admin.queues">{{msg('admin.queue.statistics')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'browse'" ng-class="{'active': selectedTabState.selectedTab === 'browse'}">
-                <a ui-sref="admin.queues.browse">{{msg('admin.queue.messages.pending')}}</a></li>
+                <a ui-sref="admin.browse">{{msg('admin.queue.messages.pending')}}</a></li>
         </ul>
         <div class="clearfix"></div>
     </div>
@@ -54,7 +54,7 @@
     <div class="ui-layout-content">
         <div class="tab-content" id="tab-content">
             <div id="main-content" class="tab-pane active">
-                <div ui-view="adminview"></div>
+                <div ui-view="adminView"></div>
             </div>
         </div>
     </div>
