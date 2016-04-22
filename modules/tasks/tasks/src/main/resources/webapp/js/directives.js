@@ -112,7 +112,7 @@
                                     '<pre id="stackTraceElement' + k + '" class="collapse">' + stackTraceElement + '</pre>'
                                     ,'ok',{ },'');
                             } else if (message !== undefined) {
-                                $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',scope.msg(message),'ok',{ },'');
+                                $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',scope.msg(messageToShow),'ok',{ },'');
                             }
                         }
                     },

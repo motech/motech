@@ -1283,7 +1283,7 @@ public class TaskTriggerHandlerTest {
         verify(taskService).findActiveTasksForTriggerSubject(TRIGGER_SUBJECT);
         verify(taskService).getActionEventFor(task.getActions().get(0));
         verify(taskActivityService).addWarning(task, "task.warning.serviceUnavailable", actionEvent.getServiceInterface());
-        verify(taskActivityService, times(2)).addWarning(task, "task.warning.notFoundObjectForType", "TestObjectField");
+        verify(taskActivityService).addWarning(task, "task.warning.notFoundObjectForType", "TestObjectField");
         verify(taskActivityService).addSuccess(task);
 
         ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
