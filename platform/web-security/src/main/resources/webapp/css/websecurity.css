@@ -64,3 +64,9 @@
 .security .info-block {
     display: none;
 }
+
+.security .disabled-link {
+    cursor: default;
+    color: grey;
+    text-decoration: none;
+}
