@@ -62,7 +62,7 @@
                     <a href="" ng-if="!permission.bundleName" ng-click="deletePermission(permission)">
                         <i class="fa fa-fw fa-trash-o" ></i> {{msg('security.delete')}}
                     </a>
-                    <a class="disabled-link" ng-if="permission.bundleName" bs-popover="{{msg('security.defaultPermission')}}"
+                    <a class="disabled-link" ng-if="permission.bundleName" bs-popover="{{msg('security.predefinedPermission')}}"
                        data-toggle="popover" data-placement="left" data-trigger="hover">
                         <i class="fa fa-fw fa-trash-o" ></i> {{msg('security.delete')}}
                     </a>
