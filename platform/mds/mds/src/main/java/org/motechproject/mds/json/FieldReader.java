@@ -78,6 +78,7 @@ public class FieldReader {
             metadata.setKey(objectReader.readString("key"));
             metadata.setValue(objectReader.readString("value"));
             jsonReader.endObject();
+            field.addMetadata(metadata);
         }
         jsonReader.endArray();
     }
