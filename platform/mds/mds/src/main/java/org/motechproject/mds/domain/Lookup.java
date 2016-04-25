@@ -160,11 +160,11 @@ public class Lookup {
 
             String customOperator = getCustomOperators().get(lookupFieldName);
             boolean useGenericParam = toBoolean(getUseGenericParams().get(lookupFieldName));
-            try {
+            if (field != null) {
                 LookupFieldDto lookupField = new LookupFieldDto(field.getId(), field.getName(), lookupFieldType, customOperator,
                         useGenericParam, LookupName.getRelatedFieldName(lookupFieldName));
                 lookupFields.add(lookupField);
-            } catch (NullPointerException ex) {
+            } else {
                 LOGGER.info("Can't create LookupFieldDto from field with name {}", lookupFieldName);
             }
         }
