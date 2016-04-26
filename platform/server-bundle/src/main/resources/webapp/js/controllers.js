@@ -239,7 +239,7 @@
                         if ($ocLazyLoad.isLoaded(moduleName)) {
                             $location.path(url);
                             $state.go(convertUrl(url));
-                            unblockUI();
+                            LoadingModal.close();
                         }
                         $scope.$on('ocLazyLoad.moduleLoaded', function(e, params) {
                             if ($ocLazyLoad.isLoaded(moduleName)) {

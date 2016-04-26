@@ -675,7 +675,7 @@
     });
 
     controllers.controller('AdminBundleSettingsCtrl', function($scope, Bundle, ModuleSettings, $stateParams, $http, ModalFactory, LoadingModal) {
-        $scope.moduleSettings = ModuleSettings.query({ bundleId:$routeParams.bundleId });
+        $scope.moduleSettings = ModuleSettings.query({ bundleId:$stateParams.bundleId });
 
         $http.get('../admin/api/settings/' + $stateParams.bundleId + '/raw').success(function (data) {
             $scope.rawFiles = data;
