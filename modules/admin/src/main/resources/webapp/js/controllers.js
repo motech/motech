@@ -120,6 +120,7 @@
         $scope.modules[$scope.mavenStr('ivr')] = 'IVR';
         $scope.modules[$scope.mavenStr('message-campaign')] = 'Message Campaign';
         $scope.modules[$scope.mavenStr('motech-tasks')] = 'Tasks';
+        $scope.modules[$scope.mavenStr('odk')] = 'Open Data Kit';
         $scope.modules[$scope.mavenStr('openmrs-19')] = 'OpenMRS 1.9';
         $scope.modules[$scope.mavenStr('pill-reminder')] = 'Pill Reminder';
         $scope.modules[$scope.mavenStr('motech-scheduler')] = 'Scheduler';
