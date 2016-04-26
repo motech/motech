@@ -4,7 +4,7 @@
     /* App Module */
 
     var serverModule = angular.module('motech-dashboard', ['localization', 'ngCookies', 'ui',
-        'motech-widgets', 'browserDetect', 'uiServices', 'loadOnDemand', 'ngRoute']);
+        'motech-widgets', 'browserDetect', 'loadOnDemand', 'ngRoute', 'uiServices']);
 
     serverModule.config(['$httpProvider', function($httpProvider) {
         var interceptor = ['$q', function($q, $location) {
