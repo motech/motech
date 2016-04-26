@@ -26,6 +26,9 @@ import org.motechproject.mds.test.domain.TestMdsEntity;
 import org.motechproject.mds.test.domain.TestSingleReturnLookup;
 import org.motechproject.mds.test.domain.cascadedelete.City;
 import org.motechproject.mds.test.domain.cascadedelete.Country;
+import org.motechproject.mds.test.domain.cascadedelete.EntityX;
+import org.motechproject.mds.test.domain.cascadedelete.EntityY;
+import org.motechproject.mds.test.domain.cascadedelete.EntityZ;
 import org.motechproject.mds.test.domain.editablelookups.Entry;
 import org.motechproject.mds.test.domain.historytest.Address;
 import org.motechproject.mds.test.domain.historytest.Company;
@@ -74,6 +77,9 @@ import org.motechproject.mds.test.service.TestSingleReturnLookupService;
 import org.motechproject.mds.test.service.TransactionTestService;
 import org.motechproject.mds.test.service.cascadedelete.CityDataService;
 import org.motechproject.mds.test.service.cascadedelete.CountryDataService;
+import org.motechproject.mds.test.service.cascadedelete.EntityXDataService;
+import org.motechproject.mds.test.service.cascadedelete.EntityYDataService;
+import org.motechproject.mds.test.service.cascadedelete.EntityZDataService;
 import org.motechproject.mds.test.service.editablelookups.EntryDataService;
 import org.motechproject.mds.test.service.historytest.AddressDataService;
 import org.motechproject.mds.test.service.historytest.CompanyDataService;
@@ -297,6 +303,15 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     @Inject
     private ConsultantDataService consultantDataService;
+    
+    @Inject
+    private EntityXDataService entityXDataService;
+    
+    @Inject
+    private EntityYDataService entityYDataService;
+    
+    @Inject
+    private EntityZDataService entityZDataService;
 
     private final Object waitLock = new Object();
 
@@ -344,6 +359,9 @@ public class MdsDdeBundleIT extends BasePaxIT {
         consultantDataService.deleteAll();
         companyDataService.deleteAll();
         entryDataService.deleteAll();
+        entityXDataService.deleteAll();
+        entityYDataService.deleteAll();
+        entityZDataService.deleteAll();
         removeFromListManyToMany();
     }
 
@@ -470,6 +488,51 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertTrue(CollectionUtils.contains(retrieved.getRecipients().iterator(), "Christina"));
     }
 
+    @Test 
+    public void testCascadeDelete2() {
+        EntityX x1 = new EntityX();
+        EntityX x2 = new EntityX();
+        
+        EntityZ z1 = new EntityZ();
+        EntityZ z2 = new EntityZ();
+        
+        EntityY y1 = new EntityY();
+        EntityY y2 = new EntityY();
+        
+        x1.getY().add(y1);
+        x1.getY().add(y2);
+        y2.getX().add(x1);
+        y2.getZ().add(z2);
+        y1.getX().add(x1);
+        y1.getZ().add(z1);
+        
+        entityXDataService.create(x1);
+        entityYDataService.create(y1);
+        entityYDataService.create(y2);
+        entityZDataService.create(z1);
+        entityZDataService.create(z2);
+        
+        EntityX testX = entityXDataService.findById(x1.getId());
+        assertNotNull(testX);
+        
+        EntityY testY = entityYDataService.findById(y1.getId());
+        assertNotNull(testY);
+        
+        EntityZ testZ = entityZDataService.findById(z1.getId());
+        assertNotNull(testZ);
+        
+        entityXDataService.delete(x1);
+        assertNull(entityXDataService.findById(x1.getId()));
+        
+        assertNull(entityYDataService.findById(y1.getId()));
+        
+        assertNull(entityYDataService.findById(y2.getId()));
+        
+        assertNull(entityZDataService.findById(z1.getId()));
+        
+        assertNull(entityZDataService.findById(z2.getId()));
+    }
+    
     @Test
     public void testCascadeDelete() {
         City warsaw = new City("Warsaw");
