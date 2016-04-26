@@ -530,7 +530,7 @@
         };
     });
 
-    directives.directive('manipulationModal', function ($compile) {
+    directives.directive('manipulationModal', function ($compile, ModalFactory) {
         return {
             restrict: 'A',
             scope: {
@@ -561,7 +561,7 @@
                         if(scope.manipulations && Array.isArray(scope.manipulations)) {
                             modalScope.manipulations = jQuery.extend(true, [], scope.manipulations);
                         }
-                        BootstrapDialog.show({
+                        ModalFactory.showAlert({
                             title: function () {
                                  switch(scope.manipulationType){
                                      case 'UNICODE':
@@ -583,7 +583,7 @@
                                     dialogRef.close();
                                 }
                             }],
-                            onHide: function(){
+                            onhide: function(){
                                 modalScope.$destroy();
                             }
                         });
@@ -726,7 +726,7 @@
         };
     }]);
 
-    directives.directive('formatManipulationButton', ['$compile', function ($compile) {
+    directives.directive('formatManipulationButton', ['$compile', 'ModalFactory', function ($compile, ModalFactory) {
         return {
             restrict: 'EA',
             templateUrl: '../tasks/partials/widgets/string-manipulation-format-button.html',
@@ -739,8 +739,8 @@
                     modalScope.msg = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.taskMsg;
                     modalScope.argument = scope.argument;
 
-                    BootstrapDialog.show({
-                        size: BootstrapDialog.SIZE_WIDE,
+                    ModalFactory.showAlert({
+                        size: 'size-wide',
                         title: scope.msg('task.format.set.header'),
                         message: $compile('<format-manipulation ng-model="argument" available-fields="availableFields" get-available-fields="getAvailableFields()" />')(modalScope),
                         buttons: [{

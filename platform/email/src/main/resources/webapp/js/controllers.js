@@ -4,8 +4,7 @@
     /* Controllers */
     var controllers = angular.module('email.controllers', []);
 
-    controllers.controller('EmailSendCtrl', function ($scope, SendEmailService, $state) {
-        $scope.current = $state.current;
+    controllers.controller('EmailSendCtrl', function ($scope, SendEmailService, ModalFactory) {
         $scope.mail = {};
 
         $scope.sendEmail = function () {
@@ -16,10 +15,10 @@
                     {},
                     $scope.mail,
                     function () {
-                        motechAlert('email.header.success', 'email.sent');
+                        ModalFactory.showSuccessAlert('email.header.success', 'email.sent');
                     },
                     function (response) {
-                        handleWithStackTrace('email.header.error', 'server.error', response);
+                        ModalFactory.showErrorWithStackTrace('email.header.error', 'server.error', response);
                     }
                 );
             }
@@ -31,10 +30,10 @@
                 {},
                 $scope.mail,
                 function () {
-                    motechAlert('email.header.success', 'email.sent');
+                    ModalFactory.showSuccessAlert('email.header.success', 'email.sent');
                 },
                 function (response) {
-                    handleWithStackTrace('email.header.error', 'server.error', response);
+                    ModalFactory.showErrorWithStackTrace('email.header.error', 'server.error', response);
                 }
             );
         };
@@ -46,8 +45,7 @@
         innerLayout({});
     });
 
-    controllers.controller('EmailLoggingCtrl', function($scope, EmailAuditService, $state) {
-        $scope.current = $state.current;
+    controllers.controller('EmailLoggingCtrl', function($scope, EmailAuditService) {
         $scope.availableRange = ['all','table', 'month'];
         $scope.loggingRange = $scope.availableRange[0];
 
@@ -99,8 +97,7 @@
         });
     });
 
-    controllers.controller('EmailSettingsCtrl', function ($scope, SettingsService, $state) {
-        $scope.current = $state.current;
+    controllers.controller('EmailSettingsCtrl', function ($scope, SettingsService, ModalFactory) {
         $scope.settings = SettingsService.get();
 
         $scope.add = function (property) {
@@ -108,7 +105,7 @@
                 $scope.settings.additionalProperties[property.name] = property.value;
                 $scope.property = {};
             } else {
-                motechAlert('email.header.error', 'email.settings.alreadyExist');
+                ModalFactory.showErrorAlert('email.settings.alreadyExist', 'email.header.error');
             }
         };
 
@@ -138,11 +135,11 @@
                 {},
                 $scope.settings,
                 function () {
-                    motechAlert('email.header.success', 'email.settings.saved');
+                    ModalFactory.showSuccessAlert('email.header.success', 'email.settings.saved');
                     $scope.settings = SettingsService.get();
                 },
                 function (response) {
-                    handleWithStackTrace('email.header.error', 'server.error', response);
+                    ModalFactory.showErrorWithStackTrace('email.header.error', 'server.error', response);
                 }
             );
         };
