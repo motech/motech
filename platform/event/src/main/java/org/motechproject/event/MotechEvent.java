@@ -24,6 +24,7 @@ public class MotechEvent implements Serializable {
     private int redeliveryCount;
     private String subject;
     private String messageDestination;
+    private String callbackName;
     private Map<String, Object> parameters;
 
     public MotechEvent() {
@@ -47,9 +48,22 @@ public class MotechEvent implements Serializable {
      * @throws IllegalArgumentException if the subject is null or contains <code>'*', '..'</code>
      */
     public MotechEvent(String subject, Map<String, Object> parameters) {
+        this(subject, parameters, null);
+    }
+
+    /**
+     * Constructs a MotechEvent with the given subject, parameters and the callback name.
+     *
+     * @param subject the subject of the event
+     * @param parameters the map of additional parameters
+     * @param callbackName the name of the callback
+     * @throws IllegalArgumentException if the subject is null or contains <code>'*', '..'</code>
+     */
+    public MotechEvent(String subject, Map<String, Object> parameters, String callbackName) {
         validateSubject(subject);
         this.subject = subject;
         this.parameters = parameters;
+        this.callbackName = callbackName;
     }
 
     /**
@@ -149,6 +163,23 @@ public class MotechEvent implements Serializable {
      */
     public void setMessageDestination(String value) {
         messageDestination = value;
+    }
+
+    /**
+     * Returns the name of the callback to invoke after this event is handled
+     *
+     * @return callback name
+     */
+    public String getCallbackName() {
+        return callbackName;
+    }
+
+    /**
+     * Sets the name of the callback to invoke after this event is handled
+     * @param callbackName
+     */
+    public void setCallbackName(String callbackName) {
+        this.callbackName = callbackName;
     }
 
     /**

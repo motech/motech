@@ -82,7 +82,7 @@ public class EventBundleIT extends BasePaxIT {
     }
 
     @Test
-    public void testEventListener_WithAnnotation() throws Exception {
+    public void testEventListenerWithAnnotation() throws Exception {
         final TestEventListenerOsgi testEventListenerOsgi = (TestEventListenerOsgi)
                 ServiceRetriever.getWebAppContext(bundleContext, bundleContext.getBundle().getSymbolicName())
                         .getBean("testEventListenerOsgi");

@@ -1,12 +1,18 @@
 package org.motechproject.event.listener.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.event.MotechEvent;
+import org.motechproject.event.exception.CallbackServiceNotFoundException;
+import org.motechproject.event.listener.EventCallbackService;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.messaging.MotechEventConfig;
 import org.motechproject.event.messaging.OutboundEventGateway;
 import org.motechproject.event.utils.MotechProxyUtils;
 import org.motechproject.server.osgi.event.OsgiEventProxy;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventHandler;
@@ -15,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -33,14 +40,16 @@ public class ServerEventRelay implements EventRelay, EventHandler {
     private OutboundEventGateway outboundEventGateway;
     private MotechEventConfig motechEventConfig;
     private EventAdmin osgiEventAdmin;
+    private BundleContext bundleContext;
 
     @Autowired
     public ServerEventRelay(OutboundEventGateway outboundEventGateway, EventListenerRegistry eventListenerRegistry, MotechEventConfig motechEventConfig,
-                            EventAdmin osgiEventAdmin) {
+                            EventAdmin osgiEventAdmin, BundleContext bundleContext) {
         this.outboundEventGateway = outboundEventGateway;
         this.eventListenerRegistry = eventListenerRegistry;
         this.motechEventConfig = motechEventConfig;
         this.osgiEventAdmin = osgiEventAdmin;
+        this.bundleContext = bundleContext;
     }
 
     // @TODO either relayQueueEvent should be made private, or this method moved out to it's own class.
@@ -146,29 +155,63 @@ public class ServerEventRelay implements EventRelay, EventHandler {
     }
 
     private void handleQueueEvent(EventListener listener, MotechEvent event) {
+        EventCallbackService callbackService = findCallbackService(event.getCallbackName());
         ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+
         try {
             Object target = MotechProxyUtils.getTargetIfProxied(listener);
             Thread.currentThread().setContextClassLoader(target.getClass().getClassLoader());
             listener.handle(event);
-
+            if (callbackService != null) {
+                callbackService.successCallback(event);
+            }
         } catch (RuntimeException e) {
             LOGGER.error("Handling error for event with subject {}", event.getSubject(), e);
 
-            event.setInvalid(true);
-            event.setMessageDestination(listener.getIdentifier());
+            if (callbackService == null || callbackService.failureCallback(event, e.getCause())) {
+                event.setInvalid(true);
+                event.setMessageDestination(listener.getIdentifier());
 
-            if (event.getMessageRedeliveryCount() == motechEventConfig.getMessageMaxRedeliveryCount()) {
-                event.setDiscarded(true);
-                LOGGER.error("Discarding Motech event {}. Max retry count reached.", event);
-                throw e;
+                if (event.getMessageRedeliveryCount() == motechEventConfig.getMessageMaxRedeliveryCount()) {
+                    event.setDiscarded(true);
+                    LOGGER.error("Discarding Motech event {}. Max retry count reached.", event);
+                    throw e;
+                }
+
+                event.incrementMessageRedeliveryCount();
+                outboundEventGateway.sendEventMessage(event);
+            } else {
+                LOGGER.info("Event failure callback service {} has prevented redelivery of failed event with subject {}.",
+                        callbackService.getName(), event.getSubject());
             }
-
-            event.incrementMessageRedeliveryCount();
-            outboundEventGateway.sendEventMessage(event);
+            return;
         } finally {
             Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
+    }
+
+    private EventCallbackService findCallbackService(String callbackName) {
+        if (StringUtils.isEmpty(callbackName)) {
+            return null;
+        }
+
+        try {
+            Collection<ServiceReference<EventCallbackService>> references = bundleContext.getServiceReferences(EventCallbackService.class, null);
+
+            for (ServiceReference<EventCallbackService> ref : references) {
+                EventCallbackService callback = bundleContext.getService(ref);
+                if (callback.getName().equals(callbackName)) {
+                    return callback;
+                }
+            }
+        } catch (InvalidSyntaxException e) {
+            //Should never happen
+            LOGGER.error("Passed filter expression is incorrect.");
+        }
+
+        // If a non-null callback name has been provided, yet it cannot be found in
+        // the running context, this indicates an error
+        throw new CallbackServiceNotFoundException(callbackName);
     }
 
     private void handleTopicEvent(EventListener listener, MotechEvent event) {
@@ -212,7 +255,7 @@ public class ServerEventRelay implements EventRelay, EventHandler {
         for (EventListener listener : listeners) {
             parameters = new HashMap<>();
             parameters.putAll(event.getParameters());
-            enrichedEventMessage = new MotechEvent(event.getSubject(), parameters);
+            enrichedEventMessage = new MotechEvent(event.getSubject(), parameters, event.getCallbackName());
             enrichedEventMessage.setMessageDestination(listener.getIdentifier());
             outboundEventGateway.sendEventMessage(enrichedEventMessage);
         }
@@ -258,6 +301,7 @@ public class ServerEventRelay implements EventRelay, EventHandler {
         copy.setDiscarded(event.isDiscarded());
         copy.setBroadcast(event.isBroadcast());
         copy.setMessageDestination(event.getMessageDestination());
+        copy.setCallbackName(event.getCallbackName());
         return copy;
     }
 

@@ -49,7 +49,7 @@ public class TaskActivitiesDataServiceBundleIT extends BasePaxIT {
 
     @Test
     public void shouldFindTaskActivitiesByTaskId() {
-        TaskActivity errorMsg = new TaskActivity(ERROR.getValue(), FIELD, TASK_ID_1, ERROR);
+        TaskActivity errorMsg = new TaskActivity(ERROR.getValue(), FIELD, TASK_ID_1, ERROR, 1);
         TaskActivity successMsg = new TaskActivity(SUCCESS.getValue(), TASK_ID_1, SUCCESS);
         TaskActivity warningMsg = new TaskActivity(WARNING.getValue(), TASK_ID_2, WARNING);
 
