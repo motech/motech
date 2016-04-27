@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.LookupFieldType;
+import org.motechproject.mds.exception.lookup.LookupWrongFieldNameException;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.ValidationUtil;
 import org.slf4j.Logger;
@@ -165,7 +166,7 @@ public class Lookup {
                         useGenericParam, LookupName.getRelatedFieldName(lookupFieldName));
                 lookupFields.add(lookupField);
             } else {
-                LOGGER.info("Can't create LookupFieldDto from field with name {}", lookupFieldName);
+                throw new LookupWrongFieldNameException(String.format("Can't create LookupFieldDto. Field with given name %s does not exist in %s lookup", lookupFieldName, lookupName));
             }
         }
 
@@ -277,7 +278,7 @@ public class Lookup {
                 return field;
             }
         }
-        LOGGER.info("Can't get field with name {}", name);
+        LOGGER.warn("Can't get field with name {}", name);
         return null;
     }
 
