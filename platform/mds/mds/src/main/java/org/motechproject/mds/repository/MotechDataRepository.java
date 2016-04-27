@@ -31,6 +31,8 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
     private Class<T> classType;
     private Integer fetchDepth;
     private Map<String, String> fieldTypeMap;
+    
+    private static final String DISTINCT = "DISTINCT ";
 
     protected MotechDataRepository(Class<T> classType) {
         this.classType = classType;
@@ -197,6 +199,21 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
         Collection collection = (Collection) QueryExecutor.executeWithFilters(query, filters, restriction);
 
         return new ArrayList<T>(collection);
+    }
+    
+    public List filterDistinctForResult(Filters filters, QueryParams queryParams, 
+            InstanceSecurityRestriction restriction, boolean distinct, String result) {
+        Query query = queryForFilters(filters, queryParams, restriction);
+        if (result != null && !result.isEmpty()) {
+            if (distinct) {
+                query.setResult(DISTINCT + result);
+            } else {
+                query.setResult(result);
+            }
+        }
+        Collection collection = (Collection) QueryExecutor.executeWithFilters(query, filters, restriction);
+
+        return new ArrayList(collection);
     }
 
     public long countForFilters(Filters filters, InstanceSecurityRestriction restriction) {
