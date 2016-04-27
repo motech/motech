@@ -105,9 +105,7 @@
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
                                 $, jQuery, angular, TasksDashboardCtrl, TasksManageCtrl, TasksLogCtrl, moment,
-                                dummyHandler, handleResponse, alertHandler, window,
-                                blockUI, unblockUI, motechAlert, motechConfirm, cloneObj,
-                                isBlank, defaultLayout, innerLayout, BootstrapDialog, rangy
+                                dummyHandler, window, innerLayout, cloneObj, isBlank, defaultLayout, rangy
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                             <excludes>

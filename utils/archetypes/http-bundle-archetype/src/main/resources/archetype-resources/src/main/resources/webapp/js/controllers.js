@@ -7,7 +7,7 @@
     /* Controllers */
     var controllers = angular.module('${artifactId}HelloWorld.controllers', []);
 
-    controllers.controller('HelloWorldController', function($scope, $http, HelloWorld) {
+    controllers.controller('HelloWorldController', function($scope, $http, HelloWorld, ModalFactory) {
 
         $scope.sayHelloResult = '';
         $scope.sayHelloCount = 0;
@@ -18,7 +18,7 @@
             HelloWorld.get({}, function(response) {
                 $scope.sayHelloResult = response.message;
                 messageKey = '${artifactId}.info.serviceResponse';
-                motechAlert(response.message, messageKey);
+                ModalFactory.showAlert({ message: response.message, title: messageKey });
                 $scope.sayHelloCount++;
             });
         };

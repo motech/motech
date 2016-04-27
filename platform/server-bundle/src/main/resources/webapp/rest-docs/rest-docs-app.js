@@ -3,14 +3,14 @@
 
     /* Module for the REST documentation section */
 
-    var restDocModule = angular.module('rest-docs', ['motech-dashboard']);
+    var restDocModule = angular.module('rest-docs', ['motech-dashboard', 'uiServices']);
 
     restDocModule.config(['$routeProvider', function($routeProvider) {
           $routeProvider.when('/rest-docs/:restUrl', {templateUrl: '../server/resources/partials/rest-docs.html',
                                                       controller: 'ServerRestDocsCtrl'});
     }]);
 
-    restDocModule.controller('ServerRestDocsCtrl', function ($scope, $location, $http) {
+    restDocModule.controller('ServerRestDocsCtrl', function ($scope, $location, $http, ModalFactory) {
 
         $scope.getRestModuleName = function() {
             $scope.before = $location.path();
@@ -26,7 +26,7 @@
                 dom_id: "swagger-ui-container",
                 supportedSubmitMethods: ['get', 'post', 'put', 'delete'],
                 onFailure: function(data) {
-                    motechAlert(data, "error");
+                    ModalFactory.showErrorAlert(null, "server.error", data);
                 },
                 onComplete: function() {
                     // remove hrefs starting with hashbang (no need for them anyway)
@@ -41,7 +41,9 @@
             });
 
             window.swaggerUi.load();
-        }).error(alertHandler('server.error', 'server.error.rest.url'));
+        }).error( function () {
+            LoadingModal.close();
+            ModalFactory.showErrorAlert('server.error.rest.url');
+        });
     });
-
 }());
