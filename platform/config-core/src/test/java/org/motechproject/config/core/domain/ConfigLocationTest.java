@@ -1,6 +1,5 @@
 package org.motechproject.config.core.domain;
 
-import org.apache.commons.io.FileUtils;
 import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 import org.motechproject.config.core.exception.MotechConfigurationException;
@@ -11,7 +10,6 @@ import org.springframework.core.io.UrlResource;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -96,10 +94,9 @@ public class ConfigLocationTest {
         ConfigLocation configLocation = new ConfigLocation(configDir);
 
         File file = configLocation.getFile("test.properties", ConfigLocation.FileAccessType.READABLE);
-        URL fileUrl = FileUtils.toURLs(new File[]{ file })[0];
 
         assertNotNull(file);
-        assertEquals(fileUrl.getFile(), new ClassPathResource(configDir + "test.properties").getURL().getFile());
+        assertEquals(file.getAbsolutePath(), new ClassPathResource(configDir + "test.properties").getFile().getAbsolutePath());
     }
 
     @Test
