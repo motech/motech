@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.exceptions.verification.WantedButNotInvoked;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
@@ -13,7 +14,6 @@ import org.motechproject.tasks.domain.mds.task.FieldParameter;
 import org.motechproject.tasks.domain.mds.task.LookupFieldsParameter;
 import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
 import org.motechproject.tasks.domain.mds.task.TaskDataProviderObject;
-import org.motechproject.tasks.exception.ValidationException;
 import org.motechproject.tasks.repository.DataProviderDataService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 
@@ -63,7 +63,7 @@ public class TaskDataProviderServiceImplTest {
         ((TaskDataProviderServiceImpl) taskDataProviderService).bind(dataProviderDataService, Collections.emptyMap());
     }
 
-    @Test(expected = ValidationException.class)
+    @Test(expected = WantedButNotInvoked.class)
     public void shouldNotSaveProviderWhenValidationExceptionIsAppeared() {
         Type type = new TypeToken<TaskDataProvider>() {
         }.getType();

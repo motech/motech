@@ -32,17 +32,17 @@ public final class TaskDataProviderValidator extends GeneralValidator {
      * @param provider  the data provider for validation, not null
      * @return  the set of encountered errors
      */
+    public static boolean validateIsNotEmpty(TaskDataProvider provider) {
+        return !checkEmpty(new HashSet<>(), TASK_DATA_PROVIDER, "objects", provider.getObjects());
+    }
+
     public static Set<TaskError> validate(TaskDataProvider provider) {
         Set<TaskError> errors = new HashSet<>();
 
         validateProviderName(errors, provider.getName());
 
-        boolean empty = checkEmpty(errors, TASK_DATA_PROVIDER, "objects", provider.getObjects());
-
-        if (!empty) {
-            for (int i = 0; i < provider.getObjects().size(); ++i) {
-                errors.addAll(validateObject(i, provider.getObjects().get(i)));
-            }
+        for (int i = 0; i < provider.getObjects().size(); ++i) {
+            errors.addAll(validateObject(i, provider.getObjects().get(i)));
         }
 
         return errors;
