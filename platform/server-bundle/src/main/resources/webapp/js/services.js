@@ -7,7 +7,7 @@
         return $resource('module/menu');
     });
 
-    uiServices.service('BootstrapDialogManager', ['LoadingModal', '$rootScope', function (LoadingModal, $rootScope) {
+    uiServices.service('BootstrapDialogManager', ['LoadingModal', '$rootScope', '$timeout', function (LoadingModal, $rootScope, $timeout) {
         var that = this, modalsList = [];
 
         LoadingModal.openEvent($rootScope, function(event) { that.hide(); });
@@ -45,6 +45,10 @@
         this.show = function () {
             if (modalsList.length > 0 && !LoadingModal.isOpen()) {
                 modalsList[modalsList.length-1].open();
+            } else if (modalsList.length > 0) {
+                $timeout(function() {
+                    that.show();
+                }, 200);
             }
         };
 
@@ -149,6 +153,7 @@
 
             dialog = new BootstrapDialog({
                 type: options.type,
+                size: options.size,
                 title: options.title,
                 message: options.message,
                 closable: options.closable,
@@ -194,6 +199,7 @@
 
             dialog = new BootstrapDialog({
                 type: options.type,
+                size: options.size,
                 title: options.title,
                 message: options.message,
                 closable: options.closable,
@@ -291,6 +297,7 @@
             }
             return makeAlert({
                 type: 'type-danger', //Error type
+                size: 'size-wide',
                 title: title && title !== undefined ? jQuery.i18n.prop(title) : jQuery.i18n.prop('server.error'),
                 message: jQuery.i18n.prop(msg).bold() + ": \n" + response
             });
