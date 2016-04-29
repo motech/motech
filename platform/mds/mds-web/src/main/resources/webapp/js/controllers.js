@@ -4647,7 +4647,7 @@
             });
             $scope.selectedEntity = undefined;
             $scope.showFilters = false;
-            $scope.removeIdFromUrl();
+            //$scope.removeIdFromUrl();
             resizeLayout();
         };
 
