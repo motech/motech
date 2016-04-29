@@ -1299,7 +1299,7 @@
     /**
     * Displays entity instances data using jqGrid
     */
-    directives.directive('entityInstancesGrid', function ($rootScope, $route, $timeout) {
+    directives.directive('entityInstancesGrid', function ($rootScope, $timeout) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {

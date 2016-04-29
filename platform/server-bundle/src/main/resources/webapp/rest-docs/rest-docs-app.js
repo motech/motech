@@ -5,9 +5,28 @@
 
     var restDocModule = angular.module('rest-docs', ['motech-dashboard', 'uiServices']);
 
-    restDocModule.config(['$routeProvider', function($routeProvider) {
-          $routeProvider.when('/rest-docs/:restUrl', {templateUrl: '../server/resources/partials/rest-docs.html',
-                                                      controller: 'ServerRestDocsCtrl'});
+    restDocModule.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', '$ocLazyLoadProvider', function($stateProvider, $locationProvider, $urlRouterProvider, $ocLazyLoadProvider) {
+        $stateProvider
+
+        .state('rest-docs', {
+            url: "/rest-docs",
+            abstract: true,
+            views: {
+                "moduleToLoad": {
+                    templateUrl: "../server/resources/partials/rest-docs-index.html"
+                }
+            }
+        })
+        .state('rest-docs.restUrl', {
+             url: '/:restUrl',
+             parent: 'rest-docs',
+             views: {
+                 'restdocsview': {
+                     templateUrl: '../server/resources/partials/rest-docs.html',
+                     controller: 'ServerRestDocsCtrl'
+                 }
+             }
+        });
     }]);
 
     restDocModule.controller('ServerRestDocsCtrl', function ($scope, $location, $http, ModalFactory) {

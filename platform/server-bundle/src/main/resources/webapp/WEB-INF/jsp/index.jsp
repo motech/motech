@@ -13,7 +13,6 @@
     <script type="text/javascript" src="resources/js/app.js"></script>
     <script type="text/javascript" src="resources/js/services.js"></script>
     <script type="text/javascript" src="resources/js/controllers.js"></script>
-    <script type="text/javascript" src="resources/js/dashboard.js"></script>
 </head>
 
 <body ng-controller="MotechMasterCtrl" id="container" ng-class="showDashboardLogo.backgroundUpDown()" class="custom ui-layout-container" layout state="bodyState" ng-init="bodyState = true">
@@ -54,7 +53,10 @@
                         <div class="splash-msg"></div>
                         <div class="clearfix"></div>
                     </div>
-                    <div id="module-content" load-on-demand="moduleToLoad"></div>
+                    <div id="module-content" ui-view="moduleToLoad">
+                        <!-- default view -->
+                        <div ng-include="'../server/resources/partials/main.html'"></div>
+                    </div>
                     </c:otherwise>
                 </c:choose>
             </div>

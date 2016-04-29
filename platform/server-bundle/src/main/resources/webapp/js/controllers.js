@@ -3,8 +3,8 @@
 
     var serverModule = angular.module('motech-dashboard');
 
-    serverModule.controller('MotechMasterCtrl', function ($scope, $http, i18nService, $cookieStore, $q, BrowserDetect,
-        Menu, $location, $timeout, $route, ModalFactory, LoadingModal) {
+    serverModule.controller('MotechMasterCtrl', function ($scope, $rootScope, $ocLazyLoad, $state, $stateParams, $http,
+          i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout, ModalFactory, LoadingModal) {
 
         var handle = function () {
                 if (!$scope.$$phase) {
@@ -204,9 +204,14 @@
         };
 
         $scope.loadModule = function (moduleName, url) {
-            var refresh, resultScope, reloadModule;
+            var refresh, resultScope, convertUrl;
             $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
             $scope.activeLink = {moduleName: moduleName, url: url};
+            convertUrl = function (urlParam) {
+                if(urlParam.indexOf('/') === 0) {urlParam = urlParam.replace('/', '');}
+                if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace('/', '.');}
+                return urlParam;
+            };
             if (moduleName) {
                 LoadingModal.open();
 
@@ -219,28 +224,27 @@
 
                 if ($scope.moduleToLoad === moduleName || url === '/login') {
                     $location.path(url);
+                    $state.go(convertUrl(url));
                     LoadingModal.close();
-                    innerLayout({}, {
-                        show: false
-                    });
+                    innerLayout({}, { show: false });
                 } else {
                     refresh = ($scope.moduleToLoad === undefined) ? true : false;
                     $scope.moduleToLoad = moduleName;
+                    if (!$ocLazyLoad.isLoaded(moduleName)) {
+                        $ocLazyLoad.load(moduleName);
+                    }
 
                     if (url) {
-                        reloadModule = true;
                         window.location.hash = "";
-                        $scope.$on('loadOnDemand.loadContent', function () {
-                            if (reloadModule) {
+                        if ($ocLazyLoad.isLoaded(moduleName)) {
+                            $location.path(url);
+                            $state.go(convertUrl(url));
+                            LoadingModal.close();
+                        }
+                        $scope.$on('ocLazyLoad.moduleLoaded', function(e, params) {
+                            if ($ocLazyLoad.isLoaded(moduleName)) {
                                 $location.path(url);
                                 LoadingModal.close();
-                                reloadModule = false;
-                                innerLayout({}, {
-                                    show: false
-                                });
-                                if (refresh) {
-                                    $route.reload();
-                                }
                             }
                         });
                     } else {
@@ -249,6 +253,10 @@
                 }
             }
         };
+
+        $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+            innerLayout({}, { show: false });
+        });
 
         $scope.loadI18n = function (data) {
             i18nService.init(data);
@@ -550,9 +558,8 @@
         };
     });
 
-    serverModule.controller('MotechHomeCtrl', function ($scope, $cookieStore, $q, Menu, $rootScope, $http, ModalFactory, LoadingModal) {
+    serverModule.controller('MotechHomeCtrl', function ($scope, $ocLazyLoad, $cookieStore, $q, Menu, $rootScope, $http, ModalFactory, LoadingModal) {
         $scope.securityMode = false;
-
         $scope.moduleMenu = {};
 
         $scope.openInNewTab = function (url) {
