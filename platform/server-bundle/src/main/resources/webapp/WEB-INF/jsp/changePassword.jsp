@@ -103,7 +103,6 @@
                                         <div>
                                             <h4>{{msg('server.reset.passwordChanged')}}</h4>
                                             <div class="form-group">
-                                                <a class="btn btn-primary" href="./home">{{msg('server.continue')}}</a>
                                             </div>
                                         </div>
                                     </div>

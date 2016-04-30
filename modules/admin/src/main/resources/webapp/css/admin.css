@@ -268,6 +268,7 @@ h4.settings-section {
     font-family: Consolas,'Lucida Console','DejaVu Sans Mono',monospace;
     font-size: 12px;
     word-wrap: break-word;
+    overflow: visible;
 }
 
 div.sidebar-container {

@@ -32,7 +32,6 @@
     "jQuery-Timepicker-Addon": "git://github.com/trentrichardson/jQuery-Timepicker-Addon",
     "swagger-ui": "git://github.com/swagger-api/swagger-ui.git#2.1.1-M1",
     "swagger-js": "git://github.com/swagger-api/swagger-js.git#2.1.1-M1",
-    "blockUI": "jquery.blockUI#*",
     "jquery.caret": "~1.5.2",
     "jquery.cookie": "~1.4.1",
     "form": "git://github.com/malsup/form/",
@@ -45,7 +44,6 @@
     "jquery-gentleSelect": "git://github.com/shawnchin/jquery-gentleSelect",
     "angular-cookies": "~1.2.29",
     "angular-resource": "~1.2.29",
-    "angular-route": "~1.2.29",
     "angular-sanitize": "~1.2.29",
     "angular-ui": "~0.4.0",
     "font-awesome": "~4.5.0",
@@ -55,7 +53,10 @@
     "jquery-ui": "~1.11.4",
     "bootstrap-multiselect": "~0.9.13",
     "angular-bootstrap": "0.6.0",
-    "bootstrap3-dialog":"1.34.9"
+    "bootstrap3-dialog":"1.34.9",
+    "angular-ui-router":"0.2.18",
+    "oclazyload":"1.0.9",
+    "jasny-bootstrap":"git://github.com/jasny/bootstrap"
   },
   "resolutions": {
     "jquery": "1.11.3",
@@ -76,11 +77,17 @@
         "./build/angular-ui.css"
       ]
     },
+    "angular-ui-router": {
+      "main": "release/angular-ui-router.min.js"
+    },
     "font-awesome": {
       "main": "./css/font-awesome.css"
     },
-    "loadOnDemand": {
-      "main": "./loadOnDemand.js"
+    "oclazyload": {
+      "main": "dist/ocLazyLoad.js",
+      "dependencies": {
+        "angular": ">=1.2.0"
+      }
     },
     "livequery": {
       "main": "./jquery.livequery.js"
@@ -159,6 +166,12 @@
         "jquery": "~1",
         "jquery-ui": "~1"
       }
+    },
+    "jasny-bootstrap": {
+      "main": [
+        "./dist/css/jasny-bootstrap.css",
+        "./js/fileinput.js"
+      ]
     }
   }
 }

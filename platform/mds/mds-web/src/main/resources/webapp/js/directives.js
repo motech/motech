@@ -113,7 +113,7 @@
         var intervalWidthResize, tableWidth;
         clearInterval(intervalWidthResize);
         intervalWidthResize = setInterval( function () {
-            tableWidth = $('#' + gridId).parent().width();
+            tableWidth = $('#gbox_' + gridId).parent().width();
             $('#' + gridId).jqGrid("setGridWidth", tableWidth);
             clearInterval(intervalWidthResize);
         }, 200);
@@ -1299,7 +1299,7 @@
     /**
     * Displays entity instances data using jqGrid
     */
-    directives.directive('entityInstancesGrid', function ($rootScope, $route, $timeout) {
+    directives.directive('entityInstancesGrid', function ($rootScope, $timeout) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -1435,7 +1435,7 @@
     /**
     * Displays related instances data using jqGrid
     */
-    directives.directive('entityInstancesBrowserGrid', function ($timeout, $http) {
+    directives.directive('entityInstancesBrowserGrid', function ($timeout, $http, LoadingModal) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -1533,10 +1533,10 @@
                 } else if (scope.relatedMode.isNested) {
                     relatedClass = scope.getRelatedClass(scope.field);
                     if (relatedClass !== undefined && scope.relatedMode.isNested) {
-                        blockUI();
+                        LoadingModal.open();
                         $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
                             relatedEntityId = data.id;
-                            unblockUI();
+                            LoadingModal.close();
                             showGrid();
                             if (scope.currentRelationRecord !== undefined) {
                                 selectedEntityNested = {id: scope.currentRelationRecord.entitySchemaId};
@@ -1568,7 +1568,7 @@
     /**
     * Displays related instances data using jqGrid
     */
-    directives.directive('entityRelationsGrid', function ($timeout, $http, MDSUtils) {
+    directives.directive('entityRelationsGrid', function ($timeout, $http, MDSUtils, ModalFactory, LoadingModal) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -1584,11 +1584,11 @@
                     selectedInstance = (scope.selectedInstance !== undefined && angular.isNumber(parseInt(scope.selectedInstance, 10)))? parseInt(scope.selectedInstance, 10) : undefined;
 
                 relatedClass = scope.getRelatedClass(scope.field);
-                    blockUI();
+                    LoadingModal.open();
                     $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
                         scope.relatedEntity = data;
                         relatedEntityId = data.id;
-                        unblockUI();
+                        LoadingModal.close();
                         $.ajax({
                             type: "GET",
                             url: "../mds/entities/" + scope.relatedEntity.id + "/entityFields",
@@ -1715,7 +1715,8 @@
                             }
                         });
                     }).error(function (response) {
-                        handleResponse('mds.error', 'mds.error.cannotAddRelatedInstance', response);
+                        LoadingModal.close();
+                        ModalFactory.showErrorAlertWithResponse('mds.error.cannotAddRelatedInstance', 'mds.error', response);
                     });
 
                 elem.on('jqGridSortCol', function (e, fieldName) {
@@ -3580,16 +3581,6 @@
             $http.get('../mds/resources/partials/embeddedMdsFilters.html', { cache: $templateCache }).success(function(response) {
                 var contents = element.html(response).contents();
                 $compile(contents)(scope);
-            });
-        };
-    });
-
-    // TODO: Can be removed after common period modals work again. (MOTECH-2265)
-    directives.directive('periodModalMds', function($http, $templateCache, $compile) {
-        return function(scope, element, attrs) {
-            $http.get('../server/resources/partials/period-modal.html', { cache: $templateCache }).success(function(response) {
-                var contents = element.html(response).contents();
-                element.replaceWith($compile(contents)(scope));
             });
         };
     });

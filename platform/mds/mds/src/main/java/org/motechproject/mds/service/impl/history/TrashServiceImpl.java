@@ -89,7 +89,7 @@ public class TrashServiceImpl extends BasePersistenceService implements TrashSer
 
     @Override
     @Transactional
-    public void moveFromTrash(Object newInstance, Object trash, boolean recordHistory) {
+    public void removeFromTrash(Object trash) {
         PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
         manager.deletePersistent(trash);
     }

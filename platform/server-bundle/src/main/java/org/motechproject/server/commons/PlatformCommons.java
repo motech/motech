@@ -1,44 +1,31 @@
 package org.motechproject.server.commons;
 
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.motechproject.commons.date.util.DateUtil;
-import org.springframework.stereotype.Component;
-
-import java.util.ResourceBundle;
 
 /**
- * Class used with {@link org.motechproject.server.CommonsDataProvider} to provide common
- * values as a data source in Tasks module.
+ * This class, exposed as OSGi service, provides basic information from the server, such as
+ * MOTECH version or current time. It is also used with {@link org.motechproject.server.CommonsDataProvider}
+ * to provide common values as a data source in Tasks module.
  */
-@Component
-public class PlatformCommons {
-
-    public PlatformCommons() {
-
-    }
+public interface PlatformCommons {
 
     /**
      * Gets current MOTECH version
      * @return version of MOTECH
      */
-    public String getMotechVersion() {
-        return ResourceBundle.getBundle("webapp/messages.messages").getString("server.version");
-    }
+    String getMotechVersion();
 
     /**
      * Gets current date as timestamp
      * @return current date
      */
-    public DateTime getNow() {
-        return DateUtil.now();
-    }
+    DateTime getNow();
 
     /**
      * Gets date of today
      * @return date of today
      */
-    public LocalDate getToday() {
-        return DateUtil.today();
-    }
+    LocalDate getToday();
 }

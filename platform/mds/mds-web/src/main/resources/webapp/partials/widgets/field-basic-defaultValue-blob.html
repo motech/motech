@@ -1,13 +1,13 @@
-<div class="fileupload fileupload-new" data-provides="fileupload">
+<div class="fileinput fileinput-new" data-provides="fileinput">
     <div class="input-append btn-group">
-        <div class="form-control uneditable-input input-auto fileupload-exists">
-            &nbsp;<span class="glyphicon glyphicon-file"></span>&nbsp;<span class="fileupload-preview"></span>
+        <div class="form-control uneditable-input input-auto fileinput-exists">
+            &nbsp;<span class="glyphicon glyphicon-file"></span>&nbsp;<span class="fileinput-preview"></span>
         </div>
-        <span class="btn btn-default btn-file">
-            <span class="fileupload-new">{{msg('mds.import.selectFile')}}</span>
-            <span class="fileupload-exists">{{msg('mds.import.changeFile')}}</span>
-            <input class="input-file" type="file" ng-model="field.basic.defaultValue" fileread="field.defaultValue" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="field.readOnly"/>
-        </span>
-        <a target="_self" href="#" class="btn btn-default fileupload-exists" data-dismiss="fileupload">{{msg('mds.btn.cancel')}}</a>
+            <span class="btn btn-default btn-file">
+                <span class="fileinput-new">{{msg('mds.import.selectFile')}}</span>
+                <span class="fileinput-exists">{{msg('mds.import.changeFile')}}</span>
+                <input class="input-file" type="file" ng-model="field.basic.defaultValue" fileread="field.defaultValue" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="field.readOnly"/>
+            </span>
+        <a target="_self" href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">{{msg('mds.btn.cancel')}}</a>
     </div>
 </div>

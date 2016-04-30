@@ -81,7 +81,7 @@ public class BootstrapControllerTest {
         when(OsgiListener.isBootstrapPresent()).thenReturn(true);
         when(OsgiListener.isServerBundleActive()).thenReturn(true);
         mockMvc.perform(MockMvcRequestBuilders.get("/bootstrap/"))
-                .andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("redirect:../../"));
+                .andExpect(MockMvcResultMatchers.status().isFound()).andExpect(MockMvcResultMatchers.view().name("redirect:../../"));
     }
 
     @Test

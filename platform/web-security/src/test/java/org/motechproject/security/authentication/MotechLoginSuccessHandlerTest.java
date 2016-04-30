@@ -6,10 +6,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.commons.api.json.MotechJsonMessage;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.helper.SessionHandler;
 import org.motechproject.security.config.SettingService;
 import org.motechproject.security.repository.MotechUsersDao;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.ServletException;
@@ -83,5 +86,24 @@ public class MotechLoginSuccessHandlerTest {
 
         verify(motechUsersDao).update(userCaptor.capture());
         assertEquals((Integer)0, userCaptor.getValue().getFailureLoginCounter());
+    }
+
+    @Test
+    public void shouldReturnJSON() throws ServletException, IOException {
+        MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+        mockRequest.addHeader("x-requested-with","XMLHttpRequest");
+
+        MotechUser user = new MotechUser();
+        user.setUserName("testUser");
+        user.setFailureLoginCounter(3);
+
+        when(authentication.getName()).thenReturn("testUser");
+        when(motechUsersDao.findByUserName("testUser")).thenReturn(user);
+
+        motechLoginSuccessHandler.onAuthenticationSuccess(mockRequest, mockResponse, authentication);
+        MotechJsonMessage message = new MotechJsonMessage("SUCCESS");
+
+        assertEquals(message.toJson(), mockResponse.getContentAsString());
     }
 }
