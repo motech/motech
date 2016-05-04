@@ -83,14 +83,12 @@
         };
 
         $scope.newJob = function() {
-            LoadingModal.open();;
-            window.location.href = "#/scheduler/createJob?action=new";
+            LoadingModal.open();
         }
 
         $scope.editJob = function(job) {
             JobsService.setCurrentJob(job);
-            LoadingModal.open();;
-            window.location.href = "#/scheduler/createJob?action=edit";
+            LoadingModal.open();
         }
 
         $scope.deleteJob = function(job) {
@@ -251,7 +249,7 @@
             job.uiDefined = true;
 
             function success() {
-                window.location.href="#/scheduler";
+                window.location.href="#/scheduler/dashboard";
                 LoadingModal.close();
             }
 

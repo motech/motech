@@ -123,7 +123,7 @@
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <button ng-if="action === 'new'" ng-disabled="!JobForm.$valid" class="btn btn-primary" ng-click="createOrUpdateJob(action)">{{msg('scheduler.scheduleJob')}}</button>
-                    <button ng-if="action === 'edit'" class="btn btn-primary" ng-click="createOrUpdateJob(action)" ng-disabled="!JobForm.$valid" >{{msg('scheduler.updateJob')}}</button>
+                    <button ng-if="action === 'edit'" ng-disabled="!JobForm.$valid" class="btn btn-primary" ng-click="createOrUpdateJob(action)">{{msg('scheduler.updateJob')}}</button>
                 </div>
             </div>
         </form>
