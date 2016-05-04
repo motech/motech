@@ -22,6 +22,11 @@ Fetches Atom feed(s) and publishes events when content changes
 
 An implementation of Spring batch (version: 3.0.0.M3); it essentially deals with scheduling triggering of jobs
 
+:std:ref:`Care Services Discovery (CSD) <csd-module>`
+-----------------------------------------------------
+
+Consumes the `IHE Care Services Discovery Profile <http://wiki.ihe.net/index.php/Care_Services_Discovery>`_ from a CSD registry such as `OpenInfoMan <https://github.com/openhie/openinfoman>`_, representing the information natively in MOTECH within MDS.
+
 :std:ref:`CMS Lite <cms-lite-module>`
 -------------------------------------
 
