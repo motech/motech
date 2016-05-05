@@ -33,7 +33,7 @@ public final class TaskDataProviderValidator extends GeneralValidator {
      * @return  the set of encountered errors
      */
     public static boolean validateIsNotEmpty(TaskDataProvider provider) {
-        return !checkEmpty(new HashSet<>(), TASK_DATA_PROVIDER, "objects", provider.getObjects());
+        return !provider.getObjects().isEmpty();
     }
 
     public static Set<TaskError> validate(TaskDataProvider provider) {

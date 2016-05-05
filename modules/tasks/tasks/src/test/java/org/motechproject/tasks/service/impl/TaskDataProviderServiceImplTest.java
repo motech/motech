@@ -14,6 +14,7 @@ import org.motechproject.tasks.domain.mds.task.FieldParameter;
 import org.motechproject.tasks.domain.mds.task.LookupFieldsParameter;
 import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
 import org.motechproject.tasks.domain.mds.task.TaskDataProviderObject;
+import org.motechproject.tasks.exception.ValidationException;
 import org.motechproject.tasks.repository.DataProviderDataService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 
@@ -63,11 +64,14 @@ public class TaskDataProviderServiceImplTest {
         ((TaskDataProviderServiceImpl) taskDataProviderService).bind(dataProviderDataService, Collections.emptyMap());
     }
 
-    @Test(expected = WantedButNotInvoked.class)
+    @Test(expected = ValidationException.class)
     public void shouldNotSaveProviderWhenValidationExceptionIsAppeared() {
         Type type = new TypeToken<TaskDataProvider>() {
         }.getType();
         TaskDataProvider provider = new TaskDataProvider();
+        TaskDataProviderObject incorrectProviderObject = new TaskDataProviderObject();
+        incorrectProviderObject.setDisplayName("displayName");
+        provider.getObjects().add(0, incorrectProviderObject);
 
         when(motechJsonReader.readFromStream(inputStream, type)).thenReturn(provider);
 
