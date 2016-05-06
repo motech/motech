@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.exceptions.verification.WantedButNotInvoked;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
@@ -17,7 +16,6 @@ import org.motechproject.tasks.domain.mds.task.TaskDataProviderObject;
 import org.motechproject.tasks.exception.ValidationException;
 import org.motechproject.tasks.repository.DataProviderDataService;
 import org.motechproject.tasks.service.TaskDataProviderService;
-import org.powermock.api.mockito.PowerMockito;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
