@@ -4,8 +4,11 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.LookupFieldDto;
 import org.motechproject.mds.dto.LookupFieldType;
+import org.motechproject.mds.exception.lookup.LookupWrongFieldNameException;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.ValidationUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -31,6 +34,9 @@ import static org.motechproject.mds.util.Constants.Util.TRUE;
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 public class Lookup {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Lookup.class);
+
     private static final String LOOKUP_ID = "id_OID";
     private static final String FIELD_NAME = "fieldName";
 
@@ -155,9 +161,13 @@ public class Lookup {
 
             String customOperator = getCustomOperators().get(lookupFieldName);
             boolean useGenericParam = toBoolean(getUseGenericParams().get(lookupFieldName));
-            LookupFieldDto lookupField = new  LookupFieldDto(field.getId(), field.getName(), lookupFieldType, customOperator,
-                    useGenericParam, LookupName.getRelatedFieldName(lookupFieldName));
-            lookupFields.add(lookupField);
+            if (field != null) {
+                LookupFieldDto lookupField = new LookupFieldDto(field.getId(), field.getName(), lookupFieldType, customOperator,
+                        useGenericParam, LookupName.getRelatedFieldName(lookupFieldName));
+                lookupFields.add(lookupField);
+            } else {
+                throw new LookupWrongFieldNameException(String.format("Can't create LookupFieldDto. Field with given name %s does not exist in %s lookup", lookupFieldName, lookupName));
+            }
         }
 
         return new LookupDto(id, lookupName, singleObjectReturn, exposedViaRest,
@@ -268,6 +278,7 @@ public class Lookup {
                 return field;
             }
         }
+        LOGGER.warn("Can't get field with name {}", name);
         return null;
     }
 
