@@ -17,6 +17,7 @@ import org.motechproject.tasks.domain.mds.task.TaskDataProviderObject;
 import org.motechproject.tasks.exception.ValidationException;
 import org.motechproject.tasks.repository.DataProviderDataService;
 import org.motechproject.tasks.service.TaskDataProviderService;
+import org.powermock.api.mockito.PowerMockito;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -32,6 +33,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -79,6 +81,19 @@ public class TaskDataProviderServiceImplTest {
 
         verify(motechJsonReader).readFromStream(inputStream, type);
         verify(dataProviderDataService).create(provider);
+    }
+
+    @Test
+    public void shouldNotRegisterProviderWhenProviderObjectsIsEmptyWithoutException() {
+        Type type = new TypeToken<TaskDataProvider>() {
+        }.getType();
+        TaskDataProvider provider = new TaskDataProvider();
+
+        when(motechJsonReader.readFromStream(inputStream, type)).thenReturn(provider);
+
+        taskDataProviderService.registerProvider(inputStream);
+
+        verify(dataProviderDataService, never()).create(provider);
     }
 
     @Test

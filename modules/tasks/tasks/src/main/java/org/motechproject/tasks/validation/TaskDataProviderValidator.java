@@ -26,16 +26,21 @@ public final class TaskDataProviderValidator extends GeneralValidator {
     }
 
     /**
-     * Validates the given data provider by checking if all necessary data is set. Returns the set of {@code TaskError}s
-     * containing information about missing fields.
      *
-     * @param provider  the data provider for validation, not null
-     * @return  the set of encountered errors
+     * @param provider the data provider for validation
+     * @return true if provider objects field isnt empty
      */
     public static boolean validateIsNotEmpty(TaskDataProvider provider) {
         return !provider.getObjects().isEmpty();
     }
 
+    /**
+     * Validates the given data provider by checking if all necessary data is set. Returns the set of {@code TaskError}s
+     * containing information about missing fields.
+     *
+     * @param provider  the data provider for validation, not null, has not empty objects field
+     * @return  the set of encountered errors
+     */
     public static Set<TaskError> validate(TaskDataProvider provider) {
         Set<TaskError> errors = new HashSet<>();
 
