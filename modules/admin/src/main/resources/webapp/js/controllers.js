@@ -96,12 +96,12 @@
             return count;
         };
 
-        $scope.moduleSources = {
-            'Repository':'Repository',
-            'File':'File'
-        };
+        $scope.moduleSources = [
+            'Repository',
+            'File'
+        ];
 
-        $scope.moduleSource = $scope.moduleSources.Repository;
+        $scope.moduleSource = $scope.moduleSources[0];
 
         $scope.mavenStr = function(artifactId) {
             return 'org.motechproject:'.concat(artifactId).concat(':').concat($scope.msg('server.version'));
@@ -284,7 +284,7 @@
                                     LoadingModal.close();
                                 }
                                 $scope.module = "";
-                                $('#bundleUploadForm .fileinput').trigger('reset');
+                                $('#bundleUploadForm .fileinput').fileinput('clear');
                             });
                         }
                     },
@@ -748,10 +748,10 @@
 
     });
 
-    controllers.controller('AdminServerLogCtrl', function($scope, $http, $rootScope, LoadingModal) {
+    controllers.controller('AdminServerLogCtrl', function($scope, $http, $state, $rootScope, LoadingModal) {
         $scope.refresh = function () {
             LoadingModal.open();
-            $http({method:'GET', url:'../admin/api/log'})
+          $http({method:'GET', url:'../admin/api/log'})
                 .success(function (data) {
                     if (data === 'server.tomcat.error.logFileNotFound') {
                         $('#logContent').html($scope.msg(data));
@@ -759,8 +759,9 @@
                         $('#logContent').html(data);
                         LoadingModal.close();
                     }
-                })
-                .error(LoadingModal.close());
+                }).error( function () {
+                    LoadingModal.close();
+                });
         };
 
         //removing the sidebar from <body> before route change

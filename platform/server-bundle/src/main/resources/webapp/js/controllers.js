@@ -256,6 +256,7 @@
 
         $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
             innerLayout({}, { show: false });
+            resizeLayout();
         });
 
         $scope.loadI18n = function (data) {
