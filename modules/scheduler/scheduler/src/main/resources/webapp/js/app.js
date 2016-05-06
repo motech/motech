@@ -21,7 +21,7 @@
                 }
             })
             .state('scheduler.dashboard', {
-                url: '/dashboard',
+                url: "/dashboard",
                 parent: 'scheduler',
                 views: {
                     'schedulerview': {
@@ -31,7 +31,7 @@
                 }
             })
             .state('scheduler.createJob', {
-                url: "/createJob",
+                url: "/createJob?action",
                 parent: 'scheduler',
                 views: {
                     'schedulerview': {
