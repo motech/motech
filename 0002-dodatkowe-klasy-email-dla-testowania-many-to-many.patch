@@ -1,0 +1,188 @@
+From 8be733af533a982af1a1c5382b47db5f0ec9f553 Mon Sep 17 00:00:00 2001
+From: Waldemar Strzelczyk <wstrzelczyk@soldevelo.com>
+Date: Wed, 23 Dec 2015 16:42:25 +0100
+Subject: [PATCH 2/2] dodatkowe klasy email dla testowania many to many
+
+---
+ .../org/motechproject/email/domain/Author.java     | 78 ++++++++++++++++++++
+ .../java/org/motechproject/email/domain/Book.java  | 83 ++++++++++++++++++++++
+ 2 files changed, 161 insertions(+)
+ create mode 100644 platform/email/src/main/java/org/motechproject/email/domain/Author.java
+ create mode 100644 platform/email/src/main/java/org/motechproject/email/domain/Book.java
+
+diff --git a/platform/email/src/main/java/org/motechproject/email/domain/Author.java b/platform/email/src/main/java/org/motechproject/email/domain/Author.java
+new file mode 100644
+index 0000000..6f49dcc
+--- /dev/null
++++ b/platform/email/src/main/java/org/motechproject/email/domain/Author.java
+@@ -0,0 +1,78 @@
++package org.motechproject.email.domain;
++
++import org.motechproject.mds.annotations.Entity;
++import org.motechproject.mds.annotations.Field;
++
++import java.util.HashSet;
++import java.util.Objects;
++import java.util.Set;
++
++
++@Entity
++public class Author {
++
++    private Long id;
++
++    @Field
++    private String name;
++
++    @Field
++    private Set<Book> books;
++
++    public Author(String name) {
++        this.name = name;
++        this.books = new HashSet<Book>();
++    }
++
++    public String getName() {
++        return name;
++    }
++
++    public void setName(String name) {
++        this.name = name;
++    }
++
++    public Set<Book> getBooks() {
++        if (books == null) {
++            books = new HashSet<Book>();
++        }
++        return books;
++    }
++
++    public void setBooks(Set<Book> books) {
++        this.books = books;
++    }
++
++    public Long getId() {
++        return id;
++    }
++
++    public void setId(Long id) {
++        this.id = id;
++    }
++
++    public void addBooks(Set<Book> books) {
++        this.getBooks().addAll(books);
++    }
++
++    @Override
++    public boolean equals(Object obj) {
++        if (this == obj) {
++            return true;
++        }
++
++        if (obj == null || getClass() != obj.getClass()) {
++            return false;
++        }
++
++        final Author other = (Author) obj;
++
++        return Objects.equals(this.id, other.id)
++                && Objects.equals(this.name, other.name);
++    }
++
++    @Override
++    public int hashCode() {
++        return Objects.hash(id);
++    }
++}
+diff --git a/platform/email/src/main/java/org/motechproject/email/domain/Book.java b/platform/email/src/main/java/org/motechproject/email/domain/Book.java
+new file mode 100644
+index 0000000..1e16c66
+--- /dev/null
++++ b/platform/email/src/main/java/org/motechproject/email/domain/Book.java
+@@ -0,0 +1,83 @@
++package org.motechproject.email.domain;
++
++import org.motechproject.mds.annotations.Entity;
++import org.motechproject.mds.annotations.Field;
++
++import javax.jdo.annotations.Persistent;
++import java.util.HashSet;
++import java.util.Objects;
++import java.util.Set;
++
++@Entity
++public class Book {
++
++    private Long id;
++
++    @Field(required = true)
++    private String title;
++
++    @Field
++    @Persistent(mappedBy = "books")
++    private Set<Author> authors;
++
++    public Book() {
++        this(null);
++    }
++
++    public Book(String title) {
++        this.title = title;
++        this.authors = new HashSet<Author>();
++    }
++
++    public String getTitle() {
++        return title;
++    }
++
++    public void setTitle(String title) {
++        this.title = title;
++    }
++
++    public Set<Author> getAuthors() {
++        if (authors == null) {
++            authors = new HashSet<Author>();
++        }
++        return authors;
++    }
++
++    public void setAuthors(Set<Author> authors) {
++        this.authors = authors;
++    }
++
++    public void addAuthors(Set<Author> authors) {
++        this.getAuthors().addAll(authors);
++    }
++
++    public Long getId() {
++        return id;
++    }
++
++    public void setId(Long id) {
++        this.id = id;
++    }
++
++    @Override
++    public boolean equals(Object obj) {
++        if (this == obj) {
++            return true;
++        }
++
++        if (obj == null || getClass() != obj.getClass()) {
++            return false;
++        }
++
++        final Book other = (Book) obj;
++
++        return Objects.equals(this.id, other.id)
++                && Objects.equals(this.title, other.title);
++    }
++
++    @Override
++    public int hashCode() {
++        return Objects.hash(id);
++    }
++}
+-- 
+1.9.1
+
