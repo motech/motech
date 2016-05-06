@@ -1,8 +1,8 @@
 <div id="inner-center" class="tasks inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
     <div class="header-footer-breadcrumb">
         <ul class="breadcrumb" role="navigation">
-            <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
-            <li><a role="menu" href="#/tasks/dashboard">{{msg('task.tab')}}</a></li>
+            <li><a role="menu" ui-sref="home">{{msg('server.home')}}</a></li>
+            <li><a role="menu" ui-sref="tasks.dashboard">{{msg('task.tab')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'dashboard'" ng-class="{'active': selectedTabState.selectedTab === 'dashboard'}">{{msg('task.tab')}} list</li>
             <li ng-show="selectedTabState.selectedTab === 'settings'" ng-class="{'active': selectedTabState.selectedTab === 'settings'}">{{msg('task.tab.settings')}}</li>
             <li ng-show="selectedTabState.selectedTab === 'new'" ng-class="{'active': selectedTabState.selectedTab === 'new'}">{{msg('task.new')}}</li>
@@ -10,14 +10,14 @@
     </div>
     <div class="header-footer">
         <ul id="content-tabs" class="nav nav-tabs tasks ">
-            <li ng-class="{'active': selectedTabState.selectedTab === 'dashboard'}" ng-click="selectedTabState.selectedTab = 'dashboard'"><a  href="#/tasks/dashboard">{{msg('task.tab')}}</a></li>
-            <li ng-class="{'active': selectedTabState.selectedTab === 'settings'}" ng-click="selectedTabState.selectedTab = 'settings'"><a  href="#/tasks/settings">{{msg('task.tab.settings')}}</a></li>
+            <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'dashboard'"><a  ui-sref="tasks.dashboard">{{msg('task.tab')}}</a></li>
+            <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'settings'"><a  ui-sref="tasks.settings">{{msg('task.tab.settings')}}</a></li>
         </ul>
     </div>
     <div class="ui-layout-content">
         <div class="tab-content tasks" id="tab-content">
-            <div id="main-content" class=" active">
-                <div ng-view></div>
+            <div id="main-content" class="active">
+                <div ui-view="tasksview"></div>
             </div>
         </div>
     </div>

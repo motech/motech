@@ -7,17 +7,38 @@
         'scheduler.controllers', 'scheduler.directives', 'ngCookies', 'uiServices'
     ]);
 
-    scheduler.config( function ($routeProvider) {
-
-        $routeProvider
-            .when('/scheduler', {
-                templateUrl: '../scheduler/partials/scheduler.html',
-                controller: 'SchedulerCtrl'
+    scheduler.config(function ($stateProvider, $urlRouterProvider) {
+        $urlRouterProvider.when("scheduler", "/dashboard");
+        $urlRouterProvider.otherwise("/dashboard");
+        $stateProvider
+            .state('scheduler', {
+                url: "/scheduler",
+                abstract: true,
+                views: {
+                    "moduleToLoad": {
+                    templateUrl: "../scheduler/index.html"
+                    }
+                }
             })
-            .when('/scheduler/createJob', {
-                templateUrl: '../scheduler/partials/createJob.html',
-                controller: 'SchedulerCreateJobCtrl'
+            .state('scheduler.dashboard', {
+                url: "/dashboard",
+                parent: 'scheduler',
+                views: {
+                    'schedulerview': {
+                        templateUrl: '../scheduler/partials/scheduler.html',
+                        controller: 'SchedulerCtrl'
+                    }
+                }
+            })
+            .state('scheduler.createJob', {
+                url: "/createJob?action",
+                parent: 'scheduler',
+                views: {
+                    'schedulerview': {
+                        templateUrl: '../scheduler/partials/createJob.html',
+                        controller: 'SchedulerCreateJobCtrl'
+                    }
+                }
             });
     });
-
 }());

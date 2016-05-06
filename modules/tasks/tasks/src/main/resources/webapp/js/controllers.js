@@ -280,7 +280,8 @@
     });
 
     controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers,
-            $q, $timeout, $routeParams, $http, $compile, $filter, ModalFactory, LoadingModal) {
+                                     $q, $timeout, $stateParams, $http, $compile, $filter, ModalFactory, LoadingModal) {
+
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
         $scope.selectedAction = [];
@@ -380,7 +381,7 @@
             $scope.channels = data[0];
             $scope.dataSources = data[1];
 
-            if ($routeParams.taskId === undefined) {
+            if ($stateParams.taskId === undefined) {
                 $scope.task = {
                     taskConfig: {
                         steps: []
@@ -388,7 +389,7 @@
                 };
                 $scope.task.retryTaskOnFailure = false;
             } else {
-                $scope.task = Tasks.get({ taskId: $routeParams.taskId }, function () {
+                $scope.task = Tasks.get({ taskId: $stateParams.taskId }, function () {
                     Triggers.getTrigger($scope.task.trigger, function(trigger) {
                         var triggerChannel, dataSource, object;
 
@@ -970,10 +971,10 @@
 
             LoadingModal.open();
 
-            if (!$routeParams.taskId) {
+            if (!$stateParams.taskId) {
                 $http.post('../tasks/api/task/save', $scope.task).success(success).error(error);
             } else {
-                $http.post('../tasks/api/task/' + $routeParams.taskId, $scope.task).success(success).error(error);
+                $http.post('../tasks/api/task/' + $stateParams.taskId, $scope.task).success(success).error(error);
             }
         };
 
@@ -1069,10 +1070,10 @@
         });
     });
 
-    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $routeParams, $filter, $http, ModalFactory, LoadingModal) {
+    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http, ModalFactory, LoadingModal) {
         var data, task;
 
-        $scope.taskId = $routeParams.taskId;
+        $scope.taskId = $stateParams.taskId;
         $scope.activityTypes = ['All', 'Warning', 'Success', 'Error'];
         $scope.selectedActivityType = 'All';
 
@@ -1082,7 +1083,7 @@
             east__maxSize: 350
         });
 
-        if ($routeParams.taskId !== undefined) {
+        if ($stateParams.taskId !== undefined) {
             data = { taskId: $scope.taskId };
 
             task = Tasks.get(data, function () {
@@ -1130,7 +1131,7 @@
                     return;
                 }
                 LoadingModal.open();
-                Activities.remove({taskId: $routeParams.taskId}, function () {
+                Activities.remove({taskId: $stateParams.taskId}, function () {
                      $scope.refresh();
                      LoadingModal.close();
                  }, function (response) {

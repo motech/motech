@@ -6,7 +6,7 @@
 
     var controllers = angular.module('scheduler.controllers', []);
 
-    controllers.controller('SchedulerCtrl', function($scope, $timeout, $routeParams, JobsService, ModalFactory, LoadingModal) {
+    controllers.controller('SchedulerCtrl', function($scope, $timeout, JobsService, ModalFactory, LoadingModal) {
 
         $scope.jobDetails = {};
 
@@ -83,14 +83,12 @@
         };
 
         $scope.newJob = function() {
-            LoadingModal.open();;
-            window.location.href = "#/scheduler/createJob?action=new";
+            LoadingModal.open();
         }
 
         $scope.editJob = function(job) {
             JobsService.setCurrentJob(job);
-            LoadingModal.open();;
-            window.location.href = "#/scheduler/createJob?action=edit";
+            LoadingModal.open();
         }
 
         $scope.deleteJob = function(job) {
@@ -133,7 +131,7 @@
         };
     });
 
-    controllers.controller('SchedulerCreateJobCtrl', function($scope, $timeout, $routeParams, JobsService, ModalFactory, LoadingModal) {
+    controllers.controller('SchedulerCreateJobCtrl', function($scope, $timeout, $stateParams, JobsService, ModalFactory, LoadingModal) {
 
         innerLayout({}, {
             show: false,
@@ -143,7 +141,7 @@
         $scope.job = {};
         $scope.job.motechEvent = {};
         $scope.motechEventParameters = [];
-        $scope.action = $routeParams.action;
+        $scope.action = $stateParams.action;
         $scope.dates = {};
 
         $scope.jobTypes = [
@@ -251,7 +249,7 @@
             job.uiDefined = true;
 
             function success() {
-                window.location.href="#/scheduler";
+                window.location.href="#/scheduler/dashboard";
                 LoadingModal.close();
             }
 
