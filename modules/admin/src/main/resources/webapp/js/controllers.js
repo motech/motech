@@ -751,7 +751,7 @@
     controllers.controller('AdminServerLogCtrl', function($scope, $http, $state, $rootScope, LoadingModal) {
         $scope.refresh = function () {
             LoadingModal.open();
-          $http({method:'GET', url:'../admin/api/log'})
+            $http({method:'GET', url:'../admin/api/log'})
                 .success(function (data) {
                     if (data === 'server.tomcat.error.logFileNotFound') {
                         $('#logContent').html($scope.msg(data));
