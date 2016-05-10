@@ -491,47 +491,27 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     @Test 
     public void testCascadeDelete2() {
-        EntityX x1 = new EntityX();
-        EntityX x2 = new EntityX();
-        
+        EntityX x1 = new EntityX();        
         EntityZ z1 = new EntityZ();
-        EntityZ z2 = new EntityZ();
-        
         EntityY y1 = new EntityY();
-        EntityY y2 = new EntityY();
         
-        x1.getY().add(y1);
-        x1.getY().add(y2);
-        y2.getX().add(x1);
-        y2.getZ().add(z2);
-        y1.getX().add(x1);
+        //set bothsides of a bidirectional 1:N relationship using Lists
+        z1.setName("Shanmukh");
         y1.getZ().add(z1);
+        y1.setX(x1);
+        x1.getY().add(y1);
         
-        entityXDataService.create(x1);
-        entityYDataService.create(y1);
-        entityYDataService.create(y2);
-        entityZDataService.create(z1);
-        entityZDataService.create(z2);
+        x1 = entityXDataService.create(x1);
         
-        EntityX testX = entityXDataService.findById(x1.getId());
-        assertNotNull(testX);
-        
-        EntityY testY = entityYDataService.findById(y1.getId());
-        assertNotNull(testY);
-        
-        EntityZ testZ = entityZDataService.findById(z1.getId());
-        assertNotNull(testZ);
+        assertNotNull(x1);
+        assertNotNull(entityYDataService.findById(y1.getId()));
+        assertNotNull(entityZDataService.findById(z1.getId()));
         
         entityXDataService.delete(x1);
-        assertNull(entityXDataService.findById(x1.getId()));
         
-        assertNull(entityYDataService.findById(y1.getId()));
-        
-        assertNull(entityYDataService.findById(y2.getId()));
-        
+        assertNull(entityXDataService.findById(x1.getId()));       
+        assertNull(entityYDataService.findById(y1.getId()));        
         assertNull(entityZDataService.findById(z1.getId()));
-        
-        assertNull(entityZDataService.findById(z2.getId()));
     }
     
     @Test

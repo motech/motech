@@ -1,7 +1,7 @@
 package org.motechproject.mds.test.domain.cascadedelete;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.jdo.annotations.Persistent;
 
@@ -15,17 +15,17 @@ public class EntityX extends MdsEntity{
     @Field
     @Cascade(delete = true)
     @Persistent(mappedBy = "x")
-    private Set<EntityY> y;
-
-    public EntityX() {
-        this.y = new HashSet<>();
-    }
+    private List<EntityY> y;
     
-    public Set<EntityY> getY() {
+    public EntityX() {
+        this.y = new ArrayList<>();
+    }
+
+    public List<EntityY> getY() {
         return y;
     }
 
-    public void setY(Set<EntityY> y) {
+    public void setY(List<EntityY> y) {
         this.y = y;
     }
 }

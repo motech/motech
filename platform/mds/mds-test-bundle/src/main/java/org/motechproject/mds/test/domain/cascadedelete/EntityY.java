@@ -1,7 +1,7 @@
 package org.motechproject.mds.test.domain.cascadedelete;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
@@ -11,30 +11,29 @@ import org.motechproject.mds.domain.MdsEntity;
 @Entity
 public class EntityY extends MdsEntity{
     @Field
-    private Set<EntityX> x;
-     
+    private EntityX x;
+    
     @Field
     @Cascade(delete = true)
-    private Set<EntityZ> z;
-    
+    private List<EntityZ> z;
+
     public EntityY() {
-        this.x = new HashSet<>();
-        this.z = new HashSet<>();
+        this.z = new ArrayList<>();
     }
 
-    public Set<EntityZ> getZ() {
+    public List<EntityZ> getZ() {
         return z;
     }
 
-    public void setZ(Set<EntityZ> z) {
+    public void setZ(List<EntityZ> z) {
         this.z = z;
     }
 
-    public Set<EntityX> getX() {
+    public EntityX getX() {
         return x;
     }
 
-    public void setX(Set<EntityX> x) {
+    public void setX(EntityX x) {
         this.x = x;
     }
 }
