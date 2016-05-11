@@ -11,7 +11,7 @@
                 ng-click="selectedTabState.selectedTab = tab"
                 ng-repeat="tab in MDS_AVAILABLE_TABS"
                 id="mdsTab_{{tab}}">
-                <a ui-sref="mds.{{tab}}">
+                <a id="tab-mds-{{tab}}" ui-sref="mds.{{tab}}">
                     {{msg('mds.tab.' + tab)}}
                 </a>
             </li>

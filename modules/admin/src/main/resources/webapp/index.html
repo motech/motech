@@ -24,29 +24,29 @@
         <ul id="content-tabs" role="tablist" class="nav nav-tabs">
             <li ng-class="{'active': selectedTabState.selectedTab === 'bundles' || selectedTabState.selectedTab === 'bundle'}"
                 ng-show="selectedTabState.selectedTab === 'bundles' || selectedTabState.selectedTab === 'bundle'"
-                ng-click="selectedTabState.selectedTab = 'bundles'"><a ui-sref="admin.bundles">{{msg('admin.bundles')}}</a></li>
+                ng-click="selectedTabState.selectedTab = 'bundles'"><a id="tab-admin-bundles" ui-sref="admin.bundles">{{msg('admin.bundles')}}</a></li>
             <li ng-class="{'active': selectedTabState.selectedTab === 'messages'}" ng-show="selectedTabState.selectedTab === 'messages'">
                 <a ui-sref="admin.messages">{{msg('admin.messages')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'messagesSettings'" ng-click="selectedTabState.selectedTab = 'messages'">
-                <a ui-sref="admin.messages">{{msg('admin.messages')}}</a></li>
+                <a id="tab-admin-messages" ui-sref="admin.messages">{{msg('admin.messages')}}</a></li>
             <li ng-class="{'active': selectedTabState.selectedTab === 'messagesSettings'}"
                 ng-show="selectedTabState.selectedTab === 'messages' || selectedTabState.selectedTab === 'messagesSettings'"
-                ng-click="selectedTabState.selectedTab = 'messagesSettings'"><a ui-sref="admin.messagesSettings">{{msg('admin.messages.notifications.title')}}</a></li>
+                ng-click="selectedTabState.selectedTab = 'messagesSettings'"><a id="tab-admin-messagesSettings" ui-sref="admin.messagesSettings">{{msg('admin.messages.notifications.title')}}</a></li>
             <li class="active" ng-show="selectedTabState.selectedTab === 'platform-settings'" ng-click="selectedTabState.selectedTab = 'platform-settings'">
-                <a ui-sref="admin.platform-settings">{{msg('admin.settings')}}</a></li>
+                <a id="tab-admin-platform-settings" ui-sref="admin.platform-settings">{{msg('admin.settings')}}</a></li>
             <li ng-class="{'active': selectedTabState.selectedTab === 'log'}" ng-show="selectedTabState.selectedTab === 'log'">
                 <a ui-sref="admin.log">{{msg('admin.log')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'logOptions'" ng-click="selectedTabState.selectedTab = 'log'">
-                <a ui-sref="admin.log">{{msg('admin.log')}}</a></li>
+                <a id="tab-admin-log" ui-sref="admin.log">{{msg('admin.log')}}</a></li>
             <li ng-class="{'active': selectedTabState.selectedTab === 'logOptions'}"
                 ng-show="selectedTabState.selectedTab === 'logOptions' || selectedTabState.selectedTab === 'log'"
-                ng-click="selectedTabState.selectedTab = 'logOptions'"><a ui-sref="admin.logOptions">{{msg('admin.log.options')}}</a></li>
+                ng-click="selectedTabState.selectedTab = 'logOptions'"><a id="tab-admin-logOptions" ui-sref="admin.logOptions">{{msg('admin.log.options')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'topics'" ng-class="{'active': selectedTabState.selectedTab === 'topics'}"
-                ng-click="selectedTabState.selectedTab = 'topics'"><a ui-sref="admin.topics">{{msg('admin.topic.statistics')}}</a></li>
+                ng-click="selectedTabState.selectedTab = 'topics'"><a id="tab-admin-topics" ui-sref="admin.topics">{{msg('admin.topic.statistics')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'queues'" ng-class="{'active': selectedTabState.selectedTab === 'queues'}">
-                <a ui-sref="admin.queues">{{msg('admin.queue.statistics')}}</a></li>
+                <a id="tab-admin-queues" ui-sref="admin.queues">{{msg('admin.queue.statistics')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'browse'" ng-class="{'active': selectedTabState.selectedTab === 'browse'}">
-                <a ui-sref="admin.browse">{{msg('admin.queue.messages.pending')}}</a></li>
+                <a id="tab-admin-browse" ui-sref="admin.browse">{{msg('admin.queue.messages.pending')}}</a></li>
         </ul>
         <div class="clearfix"></div>
     </div>
