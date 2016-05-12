@@ -1761,9 +1761,12 @@ public class MdsDdeBundleIT extends BasePaxIT {
         house.setName("A house");
         house.setHouseNumber((short)12);
         house.setAddress(address);
-        house.setUId(UUID.randomUUID());
+        house.setUuid(UUID.randomUUID());
 
         house = houseDataService.create(house);
+        
+        //check whether uuid field is set
+        assertNotNull(house.getUuid());
 
         final long firstAddressId = house.getAddress().getId();
 
@@ -1776,12 +1779,15 @@ public class MdsDdeBundleIT extends BasePaxIT {
         house.setName("Second house");
         house = houseDataService.update(house);
 
+        //check whether uuid field is set
+        assertNotNull(house.getUuid());
+        
         // then change the address
         Address secondAddress = new Address();
         secondAddress.setStreet("Abbey Road");
         house.setAddress(secondAddress);
         house.setHouseNumber((short)87);
-        house.setUId(UUID.randomUUID());
+        house.setUuid(UUID.randomUUID());
         house = houseDataService.update(house);
 
         secondAddress = house.getAddress();

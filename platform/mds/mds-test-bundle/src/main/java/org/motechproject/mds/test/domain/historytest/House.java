@@ -15,7 +15,7 @@ import java.util.UUID;
 public class House extends MdsEntity {
 
     @Field
-    private UUID uId;
+    private UUID uuid;
 
     @Field
     private String name;
@@ -27,14 +27,6 @@ public class House extends MdsEntity {
     @Persistent(mappedBy = "house", defaultFetchGroup = "true")
     @Cascade(delete = true)
     private Address address;
-
-    public UUID getUId() {
-        return uId;
-    }
-
-    public void setUId(UUID uId) {
-        this.uId = uId;
-    }
 
     public String getName() {
         return name;
@@ -58,5 +50,13 @@ public class House extends MdsEntity {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 }
