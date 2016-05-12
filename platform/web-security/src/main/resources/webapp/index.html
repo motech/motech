@@ -17,15 +17,15 @@
     <div class="header-footer">
         <ul id="content-tabs" class="nav nav-tabs">
             <li ng-show="selectedTabState.selectedTab === 'profile'" ng-class="{'active': selectedTabState.selectedTab === 'profile'}"
-                ng-click="selectedTabState.selectedTab = 'profile'"><a  ui-sref="webSecurity.profile">{{msg('security.profile')}}</a></li>
+                ng-click="selectedTabState.selectedTab = 'profile'"><a id="tab-webSecurity-profile" ui-sref="webSecurity.profile">{{msg('security.profile')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'permissions'" ng-class="{'active': selectedTabState.selectedTab === 'permissions'}"
-                ng-click="selectedTabState.selectedTab = 'permissions'"><a  ui-sref="webSecurity.permissions">{{msg('security.managePermissions')}}</a></li>
+                ng-click="selectedTabState.selectedTab = 'permissions'"><a id="tab-webSecurity-permissions" ui-sref="webSecurity.permissions">{{msg('security.managePermissions')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'roles'" ng-class="{'active': selectedTabState.selectedTab === 'roles'}"
-                ng-click="selectedTabState.selectedTab = 'roles'"><a ui-sref="webSecurity.roles">{{msg('security.manageRoles')}}</a></li>
+                ng-click="selectedTabState.selectedTab = 'roles'"><a id="tab-webSecurity-roles" ui-sref="webSecurity.roles">{{msg('security.manageRoles')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'users'" ng-class="{'active': selectedTabState.selectedTab === 'users'}"
-                ng-click="selectedTabState.selectedTab = 'users'"><a ui-sref="webSecurity.users">{{msg('security.administeringUsers')}}</a></li>
+                ng-click="selectedTabState.selectedTab = 'users'"><a id="tab-webSecurity-users" ui-sref="webSecurity.users">{{msg('security.administeringUsers')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'dynamicURL'" ng-class="{'active': selectedTabState.selectedTab === 'dynamicURL'}"
-                ng-click="selectedTabState.selectedTab = 'dynamicURL'"><a ui-sref="webSecurity.dynamicURL">{{msg('security.manageURL')}}</a></li>
+                ng-click="selectedTabState.selectedTab = 'dynamicURL'"><a id="tab-webSecurity-dynamicURL" ui-sref="webSecurity.dynamicURL">{{msg('security.manageURL')}}</a></li>
         </ul>
     </div>
     <div class="ui-layout-content">

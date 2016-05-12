@@ -10,8 +10,8 @@
     </div>
     <div class="header-footer">
         <ul id="content-tabs" class="nav nav-tabs tasks ">
-            <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'dashboard'"><a  ui-sref="tasks.dashboard">{{msg('task.tab')}}</a></li>
-            <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'settings'"><a  ui-sref="tasks.settings">{{msg('task.tab.settings')}}</a></li>
+            <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'dashboard'"><a id="tab-tasks-dashboard" ui-sref="tasks.dashboard">{{msg('task.tab')}}</a></li>
+            <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'settings'"><a id="tab-tasks-settings" ui-sref="tasks.settings">{{msg('task.tab.settings')}}</a></li>
         </ul>
     </div>
     <div class="ui-layout-content">
