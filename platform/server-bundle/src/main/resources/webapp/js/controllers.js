@@ -396,6 +396,7 @@
                 $scope.i18n = data;
             }),
             $scope.doAJAXHttpRequest('GET', 'lang/list', function (data) {
+                if(data['zh_TW.Big5'] !== undefined) { delete data['zh_TW.Big5']; }
                 $scope.languages = data;
             }),
             $scope.doAJAXHttpRequest('GET', 'lang', function (data) {
@@ -414,6 +415,7 @@
                 $scope.doAJAXHttpRequest('GET', 'lang/locate', function (data) {
                     $scope.i18n = data;
                 }), $scope.doAJAXHttpRequest('GET', 'lang/list', function (data) {
+                    if(data['zh_TW.Big5'] !== undefined) { delete data['zh_TW.Big5']; }
                     $scope.languages = data;
                 })
             ]).then(function () {
@@ -528,6 +530,11 @@
 
         $scope.getStartupViewData = function() {
             $scope.doAJAXHttpRequest('GET', '../server/startupviewdata', function (data) {
+                if(data.languages['zh_TW.Big5'] !== undefined) { delete data.languages['zh_TW.Big5']; }
+                if(data.pageLang === 'zh_TW' || data.startupSettings.language === 'zh') {
+                    data.pageLang = 'en';
+                    data.startupSettings.language = 'en';
+                }
                 $scope.startupViewData = data;
             });
         };
