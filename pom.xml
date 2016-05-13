@@ -1798,7 +1798,7 @@
                                             <location>LICENSE.txt</location>
                                         </source>
                                         <source>
-                                            <location>README</location>
+                                            <location>README.md</location>
                                         </source>
                                     </sources>
                                 </mapping>

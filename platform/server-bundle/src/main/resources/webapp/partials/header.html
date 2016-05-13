@@ -21,7 +21,7 @@
             </ul>
             <ul ng-repeat="section in moduleMenu.sections" role="tablist" id="tabbuttons" class="nav navbar-nav tabbuttons">
                 <li ng-class="showActiveMenu.changeClass(section)">
-                    <a ng-click="selectModules(section.name); setDocsUrl(section.moduleDocsUrl, false)" role="menu">{{msg(section.name)}}</a>
+                    <a id="section-nav-{{section.name | dottedToId}}" ng-click="selectModules(section.name); setDocsUrl(section.moduleDocsUrl, false)" role="menu">{{msg(section.name)}}</a>
                 </li>
             </ul>
             <ul id="tabbuttons-right" class="nav navbar-nav pull-right menu-left">
@@ -34,31 +34,31 @@
                     </a>
                 </li>
                 <li class="divider-vertical divider-vertical-sub"></li>
-                <li class="dropdown overflowChange">
-                    <a class="dropdown-toggle" target="_self" ui-sref="home" data-toggle="dropdown">
+                <li id="profile" class="dropdown overflowChange">
+                    <a id="profile-user-name" class="dropdown-toggle" target="_self" ui-sref="home" data-toggle="dropdown">
                         <span>{{msg('server.loggedAs')}} <strong>{{ user.userName }}</strong><strong class="caret"></strong></span>
                     </a>
                     <ul id="localization" class="dropdown-menu" role="menu">
                         <li ui-if="user.securityLaunch">
-                            <a role="menu" ng-click="loadModule('webSecurity', '/webSecurity/profile')" tabindex="-1">
+                            <a id="profile-user" role="menu" ng-click="loadModule('webSecurity', '/webSecurity/profile')" tabindex="-1">
                                 <span class="fa fa-user"></span> {{msg('server.profile')}}
                             </a>
                         </li>
                         <li ui-if="user.securityLaunch" class="divider"></li>
                         <li class="dropdown-submenu pull-left">
-                            <a class="menu-flag dropdown-toggle" tabindex="-1" data-toggle="dropdown" target="_self" ui-sref="home">
+                            <a id="profile-user-languages" class="menu-flag dropdown-toggle" tabindex="-1" data-toggle="dropdown" target="_self" ui-sref="home">
                                 <span class="flag flag-{{getLangCode()}}" title="{{getLangCode()}}" alt="{{getLangCode()}}"></span>
                                 <span class="text-capitalize">{{getLangForDisplay()}}</span>
                             </a>
                             <ul class="dropdown-menu">
                                 <li ng-repeat="(key, value) in languages">
-                                    <a ng-click="setUserLang(key, true)"><i class="flag flag-{{key}}"></i> {{value}}</a>
+                                    <a id="profile-user-language-{{key}}" ng-click="setUserLang(key, true)"><i class="flag flag-{{key}}"></i> {{value}}</a>
                                 </li>
                             </ul>
                         </li>
                         <li ui-if="user.securityLaunch" class="divider"></li>
                         <li ui-if="user.securityLaunch">
-                            <a href="{{contextPath}}j_spring_security_logout" class="">
+                            <a id="profile-user-logout" href="{{contextPath}}j_spring_security_logout" class="">
                                 <span class="fa fa-power-off"></span> {{msg('server.signOut')}}
                             </a>
                         </li>

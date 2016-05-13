@@ -9,10 +9,10 @@
         </ul>
     </div>
     <div class="header-footer">
-        <ul id="content-tabs" class="nav nav-tabs tasks ">
-            <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'send'"><a  ui-sref="email.send">{{msg('email.send')}}</a></li>
-            <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'logging'"><a ui-sref="email.logging">{{msg('email.logging')}}</a></li>
-            <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'settings'"><a  ui-sref="email.settings">{{msg('email.settings')}}</a></li>
+        <ul id="content-tabs" class="nav nav-tabs email">
+            <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'send'"><a id="tab-email-send" ui-sref="email.send">{{msg('email.send')}}</a></li>
+            <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'logging'"><a id="tab-email-logging" ui-sref="email.logging">{{msg('email.logging')}}</a></li>
+            <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'settings'"><a id="tab-email-settings" ui-sref="email.settings">{{msg('email.settings')}}</a></li>
         </ul>
     </div>
     <div class="ui-layout-content">

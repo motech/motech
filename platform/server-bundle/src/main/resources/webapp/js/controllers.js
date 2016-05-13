@@ -3,6 +3,22 @@
 
     var serverModule = angular.module('motech-dashboard');
 
+    serverModule.filter('pathToId', function() {
+
+        function pathToIdFilter(input) {
+            return input.replace(/[\/]/g,'-');
+        }
+
+        return pathToIdFilter;
+    }).filter('dottedToId', function() {
+
+        function dottedToIdFilter(input) {
+            return input.replace(/\./g,'-');
+        }
+
+        return dottedToIdFilter;
+    });
+
     serverModule.controller('MotechMasterCtrl', function ($scope, $rootScope, $ocLazyLoad, $state, $stateParams, $http,
           i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout, ModalFactory, LoadingModal) {
 
