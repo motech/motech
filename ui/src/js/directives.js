@@ -211,8 +211,8 @@
                 $http.post('gettime').success( function(time, status) {
                      if (status === 200) {
                          localTime = new Date();
-                         serverTime = new Date(moment(parseInt(time.millis, 10)));
-                         $(element).text(moment(new Date(moment(parseInt(time.millis, 10)))).format(formatPattern));
+                         serverTime = new Date(moment(parseInt(time, 10)));
+                         $(element).text(moment(new Date(moment(parseInt(time, 10)))).format(formatPattern));
 
                          // Calculate the difference  in seconds between the server date and the client date
                          diff = parseInt((localTime.getTime() / 1000) - (serverTime.getTime() / 1000), 10);
@@ -246,10 +246,10 @@
             getUptime = function() {
                 $http.post('getUptime').success( function(data, status) {
                     if (status === 200) {
-                        $(element).text(moment(parseInt(data.millis, 10)).fromNow());
+                        $(element).text(moment(parseInt(data, 10)).fromNow());
 
                         // Store server start time
-                        serverStartTime = data.millis;
+                        serverStartTime = data;
 
                     } else {
                         setUpTime();
