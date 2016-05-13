@@ -28,7 +28,7 @@
     <div ng-show="ready" class="bodywrap">
         <div class="header">
             <div class="container">
-                <a ui-sref=".">
+                <a ui-sref="#">
                     <div class="dashboard-logo" ng-cloak>
                         <img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="./../../static/common/img/motech-logo.gif">
                     </div>
