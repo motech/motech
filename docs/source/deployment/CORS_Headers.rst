@@ -25,20 +25,16 @@ CORS headers are set for you when making invocations to the server. Here you can
 Enable CORS in MOTECH-CORE
 ==========================
 
-By default when a cross-site request is sent to MOTECH-CORE, the following error occurs :
+By default when a cross-site request is sent to MOTECH-CORE, the following error occurs::
 
-.. code-block::
-
-	Origin http://example.domain.com is not allowed by Access-Control-Allow-Origin.
+	Origin http://example.domain.com is not allowed by Access-Control-Allow-Origin
 
 To enable CORS we have to change configuration in the web server on which MOTECH-CORE is hosted. We can add the following CORS headers :
 
 Access-Control-Allow-Origin
 ----------------------------
 
-In this header we can specify which domains have access to resources. We can allow access from any origin using "*". But if you’d like finer control over who can access your data, use an actual value in the header. Examples:
-
-.. code-block::
+In this header we can specify which domains have access to resources. We can allow access from any origin using "*". But if you’d like finer control over who can access your data, use an actual value in the header. Examples::
 
    Access-Control-Allow-Origin: "*" (allow access from any origin)
    Access-Control-Allow-Origin: "http://motech-ui.example" (allow access from only "http://motech-ui.example" origin)
@@ -47,9 +43,7 @@ In this header we can specify which domains have access to resources. We can all
 Access-Control-Allow-Methods
 -----------------------------
 
-Comma-delimited list of the supported HTTP methods (`GET`, `POST`, `PUT`, `DELETE`, `HEAD`,  `OPTIONS`). Examples:
-
-.. code-block::
+Comma-delimited list of the supported HTTP methods (`GET`, `POST`, `PUT`, `DELETE`, `HEAD`,  `OPTIONS`). Examples::
 
    Access-Control-Allow-Methods: "GET" (only GET method is allowed in request)
    Access-Control-Allow-Methods: "POST, GET" (POST and GET are allowed in request)
@@ -57,9 +51,7 @@ Comma-delimited list of the supported HTTP methods (`GET`, `POST`, `PUT`, `DELET
 Access-Control-Allow-Headers
 ----------------------------
 
-This header specifies which complex HTTP headers can be used in a request to MOTECH-CORE. Example :
-
-.. code-block::
+This header specifies which complex HTTP headers can be used in a request to MOTECH-CORE. Example::
 
    Access-Control-Allow-Headers: "Content-Type,X-Requested-With,Accept,Authorization,Origin,Access-Control-Request-Method,Access-Control-Request-Headers"
 
@@ -74,16 +66,14 @@ During a CORS request, client(MOTECH-UI) can only access simple response headers
     - Last-Modified
     - Pragma
 
-If you want clients to be able to access other headers, you have to use the Access-Control-Expose-Headers header. The value of this header is a comma-delimited list of response headers you want to expose to the client. Example :
-
-.. code-block::
+If you want clients to be able to access other headers, you have to use the Access-Control-Expose-Headers header. The value of this header is a comma-delimited list of response headers you want to expose to the client. Example::
 
    Access-Control-Expose-Headers: "Access-Control-Allow-Origin,Access-Control-Allow-Credentials" (client has access to values of mentioned headers)
 
 Apache Web Server Config
 ========================
 
-Apache Web Server includes support for CORS. To enable CORS support we have to running the following command which enable necessary for CORS mod headers :
+Apache Web Server includes support for CORS. To enable CORS support we have to running the following command which enable necessary for CORS mod headers::
 
 	a2enmod headers
 
@@ -91,7 +81,7 @@ Now we can add the CORS headers into server configuration (usually /etc/apache*/
 
 Here is a config example "allow-all-origins":
 
-.. code-block::
+.. code-block:: xml
 
     <LocationMatch "/motech-platform-server">
         Header always set Access-Control-Allow-Origin "*"
@@ -99,7 +89,7 @@ Here is a config example "allow-all-origins":
 
 Here is a different config example (let's assume that http://motech-ui.example is an url to MOTECH-UI application):
 
-.. code-block::
+.. code-block:: xml
 
     <LocationMatch "/motech-platform-server">
         Header always set Access-Control-Allow-Origin "http://motech-ui.example"
@@ -125,7 +115,7 @@ If you have not configured Tomcat for multiple instances by setting a CATALINA_B
 
 The minimal configuration required to use this filter is:
 
-.. code-block::
+.. code-block:: xml
 
     <filter>
         <filter-name>CorsFilter</filter-name>
@@ -136,9 +126,7 @@ The minimal configuration required to use this filter is:
         <url-pattern> /* </url-pattern>
     </filter-mapping>
 
-By default CORS headers will be set like the following :
-
-.. code-block::
+By default CORS headers will be set like the following::
 
  Access-Control-Allow-Origin: * (any domain)
  Access-Control-Allow-Methods: GET, POST, HEAD, OPTIONS
@@ -147,7 +135,7 @@ By default CORS headers will be set like the following :
 
 Here is a different config example (let's assume that http://motech-ui.example is an url to MOTECH-UI application):
 
-.. code-block::
+.. code-block:: xml
 
     <filter>
         <filter-name>CorsFilter</filter-name>
