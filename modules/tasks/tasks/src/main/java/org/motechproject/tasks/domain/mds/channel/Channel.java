@@ -1,7 +1,7 @@
 package org.motechproject.tasks.domain.mds.channel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.collections.CollectionUtils;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
