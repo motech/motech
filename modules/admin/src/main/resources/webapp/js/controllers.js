@@ -6,7 +6,7 @@
 
     var controllers = angular.module('admin.controllers', []);
 
-    controllers.controller('AdminBundleListCtrl', function($scope, Bundle, i18nService, $stateParams, $http, $timeout, ModalFactory, LoadingModal) {
+    controllers.controller('AdminBundleListCtrl', function($scope, Bundle, i18nService, $stateParams, $state, $http, $timeout, ModalFactory, LoadingModal) {
 
         var LOADING_STATE = 'LOADING', MODULE_LIST_REFRESH_TIMEOUT = 6000; // milliseconds
 
@@ -281,10 +281,12 @@
                                         LoadingModal.close();
                                     }, MODULE_LIST_REFRESH_TIMEOUT);
                                 } else {
+                                    $state.reload();
                                     LoadingModal.close();
                                 }
                                 $scope.module = "";
-                                $('#bundleUploadForm .fileinput').trigger('reset');
+                                $('#bundleUploadForm .fileinput').fileinput('clear');
+                                ModalFactory.showSuccessAlert('admin.bundles.successInstall', 'admin.bundles.installNewModule');
                             });
                         }
                     },
