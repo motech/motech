@@ -591,7 +591,7 @@
         };
     });
 
-    serverModule.controller('MotechHomeCtrl', function ($scope, $ocLazyLoad, $cookieStore, $q, Menu, $rootScope, $http, ModalFactory, LoadingModal) {
+    serverModule.controller('MotechHomeCtrl', function ($scope, $state, $ocLazyLoad, $cookieStore, $q, Menu, $rootScope, $http, ModalFactory, LoadingModal) {
         $scope.securityMode = false;
         $scope.moduleMenu = {};
 
@@ -679,6 +679,7 @@
         $scope.$on('module.list.refresh', function () {
             Menu.get(function(data) {
                 $scope.moduleMenu = data;
+                $state.reload();
             }, function(response) {
                     LoadingModal.close();
                     ModalFactory.showErrorAlertWithResponse('server.error.cantLoadMenu', 'server.error', response);
