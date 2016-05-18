@@ -538,7 +538,6 @@
             $scope.doAJAXHttpRequest('GET', '../server/startupviewdata', function (data) {
                 // "TODO: Temporarily hiding the Chinese option, until it's fixed with MOTECH-2484"
                 if(data.languages['zh_TW.Big5'] !== undefined) {
-                    //
                     delete data.languages['zh_TW.Big5'];
                 }
                 if(data.pageLang === 'zh_TW' || data.startupSettings.language === 'zh') {

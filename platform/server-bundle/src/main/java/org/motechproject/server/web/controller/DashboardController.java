@@ -7,6 +7,7 @@ import org.motechproject.osgi.web.service.LocaleService;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.web.form.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -86,12 +87,12 @@ public class DashboardController {
         return new UserInfo(userName, securityLaunch, lang);
     }
 
-    @RequestMapping(value = "/getNodeName", method = RequestMethod.POST)
+    @RequestMapping(value = "/getNodeName", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public String getNodeName() throws UnknownHostException {
         InetAddress ip = InetAddress.getLocalHost();
 
-        return '"' + ip.getHostName() + '"';
+        return ip.getHostName();
     }
 
     @RequestMapping(value = "/isInboundChannelActive", method = RequestMethod.POST)
