@@ -142,17 +142,16 @@
                     $scope.doAJAXHttpRequest('GET', 'lang/locate', function (data) {
                         $scope.i18n = data;
                         $scope.loadI18n($scope.i18n);
-                    });
 
-                    if ($scope.isStartupView()) {
-                        $scope.startupViewData.startupSettings.language = lang;
-                    }
-
-                    moment.locale(lang);
-                    ModalFactory.showAlert('server.success.changed.language', 'server.changed.language', function(){
-                        if (refresh ) {
-                            window.location.reload();
+                        if ($scope.isStartupView()) {
+                            $scope.startupViewData.startupSettings.language = lang;
                         }
+
+                        moment.locale(lang);
+                        if (refresh) {
+                            $state.reload();
+                        }
+                        ModalFactory.showAlert('server.success.changed.language', 'server.changed.language');
                     });
                 })
                 .error(function (response) {
@@ -221,7 +220,11 @@
 
         $scope.loadModule = function (moduleName, url) {
             var refresh, resultScope, convertUrl;
-            $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
+            if (url.indexOf('admin/bundleSettings/') > 0) {
+                $scope.selectedTabState.selectedTab = 'bundleSettings';
+            } else {
+                $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
+            }
             $scope.activeLink = {moduleName: moduleName, url: url};
             convertUrl = function (urlParam) {
                 if(urlParam.indexOf('/') === 0) {urlParam = urlParam.replace('/', '');}
@@ -240,7 +243,11 @@
 
                 if ($scope.moduleToLoad === moduleName || url === '/login') {
                     $location.path(url);
-                    $state.go(convertUrl(url));
+                    if (url.indexOf('admin/bundleSettings/') > 0) {
+                        $state.go('admin.bundleSettings', {'bundleId': url.substring(url.lastIndexOf("/")+1)});
+                    } else {
+                        $state.go(convertUrl(url));
+                    }
                     LoadingModal.close();
                     innerLayout({}, { show: false });
                 } else {

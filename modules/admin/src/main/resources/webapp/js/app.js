@@ -78,7 +78,7 @@
                }
             })
             .state('admin.logOptions', {
-               url: '/log/logOptions',
+               url: '/logOptions',
                parent: 'admin',
                views: {
                    'adminView': {

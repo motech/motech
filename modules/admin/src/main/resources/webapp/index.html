@@ -11,7 +11,7 @@
                 <a role="menu" ui-sref="admin.messages">{{msg('admin.messages')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'messages'" ng-class="{'active': selectedTabState.selectedTab === 'messages'}">{{msg('admin.messages')}}</li>
             <li ng-show="selectedTabState.selectedTab === 'messagesSettings'" ng-class="{'active': selectedTabState.selectedTab === 'messagesSettings'}">{{msg('admin.messages.notifications.title')}}</li>
-            <li ng-show="selectedTabState.selectedTab === 'platform-settings'" ng-class="{'active': selectedTabState.selectedTab === 'platform-settings'}">{{msg('admin.settings')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'platform-settings' || selectedTabState.selectedTab === 'bundleSettings'" ng-class="{'active': selectedTabState.selectedTab === 'platform-settings'}">{{msg('admin.settings')}}</li>
             <li ng-show="selectedTabState.selectedTab === 'log'" ng-class="{'active': selectedTabState.selectedTab === 'log'}">{{msg('admin.log')}}</li>
             <li ng-show="selectedTabState.selectedTab === 'logOptions'" ng-class="{'active': selectedTabState.selectedTab === 'logOptions'}">{{msg('admin.log.options')}}</li>
             <li ng-show="selectedTabState.selectedTab === 'topics'" ng-class="{'active': selectedTabState.selectedTab === 'topics'}">{{msg('admin.topics')}}</li>
@@ -34,6 +34,8 @@
                 ng-click="selectedTabState.selectedTab = 'messagesSettings'"><a id="tab-admin-messagesSettings" ui-sref="admin.messagesSettings">{{msg('admin.messages.notifications.title')}}</a></li>
             <li class="active" ng-show="selectedTabState.selectedTab === 'platform-settings'" ng-click="selectedTabState.selectedTab = 'platform-settings'">
                 <a id="tab-admin-platform-settings" ui-sref="admin.platform-settings">{{msg('admin.settings')}}</a></li>
+            <li class="active" ng-show="selectedTabState.selectedTab === 'bundleSettings'" ng-click="selectedTabState.selectedTab = 'bundleSettings'">
+                <a id="tab-admin-bundleSettings" ui-sref="admin.bundleSettings">{{msg('admin.settings')}}</a></li>
             <li ng-class="{'active': selectedTabState.selectedTab === 'log'}" ng-show="selectedTabState.selectedTab === 'log'">
                 <a ui-sref="admin.log">{{msg('admin.log')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'logOptions'" ng-click="selectedTabState.selectedTab = 'log'">
