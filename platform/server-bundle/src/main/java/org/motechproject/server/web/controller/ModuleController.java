@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.MediaType;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -161,7 +162,7 @@ public class ModuleController {
      * @param moduleName the name of the module
      * @return the url at which the REST API spec can be accessed
      */
-    @RequestMapping(value = "/module/rest-docs/{moduleName}", method = RequestMethod.GET)
+    @RequestMapping(value = "/module/rest-docs/{moduleName}", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public String getRestDocsUrl(@PathVariable String moduleName) {
         return uiFrameworkService.getRestDocLinks().get(moduleName);

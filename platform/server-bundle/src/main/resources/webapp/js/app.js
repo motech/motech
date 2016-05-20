@@ -4,7 +4,7 @@
     /* App Module */
 
     var serverModule = angular.module('motech-dashboard', ['localization', 'ngCookies', 'ui',
-        'motech-widgets', 'browserDetect', 'uiServices', 'ui.router', 'oc.lazyLoad']);
+        'motech-widgets', 'browserDetect', 'uiServices', 'ui.router', 'oc.lazyLoad', 'textAngular']);
 
     serverModule.config(['$httpProvider', function($httpProvider) {
         var interceptor = ['$q', function($q, $location) {
@@ -72,7 +72,7 @@
 
                     angular.forEach(data, function(value, key) {
                         if (value.template !== null) {
-                            modules.push({'name': value.name, 'template': value.template, 'files':[value.script, value.css]});
+                            modules.push({'name': value.name, series: true, 'template': value.template, 'files':[value.script, value.css]});
                         } else {
                             modules.push({'name': value.name, 'files':[value.script]});
                         }

@@ -4,7 +4,7 @@
     /* App Module */
 
     var app = angular.module('email', ['motech-dashboard', 'ngCookies',
-        'email.controllers', 'email.directives', 'email.services', 'ngSanitize', 'textAngular', 'uiServices']);
+        'email.controllers', 'email.directives', 'email.services', 'uiServices']);
 
     app.config(function ($stateProvider, $urlRouterProvider) {
         $stateProvider
@@ -21,7 +21,7 @@
                 url: '/send',
                 parent: 'email',
                 views: {
-                    'emailview': {
+                    'emailView': {
                         templateUrl: '../email/resources/partials/sendEmail.html',
                         controller: 'EmailSendCtrl'
                     }
@@ -31,7 +31,7 @@
                 url: "/logging",
                 parent: 'email',
                 views: {
-                    'emailview': {
+                    'emailView': {
                         controller: 'EmailLoggingCtrl',
                         templateUrl: '../email/resources/partials/emailLogging.html'
                     }
@@ -41,7 +41,7 @@
                 url: "/settings",
                 parent: 'email',
                 views: {
-                    'emailview': {
+                    'emailView': {
                         controller: 'EmailSettingsCtrl',
                         templateUrl: '../email/resources/partials/settings.html'
                     }
