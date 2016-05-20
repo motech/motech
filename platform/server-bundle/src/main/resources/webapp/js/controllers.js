@@ -220,14 +220,14 @@
         };
 
         $scope.loadModule = function (moduleName, url) {
-            var refresh, resultScope, convertUrl;
-            $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
-            $scope.activeLink = {moduleName: moduleName, url: url};
-            convertUrl = function (urlParam) {
+            var convertUrl = function (urlParam) {
                 if(urlParam.indexOf('/') === 0) {urlParam = urlParam.replace('/', '');}
                 if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace('/', '.');}
                 return urlParam;
             };
+            $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
+            $scope.activeLink = {moduleName: moduleName, url: url};
+
             if (moduleName) {
                 LoadingModal.open();
 
@@ -244,17 +244,14 @@
                     LoadingModal.close();
                     innerLayout({}, { show: false });
                 } else {
-                    refresh = ($scope.moduleToLoad === undefined) ? true : false;
                     $scope.moduleToLoad = moduleName;
                     if (!$ocLazyLoad.isLoaded(moduleName)) {
                         $ocLazyLoad.load(moduleName);
                     }
 
                     if (url) {
-                        window.location.hash = "";
                         if ($ocLazyLoad.isLoaded(moduleName)) {
                             $location.path(url);
-                            $state.go(convertUrl(url));
                             LoadingModal.close();
                         }
                         $scope.$on('ocLazyLoad.moduleLoaded', function(e, params) {
@@ -272,6 +269,7 @@
 
         $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
             innerLayout({}, { show: false });
+            resizeLayout();
         });
 
         $scope.loadI18n = function (data) {

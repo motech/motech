@@ -132,7 +132,7 @@
                                 $, angular, jQuery, window, innerLayout, toLocale,
                                 moment, parseUri, handleResponse, _, getServerPrefix,
                                 $rootScope, jgridDefaultSettings, SwaggerUi, getBaseUrl,
-                                parseResponse, BootstrapDialog, console
+                                parseResponse, BootstrapDialog, console, resizeLayout
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

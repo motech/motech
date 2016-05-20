@@ -96,12 +96,12 @@
             return count;
         };
 
-        $scope.moduleSources = {
-            'Repository':'Repository',
-            'File':'File'
-        };
+        $scope.moduleSources = [
+            'Repository',
+            'File'
+        ];
 
-        $scope.moduleSource = $scope.moduleSources.Repository;
+        $scope.moduleSource = $scope.moduleSources[0];
 
         $scope.mavenStr = function(artifactId) {
             return 'org.motechproject:'.concat(artifactId).concat(':').concat($scope.msg('server.version'));
@@ -750,7 +750,7 @@
 
     });
 
-    controllers.controller('AdminServerLogCtrl', function($scope, $http, $rootScope, LoadingModal) {
+    controllers.controller('AdminServerLogCtrl', function($scope, $http, $state, $rootScope, LoadingModal) {
         $scope.refresh = function () {
             LoadingModal.open();
             $http({method:'GET', url:'../admin/api/log'})
@@ -761,8 +761,9 @@
                         $('#logContent').html(data);
                         LoadingModal.close();
                     }
-                })
-                .error(LoadingModal.close());
+                }).error( function () {
+                    LoadingModal.close();
+                });
         };
 
         //removing the sidebar from <body> before route change
