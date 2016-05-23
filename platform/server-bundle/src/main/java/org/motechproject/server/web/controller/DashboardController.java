@@ -1,7 +1,6 @@
 package org.motechproject.server.web.controller;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
 import org.motechproject.event.listener.EventConsumerInfo;
 import org.motechproject.osgi.web.service.LocaleService;
 import org.motechproject.server.startup.StartupManager;
@@ -66,14 +65,14 @@ public class DashboardController {
 
     @RequestMapping(value = "/gettime", method = RequestMethod.GET)
     @ResponseBody
-    public DateTime getTime() {
-        return now();
+    public long getTime() {
+        return now().getMillis();
     }
 
     @RequestMapping(value = "/getUptime", method = RequestMethod.GET)
     @ResponseBody
-    public DateTime getUptime() {
-        return now().minus(ManagementFactory.getRuntimeMXBean().getUptime());
+    public long getUptime() {
+        return now().minus(ManagementFactory.getRuntimeMXBean().getUptime()).getMillis();
     }
 
     @RequestMapping(value = "/getUser", method = RequestMethod.GET)
