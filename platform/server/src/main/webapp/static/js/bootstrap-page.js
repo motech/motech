@@ -2,66 +2,132 @@ function setSuggestedValue(id, val) {
     document.getElementById(id).value = val;
 }
 
-function verifyDbConnection() {
+function setSuggestedValueByName(name, value) {
+	$("input[name='"+name+"']").val(value);
+}
+
+function saveBootstrapData(){
+    var bootstrapString = JSON.stringify($('form[name="bcform"]').serializeArray());
+    sessionStorage.setItem("bootstrapString",bootstrapString);
+};
+
+(function retrieveBootstrapData(){
+		$(document).ready(function(){
+	    		if(sessionStorage.getItem("bootstrapString") != null){
+				var bootstrapObj = JSON.parse(sessionStorage.getItem("bootstrapString"));
+				for (var key in bootstrapObj){
+				       setSuggestedValueByName(bootstrapObj[key]["name"], bootstrapObj[key]["value"]);
+				}
+				sessionStorage.removeItem("bootstrapString");
+			 }
+		});
+
+})();
+
+
+function verifyConnection(url) {
     var loader = $('#loader');
     loader.show();
 
-    var warnings = $('#verify-alert');
+    var sqlWarnings = $('#verifySql-alert');
+    var amqWarnings = $('#verifyAmq-alert');
     var infoSql = $('#verifySql-info');
-    var errors = $('#verify-error');
+    var infoAmq = $('#verifyAmq-info');
+    var sqlErrors = $('#verifySql-error');
+    var amqErrors = $('#verifyAmq-error');
+    var bootstrapErrors = $('#bootstrapErrors');
 
-    errors.html("");
-    warnings.html("");
+    sqlErrors.html("");
+    amqErrors.html("");
+    sqlWarnings.html("");
+    amqWarnings.html("");
+    bootstrapErrors.html("");
 
-    warnings.hide();
-    errors.hide();
+    sqlWarnings.hide();
+    amqWarnings.hide();
+    sqlErrors.hide();
+    amqErrors.hide();
     infoSql.hide();
+    infoAmq.hide();
+    bootstrapErrors.hide();
 
     $.ajax({
         type: 'POST',
-        url: 'verifySql',
+        url: url,
         timeout: 8000,
         data: $('form.bootstrap-config-form').serialize(),
         success: function(data) {
             if (data.success !== undefined && data.success === true) {
-                infoSql.show();
-                $(window).scrollTop(infoSql.offset().top);
+                if(url == VERIFY_SQL_URL) {
+
+                                                     infoSql.show();
+                                                     $(window).scrollTop(infoSql.offset().top);
+                                                }
+                                                if (url == VERIFY_AMQ_URL) {
+                                                    infoAmq.show();
+                                                    $(window).scrollTop(infoAmq.offset().top);
+                                                }
             } else {
-                if(data.errors !== undefined) {
+                if(data.errors !== undefined && data.sqlConfigError === true) {
                     data.errors.forEach(function(item) {
-                        errors.append(item + '<br/>');
+                        sqlErrors.append(item + '<br/>');
                     });
 
-                    errors.show();
+                    sqlErrors.show();
+                }
+                if(data.errors !== undefined && data.amqConfigError === true) {
+                    data.errors.forEach(function(item) {
+                        amqErrors.append(item + '<br/>');
+                    });
+
+                    amqErrors.show();
                 }
 
-                if(data.warnings !== undefined) {
+                if(data.warnings !== undefined && data.sqlConfigError === true) {
                     data.warnings.forEach(function(item) {
-                        warnings.append(item + '<br/>');
+                        sqlWarnings.append(item + '<br/>');
                     });
 
-                    warnings.show();
+                    sqlWarnings.show();
+                    $(window).scrollTop(warnings.offset().top);
+                }
+                if(data.warnings !== undefined && data.amqConfigError === true) {
+                    data.warnings.forEach(function(item) {
+                        amqWarnings.append(item + '<br/>');
+                    });
+
+                    amqWarnings.show();
                     $(window).scrollTop(warnings.offset().top);
                 }
             }
             loader.hide();
         },
         error: function() {
-            if(data.warnings !== undefined) {
+            if(data.warnings !== undefined && data.sqlConfigError === true) {
                 data.warnings.forEach(function(item) {
-                    warnings.append(item + '<br/>');
+                    sqlWarnings.append(item + '<br/>');
                 });
 
-                warnings.show();
+                sqlWarnings.show();
                 $(window).scrollTop(warnings.offset().top);
+            }
+            if(data.warnings !== undefined && data.amqConfigError === true) {
+                                data.warnings.forEach(function(item) {
+                                    amqWarnings.append(item + '<br/>');
+                                });
+
+                                amqWarnings.show();
+                                $(window).scrollTop(warnings.offset().top);
             }
             loader.hide();
         }
+
     });
 };
 
 var TIMEOUT = 5000;
-
+const VERIFY_AMQ_URL = 'verifyAmq';
+const VERIFY_SQL_URL = 'verifySql';
 var SERVER_BUNDLE = 'org.motechproject.motech-platform-server-bundle';
 var MDS = 'org.motechproject.motech-platform-dataservices';
 var WEB_SECURITY = 'org.motechproject.motech-platform-web-security';
