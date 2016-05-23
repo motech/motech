@@ -659,7 +659,7 @@
                 }
             ),
 
-            $scope.doAJAXHttpRequest('POST', 'getUser', function (data) {
+            $scope.doAJAXHttpRequest('GET', 'getUser', function (data) {
                 var scope = angular.element("body").scope();
 
                 scope.user.userName = data.userName;

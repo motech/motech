@@ -65,19 +65,19 @@ public class DashboardController {
         return view;
     }
 
-    @RequestMapping(value = "/gettime", method = RequestMethod.POST)
+    @RequestMapping(value = "/gettime", method = RequestMethod.GET)
     @ResponseBody
     public DateTime getTime() {
         return now();
     }
 
-    @RequestMapping(value = "/getUptime", method = RequestMethod.POST)
+    @RequestMapping(value = "/getUptime", method = RequestMethod.GET)
     @ResponseBody
     public DateTime getUptime() {
         return now().minus(ManagementFactory.getRuntimeMXBean().getUptime());
     }
 
-    @RequestMapping(value = "/getUser", method = RequestMethod.POST)
+    @RequestMapping(value = "/getUser", method = RequestMethod.GET)
     @ResponseBody
     public UserInfo getUser(HttpServletRequest request) {
         String lang = localeService.getUserLocale(request).getLanguage();
@@ -87,7 +87,7 @@ public class DashboardController {
         return new UserInfo(userName, securityLaunch, lang);
     }
 
-    @RequestMapping(value = "/getNodeName", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/getNodeName", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public String getNodeName() throws UnknownHostException {
         InetAddress ip = InetAddress.getLocalHost();
@@ -95,7 +95,7 @@ public class DashboardController {
         return ip.getHostName();
     }
 
-    @RequestMapping(value = "/isInboundChannelActive", method = RequestMethod.POST)
+    @RequestMapping(value = "/isInboundChannelActive", method = RequestMethod.GET)
     @ResponseBody
     public boolean isInboundChannelActive() throws UnknownHostException {
         return eventConsumerInfo.isRunning();

@@ -237,11 +237,11 @@
             if (bundle.settingsURL !== null && bundle.isActive()) {
                 $scope.loadModule(bundle.angularModule, bundle.settingsURL);
             } else if (bundle.bundleId !== undefined) {
-                $scope.selectedTabState.selectedTab = "bundleSettings"
+                $scope.selectedTabState.selectedTab = "bundleSettings";
                 $scope.activeLink = {moduleName: moduleName, url: '/admin/bundleSettings'};
                 $state.go('admin.bundleSettings', {'bundleId': bundle.bundleId}, {'reload': true});
             } else {
-                $scope.loadModule(moduleName, url);;
+                $scope.loadModule(moduleName, url);
             }
 
 
