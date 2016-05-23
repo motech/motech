@@ -124,7 +124,7 @@
         $scope.modules[$scope.mavenStr('mtraining')] = 'mTraining';
         $scope.modules[$scope.mavenStr('motech-tasks')] = 'Tasks';
         $scope.modules[$scope.mavenStr('odk')] = 'Open Data Kit';
-        $scope.modules[$scope.mavenStr('openmrs-19')] = 'OpenMRS 1.9';
+        $scope.modules[$scope.mavenStr('openmrs')] = 'OpenMRS';
         $scope.modules[$scope.mavenStr('pill-reminder')] = 'Pill Reminder';
         $scope.modules[$scope.mavenStr('motech-scheduler')] = 'Scheduler';
         $scope.modules[$scope.mavenStr('schedule-tracking')] = 'Schedule Tracking';
