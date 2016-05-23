@@ -208,7 +208,7 @@
                 }
             },
             getServerTime = function() {
-                $http.post('gettime').success( function(time, status) {
+                $http.get('gettime').success( function(time, status) {
                      if (status === 200) {
                          localTime = new Date();
                          serverTime = new Date(moment(parseInt(time, 10)));
@@ -244,7 +244,7 @@
                 }
             },
             getUptime = function() {
-                $http.post('getUptime').success( function(data, status) {
+                $http.get('getUptime').success( function(data, status) {
                     if (status === 200) {
                         $(element).text(moment(parseInt(data, 10)).fromNow());
 
@@ -267,7 +267,7 @@
     widgetModule.directive('serverNodeName', ['$http', function ($http) {
         return function (scope, element, attributes) {
             var getNodeName = function() {
-                $http.post('getNodeName').success( function(data, status) {
+                $http.get('getNodeName').success( function(data, status) {
                     if (status === 200) {
                        $(element).text(data);
                     } else {
@@ -283,7 +283,7 @@
     widgetModule.directive('inboundChannelActive', ['$http', function ($http) {
         return function (scope, element, attributes) {
             var isActivemqActive = function() {
-                $http.post('isInboundChannelActive').success( function(data, status) {
+                $http.get('isInboundChannelActive').success( function(data, status) {
                     if (status === 200) {
                         var glyphicon = $('<span>').addClass('glyphicon').attr('aria-hidden', 'true');
                         if (data === 'true') {
