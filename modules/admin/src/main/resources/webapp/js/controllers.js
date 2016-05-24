@@ -232,14 +232,19 @@
 
         $scope.loadSettingPage = function (bundle) {
             var moduleName = 'admin',
-                url = '/admin/bundleSettings/' + bundle.bundleId;
+                url = '/admin/platform-settings';
 
             if (bundle.settingsURL !== null && bundle.isActive()) {
-                moduleName = bundle.angularModule;
-                url = bundle.settingsURL;
+                $scope.loadModule(bundle.angularModule, bundle.settingsURL);
+            } else if (bundle.bundleId !== undefined) {
+                $scope.selectedTabState.selectedTab = "bundleSettings";
+                $scope.activeLink = {moduleName: moduleName, url: '/admin/bundleSettings'};
+                $state.go('admin.bundleSettings', {'bundleId': bundle.bundleId}, {'reload': true});
+            } else {
+                $scope.loadModule(moduleName, url);
             }
 
-            $scope.loadModule(moduleName, url);
+
         };
 
         $scope.startOnUpload = function () {
@@ -959,15 +964,17 @@
 
     controllers.controller('AdminTopicStatsCtrl', function($scope, $http) {
 
-            $scope.dataAvailable = true;
+        $scope.dataAvailable = true;
 
-            $http.get('../admin/api/topics/').success(function (data) {
-                $scope.topics = data;
-            }).error(function () {
-                $scope.dataAvailable = false;
-            });
-
+        $http.get('../admin/api/topics/').success(function (data) {
+            $scope.topics = data;
+        }).error(function () {
+            $scope.dataAvailable = false;
         });
+
+        innerLayout({});
+
+    });
 
     controllers.controller('AdminQueueStatsCtrl', function($scope, $http) {
 
@@ -978,6 +985,8 @@
         }).error(function () {
             $scope.dataAvailable = false;
         });
+
+        innerLayout({});
 
     });
 

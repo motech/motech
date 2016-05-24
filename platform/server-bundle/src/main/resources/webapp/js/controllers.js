@@ -142,17 +142,16 @@
                     $scope.doAJAXHttpRequest('GET', 'lang/locate', function (data) {
                         $scope.i18n = data;
                         $scope.loadI18n($scope.i18n);
-                    });
 
-                    if ($scope.isStartupView()) {
-                        $scope.startupViewData.startupSettings.language = lang;
-                    }
-
-                    moment.locale(lang);
-                    ModalFactory.showAlert('server.success.changed.language', 'server.changed.language', function(){
-                        if (refresh ) {
-                            window.location.reload();
+                        if ($scope.isStartupView()) {
+                            $scope.startupViewData.startupSettings.language = lang;
                         }
+
+                        moment.locale(lang);
+                        if (refresh) {
+                            $state.reload();
+                        }
+                        ModalFactory.showAlert('server.success.changed.language', 'server.changed.language');
                     });
                 })
                 .error(function (response) {
@@ -225,7 +224,11 @@
                 if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace('/', '.');}
                 return urlParam;
             };
-            $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
+            if (url.indexOf('admin/bundleSettings/') > 0) {
+                $scope.selectedTabState.selectedTab = 'bundleSettings';
+            } else {
+                $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
+            }
             $scope.activeLink = {moduleName: moduleName, url: url};
 
             if (moduleName) {
@@ -240,7 +243,11 @@
 
                 if ($scope.moduleToLoad === moduleName || url === '/login') {
                     $location.path(url);
-                    $state.go(convertUrl(url));
+                    if (url.indexOf('admin/bundleSettings/') > 0) {
+                        $state.go('admin.bundleSettings', {'bundleId': url.substring(url.lastIndexOf("/")+1)});
+                    } else {
+                        $state.go(convertUrl(url));
+                    }
                     LoadingModal.close();
                     innerLayout({}, { show: false });
                 } else {
@@ -536,7 +543,6 @@
             $scope.doAJAXHttpRequest('GET', '../server/startupviewdata', function (data) {
                 // "TODO: Temporarily hiding the Chinese option, until it's fixed with MOTECH-2484"
                 if(data.languages['zh_TW.Big5'] !== undefined) {
-                    //
                     delete data.languages['zh_TW.Big5'];
                 }
                 if(data.pageLang === 'zh_TW' || data.startupSettings.language === 'zh') {

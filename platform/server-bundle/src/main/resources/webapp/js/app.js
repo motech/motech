@@ -37,7 +37,6 @@
 
     serverModule.config(function($stateProvider, $locationProvider, $urlRouterProvider, $ocLazyLoadProvider) {
         $urlRouterProvider.otherwise("/");
-        $urlRouterProvider.when(".", "/");
 
         $stateProvider
             .state('#', {
