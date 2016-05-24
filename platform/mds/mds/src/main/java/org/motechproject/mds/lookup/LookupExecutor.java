@@ -61,8 +61,10 @@ public class LookupExecutor {
             return MethodUtils.invokeMethod(dataService, lookup.getMethodName(),
                     args.toArray(new Object[args.size()]),
                     argTypes.toArray(new Class[argTypes.size()]));
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        } catch (NoSuchMethodException | IllegalAccessException e) {
             throw new LookupExecutorException("Unable to execute lookup " + lookup.getLookupName(), e);
+        } catch (InvocationTargetException e) {
+            throw new LookupExecutorException("Unable to execute lookup " + lookup.getLookupName() + ". " + e.getTargetException().getMessage() + ".", e);
         }
     }
 

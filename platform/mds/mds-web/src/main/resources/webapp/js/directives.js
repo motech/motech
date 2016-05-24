@@ -1389,8 +1389,8 @@
                                     firstLoad = false;
                                 }
                             },
-                            loadError: function() {
-                                scope.setDataRetrievalError(true);
+                            loadError: function(e) {
+                                scope.setDataRetrievalError(true, e.responseText);
                             }
                         });
 

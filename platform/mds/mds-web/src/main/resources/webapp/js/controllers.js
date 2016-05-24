@@ -3268,7 +3268,14 @@
             exportWithOrder : false
         };
 
-        $scope.setDataRetrievalError = function (value) {
+        $scope.setDataRetrievalError = function (value, responseText) {
+            if(responseText) {
+                $scope.retrievalErrorText = $scope.msg(responseText.substring(0, responseText.indexOf('params:')).replace('key:', '').trim());
+                $scope.retrievalErrorParam = responseText.substring(responseText.indexOf('params:')).replace('params:', '');
+            } else {
+                $scope.retrievalErrorText = $scope.msg('mds.error.lookupExecError');
+            }
+
             $scope.$apply(function () {
                 $scope.dataRetrievalError = value;
             });

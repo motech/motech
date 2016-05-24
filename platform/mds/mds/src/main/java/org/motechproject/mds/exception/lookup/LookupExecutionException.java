@@ -10,6 +10,6 @@ public class LookupExecutionException extends MdsException {
     private static final long serialVersionUID = -2983280325274960321L;
 
     public LookupExecutionException(Throwable cause) {
-        super("Execution of lookup failed", cause, "mds.error.lookupExecError");
+        super("Execution of lookup failed", cause, "mds.error.lookupExecError", cause.getMessage());
     }
 }
