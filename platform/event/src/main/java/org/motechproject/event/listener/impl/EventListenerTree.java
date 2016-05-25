@@ -21,7 +21,7 @@ public class EventListenerTree {
 
     private static final String SPLIT_REGEX = "\\.";
 
-    private List<EventListenerTree> children = new ArrayList<EventListenerTree>();
+    private List<EventListenerTree> children = new ArrayList<>();
     private EventListenerTree parent;
 
     private String pathElement;
