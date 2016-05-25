@@ -58,6 +58,7 @@ public final class ConfigurationConstants {
 
     public static final String DATANUCLEUS_DATA_SETTINGS_FILE_NAME = "datanucleus_data.properties";
     public static final String DATANUCLEUS_SCHEMA_SETTINGS_FILE_NAME = "datanucleus_schema.properties";
+    public static final String DATANUCLEUS_QUARTZ_SETTINGS_FILE_NAME = "datanucleus_quartz.properties";
     public static final String FLYWAY_DATA_SETTINGS_FILE_NAME = "flyway_data.properties";
     public static final String FLYWAY_SCHEMA_SETTINGS_FILE_NAME = "flyway_schema.properties";
     public static final String BOOTSTRAP_CONFIG_FILE_NAME = "bootstrap.properties";

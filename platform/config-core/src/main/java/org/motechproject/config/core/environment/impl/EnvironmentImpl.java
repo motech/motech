@@ -35,6 +35,11 @@ public class EnvironmentImpl implements Environment {
     }
 
     @Override
+    public Properties getDatanucleusQuartzProperties() {
+        return getProperties(MOTECH_DATANUCLEUS_QUARTZ_PROPERTIES);
+    }
+
+    @Override
     public Properties getBootstrapProperties() {
         Properties bootstrapProperties = new Properties();
         bootstrapProperties.put(BootstrapConfig.SQL_URL, getValue(MOTECH_SQL_URL));

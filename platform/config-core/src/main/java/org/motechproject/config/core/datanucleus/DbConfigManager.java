@@ -32,6 +32,18 @@ public interface DbConfigManager {
     Properties getDatanucleusSchemaProperties();
 
     /**
+     * Loads datanucleus for quartz database configuration from several resources. It will try to load the configuration from file
+     * from directory specified by the MOTECH_CONFIG_DIR environment variable, if it fails an attempt to load the
+     * configuration from environmental variables will be made. If it also fails manager will try to load the
+     * configuration from classpath, after copying from classpath configuration file is automatically saved to the
+     * default config directory.
+     *
+     * @return the datanucleus properties for schema database
+     * @see org.motechproject.config.core.environment.Environment
+     */
+    Properties getDatanucleusQuartzProperties();
+
+    /**
      * Loads Flyway configuration properties for the data database. It will try to load the configuration from file
      * from directory specified by the MOTECH_CONFIG_DIR environment variable, if it fails an attempt to load the
      * configuration from environmental variables will be made. If it also fails manager will try to load the

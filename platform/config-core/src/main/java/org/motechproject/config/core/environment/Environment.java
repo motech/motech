@@ -11,6 +11,7 @@ public interface Environment {
 
     String MOTECH_DATANUCLEUS_DATA_ROPERTIES = "MOTECH_DATANUCLEUS_DATA_PROPERTIES";
     String MOTECH_DATANUCLEUS_SCHEMA_PROPERTIES = "MOTECH_DATANUCLEUS_SCHEMA_PROPERTIES";
+    String MOTECH_DATANUCLEUS_QUARTZ_PROPERTIES = "MOTECH_DATANUCLEUS_QUARTZ_PROPERTIES";
     String MOTECH_FLYWAY_DATA_PROPERTIES = "MOTECH_FLYWAY_DATA_PROPERTIES";
     String MOTECH_FLYWAY_SCHEMA_PROPERTIES = "MOTECH_FLYWAY_SCHEMA_PROPERTIES";
     String MOTECH_SQL_URL = "MOTECH_SQL_URL";
@@ -53,6 +54,13 @@ public interface Environment {
      * @return the datanucleus properties for schema database
      */
     Properties getDatanucleusSchemaProperties();
+
+    /**
+     * Returns datanucleus properties from MOTECH_DATANUCLEUS_QUARTZ_PROPERTIES environment variable.
+     *
+     * @return the datanucleus properties for schema database
+     */
+    Properties getDatanucleusQuartzProperties();
 
     /**
      * Returns bootstrap properties from environment variables:

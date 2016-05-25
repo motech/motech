@@ -38,6 +38,11 @@ public class MockCoreConfigurationService implements CoreConfigurationService {
     }
 
     @Override
+    public Properties loadDatanucleusQuartzConfig() {
+        return loadConfig(ConfigurationConstants.DATANUCLEUS_QUARTZ_SETTINGS_FILE_NAME);
+    }
+
+    @Override
     public Properties loadFlywayDataConfig() {
         return loadConfig(ConfigurationConstants.FLYWAY_DATA_SETTINGS_FILE_NAME);
     }

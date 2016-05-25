@@ -66,6 +66,11 @@ public class DbConfigManagerTest {
     }
 
     @Test
+    public void shouldCopyFileWhenLoadingDnQuartzPropertiesFromClassPath() throws IOException {
+        shouldCopyFileWhenLoadingPropertiesFromClassPath(ConfigurationConstants.DATANUCLEUS_QUARTZ_SETTINGS_FILE_NAME);
+    }
+
+    @Test
     public void shouldCopyFileWhenLoadingFlywayDataPropertiesFromClassPath() throws IOException {
         shouldCopyFileWhenLoadingPropertiesFromClassPath(ConfigurationConstants.FLYWAY_DATA_SETTINGS_FILE_NAME);
     }
@@ -105,6 +110,11 @@ public class DbConfigManagerTest {
     @Test
     public void shouldGetDnSchemaPropertiesFromEnvironment() throws IOException {
         shouldGetPropertiesFromEnvironment(ConfigurationConstants.DATANUCLEUS_SCHEMA_SETTINGS_FILE_NAME);
+    }
+
+    @Test
+    public void shouldGetDnQuartzPropertiesFromEnvironment() throws IOException {
+        shouldGetPropertiesFromEnvironment(ConfigurationConstants.DATANUCLEUS_QUARTZ_SETTINGS_FILE_NAME);
     }
 
     @Test
@@ -156,6 +166,11 @@ public class DbConfigManagerTest {
     }
 
     @Test
+    public void shouldLoadDnQuartzPropertiesFromDefaultConfigLocation() throws IOException {
+        shouldLoadPropertiesFromDefaultConfigLocation(ConfigurationConstants.DATANUCLEUS_QUARTZ_SETTINGS_FILE_NAME);
+    }
+
+    @Test
     public void shouldLoadFlywayDataPropertiesFromDefaultConfigLocation() throws IOException {
         shouldLoadPropertiesFromDefaultConfigLocation(ConfigurationConstants.FLYWAY_DATA_SETTINGS_FILE_NAME);
     }
@@ -202,6 +217,8 @@ public class DbConfigManagerTest {
                 return dbConfigManager.getDatanucleusDataProperties();
             case ConfigurationConstants.DATANUCLEUS_SCHEMA_SETTINGS_FILE_NAME:
                 return dbConfigManager.getDatanucleusSchemaProperties();
+            case ConfigurationConstants.DATANUCLEUS_QUARTZ_SETTINGS_FILE_NAME:
+                return dbConfigManager.getDatanucleusQuartzProperties();
             case ConfigurationConstants.FLYWAY_DATA_SETTINGS_FILE_NAME:
                 return dbConfigManager.getFlywayDataProperties();
             case ConfigurationConstants.FLYWAY_SCHEMA_SETTINGS_FILE_NAME:
@@ -218,6 +235,8 @@ public class DbConfigManagerTest {
                 return Environment.MOTECH_DATANUCLEUS_DATA_ROPERTIES;
             case ConfigurationConstants.DATANUCLEUS_SCHEMA_SETTINGS_FILE_NAME:
                 return Environment.MOTECH_DATANUCLEUS_SCHEMA_PROPERTIES;
+            case ConfigurationConstants.DATANUCLEUS_QUARTZ_SETTINGS_FILE_NAME:
+                return Environment.MOTECH_DATANUCLEUS_QUARTZ_PROPERTIES;
             case ConfigurationConstants.FLYWAY_DATA_SETTINGS_FILE_NAME:
                 return Environment.MOTECH_FLYWAY_DATA_PROPERTIES;
             case ConfigurationConstants.FLYWAY_SCHEMA_SETTINGS_FILE_NAME:

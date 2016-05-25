@@ -49,6 +49,12 @@ public class DbConfigManagerImpl implements DbConfigManager {
     }
 
     @Override
+    public Properties getDatanucleusQuartzProperties() {
+        return getProperties(ConfigurationConstants.DATANUCLEUS_QUARTZ_SETTINGS_FILE_NAME,
+                Environment.MOTECH_DATANUCLEUS_QUARTZ_PROPERTIES, DATANUCLEUS);
+    }
+
+    @Override
     public Properties getFlywayDataProperties() {
         return getProperties(ConfigurationConstants.FLYWAY_DATA_SETTINGS_FILE_NAME,
                 Environment.MOTECH_FLYWAY_DATA_PROPERTIES, FLYWAY);
