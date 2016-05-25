@@ -31,6 +31,9 @@ public class MdsConfig {
     private static final String FLYWAY_JAVA_MIGRATION_PATH = "org/motechproject/mdsmigration/java";
     private static final String FLYWAY_DEFAULT_MIGRATION_PATH = "db/migration/default";
     private static final String CONNECTION_URL_KEY = "javax.jdo.option.ConnectionURL";
+    private static final String QUARTZ_CONNECTION_URL_KEY = "org.quartz.dataSource.motechDS.URL";
+    private static final String SCHEMA_CONFIG = "SCHEMA_CONFIG";
+    private static final String QUARTZ_CONFIG = "QUARTZ_CONFIG";
 
     private Map<String, Properties> config = new HashMap<>();
 
@@ -38,6 +41,7 @@ public class MdsConfig {
     private CoreConfigurationService coreConfigurationService;
     private Properties mdsDataSqlProperties;
     private Properties mdsInternalSqlProperties;
+    private Properties mdsQuartzSqlProperties;
 
     public MdsConfig() {}
 
@@ -47,7 +51,11 @@ public class MdsConfig {
         }
 
         if (mdsInternalSqlProperties == null) {
-            mdsInternalSqlProperties = getDataNucleusPropertiesForInternalInfrastructure();
+            mdsInternalSqlProperties = getDataNucleusPropertiesForInternalInfrastructure(SCHEMA_CONFIG);
+        }
+
+        if(mdsQuartzSqlProperties == null) {
+            mdsQuartzSqlProperties = getDataNucleusPropertiesForInternalInfrastructure(QUARTZ_CONFIG);
         }
 
         //Create database if it doesn't exists
@@ -56,6 +64,9 @@ public class MdsConfig {
         );
         sqlDBManager.createDatabase(
                 mdsInternalSqlProperties.getProperty(CONNECTION_URL_KEY)
+        );
+        sqlDBManager.createDatabase(
+                mdsQuartzSqlProperties.getProperty(QUARTZ_CONNECTION_URL_KEY)
         );
     }
 
@@ -109,10 +120,14 @@ public class MdsConfig {
         return (result == null ? new Properties() : result);
     }
 
-    public Properties getDataNucleusPropertiesForInternalInfrastructure() {
+    public Properties getDataNucleusPropertiesForInternalInfrastructure(String configToLoad) {
         // this for the MDS bundle itself, as opposed to the entities bundle being generated
         Properties properties = new Properties();
-        properties.putAll(coreConfigurationService.loadDatanucleusSchemaConfig());
+        if (configToLoad.equals("SCHEMA_CONFIG")) {
+            properties.putAll(coreConfigurationService.loadDatanucleusSchemaConfig());
+        } else if (configToLoad.equals("QUARTZ_CONFIG")) {
+            properties.putAll(coreConfigurationService.loadDatanucleusQuartzConfig());
+        }
         addBeanValidationFactoryProperty(properties);
 
         return properties;

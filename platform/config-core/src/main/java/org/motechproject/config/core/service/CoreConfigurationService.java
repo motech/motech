@@ -40,6 +40,14 @@ public interface CoreConfigurationService {
     Properties loadDatanucleusSchemaConfig();
 
     /**
+     * Loads the datanucleus configuration for schema database
+     *
+     * @return datanucleus configuration for schema database
+     */
+    @CacheEvict(value = CORE_SETTINGS_CACHE_NAME, allEntries = true)
+    Properties loadDatanucleusQuartzConfig();
+
+    /**
      * Loads the Flyway configuration for the data database.
      * @return Flyway configuration for the data database
      */

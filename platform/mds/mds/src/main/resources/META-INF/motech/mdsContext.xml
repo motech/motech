@@ -17,7 +17,9 @@
 
     <bean id="mdsSqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
         <constructor-arg>
-            <bean factory-bean="mdsConfig" factory-method="getDataNucleusPropertiesForInternalInfrastructure" />
+            <bean factory-bean="mdsConfig" factory-method="getDataNucleusPropertiesForInternalInfrastructure">
+                <constructor-arg value="SCHEMA_CONFIG"/>
+            </bean>
         </constructor-arg>
     </bean>
 

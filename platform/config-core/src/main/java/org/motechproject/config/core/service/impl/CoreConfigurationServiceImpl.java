@@ -79,6 +79,12 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
 
     @Override
     @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = ROOT_METHOD_NAME) })
+    public Properties loadDatanucleusQuartzConfig() {
+        return dbConfigManager.getDatanucleusQuartzProperties();
+    }
+
+    @Override
+    @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = ROOT_METHOD_NAME) })
     public Properties loadFlywayDataConfig() {
         return dbConfigManager.getFlywayDataProperties();
     }
