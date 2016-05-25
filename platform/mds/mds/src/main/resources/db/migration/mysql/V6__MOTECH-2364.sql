@@ -14,7 +14,7 @@ BEGIN
 
 END//
 
-DELIMITER;
+DELIMITER ;
 CALL updateServiceInt();
 
 DROP PROCEDURE IF EXISTS updateServiceInt;
