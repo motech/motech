@@ -3,7 +3,7 @@
 CREATE OR REPLACE FUNCTION updateServiceInt()
 RETURNS void AS $$
 BEGIN
-    IF (SELECT count(*) FROM information_schema.columns WHERE table_name = 'MOTECH_TASKS_ACTIONEVENT') > 0 THEN
+    IF (SELECT count(*) FROM information_schema.columns WHERE (table_schema = 'motechdata' AND table_name = 'MOTECH_TASKS_ACTIONEVENT')) > 0 THEN
 
         UPDATE "MOTECH_TASKS_ACTIONEVENT" set "serviceInterface"='org.motechproject.openmrs.tasks.OpenMRSActionProxyService' where ("serviceInterface"='org.motechproject.openmrs19.tasks.OpenMRSActionProxyService' AND "id" <> 0);
 
