@@ -1837,7 +1837,7 @@ public class TaskTriggerHandlerTest {
         map.put("externalId", 123456789);
         map.put("startDate", new LocalDate(2012, 11, 20));
         map.put("key1", "value");
-        map.put("event name", 6789);
+        map.put("event name", "6789");
 
         return map;
     }
