@@ -15,13 +15,15 @@ import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.service.CsvImportExportService;
 import org.motechproject.mds.util.Constants;
+import org.motechproject.mds.web.domain.BasicEntityRecord;
+import org.motechproject.mds.web.domain.BasicHistoryRecord;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
 import org.motechproject.mds.web.service.InstanceService;
-import org.motechproject.mds.web.util.QueryParamsBuilder;
+import org.motechproject.mds.web.util.query.QueryParamsBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -133,14 +135,14 @@ public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/history", method = RequestMethod.GET)
     @ResponseBody
-    public Records<HistoryRecord> getHistory(@PathVariable Long entityId, @PathVariable Long instanceId, GridSettings settings) {
+    public Records<BasicHistoryRecord> getHistory(@PathVariable Long entityId, @PathVariable Long instanceId, GridSettings settings) {
         QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
-        List<HistoryRecord> historyRecordsList = instanceService.getInstanceHistory(entityId, instanceId, queryParams);
+        List<BasicHistoryRecord> historyRecordsList = instanceService.getInstanceHistory(entityId, instanceId, queryParams);
 
         long recordCount = instanceService.countHistoryRecords(entityId, instanceId);
-        int rowCount = (int) Math.ceil(recordCount / (double) settings.getRows());
+        int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
 
-        return new Records<>(settings.getPage(), rowCount, (int) recordCount, historyRecordsList);
+        return new Records<>(queryParams.getPage(), rowCount, (int) recordCount, historyRecordsList);
     }
 
     @RequestMapping(value = "/instances/{entityId}/{instanceId}/previousVersion/{historyId}", method = RequestMethod.GET)
@@ -183,14 +185,14 @@ public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/entities/{entityId}/trash", method = RequestMethod.GET)
     @ResponseBody
-    public Records<EntityRecord> getTrash(@PathVariable Long entityId, GridSettings settings) {
+    public Records<BasicEntityRecord> getTrash(@PathVariable Long entityId, GridSettings settings) {
         QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
-        List<EntityRecord> trashRecordsList = instanceService.getTrashRecords(entityId, queryParams);
+        List<BasicEntityRecord> trashRecordsList = instanceService.getTrashRecords(entityId, queryParams);
 
         long recordCount = instanceService.countTrashRecords(entityId);
-        int rowCount = (int) Math.ceil(recordCount / (double) settings.getRows());
+        int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
 
-        return new Records<>(settings.getPage(), rowCount, (int) recordCount, trashRecordsList);
+        return new Records<>(queryParams.getPage(), rowCount, (int) recordCount, trashRecordsList);
 
     }
 
@@ -235,14 +237,14 @@ public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
     @ResponseBody
-    public Records<?> getInstances(@PathVariable Long entityId, GridSettings settings) throws IOException {
+    public Records<BasicEntityRecord> getInstances(@PathVariable Long entityId, GridSettings settings) throws IOException {
         String lookup = settings.getLookup();
         String filterStr = settings.getFilter();
         Map<String, Object> fieldMap = getFields(settings);
 
         QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings, fieldMap);
 
-        List<EntityRecord> entityRecords;
+        List<BasicEntityRecord> entityRecords;
         long recordCount;
 
         if (StringUtils.isNotBlank(lookup)) {
@@ -259,9 +261,9 @@ public class InstanceController extends MdsController {
             recordCount = instanceService.countRecords(entityId);
         }
 
-        int rowCount = (int) Math.ceil(recordCount / (double) settings.getRows());
+        int rowCount = (int) Math.ceil(recordCount / (double) queryParams.getPageSize());
 
-        return new Records<>(settings.getPage(), rowCount, (int) recordCount, entityRecords);
+        return new Records<>(queryParams.getPage(), rowCount, (int) recordCount, entityRecords);
     }
 
     @RequestMapping(value = "/instances/{entityId}/csvimport", method = RequestMethod.POST)

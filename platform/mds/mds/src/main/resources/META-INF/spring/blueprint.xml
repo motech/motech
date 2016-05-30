@@ -23,6 +23,8 @@
 
     <osgi:service ref="entityServiceImpl" interface="org.motechproject.mds.service.EntityService"/>
 
+    <osgi:service ref="userPreferencesServiceImpl" interface="org.motechproject.mds.service.UserPreferencesService"/>
+
     <osgi:service ref="actionHandlerServiceImpl" interface="org.motechproject.mds.service.ActionHandlerService"/>
 
     <osgi:service ref="jdoListenerRegistryService" interface="org.motechproject.mds.service.JdoListenerRegistryService" auto-export="interfaces" />
@@ -56,5 +58,7 @@
             </entry>
         </osgi:service-properties>
     </osgi:service>
+
+    <osgi:service id="mdsOsgiBundleApplicationContextListenerServiceOSGi" auto-export="interfaces" ref="mdsOsgiBundleApplicationContextListener"/>
 
 </beans>

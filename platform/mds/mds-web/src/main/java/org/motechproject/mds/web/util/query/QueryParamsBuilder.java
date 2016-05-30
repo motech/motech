@@ -1,4 +1,4 @@
-package org.motechproject.mds.web.util;
+package org.motechproject.mds.web.util.query;
 
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Constants;
@@ -100,8 +100,10 @@ public final class QueryParamsBuilder {
         List<Order> orderList = new ArrayList<>();
 
         for (String fieldName : lookupMap.keySet()) {
-            // we do ascending on each lookup field by default
-            orderList.add(new Order(fieldName, Order.Direction.ASC));
+            // we do ascending on each lookup field, which is not related, by default
+            if (!fieldName.contains(".")) {
+                orderList.add(new Order(fieldName, Order.Direction.ASC));
+            }
         }
 
         if (!lookupMap.containsKey(Constants.Util.ID_FIELD_NAME)) {

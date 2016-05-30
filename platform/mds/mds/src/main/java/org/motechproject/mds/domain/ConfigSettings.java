@@ -33,15 +33,23 @@ public class ConfigSettings {
     @Persistent
     private TimeUnit afterTimeUnit;
 
+    @Persistent
+    private int defaultGridSize;
+
+    @Persistent
+    private boolean refreshModuleAfterTimeout;
+
     public ConfigSettings() {
-        this(DeleteMode.TRASH, false, 1, TimeUnit.HOURS);
+        this(DeleteMode.TRASH, false, 1, TimeUnit.HOURS, 10, false);
     }
 
-    public ConfigSettings(DeleteMode deleteMode, boolean emptyTrash, int afterTimeValue, TimeUnit afterTimeUnit) {
+    public ConfigSettings(DeleteMode deleteMode, boolean emptyTrash, int afterTimeValue, TimeUnit afterTimeUnit, int defaultGridSize, boolean refreshModuleAfterTimeout) {
         this.deleteMode = deleteMode;
         this.emptyTrash = emptyTrash;
         this.afterTimeValue = afterTimeValue;
         this.afterTimeUnit = afterTimeUnit;
+        this.defaultGridSize = defaultGridSize;
+        this.refreshModuleAfterTimeout = refreshModuleAfterTimeout;
     }
 
     public Long getId() {
@@ -82,6 +90,22 @@ public class ConfigSettings {
 
     public void setAfterTimeUnit(TimeUnit afterTimeUnit) {
         this.afterTimeUnit = afterTimeUnit;
+    }
+
+    public int getDefaultGridSize() {
+        return defaultGridSize;
+    }
+
+    public void setDefaultGridSize(int defaultGridSize) {
+        this.defaultGridSize = defaultGridSize;
+    }
+
+    public boolean isRefreshModuleAfterTimeout() {
+        return refreshModuleAfterTimeout;
+    }
+
+    public void setRefreshModuleAfterTimeout(boolean refreshModuleAfterTimeout) {
+        this.refreshModuleAfterTimeout = refreshModuleAfterTimeout;
     }
 
 }

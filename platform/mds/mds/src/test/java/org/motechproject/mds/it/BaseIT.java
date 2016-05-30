@@ -3,11 +3,13 @@ package org.motechproject.mds.it;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.motechproject.mds.domain.BundleFailureReport;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityAudit;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.domain.UserPreferences;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.jdo.JdoTransactionManager;
@@ -99,6 +101,10 @@ public abstract class BaseIT {
         return getAll(EntityDraft.class);
     }
 
+    protected List<UserPreferences> getUserPreferences() {
+        return getAll(UserPreferences.class);
+    }
+
     protected List<EntityDraft> getEntityDrafts() {
         return getAll(EntityDraft.class);
     }
@@ -111,6 +117,10 @@ public abstract class BaseIT {
         return getAll(Lookup.class);
     }
 
+    protected List<BundleFailureReport> getBundleFailsReports() {
+        return getAll(BundleFailureReport.class);
+    }
+
     protected void clearDB() {
         getPersistenceManager().deletePersistentAll(getFields());
         getPersistenceManager().deletePersistentAll(getLookups());
@@ -118,6 +128,8 @@ public abstract class BaseIT {
         getPersistenceManager().deletePersistentAll(getEntities());
         getPersistenceManager().deletePersistentAll(getEntitiesAudits());
         getPersistenceManager().deletePersistentAll(getEntitiesDrafts());
+        getPersistenceManager().deletePersistentAll(getUserPreferences());
+        getPersistenceManager().deletePersistentAll(getBundleFailsReports());
     }
 
     protected <T> List<T> cast(Class<T> clazz, Collection collection) {

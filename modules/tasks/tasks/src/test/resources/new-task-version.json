@@ -23,6 +23,7 @@
         }, {
             "@type": "DataSource",
             "providerId": 6899548,
+            "providerName": "TestProvider",
             "objectId": 1,
             "type": "Person",
             "name":"id",
@@ -45,7 +46,7 @@
             "serviceMethod": null,
             "values": {
                 "delivery_time": "12:00",
-                "message": "Congratulations,                {{ad.6899548.Person#1.firstName}}, your pregnancy test was positive. Please reply to schedule a clinic visit with your midwife.",
+                "message": "Congratulations,                {{ad.TestProvider.Person#1.firstName}}, your pregnancy test was positive. Please reply to schedule a clinic visit with your midwife.",
                 "message": "{{trigger.PatientId}}"
             }
         }

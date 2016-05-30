@@ -81,7 +81,7 @@ public class ExampleData {
         fields.add(
                 new FieldDto(
                         1L, 9005L, STRING,
-                        new FieldBasicDto("ID", "ID", false, "pass", null, null),
+                        new FieldBasicDto("ID", "ID", false,false, "pass", null, null),
                         false, exampleMetadata1, FieldValidationDto.STRING, null, null
                 )
         );
@@ -89,7 +89,7 @@ public class ExampleData {
         fields.add(
                 new FieldDto(
                         2L, 9007L, STRING,
-                        new FieldBasicDto("ID", "ID", false, "pass", null, null),
+                        new FieldBasicDto("ID", "ID", false, false, "pass", null, null),
                         false, null,
                         FieldValidationDto.STRING, null, null
                 )
@@ -154,6 +154,35 @@ public class ExampleData {
         instanceFields.add(new FieldInstanceDto(2L, 1L, new FieldBasicDto("User", "user")));
         instanceFields.add(new FieldInstanceDto(3L, 1L, new FieldBasicDto("Action", "action")));
         instanceFields.add(new FieldInstanceDto(4L, 1L, new FieldBasicDto("Changes", "changes")));
+
+        draftFields.add(
+                new FieldDto(
+                        12L, 9007L, STRING,
+                        new FieldBasicDto("ID", "ID", false, false, "pass", null, null),
+                        false, null,
+                        FieldValidationDto.STRING, null, null
+                )
+        );
+
+        draftFields.add(
+                new FieldDto(
+                        13L, 9007L, STRING,
+                        new FieldBasicDto("Sample", "Sample", false, false, "pass", null, null),
+                        false, null,
+                        FieldValidationDto.STRING, null, null
+                )
+        );
+
+        List<MetadataDto> exampleMetadata = new LinkedList<>();
+        exampleMetadata.add(new MetadataDto("key1", "value1"));
+        exampleMetadata.add(new MetadataDto("key2", "value2"));
+        draftFields.add(
+                new FieldDto(
+                        14L, 9005L, STRING,
+                        new FieldBasicDto("Other", "Other", false, false, "test", null, null),
+                        false, exampleMetadata, FieldValidationDto.STRING, null, null
+                )
+        );
     }
 
     public List<FieldDto> getFields(Long entityId) {

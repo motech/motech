@@ -2,6 +2,7 @@ package org.motechproject.mds.it;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.motechproject.mds.it.reposistory.AllBundleFailsReportsContextIT;
 import org.motechproject.mds.it.reposistory.AllEntitiesContextIT;
 import org.motechproject.mds.it.reposistory.AllEntityDraftsContextIT;
 import org.motechproject.mds.it.reposistory.AllTypeSettingsContextIT;
@@ -13,6 +14,7 @@ import org.motechproject.mds.it.service.TypeServiceImplContextIT;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({FilterContextIT.class, AutoGenerationContextIT.class, AllEntitiesContextIT.class,
         AllEntityDraftsContextIT.class, AllTypeSettingsContextIT.class, AllTypesContextIT.class,
-        EntityServiceContextIT.class, TypeServiceImplContextIT.class, JarGeneratorServiceContextIT.class})
+        EntityServiceContextIT.class, TypeServiceImplContextIT.class, JarGeneratorServiceContextIT.class,
+        AllBundleFailsReportsContextIT.class})
 public class MdsContextIntegrationTests {
 }

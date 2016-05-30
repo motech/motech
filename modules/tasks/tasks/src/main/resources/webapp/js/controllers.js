@@ -334,7 +334,7 @@
                         });
 
                         if (step['@type'] === 'DataSource') {
-                            source = $scope.findDataSource(step.providerId);
+                            source = $scope.findDataSource(step.providerName);
                             object = $scope.util.find({
                                 where: source.objects,
                                 by: {
@@ -585,7 +585,7 @@
                     });
 
                     if (select) {
-                        text = $scope.findObject(select.providerId, text[0]);
+                        text = $scope.findObject(select.providerName, text[0]);
                         text = $scope.util.find({
                             msg: $scope.msg,
                             where: text.fields,
@@ -618,7 +618,7 @@
                 filter.type = select.type;
                 break;
             case $scope.util.DATA_SOURCE_PREFIX:
-                filter.key = "{0}.{1}.{2}#{3}.{4}".format($scope.util.DATA_SOURCE_PREFIX, select.providerId, select.type, select.objectId, field.fieldKey);
+                filter.key = "{0}.{1}.{2}#{3}.{4}".format($scope.util.DATA_SOURCE_PREFIX, select.providerName, select.type, select.objectId, field.fieldKey);
                 filter.displayName = "{0}.{1}.{2}#{3}.{4}".format($scope.util.DATA_SOURCE_PREFIX, select.providerName, select.type, select.objectId, field.fieldKey);
                 filter.type = field.type;
                 break;
@@ -687,18 +687,18 @@
             });
         };
 
-        $scope.findDataSource = function (providerId) {
+        $scope.findDataSource = function (providerName) {
             return $scope.util.find({
                 where: $scope.dataSources,
                 by: {
-                    what: 'id',
-                    equalTo: providerId
+                    what: 'name',
+                    equalTo: providerName
                 }
             });
         };
 
-        $scope.findObject = function (providerId, type, id) {
-            var dataSource = $scope.findDataSource(providerId),
+        $scope.findObject = function (providerName, type, id) {
+            var dataSource = $scope.findDataSource(providerName),
                 by,
                 found;
 
@@ -723,7 +723,7 @@
         };
 
         $scope.selectDataSource = function (dataSource, selected) {
-            if (dataSource.providerId) {
+            if (dataSource.providerName) {
                 motechConfirm('task.confirm.changeDataSource', 'task.header.confirm', function (val) {
                     if (val) {
                         dataSource.name = '';
@@ -801,7 +801,7 @@
                     val = '{{{0}.{1}}}'.format(prefix, key);
                     break;
                 case $scope.util.DATA_SOURCE_PREFIX:
-                    val = '{{{0}.{1}.{2}#{3}.{4}}}'.format(prefix, $scope.msg(source), object.type, object.id, key);
+                    val = '{{{0}.{1}.{2}#{3}.{4}}}'.format(prefix, source, object.type, object.id, key);
                     break;
                 default:
                     val = key;
@@ -851,6 +851,11 @@
                 } else {
                     builtManipulation += manipulations[i];
                 }
+            }
+
+            // we must add last manipulation to the array
+            if (builtManipulation !== "") {
+                extractedManipulations.push(builtManipulation);
             }
 
             return extractedManipulations;
@@ -940,7 +945,7 @@
                                 });
 
                                 if (ds) {
-                                    newValue = element.replace(splittedValue[1], ds.providerId);
+                                    newValue = element.replace(splittedValue[1], ds.providerName);
                                     joinSeparator = joinSeparator.replace(element, newValue);
                                 }
                             }
@@ -960,7 +965,7 @@
             element = value.replace(regex, function (data) {
                 var indexOf = data.indexOf('.'),
                     prefix, dataArray, key, manipulations,
-                    span, cuts = {dot: [], hash: []}, param, type, field, dataSource, providerId, object, id;
+                    span, cuts = {dot: [], hash: []}, param, type, field, dataSource, providerName, object, id;
 
                     if (forFormat === 'true') {
                         prefix = data.slice(1, indexOf);
@@ -1004,7 +1009,7 @@
                     cuts.dot[0] = cuts.hash[0].split('.');
                     cuts.dot[1] = cuts.hash[1].split('.');
 
-                    providerId = cuts.dot[0][0];
+                    providerName = cuts.dot[0][0];
                     id = cuts.dot[1][0];
 
                     type = cuts.dot[0].slice(1).join('.');
@@ -1016,12 +1021,12 @@
                             what: '@type',
                             equalTo: 'DataSource'
                         }, {
-                            what: 'providerId',
-                            equalTo: parseInt(providerId, 10)
+                            what: 'providerName',
+                            equalTo: providerName
                         }]
                     });
 
-                    object = dataSource && $scope.findObject(dataSource.providerId, dataSource.type);
+                    object = dataSource && $scope.findObject(dataSource.providerName, dataSource.type);
 
                     param = object && $scope.util.find({
                         where: object.fields,
@@ -1348,7 +1353,7 @@
                                         what: '@type',
                                         equalTo: 'DataSource'
                                     }, {
-                                        what: 'providerId',
+                                        what: 'providerName',
                                         equalTo: splittedValue[1]
                                     }]
                                 });

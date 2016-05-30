@@ -31,24 +31,25 @@ public class FieldDto {
     private List<LookupDto> lookups;
 
     public FieldDto() {
-        this(null, null, null, null, false, false, true, null, null, null, null);
+        this(null, null, null, null, false, false, false, null, null, null, null);
     }
 
     public FieldDto(String name, String displayName, TypeDto type) {
-        this(name, displayName, type, false, null, null, null);
+        this(name, displayName, type, false, false, null, null, null);
     }
 
-    public FieldDto(String name, String displayName, TypeDto type, boolean required) {
-        this(name, displayName, type, required, null, null, null);
+    public FieldDto(String name, String displayName, TypeDto type, boolean required, boolean unique) {
+        this(name, displayName, type, required, unique, null, null, null);
     }
 
-    public FieldDto(String name, String displayName, TypeDto type, boolean required, Object defaultValue) {
-        this(name, displayName, type, required, defaultValue, null, null);
+    public FieldDto(String name, String displayName, TypeDto type, boolean required, boolean unique, Object defaultValue) {
+        this(name, displayName, type, required, unique, defaultValue, null, null);
     }
 
-    public FieldDto(String name, String displayName, TypeDto type, boolean required, Object defaultValue, String tooltip, String placeholder) {
+    public FieldDto(String name, String displayName, TypeDto type, boolean required, boolean unique,
+                    Object defaultValue, String tooltip, String placeholder) {
         this(null, null, type, null, false, false, true, null, null, null, null);
-        this.basic = new FieldBasicDto(displayName, name, required, defaultValue, tooltip, placeholder);
+        this.basic = new FieldBasicDto(displayName, name, required, unique, defaultValue, tooltip, placeholder);
     }
 
     public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic, boolean readOnly,

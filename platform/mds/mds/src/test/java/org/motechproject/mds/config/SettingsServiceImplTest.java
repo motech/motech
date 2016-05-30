@@ -13,10 +13,12 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
+import static org.motechproject.mds.config.ModuleSettings.DEFAULT_BUNDLE_RESTART;
 import static org.motechproject.mds.config.ModuleSettings.DEFAULT_DELETE_MODE;
 import static org.motechproject.mds.config.ModuleSettings.DEFAULT_EMPTY_TRASH;
 import static org.motechproject.mds.config.ModuleSettings.DEFAULT_TIME_UNIT;
 import static org.motechproject.mds.config.ModuleSettings.DEFAULT_TIME_VALUE;
+import static org.motechproject.mds.config.ModuleSettings.DEFAULT_GRID_SIZE;
 import static org.motechproject.mds.util.Constants.Config.MODULE_FILE;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -52,6 +54,8 @@ public class SettingsServiceImplTest {
         assertEquals(DEFAULT_EMPTY_TRASH, settingsServiceImpl.isEmptyTrash());
         assertEquals(DEFAULT_TIME_VALUE, settingsServiceImpl.getTimeValue());
         assertEquals(DEFAULT_TIME_UNIT, settingsServiceImpl.getTimeUnit());
+        assertEquals(DEFAULT_GRID_SIZE, settingsServiceImpl.getGridSize());
+        assertEquals(DEFAULT_BUNDLE_RESTART, settingsServiceImpl.isRefreshModuleAfterTimeout());
 
         // settings should contains the same values
         ModuleSettings settings = settingsServiceImpl.getModuleSettings();
@@ -60,5 +64,7 @@ public class SettingsServiceImplTest {
         assertEquals(DEFAULT_EMPTY_TRASH, settings.isEmptyTrash());
         assertEquals(DEFAULT_TIME_VALUE, settings.getTimeValue());
         assertEquals(DEFAULT_TIME_UNIT, settings.getTimeUnit());
+        assertEquals(DEFAULT_GRID_SIZE, settings.getGridSize());
+        assertEquals(DEFAULT_BUNDLE_RESTART, settings.isRestartModuleAfterTimeout());
     }
 }

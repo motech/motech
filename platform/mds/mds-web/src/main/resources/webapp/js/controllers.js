@@ -25,7 +25,7 @@
         return found && _.isEqual(found.value, value);
     }
 
-    var controllers = angular.module('mds.controllers', []).filter('orderObj', function () {
+    var controllers = angular.module('data-services.controllers', []).filter('orderObj', function () {
             return function (obj) {
                 if (!obj) {
                     return obj;
@@ -1369,7 +1369,7 @@
             });
         };
 
-        $scope.isMetadataNotEditable= function (key) {
+        $scope.isMetadataNotEditable = function (key) {
             if (key === 'related.class' || key === 'related.collectionType'
                 || key === 'related.field' || key === 'related.owningSide' || key === 'enum.className') {
                 return true;
@@ -1534,6 +1534,14 @@
         };
 
         /* ~~~~~ FIELD FUNCTIONS ~~~~~ */
+
+        $scope.isUniqueEditable = function(field) {
+            return !field.readOnly
+                   && field.type.typeClass !== 'java.util.Map'
+                   && field.type.typeClass !== "org.motechproject.mds.domain.OneToManyRelationship"
+                   && field.type.typeClass !== "org.motechproject.mds.domain.ManyToManyRelationship"
+                   && field.type.typeClass !== "java.util.Collection";
+        };
 
         /**
         * Create new field and add it to an entity schema. If displayName, name or type was not
@@ -3297,7 +3305,7 @@
 
         $scope.allEntityFields = [];
 
-        $scope.availableFieldsForDisplay= [];
+        $scope.availableFieldsForDisplay = [];
 
         $scope.validatePattern = '';
 
@@ -3319,7 +3327,7 @@
 
         $scope.availableUsers = MDSUsers.query();
 
-        // fields which won't be persisted in the user cookie
+        // fields which won't be persisted in the user preferences
         $scope.autoDisplayFields = [];
 
         /**
@@ -3433,6 +3441,7 @@
         */
         $scope.addInstance = function(module, entityName) {
             blockUI();
+            $scope.setHiddenFilters();
 
             // load the entity if coming from the 'Add' link in the main DataBrowser page
             if (!$scope.selectedEntity) {
@@ -3711,6 +3720,7 @@
         * Unselects adding or editing instance to allow user to return to entities list by modules
         */
         $scope.unselectInstance = function() {
+            $scope.setVisibleIfExistFilters();
             if ($scope.previouslyEdited) {
                 var prev = $scope.previouslyEdited;
                 $scope.selectEntityByClassName(prev.entityClassName, function() {
@@ -3719,6 +3729,7 @@
                     $scope.previouslyEdited = prev.previouslyEdited;
                 });
             } else {
+                $scope.entityAdvanced = undefined;
                 if ($scope.entityClassName) {
                     $scope.selectEntityByClassName($scope.entityClassName);
                 } else {
@@ -3727,11 +3738,6 @@
                 $scope.addedEntity = undefined;
                 $scope.selectedInstance = undefined;
                 $scope.loadedFields = undefined;
-                innerLayout({
-                    spacing_closed: 30,
-                    east__minSize: 200,
-                    east__maxSize: 350
-                });
                 $scope.removeIdFromUrl();
             }
             resizeLayout();
@@ -3921,37 +3927,22 @@
                               });
                           }
                       }
+
+                      $scope.selectedFields = [];
+                      for (i = 0; i < $scope.allEntityFields.length; i += 1) {
+                          field = $scope.allEntityFields[i];
+                          if ($.inArray(field.basic.name, $scope.entityAdvanced.userPreferences.visibleFields) !== -1) {
+                              $scope.selectedFields.push(field);
+                          }
+                      }
+                      $scope.updateInstanceGridFields();
+
+                      if (callback) {
+                          callback();
+                      }
+
+                      unblockUI();
                    });
-
-                   Entities.getDisplayFields({id: $scope.selectedEntity.id}, function(data) {
-                        var i, field, selectedName,
-                            dbUserPreferences = $scope.getDataBrowserUserPreferencesCookie($scope.selectedEntity);
-
-                        $scope.selectedFields = [];
-
-                        // filter data from db
-                        for (i = 0; i < data.length; i += 1) {
-                            field = data[i];
-                            if ($.inArray(field.basic.name, dbUserPreferences.unselected) === -1) {
-                                $scope.selectedFields.push(field);
-                            }
-                        }
-
-                        // additional selections
-                        for (i = 0; i < dbUserPreferences.selected.length; i += 1) {
-                            selectedName = dbUserPreferences.selected[i];
-                            // check if already selected
-                            if (!$scope.isFieldSelected(selectedName)) {
-                                $scope.selectFieldByName(selectedName);
-                            }
-                        }
-
-                        $scope.updateInstanceGridFields();
-                    });
-
-                    if (callback) {
-                        callback();
-                    }
                 });
                 unblockUI();
             });
@@ -4000,31 +3991,6 @@
             return username + '_org.motechproject.mds.databrowser.fields.' + entity.className + '#' + entity.id;
         };
 
-        $scope.getDataBrowserUserPreferencesCookie = function(entity) {
-            var cookieName = $scope.dataBrowserPreferencesCookieName($scope.selectedEntity),
-                cookie;
-            // get or create
-            if ($.cookie(cookieName)) {
-                cookie = JSON.parse($.cookie(cookieName));
-            } else {
-                cookie = {
-                    selected: [],
-                    unselected: []
-                };
-                $.cookie(cookieName, JSON.stringify(cookie));
-            }
-
-            // check fields
-            if (cookie.unselected === undefined) {
-                cookie.unselected = [];
-            }
-            if (cookie.selected === undefined) {
-                cookie.selected = [];
-            }
-
-            return cookie;
-        };
-
         $scope.isFieldSelected = function(name) {
             var i;
             for (i = 0; i < $scope.selectedFields.length; i += 1) {
@@ -4046,49 +4012,61 @@
             }
         };
 
-        $scope.markAllFieldsForDataBrowser = function (selected) {
-            var i, field;
-            for (i = 0; i < $scope.allEntityFields.length; i += 1) {
-                field = $scope.allEntityFields[i];
-                $scope.markFieldForDataBrowser(field.basic.name, selected);
+        $scope.addFieldsForDataBrowser = function(checked) {
+            var field, i, fieldsData = {
+                field: '',
+                action: 'ADD_ALL'
+            };
+
+            if (!checked) {
+                fieldsData.action = 'REMOVE_ALL';
+                $scope.selectedFields = [];
+            } else {
+                $scope.selectedFields = [];
+                for (i = 0; i < $scope.availableFieldsForDisplay.length; i += 1) {
+                    $scope.selectedFields.push(field);
+                }
             }
+
+            $http.post('../mds/entities/' + $scope.selectedEntity.id + "/preferences/fields", fieldsData)
+            .error(function () {
+                handleResponse('mds.error', 'mds.preferences.error.fields', '');
+                unblockUI();
+            });
         };
 
-        $scope.markFieldForDataBrowser = function(name, selected) {
-            if (name) {
-                var i, field, dbUserPreferences = $scope.getDataBrowserUserPreferencesCookie($scope.selectedEntity),
-                    cookieName = $scope.dataBrowserPreferencesCookieName($scope.selectedEntity);
+        $scope.addFieldForDataBrowser = function(selected, checked) {
+            var field, i, fieldsData = {
+                field: selected,
+                action: 'ADD'
+            };
 
-                if (selected) {
-                    dbUserPreferences.unselected.removeObject(name);
-                    dbUserPreferences.selected.uniquePush(name);
-
-                    // update selectedFields for grid switch
-                    if (!$scope.isFieldSelected(name)) {
-                        for (i = 0; i < $scope.allEntityFields.length; i += 1) {
-                            field = $scope.allEntityFields[i];
-                            if (field.basic.name === name) {
-                                $scope.selectedFields.push(field);
-                            }
-                        }
-                    }
-                } else {
-                    dbUserPreferences.selected.removeObject(name);
-                    dbUserPreferences.unselected.uniquePush(name);
-
-                    // update selectedFields for grid switch
-                    if ($scope.isFieldSelected(name)) {
-                        for (i = 0; i < $scope.selectedFields.length; i += 1) {
-                            field = $scope.selectedFields[i];
-                            if (field.basic.name === name) {
-                                $scope.selectedFields.remove(i, i);
-                            }
+            if (!checked) {
+                fieldsData.action = 'REMOVE';
+                if ($scope.isFieldSelected(selected)) {
+                    for (i = 0; i < $scope.selectedFields.length; i += 1) {
+                        field = $scope.selectedFields[i];
+                        if (field.basic.name === selected) {
+                            $scope.selectedFields.remove(i, i);
                         }
                     }
                 }
-
-                $.cookie(cookieName, JSON.stringify(dbUserPreferences));
+            } else {
+                if (!$scope.isFieldSelected(selected)) {
+                    for (i = 0; i < $scope.availableFieldsForDisplay.length; i += 1) {
+                        field = $scope.allEntityFields[i];
+                        if (field.basic.name === selected) {
+                            $scope.selectedFields.push(field);
+                        }
+                    }
+                }
             }
+
+            $http.post('../mds/entities/' + $scope.selectedEntity.id + "/preferences/fields", fieldsData)
+            .error(function () {
+                handleResponse('mds.error', 'mds.preferences.error.fields', '');
+                unblockUI();
+            });
         };
 
         $scope.filtersForField = function(field) {
@@ -4229,6 +4207,7 @@
         * Unselects entity to allow user to return to entities list by modules
         */
         $scope.unselectEntity = function () {
+            $scope.entityAdvanced = undefined;
             $scope.dataRetrievalError = false;
             innerLayout({
                 spacing_closed: 30,
@@ -4625,7 +4604,7 @@
             angular.forEach($("select.multiselect")[0], function(field) {
                 var name = $scope.getFieldName(field.label), selected = false;
 
-                // this fields won't be used for cookie data
+                // this fields won't be used for user preferences
                 $scope.autoDisplayFields = fieldsToSelect || [];
 
                 if (name) {
@@ -4815,6 +4794,8 @@
         };
 
         $scope.settings = MdsSettings.getSettings();
+
+        $scope.gridSizes = [10, 20, 50, 100];
 
         $scope.timeUnits = [
             { value: 'HOURS', label: $scope.msg('mds.dateTimeUnits.hours') },

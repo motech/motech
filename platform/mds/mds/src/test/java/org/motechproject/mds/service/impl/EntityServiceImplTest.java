@@ -20,6 +20,7 @@ import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.dto.UserPreferencesDto;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.entity.EntityAlreadyExistException;
 import org.motechproject.mds.ex.field.FieldUsedInLookupException;
@@ -30,6 +31,7 @@ import org.motechproject.mds.repository.AllEntityAudits;
 import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllTypes;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.UserPreferencesService;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.validation.EntityValidator;
 import org.osgi.framework.BundleContext;
@@ -49,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
@@ -95,6 +98,12 @@ public class EntityServiceImplTest {
     private Field field;
 
     @Mock
+    private FieldDto fieldDto;
+
+    @Mock
+    private FieldBasicDto basic;
+
+    @Mock
     private Field fieldSecond;
 
     @Mock
@@ -103,6 +112,8 @@ public class EntityServiceImplTest {
     @Mock
     private Lookup draftLookup;
 
+    @Mock
+    private UserPreferencesService userPreferencesService;
 
     @Mock
     private BundleContext bundleContext;
@@ -491,6 +502,37 @@ public class EntityServiceImplTest {
         }
     }
 
+    @Test
+    public void shouldMarkUniqueChangesInDraft() {
+        DraftData dd = new DraftData();
+        dd.setEdit(true);
+        dd.getValues().put(DraftData.VALUE, singletonList(true));
+        dd.getValues().put(DraftData.PATH, "basic.unique");
+        dd.getValues().put(DraftData.FIELD_ID, 2L);
+        when(allEntities.retrieveById(1L)).thenReturn(entity);
+        when(allEntityDrafts.retrieve(entity, "motech")).thenReturn(draft);
+        when(draft.getField(2L)).thenReturn(field);
+        when(draft.getParentEntity()).thenReturn(entity);
+        when(entity.getField("fieldName")).thenReturn(field);
+        when(field.getName()).thenReturn("fieldName");
+        when(field.toDto()).thenReturn(fieldDto);
+        when(fieldDto.getBasic()).thenReturn(basic);
+        when(field.isUnique()).thenReturn(true);
+
+        entityService.saveDraftEntityChanges(1L, dd);
+
+        verify(field).update(any(FieldDto.class));
+        verify(draft, never()).addUniqueToRemove(anyString());
+
+        // test marking for removal
+
+        dd.getValues().put(DraftData.VALUE, singletonList(false));
+
+        entityService.saveDraftEntityChanges(1L, dd);
+
+        verify(draft).addUniqueToRemove("fieldName");
+    }
+
     @Test(expected = FieldUsedInLookupException.class)
     public void shouldNotAllowRemovingAFieldUsedInALookup() {
         when(field.getId()).thenReturn(456L);
@@ -534,6 +576,8 @@ public class EntityServiceImplTest {
 
         when(allEntities.retrieveById(8L)).thenReturn(entity);
         when(allEntityDrafts.retrieve(eq(entity), anyString())).thenReturn(draft);
+
+        when(userPreferencesService.getEntityPreferences(8l)).thenReturn(new ArrayList<UserPreferencesDto>());
 
         entityService.commitChanges(8L);
     }

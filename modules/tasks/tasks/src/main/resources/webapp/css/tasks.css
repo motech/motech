@@ -141,6 +141,11 @@
     margin: 0 2px;
 }
 
+.tasks .badge-close {
+    float: none; !important;
+    font-size: 12px; !important;
+}
+
 .tasks .panel-body.task-content {
     padding: 0;
     border: none;

@@ -228,6 +228,16 @@ public final class Constants {
         public static final String MDS_TIME_UNIT = "mds.emptyTrash.afterTimeUnit";
 
         /**
+         * The property that specifies default number of records in each data browser grid.
+         */
+        public static final String MDS_DEFAULT_GRID_SIZE = "mds.default.gridSize";
+
+        /**
+         * The property that specifies that bundle should be restarted by the MDS after timeout.
+         */
+        public static final String MDS_RESTART_BUNDLE_AFTER_TIMEOUT = "mds.restartBundle.afterTimeout";
+
+        /**
          * Constant <code>EMPTY_TRASH_JOB</code> presents a name of job scheduled by scheduler
          * module.
          */
