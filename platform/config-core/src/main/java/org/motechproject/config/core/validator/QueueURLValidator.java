@@ -2,7 +2,7 @@ package org.motechproject.config.core.validator;
 
 import org.apache.activemq.util.URISupport;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.validator.UrlValidator;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.motechproject.config.core.exception.MotechConfigurationException;
 
 import java.net.URI;
@@ -21,7 +21,7 @@ public class QueueURLValidator {
     private UrlValidator urlValidator;
 
     public QueueURLValidator() {
-        this(new UrlValidator(UrlValidator.ALLOW_ALL_SCHEMES));
+        this(new UrlValidator(UrlValidator.ALLOW_ALL_SCHEMES + UrlValidator.ALLOW_LOCAL_URLS));
     }
 
     public QueueURLValidator(UrlValidator urlValidator) {
