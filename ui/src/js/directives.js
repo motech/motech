@@ -286,7 +286,7 @@
                 $http.get('isInboundChannelActive').success( function(data, status) {
                     if (status === 200) {
                         var glyphicon = $('<span>').addClass('glyphicon').attr('aria-hidden', 'true');
-                        if (data === 'true') {
+                        if (data === true) {
                             glyphicon.addClass('glyphicon-ok');
                         } else {
                             glyphicon.addClass('glyphicon-remove');
