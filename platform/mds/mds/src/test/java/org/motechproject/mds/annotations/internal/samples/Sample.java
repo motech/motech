@@ -15,6 +15,8 @@ import org.motechproject.mds.annotations.RestOperations;
 import org.motechproject.mds.annotations.UIDisplayable;
 import org.motechproject.mds.annotations.UIFilterable;
 import org.motechproject.mds.annotations.NonEditable;
+import org.motechproject.mds.annotations.MultiRelationshipDisplay;
+import org.motechproject.mds.annotations.SingleRelationshipDisplay;
 import org.motechproject.mds.annotations.InstanceLifecycleListenerType;
 import org.motechproject.mds.annotations.RestOperation;
 import org.motechproject.mds.event.CrudEventType;
@@ -122,6 +124,7 @@ public class Sample {
 
     @Field
     @Cascade(delete = true, update = false)
+    @MultiRelationshipDisplay(expandByDefault = false, showCount = false)
     private Set<RelatedSample> oneToManyUni;
 
     @Field
@@ -129,6 +132,7 @@ public class Sample {
     private List<RelatedSample> oneToManyBi;
 
     @Field
+    @SingleRelationshipDisplay(allowAddingExisting = false)
     private RelatedSample oneToOneUni;
 
     @Field

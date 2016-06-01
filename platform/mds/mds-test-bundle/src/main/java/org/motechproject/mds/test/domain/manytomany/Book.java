@@ -2,6 +2,7 @@ package org.motechproject.mds.test.domain.manytomany;
 
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.MultiRelationshipDisplay;
 
 import javax.jdo.annotations.Persistent;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ public class Book {
 
     @Field
     @Persistent(mappedBy = "books")
+    @MultiRelationshipDisplay(expandByDefault=false, showCount = false, allowAddingNew = true, allowAddingExisting = false)
     private Set<Author> authors;
 
     public Book() {

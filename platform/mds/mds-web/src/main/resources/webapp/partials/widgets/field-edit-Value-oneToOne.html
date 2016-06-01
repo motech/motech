@@ -1,11 +1,11 @@
 <div class="relation-field" id="relation-field_{{field.id}}" ng-init="relatedData.initValue(field)">
     <div class="btn-toolbar" role="toolbar">
         <div class="btn-group">
-            <button ng-click="addNewRelatedInstance(field)" type="button" class="btn btn-sm btn-success" ng-disabled="field.nonEditable || (newRelatedFields !== null && isRelationshipField(field))"  ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
+            <button ng-click="addNewRelatedInstance(field)" type="button" class="btn btn-sm btn-success" ng-disabled="field.nonEditable || (newRelatedFields !== null && isRelationshipField(field)) || !field.settings[4].value"  ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
                 <i class="fa fa-lg fa-plus"></i>
                 {{msg('mds.btn.addNew')}} {{field.displayName}}
             </button>
-            <button class="btn btn-sm btn-success" target="_self" href="#instanceBrowserModal_{{field.id}}" ng-disabled="field.nonEditable || field.value.id!==undefined && field.value !== null"
+            <button class="btn btn-sm btn-success" target="_self" href="#instanceBrowserModal_{{field.id}}" ng-disabled="field.nonEditable || field.value.id!==undefined && field.value !== null || !field.settings[5].value"
                 data-toggle="modal" data-backdrop="static"  ng-click="setRelatedEntity(field)" ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance"
                 ui-validate="{relationshipValidation: 'validateRelationshipPresence(field)'}" ng-model="field.value">
                 <i class="fa fa-lg fa-plus"></i>
@@ -14,7 +14,7 @@
         </div>
     </div>
     <div id="instance_relationsTable_{{field.id}}" class="overrideJqgridTable margin-before">
-        <table id="relationsTable_{{field.id}}" field-id="{{field.id}}" entity-relations-grid="pageRelationsTable_{{field.id}}" grid-hide="true" pager-hide="true"></table>
+        <table id="relationsTable_{{field.id}}" field-id="{{field.id}}" entity-relations-grid="pageRelationsTable_{{field.id}}" pager-hide="true"></table>
         <div id="pageRelationsTable_{{field.id}}"></div>
     </div>
     <div class="clearfix"></div>

@@ -6,18 +6,18 @@
         <div class="btn-group">
             <button ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance" class="btn btn-sm btn-default" target="_self"
                     id="instanceGrid_hide"  show-relations-grid="relationsTable_{{field.id}}">
-                <i class="fa fa-fw fa-lg fa-angle-double-up"></i>
+                <i class="fa"></i>
                 {{msg('mds.btn.showHide')}}
             </button>
         </div>
         <div class="btn-group">
             <button ng-click="addNewRelatedInstance(field)" type="button" class="btn btn-sm btn-success"
-                    ng-disabled="field.nonEditable || (newRelatedFields !== null && isRelationshipField(field))"
+                    ng-disabled="field.nonEditable || (newRelatedFields !== null && isRelationshipField(field)) || !field.settings[4].value"
                     ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance">
                 <i class="fa fa-lg fa-plus"></i> {{msg('mds.btn.addNew')}} {{field.displayName}}
             </button>
             <button class="btn btn-sm btn-success" target="_self" href="#instanceBrowserModal_{{field.id}}" data-toggle="modal"
-                    data-backdrop="static" ng-click="setRelatedEntity(field)" ng-disabled="field.nonEditable"
+                    data-backdrop="static" ng-click="setRelatedEntity(field)" ng-disabled="field.nonEditable || !field.settings[5].value"
                     ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance"
                     ui-validate="{relationshipValidation: 'validateRelationshipPresence(field)'}" ui-validate-watch="'field.value.length'" ng-model="field.value">
                 <i class="fa fa-lg fa-plus"></i>
