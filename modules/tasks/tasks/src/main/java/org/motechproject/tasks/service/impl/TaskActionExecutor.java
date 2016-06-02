@@ -195,11 +195,12 @@ public class TaskActionExecutor {
 
         for (String template : templates) {
             Object value = getValue(template.trim());
-
-            if (value instanceof Collection) {
-                tempList.addAll((Collection) value);
-            } else {
-                tempList.add(ParameterType.getType(value.getClass()).parse(keyEvaluator.evaluateTemplateString(template)));
+            if ( value != null) {
+                if (value instanceof Collection) {
+                    tempList.addAll((Collection) value);
+                } else {
+                    tempList.add(ParameterType.getType(value.getClass()).parse(keyEvaluator.evaluateTemplateString(template)));
+                }
             }
         }
 
