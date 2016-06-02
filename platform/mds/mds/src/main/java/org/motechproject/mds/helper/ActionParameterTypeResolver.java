@@ -39,8 +39,10 @@ public final class ActionParameterTypeResolver {
         TYPE_MAPPING.put("mds.field.textArea", TEXTAREA);
         TYPE_MAPPING.put("mds.field.boolean", BOOLEAN);
         TYPE_MAPPING.put("mds.field.date", DATE);
+        TYPE_MAPPING.put("mds.field.date8", DATE);
         TYPE_MAPPING.put("mds.field.time", TIME);
         TYPE_MAPPING.put("mds.field.datetime", DATE);
+        TYPE_MAPPING.put("mds.field.datetime8", DATE);
         TYPE_MAPPING.put("mds.field.decimal", DOUBLE);
         TYPE_MAPPING.put("mds.field.map", MAP);
         TYPE_MAPPING.put("mds.field.period", UNICODE); // no more suitable type at the moment

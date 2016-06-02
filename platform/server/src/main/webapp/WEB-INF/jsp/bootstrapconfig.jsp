@@ -23,7 +23,7 @@
         </script>
     </c:if>
 </head>
-<body class="body-startup" ng-app="bootstrapApp">
+<body class="body-startup" ng-app="bootstrapApp" >
 <div class="bodywrap">
     <div class="navbar-collapse hidden-xs">
         <div class="margin-before5"></div>
@@ -75,6 +75,15 @@
                 <div class="startup-form">
                     <div class="diver" ng-cloak>
                         <form action="#" method="POST" class="form-horizontal bootstrap-config-form col-sm-12" name="bcform">
+                            <div class="alerts-container form-group">
+                                <c:if test="${not empty errors}">
+                                    <div class="alert alert-danger">
+                                        <c:forEach var="error" items="${errors}">
+                                            <spring:message text="${error}"/>   <br/>
+                                        </c:forEach>
+                                    </div>
+                                </c:if>
+                            </div>
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.brokerUrl"/></label>
                                 <div class="col-sm-6" ng-class="{ 'has-error' : bcform.queueUrl.$invalid }">
@@ -88,6 +97,14 @@
                                         <span><i><spring:message code="server.suggestion"/>: </i> ${queueUrlSuggestion}</span>
                                         <button type="button" class="btn btn-default btn-xs" ng-click="config.queueUrl='${queueUrlSuggestion}'"><spring:message code="server.use"/></button>
                                     </div>
+                                </div>
+                                <input class="btn btn-secondary pull-right button-suggestion" type="button" name="VERIFYACTIVEMQ" ng-disabled="bcform.queueUrl.$error.required" value="<spring:message code="server.bootstrap.verify.amq"/>" onclick="verifyConnection('verifyAmq')"/>
+                                <div class="alerts-container col-sm-9">
+                                    <div class="alert alert-success" id="verifyAmq-info" style="display:none">
+                                        <spring:message code="server.bootstrap.verify.amq.success"/>
+                                    </div>
+                                    <div class="alert alert-danger" id="verifyAmq-error" style="display:none"></div>
+                                    <div class="alert alert-danger" id="verifyAmq-alert" style="display:none"></div>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -146,6 +163,14 @@
                                 <div class="col-sm-6">
                                     <input type="password" class="form-control" name="sqlPassword" ng-model="config.sqlPassword"/>
                                 </div>
+                                <input class="btn btn-secondary pull-right button-suggestion" type="button" name="VERIFYSQL" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required" value="<spring:message code="server.bootstrap.verifySql"/>" onclick="verifyConnection('verifySql')"/>
+                                <div class="alerts-container col-sm-9">
+                                    <div class="alert alert-success" id="verifySql-info" style="display:none">
+                                        <spring:message code="server.bootstrap.verifySql.success"/>
+                                    </div>
+                                    <div class="alert alert-danger" id="verifySql-error" style="display:none"></div>
+                                    <div class="alert alert-danger" id="verifySql-alert" style="display:none"></div>
+                                </div>
                             </div>
 
                             <div class="form-group">
@@ -190,23 +215,8 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><img id="loader" alt="loading" src="../../static/common/img/load.gif" style="display:none"/></label>
                                 <div class="col-sm-9">
-                                    <input class="btn btn-primary" type="button" name="VERIFYSQL" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required" value="<spring:message code="server.bootstrap.verifySql"/>" onclick="verifyDbConnection()"/>
-                                    <input class="btn btn-success" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required || bcform.OsgiFrameworkStorage.$error.required || bcform.motechDir.$error.required || bcform.queueUrl.$error.required" onclick="submitForm()" value="<spring:message code="server.bootstrap.submit"/>"/>
+                                    <input class="btn btn-primary button-suggestion" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required || bcform.OsgiFrameworkStorage.$error.required || bcform.motechDir.$error.required || bcform.queueUrl.$error.required" onclick="saveBootstrapData(); submitForm();" value="<spring:message code="server.bootstrap.submit"/>"/>
                                 </div>
-                            </div>
-                            <div class="alerts-container">
-                                <c:if test="${not empty errors}">
-                                    <div class="alert alert-danger">
-                                        <c:forEach var="error" items="${errors}">
-                                            <spring:message text="${error}"/>   <br/>
-                                        </c:forEach>
-                                    </div>
-                                </c:if>
-                                <div class="alert alert-success" id="verifySql-info" style="display:none">
-                                    <spring:message code="server.bootstrap.verifySql.success"/>
-                                </div>
-                                <div class="alert alert-danger" id="verify-alert" style="display:none"></div>
-                                <div class="alert alert-danger" id="verify-error" style="display:none"></div>
                             </div>
                         </form>
                     </div>

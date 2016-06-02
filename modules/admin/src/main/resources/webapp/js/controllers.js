@@ -6,7 +6,7 @@
 
     var controllers = angular.module('admin.controllers', []);
 
-    controllers.controller('AdminBundleListCtrl', function($scope, Bundle, i18nService, $stateParams, $http, $timeout, ModalFactory, LoadingModal) {
+    controllers.controller('AdminBundleListCtrl', function($scope, Bundle, i18nService, $stateParams, $state, $http, $timeout, ModalFactory, LoadingModal) {
 
         var LOADING_STATE = 'LOADING', MODULE_LIST_REFRESH_TIMEOUT = 6000; // milliseconds
 
@@ -96,12 +96,12 @@
             return count;
         };
 
-        $scope.moduleSources = {
-            'Repository':'Repository',
-            'File':'File'
-        };
+        $scope.moduleSources = [
+            'Repository',
+            'File'
+        ];
 
-        $scope.moduleSource = $scope.moduleSources.Repository;
+        $scope.moduleSource = $scope.moduleSources[0];
 
         $scope.mavenStr = function(artifactId) {
             return 'org.motechproject:'.concat(artifactId).concat(':').concat($scope.msg('server.version'));
@@ -124,7 +124,7 @@
         $scope.modules[$scope.mavenStr('mtraining')] = 'mTraining';
         $scope.modules[$scope.mavenStr('motech-tasks')] = 'Tasks';
         $scope.modules[$scope.mavenStr('odk')] = 'Open Data Kit';
-        $scope.modules[$scope.mavenStr('openmrs-19')] = 'OpenMRS 1.9';
+        $scope.modules[$scope.mavenStr('openmrs')] = 'OpenMRS';
         $scope.modules[$scope.mavenStr('pill-reminder')] = 'Pill Reminder';
         $scope.modules[$scope.mavenStr('motech-scheduler')] = 'Scheduler';
         $scope.modules[$scope.mavenStr('schedule-tracking')] = 'Schedule Tracking';
@@ -232,14 +232,19 @@
 
         $scope.loadSettingPage = function (bundle) {
             var moduleName = 'admin',
-                url = '/admin/bundleSettings/' + bundle.bundleId;
+                url = '/admin/platform-settings';
 
             if (bundle.settingsURL !== null && bundle.isActive()) {
-                moduleName = bundle.angularModule;
-                url = bundle.settingsURL;
+                $scope.loadModule(bundle.angularModule, bundle.settingsURL);
+            } else if (bundle.bundleId !== undefined) {
+                $scope.selectedTabState.selectedTab = "bundleSettings";
+                $scope.activeLink = {moduleName: moduleName, url: '/admin/bundleSettings'};
+                $state.go('admin.bundleSettings', {'bundleId': bundle.bundleId}, {'reload': true});
+            } else {
+                $scope.loadModule(moduleName, url);
             }
 
-            $scope.loadModule(moduleName, url);
+
         };
 
         $scope.startOnUpload = function () {
@@ -281,10 +286,12 @@
                                         LoadingModal.close();
                                     }, MODULE_LIST_REFRESH_TIMEOUT);
                                 } else {
+                                    $state.reload();
                                     LoadingModal.close();
                                 }
                                 $scope.module = "";
-                                $('#bundleUploadForm .fileinput').trigger('reset');
+                                $('#bundleUploadForm .fileinput').fileinput('clear');
+                                ModalFactory.showSuccessAlert('admin.bundles.successInstall', 'admin.bundles.installNewModule');
                             });
                         }
                     },
@@ -748,7 +755,7 @@
 
     });
 
-    controllers.controller('AdminServerLogCtrl', function($scope, $http, $rootScope, LoadingModal) {
+    controllers.controller('AdminServerLogCtrl', function($scope, $http, $state, $rootScope, LoadingModal) {
         $scope.refresh = function () {
             LoadingModal.open();
             $http({method:'GET', url:'../admin/api/log'})
@@ -759,8 +766,9 @@
                         $('#logContent').html(data);
                         LoadingModal.close();
                     }
-                })
-                .error(LoadingModal.close());
+                }).error( function () {
+                    LoadingModal.close();
+                });
         };
 
         //removing the sidebar from <body> before route change
@@ -956,15 +964,17 @@
 
     controllers.controller('AdminTopicStatsCtrl', function($scope, $http) {
 
-            $scope.dataAvailable = true;
+        $scope.dataAvailable = true;
 
-            $http.get('../admin/api/topics/').success(function (data) {
-                $scope.topics = data;
-            }).error(function () {
-                $scope.dataAvailable = false;
-            });
-
+        $http.get('../admin/api/topics/').success(function (data) {
+            $scope.topics = data;
+        }).error(function () {
+            $scope.dataAvailable = false;
         });
+
+        innerLayout({});
+
+    });
 
     controllers.controller('AdminQueueStatsCtrl', function($scope, $http) {
 
@@ -975,6 +985,8 @@
         }).error(function () {
             $scope.dataAvailable = false;
         });
+
+        innerLayout({});
 
     });
 

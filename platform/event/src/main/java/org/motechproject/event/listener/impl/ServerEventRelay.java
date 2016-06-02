@@ -256,6 +256,7 @@ public class ServerEventRelay implements EventRelay, EventHandler {
             parameters = new HashMap<>();
             parameters.putAll(event.getParameters());
             enrichedEventMessage = new MotechEvent(event.getSubject(), parameters, event.getCallbackName());
+            enrichedEventMessage.setMetadata(event.getMetadata());
             enrichedEventMessage.setMessageDestination(listener.getIdentifier());
             outboundEventGateway.sendEventMessage(enrichedEventMessage);
         }
@@ -302,6 +303,7 @@ public class ServerEventRelay implements EventRelay, EventHandler {
         copy.setBroadcast(event.isBroadcast());
         copy.setMessageDestination(event.getMessageDestination());
         copy.setCallbackName(event.getCallbackName());
+        copy.setMetadata(event.getMetadata());
         return copy;
     }
 

@@ -4,6 +4,7 @@ import org.motechproject.osgi.web.service.LocaleService;
 import org.motechproject.server.web.dto.LocaleDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,10 +29,10 @@ public class LocaleController {
     @Autowired
     private LocaleService localeService;
 
-    @RequestMapping(value = "/lang", method = RequestMethod.GET)
+    @RequestMapping(value = "/lang", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public String getUserLang(HttpServletRequest request) {
-        return '"' + localeService.getUserLocale(request).getLanguage() + '"';
+        return localeService.getUserLocale(request).getLanguage();
     }
 
     @ResponseStatus(HttpStatus.OK)

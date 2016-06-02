@@ -25,6 +25,7 @@ public class MotechEvent implements Serializable {
     private String subject;
     private String messageDestination;
     private String callbackName;
+    private Map<String, Object> metadata;
     private Map<String, Object> parameters;
 
     public MotechEvent() {
@@ -195,7 +196,28 @@ public class MotechEvent implements Serializable {
         return parameters;
     }
 
-    @Override
+    /**
+     * Returns the metadata of this MotechEvent. It can store any additional data, that is not meant to be the event's payload.
+     * If null, returns empty <code>HashMap</code>.
+     *
+     * @return the map of metadata
+     */
+    public Map<String, Object> getMetadata() {
+        if (metadata == null) {
+            metadata = new HashMap<>();
+        }
+        return metadata;
+    }
+
+    /**
+     * Sets the metadata of this MotechEvent. It can store any additional data, that is not meant to be the event's payload.
+     * @param metadata the metadata map
+     */
+    public void setMetadata(Map<String, Object> metadata) {
+        this.metadata = metadata;
+    }
+
+    @Override //NO CHECKSTYLE CyclomaticComplexity
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -212,6 +234,8 @@ public class MotechEvent implements Serializable {
                 Objects.equals(redeliveryCount, that.redeliveryCount) &&
                 Objects.equals(subject, that.subject) &&
                 Objects.equals(messageDestination, that.messageDestination) &&
+                Objects.equals(callbackName, that.callbackName) &&
+                Objects.equals(metadata, that.metadata) &&
                 Objects.equals(parameters, that.parameters);
     }
 
@@ -223,6 +247,8 @@ public class MotechEvent implements Serializable {
                 redeliveryCount,
                 subject,
                 messageDestination,
+                callbackName,
+                metadata,
                 parameters);
     }
 
@@ -237,6 +263,8 @@ public class MotechEvent implements Serializable {
         sb.append(", discarded=").append(discarded);
         sb.append(", broadcast=").append(broadcast);
         sb.append(", destination='").append(messageDestination).append('\'');
+        sb.append(", callbackName=").append(callbackName);
+        sb.append(", metadata=").append(metadata);
         sb.append(", parameters=").append(parameters);
         sb.append('}');
         return sb.toString();

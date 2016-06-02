@@ -8,6 +8,7 @@ import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
+import org.motechproject.mds.annotations.UIDisplayable;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.config.wrapper.MotechURL;
 
@@ -26,18 +27,22 @@ import java.util.Properties;
 public class SettingsRecord implements MotechSettings {
 
     @Field
+    @UIDisplayable
     private boolean platformInitialized;
 
     @Field
+    @UIDisplayable
     private DateTime lastRun;
 
     @Field
+    @UIDisplayable
     private String filePath;
 
     @Field
     private String configFileChecksum;
 
     @Field
+    @UIDisplayable
     private Map<String, String> platformSettings;
 
     public SettingsRecord() {

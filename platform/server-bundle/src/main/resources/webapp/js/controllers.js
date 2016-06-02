@@ -3,6 +3,22 @@
 
     var serverModule = angular.module('motech-dashboard');
 
+    serverModule.filter('pathToId', function() {
+
+        function pathToIdFilter(input) {
+            return input.replace(/[\/]/g,'-');
+        }
+
+        return pathToIdFilter;
+    }).filter('dottedToId', function() {
+
+        function dottedToIdFilter(input) {
+            return input.replace(/\./g,'-');
+        }
+
+        return dottedToIdFilter;
+    });
+
     serverModule.controller('MotechMasterCtrl', function ($scope, $rootScope, $ocLazyLoad, $state, $stateParams, $http,
           i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout, ModalFactory, LoadingModal) {
 
@@ -126,17 +142,16 @@
                     $scope.doAJAXHttpRequest('GET', 'lang/locate', function (data) {
                         $scope.i18n = data;
                         $scope.loadI18n($scope.i18n);
-                    });
 
-                    if ($scope.isStartupView()) {
-                        $scope.startupViewData.startupSettings.language = lang;
-                    }
-
-                    moment.locale(lang);
-                    ModalFactory.showAlert('server.success.changed.language', 'server.changed.language', function(){
-                        if (refresh ) {
-                            window.location.reload();
+                        if ($scope.isStartupView()) {
+                            $scope.startupViewData.startupSettings.language = lang;
                         }
+
+                        moment.locale(lang);
+                        if (refresh) {
+                            $state.reload();
+                        }
+                        ModalFactory.showAlert('server.success.changed.language', 'server.changed.language');
                     });
                 })
                 .error(function (response) {
@@ -204,14 +219,19 @@
         };
 
         $scope.loadModule = function (moduleName, url) {
-            var refresh, resultScope, convertUrl;
-            $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
-            $scope.activeLink = {moduleName: moduleName, url: url};
-            convertUrl = function (urlParam) {
+            var convertUrl = function (urlParam) {
                 if(urlParam.indexOf('/') === 0) {urlParam = urlParam.replace('/', '');}
                 if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace('/', '.');}
+                if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace('/.*', '');}
                 return urlParam;
             };
+            if (url.indexOf('admin/bundleSettings/') > 0) {
+                $scope.selectedTabState.selectedTab = 'bundleSettings';
+            } else {
+                $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
+            }
+            $scope.activeLink = {moduleName: moduleName, url: url};
+
             if (moduleName) {
                 LoadingModal.open();
 
@@ -224,21 +244,22 @@
 
                 if ($scope.moduleToLoad === moduleName || url === '/login') {
                     $location.path(url);
-                    $state.go(convertUrl(url));
+                    if (url.indexOf('admin/bundleSettings/') > 0) {
+                        $state.go('admin.bundleSettings', {'bundleId': url.substring(url.lastIndexOf("/")+1)});
+                    } else {
+                        $state.go(convertUrl(url));
+                    }
                     LoadingModal.close();
                     innerLayout({}, { show: false });
                 } else {
-                    refresh = ($scope.moduleToLoad === undefined) ? true : false;
                     $scope.moduleToLoad = moduleName;
                     if (!$ocLazyLoad.isLoaded(moduleName)) {
                         $ocLazyLoad.load(moduleName);
                     }
 
                     if (url) {
-                        window.location.hash = "";
                         if ($ocLazyLoad.isLoaded(moduleName)) {
                             $location.path(url);
-                            $state.go(convertUrl(url));
                             LoadingModal.close();
                         }
                         $scope.$on('ocLazyLoad.moduleLoaded', function(e, params) {
@@ -256,6 +277,7 @@
 
         $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
             innerLayout({}, { show: false });
+            resizeLayout();
         });
 
         $scope.loadI18n = function (data) {
@@ -380,6 +402,10 @@
                 $scope.i18n = data;
             }),
             $scope.doAJAXHttpRequest('GET', 'lang/list', function (data) {
+                // "TODO: Temporarily hiding the Chinese option, until it's fixed with MOTECH-2484"
+                if(data['zh_TW.Big5'] !== undefined) {
+                    delete data['zh_TW.Big5'];
+                }
                 $scope.languages = data;
             }),
             $scope.doAJAXHttpRequest('GET', 'lang', function (data) {
@@ -398,6 +424,10 @@
                 $scope.doAJAXHttpRequest('GET', 'lang/locate', function (data) {
                     $scope.i18n = data;
                 }), $scope.doAJAXHttpRequest('GET', 'lang/list', function (data) {
+                    // "TODO: Temporarily hiding the Chinese option, until it's fixed with MOTECH-2484"
+                    if(data['zh_TW.Big5'] !== undefined) {
+                        delete data['zh_TW.Big5'];
+                    }
                     $scope.languages = data;
                 })
             ]).then(function () {
@@ -512,6 +542,14 @@
 
         $scope.getStartupViewData = function() {
             $scope.doAJAXHttpRequest('GET', '../server/startupviewdata', function (data) {
+                // "TODO: Temporarily hiding the Chinese option, until it's fixed with MOTECH-2484"
+                if(data.languages['zh_TW.Big5'] !== undefined) {
+                    delete data.languages['zh_TW.Big5'];
+                }
+                if(data.pageLang === 'zh_TW' || data.startupSettings.language === 'zh') {
+                    data.pageLang = 'en';
+                    data.startupSettings.language = 'en';
+                }
                 $scope.startupViewData = data;
             });
         };
@@ -558,7 +596,7 @@
         };
     });
 
-    serverModule.controller('MotechHomeCtrl', function ($scope, $ocLazyLoad, $cookieStore, $q, Menu, $rootScope, $http, ModalFactory, LoadingModal) {
+    serverModule.controller('MotechHomeCtrl', function ($scope, $state, $ocLazyLoad, $cookieStore, $q, Menu, $rootScope, $http, ModalFactory, LoadingModal) {
         $scope.securityMode = false;
         $scope.moduleMenu = {};
 
@@ -622,7 +660,7 @@
                 }
             ),
 
-            $scope.doAJAXHttpRequest('POST', 'getUser', function (data) {
+            $scope.doAJAXHttpRequest('GET', 'getUser', function (data) {
                 var scope = angular.element("body").scope();
 
                 scope.user.userName = data.userName;
@@ -646,6 +684,7 @@
         $scope.$on('module.list.refresh', function () {
             Menu.get(function(data) {
                 $scope.moduleMenu = data;
+                $state.reload();
             }, function(response) {
                     LoadingModal.close();
                     ModalFactory.showErrorAlertWithResponse('server.error.cantLoadMenu', 'server.error', response);

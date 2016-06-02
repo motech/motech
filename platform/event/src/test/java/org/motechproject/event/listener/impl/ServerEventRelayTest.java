@@ -129,12 +129,13 @@ public class ServerEventRelayTest {
         when(bundleContext.getServiceReferences(EventCallbackService.class, null)).thenReturn(Arrays.asList(serviceReference));
         when(bundleContext.getService(serviceReference)).thenReturn(callbackService);
         when(callbackService.getName()).thenReturn(TEST_SERVICE_CALLBACK);
-        doThrow(new RuntimeException()).when(eventListener).handle(any(MotechEvent.class));
+        RuntimeException initCause = new RuntimeException();
+        doThrow(new RuntimeException("Failed", initCause)).when(eventListener).handle(any(MotechEvent.class));
 
         eventRelay.relayQueueEvent(motechEvent);
 
         verify(eventListener).handle(motechEvent);
-        verify(callbackService).failureCallback(motechEvent, null);
+        verify(callbackService).failureCallback(motechEvent, initCause);
     }
 
     @Test

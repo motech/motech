@@ -43,7 +43,7 @@
                             </span>
                         </div>
                     </div>
-                    <div ng-if="action !== 'edit'" class="row horizontally-inside">
+                    <div ng-if="action !== 'edit'" class="row horizontally-inside pull-right">
                         <button class="btn btn-danger" type="button" ng-click="resetMap()"><i class="fa fa-lg fa-eraser"></i> {{msg('scheduler.resetMap')}}</button>
                     </div>
                 </div>
@@ -121,7 +121,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
+                <div class="col-sm-offset-2 col-sm-1 pull-right">
                     <button ng-if="action === 'new'" ng-disabled="!JobForm.$valid" class="btn btn-primary" ng-click="createOrUpdateJob(action)">{{msg('scheduler.scheduleJob')}}</button>
                     <button ng-if="action === 'edit'" ng-disabled="!JobForm.$valid" class="btn btn-primary" ng-click="createOrUpdateJob(action)">{{msg('scheduler.updateJob')}}</button>
                 </div>

@@ -47,10 +47,12 @@ public class BootstrapController {
     private static final String POSTGRES_URL_SUGGESTION = "jdbc:postgresql://localhost:5432/";
     private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
     private static final String POSTGRES_DRIVER = "org.postgresql.Driver";
-    private static final String FELIX_PATH_DEFAULT = new File(System.getProperty("user.home"), ".motech"+File.separator+"felix-cache").getAbsolutePath();
+    private static final String FELIX_PATH_DEFAULT = new File(System.getProperty("user.home"), ".motech" + File.separator + "felix-cache").getAbsolutePath();
     private static final String MOTECH_PATH_DEFAULT = new File(System.getProperty("user.home"), ".motech").getAbsolutePath();
     private static final String ERRORS = "errors";
     private static final String WARNINGS = "warnings";
+    private static final String SQL_CONFIG_ERROR = "sqlConfigError";
+    private static final String AMQ_CONFIG_ERROR = "amqConfigError";
     private static final String SUCCESS = "success";
     private static final String BOOTSTRAP_CONFIG = "bootstrapConfig";
     private static final String QUEUE_URL_SUGGESTION = "tcp://localhost:61616";
@@ -64,6 +66,9 @@ public class BootstrapController {
 
     @Autowired
     private LocaleResolver localeResolver;
+
+    @Autowired
+    private MessageBrokerPingService messageBrokerPingService;
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
@@ -103,13 +108,23 @@ public class BootstrapController {
             return bootstrapView;
         }
 
+        String queueUrl = form.getQueueUrl();
+        boolean reachable = messageBrokerPingService.pingBroker(queueUrl);
+
+        if (!reachable) {
+            ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
+            bootstrapView.addObject(ERRORS, singletonList(getMessage("server.bootstrap.verify.amq.warning", new Object[]{queueUrl}, request)));
+            addCommonBootstrapViewObjects(bootstrapView);
+            return bootstrapView;
+        }
+
         BootstrapConfig bootstrapConfig;
         if (form.getOsgiFrameworkStorage() != null) {
-             bootstrapConfig = new BootstrapConfig(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
-                     ConfigSource.valueOf(form.getConfigSource()), form.getOsgiFrameworkStorage(), form.getMotechDir(), form.getQueueUrl());
+            bootstrapConfig = new BootstrapConfig(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
+                    ConfigSource.valueOf(form.getConfigSource()), form.getOsgiFrameworkStorage(), form.getMotechDir(), form.getQueueUrl());
         } else {
-             bootstrapConfig = new BootstrapConfig(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
-                     ConfigSource.valueOf(form.getConfigSource()), null, form.getMotechDir(), form.getQueueUrl());
+            bootstrapConfig = new BootstrapConfig(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()),
+                    ConfigSource.valueOf(form.getConfigSource()), null, form.getMotechDir(), form.getQueueUrl());
         }
 
         try {
@@ -131,12 +146,13 @@ public class BootstrapController {
     @RequestMapping(value = "/verifySql", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, ?> verifySqlConnection(@ModelAttribute(BOOTSTRAP_CONFIG) @Valid BootstrapConfigForm form,
-                                           BindingResult result, HttpServletRequest request) {
+                                              BindingResult result, HttpServletRequest request) {
         Map<String, Object> response = new HashMap<>();
 
         if (result.hasErrors()) {
             response.put(WARNINGS, singletonList(getMessage("server.bootstrap.verifySql.error", request)));
             response.put(ERRORS, getErrors(result));
+            response.put(SQL_CONFIG_ERROR, true);
         } else {
             Connection sqlConnection = null;
             try {
@@ -147,15 +163,23 @@ public class BootstrapController {
                     sqlConnection = DriverManager.getConnection(form.getSqlUrl());
                 }
                 boolean reachable = sqlConnection.prepareCall("SELECT 0;").execute();
-                response.put(SUCCESS, reachable);
+                if (reachable) {
+                    response.put(SUCCESS, reachable);
+                } else {
+                    response.put(SUCCESS, reachable);
+                    response.put(SQL_CONFIG_ERROR, true);
+                }
+
                 sqlConnection.close();
             } catch (SQLException e) {
                 response.put(WARNINGS, singletonList(getMessage("server.bootstrap.verify.warning", request)));
                 response.put(SUCCESS, false);
+                response.put(SQL_CONFIG_ERROR, true);
             } catch (IllegalArgumentException | IllegalAccessException | InstantiationException | ClassNotFoundException e) {
                 response.put(ERRORS, singletonList(getMessage("server.error.invalid.sqlDriver", request)));
                 response.put(WARNINGS, singletonList(getMessage("server.bootstrap.verifySql.error", request)));
                 response.put(SUCCESS, false);
+                response.put(SQL_CONFIG_ERROR, true);
             } finally {
                 if (sqlConnection != null) {
                     try {
@@ -164,6 +188,29 @@ public class BootstrapController {
                         LOGGER.error("Error while closing SQL connection", e);
                     }
                 }
+            }
+        }
+        return response;
+    }
+
+    @RequestMapping(value = "/verifyAmq", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, ?> verifyAmqConnection(@ModelAttribute(BOOTSTRAP_CONFIG) @Valid BootstrapConfigForm form,
+                                              BindingResult result, HttpServletRequest request) {
+        Map<String, Object> response = new HashMap<>();
+        if (result.hasErrors()) {
+            response.put(WARNINGS, singletonList(getMessage("server.bootstrap.verify.amq.error", request)));
+            response.put(SUCCESS, false);
+            response.put(AMQ_CONFIG_ERROR, true);
+        } else {
+            String queueUrl = form.getQueueUrl();
+            boolean reachable = messageBrokerPingService.pingBroker(queueUrl);
+            if (reachable) {
+                response.put(SUCCESS, true);
+            } else {
+                response.put(ERRORS, singletonList(getMessage("server.bootstrap.verify.amq.warning", new Object[]{queueUrl}, request)));
+                response.put(SUCCESS, false);
+                response.put(AMQ_CONFIG_ERROR, true);
             }
         }
         return response;
@@ -199,5 +246,9 @@ public class BootstrapController {
 
     private String getMessage(String key, HttpServletRequest request) {
         return messageSource.getMessage(key, null, localeResolver.resolveLocale(request));
+    }
+
+    private String getMessage(String key, Object[] params, HttpServletRequest request) {
+        return messageSource.getMessage(key, params, localeResolver.resolveLocale(request));
     }
 }
