@@ -1207,7 +1207,7 @@
         }, function () {
             var i,j,key,value;
             if ($scope.pairs.length === 0 && $scope.data.value !== "" && $scope.data.value !== null && !$scope.dataTransformed) {
-                values = $scope.data.value.split("<br>");
+                values = $scope.data.value.split("\n");
 
                 for (i = 0; i < values.length; i += 1) {
                     keyValue = values[i].split(":");
@@ -1317,22 +1317,15 @@
         };
 
         $scope.addToDataValue = function (pair, index) {
-            var paired;
-            if (index > 0 && dragAndDrop) {
-                paired = "<div>" + pair.key + ":" + pair.value + "</div>";
-            } else {
-                paired = pair.key + ":" + pair.value;
-            }
-
-            if(!dragAndDrop) {
-                paired = paired.concat("\n");
-            }
-
             if ($scope.data.value === null) {
                 $scope.data.value = "";
             }
 
-            $scope.data.value = $scope.data.value.concat(paired);
+            if ($scope.data.value.length > 0) {
+                $scope.data.value = $scope.data.value.concat("\n" + pair.key + ":" + pair.value);
+            } else {
+                $scope.data.value = $scope.data.value.concat(pair.key + ":" + pair.value);
+            }
         };
     });
 }());
