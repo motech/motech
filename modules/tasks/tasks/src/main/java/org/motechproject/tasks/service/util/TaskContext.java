@@ -88,8 +88,11 @@ public class TaskContext {
             if (dataSourceObject.isFailIfNotFound()) {
                 throw new TaskHandlerException(TaskFailureCause.DATA_SOURCE, "task.error.objectOfTypeNotFound", objectType);
             }
-            LOGGER.warn("Task data source object of type: {} not found", objectType);
-            publishWarningActivity("task.warning.notFoundObjectForType", objectType);
+            if (!dataSourceObject.isNullWarningPublished()) {
+                LOGGER.warn("Task data source object of type: {} not found", objectType);
+                publishWarningActivity("task.warning.notFoundObjectForType", objectType);
+                dataSourceObject.setNullWarningPublished(true);
+            }
             return null;
         }
 

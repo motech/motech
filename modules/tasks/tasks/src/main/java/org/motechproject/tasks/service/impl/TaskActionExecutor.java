@@ -162,18 +162,15 @@ public class TaskActionExecutor {
 
         for (String row : rows) {
             String[] array = row.split(":", 2);
-            Object mapKey;
             Object mapValue;
 
             switch (array.length) {
                 case 2:
                     array[1] = array[1].trim();
-                    mapKey = getValue(array[0]);
-                    mapValue = getValue(array[1]);
 
                     tempMap.put(
-                        ParameterType.getType(mapKey.getClass()).parse(keyEvaluator.evaluateTemplateString(array[0])),
-                        ParameterType.getType(mapValue.getClass()).parse(keyEvaluator.evaluateTemplateString(array[1]))
+                        keyEvaluator.evaluateTemplateString(array[0]),
+                        keyEvaluator.evaluateTemplateString(array[1])
                     );
                     break;
                 case 1:
@@ -195,11 +192,12 @@ public class TaskActionExecutor {
 
         for (String template : templates) {
             Object value = getValue(template.trim());
-
-            if (value instanceof Collection) {
-                tempList.addAll((Collection) value);
-            } else {
-                tempList.add(ParameterType.getType(value.getClass()).parse(keyEvaluator.evaluateTemplateString(template)));
+            if ( value != null) {
+                if (value instanceof Collection) {
+                    tempList.addAll((Collection) value);
+                } else {
+                    tempList.add(ParameterType.getType(value.getClass()).parse(keyEvaluator.evaluateTemplateString(template)));
+                }
             }
         }
 

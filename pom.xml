@@ -16,7 +16,7 @@
     <properties>
         <jasmine.server.port>8234</jasmine.server.port>
 
-        <external.dependency.release.tag>r031</external.dependency.release.tag>
+        <external.dependency.release.tag>r033</external.dependency.release.tag>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <modules.root.dir>${basedir}</modules.root.dir>
         <jdk.version>1.8</jdk.version>
@@ -32,6 +32,7 @@
         <spring.integration.version>2.1.0.RELEASE</spring.integration.version>
 
         <activemq.version>5.4.2-${external.dependency.release.tag}</activemq.version>
+        <j2ee.management.spec.version>1.0.1</j2ee.management.spec.version>
 
         <mysql.version>5.1.32</mysql.version>
         <postgres.version>9.1-901.jdbc4-${external.dependency.release.tag}</postgres.version>
@@ -1583,6 +1584,14 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -1790,7 +1799,7 @@
                                             <location>LICENSE.txt</location>
                                         </source>
                                         <source>
-                                            <location>README</location>
+                                            <location>README.md</location>
                                         </source>
                                     </sources>
                                 </mapping>

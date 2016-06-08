@@ -10,8 +10,8 @@
                 <div class="form-group form-horizontal clearfix">
                     <div class="form-inline">
                         <label class="control-label col-sm-3 ">{{msg('mds.security.text')}}</label>
-                        <select class="form-control input-auto" ng-model="securitySettings.securityMode" security-list="single" mds-field-id="{{field.id}}"
-                                ng-options="value for value in securityOptions">
+                        <select class="form-control input-auto" ng-model="securitySettings.securityMode" security-list="single" mds-field-id="{{field.id}}">
+                        	<option ng-repeat="option in securityOptions" value="{{option}}">{{option}}</option>
                         </select>
 
                         <div class="btn-group" ng-show="securitySettings.securityMode==='USERS'">
@@ -33,8 +33,8 @@
                 <div class="form-group form-horizontal clearfix">
                     <div class="form-inline">
                         <label class="control-label col-sm-3 ">{{msg('mds.security.textForReadOnly')}}</label>
-                        <select class="form-control input-auto" ng-model="securitySettings.readOnlySecurityMode" security-list="single" mds-field-id="{{field.id}}"
-                                ng-options="value for value in securityOptions">
+                        <select class="form-control input-auto" ng-model="securitySettings.readOnlySecurityMode" security-list="single" mds-field-id="{{field.id}}">
+                        	<option ng-repeat="option in securityOptions" value="{{option}}">{{option}}</option>
                         </select>
 
                         <div class="btn-group" ng-show="securitySettings.readOnlySecurityMode==='USERS'">

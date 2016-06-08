@@ -3,7 +3,24 @@
 
     var serverModule = angular.module('motech-dashboard');
 
-    serverModule.controller('MotechMasterCtrl', function ($scope, $http, i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout, $route) {
+    serverModule.filter('pathToId', function() {
+
+        function pathToIdFilter(input) {
+            return input.replace(/[\/]/g,'-');
+        }
+
+        return pathToIdFilter;
+    }).filter('dottedToId', function() {
+
+        function dottedToIdFilter(input) {
+            return input.replace(/\./g,'-');
+        }
+
+        return dottedToIdFilter;
+    });
+
+    serverModule.controller('MotechMasterCtrl', function ($scope, $rootScope, $ocLazyLoad, $state, $stateParams, $http,
+          i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout, ModalFactory, LoadingModal) {
 
         var handle = function () {
                 if (!$scope.$$phase) {
@@ -125,21 +142,20 @@
                     $scope.doAJAXHttpRequest('GET', 'lang/locate', function (data) {
                         $scope.i18n = data;
                         $scope.loadI18n($scope.i18n);
-                    });
 
-                    if ($scope.isStartupView()) {
-                        $scope.startupViewData.startupSettings.language = lang;
-                    }
-
-                    moment.locale(lang);
-                    motechAlert('server.success.changed.language', 'server.changed.language',function(){
-                        if (refresh ) {
-                            window.location.reload();
+                        if ($scope.isStartupView()) {
+                            $scope.startupViewData.startupSettings.language = lang;
                         }
+
+                        moment.locale(lang);
+                        if (refresh) {
+                            $state.reload();
+                        }
+                        ModalFactory.showAlert('server.success.changed.language', 'server.changed.language');
                     });
                 })
                 .error(function (response) {
-                    handleResponse('server.header.error', 'server.error.setLangError', response);
+                    ModalFactory.showErrorAlertWithResponse('server.error.setLangError', 'server.error', response);
                 });
         };
 
@@ -203,53 +219,66 @@
         };
 
         $scope.loadModule = function (moduleName, url) {
-            var refresh, resultScope, reloadModule;
-            $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
+            var convertUrl = function (urlParam) {
+                if(urlParam.indexOf('/') === 0) {urlParam = urlParam.replace('/', '');}
+                if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace('/', '.');}
+                if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace('/.*', '');}
+                return urlParam;
+            };
+            if (url.indexOf('admin/bundleSettings/') > 0) {
+                $scope.selectedTabState.selectedTab = 'bundleSettings';
+            } else {
+                $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
+            }
             $scope.activeLink = {moduleName: moduleName, url: url};
-            if (moduleName) {
-                blockUI();
 
-                $http.get('../server/module/critical/' + moduleName).success(function (data, status) {
-                    if (data !== undefined && data !== '' && status !== 408) {
-                        BootstrapDialog.alert({
-                            type: BootstrapDialog.TYPE_DANGER,
-                            message: status + ": " + data.statusText
-                        });
+            if (moduleName) {
+                LoadingModal.open();
+
+                $http.get('../server/module/critical/' + moduleName).success(function (response) {
+                    if (response.data !== undefined && response.data !== '' && response.status !== 408) {
+                        ModalFactory.showErrorAlert(null, null, response.status + ": " + response.statusText);
+                        LoadingModal.close();
                     }
                 });
 
                 if ($scope.moduleToLoad === moduleName || url === '/login') {
                     $location.path(url);
-                    unblockUI();
-                    innerLayout({}, {
-                        show: false
-                    });
+                    if (url.indexOf('admin/bundleSettings/') > 0) {
+                        $state.go('admin.bundleSettings', {'bundleId': url.substring(url.lastIndexOf("/")+1)});
+                    } else {
+                        $state.go(convertUrl(url));
+                    }
+                    LoadingModal.close();
+                    innerLayout({}, { show: false });
                 } else {
-                    refresh = ($scope.moduleToLoad === undefined) ? true : false;
                     $scope.moduleToLoad = moduleName;
+                    if (!$ocLazyLoad.isLoaded(moduleName)) {
+                        $ocLazyLoad.load(moduleName);
+                    }
 
                     if (url) {
-                        reloadModule = true;
-                        window.location.hash = "";
-                        $scope.$on('loadOnDemand.loadContent', function () {
-                            if (reloadModule) {
+                        if ($ocLazyLoad.isLoaded(moduleName)) {
+                            $location.path(url);
+                            LoadingModal.close();
+                        }
+                        $scope.$on('ocLazyLoad.moduleLoaded', function(e, params) {
+                            if ($ocLazyLoad.isLoaded(moduleName)) {
                                 $location.path(url);
-                                unblockUI();
-                                reloadModule = false;
-                                innerLayout({}, {
-                                    show: false
-                                });
-                                if (refresh) {
-                                    $route.reload();
-                                }
+                                LoadingModal.close();
                             }
                         });
                     } else {
-                        unblockUI();
+                        LoadingModal.close();
                     }
                 }
             }
         };
+
+        $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+            innerLayout({}, { show: false });
+            resizeLayout();
+        });
 
         $scope.loadI18n = function (data) {
             i18nService.init(data);
@@ -373,6 +402,10 @@
                 $scope.i18n = data;
             }),
             $scope.doAJAXHttpRequest('GET', 'lang/list', function (data) {
+                // "TODO: Temporarily hiding the Chinese option, until it's fixed with MOTECH-2484"
+                if(data['zh_TW.Big5'] !== undefined) {
+                    delete data['zh_TW.Big5'];
+                }
                 $scope.languages = data;
             }),
             $scope.doAJAXHttpRequest('GET', 'lang', function (data) {
@@ -391,6 +424,10 @@
                 $scope.doAJAXHttpRequest('GET', 'lang/locate', function (data) {
                     $scope.i18n = data;
                 }), $scope.doAJAXHttpRequest('GET', 'lang/list', function (data) {
+                    // "TODO: Temporarily hiding the Chinese option, until it's fixed with MOTECH-2484"
+                    if(data['zh_TW.Big5'] !== undefined) {
+                        delete data['zh_TW.Big5'];
+                    }
                     $scope.languages = data;
                 })
             ]).then(function () {
@@ -437,14 +474,14 @@
 
         //Used when user has forgotten the password
         $scope.submitResetPasswordForm = function() {
-            blockUI();
+            LoadingModal.open();
 
             $http({
                 method: 'POST',
                 url: '../server/forgotreset',
                 data: $scope.resetViewData.resetForm
             }).success(function(data) {
-                unblockUI();
+                LoadingModal.close();
 
                 if (data.errors === undefined || data.errors.length === 0) {
                     data.errors = null;
@@ -453,8 +490,8 @@
                 $scope.resetViewData = data;
             })
             .error(function(data) {
-                unblockUI();
-                motechAlert('server.reset.error', 'server.error');
+                LoadingModal.close();
+                ModalFactory.showErrorAlert('server.reset.error', 'server.error');
                 $scope.resetViewData.errors = ['server.reset.error'];
             });
         };
@@ -476,14 +513,14 @@
 
         //Used when user must change the password
         $scope.submitChangePasswordForm = function() {
-            blockUI();
+            LoadingModal.open();
 
             $http({
                 method: 'POST',
                 url: '../server/changepassword',
                 data: $scope.changePasswordViewData.changePasswordForm
             }).success(function(data) {
-                unblockUI();
+                LoadingModal.close();
 
                 if (data.userBlocked) {
                     window.location = "./login?blocked=true";
@@ -497,20 +534,28 @@
                 $scope.changePasswordViewData.errors = data.errors;
                 $scope.changePasswordViewData.changeSucceded = data.changeSucceded;
             }).error(function(data) {
-                unblockUI();
-                motechAlert('server.reset.error', 'server.error');
+                LoadingModal.close();
+                ModalFactory.showErrorAlert('server.reset.error', 'server.error');
                 $scope.resetViewData.errors = ['server.reset.error'];
             });
         };
 
         $scope.getStartupViewData = function() {
             $scope.doAJAXHttpRequest('GET', '../server/startupviewdata', function (data) {
+                // "TODO: Temporarily hiding the Chinese option, until it's fixed with MOTECH-2484"
+                if(data.languages['zh_TW.Big5'] !== undefined) {
+                    delete data.languages['zh_TW.Big5'];
+                }
+                if(data.pageLang === 'zh_TW' || data.startupSettings.language === 'zh') {
+                    data.pageLang = 'en';
+                    data.startupSettings.language = 'en';
+                }
                 $scope.startupViewData = data;
             });
         };
 
         $scope.submitStartupConfig = function() {
-             blockUI();
+             LoadingModal.open();
              $scope.startupViewData.startupSettings.loginMode = $scope.securityMode;
              $http({
                 method: "POST",
@@ -521,12 +566,12 @@
                 if (data.length === 0) {
                     window.location.assign("../server/");
                 } else {
-                    unblockUI();
+                    LoadingModal.close();
                 }
                 $scope.errors = data;
              })
              .error(function(data) {
-                unblockUI();
+                LoadingModal.close();
              });
         };
 
@@ -551,9 +596,8 @@
         };
     });
 
-    serverModule.controller('MotechHomeCtrl', function ($scope, $cookieStore, $q, Menu, $rootScope, $http) {
+    serverModule.controller('MotechHomeCtrl', function ($scope, $state, $ocLazyLoad, $cookieStore, $q, Menu, $rootScope, $http, ModalFactory, LoadingModal) {
         $scope.securityMode = false;
-
         $scope.moduleMenu = {};
 
         $scope.openInNewTab = function (url) {
@@ -611,9 +655,12 @@
         $q.all([
             $scope.moduleMenu = Menu.get(function(data) {
                 $scope.moduleMenu = data;
-            }, angularHandler('error', 'server.error.cantLoadMenu')),
+            }, function(response) {
+                    ModalFactory.showErrorAlertWithResponse('server.error.cantLoadMenu', 'server.error', response);
+                }
+            ),
 
-            $scope.doAJAXHttpRequest('POST', 'getUser', function (data) {
+            $scope.doAJAXHttpRequest('GET', 'getUser', function (data) {
                 var scope = angular.element("body").scope();
 
                 scope.user.userName = data.userName;
@@ -637,7 +684,12 @@
         $scope.$on('module.list.refresh', function () {
             Menu.get(function(data) {
                 $scope.moduleMenu = data;
-            }, angularHandler('error', 'server.error.cantLoadMenu'));
+                $state.reload();
+            }, function(response) {
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlertWithResponse('server.error.cantLoadMenu', 'server.error', response);
+                }
+            );
         });
 
         jgridDefaultSettings();

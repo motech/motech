@@ -151,8 +151,8 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                angular, motechAlert, angularHandler, handleResponse, alertHandler,
-                                blockUI, unblockUI, $, _, BootstrapDialog, defaultLayout
+                                angular, handleResponse,
+                                $, _, defaultLayout
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

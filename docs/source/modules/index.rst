@@ -12,10 +12,20 @@ Collects alerts for users in an inbox-like container
 
 Provides appointment scheduling and reminders
 
+:std:ref:`Atom Client <atom-client-module>`
+-------------------------------------------
+
+Fetches Atom feed(s) and publishes events when content changes
+
 :std:ref:`Batch <batch-module>`
 -------------------------------
 
 An implementation of Spring batch (version: 3.0.0.M3); it essentially deals with scheduling triggering of jobs
+
+:std:ref:`Care Services Discovery (CSD) <csd-module>`
+-----------------------------------------------------
+
+Consumes the `IHE Care Services Discovery Profile <http://wiki.ihe.net/index.php/Care_Services_Discovery>`_ from a CSD registry such as `OpenInfoMan <https://github.com/openhie/openinfoman>`_, representing the information natively in MOTECH within MDS.
 
 :std:ref:`CMS Lite <cms-lite-module>`
 -------------------------------------
@@ -31,6 +41,11 @@ Integrates the MOTECH platform with CommCareHQ, an open-source platform to help 
 -----------------------------------------------
 
 Integrates data from external data sources and provides sharable data schemas
+
+:std:ref:`DHIS2 <dhis2-module>`
+-------------------------------
+
+Forwards individual and aggregate level data to DHIS2.
 
 :std:ref:`Email <email-module>`
 -------------------------------
@@ -66,6 +81,11 @@ Enrolls users in message campaigns with flexible content-scheduling rules
 ---------------------------------------
 
 Provides data containers and APIs for defining mobile (e.g. SMS or IVR-based) training courses and tracking user enrollment and progress
+
+:std:ref:`ODK <odk-module>`
+-----------------------------------
+
+Integrates the MOTECH platform with OpenDataKit, KoboToolbox, and Ona.io
 
 :std:ref:`OpenMRS <openmrs-module>`
 -----------------------------------

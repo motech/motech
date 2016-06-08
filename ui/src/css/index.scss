@@ -79,6 +79,10 @@ a:active, a:hover, a:focus {
     margin:auto;
 }
 
+#content-header .header-nav {
+    margin: 0;
+}
+
 #content {
     padding-bottom: 31px;
 }
@@ -1232,137 +1236,17 @@ a, li a {
     box-sizing: border-box;
 }
 
-/* fileupload plugin */
+/* fileinput plugin */
 
-.btn-file {
-    overflow:hidden;
-    position:relative;
-    vertical-align:middle;
-}
-
-.btn-file > input {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 0;
-    opacity: 0;
-    filter: alpha(opacity=0);
-    transform: translate(0px, 0) scale(4);
-    font-size: 23px;
-    direction: ltr;
-    cursor: pointer;
-}
-
-.fileupload .uneditable-input {
-    display: inline-block;
+#bundleUploadForm .fileinput {
     margin-bottom: 0;
-    vertical-align: middle;
-    cursor: text;
-    float: left;
-    border-radius: 4px 0 0 4px;
-    margin-right: -1px;
-}
-
-.fileupload .thumbnail {
-    overflow:hidden;
-    display:inline-block;
-    margin-bottom:5px;
-    vertical-align:middle;
-    text-align:center;
-}
-
-.fileupload .thumbnail > img {
-    display: inline-block;
-    vertical-align: middle;
-    max-height: 100%;
-}
-
-.fileupload .btn {
-    vertical-align: middle;
-}
-
-.fileupload-exists .fileupload-new,
-.fileupload-new .fileupload-exists {
-    display: none;
-}
-
-.fileupload-inline .fileupload-controls {
-    display: inline;
-}
-
-.fileupload-new .input-append .btn-file {
-    -webkit-border-radius: 0 3px 3px 0;
-    -moz-border-radius: 0 3px 3px 0;
-    border-radius: 0 3px 3px 0;
-}
-
-.thumbnail-borderless .thumbnail {
-    border: none;padding: 0;
-    -webkit-border-radius: 0;
-    -moz-border-radius: 0;
-    border-radius: 0;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    box-shadow: none;
-}
-
-.fileupload-new.thumbnail-borderless .thumbnail {
-    border: 1px solid #ddd;
-}
-
-.form-group.warning .fileupload .uneditable-input {
-    color: #a47e3c;
-    border-color: #a47e3c;
-}
-
-.form-group.warning .fileupload .fileupload-preview {
-    color: #a47e3c;
-}
-
-.form-group.warning .fileupload .thumbnail {
-    border-color: #a47e3c;
-}
-
-.form-group.error .fileupload .uneditable-input {
-    color: #b94a48;
-    border-color: #b94a48;
-}
-
-.form-group.error .fileupload .fileupload-preview {
-    color: #b94a48;
-}
-
-.form-group.error .fileupload .thumbnail {
-    border-color: #b94a48;
-}
-
-.form-group.success .fileupload .uneditable-input {
-    color: #468847;
-    border-color: #468847;
-}
-
-.form-group.success .fileupload .fileupload-preview {
-    color: #468847;
-}
-
-.form-group.success .fileupload .thumbnail {
-    border-color: #468847;
-}
-
-.fileupload .btn-group > .btn:first-child {
-    border-radius: 4px;
-    margin-left: 5px;
-}
-
-.fileupload .btn-group + .btn-group {
-    margin-left: 0;
 }
 
 .input-append.btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
     border-radius: 4px;
 }
 
-/* fileupload plugin end */
+/* fileinput plugin end */
 
 .form-inline .form-control.form-control-select,
 .form-inline .form-control.input-auto,
@@ -2162,4 +2046,10 @@ body {
     color: #224477;
     background: #F9F9F9;
     filter:none !important;
+}
+
+/* ----- Override default BootstrapDialog style----- */
+
+.bootstrap-dialog .bootstrap-dialog-message {
+    word-wrap: break-word;
 }

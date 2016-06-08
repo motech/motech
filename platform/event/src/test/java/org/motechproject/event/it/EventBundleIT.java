@@ -82,7 +82,7 @@ public class EventBundleIT extends BasePaxIT {
     }
 
     @Test
-    public void testEventListener_WithAnnotation() throws Exception {
+    public void testEventListenerWithAnnotation() throws Exception {
         final TestEventListenerOsgi testEventListenerOsgi = (TestEventListenerOsgi)
                 ServiceRetriever.getWebAppContext(bundleContext, bundleContext.getBundle().getSymbolicName())
                         .getBean("testEventListenerOsgi");
@@ -98,7 +98,7 @@ public class EventBundleIT extends BasePaxIT {
     }
 
     @Test
-    public void testEventWithTypedPayload() throws Exception {
+    public void testEventWithTypedPayloadAndMetadata() throws Exception {
         final ArrayList<MotechEvent> receivedEvents = new ArrayList<>();
 
         registry.registerListener(new EventListener() {
@@ -120,12 +120,26 @@ public class EventBundleIT extends BasePaxIT {
         Map<String, Object> params = new HashMap<>();
         params.put("foo", new TestEventPayload());
 
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("meta", new TestEventPayload());
+        metadata.put("theNumberSeven", 7);
+
         wait2s();
-        eventRelay.sendEventMessage(new MotechEvent("event", params));
+        MotechEvent testEvent = new MotechEvent("event", params);
+        testEvent.setMetadata(metadata);
+        eventRelay.sendEventMessage(testEvent);
         wait2s();
 
         assertEquals(1, receivedEvents.size());
-        assertTrue(receivedEvents.get(0).getParameters().get("foo") instanceof TestEventPayload);
+        MotechEvent receivedEvent = receivedEvents.get(0);
+        assertTrue(receivedEvent.getParameters().get("foo") instanceof TestEventPayload);
+
+        assertEquals(2, receivedEvent.getMetadata().size());
+        assertTrue(receivedEvent.getMetadata().containsKey("meta"));
+        assertTrue(receivedEvent.getMetadata().containsKey("theNumberSeven"));
+        assertTrue(receivedEvent.getMetadata().get("meta") instanceof TestEventPayload);
+        assertEquals(7, receivedEvent.getMetadata().get("theNumberSeven"));
+
     }
 
     @Test

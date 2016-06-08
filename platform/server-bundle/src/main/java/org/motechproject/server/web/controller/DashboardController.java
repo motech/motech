@@ -7,6 +7,7 @@ import org.motechproject.osgi.web.service.LocaleService;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.web.form.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,19 +65,19 @@ public class DashboardController {
         return view;
     }
 
-    @RequestMapping(value = "/gettime", method = RequestMethod.POST)
+    @RequestMapping(value = "/gettime", method = RequestMethod.GET)
     @ResponseBody
     public DateTime getTime() {
         return now();
     }
 
-    @RequestMapping(value = "/getUptime", method = RequestMethod.POST)
+    @RequestMapping(value = "/getUptime", method = RequestMethod.GET)
     @ResponseBody
     public DateTime getUptime() {
         return now().minus(ManagementFactory.getRuntimeMXBean().getUptime());
     }
 
-    @RequestMapping(value = "/getUser", method = RequestMethod.POST)
+    @RequestMapping(value = "/getUser", method = RequestMethod.GET)
     @ResponseBody
     public UserInfo getUser(HttpServletRequest request) {
         String lang = localeService.getUserLocale(request).getLanguage();
@@ -86,15 +87,15 @@ public class DashboardController {
         return new UserInfo(userName, securityLaunch, lang);
     }
 
-    @RequestMapping(value = "/getNodeName", method = RequestMethod.POST)
+    @RequestMapping(value = "/getNodeName", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public String getNodeName() throws UnknownHostException {
         InetAddress ip = InetAddress.getLocalHost();
 
-        return '"' + ip.getHostName() + '"';
+        return ip.getHostName();
     }
 
-    @RequestMapping(value = "/isInboundChannelActive", method = RequestMethod.POST)
+    @RequestMapping(value = "/isInboundChannelActive", method = RequestMethod.GET)
     @ResponseBody
     public boolean isInboundChannelActive() throws UnknownHostException {
         return eventConsumerInfo.isRunning();

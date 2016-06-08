@@ -129,10 +129,10 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                $, angular, jQuery, motechAlert,  window, innerLayout,
-                                toLocale, moment, parseUri, handleResponse, angularHandler, blockUI, unblockUI, _,
-                                $rootScope, jgridDefaultSettings, alertHandler, SwaggerUi, getBaseUrl, getServerPrefix,
-                                parseResponse, BootstrapDialog
+                                $, angular, jQuery, window, innerLayout, toLocale,
+                                moment, parseUri, handleResponse, _, getServerPrefix,
+                                $rootScope, jgridDefaultSettings, SwaggerUi, getBaseUrl,
+                                parseResponse, BootstrapDialog, console, resizeLayout
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

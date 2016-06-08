@@ -196,6 +196,12 @@
             <groupId>org.postgresql</groupId>
             <artifactId>org.motechproject.org.postgresql</artifactId>
         </dependency>
+        <!-- Active MQ  -->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
+            <version>1.0.1</version>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>org.springframework</groupId>

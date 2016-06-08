@@ -4,7 +4,7 @@
     /* App Module */
 
     var serverModule = angular.module('motech-dashboard', ['localization', 'ngCookies', 'ui',
-        'motech-widgets', 'browserDetect', 'uiServices', 'loadOnDemand', 'ngRoute']);
+        'motech-widgets', 'browserDetect', 'uiServices', 'ui.router', 'oc.lazyLoad', 'textAngular']);
 
     serverModule.config(['$httpProvider', function($httpProvider) {
         var interceptor = ['$q', function($q, $location) {
@@ -35,14 +35,65 @@
         $httpProvider.interceptors.push(interceptor);
     }]);
 
-    serverModule.config(['$loadOnDemandProvider', function ($loadOnDemandProvider) {
+    serverModule.config(function($stateProvider, $locationProvider, $urlRouterProvider, $ocLazyLoadProvider) {
+        $urlRouterProvider.otherwise("/");
+
+        $stateProvider
+            .state('#', {
+            url: "/", // root route
+                views: {
+                    "moduleToLoad": {
+                        controller: 'MotechMasterCtrl',
+                        templateUrl: '../server/resources/partials/main.html'
+                    }
+                }
+            })
+            .state('home', {
+                url: "/home",
+                views: {
+                    "moduleToLoad": {
+                        controller: 'MotechHomeCtrl',
+                        templateUrl: '../server/resources/partials/main.html'
+                    }
+                }
+            });
+
+            // Without server side support html5 must be disabled.
+            $locationProvider.html5Mode(false);
+    });
+
+    serverModule.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
         $.ajax({
             url: '../server/module/config',
-            success:  function (data, status, headers, config,timeout) {
+            success:  function (data, status, headers, config, timeout) {
                 if (headers.getResponseHeader('login-required') !== 'true' ) {
-                    $loadOnDemandProvider.config(data);
+                    var modules = [];
+
+                    angular.forEach(data, function(value, key) {
+                        if (value.template !== null) {
+                            modules.push({'name': value.name, series: true, 'template': value.template, 'files':[value.script, value.css]});
+                        } else {
+                            modules.push({'name': value.name, 'files':[value.script]});
+                        }
+                    });
+                    angular.forEach(modules, function(module, key) {
+                        if (module.name && module.name.indexOf('.') < 0) {
+                            angular.forEach(data, function(value, key) {
+                                var indexOfName = value.name.indexOf('.');
+                                if (indexOfName > 0 && value.name.substring(0, indexOfName) === module.name) {
+                                    module.files.push(value.script);
+                                }
+                            });
+                        }
+                    });
+                    $ocLazyLoadProvider.config({
+                        events: true,
+                        debug: true,
+                        modules: modules
+                    });
                 }
             }
         });
     }]);
 }());
+
