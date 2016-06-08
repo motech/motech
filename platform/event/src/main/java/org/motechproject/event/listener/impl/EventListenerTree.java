@@ -324,20 +324,20 @@ public class EventListenerTree {
 
         for (Iterator<EventListenerTree> listenerIterator = children.iterator(); listenerIterator.hasNext();) {
             EventListenerTree child = listenerIterator.next();
-            if (child.removeListeners(beanName) && child.removeEmptyChildWithWildCardListeners()) {
+            if (child.removeListeners(beanName) && child.removeEmptyChildWithWildcardListeners()) {
                 listenerIterator.remove();
             }
         }
     }
 
-    private boolean removeEmptyChildWithWildCardListeners() {
+    private boolean removeEmptyChildWithWildcardListeners() {
 
         if (children.size() == 0) {
             return this.getAllListeners().size() == 0;
         } else {
             for (Iterator<EventListenerTree> listenerIterator = children.iterator(); listenerIterator.hasNext();) {
                 EventListenerTree child = listenerIterator.next();
-                if (!child.removeEmptyChildWithWildCardListeners() || isEmpty(wildcardListeners)) {
+                if (!child.removeEmptyChildWithWildcardListeners() || isEmpty(wildcardListeners)) {
                     return false;
                 } else {
                     listenerIterator.remove();
