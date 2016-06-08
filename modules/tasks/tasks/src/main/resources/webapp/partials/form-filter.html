@@ -56,10 +56,10 @@
                                         </div>
                                     </div>
                                     <ng-switch on="getPopoverType(filter)">
-                                        <span ng-switch-when="STRING" class="btn btn-danger popoverEvent" manipulationpopover="STRING" data-type="{{filter.type}}">
+                                        <span ng-switch-when="STRING" class="btn btn-danger popoverEvent" manipulation-modal manipulation-type="filter.type" manipulations="filter.manipulations" name="filter" is-filter="true" displayName="filter.displayName">
                                             <span class="glyphicon glyphicon-cog"></span>
                                         </span>
-                                        <span ng-switch-when="DATE" class="btn btn-danger popoverEvent" manipulationpopover="DATE" data-type="{{filter.type}}">
+                                        <span ng-switch-when="DATE" class="btn btn-danger popoverEvent" manipulation-modal manipulation-type="filter.type" manipulations="filter.manipulations" name="filter" is-filter="true" displayName="filter.displayName">
                                             <span class="glyphicon glyphicon-cog"></span>
                                         </span>
                                         <span ng-switch-default class="btn btn-danger" ng-disabled="true">
