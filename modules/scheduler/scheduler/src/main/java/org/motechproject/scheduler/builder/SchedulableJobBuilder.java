@@ -22,8 +22,11 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 
+import java.util.Map;
+
 import static org.motechproject.scheduler.constants.SchedulerConstants.CRON;
 import static org.motechproject.scheduler.constants.SchedulerConstants.DAY_OF_WEEK;
+import static org.motechproject.scheduler.constants.SchedulerConstants.EVENT_METADATA;
 import static org.motechproject.scheduler.constants.SchedulerConstants.EVENT_TYPE_KEY_NAME;
 import static org.motechproject.scheduler.constants.SchedulerConstants.IGNORE_PAST_FIRES_AT_START;
 import static org.motechproject.scheduler.constants.SchedulerConstants.IS_DAY_OF_WEEK;
@@ -52,6 +55,11 @@ public final class SchedulableJobBuilder {
     public static SchedulableJob buildJob(JobKey key, JobDataMap dataMap, Trigger trigger) throws SchedulerException {
 
         SchedulableJob job;
+
+        Map<String, Object> params = dataMap.getWrappedMap();
+        Map<String, Object> metadata = (Map<String, Object>) params.get(EVENT_METADATA);
+        params.remove(EVENT_METADATA);
+        params.putAll(metadata);
 
         switch (getJobType(key, dataMap)) {
             case CRON:
