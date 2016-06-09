@@ -126,10 +126,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
-<<<<<<< HEAD
 import java.util.Collection;
-=======
->>>>>>> Motech-2134: Add support for UUID type in MDS
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
