@@ -24,7 +24,9 @@ public enum OperatorType {
     LESS_DAYS_FROM_NOW("task.lessDaysFromNow"),
     MORE_DAYS_FROM_NOW("task.moreDaysFromNow"),
     LESS_MONTHS_FROM_NOW("task.lessMonthsFromNow"),
-    MORE_MONTHS_FROM_NOW("task.moreMonthsFromNow");
+    MORE_MONTHS_FROM_NOW("task.moreMonthsFromNow"),
+    AND("task.AND"),
+    OR("task.OR");
 
     private final String value;
 
