@@ -1,23 +1,33 @@
 package org.motechproject.mds.test.domain.historytest;
 
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.domain.MdsEntity;
 
 import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.Unique;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity(recordHistory = true)
-public class Company extends MdsEntity {
+public class Company {
 
     @Field
+    private Long id;
+
+    @Field
+    @Unique
     private String name;
 
     @Field
+    private DateTime modificationDate;
+
+    @Field
     @Persistent(mappedBy = "companies")
-    private Set<Consultant> consultants;
+    private Set<Consultant> consultants = new HashSet<>();
 
     public Company() {
     }
@@ -32,6 +42,22 @@ public class Company extends MdsEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public DateTime getModificationDate() {
+        return modificationDate;
+    }
+
+    public void setModificationDate(DateTime modificationDate) {
+        this.modificationDate = modificationDate;
     }
 
     public Set<Consultant> getConsultants() {
@@ -57,5 +83,20 @@ public class Company extends MdsEntity {
                 it.remove();
             }
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Company)) {
+            return false;
+        } else {
+            Company that = (Company) o;
+            return Objects.equals(id, that.id) && StringUtils.equals(name, that.name);
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
