@@ -13,6 +13,7 @@ import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.domain.mds.task.builder.PostActionParameter;
 import org.motechproject.tasks.json.TaskConfigDeserializer;
 
 import java.io.Serializable;
@@ -45,12 +46,17 @@ public class TaskConfig implements Serializable {
     @Cascade(delete = true)
     private List<DataSource> dataSources;
 
+    @Field
+    @Cascade(delete = true)
+    private List<PostActionParameter> postActionParameters;
+
     @Ignore
     public SortedSet<TaskConfigStep> getSteps() {
         SortedSet<TaskConfigStep> steps = new TreeSet<>();
 
         steps.addAll(getFilters());
         steps.addAll(getDataSources());
+        steps.addAll(getPostActionParameters());
 
         return steps;
     }
@@ -112,6 +118,19 @@ public class TaskConfig implements Serializable {
                         && ((DataSource) object).objectEquals(providerName, objectId, objectType);
             }
         });
+    }
+
+    @JsonIgnore
+    public List<PostActionParameter> getPostActionParameters() {
+        if (postActionParameters == null) {
+            postActionParameters = new ArrayList<>();
+        }
+        return postActionParameters;
+    }
+
+    @JsonIgnore
+    public void setPostActionParameters(List<PostActionParameter> postActionParameters) {
+        this.postActionParameters = postActionParameters;
     }
 
     /**

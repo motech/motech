@@ -5,6 +5,7 @@ import org.motechproject.tasks.domain.mds.task.DataSource;
 import org.motechproject.tasks.domain.mds.task.FilterSet;
 import org.motechproject.tasks.domain.mds.task.Lookup;
 import org.motechproject.tasks.domain.mds.task.TaskConfigStep;
+import org.motechproject.tasks.domain.mds.task.builder.PostActionParameter;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.service.util.KeyEvaluator;
 import org.motechproject.tasks.service.util.TaskContext;
@@ -75,6 +76,9 @@ class TaskInitializer {
                 } catch (RuntimeException e) {
                     throw new TaskHandlerException(FILTER, "task.error.filterError", e);
                 }
+            } else if (step instanceof PostActionParameter) {
+                PostActionParameter pa = (PostActionParameter) step;
+                taskContext.addPostActionParameterObject(pa.getObjectId().toString(), getPostActionParameterObject(), pa.isFailIfDataNotFound());
             }
         }
         return result;
@@ -103,5 +107,10 @@ class TaskInitializer {
         }
 
         return provider.lookup(dataSource.getType(), dataSource.getName(), lookupFields);
+    }
+
+    private Object getPostActionParameterObject() {
+        //todo
+        return null;
     }
 }
