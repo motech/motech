@@ -800,14 +800,14 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         JobDataMap map = detail.getJobDataMap();
 
-        if (map != null && isJobUIDefined((Map<String, Object>) map.get(EVENT_METADATA))) {
+        if (map != null && !isJobUIDefined(map)) {
             throw new MotechSchedulerException(String.format("Job is not ui defined:\n %s\n %s", key.getName(),
                     key.getGroup()));
         }
     }
 
-    private Boolean isJobUIDefined(Map<String, Object> jobMetadataMap) {
-        return jobMetadataMap != null && !(Boolean) jobMetadataMap.get(UI_DEFINED);
+    private boolean isJobUIDefined(JobDataMap jobDataMap) {
+        return jobDataMap.get(EVENT_METADATA) != null &&  (Boolean) ((Map<String, Object>) jobDataMap.get(EVENT_METADATA)).get(UI_DEFINED);
     }
 
     private MotechEvent assertCronJob(CronSchedulableJob cronSchedulableJob) {
