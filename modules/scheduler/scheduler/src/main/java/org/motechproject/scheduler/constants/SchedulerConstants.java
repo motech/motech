@@ -7,6 +7,7 @@ public final class SchedulerConstants {
 
     public static final String VIEW_SCHEDULER_JOBS = "hasRole('viewSchedulerJobs')";
     public static final String EVENT_TYPE_KEY_NAME = "eventType";
+    public static final String EVENT_METADATA = "org.motechproject.scheduler.service.Job.metadata";
 
     /* Job types */
     public static final String CRON = "CRON";
