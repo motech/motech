@@ -731,11 +731,11 @@
         $scope.getPopoverType = function(filter) {
             if (!filter.manipulations || !Array.isArray(filter.manipulations)) {
                 if (filter.displayName) {
-                    var manipulations, mans;
-                    mans = filter.key.split('?');
-                    mans.shift();
+                    var manipulations, manipulationsBuff;
+                    manipulationsBuff = filter.key.split('?');
+                    manipulationsBuff.shift();
                     manipulations = [];
-                    mans.forEach(function (manipulationStr) {
+                    manipulationsBuff.forEach(function (manipulationStr) {
                         var manipulation = {},
                         parts = manipulationStr.split('(');
                         manipulation.type = parts.shift();

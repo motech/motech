@@ -558,9 +558,9 @@
                 }
                 element.on('click', function (event) {
                     var modalScope,
-                        fun;
+                        parseManipulationsFunction;
                     if (!$(event.target).hasClass('field-remove')) {
-                        fun = function () {
+                        parseManipulationsFunction = function () {
                             var str = "";
                             if (scope.manipulations && Array.isArray(scope.manipulations)) {
                                 scope.manipulations.forEach(function(manipulation) {
@@ -604,7 +604,7 @@
                             onhide: function(){
                                 modalScope.$destroy();
                                 if (isFilter) {
-                                    fun();
+                                    parseManipulationsFunction();
                                 }
                             }
                         });
