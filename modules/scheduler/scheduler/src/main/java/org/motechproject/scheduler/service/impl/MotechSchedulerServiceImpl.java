@@ -12,6 +12,7 @@ import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobId;
+import org.motechproject.scheduler.contract.MisfireSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingJobId;
 import org.motechproject.scheduler.contract.RepeatingPeriodJobId;
 import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
@@ -603,11 +604,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             jobRepeatCount = MAX_REPEAT_COUNT;
         }
 
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put(UI_DEFINED, job.isUiDefined());
-        metadata.put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
-        metadata.put(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE, job.isUseOriginalFireTimeAfterMisfire());
-
         JobId jobId = new RepeatingJobId(motechEvent);
         JobDetail jobDetail = newJob(MotechScheduledJob.class)
                 .withIdentity(jobKey(jobId.value(), JOB_GROUP_NAME))
@@ -615,7 +611,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
-        jobDetail.getJobDataMap().put(EVENT_METADATA, metadata);
+        jobDetail.getJobDataMap().put(EVENT_METADATA, createMetadataForMisfireSchedualbleJob(job));
 
         try {
             if (scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME)) != null) {
@@ -650,6 +646,16 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         scheduleJob(jobDetail, trigger, update);
     }
 
+    private Map<String, Object> createMetadataForMisfireSchedualbleJob(MisfireSchedulableJob job) {
+
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put(UI_DEFINED, job.isUiDefined());
+        metadata.put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
+        metadata.put(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE, job.isUseOriginalFireTimeAfterMisfire());
+
+        return metadata;
+    }
+
     private void scheduleRepeatingPeriodJob(RepeatingPeriodSchedulableJob job, boolean update) {
         logObjectIfNotNull(job);
 
@@ -663,11 +669,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 .build();
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put(UI_DEFINED, job.isUiDefined());
-        metadata.put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
-        metadata.put(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE, job.isUseOriginalFireTimeAfterMisfire());
-        jobDetail.getJobDataMap().put(EVENT_METADATA, metadata);
+
+        jobDetail.getJobDataMap().put(EVENT_METADATA, jobDetail.getJobDataMap().put(EVENT_METADATA, createMetadataForMisfireSchedualbleJob(job)));
 
         ScheduleBuilder scheduleBuilder = PeriodIntervalScheduleBuilder.periodIntervalSchedule()
                 .withRepeatPeriod(job.getRepeatPeriod())
