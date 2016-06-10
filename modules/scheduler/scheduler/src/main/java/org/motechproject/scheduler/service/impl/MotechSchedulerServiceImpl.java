@@ -611,7 +611,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
-        jobDetail.getJobDataMap().put(EVENT_METADATA, createMetadataForMisfireSchedualbleJob(job));
+        jobDetail.getJobDataMap().put(EVENT_METADATA, createMetadataForMisfireSchedulableJob(job));
 
         try {
             if (scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME)) != null) {
@@ -646,7 +646,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         scheduleJob(jobDetail, trigger, update);
     }
 
-    private Map<String, Object> createMetadataForMisfireSchedualbleJob(MisfireSchedulableJob job) {
+    private Map<String, Object> createMetadataForMisfireSchedulableJob(MisfireSchedulableJob job) {
 
         Map<String, Object> metadata = new HashMap<>();
         metadata.put(UI_DEFINED, job.isUiDefined());
@@ -670,7 +670,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
-        jobDetail.getJobDataMap().put(EVENT_METADATA, jobDetail.getJobDataMap().put(EVENT_METADATA, createMetadataForMisfireSchedualbleJob(job)));
+        jobDetail.getJobDataMap().put(EVENT_METADATA, jobDetail.getJobDataMap().put(EVENT_METADATA, createMetadataForMisfireSchedulableJob(job)));
 
         ScheduleBuilder scheduleBuilder = PeriodIntervalScheduleBuilder.periodIntervalSchedule()
                 .withRepeatPeriod(job.getRepeatPeriod())
@@ -800,10 +800,14 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         JobDataMap map = detail.getJobDataMap();
 
-        if (map != null && map.get(EVENT_METADATA) != null && !(Boolean) ((Map<String, Object>) map.get(EVENT_METADATA)).get(UI_DEFINED)) {
+        if (map != null && isJobUIDefined((Map<String, Object>) map.get(EVENT_METADATA))) {
             throw new MotechSchedulerException(String.format("Job is not ui defined:\n %s\n %s", key.getName(),
                     key.getGroup()));
         }
+    }
+
+    private Boolean isJobUIDefined(Map<String, Object> jobMetadataMap) {
+        return jobMetadataMap != null && !(Boolean) jobMetadataMap.get(UI_DEFINED);
     }
 
     private MotechEvent assertCronJob(CronSchedulableJob cronSchedulableJob) {

@@ -62,7 +62,7 @@ public final class SchedulableJobBuilder {
         params.putAll(metadata);
         JobDataMap map = new JobDataMap(params);
 
-        switch (getJobType(key, dataMap)) {
+        switch (getJobType(key, map)) {
             case CRON:
                 job = buildCronSchedulableJob(trigger, map);
                 break;
