@@ -159,7 +159,8 @@ public class InstanceController extends MdsController {
         Set<Map.Entry<String, JsonElement>> entrySet = instanceIdsJsonObject.entrySet();
         for (Map.Entry<String, JsonElement> entry : entrySet) {
             String value = instanceIdsJsonObject.get(entry.getKey()).toString();
-            value = value.substring(1).substring(0, 2);
+            value = value.substring(1);
+            value = value.substring(0, value.length()-1);
             instanceIdsList.add(Long.parseLong(value));
         }
         instanceService.deleteSelectedInstances(entityId, instanceIdsList);
