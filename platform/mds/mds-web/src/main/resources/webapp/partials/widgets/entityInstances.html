@@ -17,6 +17,12 @@
             <button ng-click="addInstance(module, entity)" type="button" class="btn btn-success" ng-show="showAddInstanceButton && !shouldHideButton()">
                 <i class="fa fa-plus"></i> {{msg('mds.btn.add')}}
             </button>
+            <button ng-click="deleteSelectedInstances()" type="button" class="btn btn-danger" id="deleteSelectedButton" ng-show="showDeleteSelectedInstancesButton && !shouldHideButton()" disabled>
+                <i class="fa fa-wh fa-trash-o"></i> {{msg('mds.btn.delete')}}
+            </button>
+            <button ng-click="deleteAllInstances()" type="button" class="btn btn-danger" id="deleteAllButton"ng-show="showDeleteAllInstancesButton && !shouldHideButton()">
+                <i class="fa fa-wh fa-trash-o"></i> {{msg('mds.btn.deleteAll')}}
+            </button>
         </div>
         <div class="btn-group">
             <button id="back-to-entity-button" ng-click="backToEntityList()" type="button" class="btn btn-default" ng-show="showBackToEntityListButton">
@@ -102,6 +108,8 @@
 
     <div ng-include="'../mds/resources/partials/modals/import-entity.html'"></div>
     <div ng-include="'../mds/resources/partials/modals/export-entity.html'"></div>
+    <div ng-include="'../mds/resources/partials/modals/delete-selected-instances.html'"></div>
+    <div ng-include="'../mds/resources/partials/modals/delete-all-instances.html'"></div>
 </div>
 
 <div ng-if="showTrash && !showTrashInstance">

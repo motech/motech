@@ -226,6 +226,23 @@ public interface InstanceService {
     void deleteInstance(Long entityId, Long instanceId);
 
     /**
+     * Removes all instances from MDS. Depending on the settings, it will either be moved to trash or
+     * deleted permanently.
+     *
+     * @param entityId id of the entity
+     */
+    void deleteAllInstances(Long entityId);
+
+    /**
+     * Removes selected instances from MDS. Depending on the settings, it will either be moved to trash or
+     * deleted permanently.
+     *
+     * @param entityId id of the entity
+     * @param instanceIds list of ids of the instances
+     */
+    void deleteSelectedInstances(Long entityId, List<Long> instanceIds);
+
+    /**
      * Brings back an instance from trash. This, in fact, creates a new instance in MDS and assigns identical
      * field values as the deleted instance, after which the deleted instance is removed permanently. Old id
      * of the instance will not be persisted.

@@ -451,6 +451,26 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
+    public void deleteAllInstances(Long entityId) {
+        EntityDto entity = getEntity(entityId);
+        validateCredentials(entity);
+        validateNonEditableProperty(entity);
+        MotechDataService service = getServiceForEntity(entity);
+        service.deleteAll();
+    }
+
+    @Override
+    public void deleteSelectedInstances(Long entityId, List<Long> instanceIds) {
+        EntityDto entity = getEntity(entityId);
+        validateCredentials(entity);
+        validateNonEditableProperty(entity);
+        MotechDataService service = getServiceForEntity(entity);
+        for (Long instanceId : instanceIds) {
+            service.delete(ID_FIELD_NAME, instanceId);
+        }
+    }
+
+    @Override
     public void revertInstanceFromTrash(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
         validateCredentials(entity);

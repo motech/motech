@@ -1,5 +1,8 @@
 package org.motechproject.mds.web.controller;
 
+import com.google.gson.JsonParser;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -50,8 +53,10 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.UUID;
+import java.util.ArrayList;
 
 import static org.apache.commons.lang.CharEncoding.UTF_8;
 
@@ -114,7 +119,7 @@ public class InstanceController extends MdsController {
                              @PathVariable String fieldName, HttpServletResponse response) throws IOException, InstanceNotFoundException {
         byte[] content;
         Object value = instanceService.getInstanceField(entityId, instanceId, fieldName);
-        if (value instanceof  byte[]) {
+        if (value instanceof byte[]) {
             content = (byte[]) value;
         } else {
             content = ArrayUtils.toPrimitive((Byte[]) value);
@@ -137,6 +142,27 @@ public class InstanceController extends MdsController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteInstance(@PathVariable Long entityId, @PathVariable Long instanceId) {
         instanceService.deleteInstance(entityId, instanceId);
+    }
+
+    @RequestMapping(value = "/instances/{entityId}/deleteAll", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteAllInstances(@PathVariable Long entityId) {
+        instanceService.deleteAllInstances(entityId);
+    }
+
+    @RequestMapping(value = "/instances/{entityId}/deleteSelected/{instanceIds}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteSelectedInstances(@PathVariable Long entityId, @PathVariable String instanceIds) {
+        List<Long> instanceIdsList = new ArrayList();
+        JsonParser parser = new JsonParser();
+        JsonObject instanceIdsJsonObject = parser.parse(instanceIds).getAsJsonObject();
+        Set<Map.Entry<String, JsonElement>> entrySet = instanceIdsJsonObject.entrySet();
+        for (Map.Entry<String, JsonElement> entry : entrySet) {
+            String value = instanceIdsJsonObject.get(entry.getKey()).toString();
+            value = value.substring(1).substring(0, 2);
+            instanceIdsList.add(Long.parseLong(value));
+        }
+        instanceService.deleteSelectedInstances(entityId, instanceIdsList);
     }
 
     @RequestMapping(value = "/instances/{entityId}/revertFromTrash/{instanceId}", method = RequestMethod.GET)
@@ -200,7 +226,7 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/instances/{entityId}/instance/{instanceId}/{fieldName}", method = RequestMethod.POST)
     @ResponseBody
     public Records<BasicEntityRecord> getRelatedValues(@PathVariable Long entityId, @PathVariable Long instanceId,
-                                    @PathVariable String fieldName, String filters, GridSettings settings) {
+                                                       @PathVariable String fieldName, String filters, GridSettings settings) {
         RelationshipsUpdate filter = parseRelatedInstancesFilter(filters);
         QueryParams queryParams = QueryParamsBuilder.buildQueryParams(settings);
         Records<BasicEntityRecord> records = instanceService.getRelatedFieldValue(entityId, instanceId, fieldName, filter,
@@ -213,9 +239,8 @@ public class InstanceController extends MdsController {
      * Retrieves instance and builds field value from it. Used when user adds related instances
      * in Data Browser UI.
      *
-     *
-     * @param entityId the id of entity which has related field
-     * @param fieldId the id of related field
+     * @param entityId   the id of entity which has related field
+     * @param fieldId    the id of related field
      * @param instanceId the id of instance which will be related to given field
      * @return instance value as related field
      */
@@ -337,7 +362,7 @@ public class InstanceController extends MdsController {
     public String generateRandomUUID() {
         return UUID.randomUUID().toString();
     }
-    
+
     private RelationshipsUpdate parseRelatedInstancesFilter(String filters) {
         if (filters == null) {
             return new RelationshipsUpdate();
@@ -345,7 +370,7 @@ public class InstanceController extends MdsController {
 
         RelationshipsUpdate filter = null;
         try {
-            filter =  objectMapper.readValue(filters, RelationshipsUpdate.class);
+            filter = objectMapper.readValue(filters, RelationshipsUpdate.class);
         } catch (IOException e) {
             LOGGER.error("Could not parse related instances filter from the request. ", e);
         }
@@ -357,7 +382,8 @@ public class InstanceController extends MdsController {
         if (gridSettings.getFields() == null) {
             return null;
         } else {
-            return objectMapper.readValue(gridSettings.getFields(), new TypeReference<LinkedHashMap>() {});
+            return objectMapper.readValue(gridSettings.getFields(), new TypeReference<LinkedHashMap>() {
+            });
         }
     }
 

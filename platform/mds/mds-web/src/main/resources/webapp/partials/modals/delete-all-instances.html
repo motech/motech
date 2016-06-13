@@ -1,0 +1,22 @@
+<div id="deleteAllInstancesModal" class="mds modal fade" tabindex="-1" role="dialog"
+     aria-labelledby="deleteAllInstancesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="deleteAllInstancesModalLabel">{{msg('mds.delete.deleteAllInstancesTitle')}}</h4>
+            </div>
+            <div class="modal-body">
+                {{msg('mds.delete.deleteAllInstances')}}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger btn-primary" ng-click="deleteEveryInstance()" data-dismiss="modal">
+                    {{msg('mds.btn.delete')}}
+                </button>
+                <button class="btn btn-default" data-dismiss="modal">
+                    {{msg('mds.btn.cancel')}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

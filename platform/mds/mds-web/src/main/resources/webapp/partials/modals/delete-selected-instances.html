@@ -1,0 +1,22 @@
+<div id="deleteSelectedInstancesModal" class="mds modal fade" tabindex="-1" role="dialog"
+     aria-labelledby="deleteSelectedInstancesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="deleteSelectedInstancesModalLabel">{{msg('mds.delete.deleteSelectedInstancesTitle')}}</h4>
+            </div>
+            <div class="modal-body">
+                {{msg('mds.delete.deleteSelectedInstances',checkedInstancesLength)}}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger btn-primary" ng-click="deleteEverySelectedInstance(checkedEntitiesJSON)" data-dismiss="modal">
+                    {{msg('mds.btn.delete')}}
+                </button>
+                <button class="btn btn-default" data-dismiss="modal">
+                    {{msg('mds.btn.cancel')}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
