@@ -2818,6 +2818,26 @@
         };
     });
     
+    directives.directive('uuidValidity', function() {
+        var UUID_REGEXP = new RegExp('^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$');
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                var elm = angular.element(element), originalValue;
+                ctrl.$parsers.unshift(function(viewValue) {
+                    if(viewValue === '' || UUID_REGEXP.test(viewValue)) {
+                        ctrl.$setValidity('uuid', true);
+                        return viewValue;
+                    }
+                    else {
+                        ctrl.$setValidity('uuid', false);
+                        return viewValue;
+                    }
+                });
+            }
+        };
+    });
+    
     directives.directive('insetValidity', function() {
         return {
             require: 'ngModel',
