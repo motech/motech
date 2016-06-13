@@ -45,8 +45,8 @@
                     'type' : 'BOOLEAN',
                     'options': [
                         'task.exist',
-                        'task.AND',
-                        'task.OR'
+                        'task.and',
+                        'task.or'
                     ]
                 }
             },
