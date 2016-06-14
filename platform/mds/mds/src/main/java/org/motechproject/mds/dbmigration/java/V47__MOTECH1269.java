@@ -3,6 +3,7 @@ package org.motechproject.mds.dbmigration.java;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.helper.ClassTableName;
+import org.omg.IOP.TAG_ALTERNATE_IIOP_ADDRESS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -39,6 +40,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
     private static final String SUFFIX_OID = "_id_OID";
     private static final String SUFFIX_OWN = "_id_OWN";
     private static final String SUFFIX_HISTORY = "__History_ID";
+    private static final String SUFFIX_IDX = "_INTEGER_IDX";
     private static final String ENTITY = "Entity";
     private static final String FIELD = "Field";
     private static final String FIELD_METADATA = "FieldMetadata";
@@ -127,7 +129,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
     }
 
     private void createAndFillHistoryRelationshipTable(HistoryFk historyFk, boolean isList) {
-        String fieldName = historyFk.oldColumn.replace(historyFk.suffix, "");
+        String fieldName = historyFk.collectionName;
         String newTableName = historyFk.relatedTable + "_" + fieldName;
         String relatedFieldName = historyFk.relatedVersionColumn.replace("__HistoryCurrentVersion", "");
         relatedFieldName = Character.toUpperCase(relatedFieldName.charAt(0)) + relatedFieldName.substring(1);
@@ -212,8 +214,17 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
 
                 String versionColumn = getCurrentVersionColumn(historyTable);
 
+                String collectionName;
+                String listIndex = columnEndsWith(historyTable, SUFFIX_IDX);
+
+                if (listIndex != null && suffix.equals(SUFFIX_OID)) {
+                    collectionName = listIndex.replace(SUFFIX_IDX, "");
+                } else {
+                    collectionName = fkColumnName.replace(suffix, "");
+                }
+
                 HistoryFk historyFk = new HistoryFk(historyTable, pkTableName, fkColumnName,
-                        newColumn, newColExists, relatedVersionColumn, suffix, versionColumn);
+                        newColumn, newColExists, relatedVersionColumn, suffix, versionColumn, collectionName);
                 keys.add(historyFk);
             }
         }
@@ -228,6 +239,22 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
             }
         }
         return false;
+    }
+
+    private String columnEndsWith(String tableName, String suffix) throws SQLException {
+        String result = null;
+
+        List<Map<String, Object>> list = jdbc.queryForList("SHOW COLUMNS FROM " + tableName + ";");
+
+        for (Map<String, Object> row : list) {
+            String columnName = (String) row.get("Field");
+
+            if (columnName.endsWith(suffix)) {
+                result = columnName;
+            }
+        }
+
+        return result;
     }
 
     private String getCurrentVersionColumn(String table)  {
@@ -302,9 +329,10 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
         private String relatedVersionColumn;
         private String suffix;
         private String versionColumn;
+        private String collectionName;
 
         public HistoryFk(String table, String relatedTable, String oldColumn, String newColumn, boolean newColumnExists,
-                         String relatedVersionColumn, String suffix, String versionColumn) {
+                         String relatedVersionColumn, String suffix, String versionColumn, String collectionName) {
             this.table = table;
             this.relatedTable = relatedTable;
             this.oldColumn = oldColumn;
@@ -313,6 +341,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
             this.relatedVersionColumn = relatedVersionColumn;
             this.suffix = suffix;
             this.versionColumn = versionColumn;
+            this.collectionName = collectionName;
         }
     }
 }
