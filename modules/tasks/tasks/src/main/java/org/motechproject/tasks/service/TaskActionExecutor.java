@@ -45,7 +45,6 @@ public class TaskActionExecutor {
 
     private TaskService taskService;
     private TaskActivityService activityService;
-    private KeyEvaluator keyEvaluator;
 
     @Autowired
     public TaskActionExecutor(TaskService taskService, TaskActivityService activityService,
@@ -65,9 +64,9 @@ public class TaskActionExecutor {
      */
     public void execute(Task task, TaskActionInformation actionInformation, TaskContext taskContext) throws TaskHandlerException {
         LOGGER.info("Executing task action: {} from task: {}", actionInformation.getName(), task.getName());
-        this.keyEvaluator = new KeyEvaluator(taskContext);
+        KeyEvaluator keyEvaluator = new KeyEvaluator(taskContext);
         ActionEvent action = getActionEvent(actionInformation);
-        Map<String, Object> parameters = createParameters(actionInformation, action);
+        Map<String, Object> parameters = createParameters(actionInformation, action, keyEvaluator);
         LOGGER.debug("Parameters created: {} for task action: {}", parameters.toString(), action.getName());
 
         if (action.hasService() && bundleContext != null) {
@@ -101,7 +100,7 @@ public class TaskActionExecutor {
     }
 
     private Map<String, Object> createParameters(TaskActionInformation info,
-                                         ActionEvent action) throws TaskHandlerException {
+                                         ActionEvent action, KeyEvaluator keyEvaluator) throws TaskHandlerException {
         SortedSet<ActionParameter> actionParameters = action.getActionParameters();
         Map<String, Object> parameters = new HashMap<>(actionParameters.size());
 
@@ -119,10 +118,10 @@ public class TaskActionExecutor {
 
                 switch (actionParameter.getType()) {
                     case LIST:
-                        parameters.put(key, convertToList((List<String>) LIST.parse(template)));
+                        parameters.put(key, convertToList((List<String>) LIST.parse(template), keyEvaluator));
                         break;
                     case MAP:
-                        parameters.put(key, convertToMap(template));
+                        parameters.put(key, convertToMap(template, keyEvaluator));
                         break;
                     default:
                         try {
@@ -152,7 +151,7 @@ public class TaskActionExecutor {
         return parameters;
     }
 
-    private Map<Object, Object> convertToMap(String template) throws TaskHandlerException {
+    private Map<Object, Object> convertToMap(String template, KeyEvaluator keyEvaluator) throws TaskHandlerException {
         String[] rows = template.split("(\\r)?\\n");
         Map<Object, Object> tempMap = new HashMap<>(rows.length);
 
@@ -164,8 +163,8 @@ public class TaskActionExecutor {
             switch (array.length) {
                 case 2:
                     array[1] = array[1].trim();
-                    mapKey = getValue(array[0]);
-                    mapValue = getValue(array[1]);
+                    mapKey = getValue(array[0], keyEvaluator);
+                    mapValue = getValue(array[1], keyEvaluator);
 
                     tempMap.put(
                         ParameterType.getType(mapKey.getClass()).parse(keyEvaluator.evaluateTemplateString(array[0])),
@@ -173,7 +172,7 @@ public class TaskActionExecutor {
                     );
                     break;
                 case 1:
-                    mapValue = getValue(array[0]);
+                    mapValue = getValue(array[0], keyEvaluator);
                     if (mapValue instanceof Multimap) {
                         tempMap.putAll(((Multimap) mapValue).asMap());
                     } else {
@@ -186,11 +185,11 @@ public class TaskActionExecutor {
         return tempMap;
     }
 
-    private List<Object> convertToList(List<String> templates) throws TaskHandlerException {
+    private List<Object> convertToList(List<String> templates, KeyEvaluator keyEvaluator) throws TaskHandlerException {
         List<Object> tempList = new ArrayList<>();
 
         for (String template : templates) {
-            Object value = getValue(template.trim());
+            Object value = getValue(template.trim(), keyEvaluator);
 
             if (value instanceof Collection) {
                 tempList.addAll((Collection) value);
@@ -202,7 +201,7 @@ public class TaskActionExecutor {
         return tempList;
     }
 
-    private Object getValue(String row) throws TaskHandlerException {
+    private Object getValue(String row, KeyEvaluator keyEvaluator) throws TaskHandlerException {
         List<KeyInformation> keys = KeyInformation.parseAll(row);
 
         Object result;
