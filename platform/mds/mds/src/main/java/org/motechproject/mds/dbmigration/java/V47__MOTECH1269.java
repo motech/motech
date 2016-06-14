@@ -3,7 +3,6 @@ package org.motechproject.mds.dbmigration.java;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.helper.ClassTableName;
-import org.omg.IOP.TAG_ALTERNATE_IIOP_ADDRESS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
