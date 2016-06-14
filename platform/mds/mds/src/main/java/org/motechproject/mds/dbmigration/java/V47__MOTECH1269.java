@@ -39,6 +39,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
     private static final String SUFFIX_OID = "_id_OID";
     private static final String SUFFIX_OWN = "_id_OWN";
     private static final String SUFFIX_HISTORY = "__History_ID";
+    private static final String SUFFIX_TRASH = "__Trash_ID";
     private static final String SUFFIX_IDX = "_INTEGER_IDX";
     private static final String ENTITY = "Entity";
     private static final String FIELD = "Field";
@@ -47,6 +48,8 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
     private static final String KEY = "key";
     private static final String VALUE = "value";
     private static final String CLASS_NAME = "className";
+    private static final String HISTORY_TABLE = "__HISTORY";
+    private static final String TRASH_TABLE = "__TRASH";
 
     private static final String FROM = " FROM ";
     private static final String WHERE = " WHERE ";
@@ -64,8 +67,8 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
         for (Map<String, Object> row : result) {
             Long fieldId = (Long) row.get(FIELD_ID);
 
-            String tableName = getTableNameRelatedToField(fieldId);
-            String relatedTableName = getTableNameEntityWithField(fieldId);
+            String tableName = getTableNameRelatedToField(fieldId, HISTORY_TABLE);
+            String relatedTableName = getTableNameEntityWithField(fieldId, HISTORY_TABLE);
 
             if (checkIfExists(tableName) && checkIfExists(relatedTableName)) {
                 HistoryFk historyFk = getHistoryRelationship(tableName, relatedTableName);
@@ -73,6 +76,19 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
                 if (historyFk != null) {
                     boolean isList = List.class.getName().equals(row.get(VALUE));
                     createAndFillHistoryRelationshipTable(historyFk, isList);
+                }
+            }
+
+            tableName = getTableNameRelatedToField(fieldId, TRASH_TABLE);
+            relatedTableName = getTableNameEntityWithField(fieldId, TRASH_TABLE);
+
+            if (checkIfExists(tableName) && checkIfExists(relatedTableName)) {
+                TrashOneToMany trashOneToMany = getRelation(tableName, relatedTableName);
+
+                if (trashOneToMany != null) {
+                    String relatedField = getRelatedClassName(fieldId);
+                    boolean isList = List.class.getName().equals(row.get(VALUE));
+                    createAndFillTrashRelationshipTable(trashOneToMany, relatedField, isList);
                 }
             }
         }
@@ -85,6 +101,89 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
                 migrateHistoryFk(fk);
             }
         }
+    }
+
+    private TrashOneToMany getRelation(String table, String relatedTable) throws SQLException {
+        Connection connection = jdbc.getDataSource().getConnection();
+        DatabaseMetaData dbmd = connection.getMetaData();
+
+        ResultSet foreignKeys = dbmd.getImportedKeys(connection.getCatalog(), null, table);
+
+        TrashOneToMany result = null;
+
+        while (foreignKeys.next()) {
+            String pkTableName = foreignKeys.getString("PKTABLE_NAME");
+            String fkColumnName = foreignKeys.getString("FKCOLUMN_NAME");
+
+            String suffix;
+
+            if (fkColumnName.contains(SUFFIX_OID)) {
+                suffix = SUFFIX_OID;
+            } else if (fkColumnName.contains(SUFFIX_OWN)) {
+                suffix = SUFFIX_OWN;
+            } else {
+                break;
+            }
+
+            if (pkTableName.endsWith("__TRASH")) {
+                String collectionName;
+                String listIndex = columnEndsWith(table, SUFFIX_IDX);
+
+                if (listIndex != null) {
+                    collectionName = listIndex.replace(SUFFIX_IDX, "");
+                } else {
+                    collectionName = fkColumnName.replace(suffix, "");
+                }
+
+                if (pkTableName.equals(relatedTable)) {
+                    result = new TrashOneToMany(table, relatedTable, fkColumnName, collectionName);
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private void createAndFillTrashRelationshipTable(TrashOneToMany trashOneToMany, String relatedClass, boolean isList) {
+        String newTableName = trashOneToMany.relatedTable + "_" + trashOneToMany.fieldName;
+
+        String sql;
+        String query;
+
+        if (isList) {
+            sql = "CREATE TABLE IF NOT EXISTS " + addQuotes(newTableName) + " (" +
+                    addQuotes(relatedClass + SUFFIX_TRASH) + " " +idType() + " NOT NULL," +
+                    addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + " " + idType() + " DEFAULT NULL," +
+                    addQuotes("IDX") + " " + idType() + " NOT NULL," +
+                    "PRIMARY KEY (" + addQuotes(relatedClass + SUFFIX_TRASH) + ", " + addQuotes("IDX") + ")," +
+                    addKeyIfMySQL(addQuotes(newTableName + "_N49"), addQuotes(relatedClass + SUFFIX_TRASH)) +
+                    "CONSTRAINT " + addQuotes(newTableName + "_FK1") + " FOREIGN KEY (" + addQuotes(relatedClass + SUFFIX_TRASH) + ") " +
+                    "REFERENCES " + addQuotes(trashOneToMany.relatedTable) + " (" + addQuotes("id") + "));";
+
+            query = "INSERT INTO " + addQuotes(newTableName) + " SELECT " + addQuotes(trashOneToMany.relatedColumn) + ", " +
+                    addQuotes("id") + ", " + addQuotes(trashOneToMany.fieldName + "_INTEGER_IDX") +
+                    FROM + addQuotes(trashOneToMany.table) + WHERE + addQuotes(trashOneToMany.relatedColumn) + " IS NOT NULL;";
+        } else {
+            sql = "CREATE TABLE IF NOT EXISTS " + addQuotes(newTableName) + " (" +
+                    addQuotes(relatedClass + SUFFIX_TRASH) + " " +idType() + " NOT NULL," +
+                    addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + " " + idType() + " DEFAULT NULL," +
+                    "PRIMARY KEY (" + addQuotes(relatedClass + SUFFIX_TRASH) + ", " + addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + ")," +
+                    addKeyIfMySQL(addQuotes(newTableName + "_N49"), addQuotes(relatedClass + SUFFIX_TRASH)) +
+                    "CONSTRAINT " + addQuotes(newTableName + "_FK1") + " FOREIGN KEY (" + addQuotes(relatedClass + SUFFIX_TRASH) + ") " +
+                    "REFERENCES " + addQuotes(trashOneToMany.relatedTable) + " (" + addQuotes("id") + "));";
+
+            query = "INSERT INTO " + addQuotes(newTableName) + " SELECT " + addQuotes(trashOneToMany.relatedColumn) + ", " +
+                    addQuotes("id") + FROM + addQuotes(trashOneToMany.table) +
+                    WHERE + addQuotes(trashOneToMany.relatedColumn) + " IS NOT NULL;";
+        }
+
+        LOGGER.debug("Creating new table {}", newTableName);
+        jdbc.execute(sql);
+
+        LOGGER.debug("Migrating information about history to outer table {}", newTableName);
+        int count = jdbc.update(query);
+        LOGGER.debug("Migrated {} rows to outer table {}", count, newTableName);
     }
 
     private HistoryFk getHistoryRelationship(String tableName, String relatedTableName) throws SQLException {
@@ -101,23 +200,35 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
         return result;
     }
 
-    private String getTableNameEntityWithField(Long fieldId) {
+    private String getTableNameEntityWithField(Long fieldId, String tableSuffix) {
         String sql = "SELECT * FROM " + addQuotes(ENTITY) + WHERE + addQuotes(ID) + " IN (SELECT " +
                 addQuotes(ENTITY_ID) + FROM + addQuotes(FIELD) + WHERE + addQuotes(ID) + " = " + fieldId + ") LIMIT 1;";
 
         Map<String, Object> relatedEntity = jdbc.queryForList(sql).get(0);
 
-        return getTableName(relatedEntity);
+        return getTableName(relatedEntity, tableSuffix);
     }
 
-    private String getTableNameRelatedToField(Long fieldId) {
+    private String getRelatedClassName(Long fieldId) {
+        String sql = "SELECT * FROM " + addQuotes(ENTITY) + WHERE + addQuotes(ID) + " IN (SELECT " +
+                addQuotes(ENTITY_ID) + FROM + addQuotes(FIELD) + WHERE + addQuotes(ID) + " = " + fieldId + ") LIMIT 1;";
+
+        Map<String, Object> relatedEntity = jdbc.queryForList(sql).get(0);
+
+        String fullClassName = (String) relatedEntity.get("className");
+
+
+        return fullClassName.substring(fullClassName.lastIndexOf('.') + 1);
+    }
+
+    private String getTableNameRelatedToField(Long fieldId, String tableSuffix) {
         String sql = "SELECT * FROM " + addQuotes(ENTITY) + WHERE + addQuotes(CLASS_NAME) +
                 " IN (SELECT " + addQuotes(VALUE) + FROM + addQuotes(FIELD_METADATA) + WHERE +
                 addQuotes(KEY) + " = '" + RELATED_CLASS + "' AND " + addQuotes(FIELD_ID) + " = " + fieldId + ") LIMIT 1;";
 
         Map<String, Object> entity = jdbc.queryForList(sql).get(0);
 
-        return getTableName(entity);
+        return getTableName(entity, tableSuffix);
     }
 
     private List<Map<String, Object>> getFieldMetadataWithCollectionType() {
@@ -293,18 +404,12 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
         LOGGER.debug("Updated {} history rows", updated);
     }
 
-    private String getTableName(Map<String, Object> entity) {
-        String tableName = ClassTableName.getTableName((String) entity.get("className"),
+    private String getTableName(Map<String, Object> entity, String tableSuffix) {
+        return ClassTableName.getTableName((String) entity.get("className"),
                 (String) entity.get("module"),
                 (String) entity.get("namespace"),
                 (String) entity.get("tableName"),
-                EntityType.HISTORY);
-
-        if (!tableName.endsWith("__HISTORY")) {
-            tableName += "__HISTORY";
-        }
-
-        return tableName;
+                EntityType.STANDARD) + tableSuffix;
     }
 
     private String addQuotes(String value) {
@@ -341,6 +446,21 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
             this.suffix = suffix;
             this.versionColumn = versionColumn;
             this.collectionName = collectionName;
+        }
+    }
+
+    private class TrashOneToMany {
+        private String table;
+        private String relatedTable;
+        private String relatedColumn;
+        private String fieldName;
+
+
+        private TrashOneToMany(String table, String relatedTable, String relatedColumn, String fieldName) {
+            this.table = table;
+            this.relatedTable = relatedTable;
+            this.relatedColumn = relatedColumn;
+            this.fieldName = fieldName;
         }
     }
 }
