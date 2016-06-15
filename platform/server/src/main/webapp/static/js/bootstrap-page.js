@@ -1,3 +1,15 @@
+var bootstrapApp = angular.module('bootstrapApp',[]);
+bootstrapApp.controller('controller', function($scope) {
+              $scope.insertValuesToScopes = function() {
+                  $scope.config.queueUrl = $("input[name='queueUrl']").val();
+                  $scope.config.sqlUrl = $("input[name='sqlUrl']").val();
+                  $scope.config.sqlDriver = $("input[name='sqlDriver']").val();
+                  $scope.config.sqlUserName = $("input[name='sqlUsername']").val();
+                  $scope.config.sqlPassword = $("input[name='sqlPassword']").val();
+                  $scope.$apply()
+                                    };
+                 });
+
 function setSuggestedValue(id, val) {
     document.getElementById(id).value = val;
 }
@@ -19,6 +31,7 @@ function saveBootstrapData(){
 				       setSuggestedValueByName(bootstrapObj[key]["name"], bootstrapObj[key]["value"]);
 				}
 				sessionStorage.removeItem("bootstrapString");
+				angular.element(document.getElementById('mainBody')).scope().insertValuesToScopes();
 			 }
 		});
 

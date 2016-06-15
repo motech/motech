@@ -23,7 +23,7 @@
         </script>
     </c:if>
 </head>
-<body class="body-startup" ng-app="bootstrapApp" >
+<body id="mainBody" class="body-startup" ng-app="bootstrapApp" ng-controller="controller" >
 <div class="bodywrap">
     <div class="navbar-collapse hidden-xs">
         <div class="margin-before5"></div>
@@ -215,7 +215,7 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><img id="loader" alt="loading" src="../../static/common/img/load.gif" style="display:none"/></label>
                                 <div class="col-sm-9">
-                                    <input class="btn btn-primary button-suggestion" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required || bcform.OsgiFrameworkStorage.$error.required || bcform.motechDir.$error.required || bcform.queueUrl.$error.required" onclick="saveBootstrapData(); submitForm();" value="<spring:message code="server.bootstrap.submit"/>"/>
+                                    <input class="btn btn-primary button-suggestion" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUserName.$error.required ||bcform.sqlPassword.$error.required ||bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required || bcform.OsgiFrameworkStorage.$error.required || bcform.motechDir.$error.required || bcform.queueUrl.$error.required" onclick="saveBootstrapData(); submitForm();" value="<spring:message code="server.bootstrap.submit"/>"/>
                                 </div>
                             </div>
                         </form>
