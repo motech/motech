@@ -2289,10 +2289,10 @@
             restrict: 'A',
             require: 'ngModel',
             link: function (scope, element, attr, ngModel) {
-                var fun,
+                var onChangeFunction,
                     readFile;
 
-                fun = function(evt) {
+                onChangeFunction = function(evt) {
                     var viewScope = findCurrentScope(scope, 'draft'),
                         fieldPath = attr.mdsPath,
                         fieldId = attr.mdsFieldId,
@@ -2300,7 +2300,7 @@
                         value,
                         reader;
 
-                    if (fieldPath === undefined) {
+                    if (!fieldPath) {
                         fieldPath = attr.ngModel;
                         fieldPath = fieldPath.substring(fieldPath.indexOf('.') + 1);
                     }
@@ -2314,7 +2314,7 @@
                                 values: {
                                     path: fieldPath,
                                     fieldId: fieldId,
-                                    value: [''] //TODO shuold be "loadEvent.target.result" after saving blob default value is enabled
+                                    value: [''] //TODO should be "loadEvent.target.result" after saving blob default value is enabled
                                 }
                             });
                         });
