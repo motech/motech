@@ -454,6 +454,7 @@ public final class Constants {
         public static final String SQL_QUERY = "javax.jdo.query.SQL";
         public static final String MDS_TABLE_PREFIX = "MDS_";
         public static final String MDS_DATABASE = "motech_data_services";
+        public static final String SCHEMA_VERSION_FIELD_NAME = "schemaVersion";
 
         public static final String[] GENERATED_FIELD_NAMES = new String[]{
                 CREATOR_FIELD_NAME, OWNER_FIELD_NAME, CREATION_DATE_FIELD_NAME,

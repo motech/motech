@@ -312,7 +312,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         if (trashRecord == null) {
             throw new TrashInstanceNotFoundException(getClassType().getName(), trashId);
         }
-        verifySchemaVersion(trashRecord, trashId);
+        verifySchemaVersion(trashRecord, trashId, true);
 
         try {
             T newInstance = getClassType().newInstance();
@@ -339,7 +339,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         if (historyRecord == null) {
             throw new HistoryInstanceNotFoundException(getClassType().getName(), instanceId, historicalId);
         }
-        verifySchemaVersion(historyRecord, historicalId);
+        verifySchemaVersion(historyRecord, historicalId, false);
 
         copyValuesFromRecord(instance, historyRecord);
 
@@ -480,8 +480,13 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return restriction;
     }
 
-    protected void verifySchemaVersion(Object record, Long recordId) {
-        String schemaField = HistoryTrashClassHelper.schemaVersion(record.getClass());
+    protected void verifySchemaVersion(Object record, Long recordId, boolean forTrash) {
+        String schemaField;
+        if (forTrash) {
+            schemaField = Constants.Util.SCHEMA_VERSION_FIELD_NAME;
+        } else {
+            schemaField = HistoryTrashClassHelper.schemaVersion(record.getClass());
+        }
         Long recordSchemaVersion = (Long) PropertyUtil.safeGetProperty(record, schemaField);
         if (!schemaVersion.equals(recordSchemaVersion)) {
             throw new SchemaVersionException(schemaVersion, recordSchemaVersion, recordId, record.getClass().getName());
