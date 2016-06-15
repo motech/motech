@@ -76,6 +76,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
                 if (historyFk != null) {
                     boolean isList = List.class.getName().equals(row.get(VALUE));
                     createAndFillHistoryRelationshipTable(historyFk, isList);
+                    removeNotNullInOldColumn(historyFk);
                 }
             }
 
@@ -101,6 +102,16 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
                 migrateHistoryFk(fk);
             }
         }
+    }
+
+    private void removeNotNullInOldColumn(HistoryFk historyFk) {
+        String sql = "ALTER TABLE " + addQuotes(historyFk.table);
+        if (isPsql) {
+            sql = sql + " ALTER COLUMN " + addQuotes(historyFk.oldColumn) + " DROP NOT NULL";
+        } else {
+            sql = sql + " MODIFY COLUMN " + historyFk.oldColumn + " bigint(20) DEFAULT NULL";
+        }
+        jdbc.execute(sql);
     }
 
     private TrashOneToMany getRelation(String table, String relatedTable) throws SQLException {
