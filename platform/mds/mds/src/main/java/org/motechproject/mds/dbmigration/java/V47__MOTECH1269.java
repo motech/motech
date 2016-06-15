@@ -5,7 +5,6 @@ import org.motechproject.mds.domain.EntityType;
 import org.motechproject.mds.helper.ClassTableName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
@@ -25,6 +24,7 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.RELATIONSHIP_COL
 /**
  * Migrates old history to new history.
  */
+@SuppressWarnings("PMD")
 public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
 
     private static final Logger LOGGER = LoggerFactory.getLogger(V47__MOTECH1269.class);
@@ -164,7 +164,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
 
         if (isList) {
             sql = "CREATE TABLE IF NOT EXISTS " + addQuotes(newTableName) + " (" +
-                    addQuotes(relatedClass + SUFFIX_TRASH) + " " +idType() + " NOT NULL," +
+                    addQuotes(relatedClass + SUFFIX_TRASH) + " " + idType() + " NOT NULL," +
                     addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + " " + idType() + " DEFAULT NULL," +
                     addQuotes("IDX") + " " + idType() + " NOT NULL," +
                     "PRIMARY KEY (" + addQuotes(relatedClass + SUFFIX_TRASH) + ", " + addQuotes("IDX") + ")," +
@@ -177,7 +177,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
                     FROM + addQuotes(trashOneToMany.table) + WHERE + addQuotes(trashOneToMany.relatedColumn) + " IS NOT NULL;";
         } else {
             sql = "CREATE TABLE IF NOT EXISTS " + addQuotes(newTableName) + " (" +
-                    addQuotes(relatedClass + SUFFIX_TRASH) + " " +idType() + " NOT NULL," +
+                    addQuotes(relatedClass + SUFFIX_TRASH) + " " + idType() + " NOT NULL," +
                     addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + " " + idType() + " DEFAULT NULL," +
                     "PRIMARY KEY (" + addQuotes(relatedClass + SUFFIX_TRASH) + ", " + addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + ")," +
                     addKeyIfMySQL(addQuotes(newTableName + "_N49"), addQuotes(relatedClass + SUFFIX_TRASH)) +
@@ -260,7 +260,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
 
         if (isList) {
             sql = "CREATE TABLE IF NOT EXISTS " + addQuotes(newTableName) + " (" +
-                    addQuotes(relatedFieldName + SUFFIX_HISTORY) + " " +idType() + " NOT NULL," +
+                    addQuotes(relatedFieldName + SUFFIX_HISTORY) + " " + idType() + " NOT NULL," +
                     addQuotes(fieldName + SUFFIX_ID) + " " + idType() + " DEFAULT NULL," +
                     addQuotes("IDX") + " " + idType() + " NOT NULL," +
                     "PRIMARY KEY (" + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ", " + addQuotes("IDX") + ")," +
@@ -273,7 +273,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
                     FROM + addQuotes(historyFk.table) + WHERE + addQuotes(historyFk.oldColumn) + " IS NOT NULL;";
         } else {
             sql = "CREATE TABLE IF NOT EXISTS " + addQuotes(newTableName) + " (" +
-                    addQuotes(relatedFieldName + SUFFIX_HISTORY) + " " +idType() + " NOT NULL," +
+                    addQuotes(relatedFieldName + SUFFIX_HISTORY) + " " + idType() + " NOT NULL," +
                     addQuotes(fieldName + SUFFIX_ID) + " " + idType() + " DEFAULT NULL," +
                     "PRIMARY KEY (" + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ", " + addQuotes(fieldName + SUFFIX_ID) + ")," +
                     addKeyIfMySQL(addQuotes(newTableName + "_N49"), addQuotes(relatedFieldName + SUFFIX_HISTORY)) +
@@ -310,7 +310,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
         List<String> tables = new ArrayList<>();
 
         while (tableRs.next()) {
-            tables.add(tableRs.getString(3));
+            tables.add(tableRs.getString(3));  // NO CHECKSTYLE MagicNumber
         }
 
         return tables;
@@ -381,7 +381,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
     private String getCurrentVersionColumn(String table)  {
         return jdbc.query("SELECT * FROM " + addQuotes(table) + " LIMIT 1", new ResultSetExtractor<String>() {
             @Override
-            public String extractData(ResultSet rs) throws SQLException, DataAccessException {
+            public String extractData(ResultSet rs) throws SQLException {
                 ResultSetMetaData rsmd = rs.getMetaData();
                 for (int i = 1; i < rsmd.getColumnCount(); i++) {
                     String colName = rsmd.getColumnName(i);
@@ -447,7 +447,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
         private String collectionName;
 
         public HistoryFk(String table, String relatedTable, String oldColumn, String newColumn, boolean newColumnExists,
-                         String relatedVersionColumn, String suffix, String versionColumn, String collectionName) {
+                         String relatedVersionColumn, String suffix, String versionColumn, String collectionName) { // NO CHECKSTYLE More than 7 parameters
             this.table = table;
             this.relatedTable = relatedTable;
             this.oldColumn = oldColumn;
@@ -460,7 +460,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
         }
     }
 
-    private class TrashOneToMany {
+    private class TrashOneToMany { // NO CHECKSTYLE Final Class check
         private String table;
         private String relatedTable;
         private String relatedColumn;
