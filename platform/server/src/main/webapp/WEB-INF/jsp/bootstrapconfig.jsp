@@ -12,9 +12,7 @@
     <%@ include file="header.jsp" %>
 
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/bootstrap-page.js"></script>
-    <script type="text/javascript">
-        var bootstrapApp = angular.module('bootstrapApp',[]);
-    </script>
+
     <c:if test="${redirect}">
         <script type="text/javascript">
             $(document).ready(function() {

@@ -1,5 +1,5 @@
-var bootstrapApp = angular.module('bootstrapApp',[]);
-bootstrapApp.controller('controller', function($scope) {
+angular.module('bootstrapApp',[])
+.controller('controller', ['$scope', function($scope) {
               $scope.insertValuesToScopes = function() {
                   $scope.config.queueUrl = $("input[name='queueUrl']").val();
                   $scope.config.sqlUrl = $("input[name='sqlUrl']").val();
@@ -8,7 +8,7 @@ bootstrapApp.controller('controller', function($scope) {
                   $scope.config.sqlPassword = $("input[name='sqlPassword']").val();
                   $scope.$apply()
                                     };
-                 });
+                 }]);
 
 function setSuggestedValue(id, val) {
     document.getElementById(id).value = val;
