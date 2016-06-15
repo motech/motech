@@ -989,10 +989,7 @@
                     });
 
                     if (!param) {
-                        param = {
-                            type: 'UNKNOWN',
-                            displayName: key
-                        };
+                        return data;
                     }
 
                     span = $scope.util.createDraggableSpan({
@@ -1037,10 +1034,7 @@
                     });
 
                     if (!param) {
-                        param = {
-                            type: 'UNKNOWN',
-                            displayName: field
-                        };
+                        return data;
                     }
 
                     span = $scope.util.createDraggableSpan({
