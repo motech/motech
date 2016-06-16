@@ -24,7 +24,6 @@ import static org.motechproject.mds.util.Constants.MetadataKeys.RELATIONSHIP_COL
 /**
  * Migrates old history to new history.
  */
-@SuppressWarnings("PMD")
 public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
 
     private static final Logger LOGGER = LoggerFactory.getLogger(V47__MOTECH1269.class);
@@ -53,6 +52,22 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
 
     private static final String FROM = " FROM ";
     private static final String WHERE = " WHERE ";
+    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS ";
+    private static final String NOT_NULL = " NOT NULL,";
+    private static final String DEFAULT_NULL = " DEFAULT NULL,";
+    private static final String IDX = "IDX";
+    private static final String PRIMARY_KEY = "PRIMARY KEY (";
+    private static final String N49 = "_N49";
+    private static final String FOREIGN_KEY = " FOREIGN KEY (";
+    private static final String REFERENCES = "REFERENCES ";
+    private static final String FK1 = "_FK1";
+    private static final String INSERT_INTO = "INSERT INTO ";
+    private static final String SELECT = " SELECT ";
+    private static final String IS_NOT_NULL = " IS NOT NULL;";
+    private static final String CONSTRAINT = "CONSTRAINT ";
+    private static final String ID_STRING = "id";
+    private static final String SELECT_FROM = "SELECT * FROM ";
+    private static final String BRACKETS = "));";
 
     private JdbcTemplate jdbc;
     private boolean isPsql;
@@ -163,30 +178,30 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
         String query;
 
         if (isList) {
-            sql = "CREATE TABLE IF NOT EXISTS " + addQuotes(newTableName) + " (" +
-                    addQuotes(relatedClass + SUFFIX_TRASH) + " " + idType() + " NOT NULL," +
-                    addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + " " + idType() + " DEFAULT NULL," +
-                    addQuotes("IDX") + " " + idType() + " NOT NULL," +
-                    "PRIMARY KEY (" + addQuotes(relatedClass + SUFFIX_TRASH) + ", " + addQuotes("IDX") + ")," +
-                    addKeyIfMySQL(addQuotes(newTableName + "_N49"), addQuotes(relatedClass + SUFFIX_TRASH)) +
-                    "CONSTRAINT " + addQuotes(newTableName + "_FK1") + " FOREIGN KEY (" + addQuotes(relatedClass + SUFFIX_TRASH) + ") " +
-                    "REFERENCES " + addQuotes(trashOneToMany.relatedTable) + " (" + addQuotes("id") + "));";
+            sql = CREATE_TABLE + addQuotes(newTableName) + " (" +
+                    addQuotes(relatedClass + SUFFIX_TRASH) + " " + idType() + NOT_NULL +
+                    addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + " " + idType() + DEFAULT_NULL +
+                    addQuotes(IDX) + " " + idType() + NOT_NULL +
+                    PRIMARY_KEY + addQuotes(relatedClass + SUFFIX_TRASH) + ", " + addQuotes(IDX) + ")," +
+                    addKeyIfMySQL(addQuotes(newTableName + N49), addQuotes(relatedClass + SUFFIX_TRASH)) +
+                    CONSTRAINT + addQuotes(newTableName + FK1) + FOREIGN_KEY + addQuotes(relatedClass + SUFFIX_TRASH) + ") " +
+                    REFERENCES + addQuotes(trashOneToMany.relatedTable) + " (" + addQuotes(ID_STRING) + BRACKETS;
 
-            query = "INSERT INTO " + addQuotes(newTableName) + " SELECT " + addQuotes(trashOneToMany.relatedColumn) + ", " +
-                    addQuotes("id") + ", " + addQuotes(trashOneToMany.fieldName + "_INTEGER_IDX") +
-                    FROM + addQuotes(trashOneToMany.table) + WHERE + addQuotes(trashOneToMany.relatedColumn) + " IS NOT NULL;";
+            query = INSERT_INTO + addQuotes(newTableName) + SELECT + addQuotes(trashOneToMany.relatedColumn) + ", " +
+                    addQuotes(ID_STRING) + ", " + addQuotes(trashOneToMany.fieldName + "_INTEGER_IDX") +
+                    FROM + addQuotes(trashOneToMany.table) + WHERE + addQuotes(trashOneToMany.relatedColumn) + IS_NOT_NULL;
         } else {
-            sql = "CREATE TABLE IF NOT EXISTS " + addQuotes(newTableName) + " (" +
-                    addQuotes(relatedClass + SUFFIX_TRASH) + " " + idType() + " NOT NULL," +
-                    addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + " " + idType() + " DEFAULT NULL," +
-                    "PRIMARY KEY (" + addQuotes(relatedClass + SUFFIX_TRASH) + ", " + addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + ")," +
-                    addKeyIfMySQL(addQuotes(newTableName + "_N49"), addQuotes(relatedClass + SUFFIX_TRASH)) +
-                    "CONSTRAINT " + addQuotes(newTableName + "_FK1") + " FOREIGN KEY (" + addQuotes(relatedClass + SUFFIX_TRASH) + ") " +
-                    "REFERENCES " + addQuotes(trashOneToMany.relatedTable) + " (" + addQuotes("id") + "));";
+            sql = CREATE_TABLE + addQuotes(newTableName) + " (" +
+                    addQuotes(relatedClass + SUFFIX_TRASH) + " " + idType() + NOT_NULL +
+                    addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + " " + idType() + DEFAULT_NULL +
+                    PRIMARY_KEY + addQuotes(relatedClass + SUFFIX_TRASH) + ", " + addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + ")," +
+                    addKeyIfMySQL(addQuotes(newTableName + N49), addQuotes(relatedClass + SUFFIX_TRASH)) +
+                    CONSTRAINT + addQuotes(newTableName + FK1) + FOREIGN_KEY + addQuotes(relatedClass + SUFFIX_TRASH) + ") " +
+                    REFERENCES + addQuotes(trashOneToMany.relatedTable) + " (" + addQuotes(ID_STRING) + BRACKETS;
 
-            query = "INSERT INTO " + addQuotes(newTableName) + " SELECT " + addQuotes(trashOneToMany.relatedColumn) + ", " +
-                    addQuotes("id") + FROM + addQuotes(trashOneToMany.table) +
-                    WHERE + addQuotes(trashOneToMany.relatedColumn) + " IS NOT NULL;";
+            query = INSERT_INTO + addQuotes(newTableName) + SELECT + addQuotes(trashOneToMany.relatedColumn) + ", " +
+                    addQuotes(ID_STRING) + FROM + addQuotes(trashOneToMany.table) +
+                    WHERE + addQuotes(trashOneToMany.relatedColumn) + IS_NOT_NULL;
         }
 
         LOGGER.debug("Creating new table {}", newTableName);
@@ -212,7 +227,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
     }
 
     private String getTableNameEntityWithField(Long fieldId, String tableSuffix) {
-        String sql = "SELECT * FROM " + addQuotes(ENTITY) + WHERE + addQuotes(ID) + " IN (SELECT " +
+        String sql = SELECT_FROM + addQuotes(ENTITY) + WHERE + addQuotes(ID) + " IN (SELECT " +
                 addQuotes(ENTITY_ID) + FROM + addQuotes(FIELD) + WHERE + addQuotes(ID) + " = " + fieldId + ") LIMIT 1;";
 
         Map<String, Object> relatedEntity = jdbc.queryForList(sql).get(0);
@@ -221,7 +236,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
     }
 
     private String getRelatedClassName(Long fieldId) {
-        String sql = "SELECT * FROM " + addQuotes(ENTITY) + WHERE + addQuotes(ID) + " IN (SELECT " +
+        String sql = SELECT_FROM + addQuotes(ENTITY) + WHERE + addQuotes(ID) + " IN (SELECT " +
                 addQuotes(ENTITY_ID) + FROM + addQuotes(FIELD) + WHERE + addQuotes(ID) + " = " + fieldId + ") LIMIT 1;";
 
         Map<String, Object> relatedEntity = jdbc.queryForList(sql).get(0);
@@ -233,7 +248,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
     }
 
     private String getTableNameRelatedToField(Long fieldId, String tableSuffix) {
-        String sql = "SELECT * FROM " + addQuotes(ENTITY) + WHERE + addQuotes(CLASS_NAME) +
+        String sql = SELECT_FROM + addQuotes(ENTITY) + WHERE + addQuotes(CLASS_NAME) +
                 " IN (SELECT " + addQuotes(VALUE) + FROM + addQuotes(FIELD_METADATA) + WHERE +
                 addQuotes(KEY) + " = '" + RELATED_CLASS + "' AND " + addQuotes(FIELD_ID) + " = " + fieldId + ") LIMIT 1;";
 
@@ -259,30 +274,30 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
         String query;
 
         if (isList) {
-            sql = "CREATE TABLE IF NOT EXISTS " + addQuotes(newTableName) + " (" +
-                    addQuotes(relatedFieldName + SUFFIX_HISTORY) + " " + idType() + " NOT NULL," +
-                    addQuotes(fieldName + SUFFIX_ID) + " " + idType() + " DEFAULT NULL," +
-                    addQuotes("IDX") + " " + idType() + " NOT NULL," +
-                    "PRIMARY KEY (" + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ", " + addQuotes("IDX") + ")," +
-                    addKeyIfMySQL(addQuotes(newTableName + "_N49"), addQuotes(relatedFieldName + SUFFIX_HISTORY)) +
-                    "CONSTRAINT " + addQuotes(newTableName + "_FK1") + " FOREIGN KEY (" + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ") " +
-                    "REFERENCES " + addQuotes(historyFk.relatedTable) + " (" + addQuotes("id") + "));";
+            sql = CREATE_TABLE + addQuotes(newTableName) + " (" +
+                    addQuotes(relatedFieldName + SUFFIX_HISTORY) + " " + idType() + NOT_NULL +
+                    addQuotes(fieldName + SUFFIX_ID) + " " + idType() + DEFAULT_NULL +
+                    addQuotes(IDX) + " " + idType() + NOT_NULL +
+                    PRIMARY_KEY + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ", " + addQuotes(IDX) + ")," +
+                    addKeyIfMySQL(addQuotes(newTableName + N49), addQuotes(relatedFieldName + SUFFIX_HISTORY)) +
+                    CONSTRAINT + addQuotes(newTableName + FK1) + FOREIGN_KEY + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ") " +
+                    REFERENCES + addQuotes(historyFk.relatedTable) + " (" + addQuotes(ID) + BRACKETS;
 
-            query = "INSERT INTO " + addQuotes(newTableName) + " SELECT " + addQuotes(historyFk.oldColumn) + ", " +
+            query = INSERT_INTO + addQuotes(newTableName) + SELECT + addQuotes(historyFk.oldColumn) + ", " +
                     addQuotes(historyFk.versionColumn) + ", " + addQuotes(fieldName + "_INTEGER_IDX") +
-                    FROM + addQuotes(historyFk.table) + WHERE + addQuotes(historyFk.oldColumn) + " IS NOT NULL;";
+                    FROM + addQuotes(historyFk.table) + WHERE + addQuotes(historyFk.oldColumn) + IS_NOT_NULL;
         } else {
-            sql = "CREATE TABLE IF NOT EXISTS " + addQuotes(newTableName) + " (" +
-                    addQuotes(relatedFieldName + SUFFIX_HISTORY) + " " + idType() + " NOT NULL," +
-                    addQuotes(fieldName + SUFFIX_ID) + " " + idType() + " DEFAULT NULL," +
-                    "PRIMARY KEY (" + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ", " + addQuotes(fieldName + SUFFIX_ID) + ")," +
-                    addKeyIfMySQL(addQuotes(newTableName + "_N49"), addQuotes(relatedFieldName + SUFFIX_HISTORY)) +
-                    "CONSTRAINT " + addQuotes(newTableName + "_FK1") + " FOREIGN KEY (" + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ") " +
-                    "REFERENCES " + addQuotes(historyFk.relatedTable) + " (" + addQuotes("id") + "));";
+            sql = CREATE_TABLE + addQuotes(newTableName) + " (" +
+                    addQuotes(relatedFieldName + SUFFIX_HISTORY) + " " + idType() + NOT_NULL +
+                    addQuotes(fieldName + SUFFIX_ID) + " " + idType() + DEFAULT_NULL +
+                    PRIMARY_KEY + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ", " + addQuotes(fieldName + SUFFIX_ID) + ")," +
+                    addKeyIfMySQL(addQuotes(newTableName + N49), addQuotes(relatedFieldName + SUFFIX_HISTORY)) +
+                    CONSTRAINT + addQuotes(newTableName + FK1) + FOREIGN_KEY + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ") " +
+                    REFERENCES + addQuotes(historyFk.relatedTable) + " (" + addQuotes("id") + BRACKETS;
 
-            query = "INSERT INTO " + addQuotes(newTableName) + " SELECT " + addQuotes(historyFk.oldColumn) + ", " +
+            query = INSERT_INTO + addQuotes(newTableName) + SELECT + addQuotes(historyFk.oldColumn) + ", " +
                     addQuotes(historyFk.versionColumn) + FROM + addQuotes(historyFk.table) + WHERE +
-                    addQuotes(historyFk.oldColumn) + " IS NOT NULL;";
+                    addQuotes(historyFk.oldColumn) + IS_NOT_NULL;
         }
 
         LOGGER.debug("Creating new table {}", newTableName);
@@ -379,7 +394,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
     }
 
     private String getCurrentVersionColumn(String table)  {
-        return jdbc.query("SELECT * FROM " + addQuotes(table) + " LIMIT 1", new ResultSetExtractor<String>() {
+        return jdbc.query(SELECT_FROM + addQuotes(table) + " LIMIT 1", new ResultSetExtractor<String>() {
             @Override
             public String extractData(ResultSet rs) throws SQLException {
                 ResultSetMetaData rsmd = rs.getMetaData();
@@ -446,8 +461,8 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
         private String versionColumn;
         private String collectionName;
 
-        public HistoryFk(String table, String relatedTable, String oldColumn, String newColumn, boolean newColumnExists,
-                         String relatedVersionColumn, String suffix, String versionColumn, String collectionName) { // NO CHECKSTYLE More than 7 parameters
+        public HistoryFk(String table, String relatedTable, String oldColumn, String newColumn, boolean newColumnExists, // NO CHECKSTYLE More than 7 parameters
+                         String relatedVersionColumn, String suffix, String versionColumn, String collectionName) {
             this.table = table;
             this.relatedTable = relatedTable;
             this.oldColumn = oldColumn;
