@@ -183,8 +183,8 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
                     addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + " " + idType() + DEFAULT_NULL +
                     addQuotes(IDX) + " " + idType() + NOT_NULL +
                     PRIMARY_KEY + addQuotes(relatedClass + SUFFIX_TRASH) + ", " + addQuotes(IDX) + ")," +
-                    addKeyIfMySQL(addQuotes(newTableName + N49), addQuotes(relatedClass + SUFFIX_TRASH)) +
-                    CONSTRAINT + addQuotes(newTableName + FK1) + FOREIGN_KEY + addQuotes(relatedClass + SUFFIX_TRASH) + ") " +
+                    addKeyIfMySQL(addQuotes(shortenWhenMoreThan64chars(newTableName) + N49), addQuotes(relatedClass + SUFFIX_TRASH)) +
+                    CONSTRAINT + addQuotes(shortenWhenMoreThan64chars(newTableName) + FK1) + FOREIGN_KEY + addQuotes(relatedClass + SUFFIX_TRASH) + ") " +
                     REFERENCES + addQuotes(trashOneToMany.relatedTable) + " (" + addQuotes(ID_STRING) + BRACKETS;
 
             query = INSERT_INTO + addQuotes(newTableName) + SELECT + addQuotes(trashOneToMany.relatedColumn) + ", " +
@@ -195,8 +195,8 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
                     addQuotes(relatedClass + SUFFIX_TRASH) + " " + idType() + NOT_NULL +
                     addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + " " + idType() + DEFAULT_NULL +
                     PRIMARY_KEY + addQuotes(relatedClass + SUFFIX_TRASH) + ", " + addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + ")," +
-                    addKeyIfMySQL(addQuotes(newTableName + N49), addQuotes(relatedClass + SUFFIX_TRASH)) +
-                    CONSTRAINT + addQuotes(newTableName + FK1) + FOREIGN_KEY + addQuotes(relatedClass + SUFFIX_TRASH) + ") " +
+                    addKeyIfMySQL(addQuotes(shortenWhenMoreThan64chars(newTableName) + N49), addQuotes(relatedClass + SUFFIX_TRASH)) +
+                    CONSTRAINT + addQuotes(shortenWhenMoreThan64chars(newTableName) + FK1) + FOREIGN_KEY + addQuotes(relatedClass + SUFFIX_TRASH) + ") " +
                     REFERENCES + addQuotes(trashOneToMany.relatedTable) + " (" + addQuotes(ID_STRING) + BRACKETS;
 
             query = INSERT_INTO + addQuotes(newTableName) + SELECT + addQuotes(trashOneToMany.relatedColumn) + ", " +
@@ -279,8 +279,8 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
                     addQuotes(fieldName + SUFFIX_ID) + " " + idType() + DEFAULT_NULL +
                     addQuotes(IDX) + " " + idType() + NOT_NULL +
                     PRIMARY_KEY + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ", " + addQuotes(IDX) + ")," +
-                    addKeyIfMySQL(addQuotes(newTableName + N49), addQuotes(relatedFieldName + SUFFIX_HISTORY)) +
-                    CONSTRAINT + addQuotes(newTableName + FK1) + FOREIGN_KEY + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ") " +
+                    addKeyIfMySQL(addQuotes(shortenWhenMoreThan64chars(newTableName) + N49), addQuotes(relatedFieldName + SUFFIX_HISTORY)) +
+                    CONSTRAINT + addQuotes(shortenWhenMoreThan64chars(newTableName) + FK1) + FOREIGN_KEY + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ") " +
                     REFERENCES + addQuotes(historyFk.relatedTable) + " (" + addQuotes(ID) + BRACKETS;
 
             query = INSERT_INTO + addQuotes(newTableName) + SELECT + addQuotes(historyFk.oldColumn) + ", " +
@@ -291,8 +291,8 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
                     addQuotes(relatedFieldName + SUFFIX_HISTORY) + " " + idType() + NOT_NULL +
                     addQuotes(fieldName + SUFFIX_ID) + " " + idType() + DEFAULT_NULL +
                     PRIMARY_KEY + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ", " + addQuotes(fieldName + SUFFIX_ID) + ")," +
-                    addKeyIfMySQL(addQuotes(newTableName + N49), addQuotes(relatedFieldName + SUFFIX_HISTORY)) +
-                    CONSTRAINT + addQuotes(newTableName + FK1) + FOREIGN_KEY + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ") " +
+                    addKeyIfMySQL(addQuotes(shortenWhenMoreThan64chars(newTableName) + N49), addQuotes(relatedFieldName + SUFFIX_HISTORY)) +
+                    CONSTRAINT + addQuotes(shortenWhenMoreThan64chars(newTableName) + FK1) + FOREIGN_KEY + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ") " +
                     REFERENCES + addQuotes(historyFk.relatedTable) + " (" + addQuotes("id") + BRACKETS;
 
             query = INSERT_INTO + addQuotes(newTableName) + SELECT + addQuotes(historyFk.oldColumn) + ", " +
@@ -444,6 +444,18 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
 
     private String addKeyIfMySQL(String key, String column) {
         return isPsql ? "" : "KEY " + key + " (" + column + "),";
+    }
+
+    private String shortenWhenMoreThan64chars(String name) {
+        String newName;
+        // by default max length is 64 for key and constraint, we substract 4 which indicates _N49 or _FK1
+        if (name.length() >= (64-4)) {
+            newName = name.substring(0, 58);
+        } else {
+            newName = name;
+        }
+
+        return newName;
     }
 
     private String idType() {
