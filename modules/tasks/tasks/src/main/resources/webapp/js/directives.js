@@ -342,7 +342,7 @@
                         field = ele.data('value');
                         container.append(formatField(field));
                     }
-                }else{
+                } else if (!(this.tagName && this.tagName.toLowerCase() === 'em')) {
                     container.append(ele.text());
                 }
             });
@@ -409,12 +409,6 @@
             restrict: 'A',
             require: '?ngModel',
             link: function (scope, element, attrs, ngModel) {
-                var parent = scope;
-
-                while (parent.msg === undefined) {
-                    parent = parent.$parent;
-                }
-
                 if (!ngModel){
                     return false;
                 }
@@ -434,16 +428,12 @@
                 });
 
                 element.bind('blur', function (event) {
-                    var content;
                     event.stopPropagation();
                     if(element[0] !== event.target){
                         return;
                     }
-                    content = readContent(element);
-                    if (!(attrs.divPlaceholder && parent.msg(attrs.divPlaceholder).toLowerCase() === content.toLowerCase())) {
-                        ngModel.$setViewValue(readContent(element));
-                        scope.$apply();
-                    }
+                    ngModel.$setViewValue(readContent(element));
+                    scope.$apply();
                 });
 
                 scope.$on('field.changed', function (event) {
