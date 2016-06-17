@@ -1,6 +1,8 @@
 angular.module('bootstrapApp',[])
-.controller('controller', ['$scope', function($scope, $sessionStorage) {
+.controller('bootstrapFormController', ['$scope', function($scope) {
+    if (sessionStorage.config != null){
     $scope.config = angular.fromJson(sessionStorage.config);
+    }
 
     $scope.saveBootstrapData = function(){
      sessionStorage.config = angular.toJson($scope.config);
