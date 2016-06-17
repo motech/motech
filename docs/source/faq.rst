@@ -170,12 +170,12 @@ Next, run the integration tests as you would normally do, for example:
 
 Then connect to Tomcat using a remote debugger on port 8000, same as when normally debugging Tomcat.
 
-Why I not see anything in Admin Queues and Topics.
---------------------------------------------------
+Why am I not seeing anything in "Admin Queues and Topics"?
+----------------------------------------------------------
 
 The most likely cause is a RMI connection error. By default RMI is using a random port.
 To set fixed port you have to edit ActiveMQ broker configuration, which is in the file ``/etc/activemq/instances-enabled/main/activemq.xml``.
-Add the following lines to broker configuration, which are you currently using (you can check it in Admin/Settings):
+Add the following lines to broker configuration (name of currently using broker is in ``Admin/Settings/JMX/Broker name``):
 
 .. code-block:: xml
 
@@ -183,7 +183,7 @@ Add the following lines to broker configuration, which are you currently using (
 	    <managementContext createConnector="true" connectorPort="1099" rmiServerPort="1099" />
 	</managementContext>
 
-Next step is ActiveMQ and MOTECH restart.
+The next step is to restart ActiveMQ and MOTECH.
 To restart ActiveMQ use:
 
 .. code-block:: bash
