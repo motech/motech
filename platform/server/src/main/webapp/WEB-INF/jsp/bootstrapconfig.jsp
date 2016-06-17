@@ -152,14 +152,14 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.sqlUsername"/></label>
                                 <div class="col-sm-6">
-                                    <input type="text" class="form-control" name="sqlUsername" ng-model="config.sqlUserName"/>
+                                    <input type="text" class="form-control" name="sqlUsername" ng-required="true"  ng-model="config.sqlUserName"/>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><spring:message code="server.bootstrap.sqlPassword"/></label>
                                 <div class="col-sm-6">
-                                    <input type="password" class="form-control" name="sqlPassword" ng-model="config.sqlPassword"/>
+                                    <input type="password" class="form-control" name="sqlPassword" ng-required="true"  ng-model="config.sqlPassword"/>
                                 </div>
                                 <input class="btn btn-secondary pull-right button-suggestion" type="button" name="VERIFYSQL" ng-disabled="bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required" value="<spring:message code="server.bootstrap.verifySql"/>" onclick="verifyConnection('verifySql')"/>
                                 <div class="alerts-container col-sm-9">
@@ -213,7 +213,7 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"><img id="loader" alt="loading" src="../../static/common/img/load.gif" style="display:none"/></label>
                                 <div class="col-sm-9">
-                                    <input class="btn btn-primary button-suggestion" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUserName.$error.required ||bcform.sqlPassword.$error.required ||bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required || bcform.OsgiFrameworkStorage.$error.required || bcform.motechDir.$error.required || bcform.queueUrl.$error.required" onclick="saveBootstrapData(); submitForm();" value="<spring:message code="server.bootstrap.submit"/>"/>
+                                    <input class="btn btn-primary button-suggestion" type="submit" name="BOOTSTRAP" ng-disabled="bcform.sqlUserName.$error.required || bcform.sqlPassword.$error.required || bcform.sqlUrl.$error.required || bcform.sqlDriver.$error.required || bcform.OsgiFrameworkStorage.$error.required || bcform.motechDir.$error.required || bcform.queueUrl.$error.required" ng-click="saveBootstrapData(); submitForm();" value="<spring:message code="server.bootstrap.submit"/>"/>
                                 </div>
                             </div>
                         </form>

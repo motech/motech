@@ -1,42 +1,11 @@
 angular.module('bootstrapApp',[])
-.controller('controller', ['$scope', function($scope) {
-              $scope.insertValuesToScopes = function() {
-                  $scope.config.queueUrl = $("input[name='queueUrl']").val();
-                  $scope.config.sqlUrl = $("input[name='sqlUrl']").val();
-                  $scope.config.sqlDriver = $("input[name='sqlDriver']").val();
-                  $scope.config.sqlUserName = $("input[name='sqlUsername']").val();
-                  $scope.config.sqlPassword = $("input[name='sqlPassword']").val();
-                  $scope.$apply()
-                                    };
-                 }]);
+.controller('controller', ['$scope', function($scope, $sessionStorage) {
+    $scope.config = angular.fromJson(sessionStorage.config);
 
-function setSuggestedValue(id, val) {
-    document.getElementById(id).value = val;
-}
-
-function setSuggestedValueByName(name, value) {
-	$("input[name='"+name+"']").val(value);
-}
-
-function saveBootstrapData(){
-    var bootstrapString = JSON.stringify($('form[name="bcform"]').serializeArray());
-    sessionStorage.setItem("bootstrapString",bootstrapString);
-};
-
-(function retrieveBootstrapData(){
-		$(document).ready(function(){
-	    		if(sessionStorage.getItem("bootstrapString") != null){
-				var bootstrapObj = JSON.parse(sessionStorage.getItem("bootstrapString"));
-				for (var key in bootstrapObj){
-				       setSuggestedValueByName(bootstrapObj[key]["name"], bootstrapObj[key]["value"]);
-				}
-				sessionStorage.removeItem("bootstrapString");
-				angular.element(document.getElementById('mainBody')).scope().insertValuesToScopes();
-			 }
-		});
-
-})();
-
+    $scope.saveBootstrapData = function(){
+     sessionStorage.config = angular.toJson($scope.config);
+     }
+}]);
 
 function verifyConnection(url) {
     var loader = $('#loader');
