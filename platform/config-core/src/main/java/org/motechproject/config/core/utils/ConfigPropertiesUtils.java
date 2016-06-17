@@ -117,28 +117,36 @@ public final class ConfigPropertiesUtils {
     }
 
     /**
-     * Returns {@code PropertiesConfiguration} and creates config file if does not exist
+     * Returns {@code PropertiesConfiguration} and creates file for this configuration if it does not exist
      * @param basePath path to the file with config
      * @param fileName name of the file with config
      */
     public static PropertiesConfiguration getPropertiesConfiguration(String basePath, String fileName) {
+        createFileIfDoesNotExist(basePath, fileName);
+
+        PropertiesConfiguration propertiesConfiguration = new PropertiesConfiguration();
+        propertiesConfiguration.setBasePath(basePath);
+        propertiesConfiguration.setFileName(fileName);
+
+        try {
+            propertiesConfiguration.load();
+        } catch (ConfigurationException e) {
+            throw new MotechConfigurationException(String.format("Cannot load configuration from: %s",
+                    propertiesConfiguration.getPath()), e);
+        }
+
+        return propertiesConfiguration;
+    }
+
+    private static void createFileIfDoesNotExist(String basePath, String fileName) {
         File configFile = new File(basePath, fileName);
+
         try {
             new File(configFile.getParent()).mkdirs();
             configFile.createNewFile();
         } catch (IOException e) {
             throw new MotechConfigurationException(String.format("Cannot create file %s", configFile.getAbsolutePath()), e);
         }
-
-        PropertiesConfiguration propertiesConfiguration = new PropertiesConfiguration();
-        propertiesConfiguration.setBasePath(basePath);
-        propertiesConfiguration.setFileName(fileName);
-        try {
-            propertiesConfiguration.load();
-        } catch (ConfigurationException e) {
-            LOGGER.error("Unable to load config locations: " + e.getMessage());
-        }
-        return propertiesConfiguration;
     }
 
     /**
