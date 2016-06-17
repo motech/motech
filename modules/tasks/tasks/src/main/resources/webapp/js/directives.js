@@ -331,6 +331,9 @@
                 ManageTaskUtils.formatField(field)
                 );
         }
+        function isTagForPlaceholder (tag) {
+            return (tag.tagName && tag.tagName.toLowerCase() === 'em');
+        }
         function readContent (element) {
             var container = $('<div></div>');
             element.contents().each(function(){
@@ -342,7 +345,7 @@
                         field = ele.data('value');
                         container.append(formatField(field));
                     }
-                }else{
+                } else if (!isTagForPlaceholder(this)) {
                     container.append(ele.text());
                 }
             });
