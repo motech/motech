@@ -18,7 +18,6 @@ import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.entity.EntityInstancesNonEditableException;
 import org.motechproject.mds.ex.entity.EntityNotFoundException;
-import org.motechproject.mds.ex.entity.EntitySchemaMismatchException;
 import org.motechproject.mds.ex.field.FieldReadOnlyException;
 import org.motechproject.mds.ex.lookup.LookupExecutionException;
 import org.motechproject.mds.ex.lookup.LookupNotFoundException;
@@ -26,7 +25,6 @@ import org.motechproject.mds.ex.object.ObjectCreateException;
 import org.motechproject.mds.ex.object.ObjectNotFoundException;
 import org.motechproject.mds.ex.object.ObjectReadException;
 import org.motechproject.mds.ex.object.ObjectUpdateException;
-import org.motechproject.mds.ex.object.RevertFromTrashException;
 import org.motechproject.mds.ex.object.SecurityException;
 import org.motechproject.mds.filter.Filters;
 import org.motechproject.mds.helper.DataServiceHelper;
@@ -38,8 +36,8 @@ import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.TrashService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.service.UserPreferencesService;
-import org.motechproject.mds.service.impl.history.HistoryTrashClassHelper;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.service.HistoryTrashClassHelper;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.MemberUtil;
@@ -78,7 +76,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -204,7 +201,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         MotechDataService service = getServiceForEntity(entity);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
-        Object instance = trashService.findTrashById(instanceId, entityId);
+        Object instance = trashService.findTrashById(instanceId, entity.getClassName());
         Map<String, List<FieldDto>> relatedEntitiesFields = getRelatedEntitiesFields(fields);
 
         return instanceToRecord(instance, entity, fields, service, relatedEntitiesFields);
@@ -303,13 +300,9 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public void revertPreviousVersion(Long entityId, Long instanceId, Long historyId) {
         validateNonEditableProperty(entityId);
-        HistoryRecord historyRecord = getHistoryRecord(entityId, instanceId, historyId);
-        if (!historyRecord.isRevertable()) {
-            EntityDto entity = getEntity(entityId);
-            throw new EntitySchemaMismatchException(entity.getName());
-        }
-
-        saveInstance(new EntityRecord(instanceId, entityId, historyRecord.getFields()));
+        EntityDto entity = getEntity(entityId);
+        MotechDataService service = getServiceForEntity(entity);
+        service.revertToHistoricalRevision(instanceId, historyId);
     }
 
     @Override
@@ -441,31 +434,10 @@ public class InstanceServiceImpl implements InstanceService {
         EntityDto entity = getEntity(entityId);
         validateCredentials(entity);
         validateNonEditableProperty(entity);
+
         MotechDataService service = getServiceForEntity(entity);
 
-        Object trash = service.findTrashInstanceById(instanceId, entityId);
-        List<FieldRecord> fieldRecords = new LinkedList<>();
-
-        try {
-            for (FieldDto field : entityService.getEntityFields(entity.getId())) {
-                if ("id".equalsIgnoreCase(field.getBasic().getDisplayName())) {
-                    continue;
-                }
-                Field f = FieldUtils.getField(trash.getClass(), StringUtils.uncapitalize(field.getBasic().getName()), true);
-                FieldRecord record = new FieldRecord(field);
-                record.setValue(f.get(trash));
-                fieldRecords.add(record);
-            }
-
-            Class<?> entityClass = getEntityClass(entity);
-
-            Object newInstance = entityClass.newInstance();
-            updateFields(newInstance, fieldRecords, service, null);
-
-            service.revertFromTrash(newInstance, trash);
-        } catch (Exception e) {
-            throw new RevertFromTrashException(entity.getName(), instanceId, e);
-        }
+        service.revertFromTrash(instanceId);
     }
 
     @Override
@@ -527,11 +499,6 @@ public class InstanceServiceImpl implements InstanceService {
     private MotechDataService getServiceForEntity(EntityDto entity) {
         String className = entity.getClassName();
         return DataServiceHelper.getDataService(bundleContext, className);
-    }
-
-    private void updateFields(Object instance, List<FieldRecord> fieldRecords, MotechDataService service, Long deleteValueFieldId)
-            throws NoSuchMethodException, InstantiationException, NoSuchFieldException, CannotCompileException, IllegalAccessException, ClassNotFoundException {
-        updateFields(instance, fieldRecords, service, deleteValueFieldId, false);
     }
 
     private void updateFields(Object instance, List<FieldRecord> fieldRecords, MotechDataService service,

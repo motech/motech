@@ -320,9 +320,10 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                     }
 
                     // insert service implementation
-                    String serviceName = MotechClassPool.getServiceImplName(className);
-                    if (addClass(output, serviceName)) {
-                        info.setServiceName(serviceName);
+                    String serviceClass = MotechClassPool.getServiceImplName(className);
+                    if (addClass(output, serviceClass)) {
+                        info.setServiceClass(serviceClass);
+                        info.setServiceName(ClassName.getServiceName(className));
                     }
 
                     // insert the interface
