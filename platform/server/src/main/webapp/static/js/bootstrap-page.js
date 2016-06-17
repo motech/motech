@@ -89,7 +89,7 @@ function verifyConnection(url) {
                     });
 
                     sqlWarnings.show();
-                    $(window).scrollTop(warnings.offset().top);
+                    $(window).scrollTop(sqlWarnings.offset().top);
                 }
                 if(data.warnings !== undefined && data.amqConfigError === true) {
                     data.warnings.forEach(function(item) {
@@ -97,7 +97,7 @@ function verifyConnection(url) {
                     });
 
                     amqWarnings.show();
-                    $(window).scrollTop(warnings.offset().top);
+                    $(window).scrollTop(amqWarnings.offset().top);
                 }
             }
             loader.hide();
@@ -109,7 +109,7 @@ function verifyConnection(url) {
                 });
 
                 sqlWarnings.show();
-                $(window).scrollTop(warnings.offset().top);
+                $(window).scrollTop(sqlWarnings.offset().top);
             }
             if(data.warnings !== undefined && data.amqConfigError === true) {
                                 data.warnings.forEach(function(item) {
@@ -117,7 +117,7 @@ function verifyConnection(url) {
                                 });
 
                                 amqWarnings.show();
-                                $(window).scrollTop(warnings.offset().top);
+                                $(window).scrollTop(amqWarnings.offset().top);
             }
             loader.hide();
         }
