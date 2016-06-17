@@ -3140,7 +3140,7 @@
     /**
     * The MdsDataBrowserCtrl controller is used on the 'Data Browser' view.
     */
-    controllers.controller('MdsDataBrowserCtrl', function ($rootScope, $scope, $http, $location, $state, $stateParams, Entities, Instances, History,
+    controllers.controller('MdsDataBrowserCtrl', function ($rootScope, $scope, $http, $location, $state, $stateParams, $controller, Entities, Instances, History,
                                 $timeout, MDSUtils, Locale, MDSUsers, ModalFactory, LoadingModal) {
 
         MDSUtils.setCustomOperatorFunctions($scope);
@@ -5141,7 +5141,7 @@
     /**
     * The MdsSettingsCtrl controller is used on the 'Settings' view.
     */
-    controllers.controller('MdsSettingsCtrl', function ($scope, $http, Entities, MdsSettings, FileUpload, ModalFactory, LoadingModal) {
+    controllers.controller('MdsSettingsCtrl', function ($scope, $http, Entities, MdsSettings, FileUpload, ModalFactory, LoadingModal, MDSUtils) {
         var getExportEntities, groupByModule;
 
         innerLayout({
