@@ -42,7 +42,7 @@ Install and Configure Dependencies
 
 	#. Change memory allocation for catalina when it starts and the ownership of the tomcat7 directories
 
-		..note::
+		.. note::
 
 		#Note, you can change the memory allocation to anything, but we recommend at least 512m.
 
@@ -83,8 +83,8 @@ After downloading the appropriate .war file, you must then copy the file to the 
 
 .. code-block:: bash
 
-	sudo curl -L "http://nexus.motechproject.org/service/local/artifact/maven/redirect?r=releases&g=org.motechproject&a=motech-platform-server&v=RELEASE&e=war" -o ~/
-	sudo cp ~/motech-platform-server*.war /var/lib/tomcat7/webapps/motech-platform-server.war
+	sudo curl -L "http://nexus.motechproject.org/service/local/artifact/maven/redirect?r=releases&g=org.motechproject&a=motech-platform-server&v=RELEASE&e=war" -o ~/motech-platform-server.war
+	sudo cp ~/motech-platform-server.war /var/lib/tomcat7/webapps/motech-platform-server.war
 	sudo chown -R tomcat7:tomcat7 /var/lib/tomcat7/webapps/motech-platform-server.war
 	sudo service tomcat7 start
 

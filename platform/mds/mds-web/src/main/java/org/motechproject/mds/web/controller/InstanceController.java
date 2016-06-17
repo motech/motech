@@ -51,6 +51,7 @@ import java.io.Reader;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.apache.commons.lang.CharEncoding.UTF_8;
 
@@ -317,20 +318,26 @@ public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/instances/{entityId}/csvimport", method = RequestMethod.POST)
     @ResponseBody
-    public CsvImportResults importCsv(@PathVariable long entityId, @RequestParam(required = true)  MultipartFile csvFile,
+    public CsvImportResults importCsv(@PathVariable long entityId, @RequestParam(required = true)  MultipartFile file,
                           @RequestParam(required = false) boolean continueOnError) {
         instanceService.verifyEntityAccess(entityId);
         instanceService.validateNonEditableProperty(entityId);
         try {
-            try (InputStream in = csvFile.getInputStream()) {
+            try (InputStream in = file.getInputStream()) {
                 Reader reader = new InputStreamReader(in);
-                return csvImportExportService.importCsv(entityId, reader, csvFile.getOriginalFilename(), continueOnError);
+                return csvImportExportService.importCsv(entityId, reader, file.getOriginalFilename(), continueOnError);
             }
         } catch (IOException e) {
             throw new CsvImportException("Unable to open uploaded file", e);
         }
     }
 
+    @RequestMapping(value = "/instances/generateUUID", method = RequestMethod.GET)
+    @ResponseBody
+    public String generateRandomUUID() {
+        return UUID.randomUUID().toString();
+    }
+    
     private RelationshipsUpdate parseRelatedInstancesFilter(String filters) {
         if (filters == null) {
             return new RelationshipsUpdate();

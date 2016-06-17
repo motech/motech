@@ -75,9 +75,6 @@
                             org.motechproject.mds.web.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            net.sf.cglib.core,
-                            net.sf.cglib.proxy,
-                            net.sf.cglib.reflect,
                             org.aopalliance.aop,
                             org.eclipse.gemini.blueprint.config,
                             org.motechproject.mds.service,
@@ -85,7 +82,11 @@
                             org.springframework.aop,
                             org.springframework.aop.aspectj.annotation,
                             org.springframework.aop.framework,
+                            org.springframework.cglib.core,
+                            org.springframework.cglib.proxy,
+                            org.springframework.cglib.reflect,
                             org.springframework.context.support,
+                            org.springframework.validation.beanvalidation,
                             org.springframework.web.multipart.commons,
                             org.springframework.transaction,
                             *
@@ -226,9 +227,9 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                _, $, angular, angularHandler, isBlank, handleResponse, blockUI, FileReader,
-                                motechAlert, unblockUI, cloneArray, cloneObj, arraysEqual, resizeLayout,
-                                defaultLayout, innerLayout, alertHandler, window, moment, FormData, BootstrapDialog
+                                _, $, angular, isBlank, handleResponse, FileReader,
+                                cloneArray, cloneObj, arraysEqual, resizeLayout,
+                                defaultLayout, innerLayout, window, moment, FormData
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

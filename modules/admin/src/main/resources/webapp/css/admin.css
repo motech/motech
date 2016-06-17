@@ -26,7 +26,7 @@ h4.settings-section {
 }
 
 .box-content .lightblue-settings, .lightblue-settings  {
-    background: #dbedf7 url("../../server/resources/img/frame-set-bg.jpg") repeat-x 0 0;
+    background: #dbedf7;
     border-left:1px solid #D4E1F9;
 }
 
@@ -268,6 +268,7 @@ h4.settings-section {
     font-family: Consolas,'Lucida Console','DejaVu Sans Mono',monospace;
     font-size: 12px;
     word-wrap: break-word;
+    overflow: visible;
 }
 
 div.sidebar-container {

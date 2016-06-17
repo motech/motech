@@ -80,4 +80,22 @@
         </description>
         <priority>3</priority>
     </rule>
+    <rule name="DontImportFasterxml" language="java"
+          message="Avoid importing com.fasterxml packages"
+          class="net.sourceforge.pmd.lang.rule.XPathRule">>
+        <description>
+            Avoid importing com.fasterxml packages.
+        </description>
+        <properties>
+            <property name="xpath">
+                <value>
+                    <![CDATA[
+                //ImportDeclaration
+                [starts-with(Name/@Image, 'com.fasterxml')]
+                ]]>
+                </value>
+            </property>
+        </properties>
+        <priority>3</priority>
+    </rule>
 </ruleset>

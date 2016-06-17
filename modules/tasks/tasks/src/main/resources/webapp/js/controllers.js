@@ -6,7 +6,7 @@
 
     var controllers = angular.module('tasks.controllers', []);
 
-    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope, $http, ManageTaskUtils) {
+    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope, $http, ManageTaskUtils,  ModalFactory, LoadingModal) {
         var tasks, activities = [],
             searchMatch = function (item, method, searchQuery) {
                 var result;
@@ -111,30 +111,27 @@
                 .success(dummyHandler)
                 .error(function (response) {
                     item.task.enabled = !enabled;
-                    BootstrapDialog.alert({
-                        type: BootstrapDialog.TYPE_DANGER,
-                        title: $scope.msg('task.error.actionNotChangeTitle'),
-                        message: $scope.util.createErrorMessage($scope, response, false)
-                    });
+                    ModalFactory.showErrorAlert(null, 'task.error.actionNotChangeTitle', $scope.util.createErrorMessage($scope, response, false));
                 });
         };
 
         $scope.deleteTask = function (item) {
-            BootstrapDialog.confirm({
+            ModalFactory.showConfirm({
                 title: $scope.msg('task.header.confirm'),
                 message: $scope.msg('task.confirm.remove'),
-                type: BootstrapDialog.TYPE_WARNING,
+                type: 'type-warning',
                 callback: function(result) {
                     if (result) {
-                        blockUI();
+                        LoadingModal.open();
                         item.task.$remove(function () {
                             $scope.allTasks.removeObject(item);
                             $rootScope.search();
                             $('#inner-center').trigger("change");
-                            unblockUI();
-                        },
-                            alertHandler('task.error.removed', 'task.header.error')
-                        );
+                            LoadingModal.close();
+                        }, function () {
+                            LoadingModal.close();
+                            ModalFactory.showErrorAlert('task.error.removed');
+                        });
                     }
                 }
             });
@@ -184,17 +181,18 @@
         };
 
         $scope.importTask = function () {
-            blockUI();
+            LoadingModal.open();
 
             $('#importTaskForm').ajaxSubmit({
                 success: function () {
                     $scope.getTasks();
                     $('#importTaskForm').resetForm();
                     $('#importTaskModal').modal('hide');
-                    unblockUI();
+                    LoadingModal.close();
                 },
                 error: function (response) {
-                    handleResponse('task.header.error', 'task.error.import', response);
+                    LoadingModal.close();
+                    ModalFactory.showErrorAlertWithResponse('task.error.import', 'task.header.error', response);
                 }
             });
         };
@@ -279,10 +277,11 @@
             $rootScope.search();
             $('#inner-center').trigger("change");
         };
-
     });
 
-    controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers, $q, $timeout, $routeParams, $http, $compile, $filter) {
+    controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers,
+                                     $q, $timeout, $stateParams, $http, $compile, $filter, ModalFactory, LoadingModal) {
+
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
         $scope.selectedAction = [];
@@ -294,7 +293,7 @@
         $scope.task.retryTaskOnFailure = false;
 
         $scope.openTriggersModal = function(channel) {
-            blockUI();
+            LoadingModal.open();
             $scope.staticTriggersPager = 1;
             $scope.dynamicTriggersPager = 1;
             $scope.selectedChannel = channel;
@@ -319,7 +318,7 @@
                         $scope.divSize = "col-md-12";
                     }
                     $('#triggersModal').modal('show');
-                    unblockUI();
+                    LoadingModal.close();
                 }
             );
         };
@@ -346,7 +345,7 @@
 
         $scope.reloadLists = function(staticTriggersPage, dynamicTriggersPage) {
             if ($scope.validatePages(staticTriggersPage, dynamicTriggersPage)) {
-                blockUI();
+                LoadingModal.open();
                 Triggers.get(
                     {
                         moduleName: $scope.selectedChannel.moduleName,
@@ -360,7 +359,7 @@
                         $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
                         $("#staticTriggersPager").val($scope.staticTriggersPage);
                         $("#dynamicTriggersPager").val($scope.dynamicTriggersPage);
-                        unblockUI();
+                        LoadingModal.close();
                     }
                 );
             }
@@ -374,15 +373,15 @@
 
         $scope.filter = $filter('filter');
 
-        blockUI();
+        LoadingModal.open();
 
         $q.all([$scope.util.doQuery($q, Channels), $scope.util.doQuery($q, DataSources)]).then(function(data) {
-            blockUI();
+            LoadingModal.open();
 
             $scope.channels = data[0];
             $scope.dataSources = data[1];
 
-            if ($routeParams.taskId === undefined) {
+            if ($stateParams.taskId === undefined) {
                 $scope.task = {
                     taskConfig: {
                         steps: []
@@ -390,7 +389,7 @@
                 };
                 $scope.task.retryTaskOnFailure = false;
             } else {
-                $scope.task = Tasks.get({ taskId: $routeParams.taskId }, function () {
+                $scope.task = Tasks.get({ taskId: $stateParams.taskId }, function () {
                     Triggers.getTrigger($scope.task.trigger, function(trigger) {
                         var triggerChannel, dataSource, object;
 
@@ -433,9 +432,6 @@
                                 if (source && object) {
                                     step.providerName = source.name;
                                     step.displayName = object.displayName;
-                                    angular.forEach(step.lookup, function(lookupField) {
-                                        lookupField.value = $scope.util.convertToView($scope, 'UNICODE', lookupField.value);
-                                    });
                                 }
                             }
                         });
@@ -478,10 +474,8 @@
                                     $timeout(function () {
                                         $scope.util.action.select($scope, idx, action);
                                         angular.element('#collapse-action-' + idx).collapse('hide');
-
                                         angular.forEach($scope.selectedAction[idx].actionParameters, function (param) {
                                             param.value = info.values[param.key] || '';
-                                            param.value = $scope.util.convertToView($scope, param.type, param.value);
                                         });
                                     });
                                 }
@@ -491,7 +485,7 @@
                 });
             }
 
-            unblockUI();
+            LoadingModal.close();
         });
 
         $scope.isTaskValid = function() {
@@ -513,7 +507,7 @@
 
         $scope.selectTrigger = function (channel, trigger) {
             if ($scope.task.trigger) {
-                motechConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
+                ModalFactory.showConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
                     if (val) {
                         $scope.util.trigger.remove($scope);
                         $scope.util.trigger.select($scope, channel, trigger);
@@ -529,7 +523,7 @@
         $scope.removeTrigger = function ($event) {
             $event.stopPropagation();
 
-            motechConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
+            ModalFactory.showConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
                 if (val) {
                     $scope.util.trigger.remove($scope);
                 }
@@ -556,7 +550,7 @@
             };
 
             if ($scope.selectedActionChannel[idx] !== undefined && $scope.selectedActionChannel[idx].displayName !== undefined) {
-                motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
+                ModalFactory.showConfirm('task.confirm.action', "task.header.confirm", function (val) {
                     if (val) {
                         removeActionSelected(idx);
                     }
@@ -568,7 +562,7 @@
 
         $scope.selectActionChannel = function (idx, channel) {
             if ($scope.selectedActionChannel[idx] && $scope.selectedAction[idx]) {
-                motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
+                ModalFactory.showConfirm('task.confirm.action', "task.header.confirm", function (val) {
                     if (val) {
                         $scope.task.actions[idx] = {};
                         $scope.selectedActionChannel[idx] = channel;
@@ -590,7 +584,7 @@
 
         $scope.selectAction = function (idx, action) {
             if ($scope.selectedAction[idx]) {
-                motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
+                ModalFactory.showConfirm('task.confirm.action', "task.header.confirm", function (val) {
                     if (val) {
                         $scope.util.action.select($scope, idx, action);
                     }
@@ -621,7 +615,7 @@
             };
 
             if (data.filters !== undefined && data.filters.length > 0) {
-                motechConfirm('task.confirm.filterSet', "task.header.confirm", function (val) {
+                ModalFactory.showConfirm('task.confirm.filterSet', "task.header.confirm", function (val) {
                     if (val) {
                         removeFilterSetSelected(data);
                     }
@@ -735,6 +729,24 @@
         };
 
         $scope.getPopoverType = function(filter) {
+            if (!filter.manipulations || !Array.isArray(filter.manipulations)) {
+                if (filter.displayName) {
+                    var manipulations, manipulationsBuff;
+                    manipulationsBuff = filter.key.split('?');
+                    manipulationsBuff.shift();
+                    manipulations = [];
+                    manipulationsBuff.forEach(function (manipulationStr) {
+                        var manipulation = {},
+                        parts = manipulationStr.split('(');
+                        manipulation.type = parts.shift();
+                        if(parts.length > 0) {
+                            manipulation.argument = parts[0].replace(')','');
+                        }
+                        manipulations.push(manipulation);
+                    });
+                    filter.manipulations = manipulations;
+                }
+            }
             if (filter.type === 'UNICODE' || filter.type === 'TEXTAREA') {
                 return "STRING";
             } else if (filter.type === 'DATE') {
@@ -762,7 +774,7 @@
 
         $scope.removeData = function (dataSource) {
             if (dataSource.type !== undefined || (dataSource.providerName !== undefined && dataSource.providerName !== '')) {
-                motechConfirm('task.confirm.dataSource', "task.header.confirm", function (val) {
+                ModalFactory.showConfirm('task.confirm.dataSource', "task.header.confirm", function (val) {
                     if (val) {
                         $scope.task.taskConfig.steps.removeObject(dataSource);
 
@@ -831,7 +843,7 @@
 
         $scope.selectDataSource = function (dataSource, selected) {
             if (dataSource.providerName) {
-                motechConfirm('task.confirm.changeDataSource', 'task.header.confirm', function (val) {
+                ModalFactory.showConfirm('task.confirm.changeDataSource', 'task.header.confirm', function (val) {
                     if (val) {
                         dataSource.name = '';
                         $scope.util.dataSource.select($scope, dataSource, selected);
@@ -844,7 +856,7 @@
 
         $scope.selectObject = function (object, selected) {
             if (object.type) {
-                motechConfirm('task.confirm.changeObject', 'task.header.confirm', function (val) {
+                ModalFactory.showConfirm('task.confirm.changeObject', 'task.header.confirm', function (val) {
                     if (val) {
                         object.name = '';
                         $scope.util.dataSource.selectObject($scope, object, selected);
@@ -862,107 +874,6 @@
                 data.lookup.push({field:lookupField, value:''});
             });
 
-        };
-
-        $scope.refactorDivEditable = function (value) {
-            var result = $('<div/>').append(value),
-                isChrome = $scope.util.isChrome($scope),
-                isIE = $scope.util.isIE($scope),
-                isFirefox = $scope.util.isFirefox($scope);
-
-            result.find('em').remove();
-
-            result.find('span[data-prefix]').replaceWith(function () {
-                var span = $(this), prefix = span.data('prefix'),
-                    manipulations = span.attr('manipulate') || '',
-                    type = span.data('type'),
-                    object = {}, key, source, array, val, i;
-
-                switch (prefix) {
-                case $scope.util.TRIGGER_PREFIX:
-                    key = span.data('eventkey');
-                    break;
-                case $scope.util.DATA_SOURCE_PREFIX:
-                    source = span.data('source');
-                    object.type = span.data('object-type');
-                    object.id = span.data('object-id');
-                    key = span.data('field');
-                    break;
-                default:
-                    key = span.data('value').toString();
-                }
-
-                if (manipulations !== "") {
-                    if ($scope.util.isText(type) || $scope.util.isDate(type) || $scope.util.isDate2Date(type) ) {
-                        array = $scope.extractManipulations(manipulations);
-
-                        for (i = 0; i < array.length; i += 1) {
-                            key = key.concat("?" + array[i]);
-                        }
-                    }
-                }
-
-                key = key.replace(/\?+(?=\?)/g, '');
-
-                switch (prefix) {
-                case $scope.util.TRIGGER_PREFIX:
-                    val = '{{{0}.{1}}}'.format(prefix, key);
-                    break;
-                case $scope.util.DATA_SOURCE_PREFIX:
-                    val = '{{{0}.{1}.{2}#{3}.{4}}}'.format(prefix, source, object.type, object.id, key);
-                    break;
-                default:
-                    val = key;
-                }
-
-                return val;
-            });
-
-            if (isIE) {
-                result.find("p").replaceWith(function () {
-                    return "{0}<br>".format(this.innerHTML);
-                });
-
-                result.find("br").last().remove();
-            } else {
-                result.find("div").replaceWith(function () {
-                    return "\n{0}".format(this.innerHTML);
-                });
-            }
-
-            if (result[0].childNodes[result[0].childNodes.length - 1] === '<br>') {
-                result[0].childNodes[result[0].childNodes.length - 1].remove();
-            }
-
-            result.find("br").replaceWith("\n");
-
-            return result.text();
-        };
-
-        $scope.extractManipulations = function (manipulations) {
-            var extractedManipulations = [], insideManipulation = false, builtManipulation = "", i;
-
-            for (i = 0; i < manipulations.length; i += 1) {
-                if (manipulations[i] === "(") {
-                    insideManipulation = true;
-                } else if (manipulations[i] === ")") {
-                    insideManipulation = false;
-                }
-
-                if (manipulations[i] === " " && !insideManipulation) {
-                    extractedManipulations.push(builtManipulation);
-                    builtManipulation = "";
-                } else {
-                    builtManipulation += manipulations[i];
-                }
-            }
-
-            // we must add last manipulation to the array
-            if (builtManipulation !== "") {
-                extractedManipulations.push(builtManipulation);
-            }
-
-            return extractedManipulations;
         };
 
         $scope.hasUnknownTrigger = function (value) {
@@ -1004,214 +915,39 @@
             return unknown;
         };
 
-        $scope.createDraggableElement = function (value, fieldType, forFormat) {
-            var regex, element, manipulateAttributes, joinSeparator, ds, values, splittedValue, newValue;
-
-            if (value.length !== 0 && forFormat === 'convert') {
-                regex = new RegExp('format(.*)', "g");
-                manipulateAttributes = value.match(regex);
-                if (manipulateAttributes) {
-                    manipulateAttributes = manipulateAttributes[0].substr(0, manipulateAttributes[0].indexOf(")") + 1);
-                    regex = new RegExp(' {{', "g");
-                    joinSeparator = manipulateAttributes.replace(regex, '{');
-                    regex = new RegExp('{{', "g");
-                    joinSeparator = joinSeparator.replace(regex, '{');
-                    regex = new RegExp('}}', "g");
-                    joinSeparator = joinSeparator.replace(regex, '}');
-
-                    regex = new RegExp("\\{ad([^)]+)\\}", "g");
-                    values = joinSeparator.match(regex);
-
-                    if (values) {
-                        regex = new RegExp('{', "g");
-                        values = values[0].replace(regex, '');
-                        regex = new RegExp('}', "g");
-                        values = values.replace(regex, '');
-                        values = values.split('ad');
-
-                        angular.forEach(values, function (element) {
-                            if (element.length > 0) {
-                                newValue = ($scope.createDraggableElement(element, forFormat));
-                                splittedValue = element.split('.');
-
-                                ds = $scope.util.find({
-                                    msg: $scope.msg,
-                                    where: $scope.task.taskConfig.steps,
-                                    by: [{
-                                        what: '@type',
-                                        equalTo: 'DataSource'
-                                    }, {
-                                        what: 'providerName',
-                                        equalTo: splittedValue[1]
-                                    }]
-                                });
-
-                                if (ds) {
-                                    newValue = element.replace(splittedValue[1], ds.providerName);
-                                    joinSeparator = joinSeparator.replace(element, newValue);
-                                }
-                            }
-                        });
-                    }
-
-                    value = value.replace(manipulateAttributes, joinSeparator);
-                }
-            }
-
-            if (forFormat === 'true') {
-                regex = new RegExp("\\{.*?\\}", "g");
-            } else {
-                regex = new RegExp("\\{\\{.*?\\}\\}", "g");
-            }
-
-            element = value.replace(regex, function (data) {
-                var indexOf = data.indexOf('.'),
-                    prefix, dataArray, key, manipulations,
-                    span, cuts = {dot: [], hash: []}, param, type, field, dataSource, providerName, object, id;
-
-                    if (forFormat === 'true') {
-                        prefix = data.slice(1, indexOf);
-                        dataArray = data.slice(indexOf + 1, -1).split("?");
-                    } else {
-                        prefix = data.slice(2, indexOf);
-                        dataArray = data.slice(indexOf + 1, -2).split("?");
-                    }
-
-                    key = dataArray[0];
-                    manipulations = dataArray.slice(1);
-
-                switch (prefix) {
-                case $scope.util.TRIGGER_PREFIX:
-                    param = $scope.util.find({
-                        where: $scope.selectedTrigger.eventParameters,
-                        by: {
-                            what: 'eventKey',
-                            equalTo: key
-                        }
-                    });
-
-                    if (!param) {
-                        param = {
-                            type: 'UNKNOWN',
-                            displayName: key
-                        };
-                    }
-
-                    span = $scope.util.createDraggableSpan({
-                        msg: $scope.taskMsg,
-                        param: param,
-                        prefix: prefix,
-                        manipulations: manipulations,
-                        fieldType: fieldType,
-                        popover: forFormat
-                    });
-                    break;
-                case $scope.util.DATA_SOURCE_PREFIX:
-                    cuts.hash = key.split('#');
-                    cuts.dot[0] = cuts.hash[0].split('.');
-                    cuts.dot[1] = cuts.hash[1].split('.');
-
-                    providerName = cuts.dot[0][0];
-                    id = cuts.dot[1][0];
-
-                    type = cuts.dot[0].slice(1).join('.');
-                    field = cuts.dot[1].slice(1).join('.');
-
-                    dataSource = $scope.util.find({
-                        where: $scope.task.taskConfig.steps,
-                        by: [{
-                            what: '@type',
-                            equalTo: 'DataSource'
-                        }, {
-                            what: 'providerName',
-                            equalTo: providerName
-                        }]
-                    });
-
-                    object = dataSource && $scope.findObject(dataSource.providerName, dataSource.type);
-
-                    param = object && $scope.util.find({
-                        where: object.fields,
-                        by: {
-                            what: 'fieldKey',
-                            equalTo: field
-                        }
-                    });
-
-                    if (!param) {
-                        param = {
-                            type: 'UNKNOWN',
-                            displayName: field
-                        };
-                    }
-
-                    span = $scope.util.createDraggableSpan({
-                        msg: $scope.taskMsg,
-                        param: param,
-                        prefix: prefix,
-                        manipulations: manipulations,
-                        fieldType: fieldType,
-                        providerName: dataSource.providerName,
-                        object: {
-                            id: id,
-                            type: type,
-                            field: field,
-                            displayName: object.displayName
-                        }
-                    });
-                    break;
-                }
-
-                return span || '';
-            });
-
-            return element.replace(/\n/g, "<br>");
-        };
-
         $scope.save = function (enabled) {
             var success = function (response) {
-                    var alertMessage = enabled ? $scope.msg('task.success.savedAndEnabled') : $scope.msg('task.success.saved'),
-                    loc, indexOf, errors = response.validationErrors || response;
+                var alertMessage = enabled ? $scope.msg('task.success.savedAndEnabled') : $scope.msg('task.success.saved'),
+                loc, indexOf, errors = response.validationErrors || response;
 
-                    if (errors.length > 0) {
-                        alertMessage = $scope.util.createErrorMessage($scope, errors, true);
+                if (errors.length > 0) {
+                    alertMessage = $scope.util.createErrorMessage($scope, errors, true);
+                }
+                LoadingModal.close();
+                ModalFactory.showAlert({
+                    type: 'type-success',
+                    message: alertMessage,
+                    callback: function () {
+
+                        loc = window.location.toString();
+                        indexOf = loc.indexOf('#');
+
+                        window.location = "{0}#/tasks/dashboard".format(loc.substring(0, indexOf));
                     }
-                    BootstrapDialog.alert({
-                        type: BootstrapDialog.TYPE_SUCCESS,
-                        title: $scope.msg('task.header.saved'),
-                        message: alertMessage,
-                        callback: function () {
-                            unblockUI();
-                            loc = window.location.toString();
-                            indexOf = loc.indexOf('#');
+                });
+            },
+            error = function (response) {
+                var data = (response && response.data) || response;
 
-                            window.location = "{0}#/tasks/dashboard".format(loc.substring(0, indexOf));
-                        }
-                    });
-                },
-                error = function (response) {
-                    var data = (response && response.data) || response;
+                angular.forEach($scope.task.actions, function (action) {
+                    delete action.values;
+                });
 
-                    angular.forEach($scope.task.actions, function (action) {
-                        delete action.values;
-                    });
+                delete $scope.task.enabled;
 
-                    angular.forEach($scope.task.taskConfig.steps, function (step) {
-                        if (step['@type'] === 'DataSource') {
-                            angular.forEach(step.lookup, function(lookupField) {
-                                lookupField.value = $scope.util.convertToView($scope, 'UNICODE', lookupField.value);
-                            });
-                        }
-                    });
-
-                    delete $scope.task.enabled;
-
-                    unblockUI();
-                    BootstrapDialog.alert({
-                        type: BootstrapDialog.TYPE_DANGER,
-                        message: $scope.util.createErrorMessage($scope, data, false)
-                    });
-                };
+                LoadingModal.close();
+                ModalFactory.showErrorAlert(null, 'task.header.error', $scope.util.createErrorMessage($scope, data, false));
+            };
 
             $scope.task.enabled = enabled;
 
@@ -1225,7 +961,7 @@
                 }
 
                 angular.forEach(action.actionParameters, function (param) {
-                    $scope.task.actions[idx].values[param.key] = $scope.addDoubleBrackets($scope.util.convertToServer($scope, param.value));
+                    $scope.task.actions[idx].values[param.key] = param.value;
 
                     if (!param.required && isBlank($scope.task.actions[idx].values[param.key])) {
                         delete $scope.task.actions[idx].values[param.key];
@@ -1238,11 +974,13 @@
                     if (step.lookup === undefined) {
                         step.lookup = [];
                     }
-                    angular.forEach(step.lookup, function(lookupField) {
-                        lookupField.value = $scope.util.convertToServer($scope, lookupField.value || '');
-                    });
-
                 }
+            });
+
+            angular.forEach($scope.task.taskConfig.steps, function (step) {
+                angular.forEach(step.filters, function (filter) {
+                    delete filter.manipulations;
+                });
             });
 
             if (!$scope.task.retryTaskOnFailure) {
@@ -1255,12 +993,12 @@
                 $scope.task.retryIntervalInMilliseconds = $scope.task.retryIntervalInSeconds * 1000;
             }
 
-            blockUI();
+            LoadingModal.open();
 
-            if (!$routeParams.taskId) {
+            if (!$stateParams.taskId) {
                 $http.post('../tasks/api/task/save', $scope.task).success(success).error(error);
             } else {
-                $http.post('../tasks/api/task/' + $routeParams.taskId, $scope.task).success(success).error(error);
+                $http.post('../tasks/api/task/' + $stateParams.taskId, $scope.task).success(success).error(error);
             }
         };
 
@@ -1282,27 +1020,11 @@
                 return expression;
             } else if ($scope.selectedTrigger !== undefined) {
                 value = prop.value === undefined ? '' : prop.value;
-                value = $scope.refactorDivEditable(value);
 
                 expression = !value || value.length === 0 || value === "\n";
             }
 
             return expression;
-        };
-
-        $scope.getBooleanValue = function (value) {
-            return (value === 'true' || value === 'false') ? null : value;
-        };
-
-        $scope.setBooleanValue = function (action, index, value) {
-            $scope.filter($scope.selectedAction[action].actionParameters, {hidden: false})[index].value = $scope.util.createBooleanSpan($scope, value);
-        };
-
-        $scope.checkedBoolean = function (action, index, val) {
-            var prop = $scope.filter($scope.selectedAction[action].actionParameters, {hidden: false})[index],
-                value = $scope.refactorDivEditable(prop.value === undefined ? '' : prop.value);
-
-            return value === val;
         };
 
         $scope.getTaskValidationError = function (error) {
@@ -1319,185 +1041,6 @@
             $('#helpModalDate').modal();
         };
 
-        $scope.changeFormatInput = function (newData) {
-            $timeout(function() {
-                $scope.formatInput = [];
-                $scope.formatInput = newData;
-                $scope.$apply();
-            }, 1);
-
-            if (!$scope.$$phase) { // check if we are in digest
-                $scope.$digest(); // run digest
-            }
-        };
-
-        $scope.showFormatManipulation = function () {
-            $scope.changeFormatInput($scope.getValues('true'));
-            $('#formatManipulation').modal({keyboard: false});
-        };
-
-        $scope.getValues = function(forFormat) {
-            var manipulateElement = $("[ismanipulate=true]"), joinSeparator = "", manipulation, manipulateAttributes, manipulationAttributesIndex, convertedValues = [], reg;
-            manipulation = "format";
-            manipulateAttributes = manipulateElement.attr("manipulate") || "";
-
-            if ((manipulateAttributes.indexOf(manipulation) !== -1) && (manipulation === "format")) {
-                manipulateAttributes = manipulateAttributes.match('format(.*)');
-                reg = manipulateAttributes[1];
-                if ((reg.indexOf("(") + 1) !== reg.indexOf(")")) {
-                    joinSeparator = reg.substr(reg.indexOf("(") + 1, reg.indexOf(")") - 1);
-                    reg = joinSeparator.split(",");
-                } else {
-                    reg = convertedValues;
-                }
-            }
-
-            angular.forEach(reg, function (value) {
-                convertedValues.push($scope.createDraggableElement(value, manipulation, forFormat));
-            });
-
-            return convertedValues;
-        };
-
-        $scope.addFormatInput = function () {
-
-            $scope.tempSaveInput();
-
-            $timeout(function() {
-                $scope.formatInput.push('');
-                $scope.$apply();
-            }, 0);
-        };
-
-        $scope.deleteFormatInput = function (indexToRemove) {
-            var tempArray = [];
-
-            $scope.tempSaveInput();
-
-            angular.forEach($scope.formatInput, function (value, index) {
-                if  (indexToRemove !== index) {
-                    tempArray.push(value);
-                }
-            });
-
-            $scope.changeFormatInput(tempArray);
-        };
-
-        $scope.tempSaveInput = function () {
-            var inputFields = $("[data-type=format]"), tempArray = [];
-
-            angular.forEach(inputFields, function (value) {
-                tempArray.push(value.innerHTML);
-            });
-
-            $scope.formatInput = tempArray;
-        };
-
-        $scope.saveInput = function () {
-            var inputFields = $("[data-type=format]"), tempArray = [];
-
-            angular.forEach(inputFields, function (value) {
-                tempArray.push($scope.removeDoubleBrackets($scope.util.convertToServer($scope, value.innerHTML)));
-            });
-
-            $scope.formatInput = tempArray;
-            $scope.changeFormatManipulation();
-        };
-
-        $scope.changeFormatManipulation = function () {
-            var manipulation = "format(",
-                manipulateElement = $("[ismanipulate=true]"),
-                elementManipulation = manipulateElement.attr("manipulate"),
-                regex = new RegExp("format\\(.*?\\)", "g");
-
-            angular.forEach($scope.formatInput, function(value, index) {
-
-                manipulation = manipulation + value;
-                if (index !== $scope.formatInput.length - 1) {
-                    manipulation = manipulation + ",";
-                }
-            });
-
-            manipulation = manipulation + ")";
-            manipulation = manipulation.replace(/\s+/g,"");
-
-            elementManipulation = elementManipulation.replace(regex, manipulation);
-            manipulateElement.attr("manipulate", elementManipulation);
-            $timeout(function() {
-                manipulateElement[0].focus();
-            }, 0);
-        };
-
-        $scope.removeDoubleBrackets = function (value) {
-            var tempValue = "", reg;
-
-            if (value.length !== 0) {
-                reg = new RegExp('{{', "g");
-                tempValue = value.replace(reg, '{');
-                reg = new RegExp('}}', "g");
-                tempValue = tempValue.replace(reg, '}');
-                value = value.replace(value, tempValue);
-            }
-
-            return value;
-        };
-
-        $scope.addDoubleBrackets = function (value) {
-            var manipulateAttributes, reg = "", joinSeparator, splittedValue, newValue, values, ds;
-
-            if (value.length !== 0) {
-                reg = new RegExp("format\\(.*?\\)", "g");
-                manipulateAttributes = value.match(reg);
-                if (manipulateAttributes) {
-                    manipulateAttributes = manipulateAttributes[0].substr(0, manipulateAttributes[0].indexOf(")") + 1);
-                    reg = new RegExp('{', "g");
-                    joinSeparator = manipulateAttributes.replace(reg, '{{');
-                    reg = new RegExp('{{3,}', "g");
-                    joinSeparator = joinSeparator.replace(reg, '{{');
-                    reg = new RegExp('}', "g");
-                    joinSeparator = joinSeparator.replace(reg, '}}');
-                    reg = new RegExp('}{3,}', "g");
-                    joinSeparator = joinSeparator.replace(reg, '}}');
-                    reg = new RegExp("\\{ad([^)]+)\\}", "g");
-                    values = joinSeparator.match(reg);
-
-                    if (values) {
-                        reg = new RegExp('{', "g");
-                        values = values[0].replace(reg, '');
-                        reg = new RegExp('}', "g");
-                        values = values.replace(reg, '');
-                        values = values.split('ad');
-
-                        angular.forEach(values, function (element) {
-                            if (element.length > 0) {
-                                splittedValue = element.split('.');
-
-                                ds = $scope.util.find({
-                                    msg: $scope.msg,
-                                    where: $scope.task.taskConfig.steps,
-                                    by: [{
-                                        what: '@type',
-                                        equalTo: 'DataSource'
-                                    }, {
-                                        what: 'providerName',
-                                        equalTo: splittedValue[1]
-                                    }]
-                                });
-
-                                if (ds) {
-                                    joinSeparator = joinSeparator.replace(splittedValue[1], $scope.msg(ds.providerName));
-                                }
-                            }
-                        });
-                    }
-
-                    value = value.replace(manipulateAttributes, joinSeparator);
-                }
-            }
-
-            return value;
-        };
-
         $scope.taskMsg = function(message) {
             if (message === undefined) {
                 return "";
@@ -1509,12 +1052,52 @@
                 return message;
             }
         };
+
+        $scope.getAvailableFields = function () {
+            var dataSources, fields = [];
+            if($scope.selectedTrigger) {
+                $scope.selectedTrigger.eventParameters.forEach(function (_field) {
+                    var field = JSON.parse(JSON.stringify(_field));
+                    field.prefix = ManageTaskUtils.TRIGGER_PREFIX;
+                    fields.push(field);
+                });
+            }
+            dataSources = $scope.getDataSources();
+            if(dataSources && Array.isArray(dataSources)){
+                dataSources.forEach(function (source) {
+                    var service = $scope.findObject(source.providerName, source.type);
+                    if (!service || !service.fields){
+                        return false;
+                    }
+                    service.fields.forEach(function (_field) {
+                        var field =  JSON.parse(JSON.stringify(_field));
+                        field.prefix = ManageTaskUtils.DATA_SOURCE_PREFIX;
+                        field.serviceName = service.displayName;
+                        field.providerName = source.providerName;
+                        field.providerType = source.type;
+                        field.objectId = source.objectId;
+                        fields.push(field);
+                    });
+                });
+            }
+            return fields;
+        };
+
+        $scope.$watchCollection(function(){
+            var fieldIds = [];
+            $scope.getAvailableFields().forEach(function(field){
+                fieldIds.push(field.id);
+            });
+            return fieldIds;
+        }, function() {
+           $scope.fields = $scope.getAvailableFields();
+        });
     });
 
-    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $routeParams, $filter, $http) {
+    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http, ModalFactory, LoadingModal) {
         var data, task;
 
-        $scope.taskId = $routeParams.taskId;
+        $scope.taskId = $stateParams.taskId;
         $scope.activityTypes = ['All', 'Warning', 'Success', 'Error'];
         $scope.selectedActivityType = 'All';
 
@@ -1524,7 +1107,7 @@
             east__maxSize: 350
         });
 
-        if ($routeParams.taskId !== undefined) {
+        if ($stateParams.taskId !== undefined) {
             data = { taskId: $scope.taskId };
 
             task = Tasks.get(data, function () {
@@ -1550,6 +1133,7 @@
                 $scope.description = task.description;
                 $scope.enabled = task.enabled;
                 $scope.name = task.name;
+                $('#inner-center').trigger("change");
             });
         }
 
@@ -1566,17 +1150,17 @@
         };
 
         $scope.clearHistory = function () {
-            motechConfirm('task.history.confirm.clearHistory', 'task.history.confirm.clear',function (r) {
+            ModalFactory.showConfirm('task.history.confirm.clearHistory', 'task.history.confirm.clear',function (r) {
                 if (!r) {
                     return;
                 }
-                blockUI();
-                Activities.remove({taskId: $routeParams.taskId}, function () {
+                LoadingModal.open();
+                Activities.remove({taskId: $stateParams.taskId}, function () {
                      $scope.refresh();
-                     unblockUI();
+                     LoadingModal.close();
                  }, function (response) {
-                     unblockUI();
-                     handleResponse('task.header.error', 'task.history.deleteError', response);
+                     LoadingModal.close();
+                     ModalFactory.showErrorAlertWithResponse('task.history.deleteError', 'task.header.error', response);
                  });
             });
         };
@@ -1584,16 +1168,16 @@
         $scope.retryTask = function (activityId) {
             $http.post('../tasks/api/activity/retry/' + activityId)
                 .success(function () {
-                    motechAlert('task.retry.info', 'task.retry.header');
+                    ModalFactory.showSuccessAlert('task.retry.info', 'task.retry.header');
                 })
                 .error(function() {
-                    motechAlert('task.retry.failed', 'task.retry.header');
+                    ModalFactory.showErrorAlert('task.retry.failed', 'task.retry.header');
                 });
         };
     });
 
 
-    controllers.controller('TasksSettingsCtrl', function ($scope, Settings) {
+    controllers.controller('TasksSettingsCtrl', function ($scope, Settings, ModalFactory) {
         $scope.settings = Settings.get();
 
         innerLayout({
@@ -1604,9 +1188,9 @@
 
         $scope.submit = function() {
             $scope.settings.$save(function() {
-                motechAlert('task.settings.success.saved', 'server.saved');
+                ModalFactory.showSuccessAlert('task.settings.success.saved', 'server.saved');
             }, function() {
-                motechAlert('task.settings.error.saved', 'server.error');
+                ModalFactory.showErrorAlert('task.settings.error.saved', 'server.error');
             });
         };
 
@@ -1626,7 +1210,7 @@
 
     });
 
-    controllers.controller('MapsCtrl', function ($scope) {
+    controllers.controller('MapsCtrl', function ($scope, ModalFactory) {
         var exp, values, keyValue, dragAndDrop = $scope.BrowserDetect.browser === 'Chrome' || $scope.BrowserDetect.browser === 'Explorer' || $scope.BrowserDetect.browser === 'Firefox';
 
         if (dragAndDrop) {
@@ -1647,7 +1231,7 @@
         }, function () {
             var i,j,key,value;
             if ($scope.pairs.length === 0 && $scope.data.value !== "" && $scope.data.value !== null && !$scope.dataTransformed) {
-                values = $scope.data.value.split("<br>");
+                values = $scope.data.value.split("\n");
 
                 for (i = 0; i < values.length; i += 1) {
                     keyValue = values[i].split(":");
@@ -1749,7 +1333,7 @@
                 }
             };
 
-            motechConfirm('task.confirm.reset.map', "task.header.confirm", function (val) {
+            ModalFactory.showConfirm('task.confirm.reset.map', "task.header.confirm", function (val) {
                 if (val) {
                     resetMap();
                 }
@@ -1757,22 +1341,15 @@
         };
 
         $scope.addToDataValue = function (pair, index) {
-            var paired;
-            if (index > 0 && dragAndDrop) {
-                paired = "<div>" + pair.key + ":" + pair.value + "</div>";
-            } else {
-                paired = pair.key + ":" + pair.value;
-            }
-
-            if(!dragAndDrop) {
-                paired = paired.concat("\n");
-            }
-
             if ($scope.data.value === null) {
                 $scope.data.value = "";
             }
 
-            $scope.data.value = $scope.data.value.concat(paired);
+            if ($scope.data.value.length > 0) {
+                $scope.data.value = $scope.data.value.concat("\n" + pair.key + ":" + pair.value);
+            } else {
+                $scope.data.value = $scope.data.value.concat(pair.key + ":" + pair.value);
+            }
         };
     });
 }());

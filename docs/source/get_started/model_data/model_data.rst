@@ -575,6 +575,7 @@ The **@Ignore** annotation can be used for marking such field as not persistent:
 The name field in the example above will not become a database field and no MDS schema will be generated for it. This
 field will also not be accessible through the data browser.
 
+.. _dde-relationships:
 
 DDE relationships
 #################
@@ -1594,6 +1595,8 @@ The following code presents the usage of the annotation
             return "Sample Display Value";
     }
 
+.. _rest-api:
+
 ############
 The REST API
 ############
@@ -2247,9 +2250,9 @@ MDS transaction manager and uses it when declaring annotation driven transaction
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
            xmlns:tx="http://www.springframework.org/schema/tx"
-           xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+           xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
             http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
-            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
 
         <tx:annotation-driven transaction-manager="transactionManager"/>
 
@@ -2269,12 +2272,12 @@ might be required to explicitly import the following packages (example of the bu
 .. code-block:: xml
 
        <Import-Package>
-            net.sf.cglib.core,
-            net.sf.cglib.proxy,
-            net.sf.cglib.reflect,
             org.aopalliance.aop,
             org.springframework.aop,
             org.springframework.aop.framework,
+            org.springframework.cglib.core,
+            org.springframework.cglib.proxy,
+            org.springframework.cglib.reflect,
             org.springframework.transaction,
             *
         </Import-Package>
@@ -2594,6 +2597,8 @@ In MDS you can use flyway migrations. These migrations will run after entities s
 copy migration files from installed modules to the :code:`.motech` directory. Files should be placed in :code:`db/migration/default`
 directory(if you are using mysql then use :code:`mysql` instead :code:`default`) in the bundle. Each file muse have
 `a proper name <http://flywaydb.org/documentation/migration/sql.html>`_(e.g. :code:`V1__Description.sql`).
+
+.. _schema_import_export:
 
 ####################
 Schema Import/Export

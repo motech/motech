@@ -1,24 +1,24 @@
 <div id="inner-center" class="email inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
     <div class="header-footer-breadcrumb">
         <ul class="breadcrumb" role="navigation">
-            <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
-            <li><a role="menu" href="#/email/send">{{msg('email')}}</a></li>
+            <li><a role="menu" ui-sref="home">{{msg('server.home')}}</a></li>
+            <li><a role="menu" ui-sref="email.send">{{msg('email')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'send'" ng-class="{'active': selectedTabState.selectedTab === 'send'}">{{msg('email.send')}}</li>
             <li ng-show="selectedTabState.selectedTab === 'logging'" ng-class="{'active': selectedTabState.selectedTab === 'logging'}">{{msg('email.logging')}}</li>
             <li ng-show="selectedTabState.selectedTab === 'settings'" ng-class="{'active': selectedTabState.selectedTab === 'settings'}">{{msg('email.settings')}}</li>
         </ul>
     </div>
     <div class="header-footer">
-        <ul id="content-tabs" class="nav nav-tabs tasks ">
-            <li ng-class="{'active': selectedTabState.selectedTab === 'send'}" ng-click="selectedTabState.selectedTab = 'send'"><a  ng-href="#/email/send">{{msg('email.send')}}</a></li>
-            <li ng-class="{'active': selectedTabState.selectedTab === 'logging'}" ng-click="selectedTabState.selectedTab = 'logging'"><a ng-href="#/email/logging">{{msg('email.logging')}}</a></li>
-            <li ng-class="{'active': selectedTabState.selectedTab === 'settings'}" ng-click="selectedTabState.selectedTab = 'settings'"><a  ng-href="#/email/settings">{{msg('email.settings')}}</a></li>
+        <ul id="content-tabs" class="nav nav-tabs email">
+            <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'send'"><a id="tab-email-send" ui-sref="email.send">{{msg('email.send')}}</a></li>
+            <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'logging'"><a id="tab-email-logging" ui-sref="email.logging">{{msg('email.logging')}}</a></li>
+            <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'settings'"><a id="tab-email-settings" ui-sref="email.settings">{{msg('email.settings')}}</a></li>
         </ul>
     </div>
     <div class="ui-layout-content">
         <div class="tab-content" id="tab-content">
             <div id="main-content" class="tab-pane active">
-                <div ng-view></div>
+                <div ui-view="emailView"></div>
             </div>
         </div>
     </div>

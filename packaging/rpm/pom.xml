@@ -213,7 +213,7 @@
                                             <location>${project.parent.relativePath}/LICENSE.txt</location>
                                         </source>
                                         <source>
-                                            <location>${project.parent.relativePath}/README</location>
+                                            <location>${project.parent.relativePath}/README.md</location>
                                         </source>
                                     </sources>
                                 </mapping>

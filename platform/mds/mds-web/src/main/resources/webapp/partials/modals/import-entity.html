@@ -6,17 +6,11 @@
                 <h4 class="modal-title" id="importInstanceModalLabel">{{msg('mds.form.importCsv')}}</h4>
             </div>
             <div class="modal-body">
-                <form id="importInstanceForm" name="importInstanceForm" class="form-horizontal" action="getMdsEntityCsvImportPath(selectedEntity.id)" enctype="multipart/form-data" method="POST">
-                    <div class="form-group fileupload fileupload-new" data-provides="fileupload">
+                <form id="importInstanceForm" name="importInstanceForm" class="form-horizontal" action="{{getMdsEntityCsvImportPath(selectedEntity.id)}}" enctype="multipart/form-data" method="POST">
+                    <div class="form-group fileinput fileinput-new" data-provides="fileinput">
                         <label class="col-sm-3 control-label">{{msg('mds.import.file')}}</label>
                         <div class="form-inline col-sm-9">
-                            <div class="form-control input-auto uneditable-input input-xlarge fileupload-exists"><span class="glyphicon glyphicon-file"></span>&nbsp;<span class="mds-import fileupload-preview"></span></div>
-                            <span class="btn btn-default btn-file">
-                                <span class="fileupload-new">{{msg('mds.import.selectFile')}}</span>
-                                <span class="fileupload-exists">{{msg('mds.import.changeFile')}}</span>
-                                <input type="file" id="csvFile" name="csvFile" class="input-file" accept=".csv"/>
-                            </span>
-                            <a target="_self" href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="fa fa-fw fa-trash-o"></i>&nbsp;{{msg('mds.import.remove')}}</a>
+                            <motech-file-upload accept=".csv"></motech-file-upload>
                         </div>
                     </div>
                     <div class="form-group">
@@ -29,7 +23,6 @@
                         </div>
                     </div>
                 </form>
-
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" ng-click="importInstance()">{{msg('mds.btn.upload')}}</button>

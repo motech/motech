@@ -23,42 +23,31 @@
     <div class="inside inline top-line" ng-controller="AdminBundleListCtrl">
         <form id="bundleUploadForm" action="../admin/api/bundles/upload" enctype="multipart/form-data" method="POST">
             <div class="form-inline">
-                <div class="fileupload fileupload-new" data-provides="fileupload">
-                    <div class="form-group">
-                        <label><b>{{msg('admin.bundles.upload')}} {{msg('admin.import.from')}} </b></label>
+                <div class="form-group">
+                    <label><b>{{msg('admin.bundles.upload')}} {{msg('admin.import.from')}} </b></label>
+                </div>
+                <div class="form-group offset-1">
+                    <select class="form-control form-control-select" name="moduleSource" ng-model="moduleSource" ng-options="item for item in moduleSources track by item"></select>
+                </div>
+                <div class="form-group offset-1" ng-show="moduleSource=='Repository'">
+                    <select class="form-control form-control-select" name="moduleId" ng-model="module" ng-options="key as value for (key, value) in modules track by key" ng-show="moduleSource=='Repository'">
+                        <option value="">{{msg('admin.bundles.selectModule')}}</option>
+                    </select>
+                </div>
+                <div class="form-group offset-1">
+                    <div class="input-append btn-group fileinput fileinput-new" data-provides="fileinput" ng-show="moduleSource=='File'">
+                        <motech-file-upload></motech-file-upload>
                     </div>
-                    <div class="form-group offset-1">
-                        <select class="form-control form-control-select" name="moduleSource" ng-model="moduleSource" ng-options="k as v for (k,v) in moduleSources"/>
-                    </div>
-                    <div class="form-group offset-1">
-                        <select class="form-control form-control-select" name="moduleId" ng-model="module" ng-options="k as v for (k,v) in modules" ng-show="moduleSource=='Repository'">
-                            <option value="">Select a module</option>
-                        </select>
-                    </div>
-                    <div class="form-group offset-1">
-                    <div class="input-append btn-group" ng-show="moduleSource=='File'">
-
-                        <div class="form-control uneditable-input input-auto fileupload-exists">
-                            &nbsp;<i class="glyphicon glyphicon-file"></i>&nbsp;<span class="fileupload-preview"></span>
-                        </div>
-                        <input type="file" id="bundleFile" name="bundleFile" class="input-file"  style="display: none;"  />
-                    <span class="btn btn-default btn-file" filereader="checkFile"><span class="fileupload-new">{{msg('admin.selectFile')}}</span>
-                    <span class="fileupload-exists">{{msg('admin.bundles.change')}}</span><input type="file"/>
-                    </span><a href="#" class="btn btn-danger fileupload-exists"
-                              data-dismiss="fileupload">{{msg('admin.bundles.remove')}}</a>
-                    </div>
-                    </div>
-                    <div class="form-group offset-1" data-toggle="buttons-checkbox">
-                        <button type="button" class="btn btn-default start-on-upload" ng-click="startOnUpload()">
-                            <i class="fa fa-fw fa-check-square-o"></i> {{msg('admin.bundles.startOnInstall')}}
-                        </button>
-                        <input type="checkbox" id="startBundle" name="startBundle" ng-checked="startUpload"
-                               style="display: none;"/>
-                    </div>
-                    <div class="form-group offset-1">
-                        <span ng-click="!isNoModuleOrFileSelected() && submitBundle()" ng-disabled="isNoModuleOrFileSelected()"
-                              class="btn btn-success">{{msg('admin.bundles.installOrUpdate')}}</span>
-                    </div>
+                </div>
+                <div class="form-group offset-1" data-toggle="buttons-checkbox">
+                    <button type="button" class="btn btn-default start-on-upload" ng-click="startOnUpload()">
+                        <i class="fa fa-fw fa-check-square-o"></i> {{msg('admin.bundles.startOnInstall')}}
+                    </button>
+                    <input type="checkbox" id="startBundle" name="startBundle" ng-checked="startUpload"
+                           style="display: none;"/>
+                </div>
+                <div class="form-group offset-1">
+                    <span ng-click="submitBundle()" class="btn btn-success">{{msg('admin.bundles.installOrUpdate')}}</span>
                 </div>
             </div>
         </form>

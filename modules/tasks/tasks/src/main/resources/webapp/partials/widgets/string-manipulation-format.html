@@ -1,48 +1,28 @@
-<div id="formatManipulation" class="tasks modal fade" tabindex="-1" role="dialog" editformatmanipulation>
-    <div class="modal-dialog">
-        <div class="modal-content large">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title" id="helpModalLabel">{{msg('task.format.set.header')}}</h4>
-            </div>
-            <div class="modal-body clearfix">
-                <div class="form-group clearfix">
-                    <label class="radio col-md-3 col-sm-4 task-label unselectable">{{msg('task.info.availableFields')}}:</label>
-                    <div class="move-element col-md-9 col-sm-8">
-                        <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters track by $index" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}" data-eventkey="{{i.eventKey}}" data-popover="no">{{taskMsg(i.displayName)}}</span>​
-                        <span ng-repeat="ds in getDataSources() track by $index">
-                            <span contenteditable="false" ng-repeat="i in findObject(ds.providerName, ds.type).fields" class="badge badge-warning triggerField" draggable
-                                data-prefix="ad" data-source="{{ds.providerName}}" data-object="{{ds.displayName}}" data-object-type="{{ds.type}}"
-                                data-field="{{i.fieldKey}}" data-index="{{$index}}" data-object-id="{{ds.objectId}}" data-type="{{i.type}}" data-popover="no">
-                                {{msg(ds.providerName)}}.{{taskMsg(ds.displayName)}}#{{ds.objectId}}.{{taskMsg(i.displayName)}}
-                            </span>
-                        </span>
-                    </div>
+<div class="tasks manipulation-format">
+    <div class="form-group clearfix">
+        <label class="radio col-md-3 col-sm-4 task-label unselectable">{{msg('task.info.availableFields')}}:</label>
+        <div class="move-element col-md-9 col-sm-8">
+            <field ng-repeat="field in availableFields" field="field" draggable />
+        </div>
+    </div>
+    <div class="form-group clearfix">
+        <label class="radio task-label col-md-3 col-sm-4 task-label unselectable">{{msg('task.info.formatFields')}}:</label>
+        <div ng-repeat="lookupField in formatInput track by $index">
+            <div class="margin-before col-md-12 col-sm-12">
+                <div class="formatInput row col-md-11 col-sm-10">
+                    <editable-content data="lookupField.value" index="{{$index}}" type="format"></editable-content>
                 </div>
-                <div class="form-group clearfix">
-                    <label class="radio task-label col-md-3 col-sm-4 task-label unselectable">{{msg('task.info.formatFields')}}:</label>
-                    <div ng-repeat="lookupField in formatInput track by $index">
-                        <div class="margin-before col-md-12 col-sm-12">
-                            <div class="formatInput row col-md-11 col-sm-10">
-                                <editable-content data="lookupField" index="{{$index}}" type="format"></editable-content>
-                            </div>
-                            <div class="formatInputDelete col-md-1 col-sm-2">
-                                <button ng-click="deleteFormatInput($index)" class="btn btn-danger">
-                                    <i class="fa fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group clearfix">
-                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
-                        <button ui-if="!step.filters.length" class="btn btn-success ng-scope ng-binding" ng-click="addFormatInput()"><i class="fa fa-plus"></i>&nbsp;{{msg('task.button.addFormatField')}}</button>
-                    </div>
+                <div class="formatInputDelete col-md-1 col-sm-2">
+                    <button ng-click="deleteFormatInput($index)" class="btn btn-danger">
+                        <i class="fa fa-times"></i>
+                    </button>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button ng-click="saveInput()" data-dismiss="modal" class="btn btn-success">{{msg('task.button.save')}}</button>
-            </div>
+        </div>
+    </div>
+    <div class="form-group clearfix">
+        <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
+            <button ui-if="!step.filters.length" class="btn btn-success ng-scope ng-binding" ng-click="addFormatInput()"><i class="fa fa-plus"></i>&nbsp;{{msg('task.button.addFormatField')}}</button>
         </div>
     </div>
 </div>

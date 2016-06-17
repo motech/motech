@@ -156,7 +156,7 @@ public class BundleAdminController {
      * @param moduleSource the source from which the module will be installed. If it equals {@code File}, then this
      *                     request will be treated as bundle file upload.
      * @param moduleId the id of the module to be installed from Nexus (only used in Nexus install)
-     * @param bundleFile the file from which to install the new module (only used in upload install)
+     * @param file the file from which to install the new module (only used in upload install)
      * @param startBundle true if the bundle should be started after installation
      * @return information about the newly installed bundle
      */
@@ -164,11 +164,14 @@ public class BundleAdminController {
     @ResponseBody
     public BundleInformation uploadBundle(@RequestParam String moduleSource,
                                           @RequestParam(required = false) String moduleId,
-                                          @RequestParam(required = false) MultipartFile bundleFile,
+                                          @RequestParam(required = false) MultipartFile file,
                                           @RequestParam(required = false) String startBundle) {
-        boolean start = (StringUtils.isBlank(startBundle) ? false : "on".equals(startBundle));
+        boolean start = (StringUtils.isNotBlank(startBundle) && "on".equals(startBundle));
         if ("File".equals(moduleSource)) {
-            return moduleAdminService.installBundle(bundleFile, start);
+            if (file == null) {
+                throw new IllegalArgumentException("No file passed in the request - invalid upload");
+            }
+            return moduleAdminService.installBundle(file, start);
         } else {
             if (isBlank(moduleId)) {
                 throw new MotechException("No module selected.");

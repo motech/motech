@@ -53,6 +53,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.bval</groupId>
+            <artifactId>org.apache.bval.bundle</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
         </dependency>
@@ -63,10 +67,6 @@
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
@@ -142,10 +142,10 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                $, jQuery, angular, angularHandler, jFormErrorHandler,
-                                dummyHandler, alertHandler, window, alertHandlerWithCallback, module,
-                                blockUI, unblockUI, motechAlert, handleWithStackTrace, restartBundleHandler, parseUri,
-                                defaultLayout, innerLayout, moment
+                                $, jQuery, angular,
+                                dummyHandler, innerLayout, window, module,
+                                restartBundleHandler, parseUri,
+                                defaultLayout, moment
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>
@@ -171,8 +171,12 @@
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.config,
                             org.springframework.beans.factory.xml,
+                            org.springframework.cglib.core,
+                            org.springframework.cglib.proxy,
+                            org.springframework.cglib.reflect,
                             org.springframework.context.config,
                             org.springframework.transaction,
+                            org.springframework.validation.beanvalidation,
                             org.springframework.web.multipart.commons,
                             org.springframework.web.servlet.config,
                             org.eclipse.gemini.blueprint.config,

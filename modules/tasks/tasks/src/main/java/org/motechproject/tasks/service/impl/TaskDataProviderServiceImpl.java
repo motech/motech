@@ -72,15 +72,19 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
         final Type type = new TypeToken<TaskDataProvider>() { } .getType();
         final TaskDataProvider provider = (TaskDataProvider) motechJsonReader.readFromStream(stream, type);
 
-        LOGGER.info("Registering a task data provider with name: {}", provider.getName());
+        if(TaskDataProviderValidator.validateIsNotEmpty(provider)) {
+            LOGGER.info("Registering a task data provider with name: {}", provider.getName());
 
-        Set<TaskError> errors = TaskDataProviderValidator.validate(provider);
+            Set<TaskError> errors = TaskDataProviderValidator.validate(provider);
 
-        if (!isEmpty(errors)) {
-            throw new ValidationException(TaskDataProviderValidator.TASK_DATA_PROVIDER, errors);
+            if (!isEmpty(errors)) {
+                throw new ValidationException(TaskDataProviderValidator.TASK_DATA_PROVIDER, errors);
+            }
+
+            addProvider(provider);
+        } else {
+            LOGGER.info("Registering an empty task data provider with name: {} is not possible", provider.getName());
         }
-
-        addProvider(provider);
     }
 
     @Override

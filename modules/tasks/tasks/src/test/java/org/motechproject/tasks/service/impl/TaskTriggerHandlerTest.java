@@ -1283,7 +1283,7 @@ public class TaskTriggerHandlerTest {
         verify(taskService).findActiveTasksForTriggerSubject(TRIGGER_SUBJECT);
         verify(taskService).getActionEventFor(task.getActions().get(0));
         verify(taskActivityService).addWarning(task, "task.warning.serviceUnavailable", actionEvent.getServiceInterface());
-        verify(taskActivityService, times(2)).addWarning(task, "task.warning.notFoundObjectForType", "TestObjectField");
+        verify(taskActivityService).addWarning(task, "task.warning.notFoundObjectForType", "TestObjectField");
         verify(taskActivityService).addSuccess(task);
 
         ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
@@ -1837,7 +1837,7 @@ public class TaskTriggerHandlerTest {
         map.put("externalId", 123456789);
         map.put("startDate", new LocalDate(2012, 11, 20));
         map.put("key1", "value");
-        map.put("event name", 6789);
+        map.put("event name", "6789");
 
         return map;
     }
