@@ -1,12 +1,12 @@
 angular.module('bootstrapApp',[])
 .controller('bootstrapFormController', ['$scope', function($scope) {
-    if (sessionStorage.config != null){
-    $scope.config = angular.fromJson(sessionStorage.config);
+    if (sessionStorage.config != null) {
+        $scope.config = angular.fromJson(sessionStorage.config);
     }
 
-    $scope.saveBootstrapData = function(){
-     sessionStorage.config = angular.toJson($scope.config);
-     }
+    $scope.saveBootstrapData = function() {
+        sessionStorage.config = angular.toJson($scope.config);
+    }
 }]);
 
 function verifyConnection(url) {
