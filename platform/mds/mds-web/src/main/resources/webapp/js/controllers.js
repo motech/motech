@@ -290,7 +290,7 @@
         };
     });
 
-    controllers.controller('MdsBasicCtrl', function ($scope, $location, $state, $stateParams, $controller, Entities, MDSUtils, ModalFactory) {
+    controllers.controller('MdsBasicCtrl', function ($scope, $location, $state, $stateParams, $http, $controller, Entities, MDSUtils, ModalFactory) {
 
         angular.extend(this, $controller('MdsEmbeddableCtrl', {
             $scope: $scope,
@@ -318,6 +318,14 @@
             return expression;
         };
 
+        $scope.generateRandomUUID = function (field, isDefault) {
+            if (isDefault) {
+                field.basic.defaultValue = MDSUtils.generateUUID($http);
+            } else {
+                field.value = MDSUtils.generateUUID($http);
+            }
+        };
+        
         $scope.getWorkInProgress = function () {
             var list = [];
 
@@ -3294,7 +3302,7 @@
             $location.replace();
             window.history.pushState(null, "", $location.absUrl());
         };
-
+        
         /**
         * An array perisisting currently hidden modules in data browser view
         */

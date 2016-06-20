@@ -41,6 +41,14 @@
                         'task.lessDaysFromNow',
                         'task.moreDaysFromNow'
                     ]
+                },
+                'task.boolean': {
+                    'type' : 'BOOLEAN',
+                    'options': [
+                        'task.exist',
+                        'task.and',
+                        'task.or'
+                    ]
                 }
             },
             MANIPULATION_SETTINGS: [{

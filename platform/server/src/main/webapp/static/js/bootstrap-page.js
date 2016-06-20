@@ -1,29 +1,13 @@
-function setSuggestedValue(id, val) {
-    document.getElementById(id).value = val;
-}
+angular.module('bootstrapApp',[])
+.controller('bootstrapFormController', ['$scope', function($scope) {
+    if (sessionStorage.config != null) {
+        $scope.config = angular.fromJson(sessionStorage.config);
+    }
 
-function setSuggestedValueByName(name, value) {
-	$("input[name='"+name+"']").val(value);
-}
-
-function saveBootstrapData(){
-    var bootstrapString = JSON.stringify($('form[name="bcform"]').serializeArray());
-    sessionStorage.setItem("bootstrapString",bootstrapString);
-};
-
-(function retrieveBootstrapData(){
-		$(document).ready(function(){
-	    		if(sessionStorage.getItem("bootstrapString") != null){
-				var bootstrapObj = JSON.parse(sessionStorage.getItem("bootstrapString"));
-				for (var key in bootstrapObj){
-				       setSuggestedValueByName(bootstrapObj[key]["name"], bootstrapObj[key]["value"]);
-				}
-				sessionStorage.removeItem("bootstrapString");
-			 }
-		});
-
-})();
-
+    $scope.saveBootstrapData = function() {
+        sessionStorage.config = angular.toJson($scope.config);
+    }
+}]);
 
 function verifyConnection(url) {
     var loader = $('#loader');
@@ -89,7 +73,7 @@ function verifyConnection(url) {
                     });
 
                     sqlWarnings.show();
-                    $(window).scrollTop(warnings.offset().top);
+                    $(window).scrollTop(sqlWarnings.offset().top);
                 }
                 if(data.warnings !== undefined && data.amqConfigError === true) {
                     data.warnings.forEach(function(item) {
@@ -97,7 +81,7 @@ function verifyConnection(url) {
                     });
 
                     amqWarnings.show();
-                    $(window).scrollTop(warnings.offset().top);
+                    $(window).scrollTop(amqWarnings.offset().top);
                 }
             }
             loader.hide();
@@ -109,7 +93,7 @@ function verifyConnection(url) {
                 });
 
                 sqlWarnings.show();
-                $(window).scrollTop(warnings.offset().top);
+                $(window).scrollTop(sqlWarnings.offset().top);
             }
             if(data.warnings !== undefined && data.amqConfigError === true) {
                                 data.warnings.forEach(function(item) {
@@ -117,7 +101,7 @@ function verifyConnection(url) {
                                 });
 
                                 amqWarnings.show();
-                                $(window).scrollTop(warnings.offset().top);
+                                $(window).scrollTop(amqWarnings.offset().top);
             }
             loader.hide();
         }

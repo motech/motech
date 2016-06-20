@@ -38,6 +38,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import static org.apache.commons.lang.StringUtils.replaceEach;
 import static org.apache.commons.lang.StringUtils.split;
@@ -417,6 +418,10 @@ public final class TypeHelper {
         return map;
     }
 
+    public static Object parseStringToUUID(String val) {
+        return UUID.fromString(val);
+    }
+    
     public static Object parseMapValue(Object valueToParse, String type, boolean isKey) {
         Object parsedValue = null;
 
