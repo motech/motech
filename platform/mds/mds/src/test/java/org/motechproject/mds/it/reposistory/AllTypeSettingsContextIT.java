@@ -29,7 +29,7 @@ public class AllTypeSettingsContextIT extends BaseIT {
         List<TypeSetting> settings = allTypeSettings.retrieveAll();
 
         assertNotNull(settings);
-        assertEquals(settings.size(), 10);
+        assertEquals(settings.size(), 14);
 
         assertTypeSetting(settings, "mds.form.label.precision", asList("REQUIRE", "POSITIVE"), Integer.class, "9");
         assertTypeSetting(settings, "mds.form.label.scale", asList("REQUIRE", "POSITIVE"), Integer.class, "2");
