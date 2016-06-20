@@ -39,12 +39,12 @@
         };
     });
 
-    filters.filter('postActionField', function () {
-        return function (fields, selectedAction, id) {
+    filters.filter('postActionField', function (ManageTaskUtils) {
+        return function (fields, id) {
             var filtered = [];
 
             angular.forEach(fields, function (field) {
-                if (field.prefix !== 'pa' || (field.prefix === 'pa' && field.objectId < id)) {
+                if (field.prefix !== ManageTaskUtils.POST_ACTION_PREFIX || (field.prefix === ManageTaskUtils.POST_ACTION_PREFIX && field.objectId < id)) {
                     filtered.push(field);
                 }
             });
