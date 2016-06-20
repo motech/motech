@@ -194,7 +194,7 @@ public class TaskFilterExecutor {
 
         if (operatorType != null) {
             switch (operatorType) {
-                case EXIST:
+                case IS_TRUE:
                     result = param;
                     break;
                 case AND:
