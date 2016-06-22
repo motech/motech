@@ -54,6 +54,8 @@ public class LookupExecutor {
     public Object execute(Map<String, ?> lookupMap, QueryParams queryParams) {
         List<Object> args = getLookupArgs(lookupMap);
         List<Class> argTypes = buildArgTypes();
+        String lookupExceptionMessage = "Unable to execute lookup ";
+        String lookupExceptionMessageKey = "mds.error.lookupExecError";
 
         if (queryParams != null) {
             args.add(queryParams);
@@ -65,24 +67,20 @@ public class LookupExecutor {
                     args.toArray(new Object[args.size()]),
                     argTypes.toArray(new Class[argTypes.size()]));
         } catch (NoSuchMethodException | IllegalAccessException e) {
-            throw new LookupExecutorException("Unable to execute lookup " + lookup.getLookupName() + ".", e, null);
+            throw new LookupExecutorException(lookupExceptionMessage + lookup.getLookupName() + ".", e, null);
         } catch (InvocationTargetException e) {
-            String lookupMessageKeyError = "mds.error.lookupExecError";
-
             if (e.getTargetException() instanceof JDOUserException) {
                 JDOUserException userException = (JDOUserException) e.getTargetException();
-                lookupMessageKeyError = "mds.error.lookupExecUserError";
-
+                lookupExceptionMessageKey = "mds.error.lookupExecUserError";
                 for (Throwable exception : userException.getNestedExceptions()) {
                     if (exception instanceof QueryNotUniqueException) {
-                        lookupMessageKeyError = "mds.error.lookupExecNotUniqueError";
-                        throw new LookupExecutorException("Unable to execute lookup " + lookup.getLookupName() + ".", exception, lookupMessageKeyError);
+                        lookupExceptionMessageKey = "mds.error.lookupExecNotUniqueError";
+                        throw new LookupExecutorException(lookupExceptionMessage + lookup.getLookupName() + ".", e, lookupExceptionMessageKey);
                     }
                 }
-
-                throw new LookupExecutorException("Unable to execute lookup " + lookup.getLookupName() + ".", userException, lookupMessageKeyError);
+                throw new LookupExecutorException(lookupExceptionMessage + lookup.getLookupName() + ".", e, lookupExceptionMessageKey);
             } else {
-                throw new LookupExecutorException("Unable to execute lookup " + lookup.getLookupName() + ".", e, lookupMessageKeyError);
+                throw new LookupExecutorException(lookupExceptionMessage + lookup.getLookupName() + ".", e, lookupExceptionMessageKey);
             }
         }
     }

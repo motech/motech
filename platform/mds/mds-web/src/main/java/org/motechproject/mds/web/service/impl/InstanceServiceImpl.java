@@ -244,7 +244,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         MotechDataService service = getServiceForEntity(entity);
 
-        String lookupMessageKeyError = "mds.error.lookupExecError";
+        String lookupExceptionMessageKey = "mds.error.lookupExecError";
 
         try {
             LookupExecutor lookupExecutor = new LookupExecutor(service, lookup, fieldMap);
@@ -263,10 +263,10 @@ public class InstanceServiceImpl implements InstanceService {
             if (e.getMessageKey() != null) {
                 throw new LookupExecutionException(e, e.getMessageKey());
             } else {
-                throw new LookupExecutionException(e, lookupMessageKeyError);
+                throw new LookupExecutionException(e, lookupExceptionMessageKey);
             }
         } catch (RuntimeException e) {
-            throw new LookupExecutionException(e, lookupMessageKeyError);
+            throw new LookupExecutionException(e, lookupExceptionMessageKey);
         }
     }
 
