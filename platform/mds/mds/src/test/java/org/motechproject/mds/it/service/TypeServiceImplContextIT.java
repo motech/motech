@@ -20,13 +20,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class TypeServiceImplContextIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 24;
+    private static final int START_NUMBER_OF_TYPES = 25;
 
     @Autowired
     private TypeService typeService;
@@ -60,6 +61,7 @@ public class TypeServiceImplContextIT extends BaseIT {
         testFindType(Relationship.class, Relationship.class);
         testFindType(OneToManyRelationship.class, OneToManyRelationship.class);
         testFindType(OneToOneRelationship.class, OneToOneRelationship.class);
+        testFindType(UUID.class, UUID.class);
 
         //test primitives
         testFindType(boolean.class, Boolean.class);

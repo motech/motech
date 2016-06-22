@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
@@ -152,6 +153,10 @@ public class TypeDto {
      */
     public static final TypeDto LONG = new TypeDto(
             "mds.field.long", "mds.field.description.long", "long", Long.class.getName()
+    );
+
+    public static final TypeDto UUID = new TypeDto(
+            "mds.field.uuid", "mds.field.description.uuid", "uuid", UUID.class.getName()
     );
 
     public static final TypeDto ONE_TO_ONE_RELATIONSHIP = new TypeDto(

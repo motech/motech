@@ -222,6 +222,7 @@
             var convertUrl = function (urlParam) {
                 if(urlParam.indexOf('/') === 0) {urlParam = urlParam.replace('/', '');}
                 if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace('/', '.');}
+                if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace('/.*', '');}
                 return urlParam;
             };
             if (url.indexOf('admin/bundleSettings/') > 0) {

@@ -16,7 +16,7 @@
     <properties>
         <jasmine.server.port>8234</jasmine.server.port>
 
-        <external.dependency.release.tag>r031</external.dependency.release.tag>
+        <external.dependency.release.tag>r033</external.dependency.release.tag>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <modules.root.dir>${basedir}</modules.root.dir>
         <jdk.version>1.8</jdk.version>

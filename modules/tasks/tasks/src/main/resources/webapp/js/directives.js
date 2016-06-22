@@ -331,6 +331,9 @@
                 ManageTaskUtils.formatField(field)
                 );
         }
+        function isTagForPlaceholder (tag) {
+            return (tag.tagName && tag.tagName.toLowerCase() === 'em');
+        }
         function readContent (element) {
             var container = $('<div></div>');
             element.contents().each(function(){
@@ -342,7 +345,7 @@
                         field = ele.data('value');
                         container.append(formatField(field));
                     }
-                }else{
+                } else if (!isTagForPlaceholder(this)) {
                     container.append(ele.text());
                 }
             });
@@ -535,10 +538,18 @@
             restrict: 'A',
             scope: {
                 manipulations: "=",
-                manipulationType: "="
+                manipulationType: "=",
+                displayName: "=",
+                name: "@"
             },
             link: function (scope, element, attrs) {
-                
+                var isFilter = attrs.isFilter,
+                    name = scope.name,
+                    filter,
+                    displayNameOnly = scope.displayNameOnly;
+                if (isFilter) {
+                    filter = scope.$parent[name];
+                }
                 if(!scope.manipulationType){
                     return false;
                 }
@@ -549,8 +560,18 @@
                     return false;
                 }
                 element.on('click', function (event) {
-                    var modalScope;
-                    if (!$(event.target).hasClass('field-remove')){
+                    var modalScope,
+                        parseManipulationsFunction;
+                    if (!$(event.target).hasClass('field-remove')) {
+                        parseManipulationsFunction = function () {
+                            var str = "";
+                            if (scope.manipulations && Array.isArray(scope.manipulations)) {
+                                scope.manipulations.forEach(function(manipulation) {
+                                    str += "?{0}({1})".format(manipulation.type, manipulation.argument);
+                                });
+                            }
+                            filter.key = filter.displayName + str;
+                        };
                         window.getSelection().removeAllRanges(); // Make sure no text is selected...
                         
                         modalScope = scope.$new(true, scope);
@@ -585,6 +606,9 @@
                             }],
                             onhide: function(){
                                 modalScope.$destroy();
+                                if (isFilter) {
+                                    parseManipulationsFunction();
+                                }
                             }
                         });
                     }

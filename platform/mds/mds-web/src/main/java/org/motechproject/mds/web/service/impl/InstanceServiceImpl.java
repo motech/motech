@@ -91,6 +91,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
@@ -132,7 +133,7 @@ public class InstanceServiceImpl implements InstanceService {
         validateNonEditableProperty(entity);
 
         List<FieldDto> entityFields = getEntityFields(entityRecord.getEntitySchemaId());
-
+ 
         try {
             MotechDataService service = getServiceForEntity(entity);
             Class<?> entityClass = getEntityClass(entity);
@@ -963,6 +964,8 @@ public class InstanceServiceImpl implements InstanceService {
         } else if (null != holder && holder.isEnumCollection()) {
             String genericType = holder.getEnumName();
             parsedValue = TypeHelper.parse(valueAsString, holder.getTypeClassName(), genericType, classLoader);
+        } else if (parsedValue instanceof String && UUID.class.getName().equals(methodParameterType)) {
+            parsedValue = TypeHelper.parseStringToUUID(valueAsString);
         } else {
             parsedValue = TypeHelper.parse(valueAsString, methodParameterType, classLoader);
         }
