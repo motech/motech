@@ -23,6 +23,7 @@ import org.motechproject.mds.exception.entity.EntityNotFoundException;
 import org.motechproject.mds.exception.field.FieldNotFoundException;
 import org.motechproject.mds.exception.field.FieldReadOnlyException;
 import org.motechproject.mds.exception.lookup.LookupExecutionException;
+import org.motechproject.mds.exception.lookup.LookupExecutorException;
 import org.motechproject.mds.exception.lookup.LookupNotFoundException;
 import org.motechproject.mds.exception.object.ObjectCreateException;
 import org.motechproject.mds.exception.object.ObjectNotFoundException;
@@ -242,6 +243,8 @@ public class InstanceServiceImpl implements InstanceService {
 
         MotechDataService service = getServiceForEntity(entity);
 
+        String lookupMessageKeyError = "mds.error.lookupExecError";
+
         try {
             LookupExecutor lookupExecutor = new LookupExecutor(service, lookup, fieldMap);
 
@@ -255,8 +258,14 @@ public class InstanceServiceImpl implements InstanceService {
                 List instances = (List) result;
                 return instancesToBasicRecords(instances, entity, fields, service, EntityType.STANDARD);
             }
+        } catch (LookupExecutorException e) {
+            if (e.getMessageKey() != null) {
+                throw new LookupExecutionException(e, e.getMessageKey());
+            } else {
+                throw new LookupExecutionException(e, lookupMessageKeyError);
+            }
         } catch (RuntimeException e) {
-            throw new LookupExecutionException(e);
+            throw new LookupExecutionException(e, lookupMessageKeyError);
         }
     }
 
@@ -305,7 +314,7 @@ public class InstanceServiceImpl implements InstanceService {
             LookupExecutor lookupExecutor = new LookupExecutor(service, lookup, fieldMap);
             return lookupExecutor.executeCount(lookupMap);
         } catch (RuntimeException e) {
-            throw new LookupExecutionException(e);
+            throw new LookupExecutionException(e, "mds.error.lookupExecError");
         }
     }
 
