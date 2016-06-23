@@ -69,19 +69,18 @@ public class TaskActionExecutor {
     public void execute(Task task, TaskActionInformation actionInformation, TaskContext taskContext) throws TaskHandlerException {
         LOGGER.info("Executing task action: {} from task: {}", actionInformation.getName(), task.getName());
         KeyEvaluator keyEvaluator = new KeyEvaluator(taskContext);
+
         ActionEvent action = getActionEvent(actionInformation);
         Map<String, Object> parameters = createParameters(actionInformation, action, keyEvaluator);
         LOGGER.debug("Parameters created: {} for task action: {}", parameters.toString(), action.getName());
-
         if (action.hasService() && bundleContext != null) {
-            if (callActionServiceMethod(action, parameters)) {
+            if (callActionServiceMethod(action, parameters, taskContext)) {
                 LOGGER.info("Action: {} from task: {} was executed through an OSGi service call", actionInformation.getName(), task.getName());
                 return;
             }
             LOGGER.info("There is no service: {}", action.getServiceInterface());
             activityService.addWarning(task, "task.warning.serviceUnavailable", action.getServiceInterface());
         }
-
         if (!action.hasSubject()) {
             throw new TaskHandlerException(ACTION, "task.error.cantExecuteAction");
         } else {
@@ -191,7 +190,7 @@ public class TaskActionExecutor {
 
         for (String template : templates) {
             Object value = getValue(template.trim(), keyEvaluator);
-            if ( value != null) {
+            if (value != null) {
                 if (value instanceof Collection) {
                     tempList.addAll((Collection) value);
                 } else {
@@ -217,18 +216,17 @@ public class TaskActionExecutor {
         return result;
     }
 
-    private boolean callActionServiceMethod(ActionEvent action, Map<String, Object> parameters)
+    private boolean callActionServiceMethod(ActionEvent action, Map<String, Object> parameters, TaskContext taskContext)
             throws TaskHandlerException {
         ServiceReference reference = bundleContext.getServiceReference(
                 action.getServiceInterface()
         );
         boolean serviceAvailable = reference != null;
-
+        addPostActionParametersToTaskContext(action, parameters, taskContext);
         if (serviceAvailable) {
             Object service = bundleContext.getService(reference);
             String serviceMethod = action.getServiceMethod();
             MethodHandler methodHandler = new MethodHandler(action, parameters);
-
             try {
                 Method method = service.getClass().getMethod(serviceMethod, methodHandler.getClasses());
 
@@ -249,6 +247,17 @@ public class TaskActionExecutor {
         }
 
         return serviceAvailable;
+    }
+
+    private void addPostActionParametersToTaskContext(ActionEvent action, Map<String, Object> parameters, TaskContext taskContext) {
+        Object value;
+        Integer nextId;
+        for (ActionParameter postActionParameter : action.getPostActionParameters()) {
+            value = parameters.get(postActionParameter.getKey());
+            nextId = taskContext.getPostActionParameters().size();
+
+            taskContext.addPostActionParameterObject(nextId.toString(), value, true);
+        }
     }
 
     void setBundleContext(BundleContext bundleContext) {

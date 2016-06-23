@@ -95,7 +95,7 @@ public class TaskContext {
         }
 
         try {
-            return getFieldValue(postActionParameterObject.getObjectValue(), key);
+            return postActionParameterObject.getObjectValue();
         } catch (RuntimeException e) {
             LOGGER.warn("Parameter with id: {} not found", objectId);
             publishWarningActivity("task.error.parameterNotFound", objectId);
@@ -169,6 +169,10 @@ public class TaskContext {
             }
         }
         return null;
+    }
+
+    public Set<PostActionParameterObject> getPostActionParameters() {
+        return postActionParameters;
     }
 
     private PostActionParameterObject getPostActionParameter(String objectId) {
