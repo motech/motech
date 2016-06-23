@@ -4439,7 +4439,7 @@
         $scope.isFieldSelected = function(name) {
             var i;
             for (i = 0; i < $scope.selectedFields.length; i += 1) {
-                if ($scope.selectedFields[i].basic.name === name) {
+                if ($scope.selectedFields[i] && $scope.selectedFields[i].basic.name === name) {
                     return true;
                 }
             }
@@ -4450,7 +4450,7 @@
             var i, field;
             for (i = 0; i < $scope.allEntityFields.length; i += 1) {
                 field = $scope.allEntityFields[i];
-                if (field.basic.name === name) {
+                if (field && field.basic.name === name) {
                     $scope.selectedFields.push(field);
                     return;
                 }
@@ -4491,7 +4491,7 @@
                 if ($scope.isFieldSelected(selected)) {
                     for (i = 0; i < $scope.selectedFields.length; i += 1) {
                         field = $scope.selectedFields[i];
-                        if (field.basic.name === selected) {
+                        if (field && field.basic.name === selected) {
                             $scope.selectedFields.remove(i, i);
                         }
                     }
@@ -4500,7 +4500,7 @@
                 if (!$scope.isFieldSelected(selected)) {
                     for (i = 0; i < $scope.availableFieldsForDisplay.length; i += 1) {
                         field = $scope.allEntityFields[i];
-                        if (field.basic.name === selected) {
+                        if (field && field.basic.name === selected) {
                             $scope.selectedFields.push(field);
                         }
                     }
