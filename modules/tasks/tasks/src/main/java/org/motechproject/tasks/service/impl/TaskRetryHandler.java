@@ -39,13 +39,14 @@ public class TaskRetryHandler {
      * @param task the task to handle repeat jobs for
      * @param parameters trigger event parameters
      * @param success whether the execution was successful
+     * @param retryScheduled whether the tak retry is currently scheduled
      */
-    public void handleTaskRetries(Task task, Map<String, Object> parameters, boolean success) {
+    public void handleTaskRetries(Task task, Map<String, Object> parameters, boolean success, boolean retryScheduled) {
         if (task.retryTaskOnFailure()) {
-            if (success && isTaskRetryAlreadyScheduled(parameters)) {
+            if (success && retryScheduled) {
                 LOGGER.info("Unscheduling the task retries, due to successful execution.");
                 unscheduleTaskRetry(task.getTrigger().getEffectiveListenerRetrySubject());
-            } else if (!success && !isTaskRetryAlreadyScheduled(parameters)) {
+            } else if (!success && !retryScheduled) {
                 LOGGER.info("Scheduling task retries, since the execution of a task failed.");
                 scheduleTaskRetry(task, parameters);
             }
@@ -77,9 +78,5 @@ public class TaskRetryHandler {
         eventParameters.put(JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
 
         eventRelay.sendEventMessage(new MotechEvent(SCHEDULE_REPEATING_JOB, eventParameters));
-    }
-
-    private boolean isTaskRetryAlreadyScheduled(Map<String, Object> eventParams) {
-        return eventParams.get(TASK_RETRY) != null;
     }
 }

@@ -68,6 +68,23 @@ public class MotechEvent implements Serializable {
     }
 
     /**
+     * Constructs a MotechEvent with the given subject, parameters, the callback name and the metadata map.
+     *
+     * @param subject the subject of the event
+     * @param parameters the map of additional parameters
+     * @param callbackName the name of the callback
+     * @param metadata the metadata map
+     * @throws IllegalArgumentException if the subject is null or contains <code>'*', '..'</code>
+     */
+    public MotechEvent(String subject, Map<String, Object> parameters, String callbackName, Map<String, Object> metadata) {
+        validateSubject(subject);
+        this.subject = subject;
+        this.parameters = parameters;
+        this.callbackName = callbackName;
+        this.metadata = metadata;
+    }
+
+    /**
      * Returns the universally unique identifier
      *
      * @return the id

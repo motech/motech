@@ -80,11 +80,9 @@ public class TaskActionExecutor {
         if (action.hasService() && bundleContext != null) {
             if (callActionServiceMethod(action, parameters)) {
                 LOGGER.info("Action: {} from task: {} was executed through an OSGi service call", actionInformation.getName(), task.getName());
-                Map<String, Object> taskTriggerParameters = new HashMap<>();
-                taskTriggerParameters.putAll(taskContext.getTriggerParameters());
-                addCommonTaskParameters(taskTriggerParameters, task.getId(), activityId, (Boolean) taskContext.getTriggerValue(EventDataKeys.TASK_RETRY));
+                Map<String, Object> metadata = prepareTaskMetadata(task.getId(), activityId, (Boolean) taskContext.getTriggerValue(EventDataKeys.TASK_RETRY));
 
-                postExecutionHandler.handleActionExecuted(taskTriggerParameters, activityId);
+                postExecutionHandler.handleActionExecuted(taskContext.getTriggerParameters(), metadata, activityId);
                 return;
             }
             LOGGER.info("There is no service: {}", action.getServiceInterface());
@@ -97,17 +95,20 @@ public class TaskActionExecutor {
         } else {
             Map<String, Object> taskEventParameters = new HashMap<>();
             taskEventParameters.putAll(parameters);
-            addCommonTaskParameters(taskEventParameters, task.getId(), activityId, (Boolean) taskContext.getTriggerValue(EventDataKeys.TASK_RETRY));
+            Map<String, Object> metadata = prepareTaskMetadata(task.getId(), activityId, (Boolean) taskContext.getTriggerValue(EventDataKeys.TASK_RETRY));
 
-            eventRelay.sendEventMessage(new MotechEvent(action.getSubject(), taskEventParameters, TasksEventCallbackService.TASKS_EVENT_CALLBACK_NAME));
+            eventRelay.sendEventMessage(new MotechEvent(action.getSubject(), taskEventParameters, TasksEventCallbackService.TASKS_EVENT_CALLBACK_NAME, metadata));
             LOGGER.info("Event: {} was sent", action.getSubject());
         }
     }
 
-    private void addCommonTaskParameters(Map<String, Object> taskEventParameters, Long taskId, long activityId, Boolean isRetry) {
-        taskEventParameters.put(EventDataKeys.TASK_ID, taskId);
-        taskEventParameters.put(EventDataKeys.TASK_ACTIVITY_ID, activityId);
-        taskEventParameters.put(EventDataKeys.TASK_RETRY, isRetry);
+    private Map<String, Object> prepareTaskMetadata(Long taskId, long activityId, Boolean isRetry) {
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put(EventDataKeys.TASK_ID, taskId);
+        metadata.put(EventDataKeys.TASK_ACTIVITY_ID, activityId);
+        metadata.put(EventDataKeys.TASK_RETRY, isRetry);
+
+        return metadata;
     }
 
     private ActionEvent getActionEvent(TaskActionInformation actionInformation)

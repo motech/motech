@@ -133,7 +133,7 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         // Handle all tasks one by one
         for (Task task : tasks) {
-            handleTask(task, parameters);
+            handleTask(task, parameters, event.getMetadata());
         }
     }
 
@@ -147,7 +147,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         if (task == null || !task.isEnabled()) {
             taskRetryHandler.unscheduleTaskRetry((String) eventParams.get(JOB_SUBJECT));
         } else {
-            handleTask(task, eventParams);
+            handleTask(task, eventParams, event.getMetadata());
         }
     }
 
@@ -155,14 +155,14 @@ public class TaskTriggerHandler implements TriggerHandler {
     @Transactional
     public void retryTask(Long activityId) {
         TaskActivity activity = activityService.getTaskActivityById(activityId);
-        handleTask(taskService.getTask(activity.getTask()), activity.getParameters());
+        handleTask(taskService.getTask(activity.getTask()), activity.getParameters(), activity.getTaskMetadata());
     }
 
-    private void handleTask(Task task, Map<String, Object> parameters) {
+    private void handleTask(Task task, Map<String, Object> parameters, Map<String, Object> metadata) {
         TaskContext taskContext = new TaskContext(task, parameters, activityService);
         TaskInitializer initializer = new TaskInitializer(taskContext);
 
-        long activityId = activityService.addTaskStarted(task, parameters);
+        long activityId = activityService.addTaskStarted(task, parameters, metadata);
 
         try {
             LOGGER.info("Executing all actions from task: {}", task.getName());
@@ -173,9 +173,9 @@ public class TaskTriggerHandler implements TriggerHandler {
             }
             LOGGER.warn("Actions from task: {} weren't executed, because config steps didn't pass the evaluation", task.getName());
         } catch (TaskHandlerException e) {
-            postExecutionHandler.handleError(parameters, task, e, activityId);
+            postExecutionHandler.handleError(parameters, metadata, task, e, activityId);
         } catch (RuntimeException e) {
-            postExecutionHandler.handleError(parameters, task, new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e), activityId);
+            postExecutionHandler.handleError(parameters, metadata, task, new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e), activityId);
         }
     }
 

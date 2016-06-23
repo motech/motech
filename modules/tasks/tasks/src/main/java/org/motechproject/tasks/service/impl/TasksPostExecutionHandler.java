@@ -9,6 +9,7 @@ import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
+import org.motechproject.tasks.service.util.TaskMetadataHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,13 +66,13 @@ public class TasksPostExecutionHandler {
      * @param params trigger event parameters that invoked the task
      * @param activityId the id of an activity
      */
-    public void handleActionExecuted(Map<String, Object> params, Long activityId) {
+    public void handleActionExecuted(Map<String, Object> params, Map<String, Object> metadata, Long activityId) {
         boolean taskFinished = activityService.addSuccessfulExecution(activityId);
         if (taskFinished) {
             Long taskId = activityService.getTaskActivityById(activityId).getTask();
             Task task = taskService.getTask(taskId);
 
-            handleSuccess(params, task);
+            handleSuccess(params, metadata, task);
         }
     }
 
@@ -85,7 +86,7 @@ public class TasksPostExecutionHandler {
      * @param e the exception that caused the failure
      * @param activityId the id of an activity
      */
-    public void handleError(Map<String, Object> params, Task task, TaskHandlerException e, Long activityId) {
+    public void handleError(Map<String, Object> params, Map<String, Object> metadata, Task task, TaskHandlerException e, Long activityId) {
         LOGGER.warn("Omitted task: {} with ID: {} because: {}", task.getName(), task.getId(), e);
 
         activityService.addFailedExecution(activityId, e);
@@ -123,10 +124,12 @@ public class TasksPostExecutionHandler {
                 errorEventParam
         ));
 
-        retryHandler.handleTaskRetries(task, params, false);
+        boolean retryScheduled = TaskMetadataHelper.isRetryScheduled(metadata);
+
+        retryHandler.handleTaskRetries(task, params, false, retryScheduled);
     }
 
-    private void handleSuccess(Map<String, Object> params, Task task) {
+    private void handleSuccess(Map<String, Object> params, Map<String, Object> metadata, Task task) {
         LOGGER.debug("All actions from task: {} with ID: {} were successfully executed", task.getName(), task.getId());
 
         task.resetFailuresInRow();
@@ -137,7 +140,9 @@ public class TasksPostExecutionHandler {
                 params
         ));
 
-        retryHandler.handleTaskRetries(task, params, true);
+        boolean retryScheduled = TaskMetadataHelper.isRetryScheduled(metadata);
+
+        retryHandler.handleTaskRetries(task, params, true, retryScheduled);
     }
 
     private void publishTaskDisabledMessage(String taskName) {

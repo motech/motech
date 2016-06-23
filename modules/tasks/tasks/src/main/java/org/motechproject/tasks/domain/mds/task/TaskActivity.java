@@ -52,6 +52,9 @@ public class TaskActivity implements Comparable<TaskActivity> {
     @Field(displayName = "Parameters")
     private Map<String, Object> parameters;
 
+    @Field(displayName = "Task metadata")
+    private Map<String, Object> taskMetadata;
+
     /**
      * Constructor.
      */
@@ -67,7 +70,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
      * @param activityType  the activity type
      */
     public TaskActivity(String message, Long task, TaskActivityType activityType) {
-        this(message, new ArrayList<>(), task, activityType, 0);
+        this(message, new ArrayList<>(), task, activityType, (TaskExecutionProgress) null);
     }
 
     /**
@@ -79,7 +82,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
      * @param activityType  the activity type
      */
     public TaskActivity(String message, String field, Long task, TaskActivityType activityType) {
-        this(message, new ArrayList<>(Arrays.asList(field)), task, activityType, 0);
+        this(message, new ArrayList<>(Arrays.asList(field)), task, activityType, (TaskExecutionProgress) null);
     }
 
     /**
@@ -89,10 +92,10 @@ public class TaskActivity implements Comparable<TaskActivity> {
      * @param fields  the field names
      * @param task  the activity task ID
      * @param activityType  the activity type
-     * @param numberOfActions the total number of actions of the task
+     * @param executionProgress the progress of task action executions
      */
-    public TaskActivity(String message, List<String> fields, Long task, TaskActivityType activityType, int numberOfActions) {
-        this(message, fields, task, activityType, null, null, numberOfActions);
+    public TaskActivity(String message, List<String> fields, Long task, TaskActivityType activityType, TaskExecutionProgress executionProgress) {
+        this(message, fields, task, activityType, null, null, executionProgress);
     }
 
     /**
@@ -105,7 +108,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
      * @param stackTraceElement  the stack trace that caused the task failure
      */
     public TaskActivity(String message, List<String> fields, Long task, TaskActivityType activityType, String stackTraceElement) {
-        this(message, fields, task, activityType, stackTraceElement, null, 0);
+        this(message, fields, task, activityType, stackTraceElement, null, null);
     }
 
     /**
@@ -117,10 +120,10 @@ public class TaskActivity implements Comparable<TaskActivity> {
      * @param activityType  the activity type
      * @param stackTraceElement  the stack trace that caused the task failure
      * @param parameters the parameters used by the task in this execution
-     * @param numberOfActions the total number of actions of the task
+     * @param executionProgress the progress of task action executions
      */
     public TaskActivity(String message, List<String> fields, Long task, TaskActivityType activityType, String stackTraceElement,
-                        Map<String, Object> parameters, int numberOfActions) {
+                        Map<String, Object> parameters, TaskExecutionProgress executionProgress) {
         this.message = message;
         this.fields = fields;
         this.task = task;
@@ -128,7 +131,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
         this.activityType = activityType;
         this.stackTraceElement = stackTraceElement;
         this.parameters = parameters;
-        this.executionProgress = new TaskExecutionProgress(numberOfActions);
+        this.executionProgress = executionProgress;
     }
 
     public void setId(Long id) {
@@ -211,6 +214,14 @@ public class TaskActivity implements Comparable<TaskActivity> {
 
     public void setTaskExecutionProgress(TaskExecutionProgress executionProgress) {
         this.executionProgress = executionProgress;
+    }
+
+    public Map<String, Object> getTaskMetadata() {
+        return taskMetadata;
+    }
+
+    public void setTaskMetadata(Map<String, Object> taskMetadata) {
+        this.taskMetadata = taskMetadata;
     }
 
     @Override

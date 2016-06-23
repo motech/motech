@@ -38,10 +38,11 @@ public class TaskActivityServiceImpl implements TaskActivityService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public long addTaskStarted(Task task, Map<String, Object> parameters) {
+    public long addTaskStarted(Task task, Map<String, Object> parameters, Map<String, Object> metadata) {
         int totalActions = task.getActions().size();
         TaskActivity activity = taskActivitiesDataService.create(
-                new TaskActivity(TASK_IN_PROGRESS, Arrays.asList("0", String.valueOf(totalActions)), task.getId(), TaskActivityType.IN_PROGRESS, null, parameters, totalActions));
+                new TaskActivity(TASK_IN_PROGRESS, Arrays.asList("0", String.valueOf(totalActions)), task.getId(),
+                        TaskActivityType.IN_PROGRESS, null, parameters, new TaskExecutionProgress(totalActions)));
         return activity.getId();
     }
 
