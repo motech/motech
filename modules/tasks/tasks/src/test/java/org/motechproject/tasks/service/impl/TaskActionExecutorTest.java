@@ -23,14 +23,17 @@ import org.osgi.framework.ServiceReference;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.motechproject.tasks.domain.mds.ParameterType.MAP;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskActionExecutorTest {
@@ -187,6 +190,70 @@ public class TaskActionExecutorTest {
         taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap<>(), activityService), TASK_ACTIVITY_ID);
 
         verify(activityService).addWarning(task, "task.warning.serviceUnavailable", "serviceInterface");
+    }
+
+    @Test
+    public void shouldExecuteTaskIfActionMapParameterHasValueWithMixedTypes() throws Exception {
+        TaskActionInformation actionInformation = prepareTaskActionInformation();
+        ActionEvent actionEvent = prepareActionEvent();
+
+        when(taskService.getActionEventFor(actionInformation)).thenReturn(actionEvent);
+
+        Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
+
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
+        taskActionExecutor.setBundleContext(bundleContext);
+
+        taskActionExecutor.execute(task, actionInformation, prepareTaskContext(task), TASK_ACTIVITY_ID);
+
+        verify(eventRelay).sendEventMessage(eq(prepareMotechEvent()));
+    }
+
+    private MotechEvent prepareMotechEvent() {
+        Map<String, Object> parameters = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
+        map.put("key1", "value123");
+        parameters.put("map", map);
+        return new MotechEvent("actionSubject", parameters);
+    }
+
+    private TaskContext prepareTaskContext(Task task) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("id", 123);
+        return new TaskContext(task, parameters, activityService);
+    }
+
+    private TaskActionInformation prepareTaskActionInformation() {
+        TaskActionInformation actionInformation = new TaskActionInformation();
+        actionInformation.setDisplayName("action");
+        actionInformation.setChannelName("channel");
+        actionInformation.setModuleName("module");
+        actionInformation.setModuleVersion("0.1");
+        actionInformation.setSubject("actionSubject");
+
+        Map<String, String> values = new HashMap<>();
+        values.put("map", "key1:value{{trigger.id}}");
+        actionInformation.setValues(values);
+
+        return actionInformation;
+    }
+
+    private ActionEvent prepareActionEvent() {
+        ActionEvent actionEvent = new ActionEvent();
+        actionEvent.setDisplayName("Action");
+        actionEvent.setSubject("actionSubject");
+        actionEvent.setDescription("");
+
+        SortedSet<ActionParameter> parameters = new TreeSet<>();
+        ActionParameter parameter = new ActionParameter();
+        parameter.setDisplayName("Map");
+        parameter.setKey("map");
+        parameter.setType(MAP);
+        parameter.setOrder(1);
+        parameters.add(parameter);
+        actionEvent.setActionParameters(parameters);
+
+        return actionEvent;
     }
 
     private class TestService {

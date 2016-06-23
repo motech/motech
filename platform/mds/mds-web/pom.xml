@@ -84,6 +84,7 @@
                             org.springframework.aop.framework,
                             org.springframework.cglib.core,
                             org.springframework.cglib.proxy,
+                            org.springframework.cglib.reflect,
                             org.springframework.context.support,
                             org.springframework.validation.beanvalidation,
                             org.springframework.web.multipart.commons,

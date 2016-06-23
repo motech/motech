@@ -729,6 +729,24 @@
         };
 
         $scope.getPopoverType = function(filter) {
+            if (!filter.manipulations || !Array.isArray(filter.manipulations)) {
+                if (filter.displayName) {
+                    var manipulations, manipulationsBuff;
+                    manipulationsBuff = filter.key.split('?');
+                    manipulationsBuff.shift();
+                    manipulations = [];
+                    manipulationsBuff.forEach(function (manipulationStr) {
+                        var manipulation = {},
+                        parts = manipulationStr.split('(');
+                        manipulation.type = parts.shift();
+                        if(parts.length > 0) {
+                            manipulation.argument = parts[0].replace(')','');
+                        }
+                        manipulations.push(manipulation);
+                    });
+                    filter.manipulations = manipulations;
+                }
+            }
             if (filter.type === 'UNICODE' || filter.type === 'TEXTAREA') {
                 return "STRING";
             } else if (filter.type === 'DATE') {
@@ -957,6 +975,12 @@
                         step.lookup = [];
                     }
                 }
+            });
+
+            angular.forEach($scope.task.taskConfig.steps, function (step) {
+                angular.forEach(step.filters, function (filter) {
+                    delete filter.manipulations;
+                });
             });
 
             if (!$scope.task.retryTaskOnFailure) {
@@ -1208,7 +1232,7 @@
         }, function () {
             var i,j,key,value;
             if ($scope.pairs.length === 0 && $scope.data.value !== "" && $scope.data.value !== null && !$scope.dataTransformed) {
-                values = $scope.data.value.split("<br>");
+                values = $scope.data.value.split("\n");
 
                 for (i = 0; i < values.length; i += 1) {
                     keyValue = values[i].split(":");
@@ -1318,22 +1342,15 @@
         };
 
         $scope.addToDataValue = function (pair, index) {
-            var paired;
-            if (index > 0 && dragAndDrop) {
-                paired = "<div>" + pair.key + ":" + pair.value + "</div>";
-            } else {
-                paired = pair.key + ":" + pair.value;
-            }
-
-            if(!dragAndDrop) {
-                paired = paired.concat("\n");
-            }
-
             if ($scope.data.value === null) {
                 $scope.data.value = "";
             }
 
-            $scope.data.value = $scope.data.value.concat(paired);
+            if ($scope.data.value.length > 0) {
+                $scope.data.value = $scope.data.value.concat("\n" + pair.key + ":" + pair.value);
+            } else {
+                $scope.data.value = $scope.data.value.concat(pair.key + ":" + pair.value);
+            }
         };
     });
 }());

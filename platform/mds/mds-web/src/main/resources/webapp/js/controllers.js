@@ -290,7 +290,7 @@
         };
     });
 
-    controllers.controller('MdsBasicCtrl', function ($scope, $location, $state, $stateParams, $controller, Entities, MDSUtils, ModalFactory) {
+    controllers.controller('MdsBasicCtrl', function ($scope, $location, $state, $stateParams, $http, $controller, Entities, MDSUtils, ModalFactory) {
 
         angular.extend(this, $controller('MdsEmbeddableCtrl', {
             $scope: $scope,
@@ -318,6 +318,14 @@
             return expression;
         };
 
+        $scope.generateRandomUUID = function (field, isDefault) {
+            if (isDefault) {
+                field.basic.defaultValue = MDSUtils.generateUUID($http);
+            } else {
+                field.value = MDSUtils.generateUUID($http);
+            }
+        };
+        
         $scope.getWorkInProgress = function () {
             var list = [];
 
@@ -3294,7 +3302,7 @@
             $location.replace();
             window.history.pushState(null, "", $location.absUrl());
         };
-
+        
         /**
         * An array perisisting currently hidden modules in data browser view
         */
@@ -4425,7 +4433,7 @@
         $scope.isFieldSelected = function(name) {
             var i;
             for (i = 0; i < $scope.selectedFields.length; i += 1) {
-                if ($scope.selectedFields[i].basic.name === name) {
+                if ($scope.selectedFields[i] && $scope.selectedFields[i].basic.name === name) {
                     return true;
                 }
             }
@@ -4436,7 +4444,7 @@
             var i, field;
             for (i = 0; i < $scope.allEntityFields.length; i += 1) {
                 field = $scope.allEntityFields[i];
-                if (field.basic.name === name) {
+                if (field && field.basic.name === name) {
                     $scope.selectedFields.push(field);
                     return;
                 }
@@ -4477,7 +4485,7 @@
                 if ($scope.isFieldSelected(selected)) {
                     for (i = 0; i < $scope.selectedFields.length; i += 1) {
                         field = $scope.selectedFields[i];
-                        if (field.basic.name === selected) {
+                        if (field && field.basic.name === selected) {
                             $scope.selectedFields.remove(i, i);
                         }
                     }
@@ -4486,7 +4494,7 @@
                 if (!$scope.isFieldSelected(selected)) {
                     for (i = 0; i < $scope.availableFieldsForDisplay.length; i += 1) {
                         field = $scope.allEntityFields[i];
-                        if (field.basic.name === selected) {
+                        if (field && field.basic.name === selected) {
                             $scope.selectedFields.push(field);
                         }
                     }

@@ -22,8 +22,11 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 
+import java.util.Map;
+
 import static org.motechproject.scheduler.constants.SchedulerConstants.CRON;
 import static org.motechproject.scheduler.constants.SchedulerConstants.DAY_OF_WEEK;
+import static org.motechproject.scheduler.constants.SchedulerConstants.EVENT_METADATA;
 import static org.motechproject.scheduler.constants.SchedulerConstants.EVENT_TYPE_KEY_NAME;
 import static org.motechproject.scheduler.constants.SchedulerConstants.IGNORE_PAST_FIRES_AT_START;
 import static org.motechproject.scheduler.constants.SchedulerConstants.IS_DAY_OF_WEEK;
@@ -53,18 +56,24 @@ public final class SchedulableJobBuilder {
 
         SchedulableJob job;
 
-        switch (getJobType(key, dataMap)) {
+        Map<String, Object> params = dataMap.getWrappedMap();
+        Map<String, Object> metadata = (Map<String, Object>) params.get(EVENT_METADATA);
+        params.remove(EVENT_METADATA);
+        params.putAll(metadata);
+        JobDataMap map = new JobDataMap(params);
+
+        switch (getJobType(key, map)) {
             case CRON:
-                job = buildCronSchedulableJob(trigger, dataMap);
+                job = buildCronSchedulableJob(trigger, map);
                 break;
             case REPEATING:
-                job = buildRepeatingSchedulableJob(trigger, dataMap);
+                job = buildRepeatingSchedulableJob(trigger, map);
                 break;
             case REPEATING_PERIOD:
-                job = buildRepeatingPeriodSchedulableJob(trigger, dataMap);
+                job = buildRepeatingPeriodSchedulableJob(trigger, map);
                 break;
             case DAY_OF_WEEK:
-                job = buildDayOfWeekSchedulableJob(trigger, dataMap);
+                job = buildDayOfWeekSchedulableJob(trigger, map);
                 break;
             case RUN_ONCE:
                 job = buildRunOnceSchedulableJob();
@@ -74,8 +83,8 @@ public final class SchedulableJobBuilder {
                         key.getGroup()));
         }
 
-        job.setMotechEvent(new MotechEvent(dataMap.getString(EVENT_TYPE_KEY_NAME), dataMap.getWrappedMap()));
-        job.setUiDefined(dataMap.getBoolean(UI_DEFINED));
+        job.setMotechEvent(new MotechEvent(dataMap.getString(EVENT_TYPE_KEY_NAME), map.getWrappedMap()));
+        job.setUiDefined(map.getBoolean(UI_DEFINED));
         job.setStartDate(new DateTime(trigger.getStartTime()));
 
         return job;

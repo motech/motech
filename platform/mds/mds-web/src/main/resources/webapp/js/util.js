@@ -85,6 +85,23 @@
                 return unique ? (found.length > 0 ? found[0] : {}) : found;
             },
 
+            /** Returns a uuid value generated in the backend
+             * 
+             * @return {string} uuid value in string format
+             */
+            generateUUID: function ($http) {
+                var uuid;
+                $.ajax({
+                    method : "GET",
+                    url : "../mds/instances/generateUUID",
+                    async : false,
+                    success : function(value) {
+                       uuid = value;
+                    }
+                });
+                return uuid;
+            },
+            
             /**
             * Check if the given number has appropriate precision and scale.
             *

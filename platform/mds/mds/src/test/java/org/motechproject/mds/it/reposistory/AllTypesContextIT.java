@@ -22,13 +22,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class AllTypesContextIT extends BaseIT {
-    private static final int START_NUMBER_OF_TYPES = 24;
+    private static final int START_NUMBER_OF_TYPES = 25;
 
     @Autowired
     private AllTypes allTypes;
@@ -124,6 +125,9 @@ public class AllTypesContextIT extends BaseIT {
         assertType(
         	"mds.field.character", "mds.field.description.character", Character.class.getName(),
                 null, null
+        );
+        assertType(
+                "mds.field.uuid", "mds.field.description.uuid", UUID.class.getName(), null, null
         );
     }
 
