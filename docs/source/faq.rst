@@ -5,7 +5,7 @@ Frequently Asked Questions
 This page contains frequently asked questions about MOTECH with short answers to them.
 
 .. contents::
-:depth: 2
+    :depth: 2
 
 Can MOTECH run on Windows?
 --------------------------
