@@ -46,6 +46,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -494,8 +495,8 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     private boolean isUiDefined(byte[] bytes) throws IOException, ClassNotFoundException {
         try (InputStream is = new ByteArrayInputStream(bytes);
              ObjectInputStream ois = new ObjectInputStream(is)) {
-            JobDataMap dataMap = (JobDataMap) ois.readObject();
-            return dataMap.getBoolean(UI_DEFINED);
+            JobDataMap jobDataMap = (JobDataMap) ois.readObject();
+            return jobDataMap.get(SchedulerConstants.EVENT_METADATA) != null &&  (Boolean) ((Map<String, Object>) jobDataMap.get(SchedulerConstants.EVENT_METADATA)).get(UI_DEFINED);
         }
     }
 }
