@@ -9,7 +9,7 @@
     <context:component-scan base-package="org.motechproject.config.core"/>
 
     <bean id="propertiesConfiguration" class="org.motechproject.config.core.utils.ConfigPropertiesUtils"
-          factory-method="getPropertiesConfiguration">
+          factory-method="createPropertiesConfiguration">
         <constructor-arg value="#{systemProperties['user.home']}/.motech"/>
         <constructor-arg value="config-locations.properties"/>
     </bean>
