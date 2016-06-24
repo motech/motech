@@ -12,7 +12,6 @@ import org.motechproject.scheduler.contract.CronSchedulableJob;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobId;
-import org.motechproject.scheduler.contract.MisfireSchedulableJob;
 import org.motechproject.scheduler.contract.RepeatingJobId;
 import org.motechproject.scheduler.contract.RepeatingPeriodJobId;
 import org.motechproject.scheduler.contract.RepeatingPeriodSchedulableJob;
@@ -60,7 +59,6 @@ import java.util.Set;
 import static java.lang.String.format;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.commons.date.util.DateUtil.now;
-import static org.motechproject.scheduler.constants.SchedulerConstants.EVENT_METADATA;
 import static org.motechproject.scheduler.constants.SchedulerConstants.EVENT_TYPE_KEY_NAME;
 import static org.motechproject.scheduler.constants.SchedulerConstants.IGNORE_PAST_FIRES_AT_START;
 import static org.motechproject.scheduler.constants.SchedulerConstants.IS_DAY_OF_WEEK;
@@ -536,11 +534,9 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 .build();
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put(IS_DAY_OF_WEEK, isDayOfWeek);
-        metadata.put(UI_DEFINED, job.isUiDefined());
-        metadata.put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
-        jobDetail.getJobDataMap().put(EVENT_METADATA, metadata);
+        jobDetail.getJobDataMap().put(IS_DAY_OF_WEEK, isDayOfWeek);
+        jobDetail.getJobDataMap().put(UI_DEFINED, job.isUiDefined());
+        jobDetail.getJobDataMap().put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
 
         CronScheduleBuilder cronSchedule = cronSchedule(job.getCronExpression());
 
@@ -611,7 +607,9 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
-        jobDetail.getJobDataMap().put(EVENT_METADATA, createMetadataForMisfireSchedulableJob(job));
+        jobDetail.getJobDataMap().put(UI_DEFINED, job.isUiDefined());
+        jobDetail.getJobDataMap().put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
+        jobDetail.getJobDataMap().put(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE, job.isUseOriginalFireTimeAfterMisfire());
 
         try {
             if (scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME)) != null) {
@@ -646,16 +644,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         scheduleJob(jobDetail, trigger, update);
     }
 
-    private Map<String, Object> createMetadataForMisfireSchedulableJob(MisfireSchedulableJob job) {
-
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put(UI_DEFINED, job.isUiDefined());
-        metadata.put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
-        metadata.put(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE, job.isUseOriginalFireTimeAfterMisfire());
-
-        return metadata;
-    }
-
     private void scheduleRepeatingPeriodJob(RepeatingPeriodSchedulableJob job, boolean update) {
         logObjectIfNotNull(job);
 
@@ -669,8 +657,9 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 .build();
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
-
-        jobDetail.getJobDataMap().put(EVENT_METADATA, jobDetail.getJobDataMap().put(EVENT_METADATA, createMetadataForMisfireSchedulableJob(job)));
+        jobDetail.getJobDataMap().put(UI_DEFINED, job.isUiDefined());
+        jobDetail.getJobDataMap().put(IGNORE_PAST_FIRES_AT_START, job.isIgnorePastFiresAtStart());
+        jobDetail.getJobDataMap().put(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE, job.isUseOriginalFireTimeAfterMisfire());
 
         ScheduleBuilder scheduleBuilder = PeriodIntervalScheduleBuilder.periodIntervalSchedule()
                 .withRepeatPeriod(job.getRepeatPeriod())
@@ -694,9 +683,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                 .build();
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put(UI_DEFINED, job.isUiDefined());
-        jobDetail.getJobDataMap().put(EVENT_METADATA, metadata);
+        jobDetail.getJobDataMap().put(UI_DEFINED, job.isUiDefined());
 
         SimpleScheduleBuilder simpleSchedule = simpleSchedule()
                 .withRepeatCount(0)
@@ -800,14 +787,10 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         JobDataMap map = detail.getJobDataMap();
 
-        if (map != null && !isJobUIDefined(map)) {
+        if (map != null && !map.getBooleanValue(UI_DEFINED)) {
             throw new MotechSchedulerException(String.format("Job is not ui defined:\n %s\n %s", key.getName(),
                     key.getGroup()));
         }
-    }
-
-    private boolean isJobUIDefined(JobDataMap jobDataMap) {
-        return jobDataMap.get(EVENT_METADATA) != null &&  (Boolean) ((Map<String, Object>) jobDataMap.get(EVENT_METADATA)).get(UI_DEFINED);
     }
 
     private MotechEvent assertCronJob(CronSchedulableJob cronSchedulableJob) {
