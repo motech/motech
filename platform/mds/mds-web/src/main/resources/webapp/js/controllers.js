@@ -3517,7 +3517,10 @@
 
             // load the entity if coming from the 'Add' link in the main DataBrowser page
             if (!$scope.selectedEntity) {
-                $scope.retrieveAndSetEntityData('../mds/entities/getEntity/' + module + '/' + entityName);
+                $http.get('../mds/entities/getEntity/' + module + '/' + entityName)
+                .success(function (data) {
+                    $scope.selectedEntity = data;
+                });
             }
 
             $scope.instanceEditMode = false;
@@ -4161,7 +4164,7 @@
                 $scope.addedEntity = undefined;
                 $scope.selectedInstance = undefined;
                 $scope.loadedFields = undefined;
-                $scope.removeIdFromUrl();
+                $state.reload();
             }
             $scope.cancelAddRelatedForm();
             $scope.cancelEditRelatedForm();
@@ -4654,6 +4657,7 @@
                 east__maxSize: 350
             });
             $scope.selectedEntity = undefined;
+            $scope.removeIdFromUrl();
             $scope.showFilters = false;
             resizeLayout();
         };
@@ -5201,7 +5205,9 @@
 
         $scope.checkForModuleConfig();
 
-        $rootScope.unselectEntity = $scope.unselectEntity();
+        $rootScope.unselectEntity = function() {
+            $scope.unselectEntity();
+        };
 
         $scope.relatedId = function (obj) {
             if (obj.id) {
