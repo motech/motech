@@ -459,9 +459,9 @@
                                         actionBy.push({ what: 'subject', equalTo: info.subject });
                                     }
 
-                                    if (info.serviceInterface && info.serviceMethod) {
+                                    if (info.serviceInterface && info.displayName) {
                                         actionBy.push({ what: 'serviceInterface', equalTo: info.serviceInterface });
-                                        actionBy.push({ what: 'serviceMethod', equalTo: info.serviceMethod });
+                                        actionBy.push({ what: 'displayName', equalTo: info.displayName });
                                     }
 
                                     action = $scope.util.find({
