@@ -3815,6 +3815,7 @@
             // Temporary - should return to instance view
             $scope.instanceId = undefined;
             $scope.previousInstance = undefined;
+            $scope.editInstance($scope.selectedInstance, $scope.selectedEntity.module, $scope.selectedEntity.name);
             $scope.updateInstanceGridFields();
         };
 
