@@ -2,7 +2,7 @@ package org.motechproject.config.core.environment.impl;
 
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.environment.Environment;
-import org.motechproject.config.core.filestore.ConfigPropertiesUtils;
+import org.motechproject.config.core.utils.ConfigPropertiesUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.Properties;

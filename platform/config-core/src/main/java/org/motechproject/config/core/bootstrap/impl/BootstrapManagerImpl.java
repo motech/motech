@@ -9,7 +9,7 @@ import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.config.core.environment.Environment;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
-import org.motechproject.config.core.filestore.ConfigPropertiesUtils;
+import org.motechproject.config.core.utils.ConfigPropertiesUtils;
 import org.motechproject.config.core.service.impl.mapper.BootstrapConfigPropertyMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
