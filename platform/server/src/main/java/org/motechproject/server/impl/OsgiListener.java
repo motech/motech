@@ -1,12 +1,12 @@
 package org.motechproject.server.impl;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.motechproject.config.core.bootstrap.BootstrapManager;
 import org.motechproject.config.core.bootstrap.impl.BootstrapManagerImpl;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.environment.impl.EnvironmentImpl;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
+import org.motechproject.config.core.utils.ConfigPropertiesUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -103,14 +103,9 @@ public class OsgiListener implements ServletContextListener {
     }
 
     private static ConfigLocationFileStore buildConfigLocationFileStore() {
-        PropertiesConfiguration propertiesConfiguration = new PropertiesConfiguration();
-        propertiesConfiguration.setBasePath(System.getProperty("user.home") + "/.motech");
-        propertiesConfiguration.setFileName("config-locations.properties");
-        try {
-            propertiesConfiguration.load();
-        } catch (ConfigurationException e) {
-            LOGGER.error("Unable to load config locations: " + e.getMessage());
-        }
+        String basePath = System.getProperty("user.home") + "/.motech";
+        String fileName = "config-locations.properties";
+        PropertiesConfiguration propertiesConfiguration = ConfigPropertiesUtils.createPropertiesConfiguration(basePath, fileName);
         return new ConfigLocationFileStore(propertiesConfiguration);
     }
 

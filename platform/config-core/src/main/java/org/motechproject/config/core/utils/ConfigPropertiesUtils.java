@@ -1,5 +1,7 @@
-package org.motechproject.config.core.filestore;
+package org.motechproject.config.core.utils;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.motechproject.config.core.exception.MotechConfigurationException;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.slf4j.Logger;
@@ -112,6 +114,41 @@ public final class ConfigPropertiesUtils {
             properties.setProperty(key, value);
         }
         return properties.isEmpty() ? null : properties;
+    }
+
+    /**
+     * Creates {@code PropertiesConfiguration} in the given path if it does not exist
+     * @param basePath path to the file with config
+     * @param fileName name of the file with config
+     * @return {@code PropertiesConfiguration} from the given path
+     */
+    public static PropertiesConfiguration createPropertiesConfiguration(String basePath, String fileName) {
+        createFileIfDoesNotExist(basePath, fileName);
+
+        PropertiesConfiguration propertiesConfiguration = new PropertiesConfiguration();
+        propertiesConfiguration.setBasePath(basePath);
+        propertiesConfiguration.setFileName(fileName);
+
+        try {
+            propertiesConfiguration.load();
+        } catch (ConfigurationException e) {
+            throw new MotechConfigurationException(String.format("Cannot load configuration from: %s",
+                    propertiesConfiguration.getPath()), e);
+        }
+
+        return propertiesConfiguration;
+    }
+
+    private static void createFileIfDoesNotExist(String basePath, String fileName) {
+        File configFile = new File(basePath, fileName);
+
+        try {
+            //These methods create dir/file only if it does not yet exist.
+            new File(configFile.getParent()).mkdirs();
+            configFile.createNewFile();
+        } catch (IOException e) {
+            throw new MotechConfigurationException(String.format("Cannot create file %s", configFile.getAbsolutePath()), e);
+        }
     }
 
     /**
