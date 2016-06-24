@@ -24,6 +24,7 @@
             </div>
             <div id="job{{$index}}" class="collapse">
                 <hr/>
+                <button ng-if="job.status === 'OK'" ng-click="unscheduleJob(job)" type="button" class="btn btn-danger btn-sm active ng-binding"> Unschedule Job </button>
                 <span ng-if="job.uiDefined">
                     <div class="btn-group">
                         <button ng-if="job.status === 'OK'" ng-click="pauseJob(job)" type="button" class="btn btn-sm btn-default"><i class="fa fa-1 fa-pause"></i> Pause</button>

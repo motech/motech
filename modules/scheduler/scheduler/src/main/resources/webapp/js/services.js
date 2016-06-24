@@ -53,6 +53,11 @@
                 url: '../scheduler/api/job/delete',
                 method: "POST",
                 params: {}
+            },
+            "unscheduleJob": {
+                url: "../scheduler/api/job/unschedule",
+                method: "POST",
+                params:{}
             }
         });
         return {
@@ -79,6 +84,9 @@
             },
             "deleteJob": function(job, success) {
                 source.deleteJob(job, success);
+            },
+            "unscheduleJob": function(job, success) {
+                source.unscheduleJob(job, success);
             },
             "setListener": function(scope) {
                 listener = scope;

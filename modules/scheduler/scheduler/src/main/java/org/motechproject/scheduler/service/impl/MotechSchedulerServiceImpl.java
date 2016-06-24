@@ -9,6 +9,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.builder.SchedulableJobBuilder;
 import org.motechproject.scheduler.contract.CronJobId;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
+import org.motechproject.scheduler.contract.DayOfWeekJobId;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobId;
@@ -264,6 +265,24 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     public void unscheduleJob(JobId job) {
         logObjectIfNotNull(job);
         unscheduleJob(job.value());
+    }
+
+    @Override
+    public void unscheduleJob(SchedulableJob job) {
+        assertArgumentNotNull(job);
+        JobId jobId=null;
+        if (job instanceof CronSchedulableJob) {
+            jobId=new CronJobId(job.getMotechEvent());
+        } else if (job instanceof RepeatingSchedulableJob) {
+            jobId=new RepeatingJobId(job.getMotechEvent());
+        } else if (job instanceof RepeatingPeriodSchedulableJob) {
+            jobId=new RepeatingPeriodJobId(job.getMotechEvent());
+        } else if (job instanceof RunOnceSchedulableJob) {
+            jobId=new RunOnceJobId(job.getMotechEvent());
+        } else if (job instanceof DayOfWeekSchedulableJob){
+            jobId=new DayOfWeekJobId(job.getMotechEvent());
+        }
+        unscheduleJob(jobId);
     }
 
     @Override

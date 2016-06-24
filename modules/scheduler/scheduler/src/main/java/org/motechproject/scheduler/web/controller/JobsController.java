@@ -11,8 +11,8 @@ import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.web.domain.JobsRecords;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -145,6 +145,14 @@ public class JobsController {
     @ResponseBody
     public SchedulableJob getJob(@RequestBody JobBasicInfo jobInfo) {
         return motechSchedulerService.getJob(jobInfo);
+    }
+
+    @RequestMapping(value = "/job/unschedule", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void unScheduleJob(@RequestBody JobBasicInfo jobInfo) {
+        SchedulableJob schedulableJob=motechSchedulerService.getJob(jobInfo);
+        motechSchedulerService.unscheduleJob(schedulableJob);
     }
 
     @ExceptionHandler(MotechSchedulerException.class)
