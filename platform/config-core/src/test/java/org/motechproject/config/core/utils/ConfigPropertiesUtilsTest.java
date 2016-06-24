@@ -69,7 +69,7 @@ public class ConfigPropertiesUtilsTest {
 
         deleteFile(new File(basePath, fileName));
 
-        PropertiesConfiguration propertiesConfiguration = ConfigPropertiesUtils.getPropertiesConfiguration(basePath, fileName);
+        PropertiesConfiguration propertiesConfiguration = ConfigPropertiesUtils.createPropertiesConfiguration(basePath, fileName);
 
         assertNotNull(propertiesConfiguration);
         assertTrue(propertiesConfiguration.isEmpty());
@@ -82,7 +82,7 @@ public class ConfigPropertiesUtilsTest {
 
         createNewFile(new File(basePath, fileName));
 
-        PropertiesConfiguration propertiesConfiguration = ConfigPropertiesUtils.getPropertiesConfiguration(basePath, fileName);
+        PropertiesConfiguration propertiesConfiguration = ConfigPropertiesUtils.createPropertiesConfiguration(basePath, fileName);
 
         assertNotNull(propertiesConfiguration);
         assertFalse(propertiesConfiguration.isEmpty());

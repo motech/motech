@@ -117,11 +117,12 @@ public final class ConfigPropertiesUtils {
     }
 
     /**
-     * Returns {@code PropertiesConfiguration} and creates file for this configuration if it does not exist
+     * Creates {@code PropertiesConfiguration} in the given path if it does not exist
      * @param basePath path to the file with config
      * @param fileName name of the file with config
+     * @return {@code PropertiesConfiguration} from the given path
      */
-    public static PropertiesConfiguration getPropertiesConfiguration(String basePath, String fileName) {
+    public static PropertiesConfiguration createPropertiesConfiguration(String basePath, String fileName) {
         createFileIfDoesNotExist(basePath, fileName);
 
         PropertiesConfiguration propertiesConfiguration = new PropertiesConfiguration();
@@ -142,6 +143,7 @@ public final class ConfigPropertiesUtils {
         File configFile = new File(basePath, fileName);
 
         try {
+            //These methods create dir/file only if it does not yet exist.
             new File(configFile.getParent()).mkdirs();
             configFile.createNewFile();
         } catch (IOException e) {
