@@ -128,16 +128,16 @@
             var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value, keys = [], key;
             // Check the user supplied flag, if true return string set
             if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
-                return value === undefined || value === null ? labelValues : value;
+                return !value ? labelValues : value;
             } else {
                 if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
                     labelValues =  $scope.getAndSplitComboboxValues(labelValues);
                     for(key in labelValues) {
                         keys.push(key);
                     }
-                    return value === undefined || value === null ? keys : keys[value];
+                    return !value ? keys : keys[value];
                 } else {        // there is no colon, so we are dealing with a string set, not a map
-                    return value === undefined || value === null ? labelValues : value;
+                    return !value ? labelValues : value;
                 }
             }
         };
@@ -599,6 +599,7 @@
     * The MdsSchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
     controllers.controller('MdsSchemaEditorCtrl', function ($scope, $timeout, $http, Entities, MDSUsers, Permissions, MDSUtils, Locale, ModalFactory, LoadingModal) {
+
         MDSUtils.setCustomOperatorFunctions($scope);
 
         var setAdvancedSettings, updateAdvancedSettings, setRest, setBrowsing, setSecuritySettings, setIndexesLookupsTab, checkLookupName, checkActiveIndex;
