@@ -14,15 +14,22 @@
                     "type": "LONG",
                     "required": $idRequired
                 }
-                #foreach ( $field in $entity.nonAutoFieldInfos ),
+                #foreach ( $field in $entity.nonAutoFieldInfos ) ,
                 {
                     "key": "$field.name",
                     "displayName": "$field.displayName",
                     "type": "$field.taskType",
-                    "required": #if( "id" == $field.name ) true #else false #end
+                    "required": #if( "id" == $field.name ) true #else false #end,
+                    "options" : #if( $field.taskType.equals("SELECT") ) [ #setOptions( $field.typeInfo.items ) ] #else [] #end
                 }
                 #end
             ]
+#end
+
+#macro( setOptions $options )
+            #foreach ( $option in $options )
+            "$option"#if( $velocityHasNext ),#end
+            #end
 #end
 
 #set( $triggerParams = '"eventParameters": [
@@ -91,7 +98,8 @@
                     "key": "$field.name",
                     "displayName": "$field.displayName",
                     "type": "$field.taskType",
-                    "required": $field.required
+                    "required": $field.required,
+                    "options" : #if( $field.taskType.equals("SELECT") ) [ #setOptions( $field.typeInfo.items ) ] #else [] #end
                 }#if ( $velocityHasNext ),#end
                 #end
             ]
