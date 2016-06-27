@@ -52,9 +52,6 @@ public class TaskActivity implements Comparable<TaskActivity> {
     @Field(displayName = "Parameters")
     private Map<String, Object> parameters;
 
-    @Field(displayName = "Task metadata")
-    private Map<String, Object> taskMetadata;
-
     /**
      * Constructor.
      */
@@ -214,14 +211,6 @@ public class TaskActivity implements Comparable<TaskActivity> {
 
     public void setTaskExecutionProgress(TaskExecutionProgress executionProgress) {
         this.executionProgress = executionProgress;
-    }
-
-    public Map<String, Object> getTaskMetadata() {
-        return taskMetadata;
-    }
-
-    public void setTaskMetadata(Map<String, Object> taskMetadata) {
-        this.taskMetadata = taskMetadata;
     }
 
     @Override

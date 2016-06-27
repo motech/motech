@@ -21,7 +21,7 @@ public interface TaskActivityService {
      * @param parameters The event trigger parameters the task was initiated with
      * @return id of the created activity log
      */
-    long addTaskStarted(Task task, Map<String, Object> parameters, Map<String, Object> metadata);
+    long addTaskStarted(Task task, Map<String, Object> parameters);
 
     /**
      * Adds successful execution to the activity of the provided id. If all the task actions are executed, it marks

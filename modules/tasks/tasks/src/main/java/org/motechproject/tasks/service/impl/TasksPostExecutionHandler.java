@@ -9,7 +9,6 @@ import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
-import org.motechproject.tasks.service.util.TaskMetadataHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +26,7 @@ import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_STACK_TR
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_TASK_ID;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_TASK_NAME;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_TRIGGER_DISABLED;
+import static org.motechproject.tasks.constants.EventDataKeys.TASK_RETRY;
 import static org.motechproject.tasks.constants.EventSubjects.createHandlerFailureSubject;
 import static org.motechproject.tasks.constants.EventSubjects.createHandlerSuccessSubject;
 
@@ -124,7 +124,7 @@ public class TasksPostExecutionHandler {
                 errorEventParam
         ));
 
-        boolean retryScheduled = TaskMetadataHelper.isRetryScheduled(metadata);
+        boolean retryScheduled = isRetryScheduled(metadata);
 
         retryHandler.handleTaskRetries(task, params, false, retryScheduled);
     }
@@ -140,7 +140,7 @@ public class TasksPostExecutionHandler {
                 params
         ));
 
-        boolean retryScheduled = TaskMetadataHelper.isRetryScheduled(metadata);
+        boolean retryScheduled = isRetryScheduled(metadata);
 
         retryHandler.handleTaskRetries(task, params, true, retryScheduled);
     }
@@ -171,4 +171,7 @@ public class TasksPostExecutionHandler {
         return number;
     }
 
+    private boolean isRetryScheduled(Map<String, Object> metadata) {
+        return metadata.get(TASK_RETRY) != null && (boolean) metadata.get(TASK_RETRY);
+    }
 }

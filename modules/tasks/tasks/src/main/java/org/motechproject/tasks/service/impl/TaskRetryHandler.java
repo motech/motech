@@ -70,7 +70,6 @@ public class TaskRetryHandler {
     private void scheduleTaskRetry(Task task, Map<String, Object> parameters) {
         Map<String, Object> eventParameters = new HashMap<>();
         eventParameters.putAll(parameters);
-
         eventParameters.put(TASK_ID, task.getId());
         eventParameters.put(TASK_RETRY, true);
         eventParameters.put(REPEAT_COUNT, task.getNumberOfRetries());

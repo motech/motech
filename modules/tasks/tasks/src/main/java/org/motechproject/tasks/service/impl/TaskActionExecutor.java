@@ -4,7 +4,6 @@ import com.google.common.collect.Multimap;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.tasks.constants.EventDataKeys;
 import org.motechproject.tasks.domain.KeyInformation;
 import org.motechproject.tasks.domain.mds.ParameterType;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
@@ -74,14 +73,13 @@ public class TaskActionExecutor {
         KeyEvaluator keyEvaluator = new KeyEvaluator(taskContext);
         ActionEvent action = getActionEvent(actionInformation);
         Map<String, Object> parameters = createParameters(actionInformation, action, keyEvaluator);
+
         LOGGER.debug("Parameters created: {} for task action: {}", parameters.toString(), action.getName());
 
         if (action.hasService() && bundleContext != null) {
             if (callActionServiceMethod(action, parameters)) {
                 LOGGER.info("Action: {} from task: {} was executed through an OSGi service call", actionInformation.getName(), task.getName());
-                Map<String, Object> metadata = prepareTaskMetadata(task.getId(), activityId, (Boolean) taskContext.getTriggerValue(EventDataKeys.TASK_RETRY));
-
-                postExecutionHandler.handleActionExecuted(taskContext.getTriggerParameters(), metadata, activityId);
+                postExecutionHandler.handleActionExecuted(taskContext.getTriggerParameters(), taskContext.getMetadata(), activityId);
                 return;
             }
             LOGGER.info("There is no service: {}", action.getServiceInterface());
@@ -92,22 +90,9 @@ public class TaskActionExecutor {
         if (!action.hasSubject()) {
             throw new TaskHandlerException(ACTION, "task.error.cantExecuteAction");
         } else {
-            Map<String, Object> taskEventParameters = new HashMap<>();
-            taskEventParameters.putAll(parameters);
-            Map<String, Object> metadata = prepareTaskMetadata(task.getId(), activityId, (Boolean) taskContext.getTriggerValue(EventDataKeys.TASK_RETRY));
-
-            eventRelay.sendEventMessage(new MotechEvent(action.getSubject(), taskEventParameters, TasksEventCallbackService.TASKS_EVENT_CALLBACK_NAME, metadata));
+            eventRelay.sendEventMessage(new MotechEvent(action.getSubject(), parameters, TasksEventCallbackService.TASKS_EVENT_CALLBACK_NAME, taskContext.getMetadata()));
             LOGGER.info("Event: {} was sent", action.getSubject());
         }
-    }
-
-    private Map<String, Object> prepareTaskMetadata(Long taskId, long activityId, Boolean isRetry) {
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put(EventDataKeys.TASK_ID, taskId);
-        metadata.put(EventDataKeys.TASK_ACTIVITY_ID, activityId);
-        metadata.put(EventDataKeys.TASK_RETRY, isRetry);
-
-        return metadata;
     }
 
     private ActionEvent getActionEvent(TaskActionInformation actionInformation)

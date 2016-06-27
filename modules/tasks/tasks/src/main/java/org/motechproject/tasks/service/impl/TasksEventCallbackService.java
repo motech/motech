@@ -5,7 +5,6 @@ import org.motechproject.event.listener.EventCallbackService;
 import org.motechproject.tasks.constants.EventDataKeys;
 import org.motechproject.tasks.constants.TaskFailureCause;
 import org.motechproject.tasks.domain.mds.task.Task;
-import org.motechproject.tasks.domain.mds.task.TaskActivity;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
@@ -14,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -40,11 +38,11 @@ public class TasksEventCallbackService implements EventCallbackService {
     public boolean failureCallback(MotechEvent event, Throwable throwable) {
         LOGGER.debug("Received failure callback for event subject {}", event.getSubject());
 
-        Map<String, Object> metadata = prepareMetadata(event);
+        Map<String, Object> metadata = event.getMetadata();
         Long activityId = (Long) metadata.get(EventDataKeys.TASK_ACTIVITY_ID);
         Task task = taskService.getTask((Long) metadata.get(EventDataKeys.TASK_ID));
 
-        postExecutionHandler.handleError(event.getParameters(), prepareMetadata(event), task, new TaskHandlerException(TaskFailureCause.ACTION, "task.error.eventHandlerFailed", throwable), activityId);
+        postExecutionHandler.handleError(event.getParameters(), metadata, task, new TaskHandlerException(TaskFailureCause.ACTION, "task.error.eventHandlerFailed", throwable), activityId);
 
         return false;
     }
@@ -54,23 +52,11 @@ public class TasksEventCallbackService implements EventCallbackService {
         LOGGER.debug("Received success callback for event subject {}", event.getSubject());
         Long activityId = (Long) event.getMetadata().get(EventDataKeys.TASK_ACTIVITY_ID);
 
-        postExecutionHandler.handleActionExecuted(event.getParameters(), prepareMetadata(event), activityId);
+        postExecutionHandler.handleActionExecuted(event.getParameters(), event.getMetadata(), activityId);
     }
 
     @Override
     public String getName() {
         return TASKS_EVENT_CALLBACK_NAME;
-    }
-
-    private Map<String, Object> prepareMetadata(MotechEvent event) {
-        Long activityId = (Long) event.getParameters().get(EventDataKeys.TASK_ACTIVITY_ID);
-        TaskActivity activity = taskActivityService.getTaskActivityById(activityId);
-
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put(EventDataKeys.TASK_ID, activity.getTask());
-        metadata.put(EventDataKeys.TASK_ACTIVITY_ID, activityId);
-        metadata.put(EventDataKeys.TASK_RETRY, event.getParameters().get(EventDataKeys.TASK_RETRY));
-
-        return metadata;
     }
 }
