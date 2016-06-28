@@ -37,8 +37,6 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
     private static final String SUFFIX_ID = "_ID";
     private static final String SUFFIX_OID = "_id_OID";
     private static final String SUFFIX_OWN = "_id_OWN";
-    private static final String SUFFIX_HISTORY = "__History_ID";
-    private static final String SUFFIX_TRASH = "__Trash_ID";
     private static final String SUFFIX_IDX = "_INTEGER_IDX";
     private static final String ENTITY = "Entity";
     private static final String FIELD = "Field";
@@ -47,8 +45,6 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
     private static final String KEY = "key";
     private static final String VALUE = "value";
     private static final String CLASS_NAME = "className";
-    private static final String HISTORY_TABLE = "__HISTORY";
-    private static final String TRASH_TABLE = "__TRASH";
 
     private static final String FROM = " FROM ";
     private static final String WHERE = " WHERE ";
@@ -69,13 +65,33 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
     private static final String SELECT_FROM = "SELECT * FROM ";
     private static final String BRACKETS = "));";
 
+    private String SUFFIX_HISTORY;
+    private String SUFFIX_TRASH;
+    private String HISTORY_TABLE;
+    private String TRASH_TABLE;
+
     private JdbcTemplate jdbc;
     private boolean isPsql;
+    private boolean isLowerCase;
 
     public void migrate(JdbcTemplate jdbcTemplate) throws SQLException {
         jdbc = jdbcTemplate;
-        isPsql = StringUtils.equals(jdbcTemplate.getDataSource().getConnection().getMetaData().getDatabaseProductName(),
+        DatabaseMetaData databaseMetaData = jdbcTemplate.getDataSource().getConnection().getMetaData();
+        isPsql = StringUtils.equals(databaseMetaData.getDatabaseProductName(),
                 POSTGRES);
+        isLowerCase = databaseMetaData.storesLowerCaseIdentifiers();
+
+        if (isLowerCase) {
+            SUFFIX_HISTORY = "__history_ID";
+            SUFFIX_TRASH = "__trash_ID";
+            HISTORY_TABLE = "__history";
+            TRASH_TABLE = "__trash";
+        } else {
+            SUFFIX_HISTORY = "__History_ID";
+            SUFFIX_TRASH = "__Trash_ID";
+            HISTORY_TABLE = "__HISTORY";
+            TRASH_TABLE = "__TRASH";
+        }
 
         List<Map<String, Object>> result = getFieldMetadataWithCollectionType();
 
@@ -84,6 +100,11 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
 
             String tableName = getTableNameRelatedToField(fieldId, HISTORY_TABLE);
             String relatedTableName = getTableNameEntityWithField(fieldId, HISTORY_TABLE);
+
+            if (isLowerCase) {
+                tableName = tableName.toLowerCase();
+                relatedTableName = relatedTableName.toLowerCase();
+            }
 
             if (checkIfExists(tableName) && checkIfExists(relatedTableName)) {
                 HistoryFk historyFk = getHistoryRelationship(tableName, relatedTableName);
@@ -97,6 +118,11 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
 
             tableName = getTableNameRelatedToField(fieldId, TRASH_TABLE);
             relatedTableName = getTableNameEntityWithField(fieldId, TRASH_TABLE);
+
+            if (isLowerCase) {
+                tableName = tableName.toLowerCase();
+                relatedTableName = relatedTableName.toLowerCase();
+            }
 
             if (checkIfExists(tableName) && checkIfExists(relatedTableName)) {
                 TrashOneToMany trashOneToMany = getRelation(tableName, relatedTableName);
@@ -131,14 +157,16 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
 
     private TrashOneToMany getRelation(String table, String relatedTable) throws SQLException {
         Connection connection = jdbc.getDataSource().getConnection();
-        DatabaseMetaData dbmd = connection.getMetaData();
-
-        ResultSet foreignKeys = dbmd.getImportedKeys(connection.getCatalog(), null, table);
+        ResultSet foreignKeys = getForeignKeys(connection, table);
 
         TrashOneToMany result = null;
 
         while (foreignKeys.next()) {
             String pkTableName = foreignKeys.getString("PKTABLE_NAME");
+            if (isLowerCase) {
+                pkTableName = pkTableName.toLowerCase();
+            }
+
             String fkColumnName = foreignKeys.getString("FKCOLUMN_NAME");
 
             String suffix;
@@ -151,7 +179,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
                 break;
             }
 
-            if (pkTableName.endsWith("__TRASH")) {
+            if (pkTableName.endsWith(TRASH_TABLE)) {
                 String collectionName;
                 String listIndex = columnEndsWith(table, SUFFIX_IDX);
 
@@ -218,7 +246,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
         list.addAll(getHistoryFksToMigrate(tableName, SUFFIX_OWN));
 
         for (HistoryFk historyFk : list) {
-            if (historyFk.relatedTable.equals(relatedTableName)) {
+            if (historyFk.relatedTable.equalsIgnoreCase(relatedTableName)) {
                 result = historyFk;
             }
         }
@@ -268,6 +296,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
         String fieldName = historyFk.collectionName;
         String newTableName = historyFk.relatedTable + "_" + fieldName;
         String relatedFieldName = historyFk.relatedVersionColumn.replace("__HistoryCurrentVersion", "");
+        relatedFieldName = relatedFieldName.replace("__historycurrentversion", "");
         relatedFieldName = Character.toUpperCase(relatedFieldName.charAt(0)) + relatedFieldName.substring(1);
 
         String sql;
@@ -310,18 +339,16 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
 
     private boolean checkIfExists(String tableName) throws SQLException {
         Connection connection = jdbc.getDataSource().getConnection();
-        DatabaseMetaData dbmd = connection.getMetaData();
 
-        ResultSet tableRs = dbmd.getTables(connection.getCatalog(), null, tableName, null);
+        ResultSet tableRs = getTables(connection, tableName);
 
         return tableRs.next();
     }
 
     private List<String> getHistoryTables() throws SQLException {
         Connection connection = jdbc.getDataSource().getConnection();
-        DatabaseMetaData dbmd = connection.getMetaData();
 
-        ResultSet tableRs = dbmd.getTables(connection.getCatalog(), null, "%__HISTORY", null);
+        ResultSet tableRs = getTables(connection, "%" + HISTORY_TABLE);
         List<String> tables = new ArrayList<>();
 
         while (tableRs.next()) {
@@ -333,16 +360,19 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
 
     private List<HistoryFk> getHistoryFksToMigrate(String historyTable, String suffix) throws SQLException {
         Connection connection = jdbc.getDataSource().getConnection();
-        DatabaseMetaData dbmd = connection.getMetaData();
 
-        ResultSet foreignKeys = dbmd.getImportedKeys(connection.getCatalog(), null, historyTable);
+        ResultSet foreignKeys = getForeignKeys(connection, historyTable);
 
         List<HistoryFk> keys = new ArrayList<>();
         while (foreignKeys.next()) {
             String pkTableName = foreignKeys.getString("PKTABLE_NAME");
+            if (isLowerCase) {
+                pkTableName = pkTableName.toLowerCase();
+            }
+
             String fkColumnName = foreignKeys.getString("FKCOLUMN_NAME");
 
-            if (pkTableName.endsWith("__HISTORY") && fkColumnName.endsWith(suffix)) {
+            if (pkTableName.endsWith(HISTORY_TABLE) && fkColumnName.endsWith(suffix)) {
                 String newColumn = fkColumnName.replace(suffix, SUFFIX_ID);
                 boolean newColExists = columnExists(foreignKeys.getMetaData(), newColumn);
 
@@ -456,6 +486,17 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
         }
 
         return newName;
+    }
+
+    private ResultSet getForeignKeys(Connection connection, String tableName) throws SQLException {
+        DatabaseMetaData dbmd = connection.getMetaData();
+
+        return dbmd.getImportedKeys(connection.getCatalog(), null, tableName);
+    }
+
+    private ResultSet getTables(Connection connection, String tableName) throws SQLException {
+        DatabaseMetaData dbmd = connection.getMetaData();
+        return dbmd.getTables(connection.getCatalog(), null, tableName, null);
     }
 
     private String idType() {
