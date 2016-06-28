@@ -56,7 +56,6 @@ public class TaskConfig implements Serializable {
 
         steps.addAll(getFilters());
         steps.addAll(getDataSources());
-        steps.addAll(getPostActionParameters());
 
         return steps;
     }

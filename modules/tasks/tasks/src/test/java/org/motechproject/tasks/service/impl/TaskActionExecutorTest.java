@@ -60,7 +60,7 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap(), activityService));
 
         MotechEvent raisedEvent = new MotechEvent("actionSubject", new HashMap<>());
         verify(eventRelay).sendEventMessage(raisedEvent);
@@ -81,7 +81,7 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap(), activityService));
 
         verify(eventRelay).sendEventMessage(any(MotechEvent.class));
     }
@@ -103,7 +103,7 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap(), activityService));
 
         verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
     }
@@ -126,7 +126,7 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap(), activityService));
 
         assertTrue(testService.serviceMethodInvoked());
     }
@@ -144,7 +144,7 @@ public class TaskActionExecutorTest {
 
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap(), activityService));
     }
 
     @Test(expected = TaskHandlerException.class)
@@ -160,7 +160,7 @@ public class TaskActionExecutorTest {
 
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap(), activityService));
     }
 
     @Test
@@ -179,7 +179,7 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap(), activityService));
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap(), activityService));
 
         verify(activityService).addWarning(task, "task.warning.serviceUnavailable", "serviceInterface");
     }
@@ -196,15 +196,15 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, prepareTaskContext(task));
+        taskActionExecutor.execute(task, actionInformation, 0, prepareTaskContext(task));
 
         verify(eventRelay).sendEventMessage(eq(prepareMotechEvent()));
     }
 
     @Test
     public void shouldExecuteTaskAndUsePostActionParameters() throws Exception {
-        TaskActionInformation actionInformation = prepareTaskActionInformationWithService("testKey", "testValue");
-        TaskActionInformation actionInformationWithPostActionParameter = prepareTaskActionInformationWithService("testKey", "{{pa.0.testKey}}");
+        TaskActionInformation actionInformation = prepareTaskActionInformationWithService("key", "value");
+        TaskActionInformation actionInformationWithPostActionParameter = prepareTaskActionInformationWithService("key", "{{pa.0.testKey}}");
         ActionEvent actionEvent = prepareActionEventWithService();
 
         when(taskService.getActionEventFor(actionInformation)).thenReturn(actionEvent);
@@ -225,12 +225,11 @@ public class TaskActionExecutorTest {
         TaskContext taskContext = new TaskContext(task, new HashMap<>(), activityService);
 
         for (TaskActionInformation action : task.getActions()) {
-            taskActionExecutor.execute(task, action, taskContext);
+            taskActionExecutor.execute(task, action, task.getActions().indexOf(action), taskContext);
         }
 
-        assertEquals(2, taskContext.getPostActionParameters().size());
-        assertEquals("testValue", taskContext.getPostActionParameterValue("0", "testKey"));
-        assertEquals("testValue", taskContext.getPostActionParameterValue("1", "testKey"));
+        assertEquals("testObject", taskContext.getPostActionParameterValue("0", "testKey"));
+        assertEquals("testObject", taskContext.getPostActionParameterValue("1", "testKey"));
 
     }
 
@@ -327,8 +326,18 @@ public class TaskActionExecutorTest {
             invoked = true;
         }
 
-        public void serviceMethod(String string) {
+        public Object serviceMethod(String string) {
             invoked = true;
+            return new TestObject("testObject");
+        }
+    }
+
+    private class TestObject {
+
+        private String testKey;
+
+        public TestObject (String testKey) {
+            this.testKey = testKey;
         }
     }
 }

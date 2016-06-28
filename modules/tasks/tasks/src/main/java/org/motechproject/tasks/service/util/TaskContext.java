@@ -57,11 +57,12 @@ public class TaskContext {
      * Adds the given parameter to this task.
      *
      * @param objectId  the ID of the object, not null
+     * @param objectKey  the Key of the object, not null
      * @param postActionParameter  the result of lookup execution, not null
      * @param failIfDataNotFound  defines whether task should fail if the data wasn't found
      */
-    public void addPostActionParameterObject(String objectId, Object postActionParameter, boolean failIfDataNotFound) {
-        postActionParameters.add(new PostActionParameterObject(objectId, postActionParameter, failIfDataNotFound));
+    public void addPostActionParameterObject(String objectId, String objectKey, Object postActionParameter, boolean failIfDataNotFound) {
+        postActionParameters.add(new PostActionParameterObject(objectId, objectKey, postActionParameter, failIfDataNotFound));
     }
 
     /**
@@ -89,7 +90,7 @@ public class TaskContext {
     public Object getPostActionParameterValue(String objectId, String key) throws TaskHandlerException {
         LOGGER.info("Retrieving task post action parameter with ID: {}", objectId);
 
-        PostActionParameterObject postActionParameterObject = getPostActionParameter(objectId);
+        PostActionParameterObject postActionParameterObject = getPostActionParameter(objectId, key);
         if (postActionParameterObject == null) {
             throw new TaskHandlerException(TaskFailureCause.POST_ACTION_PARAMETER, "task.error.parameterNotFound", objectId);
         }
@@ -175,9 +176,10 @@ public class TaskContext {
         return postActionParameters;
     }
 
-    private PostActionParameterObject getPostActionParameter(String objectId) {
+    private PostActionParameterObject getPostActionParameter(String objectId, String objectKey) {
         for (PostActionParameterObject postActionParameterObject : postActionParameters) {
-            if (postActionParameterObject.getObjectId().equals(objectId)) {
+            if (postActionParameterObject.getObjectId().equals(objectId) &&
+                    postActionParameterObject.getObjectKey().equals(objectKey)) {
                 return postActionParameterObject;
             }
         }

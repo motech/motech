@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -31,11 +32,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.regex.Pattern;
 
 import static org.motechproject.tasks.domain.mds.ParameterType.LIST;
 import static org.motechproject.tasks.domain.mds.ParameterType.MAP;
 import static org.motechproject.tasks.constants.TaskFailureCause.ACTION;
 import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
+import static org.motechproject.tasks.constants.TaskFailureCause.POST_ACTION_PARAMETER;
+
 
 /**
  * Builds action parameters from  {@link TaskContext} and executes the action by invoking its service or raising its event.
@@ -66,7 +70,7 @@ public class TaskActionExecutor {
      * @param taskContext  the context of the current task execution, not null
      * @throws TaskHandlerException when the task couldn't be executed
      */
-    public void execute(Task task, TaskActionInformation actionInformation, TaskContext taskContext) throws TaskHandlerException {
+    public void execute(Task task, TaskActionInformation actionInformation, Integer actionIndex, TaskContext taskContext) throws TaskHandlerException {
         LOGGER.info("Executing task action: {} from task: {}", actionInformation.getName(), task.getName());
         KeyEvaluator keyEvaluator = new KeyEvaluator(taskContext);
 
@@ -74,7 +78,7 @@ public class TaskActionExecutor {
         Map<String, Object> parameters = createParameters(actionInformation, action, keyEvaluator);
         LOGGER.debug("Parameters created: {} for task action: {}", parameters.toString(), action.getName());
         if (action.hasService() && bundleContext != null) {
-            if (callActionServiceMethod(action, parameters, taskContext)) {
+            if (callActionServiceMethod(action, actionIndex, parameters, taskContext)) {
                 LOGGER.info("Action: {} from task: {} was executed through an OSGi service call", actionInformation.getName(), task.getName());
                 return;
             }
@@ -216,13 +220,12 @@ public class TaskActionExecutor {
         return result;
     }
 
-    private boolean callActionServiceMethod(ActionEvent action, Map<String, Object> parameters, TaskContext taskContext)
+    private boolean callActionServiceMethod(ActionEvent action, Integer actionIndex, Map<String, Object> parameters, TaskContext taskContext)
             throws TaskHandlerException {
         ServiceReference reference = bundleContext.getServiceReference(
                 action.getServiceInterface()
         );
         boolean serviceAvailable = reference != null;
-        addPostActionParametersToTaskContext(action, parameters, taskContext);
         if (serviceAvailable) {
             Object service = bundleContext.getService(reference);
             String serviceMethod = action.getServiceMethod();
@@ -231,7 +234,9 @@ public class TaskActionExecutor {
                 Method method = service.getClass().getMethod(serviceMethod, methodHandler.getClasses());
 
                 try {
-                    method.invoke(service, methodHandler.getObjects());
+                    Object object = method.invoke(service, methodHandler.getObjects());
+                    addPostActionParametersToTaskContext(action, actionIndex, taskContext, object);
+
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     throw new TaskHandlerException(
                             ACTION, "task.error.serviceMethodInvokeError", e,
@@ -249,15 +254,48 @@ public class TaskActionExecutor {
         return serviceAvailable;
     }
 
-    private void addPostActionParametersToTaskContext(ActionEvent action, Map<String, Object> parameters, TaskContext taskContext) {
+    private void addPostActionParametersToTaskContext(ActionEvent action, Integer actionIndex, TaskContext taskContext, Object object) throws TaskHandlerException {
         Object value;
-        Integer nextId;
         for (ActionParameter postActionParameter : action.getPostActionParameters()) {
-            value = parameters.get(postActionParameter.getKey());
-            nextId = taskContext.getPostActionParameters().size();
 
-            taskContext.addPostActionParameterObject(nextId.toString(), value, true);
+            value = getPostActionParameterValueByKey(object, postActionParameter.getKey());
+            taskContext.addPostActionParameterObject(actionIndex.toString(), postActionParameter.getKey(), value, true);
         }
+    }
+
+    private Object getPostActionParameterValueByKey(Object object, String key) throws TaskHandlerException {
+        Pattern pattern = Pattern.compile("\\.");
+        String keyFields[] = pattern.split(key);
+
+        Object value = object;
+        Object fetchedValue;
+
+        for (String keyField : keyFields) {
+            Field field;
+            try {
+                field = value.getClass().getDeclaredField(keyField);
+
+            } catch (NoSuchFieldException e) {
+                throw new TaskHandlerException(
+                        POST_ACTION_PARAMETER, "task.error.objectNotContainsField", e,
+                        keyField
+                );
+            }
+            field.setAccessible(true);
+
+            try {
+                fetchedValue = field.get(value);
+
+            } catch (IllegalAccessException e) {
+                throw new TaskHandlerException(
+                        POST_ACTION_PARAMETER, "task.error.fieldValueGetError", e,
+                        value.getClass().toString(), field.getClass().toString()
+                );
+            }
+            value = fetchedValue;
+        }
+
+        return value;
     }
 
     void setBundleContext(BundleContext bundleContext) {

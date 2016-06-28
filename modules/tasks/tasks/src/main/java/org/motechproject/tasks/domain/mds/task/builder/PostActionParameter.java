@@ -8,7 +8,6 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
-import org.motechproject.tasks.domain.mds.task.TaskConfigStep;
 
 import java.util.Objects;
 
@@ -20,7 +19,7 @@ import java.util.Objects;
 @CrudEvents(CrudEventType.NONE)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
-public class PostActionParameter extends TaskConfigStep {
+public class PostActionParameter {
 
     @Field
     private Long objectId;

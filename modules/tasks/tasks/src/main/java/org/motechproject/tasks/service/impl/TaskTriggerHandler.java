@@ -195,7 +195,8 @@ public class TaskTriggerHandler implements TriggerHandler {
             LOGGER.info("Executing all actions from task: {}", task.getName());
             if (initializer.evalConfigSteps(dataProviders)) {
                 for (TaskActionInformation action : task.getActions()) {
-                    executor.execute(task, action, taskContext);
+
+                    executor.execute(task, action, task.getActions().indexOf(action), taskContext);
                 }
                 handleSuccess(parameters, task);
             }

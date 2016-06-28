@@ -1091,6 +1091,9 @@
                             postActionParameter.objectId = idx;
                             postActionParameter.channelName = $scope.task.actions[idx].channelName;
                             postActionParameter.actionName = $scope.task.actions[idx].displayName;
+                            postActionParameter.displayName = postActionParameter.prefix.concat(".", postActionParameter.objectId,
+                                                                                                ".", postActionParameter.key
+                                                                                                );
                             fields.push(postActionParameter);
                         });
                     }

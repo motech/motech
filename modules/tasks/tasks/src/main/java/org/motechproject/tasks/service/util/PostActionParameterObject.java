@@ -3,6 +3,7 @@ package org.motechproject.tasks.service.util;
 public class PostActionParameterObject {
 
     private String objectId;
+    private String objectKey;
     private Object objectValue;
     private boolean failIfNotFound;
     private boolean nullWarningPublished;
@@ -13,6 +14,14 @@ public class PostActionParameterObject {
 
     public void setObjectId(String objectId) {
         this.objectId = objectId;
+    }
+
+    public String getObjectKey() {
+        return objectKey;
+    }
+
+    public void setObjectKey(String objectKey) {
+        this.objectKey = objectKey;
     }
 
     public Object getObjectValue() {
@@ -39,8 +48,9 @@ public class PostActionParameterObject {
         this.nullWarningPublished = nullWarningPublished;
     }
 
-    public PostActionParameterObject(String objectId, Object objectValue, boolean failIfNotFound) {
+    public PostActionParameterObject(String objectId, String objectKey, Object objectValue, boolean failIfNotFound) {
         this.objectId = objectId;
+        this.objectKey = objectKey;
         this.objectValue = objectValue;
         this.failIfNotFound = failIfNotFound;
     }
