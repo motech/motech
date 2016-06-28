@@ -65,16 +65,16 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
     private static final String SELECT_FROM = "SELECT * FROM ";
     private static final String BRACKETS = "));";
 
-    private String SUFFIX_HISTORY;
-    private String SUFFIX_TRASH;
-    private String HISTORY_TABLE;
-    private String TRASH_TABLE;
+    private String suffixHistory;
+    private String suffixTrash;
+    private String historyTable;
+    private String trashTable;
 
     private JdbcTemplate jdbc;
     private boolean isPsql;
     private boolean isLowerCase;
 
-    public void migrate(JdbcTemplate jdbcTemplate) throws SQLException {
+    public void migrate(JdbcTemplate jdbcTemplate) throws SQLException { // NO CHECKSTYLE Cyclomatic Complexity is 13 (max allowed is 10).
         jdbc = jdbcTemplate;
         DatabaseMetaData databaseMetaData = jdbcTemplate.getDataSource().getConnection().getMetaData();
         isPsql = StringUtils.equals(databaseMetaData.getDatabaseProductName(),
@@ -82,15 +82,15 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
         isLowerCase = databaseMetaData.storesLowerCaseIdentifiers();
 
         if (isLowerCase) {
-            SUFFIX_HISTORY = "__history_ID";
-            SUFFIX_TRASH = "__trash_ID";
-            HISTORY_TABLE = "__history";
-            TRASH_TABLE = "__trash";
+            suffixHistory = "__history_ID";
+            suffixTrash = "__trash_ID";
+            historyTable = "__history";
+            trashTable = "__trash";
         } else {
-            SUFFIX_HISTORY = "__History_ID";
-            SUFFIX_TRASH = "__Trash_ID";
-            HISTORY_TABLE = "__HISTORY";
-            TRASH_TABLE = "__TRASH";
+            suffixHistory = "__History_ID";
+            suffixTrash = "__Trash_ID";
+            historyTable = "__HISTORY";
+            trashTable = "__TRASH";
         }
 
         List<Map<String, Object>> result = getFieldMetadataWithCollectionType();
@@ -98,8 +98,8 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
         for (Map<String, Object> row : result) {
             Long fieldId = (Long) row.get(FIELD_ID);
 
-            String tableName = getTableNameRelatedToField(fieldId, HISTORY_TABLE);
-            String relatedTableName = getTableNameEntityWithField(fieldId, HISTORY_TABLE);
+            String tableName = getTableNameRelatedToField(fieldId, historyTable);
+            String relatedTableName = getTableNameEntityWithField(fieldId, historyTable);
 
             if (isLowerCase) {
                 tableName = tableName.toLowerCase();
@@ -116,8 +116,8 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
                 }
             }
 
-            tableName = getTableNameRelatedToField(fieldId, TRASH_TABLE);
-            relatedTableName = getTableNameEntityWithField(fieldId, TRASH_TABLE);
+            tableName = getTableNameRelatedToField(fieldId, trashTable);
+            relatedTableName = getTableNameEntityWithField(fieldId, trashTable);
 
             if (isLowerCase) {
                 tableName = tableName.toLowerCase();
@@ -179,7 +179,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
                 break;
             }
 
-            if (pkTableName.endsWith(TRASH_TABLE)) {
+            if (pkTableName.endsWith(trashTable)) {
                 String collectionName;
                 String listIndex = columnEndsWith(table, SUFFIX_IDX);
 
@@ -207,12 +207,12 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
 
         if (isList) {
             sql = CREATE_TABLE + addQuotes(newTableName) + " (" +
-                    addQuotes(relatedClass + SUFFIX_TRASH) + " " + idType() + NOT_NULL +
+                    addQuotes(relatedClass + suffixTrash) + " " + idType() + NOT_NULL +
                     addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + " " + idType() + DEFAULT_NULL +
                     addQuotes(IDX) + " " + idType() + NOT_NULL +
-                    PRIMARY_KEY + addQuotes(relatedClass + SUFFIX_TRASH) + ", " + addQuotes(IDX) + ")," +
-                    addKeyIfMySQL(addQuotes(shortenWhenMoreThan64chars(newTableName) + N49), addQuotes(relatedClass + SUFFIX_TRASH)) +
-                    CONSTRAINT + addQuotes(shortenWhenMoreThan64chars(newTableName) + FK1) + FOREIGN_KEY + addQuotes(relatedClass + SUFFIX_TRASH) + ") " +
+                    PRIMARY_KEY + addQuotes(relatedClass + suffixTrash) + ", " + addQuotes(IDX) + ")," +
+                    addKeyIfMySQL(addQuotes(shortenWhenMoreThan64chars(newTableName) + N49), addQuotes(relatedClass + suffixTrash)) +
+                    CONSTRAINT + addQuotes(shortenWhenMoreThan64chars(newTableName) + FK1) + FOREIGN_KEY + addQuotes(relatedClass + suffixTrash) + ") " +
                     REFERENCES + addQuotes(trashOneToMany.relatedTable) + " (" + addQuotes(ID_STRING) + BRACKETS;
 
             query = INSERT_INTO + addQuotes(newTableName) + SELECT + addQuotes(trashOneToMany.relatedColumn) + ", " +
@@ -220,11 +220,11 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
                     FROM + addQuotes(trashOneToMany.table) + WHERE + addQuotes(trashOneToMany.relatedColumn) + IS_NOT_NULL;
         } else {
             sql = CREATE_TABLE + addQuotes(newTableName) + " (" +
-                    addQuotes(relatedClass + SUFFIX_TRASH) + " " + idType() + NOT_NULL +
+                    addQuotes(relatedClass + suffixTrash) + " " + idType() + NOT_NULL +
                     addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + " " + idType() + DEFAULT_NULL +
-                    PRIMARY_KEY + addQuotes(relatedClass + SUFFIX_TRASH) + ", " + addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + ")," +
-                    addKeyIfMySQL(addQuotes(shortenWhenMoreThan64chars(newTableName) + N49), addQuotes(relatedClass + SUFFIX_TRASH)) +
-                    CONSTRAINT + addQuotes(shortenWhenMoreThan64chars(newTableName) + FK1) + FOREIGN_KEY + addQuotes(relatedClass + SUFFIX_TRASH) + ") " +
+                    PRIMARY_KEY + addQuotes(relatedClass + suffixTrash) + ", " + addQuotes(trashOneToMany.fieldName + SUFFIX_ID) + ")," +
+                    addKeyIfMySQL(addQuotes(shortenWhenMoreThan64chars(newTableName) + N49), addQuotes(relatedClass + suffixTrash)) +
+                    CONSTRAINT + addQuotes(shortenWhenMoreThan64chars(newTableName) + FK1) + FOREIGN_KEY + addQuotes(relatedClass + suffixTrash) + ") " +
                     REFERENCES + addQuotes(trashOneToMany.relatedTable) + " (" + addQuotes(ID_STRING) + BRACKETS;
 
             query = INSERT_INTO + addQuotes(newTableName) + SELECT + addQuotes(trashOneToMany.relatedColumn) + ", " +
@@ -304,12 +304,12 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
 
         if (isList) {
             sql = CREATE_TABLE + addQuotes(newTableName) + " (" +
-                    addQuotes(relatedFieldName + SUFFIX_HISTORY) + " " + idType() + NOT_NULL +
+                    addQuotes(relatedFieldName + suffixHistory) + " " + idType() + NOT_NULL +
                     addQuotes(fieldName + SUFFIX_ID) + " " + idType() + DEFAULT_NULL +
                     addQuotes(IDX) + " " + idType() + NOT_NULL +
-                    PRIMARY_KEY + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ", " + addQuotes(IDX) + ")," +
-                    addKeyIfMySQL(addQuotes(shortenWhenMoreThan64chars(newTableName) + N49), addQuotes(relatedFieldName + SUFFIX_HISTORY)) +
-                    CONSTRAINT + addQuotes(shortenWhenMoreThan64chars(newTableName) + FK1) + FOREIGN_KEY + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ") " +
+                    PRIMARY_KEY + addQuotes(relatedFieldName + suffixHistory) + ", " + addQuotes(IDX) + ")," +
+                    addKeyIfMySQL(addQuotes(shortenWhenMoreThan64chars(newTableName) + N49), addQuotes(relatedFieldName + suffixHistory)) +
+                    CONSTRAINT + addQuotes(shortenWhenMoreThan64chars(newTableName) + FK1) + FOREIGN_KEY + addQuotes(relatedFieldName + suffixHistory) + ") " +
                     REFERENCES + addQuotes(historyFk.relatedTable) + " (" + addQuotes(ID) + BRACKETS;
 
             query = INSERT_INTO + addQuotes(newTableName) + SELECT + addQuotes(historyFk.oldColumn) + ", " +
@@ -317,11 +317,11 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
                     FROM + addQuotes(historyFk.table) + WHERE + addQuotes(historyFk.oldColumn) + IS_NOT_NULL;
         } else {
             sql = CREATE_TABLE + addQuotes(newTableName) + " (" +
-                    addQuotes(relatedFieldName + SUFFIX_HISTORY) + " " + idType() + NOT_NULL +
+                    addQuotes(relatedFieldName + suffixHistory) + " " + idType() + NOT_NULL +
                     addQuotes(fieldName + SUFFIX_ID) + " " + idType() + DEFAULT_NULL +
-                    PRIMARY_KEY + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ", " + addQuotes(fieldName + SUFFIX_ID) + ")," +
-                    addKeyIfMySQL(addQuotes(shortenWhenMoreThan64chars(newTableName) + N49), addQuotes(relatedFieldName + SUFFIX_HISTORY)) +
-                    CONSTRAINT + addQuotes(shortenWhenMoreThan64chars(newTableName) + FK1) + FOREIGN_KEY + addQuotes(relatedFieldName + SUFFIX_HISTORY) + ") " +
+                    PRIMARY_KEY + addQuotes(relatedFieldName + suffixHistory) + ", " + addQuotes(fieldName + SUFFIX_ID) + ")," +
+                    addKeyIfMySQL(addQuotes(shortenWhenMoreThan64chars(newTableName) + N49), addQuotes(relatedFieldName + suffixHistory)) +
+                    CONSTRAINT + addQuotes(shortenWhenMoreThan64chars(newTableName) + FK1) + FOREIGN_KEY + addQuotes(relatedFieldName + suffixHistory) + ") " +
                     REFERENCES + addQuotes(historyFk.relatedTable) + " (" + addQuotes("id") + BRACKETS;
 
             query = INSERT_INTO + addQuotes(newTableName) + SELECT + addQuotes(historyFk.oldColumn) + ", " +
@@ -348,7 +348,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
     private List<String> getHistoryTables() throws SQLException {
         Connection connection = jdbc.getDataSource().getConnection();
 
-        ResultSet tableRs = getTables(connection, "%" + HISTORY_TABLE);
+        ResultSet tableRs = getTables(connection, "%" + historyTable);
         List<String> tables = new ArrayList<>();
 
         while (tableRs.next()) {
@@ -372,7 +372,7 @@ public class V47__MOTECH1269 { // NO CHECKSTYLE Bad format of member name
 
             String fkColumnName = foreignKeys.getString("FKCOLUMN_NAME");
 
-            if (pkTableName.endsWith(HISTORY_TABLE) && fkColumnName.endsWith(suffix)) {
+            if (pkTableName.endsWith(this.historyTable) && fkColumnName.endsWith(suffix)) {
                 String newColumn = fkColumnName.replace(suffix, SUFFIX_ID);
                 boolean newColExists = columnExists(foreignKeys.getMetaData(), newColumn);
 
