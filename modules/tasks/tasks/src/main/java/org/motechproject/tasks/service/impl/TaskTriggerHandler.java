@@ -141,6 +141,7 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         // Look for custom event parser
         Map<String, Object> eventParams = event.getParameters();
+        eventParams.putAll(event.getMetadata());
 
         TasksEventParser parser = null;
         if (eventParams != null) {
@@ -148,8 +149,8 @@ public class TaskTriggerHandler implements TriggerHandler {
         }
 
         // Use custom event parser, if it exists, to modify event
-        String triggerSubject = parser == null ? event.getSubject() : parser.parseEventSubject(event.getSubject(), event.getParameters());
-        Map<String, Object> parameters = parser == null ? event.getParameters() : parser.parseEventParameters(event.getSubject(), event.getParameters());
+        String triggerSubject = parser == null ? event.getSubject() : parser.parseEventSubject(event.getSubject(), eventParams);
+        Map<String, Object> parameters = parser == null ? eventParams : parser.parseEventParameters(event.getSubject(), eventParams);
 
         List<Task> tasks = taskService.findActiveTasksForTriggerSubject(triggerSubject);
 
@@ -164,6 +165,9 @@ public class TaskTriggerHandler implements TriggerHandler {
         LOGGER.info("Handling the motech event with subject: {} for task retry", event.getSubject());
 
         Map<String, Object> eventParams = event.getParameters();
+        Map<String, Object> eventMetadata = event.getMetadata();
+        eventParams.putAll(eventMetadata);
+
         Task task = taskService.getTask((Long) eventParams.get(TASK_ID));
 
         if (task == null || !task.isEnabled()) {
