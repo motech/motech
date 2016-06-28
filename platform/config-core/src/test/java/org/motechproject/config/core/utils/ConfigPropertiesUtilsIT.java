@@ -1,4 +1,4 @@
-package org.motechproject.config.core.filestore;
+package org.motechproject.config.core.utils;
 
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.core.Is;
