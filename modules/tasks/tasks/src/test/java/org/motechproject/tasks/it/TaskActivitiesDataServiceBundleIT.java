@@ -9,6 +9,7 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
 import org.motechproject.tasks.domain.mds.task.TaskActivityType;
+import org.motechproject.tasks.domain.mds.task.TaskExecutionProgress;
 import org.motechproject.tasks.repository.TaskActivitiesDataService;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
@@ -49,7 +50,7 @@ public class TaskActivitiesDataServiceBundleIT extends BasePaxIT {
 
     @Test
     public void shouldFindTaskActivitiesByTaskId() {
-        TaskActivity errorMsg = new TaskActivity(ERROR.getValue(), FIELD, TASK_ID_1, ERROR, 1);
+        TaskActivity errorMsg = new TaskActivity(ERROR.getValue(), FIELD, TASK_ID_1, ERROR, new TaskExecutionProgress(1));
         TaskActivity successMsg = new TaskActivity(SUCCESS.getValue(), TASK_ID_1, SUCCESS);
         TaskActivity warningMsg = new TaskActivity(WARNING.getValue(), TASK_ID_2, WARNING);
 

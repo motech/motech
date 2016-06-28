@@ -17,6 +17,7 @@ import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
 
+import java.util.HashMap;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.extract;
@@ -81,7 +82,7 @@ public class TasksPostExecutionHandlerTest extends TasksTestBase {
 
         task.setFailuresInRow(4);
 
-        postExecutionHandler.handleActionExecuted(createEventParameters(), TASK_ACTIVITY_ID);
+        postExecutionHandler.handleActionExecuted(createEventParameters(), new HashMap<>(), TASK_ACTIVITY_ID);
 
         assertEquals(0, task.getFailuresInRow());
         verify(taskService).save(task);
@@ -92,11 +93,11 @@ public class TasksPostExecutionHandlerTest extends TasksTestBase {
         when(taskActivityService.addSuccessfulExecution(TASK_ACTIVITY_ID)).thenReturn(true);
         when(taskActivityService.getTaskActivityById(TASK_ACTIVITY_ID)).thenReturn(taskActivity);
         when(taskService.getTask(task.getId())).thenReturn(task);
-        postExecutionHandler.handleActionExecuted(createEventParameters(), TASK_ACTIVITY_ID);
+        postExecutionHandler.handleActionExecuted(createEventParameters(), new HashMap<>(), TASK_ACTIVITY_ID);
 
         ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay).sendEventMessage(captorEvent.capture());
-        verify(retryHandler).handleTaskRetries(task, createEventParameters(), true);
+        verify(retryHandler).handleTaskRetries(task, createEventParameters(), true, false);
 
         MotechEvent motechEvent = captorEvent.getValue();
         assertEquals(EventSubjects.createHandlerSuccessSubject(task.getName()), motechEvent.getSubject());
@@ -110,7 +111,7 @@ public class TasksPostExecutionHandlerTest extends TasksTestBase {
         task.setFailuresInRow(taskActivities.size());
 
         assertTrue(task.isEnabled());
-        postExecutionHandler.handleError(createEventParameters(), task, taskHandlerException, TASK_ACTIVITY_ID);
+        postExecutionHandler.handleError(createEventParameters(), new HashMap<>(), task, taskHandlerException, TASK_ACTIVITY_ID);
 
         // The task should get disabled now
         assertFalse(task.isEnabled());

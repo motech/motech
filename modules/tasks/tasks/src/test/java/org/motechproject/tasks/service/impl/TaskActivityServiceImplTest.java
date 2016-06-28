@@ -9,6 +9,7 @@ import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
 import org.motechproject.tasks.domain.mds.task.TaskActivityType;
+import org.motechproject.tasks.domain.mds.task.TaskExecutionProgress;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.repository.TaskActivitiesDataService;
 import org.motechproject.tasks.service.TaskActivityService;
@@ -16,7 +17,6 @@ import org.motechproject.tasks.service.TaskActivityService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,10 +32,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
 import static org.motechproject.tasks.domain.mds.task.TaskActivityType.ERROR;
 import static org.motechproject.tasks.domain.mds.task.TaskActivityType.SUCCESS;
 import static org.motechproject.tasks.domain.mds.task.TaskActivityType.WARNING;
-import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
 
 public class TaskActivityServiceImplTest {
 
@@ -201,11 +201,11 @@ public class TaskActivityServiceImplTest {
     }
 
     private TaskActivity createInProgress() {
-        return new TaskActivity("", new ArrayList<>(), TASK_ID, TaskActivityType.IN_PROGRESS, 1);
+        return new TaskActivity("", new ArrayList<>(), TASK_ID, TaskActivityType.IN_PROGRESS, new TaskExecutionProgress(1));
     }
 
     private TaskActivity createError() {
-        return new TaskActivity(ERROR.getValue(), ERROR_FIELD, TASK_ID, ERROR, 1);
+        return new TaskActivity(ERROR.getValue(), ERROR_FIELD, TASK_ID, ERROR, new TaskExecutionProgress(1));
     }
 
     private TaskActivity createSuccess() {

@@ -15,7 +15,6 @@ import static org.motechproject.tasks.constants.EventDataKeys.JOB_SUBJECT;
 import static org.motechproject.tasks.constants.EventDataKeys.REPEAT_COUNT;
 import static org.motechproject.tasks.constants.EventDataKeys.REPEAT_INTERVAL_TIME;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_ID;
-import static org.motechproject.tasks.constants.EventDataKeys.TASK_RETRY;
 import static org.motechproject.tasks.constants.EventSubjects.SCHEDULE_REPEATING_JOB;
 import static org.motechproject.tasks.constants.EventSubjects.UNSCHEDULE_REPEATING_JOB;
 
@@ -70,12 +69,12 @@ public class TaskRetryHandler {
     private void scheduleTaskRetry(Task task, Map<String, Object> parameters) {
         Map<String, Object> eventParameters = new HashMap<>();
         eventParameters.putAll(parameters);
-        eventParameters.put(TASK_ID, task.getId());
-        eventParameters.put(TASK_RETRY, true);
-        eventParameters.put(REPEAT_COUNT, task.getNumberOfRetries());
-        eventParameters.put(REPEAT_INTERVAL_TIME, task.getRetryIntervalInMilliseconds() / 1000);
-        eventParameters.put(JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put(TASK_ID, task.getId());
+        metadata.put(REPEAT_COUNT, task.getNumberOfRetries());
+        metadata.put(REPEAT_INTERVAL_TIME, task.getRetryIntervalInMilliseconds() / 1000);
+        metadata.put(JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
 
-        eventRelay.sendEventMessage(new MotechEvent(SCHEDULE_REPEATING_JOB, eventParameters));
+        eventRelay.sendEventMessage(new MotechEvent(SCHEDULE_REPEATING_JOB, eventParameters, null, metadata));
     }
 }

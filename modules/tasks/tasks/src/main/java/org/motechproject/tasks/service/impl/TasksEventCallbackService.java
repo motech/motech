@@ -6,7 +6,6 @@ import org.motechproject.tasks.constants.EventDataKeys;
 import org.motechproject.tasks.constants.TaskFailureCause;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.exception.TaskHandlerException;
-import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +29,6 @@ public class TasksEventCallbackService implements EventCallbackService {
 
     @Autowired
     private TaskService taskService;
-
-    @Autowired
-    private TaskActivityService taskActivityService;
 
     @Override
     public boolean failureCallback(MotechEvent event, Throwable throwable) {

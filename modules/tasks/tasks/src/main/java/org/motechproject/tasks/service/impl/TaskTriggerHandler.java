@@ -156,7 +156,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     @Transactional
     public void retryTask(Long activityId) {
         TaskActivity activity = activityService.getTaskActivityById(activityId);
-        handleTask(taskService.getTask(activity.getTask()), activity.getParameters(), false);
+        handleTask(taskService.getTask(activity.getTask()), activity.getParameters(), true);
     }
 
     private void handleTask(Task task, Map<String, Object> parameters, boolean isRetry) {

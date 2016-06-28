@@ -4,7 +4,6 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -92,8 +91,6 @@ import static org.springframework.aop.support.AopUtils.getTargetClass;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
 public class TaskTriggerHandlerTest extends TasksTestBase {
-
-    private static final int TASK_METADATA_PARAMS = 3;
 
     public class TestObjectField {
         private int id = 6789;
@@ -432,7 +429,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
         handler.handle(new MotechEvent("trigger", param));
 
-        verify(postExecutionHandler).handleError(anyMap(), eq(task), any(TaskHandlerException.class), eq(TASK_ACTIVITY_ID));
+        verify(postExecutionHandler).handleError(anyMap(), anyMap(), eq(task), any(TaskHandlerException.class), eq(TASK_ACTIVITY_ID));
     }
 
     @Test
@@ -483,7 +480,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         param.put("patientId", "123");
         handler.handle(new MotechEvent("trigger", param));
 
-        verify(postExecutionHandler, never()).handleError(anyMap(), eq(task), any(TaskHandlerException.class), eq(TASK_ACTIVITY_ID));
+        verify(postExecutionHandler, never()).handleError(anyMap(), anyMap(), eq(task), any(TaskHandlerException.class), eq(TASK_ACTIVITY_ID));
         verify(taskActivityService).addWarning(eq(task), eq("task.warning.notFoundObjectForType"), eq("Patient"));
     }
 
@@ -527,7 +524,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         param.put("patientId", "123");
         handler.handle(new MotechEvent("trigger", param));
 
-        verify(postExecutionHandler).handleError(anyMap(), eq(task), any(TaskHandlerException.class), eq(TASK_ACTIVITY_ID));
+        verify(postExecutionHandler).handleError(anyMap(), anyMap(), eq(task), any(TaskHandlerException.class), eq(TASK_ACTIVITY_ID));
     }
 
     @Test
@@ -570,7 +567,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         param.put("patientId", "123");
         handler.handle(new MotechEvent("trigger", param));
 
-        verify(postExecutionHandler, never()).handleError(anyMap(), eq(task), any(TaskHandlerException.class), eq(TASK_ACTIVITY_ID));
+        verify(postExecutionHandler, never()).handleError(anyMap(), anyMap(), eq(task), any(TaskHandlerException.class), eq(TASK_ACTIVITY_ID));
         verify(taskActivityService).addWarning(eq(task), eq("task.warning.notFoundObjectForType"), eq("Patient"));
     }
 
@@ -604,7 +601,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         assertNotNull(motechEventParameters);
 
         assertEquals(task.getActions().get(0).getValues().get("phone"), motechEventParameters.get("phone").toString());
-        assertEquals(TASK_METADATA_PARAMS + 4, motechEventParameters.size());
+        assertEquals(4, motechEventParameters.size());
         assertNotNull(motechEventParameters.get("date1"));
         assertNotNull(motechEventParameters.get("date2"));
     }
@@ -625,10 +622,10 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         handler.handle(createEvent());
 
         verify(taskService).findActiveTasksForTriggerSubject(TRIGGER_SUBJECT);
-        verify(postExecutionHandler).handleError(eq(createEventParameters()), eq(task), exceptionCaptor.capture(), eq(TASK_ACTIVITY_ID));
+        verify(postExecutionHandler).handleError(eq(createEventParameters()), anyMap(), eq(task), exceptionCaptor.capture(), eq(TASK_ACTIVITY_ID));
         verify(dataProvider, never()).supports(anyString());
         verify(dataProvider, never()).lookup(anyString(), anyString(), anyMap());
-        verify(postExecutionHandler, never()).handleActionExecuted(anyMap(), eq(TASK_ACTIVITY_ID));
+        verify(postExecutionHandler, never()).handleActionExecuted(anyMap(), anyMap(), eq(TASK_ACTIVITY_ID));
 
         assertEquals("task.error.notFoundDataProvider", exceptionCaptor.getValue().getMessage());
     }
@@ -649,7 +646,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         handler.handle(createEvent());
 
         verify(taskService).findActiveTasksForTriggerSubject(TRIGGER_SUBJECT);
-        verify(postExecutionHandler).handleError(eq(createEventParameters()), eq(task), exceptionCaptor.capture(), eq(TASK_ACTIVITY_ID));
+        verify(postExecutionHandler).handleError(eq(createEventParameters()), anyMap(), eq(task), exceptionCaptor.capture(), eq(TASK_ACTIVITY_ID));
 
         verify(dataProvider, never()).supports(anyString());
         verify(dataProvider, never()).lookup(anyString(), anyString(), anyMap());
@@ -681,8 +678,8 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
         verify(taskService).findActiveTasksForTriggerSubject(TRIGGER_SUBJECT);
         verify(dataProvider).lookup("TestObjectField", "id", lookupFields);
-        verify(postExecutionHandler).handleError(eq(createEventParameters()), eq(task), exceptionCaptor.capture(), eq(TASK_ACTIVITY_ID));
-        verify(postExecutionHandler, never()).handleActionExecuted(eq(createEventParameters()), eq(TASK_ACTIVITY_ID));
+        verify(postExecutionHandler).handleError(eq(createEventParameters()), anyMap(), eq(task), exceptionCaptor.capture(), eq(TASK_ACTIVITY_ID));
+        verify(postExecutionHandler, never()).handleActionExecuted(eq(createEventParameters()), anyMap(), eq(TASK_ACTIVITY_ID));
 
         assertEquals("task.error.objectOfTypeNotFound", exceptionCaptor.getValue().getMessage());
     }
@@ -711,8 +708,8 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
         verify(taskService).findActiveTasksForTriggerSubject(TRIGGER_SUBJECT);
         verify(dataProvider).lookup("TestObjectField", "id", lookupFields);
-        verify(postExecutionHandler).handleError(eq(createEventParameters()), eq(task), exceptionCaptor.capture(), eq(TASK_ACTIVITY_ID));
-        verify(postExecutionHandler, never()).handleActionExecuted(anyMap(), eq(TASK_ACTIVITY_ID));
+        verify(postExecutionHandler).handleError(eq(createEventParameters()), anyMap(), eq(task), exceptionCaptor.capture(), eq(TASK_ACTIVITY_ID));
+        verify(postExecutionHandler, never()).handleActionExecuted(anyMap(), anyMap(), eq(TASK_ACTIVITY_ID));
 
         assertEquals("task.error.objectDoesNotContainField", exceptionCaptor.getValue().getMessage());
     }
@@ -839,7 +836,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         Map<String, Object> motechEventParameters = motechEvent.getParameters();
 
         assertNotNull(motechEventParameters);
-        assertEquals(TASK_METADATA_PARAMS + 13, motechEventParameters.size());
+        assertEquals(13, motechEventParameters.size());
         assertEquals(task.getActions().get(0).getValues().get("phone"), motechEventParameters.get("phone").toString());
         assertEquals("Hello 123456789, You have an appointment on 2012-11-20", motechEventParameters.get("message"));
         assertEquals("String manipulation: Event-Name, Date manipulation: 20121120", motechEventParameters.get("manipulations"));
@@ -953,7 +950,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
         verify(taskService).findActiveTasksForTriggerSubject(TRIGGER_SUBJECT);
         verify(taskService).getActionEventFor(task.getActions().get(0));
-        verify(postExecutionHandler).handleActionExecuted(anyMap(), eq(TASK_ACTIVITY_ID));
+        verify(postExecutionHandler).handleActionExecuted(anyMap(), anyMap(), eq(TASK_ACTIVITY_ID));
     }
 
     @Test
@@ -1023,13 +1020,13 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         handler.handle(createEvent());
         ArgumentCaptor<TaskHandlerException> exceptionArgumentCaptor = ArgumentCaptor.forClass(TaskHandlerException.class);
 
-        verify(postExecutionHandler).handleError(eq(createEventParameters()), eq(task), exceptionArgumentCaptor.capture(), eq(TASK_ACTIVITY_ID));
+        verify(postExecutionHandler).handleError(eq(createEventParameters()), anyMap(), eq(task), exceptionArgumentCaptor.capture(), eq(TASK_ACTIVITY_ID));
 
         TaskHandlerException handlerException = exceptionArgumentCaptor.getValue();
         assertEquals("task.error.unrecognizedError", handlerException.getMessage());
         assertEquals(TaskFailureCause.TRIGGER, handlerException.getFailureCause());
 
-        verify(postExecutionHandler, never()).handleActionExecuted(eq(createEventParameters()), eq(TASK_ACTIVITY_ID));
+        verify(postExecutionHandler, never()).handleActionExecuted(eq(createEventParameters()), anyMap(), eq(TASK_ACTIVITY_ID));
     }
 
     @Test
@@ -1061,7 +1058,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
         assertEquals(ACTION_SUBJECT, motechEventAction1.getSubject());
         assertNotNull(motechEventAction1.getParameters());
-        assertEquals(2 + TASK_METADATA_PARAMS, motechEventAction1.getParameters().size());
+        assertEquals(2, motechEventAction1.getParameters().size());
         assertEquals(task.getActions().get(0).getValues().get("phone"), motechEventAction1.getParameters().get("phone").toString());
         assertEquals("Hello 123456789, You have an appointment on 2012-11-20", motechEventAction1.getParameters().get("message"));
 
@@ -1069,7 +1066,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
         assertEquals(ACTION_SUBJECT, motechEventAction2.getSubject());
         assertNotNull(motechEventAction2.getParameters());
-        assertEquals(2 + TASK_METADATA_PARAMS, motechEventAction2.getParameters().size());
+        assertEquals(2, motechEventAction2.getParameters().size());
         assertEquals(task.getActions().get(0).getValues().get("phone"), motechEventAction2.getParameters().get("phone").toString());
         assertEquals("Hello, world! I'm second action", motechEventAction2.getParameters().get("message"));
     }
@@ -1188,8 +1185,8 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
     private void verifyErrorHandling(String exceptionKey) throws ActionNotFoundException {
         verify(taskService).findActiveTasksForTriggerSubject(TRIGGER_SUBJECT);
         verify(taskService).getActionEventFor(task.getActions().get(0));
-        verify(postExecutionHandler).handleError(eq(createEventParameters()), eq(task), exceptionCaptor.capture(), eq(TASK_ACTIVITY_ID));
-        verify(postExecutionHandler, never()).handleActionExecuted(eq(createEventParameters()), eq(TASK_ACTIVITY_ID));
+        verify(postExecutionHandler).handleError(eq(createEventParameters()), anyMap(), eq(task), exceptionCaptor.capture(), eq(TASK_ACTIVITY_ID));
+        verify(postExecutionHandler, never()).handleActionExecuted(eq(createEventParameters()), anyMap(), eq(TASK_ACTIVITY_ID));
 
         assertEquals(exceptionKey, exceptionCaptor.getValue().getMessage());
     }
