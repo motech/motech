@@ -4164,7 +4164,11 @@
                 $scope.addedEntity = undefined;
                 $scope.selectedInstance = undefined;
                 $scope.loadedFields = undefined;
-                $state.reload();
+                if ($state.current.parent === "mds") {
+                    $state.reload();
+                } else {
+                    $state.transitionTo($state.current);
+                }
             }
             $scope.cancelAddRelatedForm();
             $scope.cancelEditRelatedForm();
@@ -4648,7 +4652,7 @@
         /**
         * Unselects entity to allow user to return to entities list by modules
         */
-        $scope.unselectEntity = function () {
+        $rootScope.unselectEntity = function () {
             $scope.entityAdvanced = undefined;
             $scope.dataRetrievalError = false;
             innerLayout({
@@ -5204,10 +5208,6 @@
         };
 
         $scope.checkForModuleConfig();
-
-        $rootScope.unselectEntity = function() {
-            $scope.unselectEntity();
-        };
 
         $scope.relatedId = function (obj) {
             if (obj.id) {
