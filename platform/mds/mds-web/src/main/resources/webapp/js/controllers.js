@@ -3279,8 +3279,6 @@
         $scope.setDataRetrievalError = function (value, responseText) {
             if(responseText) {
                 $scope.retrievalErrorText = $scope.msg(responseText.replace('key:', '').trim());
-            } else {
-               $scope.retrievalErrorText = $scope.msg('mds.error.lookupExecError');
             }
 
             $scope.$apply(function () {
