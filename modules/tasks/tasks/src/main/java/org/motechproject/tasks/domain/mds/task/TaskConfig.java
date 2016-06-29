@@ -13,7 +13,6 @@ import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
-import org.motechproject.tasks.domain.mds.task.builder.PostActionParameter;
 import org.motechproject.tasks.json.TaskConfigDeserializer;
 
 import java.io.Serializable;

@@ -235,8 +235,10 @@ public class TaskActionExecutor {
 
                 try {
                     Object object = method.invoke(service, methodHandler.getObjects());
-                    addPostActionParametersToTaskContext(action, actionIndex, taskContext, object);
 
+                    if (object != null) {
+                        addPostActionParametersToTaskContext(action, actionIndex, taskContext, object);
+                    }
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     throw new TaskHandlerException(
                             ACTION, "task.error.serviceMethodInvokeError", e,

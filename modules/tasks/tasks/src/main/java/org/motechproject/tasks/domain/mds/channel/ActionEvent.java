@@ -59,6 +59,15 @@ public class ActionEvent extends TaskEvent {
 
     /**
      * Constructor.
+     */
+    public ActionEvent(String name, String description, String displayName, String subject, String serviceInterface, String serviceMethod,
+                       MethodCallManner serviceMethodCallManner, SortedSet<ActionParameter> actionParameters) {
+
+        this(name, description, displayName, subject, serviceInterface, serviceMethod, serviceMethodCallManner, actionParameters, null);
+    }
+
+    /**
+     * Constructor.
      *
      * @param name  the action name
      * @param description  the action description
@@ -68,6 +77,7 @@ public class ActionEvent extends TaskEvent {
      * @param serviceMethod  the event service method
      * @param serviceMethodCallManner  the event service call manner, for supported values see {@see MethodCallManner}
      * @param actionParameters  the action parameters
+     * @param postActionParameters  the post action parameters
      */
     public ActionEvent(String name, String description, String displayName, String subject, String serviceInterface, String serviceMethod,
                        MethodCallManner serviceMethodCallManner, SortedSet<ActionParameter> actionParameters,

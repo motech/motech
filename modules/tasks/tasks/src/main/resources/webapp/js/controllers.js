@@ -1083,10 +1083,8 @@
 
             if ($scope.selectedAction && Array.isArray($scope.selectedAction)) {
                 $scope.selectedAction.forEach(function (action, idx) {
-                    //action.postActionParameters = action.actionParameters; // To demonstrate how the 'postActionParameters' works, uncomment this line and after that remove this line
                     if (action.postActionParameters && Array.isArray(action.postActionParameters)) {
                         action.postActionParameters.forEach(function (postActionParameter) {
-                            // It may be necessary a slight change to match with the backend
                             postActionParameter.prefix = ManageTaskUtils.POST_ACTION_PREFIX;
                             postActionParameter.objectId = idx;
                             postActionParameter.channelName = $scope.task.actions[idx].channelName;

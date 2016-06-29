@@ -1,4 +1,4 @@
-package org.motechproject.tasks.domain.mds.task.builder;
+package org.motechproject.tasks.domain.mds.task;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.motechproject.mds.annotations.Access;

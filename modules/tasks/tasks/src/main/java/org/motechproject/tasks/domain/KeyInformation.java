@@ -54,18 +54,11 @@ public final class KeyInformation {
     private List<String> manipulations;
 
     private KeyInformation(String originalKey, String prefix, String key, List<String> manipulations) {
-        this.originalKey = originalKey;
-        this.prefix = prefix;
-        this.key = key;
-        this.manipulations = manipulations;
+        this(originalKey, prefix, null, null, null, key, manipulations);
     }
 
     private KeyInformation(String originalKey, String prefix, Long objectId, String key, List<String> manipulations) {
-        this.originalKey = originalKey;
-        this.prefix = prefix;
-        this.objectId = objectId;
-        this.key = key;
-        this.manipulations = manipulations;
+        this(originalKey, prefix, null, null, objectId, key, manipulations);
     }
 
     private KeyInformation(String originalKey, String prefix, String dataProviderName, String objectType,

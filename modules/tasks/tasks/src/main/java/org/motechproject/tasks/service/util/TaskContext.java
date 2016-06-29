@@ -1,6 +1,7 @@
 package org.motechproject.tasks.service.util;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.codec.binary.StringUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.constants.TaskFailureCause;
@@ -178,8 +179,9 @@ public class TaskContext {
 
     private PostActionParameterObject getPostActionParameter(String objectId, String objectKey) {
         for (PostActionParameterObject postActionParameterObject : postActionParameters) {
-            if (postActionParameterObject.getObjectId().equals(objectId) &&
-                    postActionParameterObject.getObjectKey().equals(objectKey)) {
+
+            if (StringUtils.equals(postActionParameterObject.getObjectId(), objectId) &&
+                    StringUtils.equals(postActionParameterObject.getObjectKey(), objectKey)) {
                 return postActionParameterObject;
             }
         }

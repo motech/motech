@@ -37,6 +37,16 @@ public class ActionEventRequest {
 
     /**
      * Constructor.
+     */
+    public ActionEventRequest(String name, String displayName, String subject, String description,
+                              String serviceInterface, String serviceMethod, String serviceMethodCallManner,
+                              SortedSet<ActionParameterRequest> actionParameters) {
+
+         this(name, displayName, subject, description, serviceInterface, serviceMethod, serviceMethodCallManner, actionParameters, null);
+    }
+
+    /**
+     * Constructor.
      *
      * @param name  the event name
      * @param displayName  the event display name
@@ -231,7 +241,7 @@ public class ActionEventRequest {
         return "ActionEventRequest{" +
                 "name='" + name + '\'' +
                 ", actionParameters=" + actionParameters +
-                ",postActionParameters=" + postActionParameters+
+                ", postActionParameters=" + postActionParameters+
                 ", serviceInterface='" + serviceInterface + '\'' +
                 ", serviceMethod='" + serviceMethod + '\'' +
                 ", serviceMethodCallManner='" + serviceMethodCallManner + '\'' +
