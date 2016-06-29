@@ -1490,12 +1490,12 @@ public class TaskTriggerHandlerTest {
         MotechEvent scheduleJobEvent = captorEvent.getAllValues().get(1);
         assertEquals(SCHEDULE_REPEATING_JOB, scheduleJobEvent.getSubject());
 
-        Map<String, Object> parameters = scheduleJobEvent.getParameters();
-        assertEquals(5, parameters.get(EventDataKeys.REPEAT_COUNT));
+        Map<String, Object> metadata = scheduleJobEvent.getMetadata();
+        assertEquals(5, metadata.get(EventDataKeys.REPEAT_COUNT));
         // We send repeat interval time in seconds
-        assertEquals(5, parameters.get(EventDataKeys.REPEAT_INTERVAL_TIME));
-        assertEquals(task.getId(), parameters.get(EventDataKeys.TASK_ID));
-        assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), parameters.get(EventDataKeys.JOB_SUBJECT));
+        assertEquals(5, metadata.get(EventDataKeys.REPEAT_INTERVAL_TIME));
+        assertEquals(task.getId(), metadata.get(EventDataKeys.TASK_ID));
+        assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), metadata.get(EventDataKeys.JOB_SUBJECT));
     }
 
     @Test
@@ -1513,7 +1513,7 @@ public class TaskTriggerHandlerTest {
         when(taskService.getActionEventFor(task.getActions().get(0))).thenThrow(new RuntimeException());
 
         MotechEvent event = createEvent();
-        event.getParameters().put(EventDataKeys.TASK_ID, 5L);
+        event.getMetadata().put(EventDataKeys.TASK_ID, 5L);
 
         handler.setBundleContext(bundleContext);
         handler.handleRetry(event);
@@ -1575,8 +1575,8 @@ public class TaskTriggerHandlerTest {
         MotechEvent scheduleJobEvent = captorEvent.getAllValues().get(2);
         assertEquals(UNSCHEDULE_REPEATING_JOB, scheduleJobEvent.getSubject());
 
-        Map<String, Object> parameters = scheduleJobEvent.getParameters();
-        assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), parameters.get(EventDataKeys.JOB_SUBJECT));
+        Map<String, Object> metadata = scheduleJobEvent.getMetadata();
+        assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), metadata.get(EventDataKeys.JOB_SUBJECT));
     }
 
     @Test
@@ -1605,8 +1605,8 @@ public class TaskTriggerHandlerTest {
         MotechEvent scheduleJobEvent = captorEvent.getValue();
         assertEquals(UNSCHEDULE_REPEATING_JOB, scheduleJobEvent.getSubject());
 
-        Map<String, Object> parameters = scheduleJobEvent.getParameters();
-        assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), parameters.get(EventDataKeys.JOB_SUBJECT));
+        Map<String, Object> metadata = scheduleJobEvent.getMetadata();
+        assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), metadata.get(EventDataKeys.JOB_SUBJECT));
     }
 
     @Test
@@ -1624,8 +1624,8 @@ public class TaskTriggerHandlerTest {
         when(taskService.getTask(5L)).thenReturn(task);
 
         MotechEvent event = createEvent();
-        event.getParameters().put(EventDataKeys.TASK_ID, 5L);
-        event.getParameters().put(EventDataKeys.JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
+        event.getMetadata().put(EventDataKeys.TASK_ID, 5L);
+        event.getMetadata().put(EventDataKeys.JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
 
         handler.setBundleContext(bundleContext);
         handler.handleRetry(event);
@@ -1637,8 +1637,8 @@ public class TaskTriggerHandlerTest {
         MotechEvent scheduleJobEvent = captorEvent.getValue();
         assertEquals(UNSCHEDULE_REPEATING_JOB, scheduleJobEvent.getSubject());
 
-        Map<String, Object> parameters = scheduleJobEvent.getParameters();
-        assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), parameters.get(EventDataKeys.JOB_SUBJECT));
+        Map<String, Object> metadata = scheduleJobEvent.getMetadata();
+        assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), metadata.get(EventDataKeys.JOB_SUBJECT));
     }
 
     private void initTask() throws Exception {

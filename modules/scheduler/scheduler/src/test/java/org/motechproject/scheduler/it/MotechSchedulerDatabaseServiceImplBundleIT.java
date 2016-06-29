@@ -114,6 +114,79 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
     }
 
     @Test
+    public void shouldCheckIFJobIsUIDefined() {
+        try {
+            fakeNow(newDateTime(CURRENT_YEAR + 6, 7, 15, 10, 0, 0));
+
+            Map<String, Object> params = new HashMap<>();
+            params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
+
+            schedulerService.scheduleRepeatingJob(
+                    new RepeatingSchedulableJob(
+                            new MotechEvent("test_event_2", params),
+                            null,
+                            DateTimeConstants.SECONDS_PER_DAY,
+                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0),
+                            newDateTime(CURRENT_YEAR + 6, 7, 18, 12, 0, 0),
+                            false,
+                            false,
+                            true
+                    )
+            );
+
+            schedulerService.scheduleRepeatingPeriodJob(
+                    new RepeatingPeriodSchedulableJob(
+                            new MotechEvent("test_event_2", params),
+                            newDateTime(CURRENT_YEAR + 6, 7, 15, 12, 0, 0),
+                            newDateTime(CURRENT_YEAR + 6, 7, 18, 12, 0, 0),
+                            new Period(4, 0, 0, 0),
+                            false,
+                            false,
+                            false
+                    )
+            );
+
+            List<JobBasicInfo> expectedJobBasicInfos = new ArrayList<>();
+            expectedJobBasicInfos.add(
+                    new JobBasicInfo(
+                            JobBasicInfo.ACTIVITY_NOTSTARTED, JobBasicInfo.STATUS_OK,
+                            "test_event_2-job_id-repeat",
+                            DEFAULT_GROUP,
+                            format("%s-07-15 12:00:00", CURRENT_YEAR +6),
+                            format("%s-07-15 12:00:00", CURRENT_YEAR +6),
+                            format("%s-07-18 12:00:00", CURRENT_YEAR +6),
+                            JobBasicInfo.JOBTYPE_REPEATING, "", true
+                    )
+            );
+            expectedJobBasicInfos.add(
+                    new JobBasicInfo(
+                            JobBasicInfo.ACTIVITY_NOTSTARTED, JobBasicInfo.STATUS_OK,
+                            "test_event_2-job_id-period",
+                            DEFAULT_GROUP,
+                            format("%s-07-15 12:00:00", CURRENT_YEAR +6),
+                            format("%s-07-15 12:00:00", CURRENT_YEAR +6),
+                            format("%s-07-18 12:00:00", CURRENT_YEAR +6),
+                            JobBasicInfo.JOBTYPE_PERIOD, "", false
+                    )
+            );
+
+            int testJobsCount = 0;
+            for (JobBasicInfo job : expectedJobBasicInfos) {
+                for (JobBasicInfo expectedJob : expectedJobBasicInfos) {
+                    if(job.getName().equals(expectedJob.getName())) {
+                        testJobsCount+=1;
+                        assertEquals(expectedJob.isUiDefined(), job.isUiDefined());
+                    }
+                }
+            }
+            assertEquals(2, testJobsCount);
+
+        } finally {
+            stopFakingTime();
+        }
+    }
+
+    @Test
     public void shouldGetScheduledJobsBasicInfo() throws SchedulerException, SQLException {
         try {
             fakeNow(newDateTime(CURRENT_YEAR + 6, 7, 15, 10, 0, 0));
