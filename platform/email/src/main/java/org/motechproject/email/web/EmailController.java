@@ -223,7 +223,7 @@ public class EmailController {
             criteria = criteria.withDeliveryStatuses(filter.getDeliveryStatusFromSettings());
         }
 
-        Order sortOrder = new Order(filter.getSidx(), filter.getSord());
+        Order sortOrder = new Order(filter.getSortColumn(), filter.getSortDirection());
         QueryParams queryParams = new QueryParams(filter.getPage(), filter.getRows(), sortOrder);
         criteria.withQueryParams(queryParams);
 
@@ -238,7 +238,7 @@ public class EmailController {
     private List<String> getAllFromAddressContaining(String partial) {
         List<String> available = new ArrayList<>();
 
-        List <EmailRecord> records = auditService.findAllEmailRecords();
+        List<EmailRecord> records = auditService.findAllEmailRecords();
         for (EmailRecord record : records) {
             if (record.getFromAddress().contains(partial) && (!available.contains(record.getFromAddress()))) {
                 available.add(record.getFromAddress());
@@ -251,7 +251,7 @@ public class EmailController {
     private List<String> getAllToAddressContaining(String partial) {
         List<String> available = new ArrayList<>();
 
-        List <EmailRecord> records = auditService.findAllEmailRecords();
+        List<EmailRecord> records = auditService.findAllEmailRecords();
         for (EmailRecord record : records) {
             if (record.getToAddress().contains(partial) && (!available.contains(record.getToAddress()))) {
                 available.add(record.getToAddress());

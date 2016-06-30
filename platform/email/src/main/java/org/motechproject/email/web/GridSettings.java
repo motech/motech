@@ -17,9 +17,9 @@ public class GridSettings {
     private String timeFrom;
     private String timeTo;
     // sort column
-    private String sidx;
+    private String sortColumn;
     // sort direction
-    private String sord;
+    private String sortDirection;
     private Integer rows;
     private Integer page;
 
@@ -39,20 +39,20 @@ public class GridSettings {
         this.page = page;
     }
 
-    public String getSord() {
-        return sord;
+    public String getSortDirection() {
+        return sortDirection;
     }
 
-    public void setSord(String sord) {
-        this.sord = sord;
+    public void setSortDirection(String sortDirection) {
+        this.sortDirection = sortDirection;
     }
 
-    public String getSidx() {
-        return sidx;
+    public String getSortColumn() {
+        return sortColumn;
     }
 
-    public void setSidx(String sidx) {
-        this.sidx = sidx;
+    public void setSortColumn(String sortColumn) {
+        this.sortColumn = sortColumn;
     }
 
     public String getSubject() {
