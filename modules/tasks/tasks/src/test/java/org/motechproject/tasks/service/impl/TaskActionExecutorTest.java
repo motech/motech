@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.tasks.domain.ObjectTest;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.ActionParameter;
 import org.motechproject.tasks.domain.mds.channel.builder.ActionEventBuilder;
@@ -328,16 +329,7 @@ public class TaskActionExecutorTest {
 
         public Object serviceMethod(String string) {
             invoked = true;
-            return new TestObject("testObject");
-        }
-    }
-
-    private class TestObject {
-
-        private String testKey;
-
-        public TestObject (String testKey) {
-            this.testKey = testKey;
+            return new ObjectTest("testObject");
         }
     }
 }
