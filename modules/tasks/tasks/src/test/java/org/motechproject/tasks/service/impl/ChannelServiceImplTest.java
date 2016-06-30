@@ -130,7 +130,7 @@ public class ChannelServiceImplTest {
         List<ActionEventRequest> actionEventRequests = asList(new TestActionEventRequestBuilder().setDisplayName("actionName")
                 .setSubject("subject.foo").setDescription("action description").setServiceInterface("some.interface")
                 .setServiceMethod("method").setActionParameters(new TreeSet<ActionParameterRequest>())
-                .createActionEventRequest());
+                .setPostActionParameters(new TreeSet<ActionParameterRequest>()).createActionEventRequest());
         List<TriggerEventRequest> triggerEventsRequest = asList(new TriggerEventRequest("displayName", "subject.foo", "description", asList(new EventParameterRequest("displayName", "eventKey"))));
         ChannelRequest channelRequest = new ChannelRequest(BUNDLE_SYMBOLIC_NAME, BUNDLE_SYMBOLIC_NAME, VERSION, "", triggerEventsRequest, actionEventRequests);
 
@@ -157,7 +157,7 @@ public class ChannelServiceImplTest {
         assertEquals(1, channelToBeCreated.getActionTaskEvents().size());
         ActionEvent expectedAction = new ActionEventBuilder().setDisplayName("actionName").setSubject("subject.foo")
                 .setDescription("action description").setServiceInterface("some.interface").setServiceMethod("method")
-                .setActionParameters(new TreeSet<>()).build();
+                .setActionParameters(new TreeSet<>()).setPostActionParameters(new TreeSet<>()).build();
         ActionEvent actualAction = channelToBeCreated.getActionTaskEvents().get(0);
         assertEquals(expectedAction, actualAction);
     }

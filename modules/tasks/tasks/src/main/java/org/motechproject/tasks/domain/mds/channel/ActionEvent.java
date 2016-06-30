@@ -38,6 +38,10 @@ public class ActionEvent extends TaskEvent {
     private SortedSet<ActionParameter> actionParameters;
 
     @Field
+    @Cascade(delete = true)
+    private SortedSet<ActionParameter> postActionParameters;
+
+    @Field
     private String serviceInterface;
 
     @Field
@@ -50,7 +54,16 @@ public class ActionEvent extends TaskEvent {
      * Constructor.
      */
     public ActionEvent() {
-        this(null, null, null, null, null, null, MethodCallManner.NAMED_PARAMETERS, null);
+        this(null, null, null, null, null, null, MethodCallManner.NAMED_PARAMETERS, null, null);
+    }
+
+    /**
+     * Constructor.
+     */
+    public ActionEvent(String name, String description, String displayName, String subject, String serviceInterface, String serviceMethod,
+                       MethodCallManner serviceMethodCallManner, SortedSet<ActionParameter> actionParameters) {
+
+        this(name, description, displayName, subject, serviceInterface, serviceMethod, serviceMethodCallManner, actionParameters, null);
     }
 
     /**
@@ -64,20 +77,24 @@ public class ActionEvent extends TaskEvent {
      * @param serviceMethod  the event service method
      * @param serviceMethodCallManner  the event service call manner, for supported values see {@see MethodCallManner}
      * @param actionParameters  the action parameters
+     * @param postActionParameters  the post action parameters
      */
     public ActionEvent(String name, String description, String displayName, String subject, String serviceInterface, String serviceMethod,
-                       MethodCallManner serviceMethodCallManner, SortedSet<ActionParameter> actionParameters) {
+                       MethodCallManner serviceMethodCallManner, SortedSet<ActionParameter> actionParameters,
+                       SortedSet<ActionParameter> postActionParameters) {
         super(name, description, displayName, subject);
         this.serviceInterface = serviceInterface;
         this.serviceMethod = serviceMethod;
         this.serviceMethodCallManner = serviceMethodCallManner;
         this.actionParameters = actionParameters == null ? new TreeSet<>() : actionParameters;
+        this.postActionParameters = postActionParameters == null ? new TreeSet<>() : postActionParameters;
     }
 
     public ActionEvent(ActionEvent actionEvent) {
         this(actionEvent.getName(), actionEvent.getDescription(), actionEvent.getDisplayName(),
                 actionEvent.getSubject(), actionEvent.getServiceInterface(), actionEvent.getServiceMethod(),
-                actionEvent.getServiceMethodCallManner(), copyActionParameters(actionEvent.getActionParameters()));
+                actionEvent.getServiceMethodCallManner(), copyActionParameters(actionEvent.getActionParameters()),
+                copyActionParameters(actionEvent.getPostActionParameters()));
     }
 
     @JsonIgnore
@@ -138,6 +155,18 @@ public class ActionEvent extends TaskEvent {
 
         if (actionParameters != null) {
             this.actionParameters.addAll(actionParameters);
+        }
+    }
+
+    public SortedSet<ActionParameter> getPostActionParameters() {
+        return postActionParameters;
+    }
+
+    public void setPostActionParameters(SortedSet<ActionParameter> postActionParameters) {
+        this.postActionParameters.clear();
+
+        if (postActionParameters != null) {
+            this.postActionParameters.addAll(postActionParameters);
         }
     }
 
