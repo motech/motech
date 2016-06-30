@@ -49,7 +49,7 @@ public class MotechEvent implements Serializable {
      * @throws IllegalArgumentException if the subject is null or contains <code>'*', '..'</code>
      */
     public MotechEvent(String subject, Map<String, Object> parameters) {
-        this(subject, parameters, null);
+        this(subject, parameters, null, null);
     }
 
     /**
@@ -61,10 +61,24 @@ public class MotechEvent implements Serializable {
      * @throws IllegalArgumentException if the subject is null or contains <code>'*', '..'</code>
      */
     public MotechEvent(String subject, Map<String, Object> parameters, String callbackName) {
+        this(subject, parameters, callbackName, null);
+    }
+
+    /**
+     * Constructs a MotechEvent with the given subject, parameters and the callback name.
+     *
+     * @param subject the subject of the event
+     * @param parameters the map of additional parameters
+     * @param callbackName the name of the callback
+     * @param metadata the map of event metadata
+     * @throws IllegalArgumentException if the subject is null or contains <code>'*', '..'</code>
+     */
+    public MotechEvent(String subject, Map<String, Object> parameters, String callbackName, Map<String, Object> metadata) {
         validateSubject(subject);
         this.subject = subject;
         this.parameters = parameters;
         this.callbackName = callbackName;
+        this.metadata = metadata;
     }
 
     /**

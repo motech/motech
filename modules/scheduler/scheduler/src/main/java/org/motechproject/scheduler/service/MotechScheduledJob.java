@@ -49,8 +49,8 @@ public class MotechScheduledJob implements Job {
 
             MotechEvent motechEvent = new MotechEvent(eventType, params);
             motechEvent.getMetadata().putAll((Map<String, Object>) params.get(SchedulerConstants.EVENT_METADATA));
-            motechEvent.getMetadata().put(MotechSchedulerService.JOB_ID_KEY, jobId);
-            motechEvent.getMetadata().put(TasksEventParser.CUSTOM_PARSER_EVENT_KEY, SchedulerConstants.PARSER_NAME);
+            motechEvent.getParameters().put(MotechSchedulerService.JOB_ID_KEY, jobId);
+            motechEvent.getParameters().put(TasksEventParser.CUSTOM_PARSER_EVENT_KEY, SchedulerConstants.PARSER_NAME);
 
             LOGGER.info("Sending Motech Event Message: " + motechEvent);
 

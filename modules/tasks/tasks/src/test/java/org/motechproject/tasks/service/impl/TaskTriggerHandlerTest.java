@@ -1155,7 +1155,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         handler.setBundleContext(bundleContext);
         handler.handleRetry(event);
 
-        verify(retryHandler).unscheduleTaskRetry((String) event.getParameters().get(EventDataKeys.JOB_SUBJECT));
+        verify(retryHandler).unscheduleTaskRetry((String) event.getMetadata().get(EventDataKeys.JOB_SUBJECT));
     }
 
     @Test
@@ -1173,13 +1173,13 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         when(taskService.getTask(5L)).thenReturn(task);
 
         MotechEvent event = createEvent();
-        event.getParameters().put(EventDataKeys.TASK_ID, 5L);
-        event.getParameters().put(EventDataKeys.JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
+        event.getMetadata().put(EventDataKeys.TASK_ID, 5L);
+        event.getMetadata().put(EventDataKeys.JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
 
         handler.setBundleContext(bundleContext);
         handler.handleRetry(event);
 
-        verify(retryHandler).unscheduleTaskRetry((String) event.getParameters().get(EventDataKeys.JOB_SUBJECT));
+        verify(retryHandler).unscheduleTaskRetry((String) event.getMetadata().get(EventDataKeys.JOB_SUBJECT));
     }
 
     private void verifyErrorHandling(String exceptionKey) throws ActionNotFoundException {
