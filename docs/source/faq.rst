@@ -5,7 +5,7 @@ Frequently Asked Questions
 This page contains frequently asked questions about MOTECH with short answers to them.
 
 .. contents::
-:depth: 2
+    :depth: 2
 
 Can MOTECH run on Windows?
 --------------------------
@@ -197,11 +197,11 @@ or
 
     sudo service activemq restart
 
-
 If everything was made properly, you should get connection with ``service:jmx:rmi:///jndi/rmi://<host_name>:1099/jmxrmi``
 (where ``<host_name>`` is the name of the broker host from ``Admin/Settings/JMX/Broker Host``) using:
 
 .. code-block:: bash
+
     jconsole
 
 If the issue still appears, restart MOTECH.
