@@ -136,7 +136,7 @@ public class TaskRetryHandlerTest extends TasksTestBase {
         MotechEvent scheduleJobEvent = captorEvent.getValue();
         assertEquals(UNSCHEDULE_REPEATING_JOB, scheduleJobEvent.getSubject());
 
-        Map<String, Object> parameters = scheduleJobEvent.getParameters();
-        assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), parameters.get(EventDataKeys.JOB_SUBJECT));
+        Map<String, Object> metadata = scheduleJobEvent.getMetadata();
+        assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), metadata.get(EventDataKeys.JOB_SUBJECT));
     }
 }

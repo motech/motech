@@ -60,10 +60,10 @@ public class TaskRetryHandler {
     public void unscheduleTaskRetry(String jobSubject) {
         LOGGER.info("Unscheduling the task retries.");
 
-        Map<String, Object> eventParameters = new HashMap<>();
-        eventParameters.put(JOB_SUBJECT, jobSubject);
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put(JOB_SUBJECT, jobSubject);
 
-        eventRelay.sendEventMessage(new MotechEvent(UNSCHEDULE_REPEATING_JOB, eventParameters));
+        eventRelay.sendEventMessage(new MotechEvent(UNSCHEDULE_REPEATING_JOB, new HashMap<>(), null, metadata));
     }
 
     private void scheduleTaskRetry(Task task, Map<String, Object> parameters) {

@@ -145,12 +145,11 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         Map<String, Object> eventParams = event.getParameters();
         Map<String, Object> eventMetadata = event.getMetadata();
-        eventParams.putAll(eventMetadata);
 
-        Task task = taskService.getTask((Long) eventParams.get(TASK_ID));
+        Task task = taskService.getTask((Long) eventMetadata.get(TASK_ID));
 
         if (task == null || !task.isEnabled()) {
-            taskRetryHandler.unscheduleTaskRetry((String) eventParams.get(JOB_SUBJECT));
+            taskRetryHandler.unscheduleTaskRetry((String) eventMetadata.get(JOB_SUBJECT));
         } else {
             handleTask(task, eventParams, true);
         }
