@@ -314,7 +314,7 @@ public class InstanceServiceImpl implements InstanceService {
             LookupExecutor lookupExecutor = new LookupExecutor(service, lookup, fieldMap);
             return lookupExecutor.executeCount(lookupMap);
         } catch (RuntimeException e) {
-            throw new LookupExecutionException(e, "mds.error.lookupExecError");
+            throw new LookupExecutionException(e, LOOKUP_EXCEPTION_MESSAGE_KEY);
         }
     }
 
