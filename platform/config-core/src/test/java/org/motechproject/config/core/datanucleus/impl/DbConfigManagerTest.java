@@ -13,7 +13,7 @@ import org.motechproject.config.core.datanucleus.DbConfigManager;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.environment.Environment;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
-import org.motechproject.config.core.filestore.ConfigPropertiesUtils;
+import org.motechproject.config.core.utils.ConfigPropertiesUtils;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
