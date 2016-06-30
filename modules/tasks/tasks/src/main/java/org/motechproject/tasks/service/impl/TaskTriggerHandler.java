@@ -13,7 +13,6 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.config.SettingsFacade;
 import org.motechproject.tasks.domain.mds.task.Task;
-import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.service.TaskActivityService;
@@ -198,8 +197,8 @@ public class TaskTriggerHandler implements TriggerHandler {
         try {
             LOGGER.info("Executing all actions from task: {}", task.getName());
             if (initializer.evalConfigSteps(dataProviders)) {
-                for (TaskActionInformation action : task.getActions()) {
-                    executor.execute(task, action, taskContext);
+                for (int i = 0; i < task.getActions().size(); i++) {
+                    executor.execute(task, task.getActions().get(i), i, taskContext);
                 }
                 handleSuccess(parameters, task);
             }
