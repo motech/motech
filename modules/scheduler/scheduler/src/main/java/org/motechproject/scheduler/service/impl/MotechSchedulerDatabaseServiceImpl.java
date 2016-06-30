@@ -44,6 +44,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -170,9 +171,12 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
                         EventInfo eventInfo = new EventInfo();
                         String subject;
 
-                        eventInfo.setParameters(
-                           scheduler.getJobDetail(jobKey).getJobDataMap().getWrappedMap()
-                        );
+                        Map<String, Object> parameters = scheduler.getJobDetail(jobKey).getJobDataMap().getWrappedMap();
+                        Map<String, Object> metadata = (HashMap) parameters.get(SchedulerConstants.EVENT_METADATA);
+                        parameters.remove(SchedulerConstants.EVENT_METADATA);
+                        parameters.putAll(metadata);
+
+                        eventInfo.setParameters(parameters);
 
                         if (eventInfo.getParameters().containsKey(SchedulerConstants.EVENT_TYPE_KEY_NAME)) {
                             subject = eventInfo.getParameters().get(SchedulerConstants.EVENT_TYPE_KEY_NAME).toString();
