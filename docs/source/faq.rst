@@ -5,7 +5,7 @@ Frequently Asked Questions
 This page contains frequently asked questions about MOTECH with short answers to them.
 
 .. contents::
-    :depth: 2
+:depth: 2
 
 Can MOTECH run on Windows?
 --------------------------
@@ -189,6 +189,41 @@ To restart ActiveMQ use:
 
 .. code-block:: bash
 
-    service activemq restart
+    sudo /etc/init.d/activemq restart
+
+or
+
+.. code-block:: bash
+
+    sudo service activemq restart
+
+
+If everything was made properly, you should get connection with ``service:jmx:rmi:///jndi/rmi://<host_name>:1099/jmxrmi``
+(where ``<host_name>`` is the name of the broker host from ``Admin/Settings/JMX/Broker Host``) using:
+
+.. code-block:: bash
+    jconsole
 
 If the issue still appears, restart MOTECH.
+
+.. note::
+
+    If you are using Ubuntu and you install ActiveMQ through ``apt-get``, you can have problems with loading of new configuration to ActiveMQ.
+    It's a known issue. The status of bug can you check here: ``https://bugs.launchpad.net/ubuntu/+source/activemq/+bug/1361831``
+    To fix this can you install ActiveMQ in another way.
+    Remove ActiveMQ using e.g.:
+
+    .. code-block:: bash
+        sudo apt-get purge --auto-remove activemq
+
+    Then download the latest stable version of ActiveMQ from `here`_
+
+        .. _here: http://activemq.apache.org/download.html
+
+    and follow this `tutorial`_
+
+        .. _tutorial: http://servicebus.blogspot.com/2011/02/installing-apache-active-mq-on-ubuntu.html
+
+    to ``sudo update-rc.d activemq defaults`` instruction (you can skip the rest of instructions).
+    Remember that your config files are now in ``/opt/activemq/conf``!
+
