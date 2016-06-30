@@ -257,47 +257,10 @@ public class TaskActionExecutor {
     }
 
     private void addPostActionParametersToTaskContext(ActionEvent action, Integer actionIndex, TaskContext taskContext, Object object) throws TaskHandlerException {
-        Object value;
         for (ActionParameter postActionParameter : action.getPostActionParameters()) {
 
-            value = getPostActionParameterValueByKey(object, postActionParameter.getKey());
-            taskContext.addPostActionParameterObject(actionIndex.toString(), postActionParameter.getKey(), value, true);
+            taskContext.addPostActionParameterObject(actionIndex.toString(), postActionParameter.getKey(), object, true);
         }
-    }
-
-    private Object getPostActionParameterValueByKey(Object object, String key) throws TaskHandlerException {
-        Pattern pattern = Pattern.compile("\\.");
-        String keyFields[] = pattern.split(key);
-
-        Object value = object;
-        Object fetchedValue;
-
-        for (String keyField : keyFields) {
-            Field field;
-            try {
-                field = value.getClass().getDeclaredField(keyField);
-
-            } catch (NoSuchFieldException e) {
-                throw new TaskHandlerException(
-                        POST_ACTION_PARAMETER, "task.error.objectNotContainsField", e,
-                        keyField
-                );
-            }
-            field.setAccessible(true);
-
-            try {
-                fetchedValue = field.get(value);
-
-            } catch (IllegalAccessException e) {
-                throw new TaskHandlerException(
-                        POST_ACTION_PARAMETER, "task.error.fieldValueGetError", e,
-                        value.getClass().toString(), field.getClass().toString()
-                );
-            }
-            value = fetchedValue;
-        }
-
-        return value;
     }
 
     void setBundleContext(BundleContext bundleContext) {

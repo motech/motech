@@ -247,7 +247,7 @@
                         scope.msg(scope.field.displayName)
                     );
                 } else if(scope.field.prefix === ManageTaskUtils.POST_ACTION_PREFIX){
-                    scope.displayName = "{0}.{1}#{2}.{3}".format(// It may be necessary a slight change to match with the backend
+                    scope.displayName = "{0}.{1}#{2}.{3}".format(
                         scope.msg(scope.field.channelName),
                         scope.msg(scope.field.actionName),
                         scope.field.objectId,

@@ -63,7 +63,9 @@ public class TaskContext {
      * @param failIfDataNotFound  defines whether task should fail if the data wasn't found
      */
     public void addPostActionParameterObject(String objectId, String objectKey, Object postActionParameter, boolean failIfDataNotFound) {
-        postActionParameters.add(new PostActionParameterObject(objectId, objectKey, postActionParameter, failIfDataNotFound));
+        Object objectValue = getFieldValue(postActionParameter, objectKey);
+
+        postActionParameters.add(new PostActionParameterObject(objectId, objectKey, objectValue, failIfDataNotFound));
     }
 
     /**
