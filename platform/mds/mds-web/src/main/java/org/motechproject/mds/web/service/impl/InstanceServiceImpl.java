@@ -108,6 +108,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstanceServiceImpl.class);
     private static final int MAX_LENGTH = 80;
+    private static final String LOOKUP_EXCEPTION_MESSAGE_KEY = "mds.error.lookupExecError";
 
     private EntityService entityService;
     private BundleContext bundleContext;
@@ -244,8 +245,6 @@ public class InstanceServiceImpl implements InstanceService {
 
         MotechDataService service = getServiceForEntity(entity);
 
-        String lookupExceptionMessageKey = "mds.error.lookupExecError";
-
         try {
             LookupExecutor lookupExecutor = new LookupExecutor(service, lookup, fieldMap);
 
@@ -263,10 +262,10 @@ public class InstanceServiceImpl implements InstanceService {
             if (e.getMessageKey() != null) {
                 throw new LookupExecutionException(e, e.getMessageKey());
             } else {
-                throw new LookupExecutionException(e, lookupExceptionMessageKey);
+                throw new LookupExecutionException(e, LOOKUP_EXCEPTION_MESSAGE_KEY);
             }
         } catch (RuntimeException e) {
-            throw new LookupExecutionException(e, lookupExceptionMessageKey);
+            throw new LookupExecutionException(e, LOOKUP_EXCEPTION_MESSAGE_KEY);
         }
     }
 

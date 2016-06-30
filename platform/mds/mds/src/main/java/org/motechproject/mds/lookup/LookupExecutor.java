@@ -75,13 +75,10 @@ public class LookupExecutor {
                 for (Throwable exception : userException.getNestedExceptions()) {
                     if (exception instanceof QueryNotUniqueException) {
                         lookupExceptionMessageKey = "mds.error.lookupExecNotUniqueError";
-                        throw new LookupExecutorException(lookupExceptionMessage + lookup.getLookupName() + ".", e, lookupExceptionMessageKey);
                     }
                 }
-                throw new LookupExecutorException(lookupExceptionMessage + lookup.getLookupName() + ".", e, lookupExceptionMessageKey);
-            } else {
-                throw new LookupExecutorException(lookupExceptionMessage + lookup.getLookupName() + ".", e, lookupExceptionMessageKey);
             }
+            throw new LookupExecutorException(lookupExceptionMessage + lookup.getLookupName() + ".", e, lookupExceptionMessageKey);
         }
     }
 
