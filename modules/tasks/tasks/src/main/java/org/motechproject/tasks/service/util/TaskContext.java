@@ -1,6 +1,7 @@
 package org.motechproject.tasks.service.util;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.codec.binary.StringUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.constants.TaskFailureCause;
@@ -25,6 +26,7 @@ public class TaskContext {
     private Map<String, Object> parameters;
     private TaskActivityService activityService;
     private Set<DataSourceObject> dataSourceObjects;
+    private Set<PostActionParameterObject> postActionParameters;
 
     /**
      * Class constructor.
@@ -38,6 +40,7 @@ public class TaskContext {
         this.parameters = parameters;
         this.activityService = activityService;
         this.dataSourceObjects = new HashSet<>();
+        this.postActionParameters = new HashSet<>();
     }
 
     /**
@@ -49,6 +52,20 @@ public class TaskContext {
      */
     public void addDataSourceObject(String objectId, Object dataSourceObject, boolean failIfDataNotFound) {
         dataSourceObjects.add(new DataSourceObject(objectId, dataSourceObject, failIfDataNotFound));
+    }
+
+    /**
+     * Adds the given parameter to this task.
+     *
+     * @param objectId  the ID of the object, not null
+     * @param objectKey  the Key of the object, not null
+     * @param postActionParameter  the result of lookup execution, not null
+     * @param failIfDataNotFound  defines whether task should fail if the data wasn't found
+     */
+    public void addPostActionParameterObject(String objectId, String objectKey, Object postActionParameter, boolean failIfDataNotFound) {
+        Object objectValue = getFieldValue(postActionParameter, objectKey);
+
+        postActionParameters.add(new PostActionParameterObject(objectId, objectKey, objectValue, failIfDataNotFound));
     }
 
     /**
@@ -65,6 +82,29 @@ public class TaskContext {
         }
 
         return value;
+    }
+
+    /**
+     * Returns the value of the post action parameter with the given key.
+     *
+     * @param key the key of the parameter, not null
+     * @return the value of the parameter with the given key
+     */
+    public Object getPostActionParameterValue(String objectId, String key) throws TaskHandlerException {
+        LOGGER.info("Retrieving task post action parameter with ID: {}", objectId);
+
+        PostActionParameterObject postActionParameterObject = getPostActionParameter(objectId, key);
+        if (postActionParameterObject == null) {
+            throw new TaskHandlerException(TaskFailureCause.POST_ACTION_PARAMETER, "task.error.parameterNotFound", objectId);
+        }
+
+        try {
+            return postActionParameterObject.getObjectValue();
+        } catch (RuntimeException e) {
+            LOGGER.warn("Parameter with id: {} not found", objectId);
+            publishWarningActivity("task.error.parameterNotFound", objectId);
+        }
+        return null;
     }
 
     /**
@@ -130,6 +170,21 @@ public class TaskContext {
         for (DataSourceObject dataSourceObject : dataSourceObjects) {
             if (dataSourceObject.getObjectId().equals(objectId)) {
                 return dataSourceObject;
+            }
+        }
+        return null;
+    }
+
+    public Set<PostActionParameterObject> getPostActionParameters() {
+        return postActionParameters;
+    }
+
+    private PostActionParameterObject getPostActionParameter(String objectId, String objectKey) {
+        for (PostActionParameterObject postActionParameterObject : postActionParameters) {
+
+            if (StringUtils.equals(postActionParameterObject.getObjectId(), objectId) &&
+                    StringUtils.equals(postActionParameterObject.getObjectKey(), objectKey)) {
+                return postActionParameterObject;
             }
         }
         return null;

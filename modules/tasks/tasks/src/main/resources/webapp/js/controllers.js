@@ -535,7 +535,7 @@
                 $scope.task.actions = [];
             }
 
-            $scope.task.actions.push({});
+            $scope.task.actions.push({'postActionParameters': []});
         };
 
         $scope.removeAction = function (idx) {
@@ -1080,6 +1080,24 @@
                     });
                 });
             }
+
+            if ($scope.selectedAction && Array.isArray($scope.selectedAction)) {
+                $scope.selectedAction.forEach(function (action, idx) {
+                    if (action.postActionParameters && Array.isArray(action.postActionParameters)) {
+                        action.postActionParameters.forEach(function (postActionParameter) {
+                            postActionParameter.prefix = ManageTaskUtils.POST_ACTION_PREFIX;
+                            postActionParameter.objectId = idx;
+                            postActionParameter.channelName = $scope.task.actions[idx].channelName;
+                            postActionParameter.actionName = $scope.task.actions[idx].displayName;
+                            postActionParameter.displayName = postActionParameter.prefix.concat(".", postActionParameter.objectId,
+                                                                                                ".", postActionParameter.key
+                                                                                                );
+                            fields.push(postActionParameter);
+                        });
+                    }
+                });
+            }
+
             return fields;
         };
 

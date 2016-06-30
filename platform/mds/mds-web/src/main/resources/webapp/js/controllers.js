@@ -3276,7 +3276,11 @@
             exportWithOrder : false
         };
 
-        $scope.setDataRetrievalError = function (value) {
+        $scope.setDataRetrievalError = function (value, responseText) {
+            if(responseText) {
+                $scope.retrievalErrorText = $scope.msg(responseText.replace('key:', '').trim());
+            }
+
             $scope.$apply(function () {
                 $scope.dataRetrievalError = value;
             });
