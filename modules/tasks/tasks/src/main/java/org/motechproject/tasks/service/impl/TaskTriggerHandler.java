@@ -140,6 +140,7 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         // Look for custom event parser
         Map<String, Object> eventParams = event.getParameters();
+        eventParams.putAll(event.getMetadata());
 
         TasksEventParser parser = null;
         if (eventParams != null) {
@@ -147,8 +148,8 @@ public class TaskTriggerHandler implements TriggerHandler {
         }
 
         // Use custom event parser, if it exists, to modify event
-        String triggerSubject = parser == null ? event.getSubject() : parser.parseEventSubject(event.getSubject(), event.getParameters());
-        Map<String, Object> parameters = parser == null ? event.getParameters() : parser.parseEventParameters(event.getSubject(), event.getParameters());
+        String triggerSubject = parser == null ? event.getSubject() : parser.parseEventSubject(event.getSubject(), eventParams);
+        Map<String, Object> parameters = parser == null ? eventParams : parser.parseEventParameters(event.getSubject(), eventParams);
 
         List<Task> tasks = taskService.findActiveTasksForTriggerSubject(triggerSubject);
 
@@ -163,6 +164,9 @@ public class TaskTriggerHandler implements TriggerHandler {
         LOGGER.info("Handling the motech event with subject: {} for task retry", event.getSubject());
 
         Map<String, Object> eventParams = event.getParameters();
+        Map<String, Object> eventMetadata = event.getMetadata();
+        eventParams.putAll(eventMetadata);
+
         Task task = taskService.getTask((Long) eventParams.get(TASK_ID));
 
         if (task == null || !task.isEnabled()) {
@@ -218,21 +222,25 @@ public class TaskTriggerHandler implements TriggerHandler {
 
     private void scheduleTaskRetry(Task task, Map<String, Object> parameters) {
         Map<String, Object> eventParameters = new HashMap<>();
+        Map<String, Object> eventMetadata = new HashMap<>();
+
         eventParameters.putAll(parameters);
 
-        eventParameters.put(TASK_ID, task.getId());
-        eventParameters.put(REPEAT_COUNT, task.getNumberOfRetries());
-        eventParameters.put(REPEAT_INTERVAL_TIME, task.getRetryIntervalInMilliseconds() / 1000);
-        eventParameters.put(JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
+        eventMetadata.put(TASK_ID, task.getId());
+        eventMetadata.put(REPEAT_COUNT, task.getNumberOfRetries());
+        eventMetadata.put(REPEAT_INTERVAL_TIME, task.getRetryIntervalInMilliseconds() / 1000);
+        eventMetadata.put(JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
 
-        eventRelay.sendEventMessage(new MotechEvent(SCHEDULE_REPEATING_JOB, eventParameters));
+        eventRelay.sendEventMessage(new MotechEvent(SCHEDULE_REPEATING_JOB, eventParameters, null, eventMetadata));
     }
 
     private void unscheduleTaskRetry(String jobSubject) {
         Map<String, Object> eventParameters = new HashMap<>();
-        eventParameters.put(JOB_SUBJECT, jobSubject);
+        Map<String, Object> eventMetadata = new HashMap<>();
 
-        eventRelay.sendEventMessage(new MotechEvent(UNSCHEDULE_REPEATING_JOB, eventParameters));
+        eventMetadata.put(JOB_SUBJECT, jobSubject);
+
+        eventRelay.sendEventMessage(new MotechEvent(UNSCHEDULE_REPEATING_JOB, eventParameters, null, eventMetadata));
     }
 
     private void handleError(Map<String, Object> params, Task task, TaskHandlerException e) {
