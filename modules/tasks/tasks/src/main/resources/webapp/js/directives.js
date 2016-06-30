@@ -855,6 +855,7 @@
                         changeYear: true,
                         dateFormat: 'yy-mm-dd',
                         timeFormat: 'HH:mm z',
+                        yearRange: '-100:+10',
                         showOn: true,
                         constrainInput: false,
                         onSelect: function (dateTex) {
