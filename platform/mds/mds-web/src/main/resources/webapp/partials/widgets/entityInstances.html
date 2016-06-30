@@ -34,7 +34,7 @@
             <button ng-show="showFilters && showFiltersButton" type="button" class="btn btn-default" id="mds-filters">
                 <i class="fa fa-filter"></i>&nbsp;{{msg('mds.filters')}}
             </button>
-            <button id="lookupDialogButton" ng-click="showLookupDialog()" type="button" class="btn btn-default" ng-show="showLookupButton">
+            <button id="lookupDialogButton" ng-click="showLookupDialog()" type="button" class="btn btn-default" ng-show="showLookupButton" ng-if="entityAdvanced.indexes != 0">
                 <i class="fa fa-lg fa-caret-down"></i>
                 {{msg('mds.btn.lookup')}}
             </button>
