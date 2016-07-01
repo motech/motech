@@ -9,7 +9,7 @@ public class LookupExecutorException extends MdsException {
 
     private static final long serialVersionUID = -1676839116204380821L;
 
-    public LookupExecutorException(String message, Throwable cause) {
-        super(message, cause);
+    public LookupExecutorException(String message, Throwable cause, String messageKey) {
+        super(message, cause, messageKey);
     }
 }
