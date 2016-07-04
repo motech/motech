@@ -670,7 +670,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
-        jobDetail.getJobDataMap().put(EVENT_METADATA, jobDetail.getJobDataMap().put(EVENT_METADATA, createMetadataForMisfireSchedulableJob(job)));
+        jobDetail.getJobDataMap().put(EVENT_METADATA, createMetadataForMisfireSchedulableJob(job));
 
         ScheduleBuilder scheduleBuilder = PeriodIntervalScheduleBuilder.periodIntervalSchedule()
                 .withRepeatPeriod(job.getRepeatPeriod())

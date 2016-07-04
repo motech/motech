@@ -3,7 +3,6 @@ package org.motechproject.scheduler.listener;
 import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
-import org.motechproject.scheduler.constants.SchedulerConstants;
 import org.motechproject.scheduler.contract.JobId;
 import org.motechproject.scheduler.contract.RepeatingJobId;
 import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
@@ -39,11 +38,14 @@ public class MotechSchedulerListener {
         Map<String, Object> metadata = event.getMetadata();
 
         String jobSubject = (String) metadata.get(JOB_SUBJECT);
+        parameters.remove(JOB_SUBJECT);
         Integer repeatCount = (Integer) metadata.get(REPEAT_COUNT);
+        parameters.remove(REPEAT_COUNT);
         Integer repeatIntervalInSeconds = (Integer) metadata.get(REPEAT_INTERVAL_TIME);
+        parameters.remove(REPEAT_COUNT);
 
-        parameters.put(SchedulerConstants.EVENT_METADATA, metadata);
-        MotechEvent jobEvent = new MotechEvent(jobSubject, parameters);
+
+        MotechEvent jobEvent = new MotechEvent(jobSubject, parameters, null, metadata);
 
         RepeatingSchedulableJob repeatingJob = new RepeatingSchedulableJob(jobEvent, repeatCount, repeatIntervalInSeconds, DateTime.now(), null, false);
 
@@ -57,12 +59,10 @@ public class MotechSchedulerListener {
      */
     @MotechListener(subjects = {UNSCHEDULE_REPEATING_JOB})
     public void handleUnscheduleRepeatingJobEvent(MotechEvent event) {
-        Map<String, Object> parameters = event.getParameters();
         Map<String, Object> metadata = event.getMetadata();
 
         String jobSubject = (String) metadata.get(JOB_SUBJECT);
 
-        parameters.put(SchedulerConstants.EVENT_METADATA, metadata);
         MotechEvent jobEvent = new MotechEvent(jobSubject, null);
 
         JobId jobId = new RepeatingJobId(jobEvent);
