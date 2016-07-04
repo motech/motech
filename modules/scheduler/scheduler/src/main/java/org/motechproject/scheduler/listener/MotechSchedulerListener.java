@@ -38,11 +38,11 @@ public class MotechSchedulerListener {
         Map<String, Object> metadata = event.getMetadata();
 
         String jobSubject = (String) metadata.get(JOB_SUBJECT);
-        parameters.remove(JOB_SUBJECT);
+        metadata.remove(JOB_SUBJECT);
         Integer repeatCount = (Integer) metadata.get(REPEAT_COUNT);
-        parameters.remove(REPEAT_COUNT);
+        metadata.remove(REPEAT_COUNT);
         Integer repeatIntervalInSeconds = (Integer) metadata.get(REPEAT_INTERVAL_TIME);
-        parameters.remove(REPEAT_COUNT);
+        metadata.remove(REPEAT_COUNT);
 
 
         MotechEvent jobEvent = new MotechEvent(jobSubject, parameters, null, metadata);
