@@ -154,7 +154,7 @@
                 $('.setHideActive').find('i').removeClass("fa-square-o").addClass('fa-check-square-o');
             } else {
                 $scope.hideActive = true;
-                $scope.setFilter($scope.hidePaused ? 'noItems' : 'activeTaskFilter');
+                $scope.setFilter($scope.hidePaused ? 'allItems' : 'activeTaskFilter');
 
                 $('.setHideActive').find('i').removeClass("fa-check-square-o").addClass('fa-square-o');
             }
@@ -168,7 +168,7 @@
                 $('.setHidePaused').find('i').removeClass("fa-square-o").addClass('fa-check-square-o');
             } else {
                 $scope.hidePaused = true;
-                $scope.setFilter($scope.hideActive ? 'noItems' : 'pausedTaskFilter');
+                $scope.setFilter($scope.hideActive ? 'allItems' : 'pausedTaskFilter');
 
                 $('.setHidePaused').find('i').removeClass("fa-check-square-o").addClass('fa-square-o');
             }

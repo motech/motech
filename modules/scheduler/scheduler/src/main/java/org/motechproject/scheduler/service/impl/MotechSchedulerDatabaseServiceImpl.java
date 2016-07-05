@@ -63,6 +63,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechSchedulerDatabaseServiceImpl.class);
     private static final String DATE_FORMAT_PATTERN = "Y-MM-dd HH:mm:ss";
     private static final String DATA_SOURCE = "org.quartz.jobStore.dataSource";
+    private static final String TABLE_PREFIX = "org.quartz.jobStore.tablePrefix";
     private static final String UI_DEFINED = "uiDefined";
     private static final String START_TIME = "START_TIME";
     private static final String END_TIME = "END_TIME";
@@ -107,10 +108,13 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     @Override
     public List<JobBasicInfo> getScheduledJobsBasicInfo(JobsSearchSettings jobsSearchSettings) throws MotechSchedulerJobRetrievalException {
         List<JobBasicInfo> jobBasicInfos = new LinkedList<>();
-        if (!isNotBlank(jobsSearchSettings.getActivity()) || !isNotBlank(jobsSearchSettings.getStatus())) {
+        String query = buildJobsBasicInfoSqlQuery(jobsSearchSettings);
+        if (jobsSearchSettings.areFiltersEmpty()) {
+            query =  buildJobsAllSqlQuery();
+        } else if (!isNotBlank(jobsSearchSettings.getActivity()) || !isNotBlank(jobsSearchSettings.getStatus())) {
             return jobBasicInfos;
         }
-        String query = buildJobsBasicInfoSqlQuery(jobsSearchSettings);
+
         LOGGER.debug("Executing {}", query);
 
         List<String> columnNames = new LinkedList<>();
@@ -356,9 +360,9 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     private String buildJobsBasicInfoSqlQuery(JobsSearchSettings jobsSearchSettings) {
 
         StringBuilder sb = new StringBuilder("SELECT A.TRIGGER_NAME, A.TRIGGER_GROUP, B.JOB_DATA FROM ")
-                .append(getCorrectNameRepresentation(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + TRIGGERS))
+                .append(getCorrectNameRepresentation(sqlProperties.get(TABLE_PREFIX).toString() + TRIGGERS))
                 .append(" AS A JOIN ")
-                .append(getCorrectNameRepresentation(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + JOB_DETAILS))
+                .append(getCorrectNameRepresentation(sqlProperties.get(TABLE_PREFIX).toString() + JOB_DETAILS))
                 .append(" AS B")
                 .append(" ON A.TRIGGER_NAME = B.JOB_NAME AND A.TRIGGER_GROUP = B.JOB_GROUP")
                 .append(buildWhereCondition(jobsSearchSettings));
@@ -380,8 +384,15 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
 
     private String buildJobsCountSqlQuery(JobsSearchSettings jobsSearchSettings) {
         StringBuilder sb = new StringBuilder("SELECT COUNT(*) FROM ");
-        sb = sb.append(getCorrectNameRepresentation(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + TRIGGERS));
+        sb = sb.append(getCorrectNameRepresentation(sqlProperties.get(TABLE_PREFIX).toString() + TRIGGERS));
         sb = sb.append(buildWhereCondition(jobsSearchSettings));
+        return sb.toString();
+    }
+
+    private String buildJobsAllSqlQuery() {
+        StringBuilder sb = new StringBuilder("SELECT A.TRIGGER_NAME, A.TRIGGER_GROUP, B.JOB_DATA FROM ");
+        sb = sb.append(getCorrectNameRepresentation(sqlProperties.get(TABLE_PREFIX).toString() + TRIGGERS));
+        sb = sb.append(" AS A JOIN QRTZ_JOB_DETAILS AS B ON A.TRIGGER_NAME = B.JOB_NAME AND A.TRIGGER_GROUP = B.JOB_GROUP");
         return sb.toString();
     }
 
