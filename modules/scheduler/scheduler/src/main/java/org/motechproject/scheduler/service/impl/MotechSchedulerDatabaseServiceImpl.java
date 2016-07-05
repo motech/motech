@@ -110,7 +110,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         List<JobBasicInfo> jobBasicInfos = new LinkedList<>();
         String query = buildJobsBasicInfoSqlQuery(jobsSearchSettings);
         if (jobsSearchSettings.areFiltersEmpty()) {
-            query =  buildJobsAllSqlQuery();
+            query = buildJobsAllSqlQuery();
         } else if (!isNotBlank(jobsSearchSettings.getActivity()) || !isNotBlank(jobsSearchSettings.getStatus())) {
             return jobBasicInfos;
         }
