@@ -239,7 +239,7 @@ Element ID
 
 |v| **Do** keep names as short as possible, while using full english words.
 
-|v| **Do** use following patten:
+|v| **Do** use following pattern:
 
 {module}.{location}.{entity-id}.{action}
 
