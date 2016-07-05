@@ -231,6 +231,56 @@ corresponds to complexity of the body).
 
 |x| **Do not** declare imports not used within the file.
 
+Element ID
+----------
+|v| **Do** use lowercase names only.
+
+|v| **Do** replace spaces with dashes.
+
+|v| **Do** keep names as short as possible, while using full english words.
+
+|v| **Do** use following patten:
+
+{module}.{location}.{entity-id}.{action}
+
+1. Module
+Module refers to the OSGI bundle or AngularJS module name that the element belongs to. 
+
+|x| **Do not** start name with "motech".
+If the module name starts with "motech" that should be omitted.
+
+Correct:
+
+.. code-block:: html
+	<element id="dashboard.sidebar.settings"/>
+
+Incorrect:
+
+.. code-block:: html
+	<element id="motech-dashboard.sidebar.settings"/>
+
+2. Location
+Location refers to where in the interface the html element is located. This location is relative to the module, not with absolute relation to the entire interface.
+For tasks breadcrumb would be:
+
+.. code-block:: html
+	<element id="tasks.breadcrumb.tasks"/>
+
+3. Entity Id (optional)
+The entity id refers to a repeating id which is used in lists of links. 
+
+|v| **Consider** using appropriate non-numeric id, in preference to a numeric id.
+
+4. Action
+Action should describe what the button, input, or form does. 
+If this is a link it should refer to where the link goes.
+
+.. code-block:: html
+	<element id="email.compose.send"/>
+	<element id="mds.nav.browser"/>
+	<element id="mds.nav.schema-editor"/>
+	<element id="task.sidebar.tasks-toggle-active"/>
+
 Code Comments
 #############
 
