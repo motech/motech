@@ -977,60 +977,57 @@ public class MdsDdeBundleIT extends BasePaxIT {
     public void testDistrictLookupsOnRelationshipFields() {
         setUpDataForLookupsOnRelationshipFields();
 
-        List<District> districts = districtDataService.findByLanguage("language_1");
-        assertEquals(1, districts.size());
-        assertEquals("district_1", districts.get(0).getName());
-
-        districts = districtDataService.findByLanguage("language_2");
-        assertEquals(1, districts.size());
-        assertEquals("district_2", districts.get(0).getName());
-
-        districts = districtDataService.findByLanguage("language_3_eng");
-        assertEquals(1, districts.size());
-        assertEquals("district_3", districts.get(0).getName());
-
-        districts = districtDataService.findByNameAndLanguage("district_2", "language_2");
-        assertEquals(1, districts.size());
-        assertEquals("district_2", districts.get(0).getName());
-        assertEquals("language_2", districts.get(0).getLanguage().getName());
-
-        districts = districtDataService.findByNameAndLanguage("district_1", "language_4_eng");
-        assertEquals(0, districts.size());
-
-        districts = districtDataService.findByNameAndLanguageWithOperators("district_3", "eng");
-        assertEquals(1, districts.size());
-        assertEquals("district_3", districts.get(0).getName());
-        assertEquals("language_3_eng", districts.get(0).getLanguage().getName());
-
-        districts = districtDataService.findByNameAndLanguageWithOperators("district_2", "eng");
-        assertEquals(0, districts.size());
-
-        final Set<String> languageNames = new HashSet<>();
-        languageNames.add("language_1");
-        languageNames.add("language_2");
-
         districtDataService.doInTransaction(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                List<District> districts = districtDataService.findByNameLanguageAndState(languageNames, "state_1");
+
+                List<District> districts = districtDataService.findByLanguage("language_1");
+                assertEquals(1, districts.size());
+                assertEquals("district_1", districts.get(0).getName());
+
+                districts = districtDataService.findByLanguage("language_2");
+                assertEquals(1, districts.size());
+                assertEquals("district_2", districts.get(0).getName());
+
+                districts = districtDataService.findByLanguage("language_3_eng");
+                assertEquals(1, districts.size());
+                assertEquals("district_3", districts.get(0).getName());
+
+                districts = districtDataService.findByNameAndLanguage("district_2", "language_2");
+                assertEquals(1, districts.size());
+                assertEquals("district_2", districts.get(0).getName());
+                assertEquals("language_2", districts.get(0).getLanguage().getName());
+
+                districts = districtDataService.findByNameAndLanguage("district_1", "language_4_eng");
+                assertEquals(0, districts.size());
+
+                districts = districtDataService.findByNameAndLanguageWithOperators("district_3", "eng");
+                assertEquals(1, districts.size());
+                assertEquals("district_3", districts.get(0).getName());
+                assertEquals("language_3_eng", districts.get(0).getLanguage().getName());
+
+                districts = districtDataService.findByNameAndLanguageWithOperators("district_2", "eng");
+                assertEquals(0, districts.size());
+
+                final Set<String> languageNames = new HashSet<>();
+                languageNames.add("language_1");
+                languageNames.add("language_2");
+
+
+                districts = districtDataService.findByNameLanguageAndState(languageNames, "state_1");
                 assertEquals(1, districts.size());
                 assertEquals("district_1", districts.get(0).getName());
                 assertEquals("state_1", districts.get(0).getState().getName());
-            }
-        });
 
-        districtDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                List<District> districts = districtDataService.findByNameLanguageAndState(languageNames, "state_2");
+                districts = districtDataService.findByNameLanguageAndState(languageNames, "state_2");
                 assertEquals(1, districts.size());
                 assertEquals("district_2", districts.get(0).getName());
                 assertEquals("state_2", districts.get(0).getState().getName());
+
+                districts = districtDataService.findByNameLanguageAndState(languageNames, "state_3");
+                assertEquals(0, districts.size());
             }
         });
-
-        districts = districtDataService.findByNameLanguageAndState(languageNames, "state_3");
-        assertEquals(0, districts.size());
     }
 
 
