@@ -14,7 +14,7 @@ Specifically, we support the latest versions of the following browsers and platf
 .. |x| image:: img/x.png
 
 .. csv-table::
-    :header: "Platform", "IE 10+", "Chrome", "Firefox", "Safari", "Opera"
+    :header: "Platform", "IE 11+", "Chrome", "Firefox", "Safari", "Opera"
     :widths: 25, 20, 20, 20, 20, 20
 
     "Windows", |v| Supported, |v| Supported, |v| Supported, |x| Not Supported, |v| Supported
@@ -33,6 +33,8 @@ Bootstrap is built to work best in the latest desktop browsers, meaning older br
 AngularJS 1.3 has dropped support for IE8. Read more about it on this `blog <https://blog.angularjs.org/2013/12/angularjs-13-new-release-approaches.html>`_.
 
 The AngularJS project currently supports and will attempt to fix bugs for IE9 and above. Their continuous integration server runs all the tests against IE9, IE10, and IE11. See `Travis CI <https://travis-ci.org/angular/angular.js>`_ and `ci.angularjs.org <https://ci.angularjs.org>`_.
+
+However, MOTECH supports IE11 and above.
 
 Internet Explorer 9: Issues
 ---------------------------
