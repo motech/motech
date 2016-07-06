@@ -233,6 +233,8 @@ corresponds to complexity of the body).
 
 Element ID
 ----------
+To allow for easier integation testing of MOTECH-UI, we are using a naming convention for the element IDs of navigational and action based items in the UI. The element IDs should follow the format below, unless there is a clear reason the format shouldn't be followed.
+
 |v| **Do** use lowercase names only.
 
 |v| **Do** replace spaces with dashes.
