@@ -24,14 +24,14 @@
                     <field ng-repeat="i in fields | idLessThan:step.objectId track by $index" field="i" draggable />​
                 </div>
             </div>
-            <div class="form-group" ng-app="" ng-init="objectBlock=true">
+            <div class="form-group">
                 <span class="col-md-2 col-sm-3 control-label">{{msg('task.subsubsection.source')}}:</span>
                 <div class="btn-group offset-15">
-                    <button   class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
+                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
                         {{taskMsg(step.providerName || 'task.select')}}
                         <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu" ng-click="objectBlock=false">
+                    <ul class="dropdown-menu">
                         <li ng-repeat="dataSource in dataSources">
                             <a ng-click="selectDataSource(step, dataSource)">{{taskMsg(dataSource.name)}}</a>
                         </li>
@@ -39,7 +39,7 @@
                 </div>
                 <span class="offset-4">{{msg('task.subsubsection.object')}}:</span>
                 <div class="btn-group offset-15">
-                    <button class="btn btn-default dropdown-toggle" ng-disabled="objectBlock" data-toggle="dropdown" target="_self" href="#" ng-init="searchData.displayName='' " ng-click="searchData.displayName='' ">
+                    <button class="btn btn-default dropdown-toggle" ng-disabled="!step.providerName" data-toggle="dropdown" target="_self" href="#" ng-init="searchData.displayName='' " ng-click="searchData.displayName='' ">
                         {{taskMsg(step.displayName) || msg('task.select')}}
                         <span class="caret"></span>
                     </button>
