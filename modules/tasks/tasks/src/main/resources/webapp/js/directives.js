@@ -248,6 +248,13 @@
                         scope.field.objectId,
                         scope.msg(scope.field.displayName)
                     );
+                } else if(scope.field.prefix === ManageTaskUtils.POST_ACTION_PREFIX){
+                    scope.displayName = "{0}.{1}#{2}.{3}".format(
+                        scope.msg(scope.field.channelName),
+                        scope.msg(scope.field.actionName),
+                        scope.field.objectId,
+                        scope.msg(scope.field.displayName)
+                    );
                 } else if (scope.boolean) {
                     if(scope.boolean === 'true') {
                         scope.displayName = scope.msg("yes");
@@ -857,6 +864,7 @@
                         changeYear: true,
                         dateFormat: 'yy-mm-dd',
                         timeFormat: 'HH:mm z',
+                        yearRange: '-100:+10',
                         showOn: true,
                         constrainInput: false,
                         onSelect: function (dateTex) {

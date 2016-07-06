@@ -7,6 +7,7 @@
         var utils = {
             TRIGGER_PREFIX: 'trigger',
             DATA_SOURCE_PREFIX: 'ad',
+            POST_ACTION_PREFIX: 'pa',
             FILTER_OPERATORS: {
                 'task.string': {
                     'type': 'UNICODE',

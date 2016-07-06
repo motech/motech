@@ -37,6 +37,7 @@ import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
 import static org.motechproject.tasks.domain.mds.ParameterType.LIST;
 import static org.motechproject.tasks.domain.mds.ParameterType.MAP;
 
+
 /**
  * Builds action parameters from  {@link TaskContext} and executes the action by invoking its service or raising its event.
  */
@@ -65,19 +66,21 @@ public class TaskActionExecutor {
      *
      * @param task  the task for which its action should be executed, not null
      * @param actionInformation  the information about the action, not null
+     * @param actionIndex the order of the task action
      * @param taskContext  the context of the current task execution, not null
+     * @param activityId the ID of the activity associated with this execution
      * @throws TaskHandlerException when the task couldn't be executed
      */
-    public void execute(Task task, TaskActionInformation actionInformation, TaskContext taskContext, long activityId) throws TaskHandlerException {
+    public void execute(Task task, TaskActionInformation actionInformation, Integer actionIndex, TaskContext taskContext, long activityId) throws TaskHandlerException {
         LOGGER.info("Executing task action: {} from task: {}", actionInformation.getName(), task.getName());
         KeyEvaluator keyEvaluator = new KeyEvaluator(taskContext);
+
         ActionEvent action = getActionEvent(actionInformation);
         Map<String, Object> parameters = createParameters(actionInformation, action, keyEvaluator);
 
         LOGGER.debug("Parameters created: {} for task action: {}", parameters.toString(), action.getName());
-
         if (action.hasService() && bundleContext != null) {
-            if (callActionServiceMethod(action, parameters)) {
+            if (callActionServiceMethod(action, actionIndex, parameters, taskContext)) {
                 LOGGER.info("Action: {} from task: {} was executed through an OSGi service call", actionInformation.getName(), task.getName());
                 postExecutionHandler.handleActionExecuted(taskContext.getTriggerParameters(), taskContext.getMetadata(), activityId);
                 return;
@@ -86,7 +89,6 @@ public class TaskActionExecutor {
 
             activityService.addWarning(task, "task.warning.serviceUnavailable", action.getServiceInterface());
         }
-
         if (!action.hasSubject()) {
             throw new TaskHandlerException(ACTION, "task.error.cantExecuteAction");
         } else {
@@ -196,7 +198,7 @@ public class TaskActionExecutor {
 
         for (String template : templates) {
             Object value = getValue(template.trim(), keyEvaluator);
-            if ( value != null) {
+            if (value != null) {
                 if (value instanceof Collection) {
                     tempList.addAll((Collection) value);
                 } else {
@@ -222,23 +224,25 @@ public class TaskActionExecutor {
         return result;
     }
 
-    private boolean callActionServiceMethod(ActionEvent action, Map<String, Object> parameters)
+    private boolean callActionServiceMethod(ActionEvent action, Integer actionIndex, Map<String, Object> parameters, TaskContext taskContext)
             throws TaskHandlerException {
         ServiceReference reference = bundleContext.getServiceReference(
                 action.getServiceInterface()
         );
         boolean serviceAvailable = reference != null;
-
         if (serviceAvailable) {
             Object service = bundleContext.getService(reference);
             String serviceMethod = action.getServiceMethod();
             MethodHandler methodHandler = new MethodHandler(action, parameters);
-
             try {
                 Method method = service.getClass().getMethod(serviceMethod, methodHandler.getClasses());
 
                 try {
-                    method.invoke(service, methodHandler.getObjects());
+                    Object object = method.invoke(service, methodHandler.getObjects());
+
+                    if (object != null) {
+                        addPostActionParametersToTaskContext(action, actionIndex, taskContext, object);
+                    }
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     throw new TaskHandlerException(
                             ACTION, "task.error.serviceMethodInvokeError", e,
@@ -254,6 +258,13 @@ public class TaskActionExecutor {
         }
 
         return serviceAvailable;
+    }
+
+    private void addPostActionParametersToTaskContext(ActionEvent action, Integer actionIndex, TaskContext taskContext, Object object) throws TaskHandlerException {
+        for (ActionParameter postActionParameter : action.getPostActionParameters()) {
+
+            taskContext.addPostActionParameterObject(actionIndex.toString(), postActionParameter.getKey(), object, true);
+        }
     }
 
     void setBundleContext(BundleContext bundleContext) {

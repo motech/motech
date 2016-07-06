@@ -7,6 +7,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.tasks.constants.EventDataKeys;
+import org.motechproject.tasks.domain.ObjectTest;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.ActionParameter;
 import org.motechproject.tasks.domain.mds.channel.builder.ActionEventBuilder;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -34,6 +36,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.motechproject.tasks.domain.mds.ParameterType.MAP;
+import static org.motechproject.tasks.domain.mds.ParameterType.TEXTAREA;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskActionExecutorTest {
@@ -69,7 +72,7 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap<>(), metadata, activityService), TASK_ACTIVITY_ID);
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap<>(), metadata, activityService), TASK_ACTIVITY_ID);
 
         MotechEvent raisedEvent = new MotechEvent("actionSubject", new HashMap<>(), TasksEventCallbackService.TASKS_EVENT_CALLBACK_NAME, metadata);
         verify(eventRelay).sendEventMessage(raisedEvent);
@@ -90,7 +93,7 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
+        taskActionExecutor.execute(task, actionInformation, 0,  new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
 
         verify(eventRelay).sendEventMessage(any(MotechEvent.class));
     }
@@ -112,7 +115,7 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
 
         verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
     }
@@ -135,7 +138,7 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
 
         assertTrue(testService.serviceMethodInvoked());
     }
@@ -153,7 +156,7 @@ public class TaskActionExecutorTest {
 
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
     }
 
     @Test(expected = TaskHandlerException.class)
@@ -169,7 +172,7 @@ public class TaskActionExecutorTest {
 
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
     }
 
     @Test
@@ -188,14 +191,14 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
 
         verify(activityService).addWarning(task, "task.warning.serviceUnavailable", "serviceInterface");
     }
 
     @Test
     public void shouldExecuteTaskIfActionMapParameterHasValueWithMixedTypes() throws Exception {
-        TaskActionInformation actionInformation = prepareTaskActionInformation();
+        TaskActionInformation actionInformation = prepareTaskActionInformationWithTrigger();
         ActionEvent actionEvent = prepareActionEvent();
 
         when(taskService.getActionEventFor(actionInformation)).thenReturn(actionEvent);
@@ -205,9 +208,41 @@ public class TaskActionExecutorTest {
         TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, prepareTaskContext(task), TASK_ACTIVITY_ID);
+        taskActionExecutor.execute(task, actionInformation, 0, prepareTaskContext(task), TASK_ACTIVITY_ID);
 
         verify(eventRelay).sendEventMessage(eq(prepareMotechEvent()));
+    }
+
+    @Test
+    public void shouldExecuteTaskAndUsePostActionParameters() throws Exception {
+        TaskActionInformation actionInformation = prepareTaskActionInformationWithService("key", "value");
+        TaskActionInformation actionInformationWithPostActionParameter = prepareTaskActionInformationWithService("key", "{{pa.0.testKey}}");
+        ActionEvent actionEvent = prepareActionEventWithService();
+
+        when(taskService.getActionEventFor(actionInformation)).thenReturn(actionEvent);
+        when(taskService.getActionEventFor(actionInformationWithPostActionParameter)).thenReturn(actionEvent);
+
+        ServiceReference serviceReference = mock(ServiceReference.class);
+
+        when(bundleContext.getServiceReference("serviceInterface")).thenReturn(serviceReference);
+        when(bundleContext.getService(serviceReference)).thenReturn(new TestService());
+
+        Task task = new Task();
+        task.addAction(actionInformation);
+        task.addAction(actionInformationWithPostActionParameter);
+
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
+        taskActionExecutor.setBundleContext(bundleContext);
+
+        TaskContext taskContext = new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService);
+
+        for (TaskActionInformation action : task.getActions()) {
+            taskActionExecutor.execute(task, action, task.getActions().indexOf(action), taskContext, TASK_ACTIVITY_ID);
+        }
+
+        assertEquals("testObject", taskContext.getPostActionParameterValue("0", "testKey"));
+        assertEquals("testObject", taskContext.getPostActionParameterValue("1", "testKey"));
+
     }
 
     private MotechEvent prepareMotechEvent() {
@@ -223,7 +258,6 @@ public class TaskActionExecutorTest {
         parameters.put("id", 123);
         return new TaskContext(task, parameters, new HashMap<>(), activityService);
     }
-
     private TaskActionInformation prepareTaskActionInformation() {
         TaskActionInformation actionInformation = new TaskActionInformation();
         actionInformation.setDisplayName("action");
@@ -232,6 +266,12 @@ public class TaskActionExecutorTest {
         actionInformation.setModuleVersion("0.1");
         actionInformation.setSubject("actionSubject");
 
+        return actionInformation;
+    }
+
+    private TaskActionInformation prepareTaskActionInformationWithTrigger() {
+        TaskActionInformation actionInformation = prepareTaskActionInformation();
+
         Map<String, String> values = new HashMap<>();
         values.put("map", "key1:value{{trigger.id}}");
         actionInformation.setValues(values);
@@ -239,6 +279,17 @@ public class TaskActionExecutorTest {
         return actionInformation;
     }
 
+    private TaskActionInformation prepareTaskActionInformationWithService(String key, String value) {
+        TaskActionInformation actionInformation = new TaskActionInformation("action", "channel", "module", "0.1", "serviceInterface", "serviceMethod");
+
+        Map<String, String> values = new HashMap<>();
+        values.put(key, value);
+        actionInformation.setValues(values);
+        actionInformation.setServiceInterface("serviceInterface");
+        actionInformation.setServiceMethod("serviceMethod");
+
+        return actionInformation;
+    }
     private ActionEvent prepareActionEvent() {
         ActionEvent actionEvent = new ActionEvent();
         actionEvent.setDisplayName("Action");
@@ -253,6 +304,24 @@ public class TaskActionExecutorTest {
         parameter.setOrder(1);
         parameters.add(parameter);
         actionEvent.setActionParameters(parameters);
+        actionEvent.setPostActionParameters(parameters);
+
+        return actionEvent;
+    }
+
+    private ActionEvent prepareActionEventWithService() {
+        ActionEvent actionEvent = new ActionEventBuilder().setDisplayName("Action")
+                .setDescription("").setServiceInterface("serviceInterface").setServiceMethod("serviceMethod").build();
+
+        SortedSet<ActionParameter> parameters = new TreeSet<>();
+        ActionParameter parameter = new ActionParameter();
+        parameter.setDisplayName("test");
+        parameter.setKey("testKey");
+        parameter.setType(TEXTAREA);
+        parameter.setOrder(0);
+        parameters.add(parameter);
+        actionEvent.setActionParameters(parameters);
+        actionEvent.setPostActionParameters(parameters);
 
         return actionEvent;
     }
@@ -267,6 +336,11 @@ public class TaskActionExecutorTest {
 
         public void serviceMethod() {
             invoked = true;
+        }
+
+        public Object serviceMethod(String string) {
+            invoked = true;
+            return new ObjectTest("testObject");
         }
     }
 }
