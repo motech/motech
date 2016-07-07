@@ -58,6 +58,8 @@ public class EmailController {
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseBody
     public EmailRecords<? extends BasicEmailRecordDto> getEmails(GridSettings filter, HttpServletRequest request) {
+        int defaultRowsAmount = 10;
+        int defaultPage = 1;
         EmailRecordSearchCriteria criteria = prepareCriteria(filter);
 
         List<EmailRecord> filtered = auditService.findEmailRecords(criteria);
@@ -65,6 +67,12 @@ public class EmailController {
         List<? extends BasicEmailRecordDto> rows = hideColumns(filtered, filter);
 
         long total = auditService.countEmailRecords(criteria);
+        if (filter.getRows() == null) {
+            filter.setRows(defaultRowsAmount);
+        }
+        if (filter.getPage() == null) {
+            filter.setPage(defaultPage);
+        }
         int totalPages = (int) Math.ceil((double) total / filter.getRows());
 
         String username = getUsername(request);

@@ -107,9 +107,6 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     @Override
     public List<JobBasicInfo> getScheduledJobsBasicInfo(JobsSearchSettings jobsSearchSettings) throws MotechSchedulerJobRetrievalException {
         List<JobBasicInfo> jobBasicInfos = new LinkedList<>();
-        if (!isNotBlank(jobsSearchSettings.getActivity()) || !isNotBlank(jobsSearchSettings.getStatus())) {
-            return jobBasicInfos;
-        }
         String query = buildJobsBasicInfoSqlQuery(jobsSearchSettings);
         LOGGER.debug("Executing {}", query);
 
@@ -258,24 +255,26 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
 
     private String buildActivityFilter(JobsSearchSettings jobsSearchSettings) {
         StringBuilder activitySb = new StringBuilder();
-        String[] activityElements = jobsSearchSettings.getActivity().split(",");
-        boolean addOr = false;
-        if (activityElements.length < 3) {
-            for(String element : activityElements) {
-                checkAndAddElement(activitySb, OR, addOr);
-                if (JobBasicInfo.ACTIVITY_NOTSTARTED.equals(element)) {
-                    activitySb.append(getCorrectNameRepresentation(START_TIME)).append(" > ").append(DateTime.now().getMillis());
-                } else if (JobBasicInfo.ACTIVITY_FINISHED.equals(element)) {
-                    activitySb.append(getCorrectNameRepresentation(END_TIME)).append(" < ").append(DateTime.now().getMillis())
-                            .append(AND).append(getCorrectNameRepresentation(END_TIME)).append(" != 0");
-                } else {
-                    activitySb.append(" (").append(getCorrectNameRepresentation(START_TIME)).append(" <= ")
-                            .append(DateTime.now().getMillis()).append(" AND (")
-                            .append(getCorrectNameRepresentation(END_TIME)).append(" >= ")
-                            .append(DateTime.now().getMillis()).append(OR)
-                            .append(getCorrectNameRepresentation(END_TIME)).append(" = 0))");
+        if (jobsSearchSettings.getActivity() != null) {
+            String[] activityElements = jobsSearchSettings.getActivity().split(",");
+            boolean addOr = false;
+            if (activityElements.length < 3) {
+                for (String element : activityElements) {
+                    checkAndAddElement(activitySb, OR, addOr);
+                    if (JobBasicInfo.ACTIVITY_NOTSTARTED.equals(element)) {
+                        activitySb.append(getCorrectNameRepresentation(START_TIME)).append(" > ").append(DateTime.now().getMillis());
+                    } else if (JobBasicInfo.ACTIVITY_FINISHED.equals(element)) {
+                        activitySb.append(getCorrectNameRepresentation(END_TIME)).append(" < ").append(DateTime.now().getMillis())
+                                .append(AND).append(getCorrectNameRepresentation(END_TIME)).append(" != 0");
+                    } else {
+                        activitySb.append(" (").append(getCorrectNameRepresentation(START_TIME)).append(" <= ")
+                                .append(DateTime.now().getMillis()).append(" AND (")
+                                .append(getCorrectNameRepresentation(END_TIME)).append(" >= ")
+                                .append(DateTime.now().getMillis()).append(OR)
+                                .append(getCorrectNameRepresentation(END_TIME)).append(" = 0))");
+                    }
+                    addOr = true;
                 }
-                addOr = true;
             }
         }
         return activitySb.toString();
@@ -283,25 +282,28 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
 
     private String buildStatusFilter(JobsSearchSettings jobsSearchSettings) {
         StringBuilder statusSb = new StringBuilder();
-        String[] statusElements = jobsSearchSettings.getStatus().split(",");
-        boolean addOr = false; if (statusElements.length < 4) {
-            for(String element : statusElements) {
-                checkAndAddElement(statusSb, OR, addOr);
-                statusSb.append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ");
-                if (Trigger.TriggerState.ERROR.toString().equals(element)) {
-                    statusSb.append("\'").append(Trigger.TriggerState.ERROR.toString()).append("\'");
-                } else if (Trigger.TriggerState.BLOCKED.toString().equals(element)) {
-                    statusSb.append("\'").append(Trigger.TriggerState.BLOCKED.toString()).append("\'");
-                } else if (Trigger.TriggerState.PAUSED.toString().equals(element)) {
-                    statusSb.append("\'").append(Trigger.TriggerState.PAUSED.toString()).append("\'");
-                } else {
-                    statusSb.append("\'").append(Trigger.TriggerState.NORMAL.toString()).append("\'");
-                    statusSb.append(OR).append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ");
-                    statusSb.append("\'").append(Trigger.TriggerState.COMPLETE.toString()).append("\'");
-                    statusSb.append(OR).append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ");
-                    statusSb.append("\'").append(WAITING).append("\'");
+        if (jobsSearchSettings.getStatus() != null) {
+            String[] statusElements = jobsSearchSettings.getStatus().split(",");
+            boolean addOr = false;
+            if (statusElements.length < 4) {
+                for (String element : statusElements) {
+                    checkAndAddElement(statusSb, OR, addOr);
+                    statusSb.append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ");
+                    if (Trigger.TriggerState.ERROR.toString().equals(element)) {
+                        statusSb.append("\'").append(Trigger.TriggerState.ERROR.toString()).append("\'");
+                    } else if (Trigger.TriggerState.BLOCKED.toString().equals(element)) {
+                        statusSb.append("\'").append(Trigger.TriggerState.BLOCKED.toString()).append("\'");
+                    } else if (Trigger.TriggerState.PAUSED.toString().equals(element)) {
+                        statusSb.append("\'").append(Trigger.TriggerState.PAUSED.toString()).append("\'");
+                    } else {
+                        statusSb.append("\'").append(Trigger.TriggerState.NORMAL.toString()).append("\'");
+                        statusSb.append(OR).append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ");
+                        statusSb.append("\'").append(Trigger.TriggerState.COMPLETE.toString()).append("\'");
+                        statusSb.append(OR).append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ");
+                        statusSb.append("\'").append(WAITING).append("\'");
+                    }
+                    addOr = true;
                 }
-                addOr = true;
             }
         }
         return statusSb.toString();
