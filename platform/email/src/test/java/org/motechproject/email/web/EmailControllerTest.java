@@ -103,21 +103,6 @@ public class EmailControllerTest {
         assertEquals(filter.getRows(), captor.getValue().getQueryParams().getPageSize());
     }
 
-
-    @Test
-    public void shouldReturnAllEmailRecordsWhenNoFiltersSet() {
-        when(auditService.countEmailRecords(any(EmailRecordSearchCriteria.class))).thenReturn(88L);
-
-        EmailRecords<? extends BasicEmailRecordDto> records = emailController.getEmails(new GridSettings(), request);
-        assertEquals(Integer.valueOf(1), records.getPage());
-        assertEquals(Integer.valueOf(88), records.getRecords());
-        assertEquals(Integer.valueOf(9), records.getTotal());
-
-        ArgumentCaptor<EmailRecordSearchCriteria> captor = ArgumentCaptor.forClass(EmailRecordSearchCriteria.class);
-
-        verify(auditService).findEmailRecords(captor.capture());
-    }
-
     @Test
     public void shouldExportEmailAllAsCsv() throws Exception {
         StringWriter writer = new StringWriter();
