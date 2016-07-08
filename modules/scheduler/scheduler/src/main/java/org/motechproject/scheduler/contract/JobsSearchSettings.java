@@ -1,7 +1,7 @@
 package org.motechproject.scheduler.contract;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-
+import static org.apache.commons.lang.StringUtils.defaultString;
 /**
  * <code>JobsSearchSettings</code> is the class used for passing search criteria to the Service Layer,
  * it tells how the <code>MotechSchedulerDatabaseService</code> should filter jobs information.
@@ -21,7 +21,7 @@ public class JobsSearchSettings {
     private String timeTo;
 
     public boolean areFiltersEmpty() {
-        if (isBlank(name + activity + status + timeFrom + timeTo)) {
+        if (isBlank(defaultString(name) + defaultString(activity) + defaultString(status) + defaultString(timeFrom) + defaultString(timeTo))) {
             return true;
         }
         return false;
