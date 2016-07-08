@@ -59,7 +59,7 @@ public final class SchedulableJobBuilder {
         Map<String, Object> params = dataMap.getWrappedMap();
         Map<String, Object> metadata = (Map<String, Object>) params.get(EVENT_METADATA);
         params.remove(EVENT_METADATA);
-        if(metadata !=null){
+        if (metadata != null) {
             params.putAll(metadata);
         }
         JobDataMap map = new JobDataMap(params);

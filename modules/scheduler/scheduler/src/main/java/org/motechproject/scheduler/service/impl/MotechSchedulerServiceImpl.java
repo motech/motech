@@ -9,7 +9,6 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.builder.SchedulableJobBuilder;
 import org.motechproject.scheduler.contract.CronJobId;
 import org.motechproject.scheduler.contract.CronSchedulableJob;
-import org.motechproject.scheduler.contract.DayOfWeekJobId;
 import org.motechproject.scheduler.contract.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobId;
@@ -61,17 +60,8 @@ import java.util.Set;
 import static java.lang.String.format;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.commons.date.util.DateUtil.now;
-import static org.motechproject.scheduler.constants.SchedulerConstants.EVENT_METADATA;
-import static org.motechproject.scheduler.constants.SchedulerConstants.EVENT_TYPE_KEY_NAME;
-import static org.motechproject.scheduler.constants.SchedulerConstants.IGNORE_PAST_FIRES_AT_START;
-import static org.motechproject.scheduler.constants.SchedulerConstants.IS_DAY_OF_WEEK;
-import static org.motechproject.scheduler.constants.SchedulerConstants.UI_DEFINED;
-import static org.motechproject.scheduler.constants.SchedulerConstants.USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE;
-import static org.motechproject.scheduler.validation.SchedulableJobValidator.validateCronSchedulableJob;
-import static org.motechproject.scheduler.validation.SchedulableJobValidator.validateDayOfWeekSchedulableJob;
-import static org.motechproject.scheduler.validation.SchedulableJobValidator.validateRepeatingPeriodSchedulableJob;
-import static org.motechproject.scheduler.validation.SchedulableJobValidator.validateRepeatingSchedulableJob;
-import static org.motechproject.scheduler.validation.SchedulableJobValidator.validateRunOnceSchedulableJob;
+import static org.motechproject.scheduler.constants.SchedulerConstants.*;
+import static org.motechproject.scheduler.validation.SchedulableJobValidator.*;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.JobKey.jobKey;
@@ -270,17 +260,17 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     @Override
     public void unscheduleJob(SchedulableJob job) {
         assertArgumentNotNull(job);
-        JobId jobId=null;
+        JobId jobId = null;
         if (job instanceof CronSchedulableJob) {
-            jobId=new CronJobId(job.getMotechEvent());
+            jobId = new CronJobId(job.getMotechEvent());
         } else if (job instanceof RepeatingSchedulableJob) {
-            jobId=new RepeatingJobId(job.getMotechEvent());
+            jobId = new RepeatingJobId(job.getMotechEvent());
         } else if (job instanceof RepeatingPeriodSchedulableJob) {
-            jobId=new RepeatingPeriodJobId(job.getMotechEvent());
+            jobId = new RepeatingPeriodJobId(job.getMotechEvent());
         } else if (job instanceof RunOnceSchedulableJob) {
-            jobId=new RunOnceJobId(job.getMotechEvent());
-        } else if (job instanceof DayOfWeekSchedulableJob){
-            jobId=new DayOfWeekJobId(job.getMotechEvent());
+            jobId = new RunOnceJobId(job.getMotechEvent());
+        } else if (job instanceof DayOfWeekSchedulableJob) {
+            jobId = new CronJobId(job.getMotechEvent());
         }
         unscheduleJob(jobId);
     }
