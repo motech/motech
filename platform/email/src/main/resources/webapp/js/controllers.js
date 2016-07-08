@@ -18,7 +18,7 @@
                         ModalFactory.showSuccessAlert('email.header.success', 'email.sent');
                     },
                     function (response) {
-                        ModalFactory.showErrorWithStackTrace('email.header.error', 'server.error', response);
+                        ModalFactory.showErrorWithStackTrace('email.header.error', 'server.error', response.data.Error);
                     }
                 );
             }
@@ -33,7 +33,7 @@
                     ModalFactory.showSuccessAlert('email.header.success', 'email.sent');
                 },
                 function (response) {
-                    ModalFactory.showErrorWithStackTrace('email.header.error', 'server.error', response);
+                    ModalFactory.showErrorWithStackTrace('email.header.error', 'server.error', response.data.Error);
                 }
             );
         };

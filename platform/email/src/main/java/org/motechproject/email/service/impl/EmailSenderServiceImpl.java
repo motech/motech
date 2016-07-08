@@ -56,7 +56,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         } catch (MailException e) {
             log(new EmailRecord(mail.getFromAddress(), mail.getToAddress(), mail.getSubject(), mail.getMessage(),
                     now(), DeliveryStatus.ERROR));
-            throw new EmailSendException("Unable to send an email to " + mail.getToAddress(), e);
+            throw new EmailSendException("{\"Error\":\"Unable to send an email to " + mail.getToAddress() + "\"}", e);
         }
     }
 
