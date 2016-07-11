@@ -39,21 +39,6 @@
           "displayName": "testNameWithPrefix"
         }
       ]
-    },
-    {
-      "displayName": "Test Action With Post Action Params",
-      "serviceInterface": "org.motechproject.testmodule.service.TasksTestService",
-      "serviceMethod": "createTestObject",
-      "actionParameters": [
-        {
-          "key": "testName",
-          "displayName": "testName"
-        },
-        {
-          "key": "testNameWithPrefix",
-          "displayName": "testNameWithPrefix"
-        }
-      ]
     }
   ]
 }
