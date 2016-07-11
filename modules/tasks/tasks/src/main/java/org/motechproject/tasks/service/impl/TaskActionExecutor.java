@@ -1,6 +1,7 @@
 package org.motechproject.tasks.service.impl;
 
 import com.google.common.collect.Multimap;
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
@@ -138,13 +139,13 @@ public class TaskActionExecutor {
                         try {
                             String userInput = keyEvaluator.evaluateTemplateString(template);
                             Object obj = actionParameter.getType().parse(userInput);
-                            if (obj.equals("") && keyEvaluator.getTaskContext().getTriggerParameters().containsKey(key)) {
-                                obj = keyEvaluator.getTaskContext().getTriggerParameters().get(key);
-                            }
                             parameters.put(key, obj);
                         } catch (MotechException ex) {
                             throw new TaskHandlerException(TRIGGER, ex.getMessage(), ex, key);
                         }
+                }
+                if (StringUtils.isBlank(parameters.get(key).toString()) && keyEvaluator.getTaskContext().getTriggerParameters().containsKey(key)) {
+                    parameters.put(key, keyEvaluator.getTaskContext().getTriggerParameters().get(key));
                 }
             } else {
                 if (actionParameter.isRequired()) {
