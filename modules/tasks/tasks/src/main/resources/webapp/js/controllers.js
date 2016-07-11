@@ -6,7 +6,7 @@
 
     var controllers = angular.module('tasks.controllers', []);
 
-    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope, $http, ManageTaskUtils,  ModalFactory, LoadingModal) {
+    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, Settings, $rootScope, $http, ManageTaskUtils,  ModalFactory, LoadingModal) {
         var tasks, activities = [],
             searchMatch = function (item, method, searchQuery) {
                 var result;
@@ -51,6 +51,7 @@
         $scope.currentFilter = 'allItems';
         $scope.formatInput = [];
         $scope.util = ManageTaskUtils;
+        $rootScope.settings = Settings.get();
 
         innerLayout({
             spacing_closed: 30,
@@ -206,61 +207,69 @@
         $scope.getTasks();
     });
 
-    controllers.controller('TasksRecentActivityCtrl', function ($scope, Tasks, Activities) {
+    controllers.controller('TasksRecentActivityCtrl', function ($scope, $rootScope, Tasks, Activities) {
 
-            var RECENT_TASK_COUNT = 7, tasks, activities = [];
+        var RECENT_TASK_COUNT = 7, tasks, activities = [];
 
-            $scope.activities = [];
-            $scope.formatInput = [];
+        $scope.activities = [];
+        $scope.formatInput = [];
 
-            $scope.getNumberOfActivities = function(id, type) {
-                var numberOfActivities;
-                $.ajax({
-                    url: '../tasks/api/activity/' + id + '/' + type,
-                    success:  function(data) {
-                        numberOfActivities = data;
-                    },
-                    async: false
-                });
+        $scope.getNumberOfActivities = function(id, type) {
+            var numberOfActivities;
+            $.ajax({
+                url: '../tasks/api/activity/' + id + '/' + type,
+                success:  function(data) {
+                    numberOfActivities = data;
+                },
+                async: false
+            });
 
-                return numberOfActivities;
-            };
+            return numberOfActivities;
+        };
 
-            $scope.getTasks = function () {
+        $scope.getTasks = function () {
 
-                tasks = Tasks.query(function () {
-                    activities = Activities.query(function () {
-                        var item, i, j;
+            tasks = Tasks.query(function () {
+                activities = Activities.query(function () {
+                    var item, i, j;
 
-                        for (i = 0; i < tasks.length; i += 1) {
-                            item = {
-                                task: tasks[i],
-                                success: $scope.getNumberOfActivities(tasks[i].id, 'SUCCESS'),
-                                error: $scope.getNumberOfActivities(tasks[i].id, 'ERROR')
-                            };
-                        }
+                    for (i = 0; i < tasks.length; i += 1) {
+                        item = {
+                            task: tasks[i],
+                            success: $scope.getNumberOfActivities(tasks[i].id, 'SUCCESS'),
+                            error: $scope.getNumberOfActivities(tasks[i].id, 'ERROR')
+                        };
+                    }
 
-                        for (i = 0; i < RECENT_TASK_COUNT && i < activities.length; i += 1) {
-                            for (j = 0; j < tasks.length; j += 1) {
-                                if (activities[i].task === tasks[j].id) {
-                                    $scope.activities.push({
-                                        task: activities[i].task,
-                                        trigger: tasks[j].trigger,
-                                        actions: tasks[j].actions,
-                                        date: activities[i].date,
-                                        type: activities[i].activityType,
-                                        name: tasks[j].name
-                                    });
-                                    break;
-                                }
+                    for (i = 0; i < RECENT_TASK_COUNT && i < activities.length; i += 1) {
+                        for (j = 0; j < tasks.length; j += 1) {
+                            if (activities[i].task === tasks[j].id) {
+                                $scope.activities.push({
+                                    task: activities[i].task,
+                                    trigger: tasks[j].trigger,
+                                    actions: tasks[j].actions,
+                                    date: activities[i].date,
+                                    type: activities[i].activityType,
+                                    name: tasks[j].name
+                                });
+                                break;
                             }
                         }
-                    });
+                    }
                 });
-            };
-            $scope.getTasks();
+            });
+        };
+        $scope.getTasks();
 
-        });
+        $scope.showLogInfo = function() {
+        var a=$rootScope.settings.taskLogActivities;
+        if (a !== "All") {
+        return true;
+        } else {
+        return false;
+        }
+        };
+    });
 
     controllers.controller('TasksFilterCtrl', function($scope, $rootScope) {
 
@@ -1195,10 +1204,10 @@
     });
 
 
-    controllers.controller('TasksSettingsCtrl', function ($scope, Settings, ModalFactory) {
-        $scope.settings = Settings.get();
+    controllers.controller('TasksSettingsCtrl', function ($scope, $rootScope, Settings, ModalFactory) {
+        $rootScope.settings = Settings.get();
 
-        $scope.activityTypes = ['All', 'Only failure', 'None'];
+        $scope.logActivityOptions = ['All', 'Only failure', 'None'];
 
         innerLayout({
             spacing_closed: 30,
@@ -1207,7 +1216,7 @@
         });
 
         $scope.submit = function() {
-            $scope.settings.$save(function() {
+            $rootScope.settings.$save(function() {
                 ModalFactory.showSuccessAlert('task.settings.success.saved', 'server.saved');
             }, function() {
                 ModalFactory.showErrorAlert('task.settings.error.saved', 'server.error');
@@ -1225,7 +1234,7 @@
         };
 
         $scope.isNumeric = function(prop) {
-            return $scope.settings.hasOwnProperty(prop) && /^[0-9]+$/.test($scope.settings[prop]);
+            return $rootScope.settings.hasOwnProperty(prop) && /^[0-9]+$/.test($rootScope.settings[prop]);
         };
 
     });

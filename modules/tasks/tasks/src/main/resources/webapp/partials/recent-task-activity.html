@@ -2,13 +2,14 @@
 <div>
     <div class="box-content clearfix">
         <table id="table-activity" class="table table-striped table-lightblue table-recent-activity table-condensed centered">
-            <tbody ng-show="activities.length == 0">
-            <tr>
+            <tbody>
+            <tr ng-show="activities.length == 0">
                 <td>{{msg('task.info.notFoundActivities')}}</td>
             </tr>
-            </tbody>
-            <tbody ng-hide="activities.length == 0">
-            <tr ng-repeat="activity in activities">
+            <tr ng-show="showLogInfo()">
+                <td colspan="5">{{msg('task.info.logsDisabled')}}</td>
+            </tr>
+            <tr ng-repeat="activity in activities" ng-hide="activities.length == 0">
                 <td>
                     <div>
                         <img ng-src="../server/module/icon?bundleName={{activity.trigger.moduleName}}&defaultIcon=iconTaskChannel.png" class="recent-activity-img"/>

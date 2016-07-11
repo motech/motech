@@ -352,8 +352,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         return number;
     }
 
-    private String getTaskLogActivities()
-    {
+    private String getTaskLogActivities() {
         return settings.getProperty(TASK_LOG_ACTIVITIES);
     }
     @Autowired(required = false)

@@ -4,12 +4,12 @@
         <div ng-class="cssClass('taskPossibleErrors')" class="form-group">
             <label class="col-md-2 col-sm-3 control-label" for="taskPossibleErrors">{{msg('task.settings.label.possibleErrors')}}:</label>
             <div class="form-inline col-md-10 col-sm-9">
-                <input class="form-control input-auto setting-input" ng-model="settings.taskPossibleErrors" type="text" id="taskPossibleErrors" required/>
+                <input class="form-control input-auto" ng-model="settings.taskPossibleErrors" type="text" id="taskPossibleErrors" required/>
                 <span ng-hide="isNumeric('taskPossibleErrors')" class="form-hint">{{msg('task.settings.error.possibleErrors')}}</span>
             </div>
             <label class="col-md-2 col-sm-3 control-label">{{msg('task.settings.label.logActivities')}}:</label>
             <div class="form-inline col-md-10 col-sm-9">
-                <select class="form-control input-auto setting-input" ng-model="settings.taskLogActivities" ng-options="activity for activity in activityTypes"></select>
+                <select class="form-control input-auto" ng-model="settings.taskLogActivities" ng-options="option for option in logActivityOptions"></select>
             </div>
         </div>
         <div class="form-group">
