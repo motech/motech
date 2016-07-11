@@ -144,9 +144,7 @@ public class TaskActionExecutor {
                             throw new TaskHandlerException(TRIGGER, ex.getMessage(), ex, key);
                         }
                 }
-                if (StringUtils.isBlank(parameters.get(key).toString()) && keyEvaluator.getTaskContext().getTriggerParameters().containsKey(key)) {
-                    parameters.put(key, keyEvaluator.getTaskContext().getTriggerParameters().get(key));
-                }
+                fillEmptyValues(parameters, key, keyEvaluator);
             } else {
                 if (actionParameter.isRequired()) {
                     throw new TaskHandlerException(
@@ -262,6 +260,12 @@ public class TaskActionExecutor {
         }
 
         return serviceAvailable;
+    }
+
+    private void fillEmptyValues(Map<String, Object> parameters, String key, KeyEvaluator keyEvaluator) {
+        if (StringUtils.isBlank(parameters.get(key).toString()) && keyEvaluator.getTaskContext().getTriggerParameters().containsKey(key)) {
+            parameters.put(key, keyEvaluator.getTaskContext().getTriggerParameters().get(key));
+        }
     }
 
     private void addPostActionParametersToTaskContext(ActionEvent action, Integer actionIndex, TaskContext taskContext, Object object) throws TaskHandlerException {
