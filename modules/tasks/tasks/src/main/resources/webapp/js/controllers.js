@@ -1198,6 +1198,8 @@
     controllers.controller('TasksSettingsCtrl', function ($scope, Settings, ModalFactory) {
         $scope.settings = Settings.get();
 
+        $scope.activityTypes = ['All', 'Only failure', 'None'];
+
         innerLayout({
             spacing_closed: 30,
             east__minSize: 200,

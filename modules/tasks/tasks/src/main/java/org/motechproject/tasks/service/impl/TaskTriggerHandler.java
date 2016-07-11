@@ -65,6 +65,12 @@ public class TaskTriggerHandler implements TriggerHandler {
 
     private static final String TASK_POSSIBLE_ERRORS_KEY = "task.possible.errors";
 
+    private static final String TASK_LOG_ACTIVITIES = "task.log.activities";
+    
+    private static final String LOG_NONE_ACTIVITIES = "None";
+    
+    private static final String LOG_ALL_ACTIVITIES = "All";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskTriggerHandler.class);
 
     @Autowired
@@ -246,7 +252,9 @@ public class TaskTriggerHandler implements TriggerHandler {
     private void handleError(Map<String, Object> params, Task task, TaskHandlerException e) {
         LOGGER.warn("Omitted task: {} with ID: {} because: {}", task.getName(), task.getId(), e);
 
-        activityService.addError(task, e, params);
+        if (!getTaskLogActivities().equals(LOG_NONE_ACTIVITIES)) {
+            activityService.addError(task, e, params);
+        }
         task.incrementFailuresInRow();
 
         LOGGER.warn("The number of failures for task: {} is: {}", task.getName(), task.getFailuresInRow());
@@ -256,9 +264,10 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         if (failureNumber >= possibleErrorsNumber) {
             task.setEnabled(false);
-
-            activityService.addWarning(task);
             publishTaskDisabledMessage(task.getName());
+            if (!getTaskLogActivities().equals(LOG_NONE_ACTIVITIES)) {
+                activityService.addWarning(task);
+            }
         }
 
         taskService.save(task);
@@ -284,8 +293,9 @@ public class TaskTriggerHandler implements TriggerHandler {
 
     private void handleSuccess(Map<String, Object> params, Task task) {
         LOGGER.debug("All actions from task: {} with ID: {} were successfully executed", task.getName(), task.getId());
-
-        activityService.addSuccess(task);
+        if (getTaskLogActivities().equals(LOG_ALL_ACTIVITIES)) {
+            activityService.addSuccess(task);
+        }
         task.resetFailuresInRow();
         taskService.save(task);
 
@@ -342,6 +352,10 @@ public class TaskTriggerHandler implements TriggerHandler {
         return number;
     }
 
+    private String getTaskLogActivities()
+    {
+        return settings.getProperty(TASK_LOG_ACTIVITIES);
+    }
     @Autowired(required = false)
     public void setBundleContext(BundleContext bundleContext) {
         this.executor.setBundleContext(bundleContext);
