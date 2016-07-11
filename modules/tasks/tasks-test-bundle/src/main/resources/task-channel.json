@@ -22,6 +22,38 @@
                 "displayName": "Foo"
             }
         ]
+    },
+    {
+      "displayName": "Test Action return Post Action Params",
+      "serviceInterface": "org.motechproject.testmodule.service.TasksTestService",
+      "serviceMethod": "createTestObjectWithPostActionParameter",
+      "actionParameters": [
+        {
+          "key": "testName",
+          "displayName": "testName"
+        }
+      ],
+      "postActionParameters": [
+        {
+          "key": "testNameWithPrefix",
+          "displayName": "testNameWithPrefix"
+        }
+      ]
+    },
+    {
+      "displayName": "Test Action With Post Action Params",
+      "serviceInterface": "org.motechproject.testmodule.service.TasksTestService",
+      "serviceMethod": "createTestObject",
+      "actionParameters": [
+        {
+          "key": "testName",
+          "displayName": "testName"
+        },
+        {
+          "key": "testNameWithPrefix",
+          "displayName": "testNameWithPrefix"
+        }
+      ]
     }
   ]
 }
