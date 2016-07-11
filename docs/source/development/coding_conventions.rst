@@ -243,7 +243,7 @@ To allow for easier integation testing of MOTECH-UI, we are using a naming conve
 
 |v| **Do** use following pattern:
 
-{module}.{location}.{entity-id}.{action}
+{module}.{location}.{entity-id}.{error}.{action}
 
 1. Module
 Module refers to the OSGI bundle or AngularJS module name that the element belongs to. 
@@ -273,7 +273,16 @@ The entity id refers to a repeating id which is used in lists of links.
 
 |v| **Consider** using appropriate non-numeric id, in preference to a numeric id.
 
-4. Action
+4. Error (optional)
+If element is used for error messages use ".errors." before action.
+
+.. code-block:: html
+	<lu id="email.send.subject-errors">
+		<li id="email.send.subject.errors.lenght">message</li>
+		<li id="email.send.subject.errors.required">message</li>
+	</lu>
+	
+5. Action
 Action should describe what the button, input, or form does. 
 If this is a link it should refer to where the link goes.
 
