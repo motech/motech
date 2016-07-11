@@ -138,6 +138,9 @@ public class TaskActionExecutor {
                         try {
                             String userInput = keyEvaluator.evaluateTemplateString(template);
                             Object obj = actionParameter.getType().parse(userInput);
+                            if (obj.equals("") && keyEvaluator.getTaskContext().getTriggerParameters().containsKey(key)) {
+                                obj = keyEvaluator.getTaskContext().getTriggerParameters().get(key);
+                            }
                             parameters.put(key, obj);
                         } catch (MotechException ex) {
                             throw new TaskHandlerException(TRIGGER, ex.getMessage(), ex, key);
