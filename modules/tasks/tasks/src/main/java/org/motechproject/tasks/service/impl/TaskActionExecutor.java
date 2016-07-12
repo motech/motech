@@ -77,7 +77,7 @@ public class TaskActionExecutor {
 
         ActionEvent action = getActionEvent(actionInformation);
         Map<String, Object> parameters = createParameters(actionInformation, action, keyEvaluator);
-        addTriggerParameters(parameters, taskContext.getTriggerParameters());
+        addTriggerParameters(task, action, parameters, taskContext.getTriggerParameters());
 
         LOGGER.debug("Parameters created: {} for task action: {}", parameters.toString(), action.getName());
         if (action.hasService() && bundleContext != null) {
@@ -261,10 +261,12 @@ public class TaskActionExecutor {
         return serviceAvailable;
     }
 
-    private void addTriggerParameters(Map<String, Object> parameters, Map<String, Object> triggerParameters) {
-        for (Map.Entry<String, Object> entry : triggerParameters.entrySet()) {
-            if (!parameters.containsKey(entry.getKey())) {
-                parameters.put(entry.getKey(), entry.getValue());
+    private void addTriggerParameters(Task task, ActionEvent action, Map<String, Object> parameters, Map<String, Object> triggerParameters) {
+        if (task.getNumberOfRetries() > 0 && !action.hasService()) {
+            for (Map.Entry<String, Object> entry : triggerParameters.entrySet()) {
+                if (! parameters.containsKey(entry.getKey())) {
+                    parameters.put(entry.getKey(), entry.getValue());
+                }
             }
         }
     }
