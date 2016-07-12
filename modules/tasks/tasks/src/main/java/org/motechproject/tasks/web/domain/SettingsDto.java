@@ -9,7 +9,6 @@ public class SettingsDto {
 
     private String taskLogActivities;
 
-
     public String getTaskPossibleErrors() {
         return taskPossibleErrors;
     }
