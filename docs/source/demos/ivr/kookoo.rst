@@ -48,7 +48,7 @@ Two KooKoo Tunes
             <collectdtmf l="1">
                 <playtext>Please type a number from 0 to 9</playtext>
             </collectdtmf>
-            <gotourl>http://yourserver.com/motech-platform-server/module/ivr/template/kookoo/goodbye</gotourl>
+            <gotourl>http://yourserver.com/motech-platform-server/ivr/template/kookoo/goodbye</gotourl>
         </Response>
 
     Name it **helloworld** and copy/paste the XML above in the value text area:

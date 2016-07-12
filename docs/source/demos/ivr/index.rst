@@ -52,7 +52,7 @@ SMS Module Config
     they receive an SMS. There typically will be some way of setting that up on their website. They probably need a URL
     to send an HTTP request to. This is where you give them the address of your Motech server. So if your server is
     accessible on the web at ``http://zebra.motechcloud.org:8080`` the complete URL you would provide your SMS provider
-    would be ``http://zebra.motechcloud.org:8080/motech-platform-server/module/sms/incoming/plivo`` where ``plivo`` is
+    would be ``http://zebra.motechcloud.org:8080/motech-platform-server/sms/incoming/plivo`` where ``plivo`` is
     the name of the SMS Config you created for that SMS provider.
 
 The Demos, Finally...

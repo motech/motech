@@ -32,7 +32,7 @@ public class RestAPIAuthenticationIT extends BaseTomcatIT {
             InterruptedException {
 
         HttpGet statusRequest =
-                new HttpGet(String.format("http://%s:%d/motech-platform-server/module/server/web-api/status", HOST, PORT));
+                new HttpGet(String.format("http://%s:%d/motech-platform-server/server/web-api/status", HOST, PORT));
 
         HttpResponse response = HTTP_CLIENT.execute(statusRequest, HttpStatus.SC_UNAUTHORIZED);
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());

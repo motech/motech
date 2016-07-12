@@ -150,7 +150,7 @@ public class SwaggerGeneratorTest {
         assertEquals(json(), swaggerModel.getProduces());
         assertEquals("2.0", swaggerModel.getSwagger());
         assertEquals(asList("http"), swaggerModel.getSchemes());
-        assertEquals("/motech-platform-server/module/mds/rest", swaggerModel.getBasePath());
+        assertEquals("/motech-platform-server/mds/rest", swaggerModel.getBasePath());
 
         Info info = swaggerModel.getInfo();
 

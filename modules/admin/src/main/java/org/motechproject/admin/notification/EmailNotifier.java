@@ -90,6 +90,6 @@ public class EmailNotifier {
         if (serverUrl == null) {
             serverUrl = "";
         }
-        return serverUrl + "/module/server/?moduleName=admin#/messages";
+        return serverUrl + "/server/?moduleName=admin#/messages";
     }
 }
