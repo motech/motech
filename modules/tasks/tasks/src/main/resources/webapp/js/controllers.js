@@ -261,13 +261,11 @@
         };
         $scope.getTasks();
 
-        $scope.showLogInfo = function() {
-        var a=$rootScope.settings.taskLogActivities;
-        if (a !== "All") {
-        return true;
-        } else {
-        return false;
-        }
+        $scope.logsDisabled = function() {
+            return ($rootScope.settings.taskLogActivities === "None");
+        };
+        $scope.successLogsDisabled = function() {
+            return ($rootScope.settings.taskLogActivities === "Only failure");
         };
     });
 
@@ -1121,7 +1119,7 @@
         });
     });
 
-    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http, ModalFactory, LoadingModal) {
+    controllers.controller('TasksLogCtrl', function ($scope, $rootScope, Tasks, Activities, $stateParams, $filter, $http, ModalFactory, LoadingModal) {
         var data, task;
 
         $scope.taskId = $stateParams.taskId;
@@ -1174,6 +1172,13 @@
 
         $scope.refresh = function () {
             $("#taskHistoryTable").trigger('reloadGrid');
+        };
+
+        $scope.logsDisabled = function() {
+            return ($rootScope.settings.taskLogActivities === "None");
+        };
+        $scope.successLogsDisabled = function() {
+            return ($rootScope.settings.taskLogActivities === "Only failure");
         };
 
         $scope.clearHistory = function () {

@@ -6,8 +6,15 @@
             <tr ng-show="activities.length == 0">
                 <td>{{msg('task.info.notFoundActivities')}}</td>
             </tr>
-            <tr ng-show="showLogInfo()">
-                <td colspan="5">{{msg('task.info.logsDisabled')}}</td>
+            <tr ng-show="logsDisabled()">
+                <td colspan="5" >
+                    <a class="activity-warn" href="#/tasks/settings">{{msg('task.info.logsDisabled')}}</a>
+                </td>
+            </tr>
+            <tr ng-show="successLogsDisabled()">
+                <td colspan="5">
+                    <a class="activity-warn" href="#/tasks/settings">{{msg('task.info.successLogsDisabled')}}</a>
+                </td>
             </tr>
             <tr ng-repeat="activity in activities" ng-hide="activities.length == 0">
                 <td>
