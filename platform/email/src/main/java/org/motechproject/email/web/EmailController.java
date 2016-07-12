@@ -9,10 +9,10 @@ import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.constants.EmailRolesConstants;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
-import org.motechproject.email.domain.EmailRecords;
 import org.motechproject.email.service.EmailAuditService;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Order;
+import org.motechproject.mds.web.domain.Records;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -42,7 +42,7 @@ import static org.apache.commons.lang.CharEncoding.UTF_8;
 
 /**
  * The <code>EmailController</code> class is used by view layer for getting information
- * about all {@link EmailRecords} or single {@link EmailRecord}. It stores the most recent
+ * about all {@link Records} or single {@link EmailRecord}. It stores the most recent
  * records and allows filtering and sorting them by given criteria.
  */
 
@@ -57,7 +57,7 @@ public class EmailController {
     @RequestMapping(value = "/emails", method = RequestMethod.GET)
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseBody
-    public EmailRecords<? extends BasicEmailRecordDto> getEmails(GridSettings filter, HttpServletRequest request) {
+    public Records<? extends BasicEmailRecordDto> getEmails(GridSettings filter, HttpServletRequest request) {
         EmailRecordSearchCriteria criteria = prepareCriteria(filter);
 
         List<EmailRecord> filtered = auditService.findEmailRecords(criteria);
@@ -80,15 +80,15 @@ public class EmailController {
             lastFilter.put(username, filter);
         }
 
-        return new EmailRecords<>((int) total, filter.getPage(), totalPages, rows);
+        return new Records<>((int) total, filter.getPage(), totalPages, rows);
     }
 
     @RequestMapping(value = "/emails/{mailid}", method = RequestMethod.GET)
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseBody
-    public EmailRecords<EmailRecordDto> getEmail(@PathVariable int mailid) {
+    public Records<EmailRecordDto> getEmail(@PathVariable int mailid) {
         EmailRecordDto record = new EmailRecordDto(auditService.findById(mailid));
-        return new EmailRecords<>(1, 1, 1, Arrays.asList(record));
+        return new Records<>(1, 1, 1, Arrays.asList(record));
     }
 
     @RequestMapping(value = "/emails/months/", method = RequestMethod.GET)
