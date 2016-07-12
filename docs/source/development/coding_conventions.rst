@@ -277,10 +277,10 @@ The entity id refers to a repeating id which is used in lists of links.
 If element is used for error messages use ".errors." before action.
 
 .. code-block:: html
-	<lu id="email.send.subject-errors">
-		<li id="email.send.subject.errors.lenght">message</li>
+	<ul id="email.send.subject-errors">
+		<li id="email.send.subject.errors.length">message</li>
 		<li id="email.send.subject.errors.required">message</li>
-	</lu>
+	</ul>
 	
 5. Action
 Action should describe what the button, input, or form does. 
