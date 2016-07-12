@@ -9,7 +9,7 @@
             </span>
         </label>
         <div class="col-md-10 col-sm-9 form-inline">
-            <ng-form name="{{field.name}}">
+            <ng-form name="{{field.name}}_fieldName">
                 <div ng-include="loadEditValueForm(field, true)"></div>
                 <span class="form-hint form-hint-bottom" ng-if="!isMapField(field)" ng-show="{{field.name}}.$error.required && !{{field.name}}.$pristine">{{msg('mds.error.requiredField')}}</span>
                 <div class="clearfix"></div>

@@ -3545,16 +3545,16 @@
                 elm.on('keyup', function () {
                     scope.$apply(function () {
                         elm.siblings('#visited-hint-' + fieldId).addClass('hidden');
-                        if (scope[fieldName] !== undefined) {
-                            scope[fieldName].$dirty = false;
+                        if (scope[fieldName + "_fieldName"] !== undefined) {
+                            scope[fieldName + "_fieldName"].$dirty = false;
                         }
                     });
                     clearTimeout(typingTimer);
                     typingTimer = setTimeout( function() {
                         elm.siblings('#visited-hint-' + fieldId).removeClass('hidden');
                         scope.$apply(function () {
-                            if (scope[fieldName] !== undefined) {
-                                scope[fieldName].$dirty = true;
+                            if (scope[fieldName + "_fieldName"] !== undefined) {
+                                scope[fieldName + "_fieldName"].$dirty = true;
                             }
                         });
                     }, 1500);
@@ -3563,8 +3563,8 @@
                 elm.on("blur", function() {
                     scope.$apply(function () {
                         elm.siblings('#visited-hint-' + fieldId).removeClass('hidden');
-                        if (scope[fieldName] !== undefined) {
-                            scope[fieldName].$dirty = true;
+                        if (scope[fieldName + "_fieldName"] !== undefined) {
+                            scope[fieldName + "_fieldName"].$dirty = true;
                         }
                     });
                 });
