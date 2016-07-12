@@ -129,10 +129,6 @@ public class KeyEvaluator {
         return value;
     }
 
-    public TaskContext getTaskContext() {
-        return taskContext;
-    }
-
     private String manipulateValue(List<String> manipulations, String value) throws TaskHandlerException {
         String manipulateValue = value;
         for (String manipulation : manipulations) {

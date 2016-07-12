@@ -1,7 +1,6 @@
 package org.motechproject.tasks.service.impl;
 
 import com.google.common.collect.Multimap;
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
@@ -78,6 +77,7 @@ public class TaskActionExecutor {
 
         ActionEvent action = getActionEvent(actionInformation);
         Map<String, Object> parameters = createParameters(actionInformation, action, keyEvaluator);
+        addTriggerParameters(parameters, taskContext.getTriggerParameters());
 
         LOGGER.debug("Parameters created: {} for task action: {}", parameters.toString(), action.getName());
         if (action.hasService() && bundleContext != null) {
@@ -144,7 +144,6 @@ public class TaskActionExecutor {
                             throw new TaskHandlerException(TRIGGER, ex.getMessage(), ex, key);
                         }
                 }
-                fillEmptyValues(parameters, key, keyEvaluator);
             } else {
                 if (actionParameter.isRequired()) {
                     throw new TaskHandlerException(
@@ -262,9 +261,11 @@ public class TaskActionExecutor {
         return serviceAvailable;
     }
 
-    private void fillEmptyValues(Map<String, Object> parameters, String key, KeyEvaluator keyEvaluator) {
-        if (StringUtils.isBlank(parameters.get(key).toString()) && keyEvaluator.getTaskContext().getTriggerParameters().containsKey(key)) {
-            parameters.put(key, keyEvaluator.getTaskContext().getTriggerParameters().get(key));
+    private void addTriggerParameters(Map<String, Object> parameters, Map<String, Object> triggerParameters) {
+        for (Map.Entry<String, Object> entry : triggerParameters.entrySet()) {
+            if (!parameters.containsKey(entry.getKey())) {
+                parameters.put(entry.getKey(), entry.getValue());
+            }
         }
     }
 
