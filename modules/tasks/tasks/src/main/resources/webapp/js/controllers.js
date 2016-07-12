@@ -138,6 +138,13 @@
             });
         };
 
+        $rootScope.logsDisabled = function() {
+            return ($rootScope.settings.taskLogActivities === "None");
+        };
+        $rootScope.successLogsDisabled = function() {
+            return ($rootScope.settings.taskLogActivities === "Only failure");
+        };
+
         $rootScope.search = function () {
             $scope.filteredItems = $filter('filter')($scope.allTasks, function (item) {
                 return item && searchMatch(item, $scope.currentFilter, $rootScope.query);
@@ -260,13 +267,6 @@
             });
         };
         $scope.getTasks();
-
-        $scope.logsDisabled = function() {
-            return ($rootScope.settings.taskLogActivities === "None");
-        };
-        $scope.successLogsDisabled = function() {
-            return ($rootScope.settings.taskLogActivities === "Only failure");
-        };
     });
 
     controllers.controller('TasksFilterCtrl', function($scope, $rootScope) {
@@ -1172,13 +1172,6 @@
 
         $scope.refresh = function () {
             $("#taskHistoryTable").trigger('reloadGrid');
-        };
-
-        $scope.logsDisabled = function() {
-            return ($rootScope.settings.taskLogActivities === "None");
-        };
-        $scope.successLogsDisabled = function() {
-            return ($rootScope.settings.taskLogActivities === "Only failure");
         };
 
         $scope.clearHistory = function () {

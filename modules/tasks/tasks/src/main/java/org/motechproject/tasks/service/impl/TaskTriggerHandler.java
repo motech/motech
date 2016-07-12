@@ -65,7 +65,7 @@ public class TaskTriggerHandler implements TriggerHandler {
 
     private static final String TASK_POSSIBLE_ERRORS_KEY = "task.possible.errors";
 
-    private static final String TASK_LOG_ACTIVITIES = "task.log.activities";
+    private static final String TASK_LOG_ACTIVITIES_KEY = "task.log.activities";
     
     private static final String LOG_NONE_ACTIVITIES = "None";
     
@@ -353,7 +353,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     }
 
     private String getTaskLogActivities() {
-        return settings.getProperty(TASK_LOG_ACTIVITIES);
+        return settings.getProperty(TASK_LOG_ACTIVITIES_KEY);
     }
     @Autowired(required = false)
     public void setBundleContext(BundleContext bundleContext) {

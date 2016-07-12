@@ -60,8 +60,8 @@ public class SettingsControllerTest {
 
         controller.saveSettings(dto);
 
-        verify(settingsFacade, times(1)).setProperty(eq(TASK_LOG_ACTIVITIES_KEY), anyString());
-        verify(settingsFacade, times(1)).setProperty(eq(TASK_POSSIBLE_ERRORS_KEY), anyString());
+        verify(settingsFacade, times(1)).setProperty(eq(TASK_LOG_ACTIVITIES_KEY), eq(TASK_LOG_ACTIVITIES_VALUE));
+        verify(settingsFacade, times(1)).setProperty(eq(TASK_POSSIBLE_ERRORS_KEY), eq(TASK_POSSIBLE_ERRORS_VALUE));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -70,9 +70,6 @@ public class SettingsControllerTest {
         dto.setTaskPossibleErrors(null);
         dto.setTaskLogActivities(null);
         controller.saveSettings(dto);
-
-        verify(settingsFacade, never()).setProperty(eq(TASK_LOG_ACTIVITIES_KEY), anyString());
-        verify(settingsFacade, times(1)).setProperty(eq(TASK_POSSIBLE_ERRORS_KEY), anyString());
     }
 
 }

@@ -16,7 +16,9 @@
                     <a class="activity-warn" href="#/tasks/settings">{{msg('task.info.successLogsDisabled')}}</a>
                 </td>
             </tr>
-            <tr ng-repeat="activity in activities" ng-hide="activities.length == 0">
+            </tbody>
+            <tbody ng-hide="activities.length == 0">
+            <tr ng-repeat="activity in activities">
                 <td>
                     <div>
                         <img ng-src="../server/module/icon?bundleName={{activity.trigger.moduleName}}&defaultIcon=iconTaskChannel.png" class="recent-activity-img"/>
