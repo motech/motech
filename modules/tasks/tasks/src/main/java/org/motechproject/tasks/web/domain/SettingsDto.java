@@ -7,6 +7,8 @@ public class SettingsDto {
 
     private String taskPossibleErrors;
 
+    private String taskLogActivities;
+
     public String getTaskPossibleErrors() {
         return taskPossibleErrors;
     }
@@ -23,4 +25,11 @@ public class SettingsDto {
         return true;
     }
 
+    public String getTaskLogActivities() {
+        return taskLogActivities;
+    }
+
+    public void setTaskLogActivities(String taskLogActivities) {
+        this.taskLogActivities = taskLogActivities;
+    }
 }

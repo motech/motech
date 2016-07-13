@@ -7,6 +7,10 @@
                 <input class="form-control input-auto" ng-model="settings.taskPossibleErrors" type="text" id="taskPossibleErrors" required/>
                 <span ng-hide="isNumeric('taskPossibleErrors')" class="form-hint">{{msg('task.settings.error.possibleErrors')}}</span>
             </div>
+            <label class="col-md-2 col-sm-3 control-label">{{msg('task.settings.label.logActivities')}}:</label>
+            <div class="form-inline col-md-10 col-sm-9">
+                <select class="form-control input-auto" ng-model="settings.taskLogActivities" ng-options="option for option in logActivityOptions"></select>
+            </div>
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-sm -offset-3 col-md-10 col-sm-9">

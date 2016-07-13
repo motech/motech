@@ -52,6 +52,8 @@
                 <label >{{msg('task.header.filterActivity')}}</label>
                 <select class="form-control input-auto" ng-model="selectedActivityType" ng-change="changeActivityTypeFilter()" ng-options="activity for activity in activityTypes"></select>
                 <a class="btn btn-default" ng-click="refresh()"><i class="fa fa-refresh"></i>&nbsp;{{msg('admin.refresh')}}</a>
+                <a class="activity-warn history-info" ng-show="logsDisabled()" href="#/tasks/settings">{{msg('task.info.logsDisabled')}}</a>
+                <a class="activity-warn history-info" ng-show="successLogsDisabled()" href="#/tasks/settings">{{msg('task.info.successLogsDisabled')}}</a>
             </div>
             <div id="outsideTaskHistoryTable" class="overrideJqgridTable">
                 <table id="taskHistoryTable" task-history-grid="pageTaskHistoryTable"></table>
