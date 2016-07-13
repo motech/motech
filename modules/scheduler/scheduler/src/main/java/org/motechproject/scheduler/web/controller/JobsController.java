@@ -151,7 +151,7 @@ public class JobsController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public void unScheduleJob(@RequestBody JobBasicInfo jobInfo) {
-        SchedulableJob schedulableJob=motechSchedulerService.getJob(jobInfo);
+        SchedulableJob schedulableJob = motechSchedulerService.getJob(jobInfo);
         motechSchedulerService.unscheduleJob(schedulableJob);
     }
 
