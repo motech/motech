@@ -92,16 +92,32 @@
         }
 
         $scope.unscheduleJob = function(job) {
-            ModalFactory.showConfirm("scheduler.confirm.unschedule", "scheduler.confirm", function(response) {
+                ModalFactory.showConfirm("scheduler.confirm.unschedule", "scheduler.confirm", function(response) {
+                function failure(response) {
+                    var error="";
+                    if (response.status == 500) {
+                        error = "Something unexpected happened";
+                    } else if (response.status == 404) {
+                        error = "The url used does not exist";
+                    } else {
+                        error = response.data;
+                    }
+                    ModalFactory.showAlert({
+                        title: $scope.msg("scheduler.error"),
+                        message: error
+                    });
+                    LoadingModal.close();
+                }
+                function success()  {
+                    JobsService.fetchJobs();
+                }
                 if (response) {
                     LoadingModal.open();
                     // Go back to previous page when deleting last record on the given page
                     if ($scope.jobs.rows.length === 1 && $scope.jobs.page > 1) {
                         JobsService.setParam("page", $scope.jobs.page - 1);
                     }
-                    JobsService.unscheduleJob(job,function(){
-                        JobsService.fetchJobs();
-                    });
+                    JobsService.unscheduleJob(job, success, failure);
                 }
             })
         }
@@ -282,7 +298,7 @@
             } else if (action === 'edit'){
                 ModalFactory.showConfirm("scheduler.confirm.updateJob", "scheduler.confirm", function(response) {
                     if (response) {
-                        LoadingModal.open();;
+                        LoadingModal.open();
                         JobsService.updateJob(job, success, failure);
                     }
                 });

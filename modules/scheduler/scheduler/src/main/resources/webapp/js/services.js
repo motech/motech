@@ -85,8 +85,8 @@
             "deleteJob": function(job, success) {
                 source.deleteJob(job, success);
             },
-            "unscheduleJob": function(job, success) {
-                source.unscheduleJob(job, success);
+            "unscheduleJob": function(job, success, failure) {
+                source.unscheduleJob(job, success, failure);
             },
             "setListener": function(scope) {
                 listener = scope;
