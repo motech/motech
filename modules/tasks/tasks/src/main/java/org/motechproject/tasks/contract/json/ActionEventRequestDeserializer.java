@@ -27,6 +27,7 @@ public class ActionEventRequestDeserializer implements JsonDeserializer<ActionEv
     public static final String SERVICE_METHOD_FIELD = "serviceMethod";
     public static final String SERVICE_METHOD_CALL_MANNER_FIELD = "serviceMethodCallManner";
     public static final String ACTION_PARAMETERS_FIELD = "actionParameters";
+    public static final String POST_ACTION_PARAMETERS_FIELD = "postActionParameters";
 
     @Override
     public ActionEventRequest deserialize(JsonElement element, Type type, JsonDeserializationContext context) {
@@ -50,6 +51,17 @@ public class ActionEventRequestDeserializer implements JsonDeserializer<ActionEv
                     boolean changeOrder = parameter.getOrder() == null;
 
                     actionEvent.addParameter(parameter, changeOrder);
+                }
+            }
+
+            if (jsonObject.has(POST_ACTION_PARAMETERS_FIELD)) {
+                JsonArray jsonArray = jsonObject.getAsJsonArray(POST_ACTION_PARAMETERS_FIELD);
+
+                for (int i = 0; i < jsonArray.size(); ++i) {
+                    ActionParameterRequest parameter = context.deserialize(jsonArray.get(i), ActionParameterRequest.class);
+                    boolean changeOrder = parameter.getOrder() == null;
+
+                    actionEvent.addPostActionParameter(parameter, changeOrder);
                 }
             }
 

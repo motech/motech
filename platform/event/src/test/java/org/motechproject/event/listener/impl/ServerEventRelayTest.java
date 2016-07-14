@@ -1,6 +1,5 @@
 package org.motechproject.event.listener.impl;
 
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,11 +10,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.domain.BuggyListener;
+import org.motechproject.event.exception.CallbackServiceNotFoundException;
+import org.motechproject.event.listener.EventCallbackService;
 import org.motechproject.event.listener.EventListener;
-import org.motechproject.event.listener.impl.EventListenerRegistry;
-import org.motechproject.event.listener.impl.ServerEventRelay;
 import org.motechproject.event.messaging.MotechEventConfig;
 import org.motechproject.event.messaging.OutboundEventGateway;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 
@@ -44,6 +45,8 @@ public class ServerEventRelayTest {
     public static final String SECONDARY_LISTENER_IDENTIFIER = "secondary-test-identifier";
     public static final String SUBJECT = "org.motechproject.server.someevent";
 
+    private static final String TEST_SERVICE_CALLBACK = "TestServiceCallback";
+
     @Mock
     private OutboundEventGateway outboundEventGateway;
 
@@ -62,11 +65,20 @@ public class ServerEventRelayTest {
     @Mock
     private EventListenerRegistry registry;
 
+    @Mock
+    private BundleContext bundleContext;
+
+    @Mock
+    private ServiceReference<EventCallbackService> serviceReference;
+
+    @Mock
+    private EventCallbackService callbackService;
+
     private ServerEventRelay eventRelay;
 
     @Before
     public void setUp() throws Exception {
-        eventRelay = new ServerEventRelay(outboundEventGateway, registry, motechEventConfig, eventAdmin);
+        eventRelay = new ServerEventRelay(outboundEventGateway, registry, motechEventConfig, eventAdmin, bundleContext);
 
         when(eventListener.getIdentifier()).thenReturn(LISTENER_IDENTIFIER);
         when(secondaryEventListener.getIdentifier()).thenReturn(SECONDARY_LISTENER_IDENTIFIER);
@@ -78,6 +90,52 @@ public class ServerEventRelayTest {
         setUpListeners(SUBJECT, eventListener);
         eventRelay.relayQueueEvent(motechEvent);
         verify(eventListener).handle(motechEvent);
+    }
+
+    @Test
+    public void shouldNotifyCallbackServiceOnSuccessfulEventHandling() throws Exception {
+        MotechEvent motechEvent = createEvent(LISTENER_IDENTIFIER);
+        motechEvent.setCallbackName(TEST_SERVICE_CALLBACK);
+        setUpListeners(SUBJECT, eventListener);
+
+        when(bundleContext.getServiceReferences(EventCallbackService.class, null)).thenReturn(Arrays.asList(serviceReference));
+        when(bundleContext.getService(serviceReference)).thenReturn(callbackService);
+        when(callbackService.getName()).thenReturn(TEST_SERVICE_CALLBACK);
+
+        eventRelay.relayQueueEvent(motechEvent);
+
+        verify(eventListener).handle(motechEvent);
+        verify(callbackService).successCallback(motechEvent);
+    }
+
+    @Test(expected = CallbackServiceNotFoundException.class)
+    public void shouldThrowExceptionWhenCallbackServiceOfTheGivenNameIsNotFound() throws Exception {
+        MotechEvent motechEvent = createEvent(LISTENER_IDENTIFIER);
+        motechEvent.setCallbackName(TEST_SERVICE_CALLBACK);
+        setUpListeners(SUBJECT, eventListener);
+
+        eventRelay.relayQueueEvent(motechEvent);
+
+        verify(eventListener).handle(motechEvent);
+        verify(callbackService).successCallback(motechEvent);
+    }
+
+    @Test
+    public void shouldNotifyCallbackServiceOnFailedEventHandling() throws Exception {
+        MotechEvent motechEvent = createEvent(LISTENER_IDENTIFIER);
+        motechEvent.setCallbackName(TEST_SERVICE_CALLBACK);
+        setUpListeners(SUBJECT, eventListener);
+
+        when(bundleContext.getServiceReferences(EventCallbackService.class, null)).thenReturn(Arrays.asList(serviceReference));
+        when(bundleContext.getService(serviceReference)).thenReturn(callbackService);
+        when(callbackService.getName()).thenReturn(TEST_SERVICE_CALLBACK);
+        RuntimeException initCause = new RuntimeException();
+        doThrow(new RuntimeException("Failed", initCause)).when(eventListener).handle(any(MotechEvent.class));
+
+        eventRelay.relayQueueEvent(motechEvent);
+
+        verify(eventListener).handle(motechEvent);
+        verify(callbackService).failureCallback(motechEvent, initCause);
     }
 
     @Test

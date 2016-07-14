@@ -1389,8 +1389,8 @@
                                     firstLoad = false;
                                 }
                             },
-                            loadError: function() {
-                                scope.setDataRetrievalError(true);
+                            loadError: function(e) {
+                                scope.setDataRetrievalError(true, e.responseText);
                             }
                         });
 
@@ -2268,9 +2268,7 @@
                         fieldPath = fieldPath.substring(fieldPath.indexOf('.') + 1);
                     }
 
-                    value = _.isBoolean(ngModel.$modelValue)
-                        ? !ngModel.$modelValue
-                        : ngModel.$modelValue;
+                    value = ngModel.$modelValue;
 
                     viewScope.draft({
                         edit: true,
@@ -2811,6 +2809,26 @@
                     }
                     else {
                         ctrl.$setValidity('char', false);
+                        return viewValue;
+                    }
+                });
+            }
+        };
+    });
+    
+    directives.directive('uuidValidity', function() {
+        var UUID_REGEXP = new RegExp('^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$');
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                var elm = angular.element(element), originalValue;
+                ctrl.$parsers.unshift(function(viewValue) {
+                    if(viewValue === '' || UUID_REGEXP.test(viewValue)) {
+                        ctrl.$setValidity('uuid', true);
+                        return viewValue;
+                    }
+                    else {
+                        ctrl.$setValidity('uuid', false);
                         return viewValue;
                     }
                 });

@@ -112,6 +112,8 @@ public class TaskFilterExecutor {
             filterCheck = checkFilterForNumber(filter, new BigDecimal(value.toString()));
         } else if (type == ParameterType.DATE) {
             filterCheck = checkFilterForDate(filter, DateTime.parse(value.toString()));
+        } else if (type == ParameterType.BOOLEAN) {
+            filterCheck = checkFilterForBoolean(filter, Boolean.parseBoolean(value.toString()));
         } else {
             filterCheck = false;
         }
@@ -176,6 +178,30 @@ public class TaskFilterExecutor {
                     break;
                 case EXIST:
                     result = true;
+                    break;
+                default:
+                    result = false;
+            }
+        }
+
+        return result;
+    }
+
+    private boolean checkFilterForBoolean(Filter filter, Boolean param) {
+        OperatorType operatorType = OperatorType.fromString(filter.getOperator());
+        boolean result = false;
+        boolean expressionValue = Boolean.parseBoolean(filter.getExpression());
+
+        if (operatorType != null) {
+            switch (operatorType) {
+                case IS_TRUE:
+                    result = param;
+                    break;
+                case AND:
+                    result = param && expressionValue;
+                    break;
+                case OR:
+                    result = param || expressionValue;
                     break;
                 default:
                     result = false;

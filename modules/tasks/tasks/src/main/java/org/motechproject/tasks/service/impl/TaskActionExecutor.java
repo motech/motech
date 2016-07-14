@@ -4,18 +4,18 @@ import com.google.common.collect.Multimap;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.tasks.domain.mds.channel.ActionEvent;
-import org.motechproject.tasks.domain.mds.channel.ActionParameter;
 import org.motechproject.tasks.domain.KeyInformation;
 import org.motechproject.tasks.domain.mds.ParameterType;
+import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.channel.ActionParameter;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 import org.motechproject.tasks.exception.TaskHandlerException;
-import org.motechproject.tasks.service.util.KeyEvaluator;
 import org.motechproject.tasks.service.TaskActivityService;
-import org.motechproject.tasks.service.util.TaskContext;
 import org.motechproject.tasks.service.TaskService;
+import org.motechproject.tasks.service.util.KeyEvaluator;
+import org.motechproject.tasks.service.util.TaskContext;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
@@ -32,10 +32,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import static org.motechproject.tasks.domain.mds.ParameterType.LIST;
-import static org.motechproject.tasks.domain.mds.ParameterType.MAP;
 import static org.motechproject.tasks.constants.TaskFailureCause.ACTION;
 import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
+import static org.motechproject.tasks.domain.mds.ParameterType.LIST;
+import static org.motechproject.tasks.domain.mds.ParameterType.MAP;
+
 
 /**
  * Builds action parameters from  {@link TaskContext} and executes the action by invoking its service or raising its event.
@@ -49,14 +50,15 @@ public class TaskActionExecutor {
 
     private TaskService taskService;
     private TaskActivityService activityService;
-    private KeyEvaluator keyEvaluator;
+    private TasksPostExecutionHandler postExecutionHandler;
 
     @Autowired
     public TaskActionExecutor(TaskService taskService, TaskActivityService activityService,
-                       EventRelay eventRelay) {
+                       EventRelay eventRelay, TasksPostExecutionHandler postExecutionHandler) {
         this.eventRelay = eventRelay;
         this.taskService = taskService;
         this.activityService = activityService;
+        this.postExecutionHandler = postExecutionHandler;
     }
 
     /**
@@ -64,30 +66,35 @@ public class TaskActionExecutor {
      *
      * @param task  the task for which its action should be executed, not null
      * @param actionInformation  the information about the action, not null
+     * @param actionIndex the order of the task action
      * @param taskContext  the context of the current task execution, not null
+     * @param activityId the ID of the activity associated with this execution
      * @throws TaskHandlerException when the task couldn't be executed
      */
-    public void execute(Task task, TaskActionInformation actionInformation, TaskContext taskContext) throws TaskHandlerException {
+    public void execute(Task task, TaskActionInformation actionInformation, Integer actionIndex, TaskContext taskContext, long activityId) throws TaskHandlerException {
         LOGGER.info("Executing task action: {} from task: {}", actionInformation.getName(), task.getName());
-        this.keyEvaluator = new KeyEvaluator(taskContext);
-        ActionEvent action = getActionEvent(actionInformation);
-        Map<String, Object> parameters = createParameters(actionInformation, action);
-        LOGGER.debug("Parameters created: {} for task action: {}", parameters.toString(), action.getName());
+        KeyEvaluator keyEvaluator = new KeyEvaluator(taskContext);
 
+        ActionEvent action = getActionEvent(actionInformation);
+        Map<String, Object> parameters = createParameters(actionInformation, action, keyEvaluator);
+        addTriggerParameters(task, action, parameters, taskContext.getTriggerParameters());
+
+        LOGGER.debug("Parameters created: {} for task action: {}", parameters.toString(), action.getName());
         if (action.hasService() && bundleContext != null) {
-            if (callActionServiceMethod(action, parameters)) {
+            if (callActionServiceMethod(action, actionIndex, parameters, taskContext)) {
                 LOGGER.info("Action: {} from task: {} was executed through an OSGi service call", actionInformation.getName(), task.getName());
+                postExecutionHandler.handleActionExecuted(taskContext.getTriggerParameters(), taskContext.getMetadata(), activityId);
                 return;
             }
             LOGGER.info("There is no service: {}", action.getServiceInterface());
+
             activityService.addWarning(task, "task.warning.serviceUnavailable", action.getServiceInterface());
         }
-
         if (!action.hasSubject()) {
             throw new TaskHandlerException(ACTION, "task.error.cantExecuteAction");
         } else {
+            eventRelay.sendEventMessage(new MotechEvent(action.getSubject(), parameters, TasksEventCallbackService.TASKS_EVENT_CALLBACK_NAME, taskContext.getMetadata()));
             LOGGER.info("Event: {} was sent", action.getSubject());
-            eventRelay.sendEventMessage(new MotechEvent(action.getSubject(), parameters));
         }
     }
 
@@ -105,7 +112,7 @@ public class TaskActionExecutor {
     }
 
     private Map<String, Object> createParameters(TaskActionInformation info,
-                                         ActionEvent action) throws TaskHandlerException {
+                                         ActionEvent action, KeyEvaluator keyEvaluator) throws TaskHandlerException {
         SortedSet<ActionParameter> actionParameters = action.getActionParameters();
         Map<String, Object> parameters = new HashMap<>(actionParameters.size());
 
@@ -123,10 +130,10 @@ public class TaskActionExecutor {
 
                 switch (actionParameter.getType()) {
                     case LIST:
-                        parameters.put(key, convertToList((List<String>) LIST.parse(template)));
+                        parameters.put(key, convertToList((List<String>) LIST.parse(template), keyEvaluator));
                         break;
                     case MAP:
-                        parameters.put(key, convertToMap(template));
+                        parameters.put(key, convertToMap(template, keyEvaluator));
                         break;
                     default:
                         try {
@@ -156,28 +163,25 @@ public class TaskActionExecutor {
         return parameters;
     }
 
-    private Map<Object, Object> convertToMap(String template) throws TaskHandlerException {
+    private Map<Object, Object> convertToMap(String template, KeyEvaluator keyEvaluator) throws TaskHandlerException {
         String[] rows = template.split("(\\r)?\\n");
         Map<Object, Object> tempMap = new HashMap<>(rows.length);
 
         for (String row : rows) {
             String[] array = row.split(":", 2);
-            Object mapKey;
             Object mapValue;
 
             switch (array.length) {
                 case 2:
                     array[1] = array[1].trim();
-                    mapKey = getValue(array[0]);
-                    mapValue = getValue(array[1]);
 
                     tempMap.put(
-                        ParameterType.getType(mapKey.getClass()).parse(keyEvaluator.evaluateTemplateString(array[0])),
-                        ParameterType.getType(mapValue.getClass()).parse(keyEvaluator.evaluateTemplateString(array[1]))
+                        keyEvaluator.evaluateTemplateString(array[0]),
+                        keyEvaluator.evaluateTemplateString(array[1])
                     );
                     break;
                 case 1:
-                    mapValue = getValue(array[0]);
+                    mapValue = getValue(array[0], keyEvaluator);
                     if (mapValue instanceof Multimap) {
                         tempMap.putAll(((Multimap) mapValue).asMap());
                     } else {
@@ -190,23 +194,24 @@ public class TaskActionExecutor {
         return tempMap;
     }
 
-    private List<Object> convertToList(List<String> templates) throws TaskHandlerException {
+    private List<Object> convertToList(List<String> templates, KeyEvaluator keyEvaluator) throws TaskHandlerException {
         List<Object> tempList = new ArrayList<>();
 
         for (String template : templates) {
-            Object value = getValue(template.trim());
-
-            if (value instanceof Collection) {
-                tempList.addAll((Collection) value);
-            } else {
-                tempList.add(ParameterType.getType(value.getClass()).parse(keyEvaluator.evaluateTemplateString(template)));
+            Object value = getValue(template.trim(), keyEvaluator);
+            if (value != null) {
+                if (value instanceof Collection) {
+                    tempList.addAll((Collection) value);
+                } else {
+                    tempList.add(ParameterType.getType(value.getClass()).parse(keyEvaluator.evaluateTemplateString(template)));
+                }
             }
         }
 
         return tempList;
     }
 
-    private Object getValue(String row) throws TaskHandlerException {
+    private Object getValue(String row, KeyEvaluator keyEvaluator) throws TaskHandlerException {
         List<KeyInformation> keys = KeyInformation.parseAll(row);
 
         Object result;
@@ -220,23 +225,25 @@ public class TaskActionExecutor {
         return result;
     }
 
-    private boolean callActionServiceMethod(ActionEvent action, Map<String, Object> parameters)
+    private boolean callActionServiceMethod(ActionEvent action, Integer actionIndex, Map<String, Object> parameters, TaskContext taskContext)
             throws TaskHandlerException {
         ServiceReference reference = bundleContext.getServiceReference(
                 action.getServiceInterface()
         );
         boolean serviceAvailable = reference != null;
-
         if (serviceAvailable) {
             Object service = bundleContext.getService(reference);
             String serviceMethod = action.getServiceMethod();
             MethodHandler methodHandler = new MethodHandler(action, parameters);
-
             try {
                 Method method = service.getClass().getMethod(serviceMethod, methodHandler.getClasses());
 
                 try {
-                    method.invoke(service, methodHandler.getObjects());
+                    Object object = method.invoke(service, methodHandler.getObjects());
+
+                    if (object != null) {
+                        addPostActionParametersToTaskContext(action, actionIndex, taskContext, object);
+                    }
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     throw new TaskHandlerException(
                             ACTION, "task.error.serviceMethodInvokeError", e,
@@ -252,6 +259,23 @@ public class TaskActionExecutor {
         }
 
         return serviceAvailable;
+    }
+
+    private void addTriggerParameters(Task task, ActionEvent action, Map<String, Object> parameters, Map<String, Object> triggerParameters) {
+        if (task.getNumberOfRetries() > 0 && !action.hasService()) {
+            for (Map.Entry<String, Object> entry : triggerParameters.entrySet()) {
+                if (! parameters.containsKey(entry.getKey())) {
+                    parameters.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+    }
+
+    private void addPostActionParametersToTaskContext(ActionEvent action, Integer actionIndex, TaskContext taskContext, Object object) throws TaskHandlerException {
+        for (ActionParameter postActionParameter : action.getPostActionParameters()) {
+
+            taskContext.addPostActionParameterObject(actionIndex.toString(), postActionParameter.getKey(), object, true);
+        }
     }
 
     void setBundleContext(BundleContext bundleContext) {

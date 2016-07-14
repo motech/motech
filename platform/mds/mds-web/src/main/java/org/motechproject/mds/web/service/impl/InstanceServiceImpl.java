@@ -23,6 +23,7 @@ import org.motechproject.mds.exception.entity.EntityNotFoundException;
 import org.motechproject.mds.exception.field.FieldNotFoundException;
 import org.motechproject.mds.exception.field.FieldReadOnlyException;
 import org.motechproject.mds.exception.lookup.LookupExecutionException;
+import org.motechproject.mds.exception.lookup.LookupExecutorException;
 import org.motechproject.mds.exception.lookup.LookupNotFoundException;
 import org.motechproject.mds.exception.object.ObjectCreateException;
 import org.motechproject.mds.exception.object.ObjectNotFoundException;
@@ -90,6 +91,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import static org.motechproject.mds.util.Constants.MetadataKeys.MAP_KEY_TYPE;
@@ -106,6 +108,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstanceServiceImpl.class);
     private static final int MAX_LENGTH = 80;
+    private static final String LOOKUP_EXCEPTION_MESSAGE_KEY = "mds.error.lookupExecError";
 
     private EntityService entityService;
     private BundleContext bundleContext;
@@ -131,7 +134,7 @@ public class InstanceServiceImpl implements InstanceService {
         validateNonEditableProperty(entity);
 
         List<FieldDto> entityFields = getEntityFields(entityRecord.getEntitySchemaId());
-
+ 
         try {
             MotechDataService service = getServiceForEntity(entity);
             Class<?> entityClass = getEntityClass(entity);
@@ -255,8 +258,14 @@ public class InstanceServiceImpl implements InstanceService {
                 List instances = (List) result;
                 return instancesToBasicRecords(instances, entity, fields, service, EntityType.STANDARD);
             }
+        } catch (LookupExecutorException e) {
+            if (e.getMessageKey() != null) {
+                throw new LookupExecutionException(e, e.getMessageKey());
+            } else {
+                throw new LookupExecutionException(e, LOOKUP_EXCEPTION_MESSAGE_KEY);
+            }
         } catch (RuntimeException e) {
-            throw new LookupExecutionException(e);
+            throw new LookupExecutionException(e, LOOKUP_EXCEPTION_MESSAGE_KEY);
         }
     }
 
@@ -305,7 +314,7 @@ public class InstanceServiceImpl implements InstanceService {
             LookupExecutor lookupExecutor = new LookupExecutor(service, lookup, fieldMap);
             return lookupExecutor.executeCount(lookupMap);
         } catch (RuntimeException e) {
-            throw new LookupExecutionException(e);
+            throw new LookupExecutionException(e, LOOKUP_EXCEPTION_MESSAGE_KEY);
         }
     }
 
@@ -954,6 +963,8 @@ public class InstanceServiceImpl implements InstanceService {
         } else if (null != holder && holder.isEnumCollection()) {
             String genericType = holder.getEnumName();
             parsedValue = TypeHelper.parse(valueAsString, holder.getTypeClassName(), genericType, classLoader);
+        } else if (parsedValue instanceof String && UUID.class.getName().equals(methodParameterType)) {
+            parsedValue = TypeHelper.parseStringToUUID(valueAsString);
         } else {
             parsedValue = TypeHelper.parse(valueAsString, methodParameterType, classLoader);
         }

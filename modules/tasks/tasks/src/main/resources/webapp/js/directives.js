@@ -92,6 +92,8 @@
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-ok.png" class="recent-activity-task-img"/>','ok',{ },'');
                                 } else if (activity === 'warning') {
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-question.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                } else if (activity === 'in progress') {
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-info.png" class="recent-activity-task-img"/>','ok',{ },'');
                                 } else if (activity === 'error') {
                                     activityId = $("#taskHistoryTable").getCell(rows[k],"id");
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType',
@@ -246,6 +248,13 @@
                         scope.field.objectId,
                         scope.msg(scope.field.displayName)
                     );
+                } else if(scope.field.prefix === ManageTaskUtils.POST_ACTION_PREFIX){
+                    scope.displayName = "{0}.{1}#{2}.{3}".format(
+                        scope.msg(scope.field.channelName),
+                        scope.msg(scope.field.actionName),
+                        scope.field.objectId,
+                        scope.msg(scope.field.displayName)
+                    );
                 } else if (scope.boolean) {
                     if(scope.boolean === 'true') {
                         scope.displayName = scope.msg("yes");
@@ -331,6 +340,9 @@
                 ManageTaskUtils.formatField(field)
                 );
         }
+        function isTagForPlaceholder (tag) {
+            return (tag.tagName && tag.tagName.toLowerCase() === 'em');
+        }
         function readContent (element) {
             var container = $('<div></div>');
             element.contents().each(function(){
@@ -342,7 +354,7 @@
                         field = ele.data('value');
                         container.append(formatField(field));
                     }
-                }else{
+                } else if (!isTagForPlaceholder(this)) {
                     container.append(ele.text());
                 }
             });
@@ -535,10 +547,18 @@
             restrict: 'A',
             scope: {
                 manipulations: "=",
-                manipulationType: "="
+                manipulationType: "=",
+                displayName: "=",
+                name: "@"
             },
             link: function (scope, element, attrs) {
-                
+                var isFilter = attrs.isFilter,
+                    name = scope.name,
+                    filter,
+                    displayNameOnly = scope.displayNameOnly;
+                if (isFilter) {
+                    filter = scope.$parent[name];
+                }
                 if(!scope.manipulationType){
                     return false;
                 }
@@ -549,8 +569,18 @@
                     return false;
                 }
                 element.on('click', function (event) {
-                    var modalScope;
-                    if (!$(event.target).hasClass('field-remove')){
+                    var modalScope,
+                        parseManipulationsFunction;
+                    if (!$(event.target).hasClass('field-remove')) {
+                        parseManipulationsFunction = function () {
+                            var str = "";
+                            if (scope.manipulations && Array.isArray(scope.manipulations)) {
+                                scope.manipulations.forEach(function(manipulation) {
+                                    str += "?{0}({1})".format(manipulation.type, manipulation.argument);
+                                });
+                            }
+                            filter.key = filter.displayName + str;
+                        };
                         window.getSelection().removeAllRanges(); // Make sure no text is selected...
                         
                         modalScope = scope.$new(true, scope);
@@ -585,6 +615,9 @@
                             }],
                             onhide: function(){
                                 modalScope.$destroy();
+                                if (isFilter) {
+                                    parseManipulationsFunction();
+                                }
                             }
                         });
                     }
@@ -831,6 +864,7 @@
                         changeYear: true,
                         dateFormat: 'yy-mm-dd',
                         timeFormat: 'HH:mm z',
+                        yearRange: '-100:+10',
                         showOn: true,
                         constrainInput: false,
                         onSelect: function (dateTex) {

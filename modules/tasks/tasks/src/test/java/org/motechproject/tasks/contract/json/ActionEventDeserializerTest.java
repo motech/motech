@@ -126,7 +126,8 @@ public class ActionEventDeserializerTest {
     @Test
     public void shouldDeserializeActionEvent() throws IOException {
         String json = "{description=\"description\", displayName=\"displayName\", subject=\"subject\", serviceInterface=\"serviceInterface\", serviceMethod=\"serviceMethod\"," +
-                "actionParameters=[{\"displayName\":\"externalId\",\"type\":\"UNICODE\",\"key\":\"ExternalId\",\"order\":3},{\"displayName\":\"motechId\",\"type\":\"INTEGER\",\"key\":\"MotechId\"}]}";
+                "actionParameters=[{\"displayName\":\"externalId\",\"type\":\"UNICODE\",\"key\":\"ExternalId\",\"order\":3},{\"displayName\":\"motechId\",\"type\":\"INTEGER\",\"key\":\"MotechId\"}]," +
+                "postActionParameters=[{\"displayName\":\"externalId\",\"key\":\"ExternalId\"}]}";
 
         TypeToken<ActionEventRequest> typeToken = new TypeToken<ActionEventRequest>() {
         };
@@ -139,6 +140,7 @@ public class ActionEventDeserializerTest {
         assertThat(actionEventRequest.getDisplayName(), is("displayName"));
         assertThat(actionEventRequest.getActionParameters().size(), is(2));
         assertThat(actionEventRequest.getActionParameters().iterator().next().getOrder(), is(3));
+        assertThat(actionEventRequest.getPostActionParameters().size(), is(1));
     }
 
     @Test

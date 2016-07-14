@@ -15,8 +15,10 @@ import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.motechproject.tasks.domain.KeyInformation.ADDITIONAL_DATA_PREFIX;
+import static org.motechproject.tasks.domain.KeyInformation.POST_ACTION_PARAMETER_PREFIX;
 import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 import static org.motechproject.tasks.domain.KeyInformation.parseAll;
+import static org.motechproject.tasks.constants.TaskFailureCause.POST_ACTION_PARAMETER;
 import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
 
 /**
@@ -94,6 +96,15 @@ public class KeyEvaluator {
                 break;
             case ADDITIONAL_DATA_PREFIX:
                 value = taskContext.getDataSourceObjectValue(keyInformation.getObjectId().toString(), keyInformation.getKey(), keyInformation.getObjectType());
+                break;
+            case POST_ACTION_PARAMETER_PREFIX:
+                try {
+                    value = taskContext.getPostActionParameterValue(keyInformation.getObjectId().toString(), keyInformation.getKey());
+                } catch (RuntimeException e) {
+                    throw new TaskHandlerException(
+                            POST_ACTION_PARAMETER, "task.error.objectDoesNotContainField", e, keyInformation.getKey()
+                    );
+                }
                 break;
             default:
         }

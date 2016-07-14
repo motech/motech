@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 public class QueueURLValidatorTest {
 
-    private static final List<String> INVALID_COMPOSITE_URLS = Arrays.asList("failoverr:(tcp://127.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100", "failover:(tcp://localhost:61616,tcp://remotehost:61616)?initialReconnectDelay=100",
+    private static final List<String> INVALID_COMPOSITE_URLS = Arrays.asList("failoverr:(tcp://127.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100",
             "failover:(tcp://256.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100", "failover:(tcp://127.0..0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100",
             "failover:((tcp:///127.0.0.1:61616,tcp://127.0.0.1:61616))?initialReconnectDelay=100", "failover:(tcp://127.0.0.1:61616,tcp://127.0.0.1:612616)?initialReconnectDelay=100",
             "failover:(tcp://127.0.0.1:61616,tcp://1217.0.0.1:61616)?initialReconnectDelay=100", "failover://(tcp://137.0.0.1:61616,tcp://137.0.0.1:61616)?timeout=3000",
@@ -48,8 +48,13 @@ public class QueueURLValidatorTest {
     }
 
     @Test
+    public void shouldAcceptValidQueueLocalURL() {
+        queueURLValidator.validate("http://activemq:61616");
+    }
+
+    @Test
     public void shouldAcceptValidQueueURLWithFQDN() {
-        queueURLValidator.validate("tcp://some.good.url:61616");
+        queueURLValidator.validate("tcp://some.good.url.com:61616");
     }
 
     @Test

@@ -535,7 +535,7 @@
                 $scope.task.actions = [];
             }
 
-            $scope.task.actions.push({});
+            $scope.task.actions.push({'postActionParameters': []});
         };
 
         $scope.removeAction = function (idx) {
@@ -729,6 +729,24 @@
         };
 
         $scope.getPopoverType = function(filter) {
+            if (!filter.manipulations || !Array.isArray(filter.manipulations)) {
+                if (filter.displayName) {
+                    var manipulations, manipulationsBuff;
+                    manipulationsBuff = filter.key.split('?');
+                    manipulationsBuff.shift();
+                    manipulations = [];
+                    manipulationsBuff.forEach(function (manipulationStr) {
+                        var manipulation = {},
+                        parts = manipulationStr.split('(');
+                        manipulation.type = parts.shift();
+                        if(parts.length > 0) {
+                            manipulation.argument = parts[0].replace(')','');
+                        }
+                        manipulations.push(manipulation);
+                    });
+                    filter.manipulations = manipulations;
+                }
+            }
             if (filter.type === 'UNICODE' || filter.type === 'TEXTAREA') {
                 return "STRING";
             } else if (filter.type === 'DATE') {
@@ -959,6 +977,12 @@
                 }
             });
 
+            angular.forEach($scope.task.taskConfig.steps, function (step) {
+                angular.forEach(step.filters, function (filter) {
+                    delete filter.manipulations;
+                });
+            });
+
             if (!$scope.task.retryTaskOnFailure) {
                 // If the retryTaskOnFailure flag is set on false, we set the following properties to undefined.
                 // The default values will be set for them in the backend.
@@ -1056,6 +1080,24 @@
                     });
                 });
             }
+
+            if ($scope.selectedAction && Array.isArray($scope.selectedAction)) {
+                $scope.selectedAction.forEach(function (action, idx) {
+                    if (action.postActionParameters && Array.isArray(action.postActionParameters)) {
+                        action.postActionParameters.forEach(function (postActionParameter) {
+                            postActionParameter.prefix = ManageTaskUtils.POST_ACTION_PREFIX;
+                            postActionParameter.objectId = idx;
+                            postActionParameter.channelName = $scope.task.actions[idx].channelName;
+                            postActionParameter.actionName = $scope.task.actions[idx].displayName;
+                            postActionParameter.displayName = postActionParameter.prefix.concat(".", postActionParameter.objectId,
+                                                                                                ".", postActionParameter.key
+                                                                                                );
+                            fields.push(postActionParameter);
+                        });
+                    }
+                });
+            }
+
             return fields;
         };
 
@@ -1074,7 +1116,8 @@
         var data, task;
 
         $scope.taskId = $stateParams.taskId;
-        $scope.activityTypes = ['All', 'Warning', 'Success', 'Error'];
+        $scope.activityTypes = ['All', 'In progress', 'Success', 'Warning', 'Error'];
+
         $scope.selectedActivityType = 'All';
 
         innerLayout({
@@ -1117,7 +1160,7 @@
             $('#taskHistoryTable').jqGrid('setGridParam', {
                 page: 1,
                 postData: {
-                    activityType: ($scope.selectedActivityType === 'All') ? '' : $scope.selectedActivityType.toUpperCase()
+                    activityType: ($scope.selectedActivityType === 'All') ? '' : $scope.selectedActivityType.toUpperCase().replace(/ /g, "_")
                 }}).trigger('reloadGrid');
         };
 
@@ -1207,7 +1250,7 @@
         }, function () {
             var i,j,key,value;
             if ($scope.pairs.length === 0 && $scope.data.value !== "" && $scope.data.value !== null && !$scope.dataTransformed) {
-                values = $scope.data.value.split("<br>");
+                values = $scope.data.value.split("\n");
 
                 for (i = 0; i < values.length; i += 1) {
                     keyValue = values[i].split(":");
@@ -1317,22 +1360,15 @@
         };
 
         $scope.addToDataValue = function (pair, index) {
-            var paired;
-            if (index > 0 && dragAndDrop) {
-                paired = "<div>" + pair.key + ":" + pair.value + "</div>";
-            } else {
-                paired = pair.key + ":" + pair.value;
-            }
-
-            if(!dragAndDrop) {
-                paired = paired.concat("\n");
-            }
-
             if ($scope.data.value === null) {
                 $scope.data.value = "";
             }
 
-            $scope.data.value = $scope.data.value.concat(paired);
+            if ($scope.data.value.length > 0) {
+                $scope.data.value = $scope.data.value.concat("\n" + pair.key + ":" + pair.value);
+            } else {
+                $scope.data.value = $scope.data.value.concat(pair.key + ":" + pair.value);
+            }
         };
     });
 }());

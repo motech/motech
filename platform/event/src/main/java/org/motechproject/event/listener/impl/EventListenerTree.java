@@ -21,7 +21,7 @@ public class EventListenerTree {
 
     private static final String SPLIT_REGEX = "\\.";
 
-    private List<EventListenerTree> children = new ArrayList<EventListenerTree>();
+    private List<EventListenerTree> children = new ArrayList<>();
     private EventListenerTree parent;
 
     private String pathElement;
@@ -324,20 +324,20 @@ public class EventListenerTree {
 
         for (Iterator<EventListenerTree> listenerIterator = children.iterator(); listenerIterator.hasNext();) {
             EventListenerTree child = listenerIterator.next();
-            if (child.containsListenersForBeanName(beanName) && child.allListenersEmpty()) {
+            if (child.removeListeners(beanName) && child.removeEmptyChildWithWildcardListeners()) {
                 listenerIterator.remove();
             }
         }
     }
 
-    private boolean allListenersEmpty() {
+    private boolean removeEmptyChildWithWildcardListeners() {
 
         if (children.size() == 0) {
             return this.getAllListeners().size() == 0;
         } else {
             for (Iterator<EventListenerTree> listenerIterator = children.iterator(); listenerIterator.hasNext();) {
                 EventListenerTree child = listenerIterator.next();
-                if (!child.allListenersEmpty() || isEmpty(wildcardListeners)) {
+                if (!child.removeEmptyChildWithWildcardListeners() || isEmpty(wildcardListeners)) {
                     return false;
                 } else {
                     listenerIterator.remove();
@@ -347,7 +347,7 @@ public class EventListenerTree {
         return true;
     }
 
-    private boolean containsListenersForBeanName(String beanName) {
+    private boolean removeListeners(String beanName) {
         boolean removed = false;
 
         if (listeners != null) {
@@ -370,7 +370,7 @@ public class EventListenerTree {
             }
         }
         for (EventListenerTree childTree : children) {
-            if (childTree.containsListenersForBeanName(beanName)) {
+            if (childTree.removeListeners(beanName)) {
                 removed = true;
             }
         }

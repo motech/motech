@@ -222,13 +222,13 @@
             var convertUrl = function (urlParam) {
                 if(urlParam.indexOf('/') === 0) {urlParam = urlParam.replace('/', '');}
                 if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace('/', '.');}
-                if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace('/.*', '');}
+                if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace(/(\/)\w+((\/)\w*)*/i, '');}
                 return urlParam;
             };
             if (url.indexOf('admin/bundleSettings/') > 0) {
                 $scope.selectedTabState.selectedTab = 'bundleSettings';
             } else {
-                $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
+                $scope.selectedTabState.selectedTab = url.replace(/(\/)\d+((\/)\w*)*/i, '').toString().substring(url.replace(/(\/)\d+((\/)\w*)*/i, '').toString().lastIndexOf("/")+1);
             }
             $scope.activeLink = {moduleName: moduleName, url: url};
 
@@ -247,7 +247,7 @@
                     if (url.indexOf('admin/bundleSettings/') > 0) {
                         $state.go('admin.bundleSettings', {'bundleId': url.substring(url.lastIndexOf("/")+1)});
                     } else {
-                        $state.go(convertUrl(url));
+                        $state.go(convertUrl(url), $state.params);
                     }
                     LoadingModal.close();
                     innerLayout({}, { show: false });
