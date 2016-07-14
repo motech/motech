@@ -58,12 +58,7 @@ public class ProxyServlet extends HttpServlet {
         if (felixServlet == null) {
             LOGGER.warn("OSGi proxy servlet not yet initialized, yet received request for {} from {}",
                     req.getPathInfo(), req.getRemoteAddr());
-        } else if (OsgiListener.isBootstrapPresent() && OsgiListener.isServerBundleActive()) {
-            res.sendRedirect("server/");
-        } else if (OsgiListener.inFatalError()) {
-            res.sendRedirect("server/error/startup");
         } else {
-            res.sendRedirect("server/bootstrap/");
             felixServlet.service(req, res);
         }
     }

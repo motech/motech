@@ -60,7 +60,6 @@
     </bean>
 
     <security:http auto-config="false" entry-point-ref="loginFormAuthentication" use-expressions="true">
-        <security:custom-filter ref="resourcesFilter" before="FIRST"/>
         <security:custom-filter position="LOGOUT_FILTER" ref="logoutFilter"/>
         <security:custom-filter position="FORM_LOGIN_FILTER" ref="userAuthenticationProcessingFilter"/>
         <security:custom-filter position="OPENID_FILTER" ref="openIdAuthenticationProcessingFilter"/>
@@ -71,8 +70,6 @@
         <security:authentication-provider ref="motechAuthenticationProvider"/>
         <security:authentication-provider ref="motechOpenIdAuthenticationProvider"/>
     </security:authentication-manager>
-
-    <bean id="resourcesFilter" class="org.motechproject.security.filter.ResourcesFilter"></bean>
 
     <bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
         <constructor-arg value="/server/login"/>
