@@ -62,15 +62,11 @@ import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
 public class TaskTriggerHandler implements TriggerHandler {
 
     private static final String BEAN_NAME = "taskTriggerHandler";
-
     private static final String TASK_POSSIBLE_ERRORS_KEY = "task.possible.errors";
-
     private static final String TASK_LOG_ACTIVITIES_KEY = "task.log.activities";
-    
     private static final String LOG_NONE_ACTIVITIES = "None";
-    
+    private static final String LOG_FAILURE_ACTIVITIES = "Only failure";
     private static final String LOG_ALL_ACTIVITIES = "All";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskTriggerHandler.class);
 
     @Autowired
@@ -252,7 +248,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     private void handleError(Map<String, Object> params, Task task, TaskHandlerException e) {
         LOGGER.warn("Omitted task: {} with ID: {} because: {}", task.getName(), task.getId(), e);
 
-        if (!getTaskLogActivities().equals(LOG_NONE_ACTIVITIES)) {
+        if (logFailureActivities()) {
             activityService.addError(task, e, params);
         }
         task.incrementFailuresInRow();
@@ -265,7 +261,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         if (failureNumber >= possibleErrorsNumber) {
             task.setEnabled(false);
             publishTaskDisabledMessage(task.getName());
-            if (!getTaskLogActivities().equals(LOG_NONE_ACTIVITIES)) {
+            if (logFailureActivities()) {
                 activityService.addWarning(task);
             }
         }
@@ -293,7 +289,7 @@ public class TaskTriggerHandler implements TriggerHandler {
 
     private void handleSuccess(Map<String, Object> params, Task task) {
         LOGGER.debug("All actions from task: {} with ID: {} were successfully executed", task.getName(), task.getId());
-        if (getTaskLogActivities().equals(LOG_ALL_ACTIVITIES)) {
+        if (logSuccessActivities()) {
             activityService.addSuccess(task);
         }
         task.resetFailuresInRow();
@@ -355,6 +351,16 @@ public class TaskTriggerHandler implements TriggerHandler {
     private String getTaskLogActivities() {
         return settings.getProperty(TASK_LOG_ACTIVITIES_KEY);
     }
+
+    private boolean logFailureActivities() {
+        String taskLogActivities = getTaskLogActivities();
+        return taskLogActivities.equals(LOG_NONE_ACTIVITIES) || taskLogActivities.equals(LOG_FAILURE_ACTIVITIES);
+    }
+
+    private boolean logSuccessActivities() {
+        return getTaskLogActivities().equals(LOG_ALL_ACTIVITIES);
+    }
+
     @Autowired(required = false)
     public void setBundleContext(BundleContext bundleContext) {
         this.executor.setBundleContext(bundleContext);
