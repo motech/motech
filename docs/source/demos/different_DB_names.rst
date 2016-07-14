@@ -28,16 +28,16 @@ The first step is to follow the :doc: `implementer's setup guide <../get_started
    #Stop the tomcat7 server
    sudo service tomcat7 stop
    #Create a file called motech-settings.properties that has the configuration variables
-   echo -e "system.language=en\nlogin.mode=repository" | sudo tee --append ~/.motech/config/motech-settings.properties
+   echo -e "system.language=en\nlogin.mode=repository" | sudo tee --append /usr/share/tomcat7/.motech/config/motech-settings.properties
    #Change the file permissions to tomcat7:tomcat7
-   sudo chown tomcat7:tomcat7 ~/.motech/config/motech-settings.properties
+   sudo chown tomcat7:tomcat7 /usr/share/tomcat7/.motech/config/motech-settings.properties
    #Start tomcat7
    sudo service tomcat7 start
 
 Next, login to the website, create a user and login to MOTECH.
 
 Now, you have the following items that we're interested in working with:
-- a .motech folder in your home directory
+- a .motech folder in the /usr/share/tomcat7/ directory
 - 3 SQL databases named motechquartz, motechschema and motechdata
 
 The .motech directory contains all of the configuration files in the .motech/config directory. We will modify files in this directory. We will also export these SQL databases, change the names and import them to the SQL server in the next parts.
@@ -54,9 +54,9 @@ We now have a running instance of MOTECH on our machine. During this part, we wi
    mkdir default_config
    cd default_config
    #Copy the .motech directory to the default_config folder
-   cp -R ~/.motech .
+   cp -R /usr/share/tomcat7/.motech .
    #Remove the mds_entities.jar bundle (this is created each time MOTECH is run by MDS)
-   rm ~/.motech/bundles/mds-entities.jar
+   rm /usr/share/tomcat7/.motech/bundles/mds-entities.jar
    #Perform the SQL Dump
    #MySQL Commands
       mysqldump -u {ENTER YOUR MYSQL USERNAME HERE} -p motechdata > motechdata.sql
@@ -71,7 +71,7 @@ Now, we have copy of the default .motech directory and a copy of all three datab
 
 Part 3
 ------
-Now it's time to change the configuration files, upload the SQL databases and start MOTECH with the new database names. The first step is to copy the default configuration .motech folder to the appropriate location {USER_HOME}/.motech. This could be in a docker container or in another user.
+Now it's time to change the configuration files, upload the SQL databases and start MOTECH with the new database names. The first step is to copy the default configuration .motech folder to the appropriate location /usr/share/tomcat7/.motech. This could be in a docker container or in another user.
 
 Here's a basic structure of the .motech/config folder:
 
@@ -93,7 +93,7 @@ File 1: datanucleus_data.properties
 .. code-block:: bash
 
    #Open the file
-   nano ~/.motech/config/datanucleus_data.properties
+   nano /usr/share/tomcat7/.motech/config/datanucleus_data.properties
    #Look for the following line:
    #javax.jdo.option.ConnectionURL=${sql.url}motechdata
    #Change the 'motechdata' to 'node1data' and save the file
@@ -103,7 +103,7 @@ File 2: datanucleus_schema.properties
 .. code-block:: bash
 
    #Open the file
-   nano ~/.motech/config/datanucleus_schema.properties
+   nano /usr/share/tomcat7/.motech/config/datanucleus_schema.properties
    #Look for the following line:
    #javax.jdo.option.ConnectionURL=${sql.url}motechschema
    #Change the 'motechschema' to 'node1schema' and save the file
@@ -113,7 +113,7 @@ File 3: org.motechproject.motech-scheduler/quartz.properties
 .. code-block:: bash
 
    #Open the file
-   nano ~/.motech/config/org.motechproject.motech-scheduler/quartz.properties
+   nano /usr/share/tomcat7/.motech/config/org.motechproject.motech-scheduler/quartz.properties
    #Look for the following line:
    #org.quartz.dataSource.motechDS.URL=${sql.url}motechquartz
    #Change the 'motechquartz' to 'node1quartz' and save the file
