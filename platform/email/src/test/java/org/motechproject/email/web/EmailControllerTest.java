@@ -111,10 +111,6 @@ public class EmailControllerTest {
         assertEquals(Integer.valueOf(1), records.getPage());
         assertEquals(Integer.valueOf(88), records.getRecords());
         assertEquals(Integer.valueOf(9), records.getTotal());
-
-        ArgumentCaptor<EmailRecordSearchCriteria> captor = ArgumentCaptor.forClass(EmailRecordSearchCriteria.class);
-
-        verify(auditService).findEmailRecords(captor.capture());
     }
 
     @Test

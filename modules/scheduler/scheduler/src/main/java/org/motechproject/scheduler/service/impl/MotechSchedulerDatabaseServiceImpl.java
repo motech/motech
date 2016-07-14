@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 /**
@@ -104,14 +105,21 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         }
     }
 
-
+    private String getQueryForForFilter(JobsSearchSettings jobsSearchSettings){
+        if (isBlank(jobsSearchSettings.getName()) &&  isBlank(jobsSearchSettings.getActivity()) && isBlank(jobsSearchSettings.getStatus()) && isBlank(jobsSearchSettings.getTimeFrom()) && isBlank(jobsSearchSettings.getTimeTo())) { //NO CHECKSTYLE BooleanExpressionComplexity
+            return buildJobsAllSqlQuery();
+        } else if (isBlank(jobsSearchSettings.getActivity()) || isBlank(jobsSearchSettings.getStatus())) {
+            return null;
+        } else {
+            return buildJobsBasicInfoSqlQuery(jobsSearchSettings);
+        }
+    }
+    
     @Override
     public List<JobBasicInfo> getScheduledJobsBasicInfo(JobsSearchSettings jobsSearchSettings) throws MotechSchedulerJobRetrievalException {
         List<JobBasicInfo> jobBasicInfos = new LinkedList<>();
-        String query = buildJobsBasicInfoSqlQuery(jobsSearchSettings);
-        if (jobsSearchSettings.areFiltersEmpty()) {
-            query = buildJobsAllSqlQuery();
-        } else if (!isNotBlank(jobsSearchSettings.getActivity()) || !isNotBlank(jobsSearchSettings.getStatus())) {
+        String query=getQueryForForFilter(jobsSearchSettings);
+        if(isBlank(query)) {
             return jobBasicInfos;
         }
 
@@ -381,7 +389,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         }
         if (jobsSearchSettings.getRows() != null && jobsSearchSettings.getPage() != null) {
             int offset = (jobsSearchSettings.getPage() == 0) ? 0 : (jobsSearchSettings.getPage() - 1) * jobsSearchSettings.getRows();
-            sb = sb.append(" LIMIT ").append(jobsSearchSettings.getRows()).append(" OFFSET ").append(offset);
+            sb.append(" LIMIT ").append(jobsSearchSettings.getRows()).append(" OFFSET ").append(offset);
         }
 
         return sb.toString();
@@ -389,15 +397,15 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
 
     private String buildJobsCountSqlQuery(JobsSearchSettings jobsSearchSettings) {
         StringBuilder sb = new StringBuilder("SELECT COUNT(*) FROM ");
-        sb = sb.append(getCorrectNameRepresentation(sqlProperties.get(TABLE_PREFIX).toString() + TRIGGERS));
-        sb = sb.append(buildWhereCondition(jobsSearchSettings));
+        sb.append(getCorrectNameRepresentation(sqlProperties.get(TABLE_PREFIX).toString() + TRIGGERS));
+        sb.append(buildWhereCondition(jobsSearchSettings));
         return sb.toString();
     }
 
     private String buildJobsAllSqlQuery() {
-        StringBuilder sb = new StringBuilder("SELECT A.TRIGGER_NAME, A.TRIGGER_GROUP, B.JOB_DATA FROM ");
-        sb = sb.append(getCorrectNameRepresentation(sqlProperties.get(TABLE_PREFIX).toString() + TRIGGERS));
-        sb = sb.append(" AS A JOIN QRTZ_JOB_DETAILS AS B ON A.TRIGGER_NAME = B.JOB_NAME AND A.TRIGGER_GROUP = B.JOB_GROUP");
+        StringBuilder sb = new StringBuilder("SELECT A. TRIGGER_NAME, A.TRIGGER_GROUP, B.JOB_DATA FROM ");
+        sb.append(getCorrectNameRepresentation(sqlProperties.get(TABLE_PREFIX).toString() + TRIGGERS));
+        sb.append(" AS A JOIN QRTZ_JOB_DETAILS AS B ON A.TRIGGER_NAME = B.JOB_NAME AND A.TRIGGER_GROUP = B.JOB_GROUP");
         return sb.toString();
     }
 
