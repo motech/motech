@@ -105,7 +105,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         }
     }
 
-    private String getQueryForForFilter(JobsSearchSettings jobsSearchSettings){
+    private String getQueryForEmptyFilter(JobsSearchSettings jobsSearchSettings){
         if (isBlank(jobsSearchSettings.getName()) &&  isBlank(jobsSearchSettings.getActivity()) && isBlank(jobsSearchSettings.getStatus()) && isBlank(jobsSearchSettings.getTimeFrom()) && isBlank(jobsSearchSettings.getTimeTo())) { //NO CHECKSTYLE BooleanExpressionComplexity
             return buildJobsAllSqlQuery();
         } else if (isBlank(jobsSearchSettings.getActivity()) || isBlank(jobsSearchSettings.getStatus())) {
