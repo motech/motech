@@ -3540,21 +3540,22 @@
                 var elm = angular.element(element),
                 fieldId = attrs.mdsFieldId,
                 fieldName = attrs.mdsFieldName,
-                typingTimer;
+                typingTimer,
+                ngFormNameAttrSuffix = "form";
 
                 elm.on('keyup', function () {
                     scope.$apply(function () {
                         elm.siblings('#visited-hint-' + fieldId).addClass('hidden');
-                        if (scope[fieldName + "_fieldName"] !== undefined) {
-                            scope[fieldName + "_fieldName"].$dirty = false;
+                        if (scope[fieldName + ngFormNameAttrSuffix] !== undefined) {
+                            scope[fieldName + ngFormNameAttrSuffix].$dirty = false;
                         }
                     });
                     clearTimeout(typingTimer);
                     typingTimer = setTimeout( function() {
                         elm.siblings('#visited-hint-' + fieldId).removeClass('hidden');
                         scope.$apply(function () {
-                            if (scope[fieldName + "_fieldName"] !== undefined) {
-                                scope[fieldName + "_fieldName"].$dirty = true;
+                            if (scope[fieldName + ngFormNameAttrSuffix] !== undefined) {
+                                scope[fieldName + ngFormNameAttrSuffix].$dirty = true;
                             }
                         });
                     }, 1500);
@@ -3563,8 +3564,8 @@
                 elm.on("blur", function() {
                     scope.$apply(function () {
                         elm.siblings('#visited-hint-' + fieldId).removeClass('hidden');
-                        if (scope[fieldName + "_fieldName"] !== undefined) {
-                            scope[fieldName + "_fieldName"].$dirty = true;
+                        if (scope[fieldName + ngFormNameAttrSuffix] !== undefined) {
+                            scope[fieldName + ngFormNameAttrSuffix].$dirty = true;
                         }
                     });
                 });
@@ -3602,4 +3603,60 @@
             });
         };
     });
+
+    directives.directive('preventNameConflicts', function($compile) {
+        return {
+            restrict: 'A',
+            priority: 10000,
+            terminal: true,
+            link: function(scope, element, attrs) {
+                attrs.$set('name', attrs.name + 'form');
+                attrs.$set('preventNameConflicts', null);
+                $compile(element)(scope);
+            }
+        };
+    });
 }());
+
+
+
+        /*
+        irectives.directive('ngForm', function() {
+                return {
+                    restrict: 'E',
+                    scope: { name: '=' },
+                    link: function(scope, element, attrs) {
+                        attrs.$observe('name', function(formName) {
+                            if (!formName.endsWith('form')) {
+                                attrs.$set('name', formName + 'form');
+                            }
+                        });
+                    }
+                };
+            });
+
+
+        return {
+         restrict: 'A',
+
+         function (scope, element, attr) {
+            attr.$observe('name', function(actual_value) {
+              element.val(actual_value + "form");
+            })
+         }*/
+
+            /*compile: function(element, attrs){
+                var ngFormNameAttrSuffix = "form", fn;
+
+                element.removeAttr('prevent-name-conflicts'); // must remove to prevent infinite compile loop
+
+                if (attrs.name) {
+                    attrs.name = attrs.name + ngFormNameAttrSuffix;
+                }
+
+                fn =  $compile(element); // compiling again
+
+                return function(scope){
+                    fn(scope);
+                };
+            }*/
