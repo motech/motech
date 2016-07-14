@@ -129,7 +129,6 @@ public class ServerEventRelayTest {
         when(bundleContext.getServiceReferences(EventCallbackService.class, null)).thenReturn(Arrays.asList(serviceReference));
         when(bundleContext.getService(serviceReference)).thenReturn(callbackService);
         when(callbackService.getName()).thenReturn(TEST_SERVICE_CALLBACK);
-
         RuntimeException initCause = new RuntimeException();
         doThrow(new RuntimeException("Failed", initCause)).when(eventListener).handle(any(MotechEvent.class));
 
