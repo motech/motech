@@ -261,7 +261,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         String[] activityElements = jobsSearchSettings.getActivity().split(",");
         boolean addOr = false;
         if (activityElements.length < 3) {
-            for (String element : activityElements) {
+            for(String element : activityElements) {
                 checkAndAddElement(activitySb, OR, addOr);
                 if (JobBasicInfo.ACTIVITY_NOTSTARTED.equals(element)) {
                     activitySb.append(getCorrectNameRepresentation(START_TIME)).append(" > ").append(DateTime.now().getMillis());
@@ -284,9 +284,8 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     private String buildStatusFilter(JobsSearchSettings jobsSearchSettings) {
         StringBuilder statusSb = new StringBuilder();
         String[] statusElements = jobsSearchSettings.getStatus().split(",");
-        boolean addOr = false;
-        if (statusElements.length < 4) {
-            for (String element : statusElements) {
+        boolean addOr = false; if (statusElements.length < 4) {
+            for(String element : statusElements) {
                 checkAndAddElement(statusSb, OR, addOr);
                 statusSb.append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ");
                 if (Trigger.TriggerState.ERROR.toString().equals(element)) {
