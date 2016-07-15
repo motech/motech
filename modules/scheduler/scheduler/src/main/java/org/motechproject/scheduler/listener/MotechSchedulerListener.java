@@ -43,7 +43,8 @@ public class MotechSchedulerListener {
 
         MotechEvent jobEvent = new MotechEvent(jobSubject, parameters, null, metadata);
 
-        RepeatingSchedulableJob repeatingJob = new RepeatingSchedulableJob(jobEvent, repeatCount, repeatIntervalInSeconds, DateTime.now(), null, false);
+        RepeatingSchedulableJob repeatingJob = new RepeatingSchedulableJob(jobEvent, repeatCount - 1, repeatIntervalInSeconds,
+                DateTime.now().plusSeconds(repeatIntervalInSeconds), null, false);
 
         schedulerService.scheduleRepeatingJob(repeatingJob);
     }
