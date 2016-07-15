@@ -154,7 +154,7 @@
                 $('.setHideActive').find('i').removeClass("fa-square-o").addClass('fa-check-square-o');
             } else {
                 $scope.hideActive = true;
-                $scope.setFilter($scope.hidePaused ? 'allItems' : 'activeTaskFilter');
+                $scope.setFilter($scope.hidePaused ? 'noItems' : 'activeTaskFilter');
 
                 $('.setHideActive').find('i').removeClass("fa-check-square-o").addClass('fa-square-o');
             }
