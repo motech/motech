@@ -314,10 +314,10 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
                         statusSb.append("\'").append(Trigger.TriggerState.PAUSED.toString()).append("\'");
                     } else {
                         statusSb.append("\'").append(Trigger.TriggerState.NORMAL.toString()).append("\'")
-                        .append(OR).append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ")
-                        .append("\'").append(Trigger.TriggerState.COMPLETE.toString()).append("\'")
-                        .append(OR).append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ")
-                        .append("\'").append(WAITING).append("\'");
+                            .append(OR).append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ")
+                            .append("\'").append(Trigger.TriggerState.COMPLETE.toString()).append("\'")
+                            .append(OR).append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ")
+                            .append("\'").append(WAITING).append("\'");
                     }
                     addOr = true;
                 }
