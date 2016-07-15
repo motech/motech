@@ -7,6 +7,7 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
 import org.motechproject.tasks.domain.mds.task.TaskActivityType;
+import org.motechproject.tasks.domain.mds.task.TaskExecutionProgress;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.impl.TaskTriggerHandler;
 
@@ -64,7 +65,7 @@ public class ActivityControllerTest {
         expected.add(new TaskActivity(SUCCESS.getValue(), TASK_ID, SUCCESS));
         expected.add(new TaskActivity(WARNING.getValue(), TASK_ID, WARNING));
         expected.add(new TaskActivity(ERROR.getValue(), TASK_ID, ERROR));
-        expected.add(new TaskActivity(ERROR.getValue(), new ArrayList<String>(), TASK_ID, ERROR, null, params));
+        expected.add(new TaskActivity(ERROR.getValue(), new ArrayList<>(), TASK_ID, ERROR, null, params, new TaskExecutionProgress(1)));
 
         activityTypes = new HashSet<>();
         activityTypes.addAll(Arrays.asList(TaskActivityType.values()));

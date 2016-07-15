@@ -1123,7 +1123,8 @@
         var data, task;
 
         $scope.taskId = $stateParams.taskId;
-        $scope.activityTypes = ['All', 'Warning', 'Success', 'Error'];
+        $scope.activityTypes = ['All', 'In progress', 'Success', 'Warning', 'Error'];
+
         $scope.selectedActivityType = 'All';
 
         innerLayout({
@@ -1166,7 +1167,7 @@
             $('#taskHistoryTable').jqGrid('setGridParam', {
                 page: 1,
                 postData: {
-                    activityType: ($scope.selectedActivityType === 'All') ? '' : $scope.selectedActivityType.toUpperCase()
+                    activityType: ($scope.selectedActivityType === 'All') ? '' : $scope.selectedActivityType.toUpperCase().replace(/ /g, "_")
                 }}).trigger('reloadGrid');
         };
 
