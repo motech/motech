@@ -185,7 +185,7 @@ public class TaskTriggerHandlerTest {
 
         when(taskService.getAllTasks()).thenReturn(tasks);
         when(settingsFacade.getProperty("task.possible.errors")).thenReturn("5");
-        when(settingsFacade.getProperty("task.log.activities")).thenReturn("All");
+        when(settingsFacade.getProperty("task.log.activities")).thenReturn("all");
         when(dataProvider.getName()).thenReturn(TASK_DATA_PROVIDER_NAME);
 
         // do the initialization, normally called by Spring as @PostConstruct

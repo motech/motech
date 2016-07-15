@@ -64,9 +64,8 @@ public class TaskTriggerHandler implements TriggerHandler {
     private static final String BEAN_NAME = "taskTriggerHandler";
     private static final String TASK_POSSIBLE_ERRORS_KEY = "task.possible.errors";
     private static final String TASK_LOG_ACTIVITIES_KEY = "task.log.activities";
-    private static final String LOG_NONE_ACTIVITIES = "None";
-    private static final String LOG_FAILURE_ACTIVITIES = "Only failure";
-    private static final String LOG_ALL_ACTIVITIES = "All";
+    private static final String LOG_FAILURE_ACTIVITIES = "failure";
+    private static final String LOG_ALL_ACTIVITIES = "all";
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskTriggerHandler.class);
 
     @Autowired
@@ -354,7 +353,7 @@ public class TaskTriggerHandler implements TriggerHandler {
 
     private boolean logFailureActivities() {
         String taskLogActivities = getTaskLogActivities();
-        return taskLogActivities.equals(LOG_NONE_ACTIVITIES) || taskLogActivities.equals(LOG_FAILURE_ACTIVITIES);
+        return taskLogActivities.equals(LOG_ALL_ACTIVITIES) || taskLogActivities.equals(LOG_FAILURE_ACTIVITIES);
     }
 
     private boolean logSuccessActivities() {

@@ -8,8 +8,16 @@
                 <span ng-hide="isNumeric('taskPossibleErrors')" class="form-hint">{{msg('task.settings.error.possibleErrors')}}</span>
             </div>
             <label class="col-md-2 col-sm-3 control-label">{{msg('task.settings.label.logActivities')}}:</label>
-            <div class="form-inline col-md-10 col-sm-9">
-                <select class="form-control input-auto" ng-model="settings.taskLogActivities" ng-options="option for option in logActivityOptions"></select>
+            <div class="form-inline col-md-4 col-sm-4">
+                <div class="btn-group" id="columns">
+                    <a class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        {{currentLogOption}}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="(key, val) in logOptionsMap" ng-click="changeLogOption(key, val)"><a>{{ val }}</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
         <div class="form-group">

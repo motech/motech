@@ -139,10 +139,10 @@
         };
 
         $rootScope.logsDisabled = function() {
-            return ($rootScope.settings.taskLogActivities === "None");
+            return ($rootScope.settings.taskLogActivities === "none");
         };
         $rootScope.successLogsDisabled = function() {
-            return ($rootScope.settings.taskLogActivities === "Only failure");
+            return ($rootScope.settings.taskLogActivities === "failure");
         };
 
         $rootScope.search = function () {
@@ -1203,9 +1203,9 @@
 
 
     controllers.controller('TasksSettingsCtrl', function ($scope, $rootScope, Settings, ModalFactory) {
-        $rootScope.settings = Settings.get();
 
-        $scope.logActivityOptions = ['All', 'Only failure', 'None'];
+        $scope.logOptionsMap = { 'all': $scope.msg('task.log.all'), 'failure': $scope.msg('task.log.failure'), 'none': $scope.msg('task.log.none')};
+        $scope.currentLogOption = $scope.logOptionsMap[$rootScope.settings.taskLogActivities];
 
         innerLayout({
             spacing_closed: 30,
@@ -1233,6 +1233,11 @@
 
         $scope.isNumeric = function(prop) {
             return $rootScope.settings.hasOwnProperty(prop) && /^[0-9]+$/.test($rootScope.settings[prop]);
+        };
+
+        $scope.changeLogOption = function(key, val) {
+        $rootScope.settings.taskLogActivities = key;
+        $scope.currentLogOption = val;
         };
 
     });
