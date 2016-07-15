@@ -11,7 +11,8 @@ public enum TaskActivityType {
 
     ERROR("ERROR"),
     WARNING("WARNING"),
-    SUCCESS("SUCCESS");
+    SUCCESS("SUCCESS"),
+    IN_PROGRESS("IN PROGRESS");
 
     private final String value;
 
@@ -20,7 +21,7 @@ public enum TaskActivityType {
         return value;
     }
 
-    private TaskActivityType(String value) {
+    TaskActivityType(String value) {
         this.value = value;
     }
 

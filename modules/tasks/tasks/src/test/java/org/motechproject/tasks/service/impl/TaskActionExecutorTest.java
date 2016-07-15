@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.tasks.constants.EventDataKeys;
 import org.motechproject.tasks.domain.ObjectTest;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.ActionParameter;
@@ -40,6 +41,8 @@ import static org.motechproject.tasks.domain.mds.ParameterType.TEXTAREA;
 @RunWith(MockitoJUnitRunner.class)
 public class TaskActionExecutorTest {
 
+    private static final Long TASK_ACTIVITY_ID  = 11L;
+
     @Mock
     private TaskService taskService;
     @Mock
@@ -48,6 +51,8 @@ public class TaskActionExecutorTest {
     private EventRelay eventRelay;
     @Mock
     private BundleContext bundleContext;
+    @Mock
+    private TasksPostExecutionHandler postExecutionHandler;
 
     @Test
     public void shouldRaiseEventIfActionHasSubject() throws ActionNotFoundException, TaskHandlerException {
@@ -57,13 +62,19 @@ public class TaskActionExecutorTest {
         when(taskService.getActionEventFor(actionInformation)).thenReturn(actionEvent);
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
+        task.setId(11L);
 
-        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put(EventDataKeys.TASK_ID, 11L);
+        metadata.put(EventDataKeys.TASK_RETRY, null);
+        metadata.put(EventDataKeys.TASK_ACTIVITY_ID, TASK_ACTIVITY_ID);
+
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap(), activityService));
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap<>(), metadata, activityService), TASK_ACTIVITY_ID);
 
-        MotechEvent raisedEvent = new MotechEvent("actionSubject", new HashMap<>());
+        MotechEvent raisedEvent = new MotechEvent("actionSubject", new HashMap<>(), TasksEventCallbackService.TASKS_EVENT_CALLBACK_NAME, metadata);
         verify(eventRelay).sendEventMessage(raisedEvent);
     }
 
@@ -79,10 +90,10 @@ public class TaskActionExecutorTest {
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
 
-        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap(), activityService));
+        taskActionExecutor.execute(task, actionInformation, 0,  new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
 
         verify(eventRelay).sendEventMessage(any(MotechEvent.class));
     }
@@ -101,10 +112,10 @@ public class TaskActionExecutorTest {
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
 
-        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap(), activityService));
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
 
         verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
     }
@@ -124,10 +135,10 @@ public class TaskActionExecutorTest {
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
 
-        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap(), activityService));
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
 
         assertTrue(testService.serviceMethodInvoked());
     }
@@ -143,9 +154,9 @@ public class TaskActionExecutorTest {
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
 
-        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
 
-        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap(), activityService));
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
     }
 
     @Test(expected = TaskHandlerException.class)
@@ -159,9 +170,9 @@ public class TaskActionExecutorTest {
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
 
-        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
 
-        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap(), activityService));
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
     }
 
     @Test
@@ -177,10 +188,10 @@ public class TaskActionExecutorTest {
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
 
-        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap(), activityService));
+        taskActionExecutor.execute(task, actionInformation, 0, new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService), TASK_ACTIVITY_ID);
 
         verify(activityService).addWarning(task, "task.warning.serviceUnavailable", "serviceInterface");
     }
@@ -194,10 +205,10 @@ public class TaskActionExecutorTest {
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "actionSubject")).build();
 
-        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        taskActionExecutor.execute(task, actionInformation, 0, prepareTaskContext(task));
+        taskActionExecutor.execute(task, actionInformation, 0, prepareTaskContext(task), TASK_ACTIVITY_ID);
 
         verify(eventRelay).sendEventMessage(eq(prepareMotechEvent()));
     }
@@ -220,13 +231,13 @@ public class TaskActionExecutorTest {
         task.addAction(actionInformation);
         task.addAction(actionInformationWithPostActionParameter);
 
-        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay);
+        TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, activityService, eventRelay, postExecutionHandler);
         taskActionExecutor.setBundleContext(bundleContext);
 
-        TaskContext taskContext = new TaskContext(task, new HashMap<>(), activityService);
+        TaskContext taskContext = new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService);
 
         for (TaskActionInformation action : task.getActions()) {
-            taskActionExecutor.execute(task, action, task.getActions().indexOf(action), taskContext);
+            taskActionExecutor.execute(task, action, task.getActions().indexOf(action), taskContext, TASK_ACTIVITY_ID);
         }
 
         assertEquals("testObject", taskContext.getPostActionParameterValue("0", "testKey"));
@@ -239,13 +250,13 @@ public class TaskActionExecutorTest {
         Map<String, Object> map = new HashMap<>();
         map.put("key1", "value123");
         parameters.put("map", map);
-        return new MotechEvent("actionSubject", parameters);
+        return new MotechEvent("actionSubject", parameters, TasksEventCallbackService.TASKS_EVENT_CALLBACK_NAME, new HashMap<>());
     }
 
     private TaskContext prepareTaskContext(Task task) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", 123);
-        return new TaskContext(task, parameters, activityService);
+        return new TaskContext(task, parameters, new HashMap<>(), activityService);
     }
     private TaskActionInformation prepareTaskActionInformation() {
         TaskActionInformation actionInformation = new TaskActionInformation();

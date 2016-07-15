@@ -39,7 +39,7 @@
                 </div>
                 <span class="offset-4">{{msg('task.subsubsection.object')}}:</span>
                 <div class="btn-group offset-15">
-                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#" ng-init="searchData.displayName='' " ng-click="searchData.displayName='' ">
+                    <button class="btn btn-default dropdown-toggle" ng-disabled="!step.providerName" data-toggle="dropdown" target="_self" href="#" ng-init="searchData.displayName='' " ng-click="searchData.displayName='' ">
                         {{taskMsg(step.displayName) || msg('task.select')}}
                         <span class="caret"></span>
                     </button>
