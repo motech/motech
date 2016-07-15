@@ -94,11 +94,10 @@
         $scope.unscheduleJob = function(job) {
                 ModalFactory.showConfirm("scheduler.confirm.unschedule", "scheduler.confirm", function(response) {
                 function failure(response) {
+                    LoadingModal.open();
                     var error="";
-                    if (response.status == 500) {
-                        error = "Something unexpected happened";
-                    } else if (response.status == 404) {
-                        error = "The url used does not exist";
+                    if (response.status == 500 || response.status == 404) {
+                        error = $scope.msg("scheduler.error.unschedule.unexpectederror");
                     } else {
                         error = response.data;
                     }
