@@ -87,6 +87,8 @@
                 dialog.getModalBody().css('padding', '0');
 
                 dialog.open();
+
+                dialog.getModal().prev().css('z-index', dialog.getModal().css('z-index'));
                 open = true;
                 $rootScope.$emit('loadingModalOpen');
             }
