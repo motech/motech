@@ -15,11 +15,7 @@ public class TasksTestServiceImpl implements TasksTestService {
         TaskTestObject object = new TaskTestObject(name);
 
         object.setTestNameWithPrefix(name + " - postActionParameter");
-        return object;
-    }
 
-    @Override
-    public TaskTestObject createTestObject(String name, String nameWithPrefix) {
-        return new TaskTestObject(name, nameWithPrefix);
+        return object;
     }
 }

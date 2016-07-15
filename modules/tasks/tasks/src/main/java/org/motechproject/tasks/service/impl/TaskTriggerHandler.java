@@ -65,6 +65,8 @@ public class TaskTriggerHandler implements TriggerHandler {
     @Autowired
     private TasksPostExecutionHandler postExecutionHandler;
 
+    private TaskContext taskContext;
+
     private Map<String, DataProvider> dataProviders;
 
     @PostConstruct
@@ -165,7 +167,8 @@ public class TaskTriggerHandler implements TriggerHandler {
         long activityId = activityService.addTaskStarted(task, parameters);
         Map<String, Object> metadata = prepareTaskMetadata(task.getId(), activityId, isRetry);
 
-        TaskContext taskContext = new TaskContext(task, parameters, metadata, activityService);
+        taskContext = new TaskContext(task, parameters, metadata, activityService);
+
         TaskInitializer initializer = new TaskInitializer(taskContext);
 
         try {
@@ -197,6 +200,10 @@ public class TaskTriggerHandler implements TriggerHandler {
         if (MapUtils.isNotEmpty(dataProviders)) {
             dataProviders.remove(taskDataProviderId);
         }
+    }
+
+    public TaskContext getTaskContext() {
+        return taskContext;
     }
 
     void setDataProviders(Map<String, DataProvider> dataProviders) {

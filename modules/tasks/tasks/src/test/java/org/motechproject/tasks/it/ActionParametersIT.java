@@ -1,0 +1,228 @@
+package org.motechproject.tasks.it;
+
+import com.google.gson.reflect.TypeToken;
+import org.apache.commons.io.IOUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.motechproject.commons.api.json.MotechJsonReader;
+import org.motechproject.config.domain.SettingsRecord;
+import org.motechproject.config.mds.SettingsDataService;
+import org.motechproject.mds.query.QueryParams;
+import org.motechproject.mds.util.Order;
+import org.motechproject.tasks.contract.ActionEventRequest;
+import org.motechproject.tasks.contract.ChannelRequest;
+import org.motechproject.tasks.contract.json.ActionEventRequestDeserializer;
+import org.motechproject.tasks.domain.mds.channel.Channel;
+import org.motechproject.tasks.domain.mds.channel.builder.ChannelBuilder;
+import org.motechproject.tasks.domain.mds.task.Task;
+import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
+import org.motechproject.tasks.domain.mds.task.TaskActivity;
+import org.motechproject.tasks.domain.mds.task.TaskActivityType;
+import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
+import org.motechproject.tasks.exception.ActionNotFoundException;
+import org.motechproject.tasks.repository.TaskActivitiesDataService;
+import org.motechproject.tasks.service.ChannelService;
+import org.motechproject.tasks.service.TaskService;
+import org.motechproject.tasks.service.TriggerHandler;
+import org.motechproject.tasks.service.util.PostActionParameterObject;
+import org.motechproject.tasks.service.util.TaskContext;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.motechproject.testing.osgi.wait.Wait;
+import org.motechproject.testing.osgi.wait.WaitCondition;
+import org.ops4j.pax.exam.ExamFactory;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.junit.Assert.assertTrue;
+
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerSuite.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
+public class ActionParametersIT extends BasePaxIT {
+
+    private static final String TASK_TEST_CHANNEL_NAME = "motech-tasks-test-bundle";
+    private static final String TASK_TEST_SERVICE_INTERFACE = "org.motechproject.testmodule.service.TasksTestService";
+    private static final String TASK_TEST_SERVICE_METHOD = "createTestObjectWithPostActionParameter";
+    private static final String TASK_TEST_ACTION_NAME = "Test Action return Post Action Params";
+    private static final String MDS_CHANNEL_NAME = "org.motechproject.motech-platform-dataservices-entities";
+    private static final String VERSION = "0.29";
+    private static final String TRIGGER_SUBJECT = "mds.crud.serverconfig.SettingsRecord.CREATE";
+
+    private static final Integer MAX_RETRIES_BEFORE_FAIL = 20;
+    private static final Integer WAIT_TIME = 2000;
+
+    @Inject
+    private ChannelService channelService;
+
+    @Inject
+    private TaskService taskService;
+
+    @Inject
+    private TriggerHandler triggerHandler;
+
+    @Inject
+    private SettingsDataService settingsDataService;
+
+    @Inject
+    private TaskActivitiesDataService taskActivitiesDataService;
+
+
+    private MotechJsonReader motechJsonReader = new MotechJsonReader();
+
+    @Override
+    protected Collection<String> getAdditionalTestDependencies() {
+        return Arrays.asList(
+                "org.motechproject:motech-tasks-test-bundle"
+        );
+    }
+
+    @Before
+    public void setUp() throws IOException, InterruptedException {
+        createAdminUser();
+        login();
+        Channel channel = loadChannel();
+        setUpSecurityContext("motech", "motech", "manageTasks");
+
+        channelService.addOrUpdate(channel);
+        waitForChannel(MDS_CHANNEL_NAME);
+    }
+
+    @Test
+    public void testActionWithPostActionParameters() throws InterruptedException, IOException, ActionNotFoundException {
+        long taskID = createTestTask();
+
+        activateTrigger();
+        assertTrue(waitForTaskExecution(taskID));
+
+        TaskContext taskContext =  triggerHandler.getTaskContext();
+
+        ArrayList<PostActionParameterObject> postActionParameterObjects = new ArrayList<>();
+        postActionParameterObjects.addAll(taskContext.getPostActionParameters());
+
+        List<PostActionParameterObject> expectedPostActionParams = prepareExpectedPostActionParams();
+        postActionParameterObjects.contains(expectedPostActionParams.get(0));
+        postActionParameterObjects.contains(expectedPostActionParams.get(1));
+        postActionParameterObjects.contains(expectedPostActionParams.get(2));
+    }
+
+    private Long createTestTask() {
+        TaskTriggerInformation triggerInformation = new TaskTriggerInformation("CREATE SettingsRecord", "data-services", MDS_CHANNEL_NAME,
+                VERSION, TRIGGER_SUBJECT, TRIGGER_SUBJECT);
+
+        List<TaskActionInformation> actions = new ArrayList<>();
+
+        actions.add(prepareActionWithKeyValue("testName", "ActionValue"));
+        actions.add(prepareActionWithKeyValue("testName", "{{pa.0.testNameWithPrefix}}"));
+        actions.add(prepareActionWithKeyValue("testName", "{{pa.1.testNameWithPrefix}}"));
+
+        Task task = new Task("TestTask", triggerInformation, actions, null, true, true);
+        taskService.save(task);
+
+        triggerHandler.registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
+
+        return task.getId();
+    }
+
+    private void activateTrigger() {
+        settingsDataService.create(new SettingsRecord());
+    }
+
+    private void waitForChannel(String channelName) throws InterruptedException {
+        (new Wait(new WaitCondition() {
+            public boolean needsToWait() {
+                try {
+                    return ActionParametersIT.this.findChannel(channelName) == null;
+                } catch (IOException var2) {
+                    ActionParametersIT.this.getLogger().error("Error while searching for channel " + channelName, var2);
+                    return false;
+                }
+            }
+        }, 20000)).start();
+    }
+
+    protected Channel findChannel(String channelName) throws IOException {
+        this.getLogger().info(String.format("Looking for %s", new Object[]{channelName}));
+        this.getLogger().info(String.format("There are %d channels in total", new Object[]{Integer.valueOf(this.channelService.getAllChannels().size())}));
+        return this.channelService.getChannel(channelName);
+    }
+
+    private Channel loadChannel() throws IOException {
+        Type type = new TypeToken<ChannelRequest>() {}.getType();
+
+        HashMap<Type, Object> typeAdapters = new HashMap<>();
+        typeAdapters.put(ActionEventRequest.class, new ActionEventRequestDeserializer());
+        StringWriter writer = new StringWriter();
+
+        try (InputStream stream = getClass().getResourceAsStream("/task-testmodule-channel.json")) {
+            IOUtils.copy(stream, writer);
+        }
+            ChannelRequest channelRequest = (ChannelRequest) motechJsonReader.readFromString(writer.toString(), type, typeAdapters);
+            channelRequest.setModuleName(channelRequest.getDisplayName());
+            channelRequest.setModuleVersion("1.0");
+
+        return ChannelBuilder.fromChannelRequest(channelRequest).build();
+    }
+
+    private boolean waitForTaskExecution(Long taskID) throws InterruptedException {
+        getLogger().info("testTasksIntegration starts waiting for task to execute");
+        int retries = 0;
+        while (retries < MAX_RETRIES_BEFORE_FAIL && !hasTaskExecuted(taskID)) {
+            retries++;
+            Thread.sleep(WAIT_TIME);
+        }
+        if (retries == MAX_RETRIES_BEFORE_FAIL) {
+            getLogger().info("Task execution failed");
+            return false;
+        }
+        getLogger().info("Task executed after " + retries + " retries, what took about "
+                + (retries * WAIT_TIME) / 1000 + " seconds");
+        return true;
+    }
+
+    private boolean hasTaskExecuted(Long taskID) {
+        Set<TaskActivityType> activityTypes = new HashSet<>();
+        activityTypes.add(TaskActivityType.SUCCESS);
+        QueryParams queryParams = new QueryParams((Order) null);
+        List<TaskActivity> taskActivities = taskActivitiesDataService.byTaskAndActivityTypes(taskID, activityTypes, queryParams);
+
+        return taskActivities.size() == 1;
+    }
+
+    private TaskActionInformation prepareActionWithKeyValue(String key, String value) {
+        TaskActionInformation actionInformation = new TaskActionInformation(TASK_TEST_ACTION_NAME, TASK_TEST_CHANNEL_NAME,
+                TASK_TEST_CHANNEL_NAME, VERSION, TASK_TEST_SERVICE_INTERFACE, TASK_TEST_SERVICE_METHOD);
+
+        Map<String, String> values = new HashMap<>();
+        values.put(key, value);
+        actionInformation.setValues(values);
+
+        return actionInformation;
+    }
+
+    private List<PostActionParameterObject> prepareExpectedPostActionParams () {
+        List<PostActionParameterObject> expectedPostActionParams = new ArrayList<>();
+
+        expectedPostActionParams.add(new PostActionParameterObject("0", "testNameWithPrefix", "ActionValue - postActionParameter", true));
+        expectedPostActionParams.add(new PostActionParameterObject("1", "testNameWithPrefix", "ActionValue - postActionParameter - postActionParameter", true));
+        expectedPostActionParams.add(new PostActionParameterObject("2", "testNameWithPrefix", "ActionValue - postActionParameter - postActionParameter - postActionParameter", true));
+
+        return expectedPostActionParams;
+    }
+}

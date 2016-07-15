@@ -3,6 +3,7 @@ package org.motechproject.tasks.service;
 import org.motechproject.commons.api.DataProvider;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.tasks.exception.TriggerNotFoundException;
+import org.motechproject.tasks.service.util.TaskContext;
 
 /**
  * Service responsible for handling triggers. When registered for an event with a specific subject, it will act as
@@ -67,4 +68,11 @@ public interface TriggerHandler {
      * @param taskDataProviderId ID of the DataProvider to be removed, passed as a String
      */
     void removeDataProvider(String taskDataProviderId);
+
+    /**
+     * Returns {@link org.motechproject.tasks.service.util.TaskContext} from this handler.
+     *
+     * @return TaskContext
+     */
+    TaskContext getTaskContext();
 }

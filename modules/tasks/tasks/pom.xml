@@ -61,6 +61,12 @@
             <artifactId>org.motechproject.gemini-blueprint-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-tasks-test-bundle</artifactId>
+            <version>0.29-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -139,7 +145,7 @@
                             org.motechproject.tasks.repository;version=${project.version},
                             org.motechproject.tasks.service;version=${project.version},
                             org.motechproject.tasks.service.osgi;version=${project.version},
-                            org.motechproject.tasks.util;version=${project.version}
+                            org.motechproject.tasks.service.util;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             net.sf.cglib.core,
@@ -151,6 +157,7 @@
                             org.motechproject.event.listener,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.config.service,
+                            org.motechproject.testmodule.service,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.config,
