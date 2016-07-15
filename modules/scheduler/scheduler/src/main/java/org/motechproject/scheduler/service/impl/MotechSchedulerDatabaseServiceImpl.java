@@ -105,21 +105,23 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         }
     }
 
-    private String getQueryForEmptyFilter(JobsSearchSettings jobsSearchSettings){
+    private String getQuery(JobsSearchSettings jobsSearchSettings){
+        String query;
         if (isBlank(jobsSearchSettings.getName()) &&  isBlank(jobsSearchSettings.getActivity()) && isBlank(jobsSearchSettings.getStatus()) && isBlank(jobsSearchSettings.getTimeFrom()) && isBlank(jobsSearchSettings.getTimeTo())) { //NO CHECKSTYLE BooleanExpressionComplexity
-            return buildJobsAllSqlQuery();
+            query = buildJobsAllSqlQuery();
         } else if (isBlank(jobsSearchSettings.getActivity()) || isBlank(jobsSearchSettings.getStatus())) {
-            return null;
+            query = null;
         } else {
-            return buildJobsBasicInfoSqlQuery(jobsSearchSettings);
+            query = buildJobsBasicInfoSqlQuery(jobsSearchSettings);
         }
+        return query;
     }
     
     @Override
     public List<JobBasicInfo> getScheduledJobsBasicInfo(JobsSearchSettings jobsSearchSettings) throws MotechSchedulerJobRetrievalException {
         List<JobBasicInfo> jobBasicInfos = new LinkedList<>();
-        String query=getQueryForForFilter(jobsSearchSettings);
-        if(isBlank(query)) {
+        String query = getQuery(jobsSearchSettings);
+        if(query == null) {
             return jobBasicInfos;
         }
 
@@ -311,11 +313,11 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
                     } else if (Trigger.TriggerState.PAUSED.toString().equals(element)) {
                         statusSb.append("\'").append(Trigger.TriggerState.PAUSED.toString()).append("\'");
                     } else {
-                        statusSb.append("\'").append(Trigger.TriggerState.NORMAL.toString()).append("\'");
-                        statusSb.append(OR).append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ");
-                        statusSb.append("\'").append(Trigger.TriggerState.COMPLETE.toString()).append("\'");
-                        statusSb.append(OR).append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ");
-                        statusSb.append("\'").append(WAITING).append("\'");
+                        statusSb.append("\'").append(Trigger.TriggerState.NORMAL.toString()).append("\'")
+                        .append(OR).append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ")
+                        .append("\'").append(Trigger.TriggerState.COMPLETE.toString()).append("\'")
+                        .append(OR).append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ")
+                        .append("\'").append(WAITING).append("\'");
                     }
                     addOr = true;
                 }
@@ -396,16 +398,16 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     }
 
     private String buildJobsCountSqlQuery(JobsSearchSettings jobsSearchSettings) {
-        StringBuilder sb = new StringBuilder("SELECT COUNT(*) FROM ");
-        sb.append(getCorrectNameRepresentation(sqlProperties.get(TABLE_PREFIX).toString() + TRIGGERS));
-        sb.append(buildWhereCondition(jobsSearchSettings));
+        StringBuilder sb = new StringBuilder("SELECT COUNT(*) FROM ")
+            .append(getCorrectNameRepresentation(sqlProperties.get(TABLE_PREFIX).toString() + TRIGGERS))
+            .append(buildWhereCondition(jobsSearchSettings));
         return sb.toString();
     }
 
     private String buildJobsAllSqlQuery() {
-        StringBuilder sb = new StringBuilder("SELECT A. TRIGGER_NAME, A.TRIGGER_GROUP, B.JOB_DATA FROM ");
-        sb.append(getCorrectNameRepresentation(sqlProperties.get(TABLE_PREFIX).toString() + TRIGGERS));
-        sb.append(" AS A JOIN QRTZ_JOB_DETAILS AS B ON A.TRIGGER_NAME = B.JOB_NAME AND A.TRIGGER_GROUP = B.JOB_GROUP");
+        StringBuilder sb = new StringBuilder("SELECT A. TRIGGER_NAME, A.TRIGGER_GROUP, B.JOB_DATA FROM ")
+            .append(getCorrectNameRepresentation(sqlProperties.get(TABLE_PREFIX).toString() + TRIGGERS))
+            .append(" AS A JOIN QRTZ_JOB_DETAILS AS B ON A.TRIGGER_NAME = B.JOB_NAME AND A.TRIGGER_GROUP = B.JOB_GROUP");
         return sb.toString();
     }
 
