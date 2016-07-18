@@ -4,7 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ChannelsDataServiceBundleIT.class,  TaskDataServiceBundleIT.class,
-        TaskActivitiesDataServiceBundleIT.class, TasksBundleIT.class, ActionParametersIT.class})
+@Suite.SuiteClasses({TasksBundleIT.class, ActionParametersBundleIT.class, ChannelsDataServiceBundleIT.class, TaskDataServiceBundleIT.class,
+        TaskActivitiesDataServiceBundleIT.class})
 public class TasksIntegrationTests {
 }

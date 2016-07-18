@@ -202,10 +202,6 @@ public class TaskTriggerHandler implements TriggerHandler {
         }
     }
 
-    public TaskContext getTaskContext() {
-        return taskContext;
-    }
-
     void setDataProviders(Map<String, DataProvider> dataProviders) {
         this.dataProviders = dataProviders;
     }

@@ -2,6 +2,8 @@ package org.motechproject.tasks.it;
 
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,20 +23,22 @@ import org.motechproject.tasks.domain.mds.task.TaskActivity;
 import org.motechproject.tasks.domain.mds.task.TaskActivityType;
 import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 import org.motechproject.tasks.exception.ActionNotFoundException;
+import org.motechproject.tasks.repository.ChannelsDataService;
 import org.motechproject.tasks.repository.TaskActivitiesDataService;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TriggerHandler;
-import org.motechproject.tasks.service.util.PostActionParameterObject;
-import org.motechproject.tasks.service.util.TaskContext;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.motechproject.testing.osgi.wait.Wait;
 import org.motechproject.testing.osgi.wait.WaitCondition;
+import org.motechproject.testmodule.domain.TaskTestObject;
+import org.motechproject.testmodule.service.TasksTestService;
 import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
+import org.osgi.framework.BundleContext;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -46,6 +50,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,7 +60,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
-public class ActionParametersIT extends BasePaxIT {
+public class ActionParametersBundleIT extends BasePaxIT {
 
     private static final String TASK_TEST_CHANNEL_NAME = "motech-tasks-test-bundle";
     private static final String TASK_TEST_SERVICE_INTERFACE = "org.motechproject.testmodule.service.TasksTestService";
@@ -72,7 +77,16 @@ public class ActionParametersIT extends BasePaxIT {
     private ChannelService channelService;
 
     @Inject
+    private ChannelsDataService channelsDataService;
+
+    @Inject
+    private BundleContext bundleContext;
+
+    @Inject
     private TaskService taskService;
+
+    @Inject
+    private TasksTestService tasksTestService;
 
     @Inject
     private TriggerHandler triggerHandler;
@@ -85,6 +99,8 @@ public class ActionParametersIT extends BasePaxIT {
 
 
     private MotechJsonReader motechJsonReader = new MotechJsonReader();
+
+    private Long taskID;
 
     @Override
     protected Collection<String> getAdditionalTestDependencies() {
@@ -106,21 +122,23 @@ public class ActionParametersIT extends BasePaxIT {
 
     @Test
     public void testActionWithPostActionParameters() throws InterruptedException, IOException, ActionNotFoundException {
-        long taskID = createTestTask();
+        taskID = createTestTask();
 
         activateTrigger();
         assertTrue(waitForTaskExecution(taskID));
 
-        TaskContext taskContext =  triggerHandler.getTaskContext();
+        List<TaskTestObject> fetchedTaskTestObjects = tasksTestService.getTaskTestObjects();
 
-        ArrayList<PostActionParameterObject> postActionParameterObjects = new ArrayList<>();
-        postActionParameterObjects.addAll(taskContext.getPostActionParameters());
+        List<TaskTestObject> expectedTaskTestObject = prepareExpectedTaskTestObject();
 
-        List<PostActionParameterObject> expectedPostActionParams = prepareExpectedPostActionParams();
-        postActionParameterObjects.contains(expectedPostActionParams.get(0));
-        postActionParameterObjects.contains(expectedPostActionParams.get(1));
-        postActionParameterObjects.contains(expectedPostActionParams.get(2));
+        deleteTask(taskID);
+        removeChannels(channelsDataService.retrieveAll());
+
+        assertTrue(fetchedTaskTestObjects.contains(expectedTaskTestObject.get(0)));
+        assertTrue(fetchedTaskTestObjects.contains(expectedTaskTestObject.get(1)));
+        assertTrue(fetchedTaskTestObjects.contains(expectedTaskTestObject.get(2)));
     }
+
 
     private Long createTestTask() {
         TaskTriggerInformation triggerInformation = new TaskTriggerInformation("CREATE SettingsRecord", "data-services", MDS_CHANNEL_NAME,
@@ -148,9 +166,9 @@ public class ActionParametersIT extends BasePaxIT {
         (new Wait(new WaitCondition() {
             public boolean needsToWait() {
                 try {
-                    return ActionParametersIT.this.findChannel(channelName) == null;
+                    return ActionParametersBundleIT.this.findChannel(channelName) == null;
                 } catch (IOException var2) {
-                    ActionParametersIT.this.getLogger().error("Error while searching for channel " + channelName, var2);
+                    ActionParametersBundleIT.this.getLogger().error("Error while searching for channel " + channelName, var2);
                     return false;
                 }
             }
@@ -174,8 +192,8 @@ public class ActionParametersIT extends BasePaxIT {
             IOUtils.copy(stream, writer);
         }
             ChannelRequest channelRequest = (ChannelRequest) motechJsonReader.readFromString(writer.toString(), type, typeAdapters);
-            channelRequest.setModuleName(channelRequest.getDisplayName());
-            channelRequest.setModuleVersion("1.0");
+            channelRequest.setModuleName(TASK_TEST_CHANNEL_NAME);
+            channelRequest.setModuleVersion("0.29.0.SNAPSHOT");
 
         return ChannelBuilder.fromChannelRequest(channelRequest).build();
     }
@@ -216,13 +234,27 @@ public class ActionParametersIT extends BasePaxIT {
         return actionInformation;
     }
 
-    private List<PostActionParameterObject> prepareExpectedPostActionParams () {
-        List<PostActionParameterObject> expectedPostActionParams = new ArrayList<>();
+    private List<TaskTestObject> prepareExpectedTaskTestObject() {
+        List<TaskTestObject> expectedTaskTestObjects = new ArrayList<>();
 
-        expectedPostActionParams.add(new PostActionParameterObject("0", "testNameWithPrefix", "ActionValue - postActionParameter", true));
-        expectedPostActionParams.add(new PostActionParameterObject("1", "testNameWithPrefix", "ActionValue - postActionParameter - postActionParameter", true));
-        expectedPostActionParams.add(new PostActionParameterObject("2", "testNameWithPrefix", "ActionValue - postActionParameter - postActionParameter - postActionParameter", true));
+        expectedTaskTestObjects.add(new TaskTestObject("ActionValue", "ActionValue - postActionParameter"));
+        expectedTaskTestObjects.add(new TaskTestObject("ActionValue - postActionParameter", "ActionValue - postActionParameter - postActionParameter"));
+        expectedTaskTestObjects.add(new TaskTestObject("ActionValue - postActionParameter - postActionParameter", "ActionValue - postActionParameter - postActionParameter - postActionParameter"));
 
-        return expectedPostActionParams;
+        return expectedTaskTestObjects;
+    }
+
+    private void deleteTask(Long taskID) {
+        taskService.deleteTask(taskID);
+    }
+
+    private void removeChannels(List<Channel> channels) {
+        Iterator<Channel> it = channels.iterator();
+        while (it.hasNext()) {
+            Channel channel = it.next();
+            if(channel.getModuleName() != null) {
+                channelService.unregisterChannel(channel.getModuleName());
+            }
+        }
     }
 }
