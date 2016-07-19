@@ -424,6 +424,22 @@ public class MotechSchedulerDatabaseServiceImplBundleIT extends BasePaxIT {
     }
 
     @Test
+    public void shouldReturnAllJobsWhenNoFiltersSet() {
+        try {
+            fakeNow(newDateTime(CURRENT_YEAR + 1, 7, 13, 5, 0, 0));
+            addTestJobs();
+
+            JobsSearchSettings jobsSearchSettings = new JobsSearchSettings();
+
+            List<JobBasicInfo> jobs = databaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
+            assertNotNull(jobs);
+            assertEquals(6, jobs.size());
+        } finally {
+            stopFakingTime();
+        }
+    }
+
+    @Test
     public void shouldFilterJobsByName() {
         try {
             fakeNow(newDateTime(CURRENT_YEAR + 1, 7, 13, 5, 0, 0));
