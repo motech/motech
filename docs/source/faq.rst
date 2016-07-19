@@ -189,23 +189,4 @@ To restart ActiveMQ use
 
 If the issue still appears, restart MOTECH (Tomcat).
 
-2. The most likely cause is a RMI connection error. By default RMI is using a random port.
-To set fixed port you have to edit ActiveMQ broker configuration, which is in the file ``/etc/activemq/instances-enabled/main/activemq.xml``.
-Add the following lines to the broker configuration (the name of the broker in use is in ``Admin/Settings/JMX/Broker name``):
-
-.. code-block:: xml
-
-	<managementContext>
-	    <managementContext createConnector="true" connectorPort="1099" rmiServerPort="1099" />
-	</managementContext>
-
-The XML elements inside the ``<broker>`` element must be ordered alphabetically.
-The next step is to restart ActiveMQ.
-To restart ActiveMQ use:
-
-.. code-block:: bash
-
-    sudo /etc/init.d/activemq restart
-
-If the issue still appears, restart MOTECH (Tomcat).
 
