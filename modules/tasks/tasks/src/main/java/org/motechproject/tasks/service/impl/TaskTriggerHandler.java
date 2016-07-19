@@ -65,8 +65,6 @@ public class TaskTriggerHandler implements TriggerHandler {
     @Autowired
     private TasksPostExecutionHandler postExecutionHandler;
 
-    private TaskContext taskContext;
-
     private Map<String, DataProvider> dataProviders;
 
     @PostConstruct
@@ -167,7 +165,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         long activityId = activityService.addTaskStarted(task, parameters);
         Map<String, Object> metadata = prepareTaskMetadata(task.getId(), activityId, isRetry);
 
-        taskContext = new TaskContext(task, parameters, metadata, activityService);
+        TaskContext taskContext = new TaskContext(task, parameters, metadata, activityService);
 
         TaskInitializer initializer = new TaskInitializer(taskContext);
 

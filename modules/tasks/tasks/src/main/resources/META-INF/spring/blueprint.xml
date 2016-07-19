@@ -62,9 +62,6 @@
     <osgi:reference id="triggerEventDataService"
                     interface="org.motechproject.tasks.repository.TriggerEventsDataService"/>
 
-    <osgi:reference id="tasksTestServiceOsgi"
-                    interface="org.motechproject.testmodule.service.TasksTestService"/>
-
     <osgi:reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager" context-class-loader="unmanaged"/>
 
     <osgi:service id="channelServiceOsgi" auto-export="interfaces" ref="channelService"

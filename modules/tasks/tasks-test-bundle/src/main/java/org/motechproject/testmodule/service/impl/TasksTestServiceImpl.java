@@ -27,7 +27,6 @@ public class TasksTestServiceImpl implements TasksTestService {
 
     @Override
     public List<TaskTestObject> getTaskTestObjects() {
-
         return taskTestObjects;
     }
 }

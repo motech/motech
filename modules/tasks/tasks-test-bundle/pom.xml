@@ -41,21 +41,6 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Context-Path>testmodule/api</Context-Path>
-                        <Resource-Path>testmodule</Resource-Path>
-                        <Blueprint-Enabled>true</Blueprint-Enabled>
-                        <Export-Package>
-                            org.motechproject.testmodule.service;version=${project.version},
-                            org.motechproject.testmodule.domain;version=${project.version}
-                        </Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
                         <Bundle-SymbolicName>motech-tasks-test-bundle</Bundle-SymbolicName>
                     </instructions>
                 </configuration>

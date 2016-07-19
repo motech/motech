@@ -131,12 +131,15 @@ public class ActionParametersBundleIT extends BasePaxIT {
 
         List<TaskTestObject> expectedTaskTestObject = prepareExpectedTaskTestObject();
 
-        deleteTask(taskID);
-        removeChannels(channelsDataService.retrieveAll());
-
         assertTrue(fetchedTaskTestObjects.contains(expectedTaskTestObject.get(0)));
         assertTrue(fetchedTaskTestObjects.contains(expectedTaskTestObject.get(1)));
         assertTrue(fetchedTaskTestObjects.contains(expectedTaskTestObject.get(2)));
+    }
+
+    @After
+    public void clean() {
+        deleteTask(taskID);
+        removeChannels(channelsDataService.retrieveAll());
     }
 
 
