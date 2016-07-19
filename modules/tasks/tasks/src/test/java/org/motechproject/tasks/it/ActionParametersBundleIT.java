@@ -120,6 +120,12 @@ public class ActionParametersBundleIT extends BasePaxIT {
         waitForChannel(MDS_CHANNEL_NAME);
     }
 
+    @After
+    public void clean() {
+        deleteTask(taskID);
+        removeChannels(channelsDataService.retrieveAll());
+    }
+
     @Test
     public void testActionWithPostActionParameters() throws InterruptedException, IOException, ActionNotFoundException {
         taskID = createTestTask();
@@ -135,13 +141,6 @@ public class ActionParametersBundleIT extends BasePaxIT {
         assertTrue(fetchedTaskTestObjects.contains(expectedTaskTestObject.get(1)));
         assertTrue(fetchedTaskTestObjects.contains(expectedTaskTestObject.get(2)));
     }
-
-    @After
-    public void clean() {
-        deleteTask(taskID);
-        removeChannels(channelsDataService.retrieveAll());
-    }
-
 
     private Long createTestTask() {
         TaskTriggerInformation triggerInformation = new TaskTriggerInformation("CREATE SettingsRecord", "data-services", MDS_CHANNEL_NAME,
@@ -255,7 +254,7 @@ public class ActionParametersBundleIT extends BasePaxIT {
         Iterator<Channel> it = channels.iterator();
         while (it.hasNext()) {
             Channel channel = it.next();
-            if(channel.getModuleName() != null) {
+            if (StringUtils.equals(TASK_TEST_CHANNEL_NAME, channel.getModuleName()) || StringUtils.equals(MDS_CHANNEL_NAME, channel.getModuleName()) ) {
                 channelService.unregisterChannel(channel.getModuleName());
             }
         }

@@ -10,7 +10,6 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.testmodule"/>
 
-    
-    <osgi:service id="tasksTestServiceOsgi" ref="tasksTestService"  interface="org.motechproject.testmodule.service.TasksTestService" auto-export="interfaces" />
+    <osgi:service ref="tasksTestService"  interface="org.motechproject.testmodule.service.TasksTestService" auto-export="interfaces" />
 
 </beans>

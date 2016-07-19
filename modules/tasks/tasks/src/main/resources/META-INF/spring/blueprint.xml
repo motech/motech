@@ -58,7 +58,6 @@
     <osgi:reference id="tasksDataServiceOSGi"
                     interface="org.motechproject.tasks.repository.TasksDataService"/>
 
-
     <osgi:reference id="triggerEventDataService"
                     interface="org.motechproject.tasks.repository.TriggerEventsDataService"/>
 

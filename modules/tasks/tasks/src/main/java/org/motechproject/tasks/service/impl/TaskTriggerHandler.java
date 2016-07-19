@@ -166,7 +166,6 @@ public class TaskTriggerHandler implements TriggerHandler {
         Map<String, Object> metadata = prepareTaskMetadata(task.getId(), activityId, isRetry);
 
         TaskContext taskContext = new TaskContext(task, parameters, metadata, activityService);
-
         TaskInitializer initializer = new TaskInitializer(taskContext);
 
         try {
