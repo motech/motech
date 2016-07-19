@@ -173,7 +173,23 @@ Then connect to Tomcat using a remote debugger on port 8000, same as when normal
 Why am I not seeing anything in "Admin Queues and Topics"?
 ----------------------------------------------------------
 
-The most likely cause is a RMI connection error. By default RMI is using a random port.
+1. Edit ActiveMQ broker configuration, which is in the file ``/etc/activemq/instances-enabled/main/activemq.xml``.
+Change or add the following lines in the broker tag;
+
+.. code-block:: xml
+
+    <broker useJmx="true">
+
+The next step is to restart ActiveMQ.
+To restart ActiveMQ use
+
+    .. code-block:: bash
+
+        sudo service activemq restart
+
+If the issue still appears, restart MOTECH (Tomcat).
+
+2. The most likely cause is a RMI connection error. By default RMI is using a random port.
 To set fixed port you have to edit ActiveMQ broker configuration, which is in the file ``/etc/activemq/instances-enabled/main/activemq.xml``.
 Add the following lines to the broker configuration (the name of the broker in use is in ``Admin/Settings/JMX/Broker name``):
 
@@ -191,39 +207,5 @@ To restart ActiveMQ use:
 
     sudo /etc/init.d/activemq restart
 
-or
-
-.. code-block:: bash
-
-    sudo service activemq restart
-
-If everything was made properly, you should get connection with ``service:jmx:rmi:///jndi/rmi://<host_name>:1099/jmxrmi``
-(where ``<host_name>`` is the name of the broker host from ``Admin/Settings/JMX/Broker Host``) using:
-
-.. code-block:: bash
-
-    jconsole
-
-If the issue still appears, restart MOTECH.
-
-.. note::
-
-    If you are using Ubuntu and you install ActiveMQ through ``apt-get``, you can have problems with loading of new configuration to ActiveMQ.
-    It's a known issue. The status of bug can you check here: ``https://bugs.launchpad.net/ubuntu/+source/activemq/+bug/1361831``
-    To fix this can you install ActiveMQ in another way.
-    Remove ActiveMQ using e.g.:
-
-    .. code-block:: bash
-        sudo apt-get purge --auto-remove activemq
-
-    Then download the latest stable version of ActiveMQ from `here`_
-
-        .. _here: http://activemq.apache.org/download.html
-
-    and follow this `tutorial`_
-
-        .. _tutorial: http://servicebus.blogspot.com/2011/02/installing-apache-active-mq-on-ubuntu.html
-
-    to ``sudo update-rc.d activemq defaults`` instruction (you can skip the rest of instructions).
-    Remember that your config files are now in ``/opt/activemq/conf``!
+If the issue still appears, restart MOTECH (Tomcat).
 
