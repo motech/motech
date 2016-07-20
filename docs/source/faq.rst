@@ -173,8 +173,8 @@ Then connect to Tomcat using a remote debugger on port 8000, same as when normal
 Why am I not seeing anything in "Admin Queues and Topics"?
 ----------------------------------------------------------
 
-1. Edit ActiveMQ broker configuration, which is in the file ``/etc/activemq/instances-enabled/main/activemq.xml``.
-Change or add the following lines in the broker tag;
+Edit ActiveMQ broker configuration, which is in the file ``/etc/activemq/instances-enabled/main/activemq.xml``.
+Change or add the following attribute to the broker element:
 
 .. code-block:: xml
 
