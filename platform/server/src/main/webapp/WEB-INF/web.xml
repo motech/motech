@@ -52,6 +52,11 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+	<servlet-name>default</servlet-name>
+	<url-pattern>/static/*</url-pattern>
+    </servlet-mapping>
+
     <error-page>
         <error-code>401</error-code>
         <location>/server/error/401</location>
