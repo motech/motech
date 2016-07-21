@@ -186,6 +186,8 @@
                 title: $scope.msg('task.import'),
                 message: $compile('<import-task-modal></import-task-modal>')($scope),
                 closable: true,
+                closeByBackdrop: false,
+                closeByKeyboard: false,
                 draggable: false,
                 cssClass: 'tasks',
                 buttons: [{
@@ -318,6 +320,8 @@
                 title: $scope.msg('task.tooltip.availableTriggers'),
                 message: $compile('<triggers-modal></triggers-modal>')($scope),
                 closable: true,
+                closeByBackdrop: false,
+                closeByKeyboard: false,
                 draggable: false,
                 cssClass: 'tasks',
                 autodestroy: false,
