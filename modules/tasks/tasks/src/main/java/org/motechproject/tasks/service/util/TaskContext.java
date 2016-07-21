@@ -24,6 +24,7 @@ public class TaskContext {
 
     private Task task;
     private Map<String, Object> parameters;
+    private Map<String, Object> metadata;
     private TaskActivityService activityService;
     private Set<DataSourceObject> dataSourceObjects;
     private Set<PostActionParameterObject> postActionParameters;
@@ -35,9 +36,10 @@ public class TaskContext {
      * @param parameters  the task parameters
      * @param activityService  the activity service, not null
      */
-    public TaskContext(Task task, Map<String, Object> parameters, TaskActivityService activityService) {
+    public TaskContext(Task task, Map<String, Object> parameters, Map<String, Object> metadata, TaskActivityService activityService) {
         this.task = task;
         this.parameters = parameters;
+        this.metadata = metadata;
         this.activityService = activityService;
         this.dataSourceObjects = new HashSet<>();
         this.postActionParameters = new HashSet<>();
@@ -164,6 +166,14 @@ public class TaskContext {
 
     public Map<String, Object> getTriggerParameters() {
         return parameters;
+    }
+
+    public Map<String, Object> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, Object> metadata) {
+        this.metadata = metadata;
     }
 
     private DataSourceObject getDataSourceObject(String objectId) {
