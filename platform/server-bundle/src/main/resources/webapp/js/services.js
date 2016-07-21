@@ -14,12 +14,22 @@
         LoadingModal.closeEvent($rootScope, function(event) { that.show(); });
 
         this.open = function (dialog) {
-            modalsList.push(dialog);
-            if (modalsList.length > 1) {
-                modalsList[modalsList.length-2].close();
+            var i, dialogExists = false;
+
+            for (i = 0; i < modalsList.length; i+=1) {
+                if (modalsList[i] === dialog) {
+                    dialogExists = true;
+                }
             }
-            if (!LoadingModal.isOpen()) {
-                dialog.open();
+            if (!dialogExists) {
+                modalsList.push(dialog);
+
+                if (modalsList.length > 1) {
+                    modalsList[modalsList.length-2].close();
+                }
+                if (!LoadingModal.isOpen()) {
+                    dialog.open();
+                }
             }
         };
 
@@ -48,7 +58,7 @@
             } else if (modalsList.length > 0) {
                 $timeout(function() {
                     that.show();
-                }, 200);
+                }, 400);
             }
         };
 
@@ -88,7 +98,6 @@
 
                 dialog.open();
 
-                dialog.getModal().prev().css('z-index', dialog.getModal().css('z-index'));
                 open = true;
                 $rootScope.$emit('loadingModalOpen');
             }

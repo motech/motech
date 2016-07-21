@@ -6,7 +6,7 @@
 
     var controllers = angular.module('tasks.controllers', []);
 
-    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope, $http, ManageTaskUtils,  ModalFactory, LoadingModal) {
+    controllers.controller('TasksDashboardCtrl', function ($scope, $compile, $filter, Tasks, Activities, $rootScope, $http, ManageTaskUtils, ModalFactory, LoadingModal, BootstrapDialogManager) {
         var tasks, activities = [],
             searchMatch = function (item, method, searchQuery) {
                 var result;
@@ -180,26 +180,46 @@
             $('#inner-center').trigger("change");
         };
 
-        $scope.importTask = function () {
-            LoadingModal.open();
+        $scope.openImportTaskModal = function () {
 
-            $('#importTaskForm').ajaxSubmit({
-                success: function () {
-                    $scope.getTasks();
-                    $('#importTaskForm').resetForm();
-                    $('#importTaskModal').modal('hide');
-                    LoadingModal.close();
-                },
-                error: function (response) {
-                    LoadingModal.close();
-                    ModalFactory.showErrorAlertWithResponse('task.error.import', 'task.header.error', response);
-                }
-            });
-        };
+            var dialog = new BootstrapDialog({
+                title: $scope.msg('task.import'),
+                message: $compile('<import-task-modal></import-task-modal>')($scope),
+                closable: true,
+                draggable: false,
+                cssClass: 'tasks',
+                buttons: [{
+                    label: $scope.msg('task.button.import'),
+                    cssClass: 'btn btn-primary',
+                    action: function (dialogItself) {
+                        LoadingModal.open();
 
-        $scope.closeImportTaskModal = function () {
-            $('#importTaskForm').resetForm();
-            $('#importTaskModal').modal('hide');
+                        $('#importTaskForm').ajaxSubmit({
+                            success: function () {
+                                $scope.getTasks();
+                                $('#importTaskForm').resetForm();
+                                BootstrapDialogManager.close(dialogItself);
+                                LoadingModal.close();
+                            },
+                            error: function (response) {
+                                LoadingModal.close();
+                                ModalFactory.showErrorAlertWithResponse('task.error.import', 'task.header.error', response);
+                            }
+                        });
+                    }
+                }, {
+                    label: $scope.msg('task.close'),
+                    cssClass: 'btn btn-default',
+                    action: function (dialogItself) {
+                        $('#importTaskForm').resetForm();
+                        BootstrapDialogManager.close(dialogItself);
+                    }
+                }]
+             });
+
+            dialog.realize();
+
+            BootstrapDialogManager.open(dialog);
         };
 
         $scope.resetItemsPagination();
@@ -280,7 +300,7 @@
     });
 
     controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers,
-                                     $q, $timeout, $stateParams, $http, $compile, $filter, ModalFactory, LoadingModal) {
+                                     $q, $timeout, $stateParams, $http, $compile, $filter, ModalFactory, LoadingModal, BootstrapDialogManager) {
 
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
@@ -293,6 +313,23 @@
         $scope.task.retryTaskOnFailure = false;
 
         $scope.openTriggersModal = function(channel) {
+
+            $scope.triggersDialog = new BootstrapDialog({
+                title: $scope.msg('task.tooltip.availableTriggers'),
+                message: $compile('<triggers-modal></triggers-modal>')($scope),
+                closable: true,
+                draggable: false,
+                cssClass: 'tasks',
+                autodestroy: false,
+                buttons: [{
+                    label: $scope.msg('task.close'),
+                    cssClass: 'btn btn-default',
+                    action: function (dialogItself) {
+                        BootstrapDialogManager.close(dialogItself);
+                    }
+                }]
+             });
+
             LoadingModal.open();
             $scope.staticTriggersPager = 1;
             $scope.dynamicTriggersPager = 1;
@@ -308,8 +345,6 @@
                     $scope.staticTriggers = data.staticTriggersList;
                     $scope.staticTriggersPage = $scope.staticTriggers.page;
                     $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
-                    $("#staticTriggersPager").val($scope.staticTriggersPage);
-                    $("#dynamicTriggersPager").val($scope.dynamicTriggersPage);
                     $scope.hasDynamicTriggers = $scope.dynamicTriggers.triggers.length > 0;
                     $scope.hasStaticTriggers = $scope.staticTriggers.triggers.length > 0;
                     if ($scope.hasStaticTriggers && $scope.hasDynamicTriggers) {
@@ -317,7 +352,7 @@
                     } else {
                         $scope.divSize = "col-md-12";
                     }
-                    $('#triggersModal').modal('show');
+                    BootstrapDialogManager.open($scope.triggersDialog);
                     LoadingModal.close();
                 }
             );
@@ -357,8 +392,6 @@
                         $scope.staticTriggers = data.staticTriggersList;
                         $scope.staticTriggersPage = $scope.staticTriggers.page;
                         $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
-                        $("#staticTriggersPager").val($scope.staticTriggersPage);
-                        $("#dynamicTriggersPager").val($scope.dynamicTriggersPage);
                         LoadingModal.close();
                     }
                 );
@@ -511,12 +544,12 @@
                     if (val) {
                         $scope.util.trigger.remove($scope);
                         $scope.util.trigger.select($scope, channel, trigger);
-                        $('#triggersModal').modal('hide');
+                        BootstrapDialogManager.close($scope.triggersDialog);
                     }
                 });
             } else {
                 $scope.util.trigger.select($scope, channel, trigger);
-                $('#triggersModal').modal('hide');
+                BootstrapDialogManager.close($scope.triggersDialog);
             }
         };
 
