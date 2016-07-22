@@ -1,6 +1,5 @@
 {
   "displayName": "logger",
-
   "triggerTaskEvents" : [],
   "actionTaskEvents": [
     {
@@ -12,7 +11,7 @@
         {
           "key": "level",
           "displayName": "logger.log.level",
-          "options": ["error", "debug", "info"],
+          "options": ["logger.log.level.trace", "logger.log.level.debug", "logger.log.level.info", "logger.log.level.warn", "logger.log.level.error"],
           "type": "SELECT"
         },
         {
