@@ -14,16 +14,6 @@
   ],
   "actionTaskEvents": [
     {
-        "displayName": "Test Action",
-        "subject": "actionEvent",
-        "actionParameters": [
-            {
-                "key": "foo",
-                "displayName": "Foo"
-            }
-        ]
-    },
-    {
       "displayName": "Test Action return Post Action Params",
       "serviceInterface": "org.motechproject.testmodule.service.TasksTestService",
       "serviceMethod": "createTestObjectWithPostActionParameter",

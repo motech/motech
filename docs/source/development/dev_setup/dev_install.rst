@@ -22,7 +22,7 @@ The versions below may change, most likely the latest stable release will work f
 		.. code-block:: bash
 
 			sudo apt-get install curl git maven activemq npm
-			curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
+			curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 			sudo apt-get install -y nodejs
 			sudo npm install -g bower gulp
 
