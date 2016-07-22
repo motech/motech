@@ -67,7 +67,7 @@ public class TaskFilterExecutorTest {
         when(taskConfig.getDataSource(anyString(), anyLong(), anyString())).thenReturn(dataSource);
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
-        TaskContext taskContext = new TaskContext(task, null, activityService);
+        TaskContext taskContext = new TaskContext(task, null, null, activityService);
         TaskFilterExecutor taskFilterExecutor = new TaskFilterExecutor();
 
         assertTrue(taskFilterExecutor.checkFilters(null, null, taskContext));
@@ -106,7 +106,7 @@ public class TaskFilterExecutorTest {
         filters.add(new Filter("MRS.Person#1.Dead", "ad.2.Person#1.dead", BOOLEAN, false, AND.getValue(), "false"));
         filters.add(new Filter("MRS.Person#1.Dead", "ad.2.Person#1.dead", BOOLEAN, true, OR.getValue(), "true"));
 
-        taskContext = new TaskContext(task, new HashMap<>(), activityService);
+        taskContext = new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService);
         assertFalse(taskFilterExecutor.checkFilters(filters, LogicalOperator.AND, taskContext));
         assertTrue(taskFilterExecutor.checkFilters(filters, LogicalOperator.OR, taskContext));
 
@@ -114,7 +114,7 @@ public class TaskFilterExecutorTest {
         triggerParameters.put("eventName", "etName");
         triggerParameters.put("externalId", "12345");
 
-        taskContext = new TaskContext(task, triggerParameters, activityService);
+        taskContext = new TaskContext(task, triggerParameters, new HashMap<>(), activityService);
         taskContext.addDataSourceObject("0", new StreamContent("Eman"), false);
         taskContext.addDataSourceObject("1", new Person(150, true), false);
         assertFalse(taskFilterExecutor.checkFilters(filters, LogicalOperator.AND, taskContext));
@@ -122,7 +122,7 @@ public class TaskFilterExecutorTest {
 
         triggerParameters.put("eventName", "event name");
         triggerParameters.put("externalId", "123456789");
-        taskContext = new TaskContext(task, triggerParameters, activityService);
+        taskContext = new TaskContext(task, triggerParameters, new HashMap<>(), activityService);
         taskContext.addDataSourceObject("0", new StreamContent("name"), false);
         taskContext.addDataSourceObject("1", new Person(46, false), false);
         assertTrue(taskFilterExecutor.checkFilters(filters, LogicalOperator.AND, taskContext));
@@ -145,7 +145,7 @@ public class TaskFilterExecutorTest {
         filters.add(moreDays);
 
         triggerParameters.put("test_date", dateTime.toString());
-        taskContext = new TaskContext(task, triggerParameters, activityService);
+        taskContext = new TaskContext(task, triggerParameters, new HashMap<>(), activityService);
         taskContext.addDataSourceObject("0", new StreamContent("name"), false);
         taskContext.addDataSourceObject("1", new Person(46, false), false);
         assertTrue(taskFilterExecutor.checkFilters(filters, LogicalOperator.AND, taskContext));
@@ -165,7 +165,7 @@ public class TaskFilterExecutorTest {
         dateTime = DateTime.now().minusMonths(3);
 
         triggerParameters.put("test_date", dateTime.toString());
-        taskContext = new TaskContext(task, triggerParameters, activityService);
+        taskContext = new TaskContext(task, triggerParameters, new HashMap<>(), activityService);
         taskContext.addDataSourceObject("0", new StreamContent("name"), false);
         taskContext.addDataSourceObject("1", new Person(46, false), false);
         assertTrue(taskFilterExecutor.checkFilters(filters, LogicalOperator.AND, taskContext));
@@ -173,7 +173,7 @@ public class TaskFilterExecutorTest {
         dateTime = dateTime.plusMonths(6);
 
         triggerParameters.put("test_date", dateTime.toString());
-        taskContext = new TaskContext(task, triggerParameters, activityService);
+        taskContext = new TaskContext(task, triggerParameters, new HashMap<>(), activityService);
         taskContext.addDataSourceObject("0", new StreamContent("name"), false);
         taskContext.addDataSourceObject("1", new Person(46, false), false);
         assertTrue(taskFilterExecutor.checkFilters(filters, LogicalOperator.AND, taskContext));
@@ -184,7 +184,7 @@ public class TaskFilterExecutorTest {
         before.setNegationOperator(!before.isNegationOperator());
         beforeNow.setNegationOperator(!beforeNow.isNegationOperator());
 
-        taskContext = new TaskContext(task, triggerParameters, activityService);
+        taskContext = new TaskContext(task, triggerParameters, new HashMap<>(), activityService);
         taskContext.addDataSourceObject("0", new StreamContent("name"), false);
         taskContext.addDataSourceObject("1", new Person(46, false), false);
         assertTrue(taskFilterExecutor.checkFilters(filters, LogicalOperator.AND, taskContext));
@@ -194,7 +194,7 @@ public class TaskFilterExecutorTest {
         Filter additionalDataFilter = new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, "abc", "");
         filters.add(additionalDataFilter);
 
-        taskContext = new TaskContext(task, triggerParameters, activityService);
+        taskContext = new TaskContext(task, triggerParameters, new HashMap<>(), activityService);
         taskContext.addDataSourceObject("0", new StreamContent("name"), false);
         taskContext.addDataSourceObject("1", new Person(46, true), false);
         assertFalse(taskFilterExecutor.checkFilters(filters, LogicalOperator.AND, taskContext));
@@ -205,7 +205,7 @@ public class TaskFilterExecutorTest {
         filters.remove(additionalDataFilter);
         filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, "abc", ""));
 
-        taskContext = new TaskContext(task, triggerParameters, activityService);
+        taskContext = new TaskContext(task, triggerParameters, new HashMap<>(), activityService);
         taskContext.addDataSourceObject("0", new StreamContent("name"), false);
         taskContext.addDataSourceObject("1", new Person(46, true), false);
         assertFalse(taskFilterExecutor.checkFilters(filters, LogicalOperator.AND, taskContext));
@@ -218,7 +218,7 @@ public class TaskFilterExecutorTest {
         filters.add(new Filter("MRS.Person#2.Age", "ad.2.Person#2.age", INTEGER, false, EXIST.getValue(), ""));
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
-        TaskContext taskContext = new TaskContext(task, new HashMap<>(), activityService);
+        TaskContext taskContext = new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService);
         new TaskFilterExecutor().checkFilters(filters, LogicalOperator.AND, taskContext);
     }
 

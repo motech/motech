@@ -25,6 +25,9 @@ import java.util.Objects;
 @Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class TaskActivity implements Comparable<TaskActivity> {
 
+    @Field
+    private Long id;
+
     @Field(displayName = "Message")
     private String message;
 
@@ -39,6 +42,9 @@ public class TaskActivity implements Comparable<TaskActivity> {
 
     @Field(displayName = "Activity Type")
     private TaskActivityType activityType;
+
+    @Field(displayName = "Task execution progress")
+    private TaskExecutionProgress executionProgress;
 
     @Field(displayName = "StackTrace element", type = "text")
     private String stackTraceElement;
@@ -61,7 +67,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
      * @param activityType  the activity type
      */
     public TaskActivity(String message, Long task, TaskActivityType activityType) {
-        this(message, new ArrayList<String>(), task, activityType);
+        this(message, new ArrayList<>(), task, activityType, (TaskExecutionProgress) null);
     }
 
     /**
@@ -73,7 +79,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
      * @param activityType  the activity type
      */
     public TaskActivity(String message, String field, Long task, TaskActivityType activityType) {
-        this(message, new ArrayList<>(Arrays.asList(field)), task, activityType);
+        this(message, new ArrayList<>(Arrays.asList(field)), task, activityType, (TaskExecutionProgress) null);
     }
 
     /**
@@ -83,9 +89,10 @@ public class TaskActivity implements Comparable<TaskActivity> {
      * @param fields  the field names
      * @param task  the activity task ID
      * @param activityType  the activity type
+     * @param executionProgress the progress of task action executions
      */
-    public TaskActivity(String message, List<String> fields, Long task, TaskActivityType activityType) {
-        this(message, fields, task, activityType, null, null);
+    public TaskActivity(String message, List<String> fields, Long task, TaskActivityType activityType, TaskExecutionProgress executionProgress) {
+        this(message, fields, task, activityType, null, null, executionProgress);
     }
 
     /**
@@ -98,7 +105,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
      * @param stackTraceElement  the stack trace that caused the task failure
      */
     public TaskActivity(String message, List<String> fields, Long task, TaskActivityType activityType, String stackTraceElement) {
-        this(message, fields, task, activityType, stackTraceElement, null);
+        this(message, fields, task, activityType, stackTraceElement, null, null);
     }
 
     /**
@@ -110,9 +117,10 @@ public class TaskActivity implements Comparable<TaskActivity> {
      * @param activityType  the activity type
      * @param stackTraceElement  the stack trace that caused the task failure
      * @param parameters the parameters used by the task in this execution
+     * @param executionProgress the progress of task action executions
      */
     public TaskActivity(String message, List<String> fields, Long task, TaskActivityType activityType, String stackTraceElement,
-                        Map<String, Object> parameters) {
+                        Map<String, Object> parameters, TaskExecutionProgress executionProgress) {
         this.message = message;
         this.fields = fields;
         this.task = task;
@@ -120,6 +128,15 @@ public class TaskActivity implements Comparable<TaskActivity> {
         this.activityType = activityType;
         this.stackTraceElement = stackTraceElement;
         this.parameters = parameters;
+        this.executionProgress = executionProgress;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getMessage() {
@@ -186,6 +203,14 @@ public class TaskActivity implements Comparable<TaskActivity> {
 
     public void setParameters(Map<String, Object> parameters) {
         this.parameters = parameters;
+    }
+
+    public TaskExecutionProgress getTaskExecutionProgress() {
+        return executionProgress;
+    }
+
+    public void setTaskExecutionProgress(TaskExecutionProgress executionProgress) {
+        this.executionProgress = executionProgress;
     }
 
     @Override
