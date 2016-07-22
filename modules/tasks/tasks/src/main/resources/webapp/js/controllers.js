@@ -1094,7 +1094,7 @@
         });
     });
 
-    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http, ModalFactory, LoadingModal) {
+    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http, ModalFactory, LoadingModal, BootstrapDialogManager) {
         var data, task;
 
         $scope.taskId = $stateParams.taskId;
@@ -1173,6 +1173,20 @@
                 .error(function() {
                     ModalFactory.showErrorAlert('task.retry.failed', 'task.retry.header');
                 });
+        };
+
+        $scope.showStackTrace = function (messageToShow) {
+            var dialog = new BootstrapDialog({
+                title: 'Stack trace',
+                message: messageToShow,
+                buttons: [{
+                    label: 'Close',
+                    action: function (dialogRef) {
+                        BootstrapDialogManager.close(dialogRef);
+                    }
+                }]
+            });
+            BootstrapDialogManager.open(dialog);
         };
     });
 
