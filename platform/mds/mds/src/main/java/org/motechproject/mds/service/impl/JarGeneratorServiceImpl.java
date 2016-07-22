@@ -641,8 +641,8 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                 }
                 ++count;
             }
-            if(count >= MAX_WAIT_COUNT) {
-                LOGGER.error("Package has not been refreshed, reached time limit");
+            if (count >= MAX_WAIT_COUNT) {
+                LOGGER.error("Packages have not been refreshed, reached time limit");
             }
         }
     }

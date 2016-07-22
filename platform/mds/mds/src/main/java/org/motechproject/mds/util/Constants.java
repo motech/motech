@@ -486,7 +486,6 @@ public final class Constants {
         public static final String SERVER_CONFIG_MODULE = "org.motechproject.motech-platform-server-config";
         public static final String SCHEDULER_MODULE = "org.motechproject.motech-platform-scheduler";
         public static final String TASKS_MODULE = "org.motechproject.motech-tasks";
-        public static final String EMAIL_MODULE = "org.motechproject.motech-email";
         private BundleNames() {
         }
     }
