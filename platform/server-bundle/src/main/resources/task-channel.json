@@ -6,7 +6,6 @@
       "serviceInterface": "org.motechproject.server.service.LoggerService",
       "serviceMethod": "logMessage",
       "displayName": "logger.log",
-      "subject": "LogLogs",
       "actionParameters": [
         {
           "key": "level",
