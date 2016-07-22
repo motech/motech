@@ -117,9 +117,9 @@ public class BootstrapController {
             return bootstrapView;
         }
 
-        boolean isSqlReachable = testSqlConnection(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()), request);
+        boolean isDBReachable = testSqlConnection(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()), request);
 
-        if (!isSqlReachable) {
+        if (!isDBReachable) {
             bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
             bootstrapView.addObject(ERRORS, singletonList(getMessage("server.bootstrap.verifySql.error", new Object[]{queueUrl}, request)));
             addCommonBootstrapViewObjects(bootstrapView);
@@ -262,11 +262,11 @@ public class BootstrapController {
 
     private boolean testSqlConnection(SQLDBConfig config, HttpServletRequest request) {
         Map<String, Object> response = verifySqlConnection(config, request);
-        boolean isSqlReachable = false;
+        boolean isDBReachable = false;
         if (response.get(SUCCESS) instanceof Boolean) {
-            isSqlReachable = (Boolean) response.get(SUCCESS);
+            isDBReachable = (Boolean) response.get(SUCCESS);
         }
 
-        return isSqlReachable;
+        return isDBReachable;
     }
 }
