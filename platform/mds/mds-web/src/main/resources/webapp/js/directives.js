@@ -1389,8 +1389,8 @@
                                     firstLoad = false;
                                 }
                             },
-                            loadError: function() {
-                                scope.setDataRetrievalError(true);
+                            loadError: function(e) {
+                                scope.setDataRetrievalError(true, e.responseText);
                             }
                         });
 
@@ -2267,9 +2267,7 @@
                         fieldPath = fieldPath.substring(fieldPath.indexOf('.') + 1);
                     }
 
-                    value = _.isBoolean(ngModel.$modelValue)
-                        ? !ngModel.$modelValue
-                        : ngModel.$modelValue;
+                    value = ngModel.$modelValue;
 
                     viewScope.draft({
                         edit: true,
@@ -3587,21 +3585,22 @@
                 var elm = angular.element(element),
                 fieldId = attrs.mdsFieldId,
                 fieldName = attrs.mdsFieldName,
-                typingTimer;
+                typingTimer,
+                ngFormNameAttrSuffix = "form";
 
                 elm.on('keyup', function () {
                     scope.$apply(function () {
                         elm.siblings('#visited-hint-' + fieldId).addClass('hidden');
-                        if (scope[fieldName] !== undefined) {
-                            scope[fieldName].$dirty = false;
+                        if (scope[fieldName + ngFormNameAttrSuffix] !== undefined) {
+                            scope[fieldName + ngFormNameAttrSuffix].$dirty = false;
                         }
                     });
                     clearTimeout(typingTimer);
                     typingTimer = setTimeout( function() {
                         elm.siblings('#visited-hint-' + fieldId).removeClass('hidden');
                         scope.$apply(function () {
-                            if (scope[fieldName] !== undefined) {
-                                scope[fieldName].$dirty = true;
+                            if (scope[fieldName + ngFormNameAttrSuffix] !== undefined) {
+                                scope[fieldName + ngFormNameAttrSuffix].$dirty = true;
                             }
                         });
                     }, 1500);
@@ -3610,8 +3609,8 @@
                 elm.on("blur", function() {
                     scope.$apply(function () {
                         elm.siblings('#visited-hint-' + fieldId).removeClass('hidden');
-                        if (scope[fieldName] !== undefined) {
-                            scope[fieldName].$dirty = true;
+                        if (scope[fieldName + ngFormNameAttrSuffix] !== undefined) {
+                            scope[fieldName + ngFormNameAttrSuffix].$dirty = true;
                         }
                     });
                 });
@@ -3649,4 +3648,18 @@
             });
         };
     });
+
+    directives.directive('preventNameConflicts', function($compile) {
+        return {
+            restrict: 'A',
+            priority: 10000,
+            terminal: true,
+            link: function(scope, element, attrs) {
+                attrs.$set('name', attrs.name + 'form');
+                attrs.$set('preventNameConflicts', null);
+                $compile(element)(scope);
+            }
+        };
+    });
 }());
+

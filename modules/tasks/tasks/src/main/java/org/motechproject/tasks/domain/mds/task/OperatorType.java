@@ -25,6 +25,7 @@ public enum OperatorType {
     MORE_DAYS_FROM_NOW("task.moreDaysFromNow"),
     LESS_MONTHS_FROM_NOW("task.lessMonthsFromNow"),
     MORE_MONTHS_FROM_NOW("task.moreMonthsFromNow"),
+    IS_TRUE("task.isTrue"),
     AND("task.and"),
     OR("task.or");
 
@@ -58,7 +59,9 @@ public enum OperatorType {
         OperatorType type = fromString(string);
         boolean need = true;
 
-        if (type != null && (type == EXIST || type == AFTER_NOW || type == BEFORE_NOW)) {
+        if (type != null && (type == EXIST || type == IS_TRUE)) {
+            need = false;
+        } else if( type == AFTER_NOW || type == BEFORE_NOW) {
             need = false;
         }
 

@@ -212,6 +212,11 @@
             <artifactId>motech-tomcat-it</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- Required for the calls coming from the Commcare "Data Forwarding" page -->
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <finalName>motech-platform-server</finalName>

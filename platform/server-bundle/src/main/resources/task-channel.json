@@ -1,0 +1,23 @@
+{
+  "displayName": "logger",
+  "triggerTaskEvents" : [],
+  "actionTaskEvents": [
+    {
+      "serviceInterface": "org.motechproject.server.service.LoggerService",
+      "serviceMethod": "logMessage",
+      "displayName": "logger.log",
+      "actionParameters": [
+        {
+          "key": "level",
+          "displayName": "logger.log.level",
+          "options": ["logger.log.level.trace", "logger.log.level.debug", "logger.log.level.info", "logger.log.level.warn", "logger.log.level.error"],
+          "type": "SELECT"
+        },
+        {
+          "key": "message",
+          "displayName": "logger.log.message"
+        }
+      ]
+    }
+  ]
+}

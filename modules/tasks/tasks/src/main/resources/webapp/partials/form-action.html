@@ -9,9 +9,9 @@
         </div>
         <a class="accordion-toggle cursor-auto" action-sortable-cursor>
             <i class="fa fa-fw fa-lg fa-caret-down pointer" data-toggle="collapse" data-parent="#select-action-{{$index}}" target="_self" href="#collapse-action-{{$index}}"></i> {{msg('task.header.action')}}
-                                    <span ng-hide="!action.displayName">
-                                        &raquo; {{msg(action.channelName)}} : {{taskMsg(action.displayName)}}
-                                    </span>
+            <span ng-hide="!action.displayName">
+                &raquo; {{msg(action.channelName)}} : {{taskMsg(action.displayName)}}
+            </span>
         </a>
     </div>
     <div id="collapse-action-{{$index}}" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
@@ -19,7 +19,7 @@
             <div class="form-group control-section">
                 <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.info.availableFields')}}:</label>
                 <div class="form-inline col-md-10 col-sm-9 move-element">
-                    <field ng-repeat="field in fields" field="field" draggable />
+                    <field ng-repeat="field in fields | postActionField:$index track by $index" field="field" draggable />
                 </div>
             </div>
 

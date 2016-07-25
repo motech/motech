@@ -7,6 +7,7 @@
         var utils = {
             TRIGGER_PREFIX: 'trigger',
             DATA_SOURCE_PREFIX: 'ad',
+            POST_ACTION_PREFIX: 'pa',
             FILTER_OPERATORS: {
                 'task.string': {
                     'type': 'UNICODE',
@@ -44,7 +45,7 @@
                 'task.boolean': {
                     'type' : 'BOOLEAN',
                     'options': [
-                        'task.exist',
+                        'task.isTrue',
                         'task.and',
                         'task.or'
                     ]
@@ -287,7 +288,7 @@
                 return $.inArray(scope.BrowserDetect.browser, ['Firefox']) !== -1;
             },
             needExpression: function (param) {
-                return param && $.inArray(param, ['task.exist', 'task.afterNow', 'task.beforeNow']) === -1;
+                return param && $.inArray(param, ['task.exist', 'task.isTrue', 'task.afterNow', 'task.beforeNow']) === -1;
             },
             createErrorMessage: function (scope, response, warning) {
                 var msg;
