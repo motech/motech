@@ -1,0 +1,1 @@
+UPDATE TypeValidation SET TYPE_ID = 2 WHERE id = 4;
