@@ -35,13 +35,16 @@ public class MotechSchedulerListener {
     @MotechListener(subjects = {SCHEDULE_REPEATING_JOB})
     public void handleScheduleRepeatingJobEvent(MotechEvent event) {
         Map<String, Object> parameters = event.getParameters();
-        String jobSubject = (String) parameters.get(JOB_SUBJECT);
-        MotechEvent jobEvent = new MotechEvent(jobSubject, parameters);
+        Map<String, Object> metadata = event.getMetadata();
 
-        Integer repeatCount = (Integer) parameters.get(REPEAT_COUNT);
-        Integer repeatIntervalInSeconds = (Integer) parameters.get(REPEAT_INTERVAL_TIME);
+        String jobSubject = (String) metadata.get(JOB_SUBJECT);
+        Integer repeatCount = (Integer) metadata.get(REPEAT_COUNT);
+        Integer repeatIntervalInSeconds = (Integer) metadata.get(REPEAT_INTERVAL_TIME);
 
-        RepeatingSchedulableJob repeatingJob = new RepeatingSchedulableJob(jobEvent, repeatCount, repeatIntervalInSeconds, DateTime.now(), null, false);
+        MotechEvent jobEvent = new MotechEvent(jobSubject, parameters, null, metadata);
+
+        RepeatingSchedulableJob repeatingJob = new RepeatingSchedulableJob(jobEvent, repeatCount - 1, repeatIntervalInSeconds,
+                DateTime.now().plusSeconds(repeatIntervalInSeconds), null, false);
 
         schedulerService.scheduleRepeatingJob(repeatingJob);
     }
@@ -53,8 +56,10 @@ public class MotechSchedulerListener {
      */
     @MotechListener(subjects = {UNSCHEDULE_REPEATING_JOB})
     public void handleUnscheduleRepeatingJobEvent(MotechEvent event) {
-        Map<String, Object> parameters = event.getParameters();
-        String jobSubject = (String) parameters.get(JOB_SUBJECT);
+        Map<String, Object> metadata = event.getMetadata();
+
+        String jobSubject = (String) metadata.get(JOB_SUBJECT);
+
         MotechEvent jobEvent = new MotechEvent(jobSubject, null);
 
         JobId jobId = new RepeatingJobId(jobEvent);

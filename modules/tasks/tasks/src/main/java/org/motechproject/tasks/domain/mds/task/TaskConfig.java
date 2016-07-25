@@ -45,6 +45,10 @@ public class TaskConfig implements Serializable {
     @Cascade(delete = true)
     private List<DataSource> dataSources;
 
+    @Field
+    @Cascade(delete = true)
+    private List<PostActionParameter> postActionParameters;
+
     @Ignore
     public SortedSet<TaskConfigStep> getSteps() {
         SortedSet<TaskConfigStep> steps = new TreeSet<>();
@@ -112,6 +116,19 @@ public class TaskConfig implements Serializable {
                         && ((DataSource) object).objectEquals(providerName, objectId, objectType);
             }
         });
+    }
+
+    @JsonIgnore
+    public List<PostActionParameter> getPostActionParameters() {
+        if (postActionParameters == null) {
+            postActionParameters = new ArrayList<>();
+        }
+        return postActionParameters;
+    }
+
+    @JsonIgnore
+    public void setPostActionParameters(List<PostActionParameter> postActionParameters) {
+        this.postActionParameters = postActionParameters;
     }
 
     /**

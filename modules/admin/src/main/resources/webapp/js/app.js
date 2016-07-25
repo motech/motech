@@ -47,7 +47,7 @@
                    }
                }
             })
-            .state('admin.bundleId', {
+            .state('admin.bundle', {
                url: '/bundle/:bundleId',
                parent: 'admin',
                views: {

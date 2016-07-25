@@ -98,6 +98,8 @@
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-ok.png" class="recent-activity-task-img"/>','ok',{ },'');
                                 } else if (activity === 'warning') {
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-question.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                } else if (activity === 'in progress') {
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-info.png" class="recent-activity-task-img"/>','ok',{ },'');
                                 } else if (activity === 'error') {
                                     activityId = $("#taskHistoryTable").getCell(rows[k],"id");
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType',
@@ -249,6 +251,13 @@
                     scope.displayName = "{0}.{1}#{2}.{3}".format(
                         scope.msg(scope.field.providerName),
                         scope.msg(scope.field.serviceName),
+                        scope.field.objectId,
+                        scope.msg(scope.field.displayName)
+                    );
+                } else if(scope.field.prefix === ManageTaskUtils.POST_ACTION_PREFIX){
+                    scope.displayName = "{0}.{1}#{2}.{3}".format(
+                        scope.msg(scope.field.channelName),
+                        scope.msg(scope.field.actionName),
                         scope.field.objectId,
                         scope.msg(scope.field.displayName)
                     );
@@ -861,6 +870,7 @@
                         changeYear: true,
                         dateFormat: 'yy-mm-dd',
                         timeFormat: 'HH:mm z',
+                        yearRange: '-100:+10',
                         showOn: true,
                         constrainInput: false,
                         onSelect: function (dateTex) {

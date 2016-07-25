@@ -48,24 +48,35 @@
     border-radius: 10px;
     cursor: pointer;
 }
-.tasks .field-trigger{
+
+.tasks .field-trigger {
     background-color: #3a87ad;
 }
-.tasks .field-ad{
+
+.tasks .field-ad {
     background-color: #f89406;
 }
 
-.tasks .field-bubble .badge{
+.tasks .field-pa {
+    background-color: #7B040E;
+}
+
+.tasks .field-bubble .badge {
     border-radius: 5px;
     font-size: 0.8em;
     background-color: #FFF;
-    color: #F4F4F4;
+    color: #333333;
 }
-.tasks .field-trigger .badge{
+
+.tasks .field-trigger .badge {
     color: #3a87ad;
 }
-.tasks .field-ad .badge{
+.tasks .field-ad .badge {
     color: #f89406;
+}
+
+.tasks .field-pa .badge {
+    color: #7B040E;
 }
 
 manipulation-sorter ol.sortable li.ui-state-highlight{

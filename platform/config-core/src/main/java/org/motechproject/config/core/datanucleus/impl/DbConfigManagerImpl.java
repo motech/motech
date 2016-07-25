@@ -7,7 +7,7 @@ import org.motechproject.config.core.datanucleus.DbConfigManager;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.environment.Environment;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
-import org.motechproject.config.core.filestore.ConfigPropertiesUtils;
+import org.motechproject.config.core.utils.ConfigPropertiesUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
