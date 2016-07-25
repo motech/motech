@@ -1094,7 +1094,7 @@
         });
     });
 
-    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http, ModalFactory, LoadingModal, BootstrapDialogManager) {
+    controllers.controller('TasksLogCtrl', function ($scope, $rootScope, Tasks, Activities, $stateParams, $filter, $http, ModalFactory, LoadingModal, BootstrapDialogManager) {
         var data, task;
 
         $scope.taskId = $stateParams.taskId;
@@ -1175,14 +1175,15 @@
                 });
         };
 
-        $scope.showStackTrace = function (messageToShow) {
+        $scope.showStackTrace = function () {
             var dialog = new BootstrapDialog({
                 title: 'Stack trace',
-                message: messageToShow,
+                message: $scope.stackTraceEl,
                 buttons: [{
-                    label: 'Close',
-                    action: function (dialogRef) {
-                        BootstrapDialogManager.close(dialogRef);
+                    label: $scope.msg('task.close'),
+                    cssClass: 'btn btn-default',
+                    action: function (dialogItself) {
+                        BootstrapDialogManager.close(dialogItself);
                     }
                 }]
             });

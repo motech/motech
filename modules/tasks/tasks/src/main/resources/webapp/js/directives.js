@@ -109,11 +109,12 @@
                             }
 
                             stackTraceElement = $("#taskHistoryTable").getCell(rows[k],"stackTraceElement");
+                            scope.stackTraceEl = stackTraceElement;
                             fields = $("#taskHistoryTable").getCell(rows[k], "fields").split(",");
                             messageToShow = [message].concat(fields);
                             if (message !== undefined && activity === 'error' && stackTraceElement !== undefined && stackTraceElement !== null) {
                                 $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',
-                                    '<p class="wrap-paragraph">' + scope.msg(messageToShow) + '&nbsp;&nbsp; <span type="button" class="btn btn-primary btn-xs grid-ng-clickable" ng-click="showStackTrace(stackTraceElement)" data-target="#stackTraceElement' +
+                                    '<p class="wrap-paragraph">' + scope.msg(messageToShow) + '&nbsp;&nbsp; <span type="button" class="btn btn-primary btn-xs grid-ng-clickable" ng-click="showStackTrace()" data-target="#stackTraceElement' +
                                     k + '">'+ scope.msg('task.button.showStackTrace') + '</span></p>',
                                     'ok',{ },'');
                             } else if (message !== undefined) {
