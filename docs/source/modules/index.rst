@@ -52,6 +52,11 @@ Forwards individual and aggregate level data to DHIS2.
 
 Sends and logs email messages
 
+:std:ref`Event <event-module>`
+------------------------------
+
+Allow the possibility to listen and assign an action to the events. The event actions can return a custom callback.
+
 :std:ref:`Event Logging <event-logging-module>`
 -----------------------------------------------
 
