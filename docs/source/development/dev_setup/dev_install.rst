@@ -141,7 +141,7 @@ The versions below may change, most likely the latest stable release will work f
 			nano ~/apache-tomcat-7.0.68/webapps/manager/WEB-INF/web.xml
 
 
-	#. Edit the lines in multipart-config defining the max upload value. Change it from 50MB to a bit more, 70MB should suffice:
+	#. Edit the lines in multipart-config defining the max upload value. Change it from 50MB to a bit more, 100MB should suffice:
 
             .. code-block:: xml
 
@@ -159,9 +159,9 @@ The versions below may change, most likely the latest stable release will work f
                 <!-- After changes -->
 
                 <multipart-config>
-                  <!-- 70MB max -->
-                  <max-file-size>71680000</max-file-size>
-                  <max-request-size>71680000</max-request-size>
+                  <!-- 100MB max -->
+                  <max-file-size>100000000</max-file-size>
+                  <max-request-size>100000000</max-request-size>
                   <file-size-threshold>0</file-size-threshold>
                 </multipart-config>
 
