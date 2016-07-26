@@ -55,7 +55,7 @@ Sends and logs email messages
 :std:ref`Event <event-module>`
 ------------------------------
 
-Allow the possibility to listen and assign an action to the events. The event actions can return a custom callback.
+Allows to publish and subscribe to events in MOTECH.
 
 :std:ref:`Event Logging <event-logging-module>`
 -----------------------------------------------
