@@ -68,7 +68,7 @@ public class AllEntityDrafts extends MotechDataRepository<EntityDraft> {
 
         draft.setDraftOwnerUsername(username);
         draft.setLastModificationDate(DateUtil.nowUTC());
-        draft.setSuperClass(entity.getSuperClass());
+
         draft.setName(entity.getName());
         draft.setClassName(entity.getClassName());
         draft.setNamespace(entity.getNamespace());
