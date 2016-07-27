@@ -705,7 +705,8 @@ New task creation process begins with clicking the 'New task' button on the main
 
 Starting from the top, one can see three properties to provide: task name, task description and option which allow to
 set task retry in case of failure, from which the task name is mandatory. If the "Retry task on failure" option is checked,
-one should set the count of retries and the interval in seconds between each retry call.
+one should set the count of retries and the interval in seconds between each retry call. For each retry all the task's actions are
+repeated, not only those that have failed.
 
 .. note::
     In the Tasks UI, if a property has invalid value it is signalled by highlighting its label and input field. There

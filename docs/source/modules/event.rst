@@ -11,8 +11,8 @@ Description
 ===========
 
 The Event module allows to create listener and assign action to event. The module is using :code:`MotechEvent` to provide
-event with specific data that will be sent by any MOTECH module (using :code:`EventRelay`) when a scheduled event is fired.
-The module is using ActiveMQ to support the event execution and callback. It is possible to register your own callback
+event with specific data that can be sent by any MOTECH module (using :code:`EventRelay`) when an event is fired.
+The module is using ActiveMQ to support the event execution. It is possible to register your own callback
 function using :code:`EventCallbackService`.
 
 MotechEvent
@@ -50,7 +50,7 @@ There are 2 ways to create an event listener:
 
     In :doc:`Core Architecture </architecture/core_architecture>` you can find an example of use of this annotation.
 
-#. Use an OSGi service exposed by the event module.
+#. Use an OSGi :code:`EventListenerRegistry` service exposed by the event module.
 
 Register custom callback
 ========================
@@ -61,7 +61,7 @@ interface and expose it as OSGi service. Then this service name must be set in t
 Example of a custom callback
 ----------------------------
 
-Firstly you should implement an :code:`EventCallbackService`:
+First you should implement an :code:`EventCallbackService`:
 
     .. code-block:: java
 
