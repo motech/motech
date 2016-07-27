@@ -10,7 +10,7 @@
             <defaultValue>Motech Minimal Bundle</defaultValue>
         </requiredProperty>
         <requiredProperty key="motechVersion">
-            <defaultValue>0.29-SNAPSHOT</defaultValue>
+            <defaultValue>0.30-SNAPSHOT</defaultValue>
         </requiredProperty>
         <requiredProperty key="http">
             <defaultValue>false</defaultValue>
