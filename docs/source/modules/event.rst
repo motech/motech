@@ -56,7 +56,7 @@ Register custom callback
 ========================
 
 ActiveMQ is sending events with its own retry. To register event callbacks you should implement an :code:`EventCallbackService`
-interface and expose it as OSGi service. Then this service name must be set in the callback field of the :code`MotechEvent`.
+interface and expose it as OSGi service. Then this service name must be set in the callback field of the :code:`MotechEvent`.
 
 Example of a custom callback
 ----------------------------
