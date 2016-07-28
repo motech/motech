@@ -14,22 +14,13 @@
         LoadingModal.closeEvent($rootScope, function(event) { that.show(); });
 
         this.open = function (dialog) {
-            var i, dialogExists = false;
+            modalsList.push(dialog);
 
-            for (i = 0; i < modalsList.length; i+=1) {
-                if (modalsList[i] === dialog) {
-                    dialogExists = true;
-                }
+            if (modalsList.length > 1) {
+                modalsList[modalsList.length-2].close();
             }
-            if (!dialogExists) {
-                modalsList.push(dialog);
-
-                if (modalsList.length > 1) {
-                    modalsList[modalsList.length-2].close();
-                }
-                if (!LoadingModal.isOpen()) {
-                    dialog.open();
-                }
+            if (!LoadingModal.isOpen()) {
+                dialog.open();
             }
         };
 
