@@ -34,7 +34,6 @@
                         },
                         index: 'date',
                         sortable: false,
-                        align: 'center',
                         width: 35
                     }, {
                         name: 'activityType',
