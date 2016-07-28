@@ -34,23 +34,27 @@
                         },
                         index: 'date',
                         sortable: false,
+                        align: 'center',
                         width: 35
                     }, {
                         name: 'activityType',
                         index: 'activityType',
                         sortable: false,
                         width: 15,
+                        align: 'center',
                         title: false
                     }, {
                         name: 'message',
                         index: 'message',
                         sortable: false,
+                        align: 'center',
                         width: 180
                     }, {
                         name: 'retry',
                         index: 'retry',
                         sortable: false,
-                        width: 20
+                        align: 'center',
+                        width: 15
                     }, {
                        name: 'stackTraceElement',
                        index: 'stackTraceElement',
