@@ -47,7 +47,6 @@
                         name: 'message',
                         index: 'message',
                         sortable: false,
-                        align: 'center',
                         width: 180
                     }, {
                         name: 'retry',
