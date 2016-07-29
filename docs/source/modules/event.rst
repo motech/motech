@@ -10,16 +10,16 @@ Event Module
 Description
 ===========
 
-The Event module allows to create listener and assign action to event. The module is using :code:`MotechEvent` to provide
-event with specific data that can be sent by any MOTECH module (using :code:`EventRelay`) when an event is fired.
-The module is using ActiveMQ to support the event execution. It is possible to register your own callback
+The Event module allows to create a listener, that contains an action, triggered by firing an event. The module is using
+:code:`MotechEvent` to provide event with specific data that can be sent by any MOTECH module (using :code:`EventRelay`) when an event is fired.
+The module is using ActiveMQ for delivery of the events. It is possible to register your own callback
 function using :code:`EventCallbackService`.
 
 MotechEvent
 ===========
 
-The Event module use :code:`MotechEvent` to store information about fired event. Instance of this class can be sent by
-any module to a specific handler to fire an event. Every module can also be a subscriber of an event and receiving events to fire.
+The Event module uses :code:`MotechEvent` to store information about fired event. Instance of this class can be sent by
+any module to a specific handler to fire an event. Every module can also be a subscriber of an event and receive events to handle.
 
 Main fields of :code:`MotechEvent`:
 
@@ -48,15 +48,17 @@ There are 2 ways to create an event listener:
 
 #. Use an :code:`@MotechListener` annotation to a handler function.
 
-    In :doc:`Core Architecture </architecture/core_architecture>` you can find an example of use of this annotation.
+    In :doc:`Core Architecture </architecture/core_architecture>` you can find an example usage of this annotation.
 
 #. Use an OSGi :code:`EventListenerRegistry` service exposed by the event module.
 
 Register custom callback
 ========================
 
-ActiveMQ is sending events with its own retry. To register event callbacks you should implement an :code:`EventCallbackService`
-interface and expose it as OSGi service. Then this service name must be set in the callback field of the :code:`MotechEvent`.
+ActiveMQ is sending events with its own retry. The default ActiveMQ retries will take place when the handler method fails (an exception is thrown).
+The default retries can be disabled by custom event callback service (flag returned by the failureCallback method). To register
+event callbacks you should implement an :code:`EventCallbackService` interface and expose it as OSGi service. Then this service
+name must be set in the callback field of the :code:`MotechEvent`.
 
 Example of a custom callback
 ----------------------------
