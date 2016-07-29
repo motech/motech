@@ -1261,4 +1261,97 @@
             }
         };
     });
+
+    controllers.controller('TriggersModalCtrl', function ($scope, LoadingModal, BootstrapDialogManager, Triggers, ModalFactory) {
+
+        $scope.reloadLists = function(staticTriggersPage, dynamicTriggersPage) {
+            if ($scope.validatePages(staticTriggersPage, dynamicTriggersPage)) {
+                LoadingModal.open();
+                Triggers.get(
+                {
+                    moduleName: $scope.selectedChannel.moduleName,
+                    staticTriggersPage: staticTriggersPage,
+                    dynamicTriggersPage: dynamicTriggersPage
+                },
+                function(data) {
+                    $scope.dynamicTriggers = data.dynamicTriggersList;
+                    $scope.staticTriggers = data.staticTriggersList;
+                    $scope.staticTriggersPage = $scope.staticTriggers.page;
+                    $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
+                    LoadingModal.close();
+                });
+            }
+        };
+
+        $scope.validatePages = function(staticTriggersPage, dynamicTriggersPage){
+            var valid = true;
+
+            if ($scope.hasStaticTriggers) {
+                if (staticTriggersPage === null ||
+                    staticTriggersPage === undefined) {
+                    valid = false;
+                }
+            }
+
+            if ($scope.hasDynamicTriggers) {
+                if (dynamicTriggersPage === null ||
+                    dynamicTriggersPage === undefined) {
+                    valid = false;
+                }
+            }
+
+            return valid;
+        };
+
+        $scope.selectTrigger = function (channel, trigger) {
+            if ($scope.task.trigger) {
+                ModalFactory.showConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
+                    if (val) {
+                        $scope.util.trigger.remove($scope);
+                        $scope.util.trigger.select($scope, channel, trigger);
+                        BootstrapDialogManager.close($scope.triggersDialog);
+                    }
+                });
+            } else {
+                $scope.util.trigger.select($scope, channel, trigger);
+                BootstrapDialogManager.close($scope.triggersDialog);
+            }
+        };
+
+        $scope.openTriggersModal = function() {
+
+             LoadingModal.open();
+             $scope.staticTriggersPager = 1;
+             $scope.dynamicTriggersPager = 1;
+             $scope.selectedChannel = $scope.channel;
+             Triggers.get(
+             {
+                 moduleName: $scope.channel.moduleName,
+                 staticTriggersPage: $scope.staticTriggersPager,
+                 dynamicTriggersPage: $scope.dynamicTriggersPager
+             },
+             function(data) {
+                 $scope.dynamicTriggers = data.dynamicTriggersList;
+                 $scope.staticTriggers = data.staticTriggersList;
+                 $scope.staticTriggersPage = $scope.staticTriggers.page;
+                 $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
+                 $scope.hasDynamicTriggers = $scope.dynamicTriggers.triggers.length > 0;
+                 $scope.hasStaticTriggers = $scope.staticTriggers.triggers.length > 0;
+                 if ($scope.hasStaticTriggers && $scope.hasDynamicTriggers) {
+                     $scope.divSize = "col-md-6";
+                 } else {
+                     $scope.divSize = "col-md-12";
+                 }
+                 BootstrapDialogManager.open($scope.triggersDialog);
+                 LoadingModal.close();
+             });
+        };
+    });
+
+    controllers.controller('ImportModalCtrl', function ($scope, BootstrapDialogManager) {
+
+        $scope.openImportTaskModal = function () {
+            BootstrapDialogManager.open($scope.importDialog);
+        };
+    });
 }());
