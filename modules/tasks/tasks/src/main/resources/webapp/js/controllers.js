@@ -6,7 +6,7 @@
 
     var controllers = angular.module('tasks.controllers', []);
 
-    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, Settings, $rootScope, $http, ManageTaskUtils,  ModalFactory, LoadingModal) {
+    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope, $http, ManageTaskUtils,  ModalFactory, LoadingModal) {
         var tasks, activities = [],
             searchMatch = function (item, method, searchQuery) {
                 var result;
@@ -214,60 +214,61 @@
         $scope.getTasks();
     });
 
-    controllers.controller('TasksRecentActivityCtrl', function ($scope, $rootScope, Tasks, Activities) {
+    controllers.controller('TasksRecentActivityCtrl', function ($scope, Tasks, Activities) {
 
-        var RECENT_TASK_COUNT = 7, tasks, activities = [];
+            var RECENT_TASK_COUNT = 7, tasks, activities = [];
 
-        $scope.activities = [];
-        $scope.formatInput = [];
+            $scope.activities = [];
+            $scope.formatInput = [];
 
-        $scope.getNumberOfActivities = function(id, type) {
-            var numberOfActivities;
-            $.ajax({
-                url: '../tasks/api/activity/' + id + '/' + type,
-                success:  function(data) {
-                    numberOfActivities = data;
-                },
-                async: false
-            });
+            $scope.getNumberOfActivities = function(id, type) {
+                var numberOfActivities;
+                $.ajax({
+                    url: '../tasks/api/activity/' + id + '/' + type,
+                    success:  function(data) {
+                        numberOfActivities = data;
+                    },
+                    async: false
+                });
 
-            return numberOfActivities;
-        };
+                return numberOfActivities;
+            };
 
-        $scope.getTasks = function () {
+            $scope.getTasks = function () {
 
-            tasks = Tasks.query(function () {
-                activities = Activities.query(function () {
-                    var item, i, j;
+                tasks = Tasks.query(function () {
+                    activities = Activities.query(function () {
+                        var item, i, j;
 
-                    for (i = 0; i < tasks.length; i += 1) {
-                        item = {
-                            task: tasks[i],
-                            success: $scope.getNumberOfActivities(tasks[i].id, 'SUCCESS'),
-                            error: $scope.getNumberOfActivities(tasks[i].id, 'ERROR')
-                        };
-                    }
+                        for (i = 0; i < tasks.length; i += 1) {
+                            item = {
+                                task: tasks[i],
+                                success: $scope.getNumberOfActivities(tasks[i].id, 'SUCCESS'),
+                                error: $scope.getNumberOfActivities(tasks[i].id, 'ERROR')
+                            };
+                        }
 
-                    for (i = 0; i < RECENT_TASK_COUNT && i < activities.length; i += 1) {
-                        for (j = 0; j < tasks.length; j += 1) {
-                            if (activities[i].task === tasks[j].id) {
-                                $scope.activities.push({
-                                    task: activities[i].task,
-                                    trigger: tasks[j].trigger,
-                                    actions: tasks[j].actions,
-                                    date: activities[i].date,
-                                    type: activities[i].activityType,
-                                    name: tasks[j].name
-                                });
-                                break;
+                        for (i = 0; i < RECENT_TASK_COUNT && i < activities.length; i += 1) {
+                            for (j = 0; j < tasks.length; j += 1) {
+                                if (activities[i].task === tasks[j].id) {
+                                    $scope.activities.push({
+                                        task: activities[i].task,
+                                        trigger: tasks[j].trigger,
+                                        actions: tasks[j].actions,
+                                        date: activities[i].date,
+                                        type: activities[i].activityType,
+                                        name: tasks[j].name
+                                    });
+                                    break;
+                                }
                             }
                         }
-                    }
+                    });
                 });
-            });
-        };
-        $scope.getTasks();
-    });
+            };
+            $scope.getTasks();
+
+        });
 
     controllers.controller('TasksFilterCtrl', function($scope, $rootScope) {
 
@@ -1199,6 +1200,21 @@
                 .error(function() {
                     ModalFactory.showErrorAlert('task.retry.failed', 'task.retry.header');
                 });
+        };
+
+        $scope.showStackTrace = function () {
+            var dialog = new BootstrapDialog({
+                title: 'Stack trace',
+                message: $scope.stackTraceEl,
+                buttons: [{
+                    label: $scope.msg('task.close'),
+                    cssClass: 'btn btn-default',
+                    action: function (dialogItself) {
+                        BootstrapDialogManager.close(dialogItself);
+                    }
+                }]
+            });
+            BootstrapDialogManager.open(dialog);
         };
     });
 

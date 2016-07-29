@@ -76,8 +76,9 @@ import static java.util.jar.Attributes.Name;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.split;
 import static org.motechproject.mds.util.Constants.BundleNames.MDS_ENTITIES_SYMBOLIC_NAME;
-import static org.motechproject.mds.util.Constants.BundleNames.SCHEDULER_MODULE;
+
 import static org.motechproject.mds.util.Constants.BundleNames.SERVER_CONFIG_MODULE;
+import static org.motechproject.mds.util.Constants.BundleNames.TASKS_MODULE;
 import static org.motechproject.mds.util.Constants.BundleNames.WEB_SECURITY_MODULE;
 import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_MANIFESTVERSION;
 import static org.motechproject.mds.util.Constants.Manifest.BUNDLE_NAME_SUFFIX;
@@ -203,7 +204,9 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         } else if (Arrays.asList(moduleNames).contains(SERVER_CONFIG_MODULE)) {
             stopBundle(SERVER_CONFIG_MODULE);
             stopBundle(WEB_SECURITY_MODULE);
-            stopBundle(SCHEDULER_MODULE);
+        } else if (Arrays.asList(moduleNames).contains(TASKS_MODULE)){
+            stopBundle(SERVER_CONFIG_MODULE);
+            stopBundle(WEB_SECURITY_MODULE);
         }
     }
 
@@ -213,7 +216,9 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
         } else if (Arrays.asList(moduleNames).contains(SERVER_CONFIG_MODULE)) {
             startBundle(SERVER_CONFIG_MODULE);
             startBundle(WEB_SECURITY_MODULE);
-            startBundle(SCHEDULER_MODULE);
+        } else if (Arrays.asList(moduleNames).contains(TASKS_MODULE)){
+            startBundle(SERVER_CONFIG_MODULE);
+            startBundle(WEB_SECURITY_MODULE);
         }
     }
 
@@ -635,6 +640,9 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                     LOGGER.error("Interrupted while waiting", e);
                 }
                 ++count;
+            }
+            if (count >= MAX_WAIT_COUNT) {
+                LOGGER.error("Packages have not been refreshed, reached time limit");
             }
         }
     }

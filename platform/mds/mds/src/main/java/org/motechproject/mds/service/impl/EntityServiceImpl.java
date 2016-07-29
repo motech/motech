@@ -956,7 +956,7 @@ public class EntityServiceImpl implements EntityService {
         LOGGER.debug("Retrieving entities for processing");
 
         stopWatch.start();
-        List<Entity> entities = allEntities.retrieveAll();
+        List<Entity> entities = allEntities.getActualEntities();
         stopWatch.stop();
 
         LOGGER.debug("{} entities retrieved in {} ms", entities.size(), stopWatch.getTime());
