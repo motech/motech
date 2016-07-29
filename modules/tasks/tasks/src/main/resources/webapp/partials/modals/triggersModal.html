@@ -9,7 +9,7 @@
             </div>
         </div>
         <div class="row trigger-lists">
-            <div ng-class="divSize" ng-if="hasStaticTriggers">
+            <div ng-class="divSize" ng-if="hasStaticTriggers" ng-controller="TasksManageCtrl">
                 <ul class="trigger-list list-group">
                     <li ng-click="selectTrigger(selectedChannel, trigger)" class="list-group-item" ng-repeat="trigger in staticTriggers.triggers" popover-loader="taskMsg(trigger.displayName)" two-lists="hasStaticTriggers && hasDynamicTriggers">
                     </li>

@@ -1271,7 +1271,7 @@
         };
     });
 
-    directives.directive('importTaskModal', ['$compile', '$http', '$templateCache', function ($compile, $http, $templateCache) {
+    directives.directive('importTaskModalBody', ['$compile', '$http', '$templateCache', function ($compile, $http, $templateCache) {
         var templateLoader;
 
         return {
@@ -1295,7 +1295,67 @@
         };
     }]);
 
-    directives.directive('triggersModal', ['$compile', '$http', '$templateCache', function ($compile, $http, $templateCache) {
+    directives.directive('importTaskModal', ['$compile', 'BootstrapDialogManager', 'LoadingModal', 'ModalFactory',
+        function ($compile, BootstrapDialogManager, LoadingModal, ModalFactory) {
+
+        return {
+            restrict: 'A',
+            replace: true,
+            scope {
+                getTasks: '='
+            },
+            link: function (scope, element, attrs) {
+                scope.importDialog = new BootstrapDialog({
+                    title: scope.msg('task.import'),
+                    message: $compile('<import-task-modal-body></import-task-modal-body>')(scope),
+                    closable: true,
+                    closeByBackdrop: false,
+                    closeByKeyboard: false,
+                    draggable: false,
+                    cssClass: 'tasks',
+                    buttons: [{
+                        label: scope.msg('task.button.import'),
+                        cssClass: 'btn btn-primary',
+                        action: function (dialogItself) {
+                            LoadingModal.open();
+
+                            $('#importTaskForm').ajaxSubmit({
+                                success: function () {
+                                    scope.getTasks();
+                                    $('#importTaskForm').resetForm();
+                                    BootstrapDialogManager.close(dialogItself);
+                                    LoadingModal.close();
+                                },
+                                error: function (response) {
+                                    LoadingModal.close();
+                                    ModalFactory.showErrorAlertWithResponse('task.error.import', 'task.header.error', response);
+                                }
+                            });
+                        }
+                    }, {
+                        label: scope.msg('task.close'),
+                        cssClass: 'btn btn-default',
+                        action: function (dialogItself) {
+                            $('#importTaskForm').resetForm();
+                            BootstrapDialogManager.close(dialogItself);
+                        }
+                    }]
+                 });
+                 scope.$watch('openImportTaskModal', function () {
+                    element.on('click', scope.openImportTaskModal);
+                 });
+            },
+            controller: ['$scope', 'BootstrapDialogManager',
+                function ($scope, BootstrapDialogManager) {
+
+                $scope.openImportTaskModal = function () {
+                    BootstrapDialogManager.open($scope.importDialog);
+                };
+            }]
+        };
+    }]);
+
+    directives.directive('triggersModalBody', ['$compile', '$http', '$templateCache', function ($compile, $http, $templateCache) {
         var templateLoader;
 
         return {
@@ -1316,6 +1376,129 @@
                     });
                 };
             }
+        };
+    }]);
+
+    directives.directive('triggersModal', ['$compile', 'BootstrapDialogManager', function ($compile, BootstrapDialogManager) {
+        return {
+            restrict: 'A',
+            replace: true,
+            scope: {
+                channel: '=',
+                task: '=',
+                util: '=',
+                msg: '='
+            },
+            link: function (scope, element, attrs) {
+                scope.triggersDialog = new BootstrapDialog({
+                    title: scope.msg('task.tooltip.availableTriggers'),
+                    message: $compile('<triggers-modal-body></triggers-modal-body>')(scope),
+                    closable: true,
+                    closeByBackdrop: false,
+                    closeByKeyboard: false,
+                    draggable: false,
+                    cssClass: 'tasks',
+                    autodestroy: false,
+                    buttons: [{
+                        label: scope.msg('task.close'),
+                        cssClass: 'btn btn-default',
+                        action: function (dialogItself) {
+                            BootstrapDialogManager.close(dialogItself);
+                        }
+                    }]
+                 });
+                 scope.$watch('openTriggersModal', function () {
+                    element.on('click', scope.openTriggersModal);
+                 });
+            },
+            controller: ['$scope', 'LoadingModal', 'BootstrapDialogManager', 'Triggers', 'ModalFactory',
+                function ($scope, LoadingModal, BootstrapDialogManager, Triggers, ModalFactory) {
+
+                $scope.reloadLists = function(staticTriggersPage, dynamicTriggersPage) {
+                    if ($scope.validatePages(staticTriggersPage, dynamicTriggersPage)) {
+                        LoadingModal.open();
+                        Triggers.get(
+                            {
+                                moduleName: $scope.selectedChannel.moduleName,
+                                staticTriggersPage: staticTriggersPage,
+                                dynamicTriggersPage: dynamicTriggersPage
+                            },
+                            function(data) {
+                                $scope.dynamicTriggers = data.dynamicTriggersList;
+                                $scope.staticTriggers = data.staticTriggersList;
+                                $scope.staticTriggersPage = $scope.staticTriggers.page;
+                                $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
+                                LoadingModal.close();
+                            }
+                        );
+                    }
+                };
+
+                $scope.validatePages = function(staticTriggersPage, dynamicTriggersPage){
+                    var valid = true;
+
+                    if ($scope.hasStaticTriggers) {
+                        if (staticTriggersPage === null ||
+                            staticTriggersPage === undefined) {
+                            valid = false;
+                        }
+                    }
+
+                    if ($scope.hasDynamicTriggers) {
+                        if (dynamicTriggersPage === null ||
+                            dynamicTriggersPage === undefined) {
+                            valid = false;
+                        }
+                    }
+
+                    return valid;
+                };
+
+                $scope.selectTrigger = function (channel, trigger) {
+                    if ($scope.task.trigger) {
+                        ModalFactory.showConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
+                            if (val) {
+                                $scope.util.trigger.remove($scope);
+                                $scope.util.trigger.select($scope, channel, trigger);
+                                BootstrapDialogManager.close($scope.triggersDialog);
+                            }
+                        });
+                    } else {
+                        $scope.util.trigger.select($scope, channel, trigger);
+                        BootstrapDialogManager.close($scope.triggersDialog);
+                    }
+                };
+
+                $scope.openTriggersModal = function() {
+
+                      LoadingModal.open();
+                      $scope.staticTriggersPager = 1;
+                      $scope.dynamicTriggersPager = 1;
+                      $scope.selectedChannel = $scope.channel;
+                      Triggers.get(
+                          {
+                              moduleName: $scope.channel.moduleName,
+                              staticTriggersPage: $scope.staticTriggersPager,
+                              dynamicTriggersPage: $scope.dynamicTriggersPager
+                          },
+                          function(data) {
+                              $scope.dynamicTriggers = data.dynamicTriggersList;
+                              $scope.staticTriggers = data.staticTriggersList;
+                              $scope.staticTriggersPage = $scope.staticTriggers.page;
+                              $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
+                              $scope.hasDynamicTriggers = $scope.dynamicTriggers.triggers.length > 0;
+                              $scope.hasStaticTriggers = $scope.staticTriggers.triggers.length > 0;
+                              if ($scope.hasStaticTriggers && $scope.hasDynamicTriggers) {
+                                  $scope.divSize = "col-md-6";
+                              } else {
+                                  $scope.divSize = "col-md-12";
+                              }
+                              BootstrapDialogManager.open($scope.triggersDialog);
+                              LoadingModal.close();
+                          }
+                      );
+                  };
+            }]
         };
     }]);
 }());
