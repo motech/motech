@@ -1301,7 +1301,7 @@
         return {
             restrict: 'A',
             replace: true,
-            scope {
+            scope: {
                 getTasks: '='
             },
             link: function (scope, element, attrs) {
