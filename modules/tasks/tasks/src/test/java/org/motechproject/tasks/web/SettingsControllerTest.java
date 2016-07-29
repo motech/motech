@@ -25,7 +25,7 @@ public class SettingsControllerTest {
     private static final String TASK_POSSIBLE_ERRORS_VALUE = "123";
 
     private static final String TASK_LOG_ACTIVITIES_KEY = "task.log.activities";
-    private static final String TASK_LOG_ACTIVITIES_VALUE = "All";
+    private static final String TASK_LOG_ACTIVITIES_VALUE = "all";
 
     @Mock
     private SettingsFacade settingsFacade;
