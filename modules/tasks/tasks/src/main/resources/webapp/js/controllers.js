@@ -535,7 +535,7 @@
                 $scope.task.actions = [];
             }
 
-            $scope.task.actions.push({});
+            $scope.task.actions.push({'postActionParameters': []});
         };
 
         $scope.removeAction = function (idx) {
@@ -1080,6 +1080,24 @@
                     });
                 });
             }
+
+            if ($scope.selectedAction && Array.isArray($scope.selectedAction)) {
+                $scope.selectedAction.forEach(function (action, idx) {
+                    if (action.postActionParameters && Array.isArray(action.postActionParameters)) {
+                        action.postActionParameters.forEach(function (postActionParameter) {
+                            postActionParameter.prefix = ManageTaskUtils.POST_ACTION_PREFIX;
+                            postActionParameter.objectId = idx;
+                            postActionParameter.channelName = $scope.task.actions[idx].channelName;
+                            postActionParameter.actionName = $scope.task.actions[idx].displayName;
+                            postActionParameter.displayName = postActionParameter.prefix.concat(".", postActionParameter.objectId,
+                                                                                                ".", postActionParameter.key
+                                                                                                );
+                            fields.push(postActionParameter);
+                        });
+                    }
+                });
+            }
+
             return fields;
         };
 
@@ -1094,11 +1112,12 @@
         });
     });
 
-    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http, ModalFactory, LoadingModal) {
+    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http, ModalFactory, LoadingModal, BootstrapDialogManager) {
         var data, task;
 
         $scope.taskId = $stateParams.taskId;
-        $scope.activityTypes = ['All', 'Warning', 'Success', 'Error'];
+        $scope.activityTypes = ['All', 'In progress', 'Success', 'Warning', 'Error'];
+
         $scope.selectedActivityType = 'All';
 
         innerLayout({
@@ -1141,7 +1160,7 @@
             $('#taskHistoryTable').jqGrid('setGridParam', {
                 page: 1,
                 postData: {
-                    activityType: ($scope.selectedActivityType === 'All') ? '' : $scope.selectedActivityType.toUpperCase()
+                    activityType: ($scope.selectedActivityType === 'All') ? '' : $scope.selectedActivityType.toUpperCase().replace(/ /g, "_")
                 }}).trigger('reloadGrid');
         };
 
@@ -1173,6 +1192,21 @@
                 .error(function() {
                     ModalFactory.showErrorAlert('task.retry.failed', 'task.retry.header');
                 });
+        };
+
+        $scope.showStackTrace = function () {
+            var dialog = new BootstrapDialog({
+                title: 'Stack trace',
+                message: $scope.stackTraceEl,
+                buttons: [{
+                    label: $scope.msg('task.close'),
+                    cssClass: 'btn btn-default',
+                    action: function (dialogItself) {
+                        BootstrapDialogManager.close(dialogItself);
+                    }
+                }]
+            });
+            BootstrapDialogManager.open(dialog);
         };
     });
 

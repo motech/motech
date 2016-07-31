@@ -62,7 +62,7 @@ public class TaskContextTest {
     @Test
     public void shouldThrowExceptionWhenAccessingUnconfiguredDataSource() throws Exception {
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
-        TaskContext taskContext = new TaskContext(task, null, activityService);
+        TaskContext taskContext = new TaskContext(task, null, null, activityService);
         taskContext.addDataSourceObject("1", new TestDataSourceObject(), false);
 
         KeyInformation key = parse("ad.1.Integer#2.id");
@@ -75,7 +75,7 @@ public class TaskContextTest {
     @Test
     public void shouldThrowExceptionWhenDataSourceIsNull() throws Exception {
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
-        TaskContext taskContext = new TaskContext(task, null, activityService);
+        TaskContext taskContext = new TaskContext(task, null, null, activityService);
         taskContext.addDataSourceObject("1", null, true);
 
         KeyInformation key = parse("ad.1.Integer#1.id");
@@ -88,7 +88,7 @@ public class TaskContextTest {
     @Test
     public void shouldNotThrowExceptionWhenDataSourceIsNull_IfFailNotFoundIsFalse() throws Exception {
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
-        TaskContext taskContext = new TaskContext(task, null, activityService);
+        TaskContext taskContext = new TaskContext(task, null, null, activityService);
         taskContext.addDataSourceObject("1", null, false);
 
         KeyInformation key = parse("ad.1.Integer#1.id");
@@ -99,7 +99,7 @@ public class TaskContextTest {
     @Test
     public void shouldThrowExceptionWhenDataSourceFieldValueEvaluationThrowsException() throws Exception {
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
-        TaskContext taskContext = new TaskContext(task, null, activityService);
+        TaskContext taskContext = new TaskContext(task, null, null, activityService);
         taskContext.addDataSourceObject("1", new TestDataSourceObject(), true);
 
         KeyInformation key = parse("ad.1.Integer#1.providerId");
@@ -112,7 +112,7 @@ public class TaskContextTest {
     @Test
     public void shouldNotThrowExceptionWhenDataSourceFieldValueEvaluationThrowsException_IfFailNotFoundIsFalse() throws Exception {
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
-        TaskContext taskContext = new TaskContext(task, null, activityService);
+        TaskContext taskContext = new TaskContext(task, null, null, activityService);
         taskContext.addDataSourceObject("1", new TestDataSourceObject(), false);
 
         KeyInformation key = parse("ad.1.Integer#1.providerId");
@@ -123,7 +123,7 @@ public class TaskContextTest {
     @Test
     public void testGetDataSourceValue() throws Exception {
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
-        TaskContext taskContext = new TaskContext(task, null, activityService);
+        TaskContext taskContext = new TaskContext(task, null, null, activityService);
         taskContext.addDataSourceObject("1", new TestDataSourceObject(), true);
 
         KeyInformation key = parse("ad.1.Integer#1.id");
@@ -134,7 +134,7 @@ public class TaskContextTest {
     @Test
     public void testGetDataSourceValueForBooleanWithGetterIs() throws Exception {
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
-        TaskContext taskContext = new TaskContext(task, null, activityService);
+        TaskContext taskContext = new TaskContext(task, null, null, activityService);
         taskContext.addDataSourceObject("1", new TestDataSourceObject(), true);
 
         KeyInformation key = parse("ad.1.Boolean#1.checked");
@@ -147,7 +147,7 @@ public class TaskContextTest {
         Map<String, Object> parameters = new HashMap<>();
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
-        TaskContext taskContext = new TaskContext(task, null, activityService);
+        TaskContext taskContext = new TaskContext(task, null, null, activityService);
 
         KeyInformation key = parse(String.format("%s.%s", TRIGGER_PREFIX, EVENT_KEY));
         assertEquals(null, taskContext.getTriggerValue(key.getKey()));
@@ -156,7 +156,7 @@ public class TaskContextTest {
         child.put("key", EVENT_KEY_VALUE);
         parameters.put("event", child);
 
-        taskContext = new TaskContext(task, parameters, activityService);
+        taskContext = new TaskContext(task, parameters, null, activityService);
 
         assertEquals(EVENT_KEY_VALUE, taskContext.getTriggerValue(key.getKey()));
     }
@@ -164,12 +164,12 @@ public class TaskContextTest {
     @Test(expected = IllegalStateException.class)
     public void testGetTriggerKeyShouldThrowException() throws Exception {
         MotechEvent event = mock(MotechEvent.class);
-        when(event.getParameters()).thenReturn(new HashMap<String, Object>());
+        when(event.getParameters()).thenReturn(new HashMap<>());
 
         KeyInformation key = parse(String.format("%s.%s", TRIGGER_PREFIX, EVENT_KEY));
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
-        new TaskContext(task, event.getParameters(), activityService).getTriggerValue(key.getKey());
+        new TaskContext(task, event.getParameters(), null, activityService).getTriggerValue(key.getKey());
     }
 
     @Test
@@ -186,10 +186,10 @@ public class TaskContextTest {
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
 
-        assertEquals(null, new TaskContext(task, parameters, activityService).getTriggerValue(key.getKey()));
+        assertEquals(null, new TaskContext(task, parameters, null, activityService).getTriggerValue(key.getKey()));
 
         // should not throw any exceptions
-        assertNull(new TaskContext(task, parameters, activityService).getTriggerValue(key.getKey()));
+        assertNull(new TaskContext(task, parameters, null, activityService).getTriggerValue(key.getKey()));
     }
 
     private class TaskHandlerExceptionMatcher extends TypeSafeMatcher<Object> {

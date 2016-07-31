@@ -3276,7 +3276,11 @@
             exportWithOrder : false
         };
 
-        $scope.setDataRetrievalError = function (value) {
+        $scope.setDataRetrievalError = function (value, responseText) {
+            if(responseText) {
+                $scope.retrievalErrorText = $scope.msg(responseText.replace('key:', '').trim());
+            }
+
             $scope.$apply(function () {
                 $scope.dataRetrievalError = value;
             });
@@ -3517,7 +3521,10 @@
 
             // load the entity if coming from the 'Add' link in the main DataBrowser page
             if (!$scope.selectedEntity) {
-                $scope.retrieveAndSetEntityData('../mds/entities/getEntity/' + module + '/' + entityName);
+                $http.get('../mds/entities/getEntity/' + module + '/' + entityName)
+                .success(function (data) {
+                    $scope.selectedEntity = data;
+                });
             }
 
             $scope.instanceEditMode = false;
@@ -3550,11 +3557,13 @@
             });
         };
 
+        $scope.ngFormNameAttrSuffix = "form";
+
         $scope.addNewRelatedInstance = function (field) {
             $scope.relatedMode.isNested = true;
             var relatedClass  = $scope.getRelatedClass(field);
             $scope.editedField = angular.copy(field);
-            $('ng-form[name=' + field.name + '] #new-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
+            $('ng-form[name=' + field.name + $scope.ngFormNameAttrSuffix + '] #new-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
             $scope.editedInstanceId = undefined;
             $('body > #new-related_' + field.id).on('hide.bs.modal', function () {
                 $scope.relatedMode.isNested = false;
@@ -3641,7 +3650,7 @@
             $scope.relatedMode.isNested = true;
             instanceId = parseInt(instanceId, 10);
             $scope.editedInstanceId = instanceId;
-            $('ng-form[name=' + field.name + '] #edit-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
+            $('ng-form[name=' + field.name + $scope.ngFormNameAttrSuffix + '] #edit-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
             var addedNewRecords,
                 editExisting = true,
                 setExisting = function () {
@@ -4161,7 +4170,11 @@
                 $scope.addedEntity = undefined;
                 $scope.selectedInstance = undefined;
                 $scope.loadedFields = undefined;
-                $scope.removeIdFromUrl();
+                if ($state.current.parent === "mds") {
+                    $state.reload();
+                } else {
+                    $state.transitionTo($state.current);
+                }
             }
             $scope.cancelAddRelatedForm();
             $scope.cancelEditRelatedForm();
@@ -4645,7 +4658,7 @@
         /**
         * Unselects entity to allow user to return to entities list by modules
         */
-        $scope.unselectEntity = function () {
+        $rootScope.unselectEntity = function () {
             $scope.entityAdvanced = undefined;
             $scope.dataRetrievalError = false;
             innerLayout({
@@ -4654,6 +4667,7 @@
                 east__maxSize: 350
             });
             $scope.selectedEntity = undefined;
+            $scope.removeIdFromUrl();
             $scope.showFilters = false;
             resizeLayout();
         };
@@ -5200,8 +5214,6 @@
         };
 
         $scope.checkForModuleConfig();
-
-        $rootScope.unselectEntity = $scope.unselectEntity();
 
         $scope.relatedId = function (obj) {
             if (obj.id) {

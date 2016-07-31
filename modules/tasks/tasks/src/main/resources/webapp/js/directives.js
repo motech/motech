@@ -28,24 +28,31 @@
                         repeatitems:false
                     },
                     colModel: [{
-                        name: 'activityType',
-                        index: 'activityType',
-                        sortable: false,
-                        width: 50,
-                        title: false
-                    }, {
-                        name: 'message',
-                        index: 'message',
-                        sortable: false,
-                        width: 220
-                    }, {
                         name: 'date',
                         formatter: function (value) {
                             return moment(parseInt(value, 10)).fromNow();
                         },
                         index: 'date',
                         sortable: false,
-                        width: 80
+                        width: 35
+                    }, {
+                        name: 'activityType',
+                        index: 'activityType',
+                        sortable: false,
+                        width: 15,
+                        align: 'center',
+                        title: false
+                    }, {
+                        name: 'message',
+                        index: 'message',
+                        sortable: false,
+                        width: 180
+                    }, {
+                        name: 'retry',
+                        index: 'retry',
+                        sortable: false,
+                        align: 'center',
+                        width: 15
                     }, {
                        name: 'stackTraceElement',
                        index: 'stackTraceElement',
@@ -65,9 +72,10 @@
                     pager: '#' + attrs.taskHistoryGrid,
                     viewrecords: true,
                     gridComplete: function () {
+                        elem.jqGrid('setLabel', 'date', scope.msg('task.subsection.information'));
                         elem.jqGrid('setLabel', 'activityType', scope.msg('task.subsection.status'));
                         elem.jqGrid('setLabel', 'message', scope.msg('task.subsection.message'));
-                        elem.jqGrid('setLabel', 'date', scope.msg('task.subsection.information'));
+                        elem.jqGrid('setLabel', 'retry', 'Retry');
 
                         $('#outsideTaskHistoryTable').children('div').css('width','100%');
                         $('.ui-jqgrid-htable').addClass("table-lightblue");
@@ -92,25 +100,27 @@
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-ok.png" class="recent-activity-task-img"/>','ok',{ },'');
                                 } else if (activity === 'warning') {
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-question.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                } else if (activity === 'in progress') {
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-info.png" class="recent-activity-task-img"/>','ok',{ },'');
                                 } else if (activity === 'error') {
                                     activityId = $("#taskHistoryTable").getCell(rows[k],"id");
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType',
-                                        '<img src="../tasks/img/icon-exclamation.png" class="recent-activity-task-img"/>' +
-                                        '&nbsp;&nbsp;<span class="label label-danger pointer grid-ng-clickable" ng-click="retryTask(' + activityId + ')">Retry</span>',
+                                        '<img src="../tasks/img/icon-exclamation.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'retry',
+                                        '&nbsp;&nbsp;<span type="button" class="btn btn-primary btn-xs grid-ng-clickable" ng-click="retryTask(' + activityId + ')">Retry</span>',
                                         'ok',{ },'');
                                 }
                             }
 
                             stackTraceElement = $("#taskHistoryTable").getCell(rows[k],"stackTraceElement");
+                            scope.stackTraceEl = stackTraceElement;
                             fields = $("#taskHistoryTable").getCell(rows[k], "fields").split(",");
                             messageToShow = [message].concat(fields);
                             if (message !== undefined && activity === 'error' && stackTraceElement !== undefined && stackTraceElement !== null) {
                                 $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',
-                                    '<p class="wrap-paragraph">' + scope.msg(messageToShow) +
-                                    '&nbsp;&nbsp;<span class="label label-danger pointer" data-toggle="collapse" data-target="#stackTraceElement' + k + '">' +
-                                    scope.msg('task.button.showStackTrace') + '</span></p>' +
-                                    '<pre id="stackTraceElement' + k + '" class="collapse">' + stackTraceElement + '</pre>'
-                                    ,'ok',{ },'');
+                                    '<p class="wrap-paragraph">' + scope.msg(messageToShow) + '&nbsp;&nbsp; <span type="button" class="btn btn-primary btn-xs grid-ng-clickable" ng-click="showStackTrace()" data-target="#stackTraceElement' +
+                                    k + '">'+ scope.msg('task.button.showStackTrace') + '</span></p>',
+                                    'ok',{ },'');
                             } else if (message !== undefined) {
                                 $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',scope.msg(messageToShow),'ok',{ },'');
                             }
@@ -243,6 +253,13 @@
                     scope.displayName = "{0}.{1}#{2}.{3}".format(
                         scope.msg(scope.field.providerName),
                         scope.msg(scope.field.serviceName),
+                        scope.field.objectId,
+                        scope.msg(scope.field.displayName)
+                    );
+                } else if(scope.field.prefix === ManageTaskUtils.POST_ACTION_PREFIX){
+                    scope.displayName = "{0}.{1}#{2}.{3}".format(
+                        scope.msg(scope.field.channelName),
+                        scope.msg(scope.field.actionName),
                         scope.field.objectId,
                         scope.msg(scope.field.displayName)
                     );
@@ -855,6 +872,7 @@
                         changeYear: true,
                         dateFormat: 'yy-mm-dd',
                         timeFormat: 'HH:mm z',
+                        yearRange: '-100:+10',
                         showOn: true,
                         constrainInput: false,
                         onSelect: function (dateTex) {

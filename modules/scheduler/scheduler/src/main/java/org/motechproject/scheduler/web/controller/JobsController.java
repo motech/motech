@@ -58,6 +58,14 @@ public class JobsController {
     public JobsRecords retrieveJobInfo(JobsSearchSettings jobsSearchSettings) throws SchedulerException, SQLException {
         List<JobBasicInfo> jobs = motechSchedulerDatabaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
         int rowCount = jobs.size() == 0 ? 0 : motechSchedulerDatabaseService.countJobs(jobsSearchSettings);
+        if (jobsSearchSettings.getRows() == null) {
+            int defaultRowsNumber = 10;
+            jobsSearchSettings.setRows(defaultRowsNumber);
+        }
+        if (jobsSearchSettings.getPage() == null) {
+            int defaultPage = 1;
+            jobsSearchSettings.setPage(defaultPage);
+        }
         previousJobsRecords = new JobsRecords(
             jobsSearchSettings.getPage(), jobsSearchSettings.getRows(), rowCount, jobs
         );
