@@ -150,6 +150,13 @@ public interface MotechSchedulerService {
     void unscheduleJob(JobId job);
 
     /**
+     * Unschedules job with given schedulable Job.
+     *
+     * @param job {@code SchedulableJob} which should be unscheduled, not null
+     */
+    void unscheduleJob(SchedulableJob job);
+
+    /**
      * Returns last fire date of job with given ID.
      *
      * @param jobId  the {@code JobId} of job, not null

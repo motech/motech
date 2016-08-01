@@ -91,6 +91,36 @@
             LoadingModal.open();
         }
 
+        $scope.unscheduleJob = function(job) {
+                ModalFactory.showConfirm("scheduler.confirm.unschedule", "scheduler.confirm", function(response) {
+                function failure(response) {
+                    LoadingModal.open();
+                    var error="";
+                    if (response.status == 500 || response.status == 404) {
+                        error = $scope.msg("scheduler.error.unschedule.unexpectederror");
+                    } else {
+                        error = response.data;
+                    }
+                    ModalFactory.showAlert({
+                        title: $scope.msg("scheduler.error"),
+                        message: error
+                    });
+                    LoadingModal.close();
+                }
+                function success()  {
+                    JobsService.fetchJobs();
+                }
+                if (response) {
+                    LoadingModal.open();
+                    // Go back to previous page when deleting last record on the given page
+                    if ($scope.jobs.rows.length === 1 && $scope.jobs.page > 1) {
+                        JobsService.setParam("page", $scope.jobs.page - 1);
+                    }
+                    JobsService.unscheduleJob(job, success, failure);
+                }
+            })
+        }
+
         $scope.deleteJob = function(job) {
             ModalFactory.showConfirm("scheduler.confirm.delete", "scheduler.confirm", function(response) {
                 if (response) {
@@ -267,7 +297,7 @@
             } else if (action === 'edit'){
                 ModalFactory.showConfirm("scheduler.confirm.updateJob", "scheduler.confirm", function(response) {
                     if (response) {
-                        LoadingModal.open();;
+                        LoadingModal.open();
                         JobsService.updateJob(job, success, failure);
                     }
                 });

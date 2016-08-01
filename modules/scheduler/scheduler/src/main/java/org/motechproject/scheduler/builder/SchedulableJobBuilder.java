@@ -59,7 +59,9 @@ public final class SchedulableJobBuilder {
         Map<String, Object> params = dataMap.getWrappedMap();
         Map<String, Object> metadata = (Map<String, Object>) params.get(EVENT_METADATA);
         params.remove(EVENT_METADATA);
-        params.putAll(metadata);
+        if (metadata != null) {
+            params.putAll(metadata);
+        }
         JobDataMap map = new JobDataMap(params);
 
         switch (getJobType(key, map)) {
@@ -118,7 +120,7 @@ public final class SchedulableJobBuilder {
         job.setRepeatIntervalInSeconds((int) interval);
         job.setIgnorePastFiresAtStart(dataMap.getBoolean(IGNORE_PAST_FIRES_AT_START));
         job.setUseOriginalFireTimeAfterMisfire(dataMap.getBoolean(USE_ORIGINAL_FIRE_TIME_AFTER_MISFIRE));
-        
+
         return job;
     }
 
