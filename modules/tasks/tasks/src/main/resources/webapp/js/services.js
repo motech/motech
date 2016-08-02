@@ -29,7 +29,7 @@
         return $resource('../tasks/api/channel/triggers', {}, {
             "getTrigger":  {
                 url: "../tasks/api/channel/trigger",
-                method: "POST"
+                method: "GET"
             }
         });
     });
