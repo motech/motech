@@ -69,7 +69,7 @@
                 source.getDetails(job, success);
             },
             "getCurrentJob": function(success) {
-                source.getJob({ jobInfo: currentJob }, success);
+                source.getJob(currentJob, success);
             },
             "pauseJob": function(job, success) {
                 source.pauseJob(job, success);

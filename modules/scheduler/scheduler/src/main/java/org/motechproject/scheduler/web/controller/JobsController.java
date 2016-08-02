@@ -1,7 +1,5 @@
 package org.motechproject.scheduler.web.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.motechproject.scheduler.constants.SchedulerConstants;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
@@ -13,14 +11,13 @@ import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.web.domain.JobsRecords;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -49,8 +46,6 @@ public class JobsController {
     private MotechSchedulerService motechSchedulerService;
 
     private JobsRecords previousJobsRecords;
-
-    private static final Gson GSON = new GsonBuilder().create();
 
     /**
      * Returns job information sorted and filtered as defined in {@code jobsGridSettings}.
@@ -156,9 +151,8 @@ public class JobsController {
     @RequestMapping(value = "/job", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public SchedulableJob getJob(@RequestParam(value = "jobInfo", required = true) String jobInfo) {
-        JobBasicInfo jobBasicInfo = GSON.fromJson(jobInfo, JobBasicInfo.class);
-        return motechSchedulerService.getJob(jobBasicInfo);
+    public SchedulableJob getJob(JobBasicInfo jobInfo) {
+        return motechSchedulerService.getJob(jobInfo);
     }
 
     @ExceptionHandler(MotechSchedulerException.class)
