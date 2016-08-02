@@ -37,7 +37,7 @@
             },
             "getJob": {
                 url: '../scheduler/api/job',
-                method: "POST"
+                method: "GET"
             },
             "pauseJob": {
                 url: '../scheduler/api/job/pause',
@@ -69,7 +69,7 @@
                 source.getDetails(job, success);
             },
             "getCurrentJob": function(success) {
-                source.getJob(currentJob, success);
+                source.getJob({ jobInfo: currentJob }, success);
             },
             "pauseJob": function(job, success) {
                 source.pauseJob(job, success);
