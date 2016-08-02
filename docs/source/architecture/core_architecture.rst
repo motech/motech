@@ -29,11 +29,12 @@ Events
 
 To aid in the development of stateless services, the MOTECH engine provides a pub/sub like event system. (The event system follows the publish-subscribe pattern but does not implement the standard Java pub/sub protocol.) It helps to decouple emitters of events from the modules that wish to consume them. Any module can emit an event by calling the EventRelay and passing it a MotechEvent and a subject. To register for an event, a module just needs to annotate a method with the list of event subjects of interest.
 
-.. code::bash
-	@MotechListener(subjects={EventKeys.SAMPLE_EVENT_SUBJECT})
-    	public void handle(MotechEvent event) {
-     	 logger.info("Received sample event");
-    	}
+.. code-block:: java
+
+    @MotechListener(subjects={EventKeys.SAMPLE_EVENT_SUBJECT})
+    public void handle(MotechEvent event) {
+        logger.info("Received sample event");
+    }
 
 For more information, see :doc:`event_scheduler_architecture`.
 

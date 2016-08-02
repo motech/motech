@@ -7,12 +7,12 @@
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>motech</artifactId>
-        <version>0.29-SNAPSHOT</version>
+        <version>0.30-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
 
     <artifactId>motech-platform-server-bundle</artifactId>
-    <version>0.29-SNAPSHOT</version>
+    <version>0.30-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>MOTECH Platform Server Bundle</name>
 
@@ -99,6 +99,7 @@
                 <directory>src/main/resources/</directory>
                 <filtering>true</filtering>
                 <includes>
+                    <include>task-channel.json</include>
                     <include>**/*.properties</include>
                 </includes>
             </resource>
@@ -106,6 +107,7 @@
                 <directory>src/main/resources/</directory>
                 <filtering>false</filtering>
                 <excludes>
+                    <exclude>task-channel.json</exclude>
                     <exclude>**/*.properties</exclude>
                 </excludes>
             </resource>
@@ -154,7 +156,8 @@
                             org.motechproject.server.web.controller;version=${project.version},
                             org.motechproject.server.web.form;version=${project.version},
                             org.motechproject.server.web.validator;version=${project.version},
-                            org.motechproject.server.web.helper;version=${project.version}
+                            org.motechproject.server.web.helper;version=${project.version},
+                            org.motechproject.server.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,
