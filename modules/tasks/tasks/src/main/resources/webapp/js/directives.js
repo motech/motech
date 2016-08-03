@@ -550,7 +550,7 @@
         };
     });
 
-    directives.directive('manipulationModal', function ($compile, ModalFactory) {
+    directives.directive('manipulationModal', function ($compile, ModalFactory, BootstrapDialogManager) {
         return {
             restrict: 'A',
             scope: {
@@ -618,7 +618,7 @@
                                 action: function(dialogRef) {
                                     scope.manipulations = jQuery.extend(true, [], modalScope.manipulations);
                                     scope.$emit('field.changed');
-                                    dialogRef.close();
+                                    BootstrapDialogManager.close(dialogRef);
                                 }
                             }],
                             onhide: function(){
