@@ -10,6 +10,7 @@
 
         $scope.jobDetails = {};
 
+
         innerLayout({
             spacing_closed: 30,
             east__minSize: 200,
@@ -82,15 +83,6 @@
             })
         };
 
-        $scope.newJob = function() {
-            LoadingModal.open();
-        }
-
-        $scope.editJob = function(job) {
-            JobsService.setCurrentJob(job);
-            LoadingModal.open();
-        }
-
         $scope.deleteJob = function(job) {
             ModalFactory.showConfirm("scheduler.confirm.delete", "scheduler.confirm", function(response) {
                 if (response) {
@@ -98,6 +90,7 @@
                     // Go back to previous page when deleting last record on the given page
                     if ($scope.jobs.rows.length === 1 && $scope.jobs.page > 1) {
                         JobsService.setParam("page", $scope.jobs.page - 1);
+
                     }
                     JobsService.deleteJob(job, function() {
                         JobsService.fetchJobs();
@@ -132,6 +125,11 @@
     });
 
     controllers.controller('SchedulerCreateJobCtrl', function($scope, $timeout, $stateParams, JobsService, ModalFactory, LoadingModal) {
+        LoadingModal.open();
+
+        if ($stateParams.currJob != null) {
+            JobsService.setCurrentJob(findJobByName($stateParams.currJob, JobsService.get()));
+        }
 
         innerLayout({}, {
             show: false,
@@ -212,7 +210,7 @@
             return null;
         };
 
-        $scope.createOrUpdateJob = function(action) {
+        $scope.createOrUpdateJob = function(action, currentJob) {
             var job = {};
 
             job.motechEvent = {};
@@ -332,6 +330,14 @@
         }
 
         LoadingModal.close();
+
+        function findJobByName (name, jobs) {
+            for (var i = 0; i < jobs.rows.length; i++) {
+                if (jobs.rows[i].name == name) {
+                    return jobs.rows[i];
+                }
+            }
+        }
     });
 
 }());

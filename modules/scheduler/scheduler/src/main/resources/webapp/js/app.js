@@ -31,7 +31,7 @@
                 }
             })
             .state('scheduler.createJob', {
-                url: "/createJob?action",
+                url: "/createJob?action?currJob",
                 parent: 'scheduler',
                 views: {
                     'schedulerview': {
