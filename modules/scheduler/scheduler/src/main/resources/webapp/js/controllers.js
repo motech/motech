@@ -10,7 +10,6 @@
 
         $scope.jobDetails = {};
 
-
         innerLayout({
             spacing_closed: 30,
             east__minSize: 200,
@@ -90,7 +89,6 @@
                     // Go back to previous page when deleting last record on the given page
                     if ($scope.jobs.rows.length === 1 && $scope.jobs.page > 1) {
                         JobsService.setParam("page", $scope.jobs.page - 1);
-
                     }
                     JobsService.deleteJob(job, function() {
                         JobsService.fetchJobs();
