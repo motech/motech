@@ -283,7 +283,7 @@ public class InstanceController extends MdsController {
         }
     }
 
-    @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
+    @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.GET)
     @ResponseBody
     public Records<BasicEntityRecord> getInstances(@PathVariable Long entityId, GridSettings settings) throws IOException {
         String lookup = settings.getLookup();
