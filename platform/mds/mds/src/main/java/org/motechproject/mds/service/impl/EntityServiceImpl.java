@@ -203,6 +203,7 @@ public class EntityServiceImpl implements EntityService {
             draftRemove(draft, draftData);
         }
 
+
         return new DraftResult(draft.isChangesMade(), draft.isOutdated());
     }
 
@@ -943,6 +944,10 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     @Transactional
+
+
+
+
     public SchemaHolder getSchema() {
         StopWatch stopWatch = new StopWatch();
 

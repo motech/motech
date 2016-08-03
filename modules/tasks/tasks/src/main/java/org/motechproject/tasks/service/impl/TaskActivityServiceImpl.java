@@ -1,6 +1,7 @@
 package org.motechproject.tasks.service.impl;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.motechproject.config.SettingsFacade;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.mds.task.Task;
@@ -11,6 +12,7 @@ import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.repository.TaskActivitiesDataService;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +30,14 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     private static final String TASK_IN_PROGRESS = "task.inProgress";
     private static final String TASK_SUCCEEDED = "task.success.ok";
     private static final String TASK_DISABLED = "task.warning.taskDisabled";
+    private static final String TASK_LOG_ACTIVITIES_KEY = "task.log.activities";
+    private static final String TASK_LOG_ACTIVITIES_VAL_ALL = "all";
 
     private TaskActivitiesDataService taskActivitiesDataService;
+
+    @Autowired
+    @Qualifier("tasksSettings")
+    private SettingsFacade settings;
 
     @Autowired
     public TaskActivityServiceImpl(TaskActivitiesDataService taskActivitiesDataService) {
@@ -64,9 +72,13 @@ public class TaskActivityServiceImpl implements TaskActivityService {
             activity.getFields().clear();
         }
 
-        updateTaskInProgressMessage(activity);
-        taskActivitiesDataService.update(activity);
-
+        if (!logSuccessActivities()) {
+            taskActivitiesDataService.delete(activity);
+            return false;
+        } else {
+            updateTaskInProgressMessage(activity);
+            taskActivitiesDataService.update(activity);
+        }
         return taskFinished;
     }
 
@@ -153,5 +165,18 @@ public class TaskActivityServiceImpl implements TaskActivityService {
         if (TASK_IN_PROGRESS.equals(activity.getMessage())) {
             activity.getFields().set(0, String.valueOf(activity.getTaskExecutionProgress().getActionsSucceeded()));
         }
+    }
+
+    private String getTaskLogActivities() {
+        return settings.getProperty(TASK_LOG_ACTIVITIES_KEY);
+    }
+
+    @Override
+    public void setSettingFacade(SettingsFacade settingFacade) {
+        settings=settingFacade;
+    }
+
+    private boolean logSuccessActivities() {
+        return (getTaskLogActivities().equals(TASK_LOG_ACTIVITIES_VAL_ALL));
     }
 }

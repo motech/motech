@@ -1,5 +1,6 @@
 package org.motechproject.tasks.service;
 
+import org.motechproject.config.SettingsFacade;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
@@ -115,4 +116,11 @@ public interface TaskActivityService {
      * @return the count of matching activities
      */
     long getTaskActivitiesCount(Long taskId, TaskActivityType type);
+
+    /**
+     * Sets the setting field
+     *
+     * @param settingFacade  instance of settings
+     */
+    void setSettingFacade(SettingsFacade settingFacade);
 }

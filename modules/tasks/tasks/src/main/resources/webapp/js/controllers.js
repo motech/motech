@@ -6,7 +6,7 @@
 
     var controllers = angular.module('tasks.controllers', []);
 
-    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope, $http, ManageTaskUtils,  ModalFactory, LoadingModal) {
+    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Settings, Activities, $rootScope, $http, ManageTaskUtils,  ModalFactory, LoadingModal) {
         var tasks, activities = [],
             searchMatch = function (item, method, searchQuery) {
                 var result;
@@ -51,6 +51,7 @@
         $scope.currentFilter = 'allItems';
         $scope.formatInput = [];
         $scope.util = ManageTaskUtils;
+        $rootScope.settings = Settings.get();
 
         innerLayout({
             spacing_closed: 30,
@@ -135,6 +136,13 @@
                     }
                 }
             });
+        };
+
+        $rootScope.logsDisabled = function() {
+            return ($rootScope.settings.taskLogActivities === "none");
+        };
+        $rootScope.successLogsDisabled = function() {
+            return ($rootScope.settings.taskLogActivities === "failure");
         };
 
         $rootScope.search = function () {
@@ -1112,7 +1120,7 @@
         });
     });
 
-    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http, ModalFactory, LoadingModal, BootstrapDialogManager) {
+    controllers.controller('TasksLogCtrl', function ($scope, $rootScope, Tasks, Activities, $stateParams, $filter, $http, ModalFactory, LoadingModal, BootstrapDialogManager) {
         var data, task;
 
         $scope.taskId = $stateParams.taskId;
@@ -1211,8 +1219,10 @@
     });
 
 
-    controllers.controller('TasksSettingsCtrl', function ($scope, Settings, ModalFactory) {
-        $scope.settings = Settings.get();
+    controllers.controller('TasksSettingsCtrl', function ($scope, $rootScope, Settings, ModalFactory) {
+
+        $scope.logOptionsMap = { 'all': $scope.msg('task.log.all'), 'failure': $scope.msg('task.log.failure'), 'none': $scope.msg('task.log.none')};
+        $scope.currentLogOption = $scope.logOptionsMap[$rootScope.settings.taskLogActivities];
 
         innerLayout({
             spacing_closed: 30,
@@ -1221,7 +1231,7 @@
         });
 
         $scope.submit = function() {
-            $scope.settings.$save(function() {
+            $rootScope.settings.$save(function() {
                 ModalFactory.showSuccessAlert('task.settings.success.saved', 'server.saved');
             }, function() {
                 ModalFactory.showErrorAlert('task.settings.error.saved', 'server.error');
@@ -1239,7 +1249,12 @@
         };
 
         $scope.isNumeric = function(prop) {
-            return $scope.settings.hasOwnProperty(prop) && /^[0-9]+$/.test($scope.settings[prop]);
+            return $rootScope.settings.hasOwnProperty(prop) && /^[0-9]+$/.test($rootScope.settings[prop]);
+        };
+
+        $scope.changeLogOption = function(key, val) {
+        $rootScope.settings.taskLogActivities = key;
+        $scope.currentLogOption = val;
         };
 
     });

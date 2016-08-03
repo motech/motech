@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.motechproject.config.SettingsFacade;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.mds.task.Task;
@@ -42,6 +43,8 @@ public class TaskActivityServiceImplTest {
     private static final Long TASK_ID = 12345l;
     private static final Long TASK_ACTIVITY_ID  = 11L;
     private static final List<String> ERROR_FIELD = asList("phone");
+    private static final String TASK_LOG_ACTIVITIES_KEY = "task.log.activities";
+    private static final String TASK_LOG_ACTIVITIES_VAL = "all";
 
     private List<TaskActivity> activities;
 
@@ -52,11 +55,15 @@ public class TaskActivityServiceImplTest {
 
     Task task;
 
+    @Mock
+    SettingsFacade settings;
+
     @Before
     public void setup() throws Exception {
         initMocks(this);
 
         activityService = new TaskActivityServiceImpl(taskActivitiesDataService);
+        activityService.setSettingFacade(settings);
         activities = createTaskActivities();
 
         task = new Task();
@@ -66,6 +73,7 @@ public class TaskActivityServiceImplTest {
 
     @Test
     public void shouldAddErrorActivityWithTaskException() {
+        when(settings.getProperty(TASK_LOG_ACTIVITIES_KEY)).thenReturn(TASK_LOG_ACTIVITIES_VAL);
         when(taskActivitiesDataService.findById(TASK_ACTIVITY_ID)).thenReturn(createInProgress());
         String messageKey = "error.notFoundTrigger";
         TaskHandlerException exception = new TaskHandlerException(TRIGGER, messageKey, ERROR_FIELD.get(0));
@@ -81,6 +89,7 @@ public class TaskActivityServiceImplTest {
 
     @Test
     public void shouldAddTaskSuccessActivity() {
+        when(settings.getProperty(TASK_LOG_ACTIVITIES_KEY)).thenReturn(TASK_LOG_ACTIVITIES_VAL);
         when(taskActivitiesDataService.findById(TASK_ACTIVITY_ID)).thenReturn(createInProgress());
         String messageKey = "task.success.ok";
 
@@ -99,6 +108,7 @@ public class TaskActivityServiceImplTest {
 
     @Test
     public void shouldAddTaskWarningActivity() {
+        when(settings.getProperty(TASK_LOG_ACTIVITIES_KEY)).thenReturn(TASK_LOG_ACTIVITIES_VAL);
         String messageKey = "task.warning.taskDisabled";
 
         ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
@@ -113,6 +123,7 @@ public class TaskActivityServiceImplTest {
 
     @Test
     public void shouldAddTaskWarningActivityWithGivenKeyAndField() {
+        when(settings.getProperty(TASK_LOG_ACTIVITIES_KEY)).thenReturn(TASK_LOG_ACTIVITIES_VAL);
         String messageKey = "warning.manipulation";
 
         ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
@@ -126,6 +137,7 @@ public class TaskActivityServiceImplTest {
 
     @Test
     public void shouldAddTaskWarningActivityWithGivenException() {
+        when(settings.getProperty(TASK_LOG_ACTIVITIES_KEY)).thenReturn(TASK_LOG_ACTIVITIES_VAL);
         TaskHandlerException exception = new TaskHandlerException(TRIGGER, "trigger.exception", new TaskHandlerException(TRIGGER, "task.exception"));
         String messageKey = "warning.manipulation";
 

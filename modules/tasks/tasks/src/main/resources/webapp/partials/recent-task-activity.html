@@ -2,9 +2,19 @@
 <div>
     <div class="box-content clearfix">
         <table id="table-activity" class="table table-striped table-lightblue table-recent-activity table-condensed centered">
-            <tbody ng-show="activities.length == 0">
-            <tr>
+            <tbody>
+            <tr ng-show="activities.length == 0">
                 <td>{{msg('task.info.notFoundActivities')}}</td>
+            </tr>
+            <tr ng-show="logsDisabled()">
+                <td colspan="5" >
+                    <a class="activity-warn" href="#/tasks/settings">{{msg('task.info.logsDisabled')}}</a>
+                </td>
+            </tr>
+            <tr ng-show="successLogsDisabled()">
+                <td colspan="5">
+                    <a class="activity-warn" href="#/tasks/settings">{{msg('task.info.successLogsDisabled')}}</a>
+                </td>
             </tr>
             </tbody>
             <tbody ng-hide="activities.length == 0">

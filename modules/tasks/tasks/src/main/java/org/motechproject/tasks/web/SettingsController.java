@@ -24,6 +24,8 @@ public class SettingsController {
 
     private static final String TASK_POSSIBLE_ERRORS = "task.possible.errors";
 
+    private static final String TASK_LOG_ACTIVITIES = "task.log.activities";
+
     @Autowired
     private SettingsFacade settingsFacade;
 
@@ -37,6 +39,7 @@ public class SettingsController {
     public SettingsDto getSettings() {
         SettingsDto dto = new SettingsDto();
         dto.setTaskPossibleErrors(getPropertyValue(TASK_POSSIBLE_ERRORS));
+        dto.setTaskLogActivities(getPropertyValue(TASK_LOG_ACTIVITIES));
         return dto;
     }
 
@@ -50,6 +53,7 @@ public class SettingsController {
     public void saveSettings(@RequestBody SettingsDto settings) {
         if (settings.isValid()) {
             settingsFacade.setProperty(TASK_POSSIBLE_ERRORS, settings.getTaskPossibleErrors());
+            settingsFacade.setProperty(TASK_LOG_ACTIVITIES, settings.getTaskLogActivities());
         } else {
             throw new IllegalArgumentException("Settings are not valid");
         }

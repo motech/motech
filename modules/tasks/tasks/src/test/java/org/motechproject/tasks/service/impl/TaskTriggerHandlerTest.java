@@ -168,6 +168,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
         when(taskService.getAllTasks()).thenReturn(tasks);
         when(settingsFacade.getProperty("task.possible.errors")).thenReturn("5");
+        when(settingsFacade.getProperty("task.log.activities")).thenReturn("all");
         when(dataProvider.getName()).thenReturn(TASK_DATA_PROVIDER_NAME);
         when(taskActivityService.addTaskStarted(any(Task.class), anyMap())).thenReturn(TASK_ACTIVITY_ID);
 

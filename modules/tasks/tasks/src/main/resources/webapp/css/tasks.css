@@ -692,6 +692,16 @@ manipulation-sorter .manipulation .remove:before {
     font-weight: bold;
 }
 
+.tasks a.activity-warn {
+    font-weight: bold;
+    color: #ff0000;
+    font-size: 16px;
+}
+
+.tasks a.history-info {
+    margin-left: 20px;
+}
+
 /*----- Tasks - history -----*/
 
 .tasks .history .task-bar .task-nav > li.task-element.task-name {
