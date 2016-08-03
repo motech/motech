@@ -1,20 +1,23 @@
 package org.motechproject.tasks.web;
 
+import org.joda.time.DateTime;
 import org.motechproject.tasks.domain.mds.channel.Channel;
-import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
-import org.motechproject.tasks.web.domain.TriggersList;
-import org.motechproject.tasks.web.domain.TriggersLists;
+import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TriggerEventService;
+import org.motechproject.tasks.web.domain.TriggersList;
+import org.motechproject.tasks.web.domain.TriggersLists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.beans.PropertyEditorSupport;
 import java.util.List;
 
 /**
@@ -98,9 +101,18 @@ public class ChannelController {
      * @param info  the information about the trigger
      * @return the trigger matching given information
      */
-    @RequestMapping(value = "channel/trigger", method = RequestMethod.POST)
+    @RequestMapping(value = "channel/trigger", method = RequestMethod.GET)
     @ResponseBody
-    public TriggerEvent getTrigger(@RequestBody TaskTriggerInformation info) {
+    public TriggerEvent getTrigger(TaskTriggerInformation info) {
         return triggerEventService.getTrigger(info);
+    }
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(DateTime.class, new PropertyEditorSupport() {
+            public void setAsText(String value) {
+                setValue(new DateTime(Long.valueOf(value)));
+            }
+        });
     }
 }
