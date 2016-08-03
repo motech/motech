@@ -1,7 +1,6 @@
 package org.motechproject.tasks.web;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.joda.time.DateTime;
 import org.motechproject.tasks.domain.mds.channel.Channel;
 import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
@@ -11,11 +10,14 @@ import org.motechproject.tasks.web.domain.TriggersList;
 import org.motechproject.tasks.web.domain.TriggersLists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.beans.PropertyEditorSupport;
 import java.util.List;
 
 /**
@@ -25,7 +27,6 @@ import java.util.List;
 public class ChannelController {
 
     private static final int PAGE_SIZE = 10;
-    private static final Gson GSON = new GsonBuilder().create();
 
     private ChannelService channelService;
     private TriggerEventService triggerEventService;
@@ -102,8 +103,16 @@ public class ChannelController {
      */
     @RequestMapping(value = "channel/trigger", method = RequestMethod.GET)
     @ResponseBody
-    public TriggerEvent getTrigger(@RequestParam(value = "info", required = true) String info) {
-        TaskTriggerInformation taskTriggerInformation = GSON.fromJson(info, TaskTriggerInformation.class);
-        return triggerEventService.getTrigger(taskTriggerInformation);
+    public TriggerEvent getTrigger(TaskTriggerInformation info) {
+        return triggerEventService.getTrigger(info);
+    }
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(DateTime.class, new PropertyEditorSupport() {
+            public void setAsText(String value) {
+                setValue(new DateTime(Long.valueOf(value)));
+            }
+        });
     }
 }

@@ -390,20 +390,7 @@
                 $scope.task.retryTaskOnFailure = false;
             } else {
                 $scope.task = Tasks.get({ taskId: $stateParams.taskId }, function () {
-                    function removeUnnecessaryProperties(param) {
-                        var copy = JSON.parse(JSON.stringify(param));
-
-                        delete copy.id;
-                        delete copy.creator;
-                        delete copy.owner;
-                        delete copy.modifiedBy;
-                        delete copy.creationDate;
-                        delete copy.modificationDate;
-
-                        return copy;
-                    }
-
-                    Triggers.getTrigger({ info: removeUnnecessaryProperties($scope.task.trigger) }, function(trigger) {
+                    Triggers.getTrigger($scope.task.trigger, function(trigger) {
                         var triggerChannel, dataSource, object;
 
                         if ($scope.task.numberOfRetries > 0) {
