@@ -633,7 +633,7 @@
     /**
     * The MdsSchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
-    controllers.controller('MdsSchemaEditorCtrl', function ($scope, $timeout, $http, Entities, MDSUsers, Permissions, MDSUtils, Locale, ModalFactory, LoadingModal) {
+    controllers.controller('MdsSchemaEditorCtrl', function ($scope, $timeout, $http, Entities, MDSUsers, Permissions, MDSUtils, Locale, ModalFactory, LoadingModal, $rootScope) {
 
         MDSUtils.setCustomOperatorFunctions($scope);
 
@@ -2047,9 +2047,19 @@
             var exists;
 
             if ($scope.advancedSettings !== null && $scope.lookup !== undefined && $scope.lookup.lookupName !== undefined) {
-                LoadingModal.open();
-                $scope.validateLookupName($scope.lookup.lookupName);
-                LoadingModal.close();
+                $timeout(function() {
+                    LoadingModal.open();
+                    $scope.validateLookupName($scope.lookup.lookupName);
+                    LoadingModal.close();
+                }, 1000);
+            }
+        });
+
+
+        $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+            if(fromState.name === 'mds.schemaEditor') {
+                var modal = angular.element('#advancedObjectSettingsModal');
+                modal.modal('hide');
             }
         });
 
