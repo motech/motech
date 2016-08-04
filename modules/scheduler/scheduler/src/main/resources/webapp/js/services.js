@@ -37,7 +37,7 @@
             },
             "getJob": {
                 url: '../scheduler/api/job',
-                method: "POST"
+                method: "GET"
             },
             "pauseJob": {
                 url: '../scheduler/api/job/pause',
