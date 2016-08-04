@@ -2255,7 +2255,6 @@
             require: 'ngModel',
             link: function (scope, element, attr, ngModel) {
                 var func = attr.mdsAutoSaveFieldChange || 'focusout';
-
                 angular.element(element).on(func, function () {
                     var viewScope = findCurrentScope(scope, 'draft'),
                         fieldPath = attr.mdsPath,
@@ -2279,6 +2278,52 @@
                         }
                     });
                 });
+            }
+        };
+    });
+
+    directives.directive('mdsAutoSaveFileInputFieldChange', function (Entities) {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function (scope, element, attr, ngModel) {
+                var onChangeFunction,
+                    readFile;
+
+                onChangeFunction = function(evt) {
+                    var viewScope = findCurrentScope(scope, 'draft'),
+                        fieldPath = attr.mdsPath,
+                        fieldId = attr.mdsFieldId,
+                        fileReadPath = attr.filereadpath,
+                        value,
+                        reader;
+
+                    if (!fieldPath) {
+                        fieldPath = attr.ngModel;
+                        fieldPath = fieldPath.substring(fieldPath.indexOf('.') + 1);
+                    }
+
+                    reader = new FileReader();
+                    reader.onload = function (loadEvent) {
+                        scope.$apply(function () {
+                            scope.fileReadPath = loadEvent.target.result;
+                            viewScope.draft({
+                                edit: true,
+                                values: {
+                                    path: fieldPath,
+                                    fieldId: fieldId,
+                                    value: [''] //TODO should be "loadEvent.target.result" after saving blob default value is enabled
+                                }
+                            });
+                        });
+                    };
+
+                    if(evt.target.files[0]) {
+                        reader.readAsDataURL(evt.target.files[0]);
+                    }
+                };
+
+                $('.fileinput').on('change', fun);
             }
         };
     });
