@@ -1357,8 +1357,7 @@
                 channel: '=',
                 task: '=',
                 util: '=',
-                msg: '=',
-                taskMsg: '='
+                msg: '='
             },
             link: function (scope, element, attrs) {
                 loadTemplate(scope);
