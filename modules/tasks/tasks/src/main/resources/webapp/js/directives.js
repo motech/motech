@@ -1271,35 +1271,32 @@
         };
     });
 
-    directives.directive('importTaskModal', ['$compile', '$http', '$templateCache', 'BootstrapDialogManager', 'LoadingModal', 'ModalFactory', 'ImportModalCtrl',
-        function ($compile, $http, $templateCache, BootstrapDialogManager, LoadingModal, ModalFactory, ImportModalCtrl) {
+    directives.directive('importTaskModal', ['$compile', '$http', '$templateCache', 'BootstrapDialogManager', 'LoadingModal', 'ModalFactory',
+        function ($compile, $http, $templateCache, BootstrapDialogManager, LoadingModal, ModalFactory) {
 
-        var templateLoader;
+        function loadTemplate (scope) {
+            var url = '../tasks/partials/widgets/import-modal.html';
+
+            $http.get(url, {cache: $templateCache})
+                .success(function (html) {
+                    var compiledMessage = $compile(html)(scope);
+                    scope.importDialog.setMessage(compiledMessage);
+                });
+        }
 
         return {
             restrict: 'A',
             replace: true,
+            name: 'ctrl',
+            controller: '@',
             scope: {
-                getTasks: '='
+                getTasks: '=',
+                msg: '='
             },
-            compile: function (tElement, tAttrs, scope) {
-                var url = '../tasks/partials/widgets/import-modal.html',
-
-                templateLoader = $http.get(url, {cache: $templateCache})
-                    .success(function (html) {
-                        tElement.html(html);
-                    });
-
-                return function (scope, element, attrs) {
-                    templateLoader.then(function () {
-                        element.html($compile(tElement.html())(scope));
-                    });
-                };
-          },
             link: function (scope, element, attrs) {
+                loadTemplate(scope);
                 scope.importDialog = new BootstrapDialog({
                     title: scope.msg('task.import'),
-                    message: templateLoader,
                     closable: true,
                     closeByBackdrop: false,
                     closeByKeyboard: false,
@@ -1332,32 +1329,41 @@
                             BootstrapDialogManager.close(dialogItself);
                         }
                     }]
-                 });
-                 scope.$watch('openImportTaskModal', function () {
-                    element.on('click', scope.openImportTaskModal);
-                 });
-            },
-            controller: ImportModalCtrl
+                });
+                element.on('click', scope.openImportTaskModal);
+            }
         };
     }]);
 
-    directives.directive('triggersModal', ['$compile', '$http', '$templateCache', 'BootstrapDialogManager', 'TriggersModalCtrl',
-        function ($compile, $http, $templateCache, BootstrapDialogManager, TriggersModalCtrl) {
-        var templateLoader;
+    directives.directive('triggersModal', ['$compile', '$http', '$templateCache', 'BootstrapDialogManager',
+        function ($compile, $http, $templateCache, BootstrapDialogManager) {
+
+        function loadTemplate (scope) {
+            var url = '../tasks/partials/modals/triggersModal.html';
+
+            $http.get(url, {cache: $templateCache})
+                .success(function (html) {
+                    var compiledMessage = $compile(html)(scope);
+                    scope.triggersDialog.setMessage(compiledMessage);
+                });
+        }
 
         return {
             restrict: 'A',
             replace: true,
+            name: 'ctrl',
+            controller: '@',
             scope: {
                 channel: '=',
                 task: '=',
                 util: '=',
-                msg: '='
+                msg: '=',
+                taskMsg: '='
             },
             link: function (scope, element, attrs) {
+                loadTemplate(scope);
                 scope.triggersDialog = new BootstrapDialog({
                     title: scope.msg('task.tooltip.availableTriggers'),
-                    message: templateLoader,
                     closable: true,
                     closeByBackdrop: false,
                     closeByKeyboard: false,
@@ -1372,25 +1378,8 @@
                         }
                     }]
                  });
-                 scope.$watch('openTriggersModal', function () {
-                    element.on('click', scope.openTriggersModal);
-                 });
-            },
-            compile: function (tElement, tAttrs, scope) {
-                var url = '../tasks/partials/modals/triggersModal.html',
-
-                templateLoader = $http.get(url, {cache: $templateCache})
-                    .success(function (html) {
-                        tElement.html(html);
-                    });
-
-                return function (scope, element, attrs) {
-                    templateLoader.then(function () {
-                        element.html($compile(tElement.html())(scope));
-                    });
-                };
-            },
-            controller: TriggersModalCtrl
+                 element.on('click', scope.openTriggersModal);
+            }
         };
     }]);
 }());
