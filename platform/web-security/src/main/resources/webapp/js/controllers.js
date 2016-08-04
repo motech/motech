@@ -107,11 +107,13 @@
                $scope.successfulMessage='';
                $scope.failureMessage='';
                $scope.deleteU=false;
-               $http.post('../websecurity/api/users/getuser', user.userName).success(function(data) {
-                       $scope.user = data;
-                       $scope.user.password='';
-                       $scope.confirmPassword="";
+
+               $http.get('../websecurity/api/users/getuser?userName=' + user.userName).success(function (data) {
+                    $scope.user = data;
+                    $scope.user.password='';
+                    $scope.confirmPassword="";
                });
+
                $scope.showUsersView=!$scope.editUserView;
                $scope.editUserView=!$scope.editUserView;
            };
