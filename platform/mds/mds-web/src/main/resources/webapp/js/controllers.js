@@ -2047,11 +2047,7 @@
             var exists;
 
             if ($scope.advancedSettings !== null && $scope.lookup !== undefined && $scope.lookup.lookupName !== undefined) {
-                $timeout(function() {
-                    LoadingModal.open();
-                    $scope.validateLookupName($scope.lookup.lookupName);
-                    LoadingModal.close();
-                }, 1000);
+                $scope.validateLookupName($scope.lookup.lookupName);
             }
         });
 
