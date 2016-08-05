@@ -14,7 +14,7 @@
                 <ul class="task-selector" ng-init="searchTrigger.displayName='' " data-ng-cloak="">
                     <li class="task-panel pointer" ng-model="selectedChannel" ng-repeat="channel in util.channels.withTriggers(channels)">
                         <div id="trigger-{{channel.moduleName}}">
-                            <div ng-click="openTriggersModal(channel)">
+                            <div triggers-modal channel="channel" task="task" util="util" msg="msg" ctrl="TriggersModalCtrl">
                                 <a ng-click="removeTrigger($event)" ui-if="task.trigger && task.trigger.moduleName == channel.moduleName">
                                     <i class="fa fa-times close-channel"></i>
                                 </a>

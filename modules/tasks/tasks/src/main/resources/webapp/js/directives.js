@@ -1278,4 +1278,115 @@
             }
         };
     });
+
+    directives.directive('importTaskModal', ['$compile', '$http', '$templateCache', 'BootstrapDialogManager', 'LoadingModal', 'ModalFactory',
+        function ($compile, $http, $templateCache, BootstrapDialogManager, LoadingModal, ModalFactory) {
+
+        function loadTemplate (scope) {
+            var url = '../tasks/partials/widgets/import-modal.html';
+
+            $http.get(url, {cache: $templateCache})
+                .success(function (html) {
+                    var compiledMessage = $compile(html)(scope);
+                    scope.importDialog.setMessage(compiledMessage);
+                });
+        }
+
+        return {
+            restrict: 'A',
+            replace: true,
+            name: 'ctrl',
+            controller: '@',
+            scope: {
+                getTasks: '=',
+                msg: '='
+            },
+            link: function (scope, element, attrs) {
+                loadTemplate(scope);
+                scope.importDialog = new BootstrapDialog({
+                    title: scope.msg('task.import'),
+                    closable: true,
+                    closeByBackdrop: false,
+                    closeByKeyboard: false,
+                    draggable: false,
+                    cssClass: 'tasks',
+                    buttons: [{
+                        label: scope.msg('task.button.import'),
+                        cssClass: 'btn btn-primary',
+                        action: function (dialogItself) {
+                            LoadingModal.open();
+
+                            $('#importTaskForm').ajaxSubmit({
+                                success: function () {
+                                    scope.getTasks();
+                                    $('#importTaskForm').resetForm();
+                                    BootstrapDialogManager.close(dialogItself);
+                                    LoadingModal.close();
+                                },
+                                error: function (response) {
+                                    LoadingModal.close();
+                                    ModalFactory.showErrorAlertWithResponse('task.error.import', 'task.header.error', response);
+                                }
+                            });
+                        }
+                    }, {
+                        label: scope.msg('task.close'),
+                        cssClass: 'btn btn-default',
+                        action: function (dialogItself) {
+                            $('#importTaskForm').resetForm();
+                            BootstrapDialogManager.close(dialogItself);
+                        }
+                    }]
+                });
+                element.on('click', scope.openImportTaskModal);
+            }
+        };
+    }]);
+
+    directives.directive('triggersModal', ['$compile', '$http', '$templateCache', 'BootstrapDialogManager',
+        function ($compile, $http, $templateCache, BootstrapDialogManager) {
+
+        function loadTemplate (scope) {
+            var url = '../tasks/partials/modals/triggersModal.html';
+
+            $http.get(url, {cache: $templateCache})
+                .success(function (html) {
+                    var compiledMessage = $compile(html)(scope);
+                    scope.triggersDialog.setMessage(compiledMessage);
+                });
+        }
+
+        return {
+            restrict: 'A',
+            replace: true,
+            name: 'ctrl',
+            controller: '@',
+            scope: {
+                channel: '=',
+                task: '=',
+                util: '=',
+                msg: '='
+            },
+            link: function (scope, element, attrs) {
+                loadTemplate(scope);
+                scope.triggersDialog = new BootstrapDialog({
+                    title: scope.msg('task.tooltip.availableTriggers'),
+                    closable: true,
+                    closeByBackdrop: false,
+                    closeByKeyboard: false,
+                    draggable: false,
+                    cssClass: 'tasks',
+                    autodestroy: false,
+                    buttons: [{
+                        label: scope.msg('task.close'),
+                        cssClass: 'btn btn-default',
+                        action: function (dialogItself) {
+                            BootstrapDialogManager.close(dialogItself);
+                        }
+                    }]
+                 });
+                 element.on('click', scope.openTriggersModal);
+            }
+        };
+    }]);
 }());
