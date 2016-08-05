@@ -67,6 +67,18 @@ public interface StatusMessageService {
     /**
      * Creates a status message and posts it in the system. If the message matches any
      * notification rules, appropriate notifications will be triggered. The message
+     * will be visible in the message UI until it expires.
+     *
+     * @param text the message content
+     * @param moduleName the name of the module this message is related with
+     * @param level the message level as a string value
+     * @param timeout the message expiry date
+     */
+    void postMessage(String text, String moduleName, String level, DateTime timeout);
+
+    /**
+     * Creates a status message and posts it in the system. If the message matches any
+     * notification rules, appropriate notifications will be triggered. The message
      * will be visible in the message UI until it expires. The value of timeout is set
      * to the default.
      *

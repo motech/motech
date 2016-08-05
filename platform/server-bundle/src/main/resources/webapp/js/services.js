@@ -58,6 +58,15 @@
                 modalsList[modalsList.length-1].close();
             }
         };
+
+        this.onhide = function (dialog) {
+            $timeout(function() {
+                if (modalsList.length > 0) {
+                    that.remove(dialog);
+                }
+            }, 200);
+        };
+
     }]);
 
     uiServices.service('LoadingModal', ['$rootScope', function ($rootScope) {

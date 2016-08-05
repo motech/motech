@@ -703,8 +703,10 @@ New task creation process begins with clicking the 'New task' button on the main
                 :alt: Tasks UI - new task creation
                 :align: center
 
-Starting from the top, one can see two properties to provide: task name and task description, from which the task name
-is mandatory.
+Starting from the top, one can see three properties to provide: task name, task description and option which allow to
+set task retry in case of failure, from which the task name is mandatory. If the "Retry task on failure" option is checked,
+one should set the count of retries and the interval in seconds between each retry call. For each retry all the task's actions are
+repeated, not only those that have failed.
 
 .. note::
     In the Tasks UI, if a property has invalid value it is signalled by highlighting its label and input field. There
@@ -855,8 +857,10 @@ execution.
 The delete button allows to permanently delete tasks. Once deleted, a task cannot be restored.
 
 There is also a button that leads to the task history view. It allows to monitor all events related to the task and
-especially track an execution of the task. It provides information about the task result status and the message, which
-in case of failure contains stacktrace and failure reason. You can also clean the tasks history.
+especially track an execution of the task. It provides information about currently performing tasks (how many actions are
+and how many are completed), the task result status and the message, which in case of failure contains stacktrace and
+failure reason. You can also clean the tasks history. Task execution is marked as success when all actions finish without
+an error.
 
         .. image:: img/task_history.png
                 :scale: 100 %
