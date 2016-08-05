@@ -5,36 +5,9 @@ Browser Compatibility
 Supported Browsers
 ==================
 
-MOTECH project uses new technologies (HTML 5, CSS3) and new frameworks like `AngularJS <https://angularjs.org/>`_, `Bootstrap <http://getbootstrap.com/>`_
-which means that the compatibility of the browsers depends on the extent to which these frameworks support old browsers.
+MOTECH project uses new technologies (HTML 5, CSS3) and new frameworks like AngularJS, Bootstrap which means that the compatibility of the browsers depends on the extent to which these frameworks support old browsers.
 
-Specifically, we support the latest versions of the following browsers and platforms.
-
-.. |v| image:: img/checkmark.png
-.. |x| image:: img/x.png
-
-.. csv-table::
-    :header: "Platform", "IE 11+", "Chrome", "Firefox", "Safari", "Opera"
-    :widths: 25, 20, 20, 20, 20, 20
-
-    "Windows", |v| Supported, |v| Supported, |v| Supported, |x| Not Supported, |v| Supported
-    "Mac OS X", |x| Not Supported, |v| Supported, |v| Supported, |v| Supported, |v| Supported
-    "Linux", |x| Not Supported, |v| Supported, |v| Supported, |x| Not Supported, |v| Supported
-
-
-Unofficially, MOTECH should look and behave well enough in Chromium for Linux,
-though it is not officially supported.
-
-Internet Explorer Compatibility
-===============================
-
-Bootstrap is built to work best in the latest desktop browsers, meaning older browsers might display differently styled, though fully functional, renderings of certain components.
-
-AngularJS 1.3 has dropped support for IE8. Read more about it on this `blog <https://blog.angularjs.org/2013/12/angularjs-13-new-release-approaches.html>`_.
-
-The AngularJS project currently supports and will attempt to fix bugs for IE9 and above. Their continuous integration server runs all the tests against IE9, IE10, and IE11. See `Travis CI <https://travis-ci.org/angular/angular.js>`_ and `ci.angularjs.org <https://ci.angularjs.org>`_.
-
-However, MOTECH supports IE11 and above. We don't support older versions of Internet Explorer due to framework compatibility, as mentioned above.
+We officialy support IE11 and up, Chrome, Firefox, Safari and Opera. We don't support older versions of Internet Explorer due to framework compatibility, as mentioned above.
 
 Screen Resolution
 =================
