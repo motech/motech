@@ -921,6 +921,15 @@ manipulation-sorter .manipulation .remove:before {
     height: 20px;
 }
 
+.tasks .modal-header {
+    background-color: white !important;
+    font-weight: bold;
+}
+
+.tasks .modal-header .bootstrap-dialog-title {
+    color: #224477 !important;
+}
+
 #helpModal .modal-dialog {
     width: 760px;
 }
