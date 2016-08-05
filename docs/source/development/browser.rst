@@ -34,23 +34,7 @@ AngularJS 1.3 has dropped support for IE8. Read more about it on this `blog <htt
 
 The AngularJS project currently supports and will attempt to fix bugs for IE9 and above. Their continuous integration server runs all the tests against IE9, IE10, and IE11. See `Travis CI <https://travis-ci.org/angular/angular.js>`_ and `ci.angularjs.org <https://ci.angularjs.org>`_.
 
-However, MOTECH supports IE11 and above.
-
-Internet Explorer 9: Issues
----------------------------
-
-To keep compatibility with Internet Explorer 9 it is best to follow these rules:
-
-1. Internet Explorer 9 doesn't support CSS3 animations and transitions, so it is best to use *.gif files for animations.
-2. Internet Explorer 9 filter supports only colours defined in 8 digit hexes (AARRGGBB)
-
-    .. code-block:: bash
-
-			filter : progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFE8E8E8', endColorstr='#FFF2F2F1');
-
-   For more information see `Gradient Attributes and Properties <https://msdn.microsoft.com/en-us/library/ms532997(v=vs.85).aspx>`_
-   Some frameworks don't use correctly defined colours for MS filter and it might lead to inconsistency between different browser UIs.
-3. Internet Explorer 9 can't interpret 3 digit hexes for background-colour so it is best not to use it at all for better code management and code consistency.
+However, MOTECH supports IE11 and above. We don't support older versions of Internet Explorer due to framework compatibility, as mentioned above.
 
 Screen Resolution
 =================
