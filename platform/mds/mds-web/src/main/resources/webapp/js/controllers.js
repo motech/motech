@@ -2051,14 +2051,6 @@
             }
         });
 
-
-        $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-            if(fromState.name === 'mds.schemaEditor') {
-                var modal = angular.element('#advancedObjectSettingsModal');
-                modal.modal('hide');
-            }
-        });
-
         /**
         * Runs a validation for given lookup name. If there's a duplicate in the current array of
         * lookups, it will perform necessary actions (display error and block components on UI). Otherwise
