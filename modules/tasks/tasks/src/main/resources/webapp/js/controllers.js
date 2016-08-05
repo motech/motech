@@ -1204,7 +1204,10 @@
                     action: function (dialogItself) {
                         BootstrapDialogManager.close(dialogItself);
                     }
-                }]
+                }],
+                onhide: function (dialog) {
+                    BootstrapDialogManager.onhide(dialog);
+                }
             });
             BootstrapDialogManager.open(dialog);
         };
