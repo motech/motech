@@ -2047,9 +2047,7 @@
             var exists;
 
             if ($scope.advancedSettings !== null && $scope.lookup !== undefined && $scope.lookup.lookupName !== undefined) {
-                LoadingModal.open();
                 $scope.validateLookupName($scope.lookup.lookupName);
-                LoadingModal.close();
             }
         });
 
