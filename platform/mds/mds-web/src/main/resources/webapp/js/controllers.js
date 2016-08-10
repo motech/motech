@@ -2042,6 +2042,15 @@
             });
 
         };
+
+         $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState) {
+            if(fromState.name === 'mds.schemaEditor') {
+               var modal = angular.element('#advancedObjectSettingsModal');
+               modal.modal('hide');
+            }
+         });
+
+
         $scope.blockLookups = false;
         $scope.$watch('lookup.lookupName', function () {
             var exists;
