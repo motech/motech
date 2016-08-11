@@ -2050,7 +2050,6 @@
             }
          });
 
-
         $scope.blockLookups = false;
         $scope.$watch('lookup.lookupName', function () {
             var exists;
