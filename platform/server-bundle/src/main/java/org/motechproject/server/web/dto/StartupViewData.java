@@ -6,8 +6,8 @@ import org.motechproject.server.web.form.StartupSuggestionsForm;
 import java.util.Locale;
 import java.util.NavigableMap;
 
-/*
-* Class responsible for holding data shared between startup controller and its view
+/**
+ * Class responsible for holding data shared between startup controller and its view
  */
 public class StartupViewData {
     private StartupSuggestionsForm suggestions;

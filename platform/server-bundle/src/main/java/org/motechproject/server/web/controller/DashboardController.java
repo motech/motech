@@ -5,6 +5,7 @@ import org.joda.time.DateTime;
 import org.motechproject.event.listener.EventConsumerInfo;
 import org.motechproject.osgi.web.service.LocaleService;
 import org.motechproject.server.startup.StartupManager;
+import org.motechproject.server.web.dto.StatusData;
 import org.motechproject.server.web.form.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -19,6 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.List;
 
 import static org.motechproject.commons.date.util.DateUtil.now;
 
@@ -65,18 +68,6 @@ public class DashboardController {
         return view;
     }
 
-    @RequestMapping(value = "/gettime", method = RequestMethod.GET)
-    @ResponseBody
-    public DateTime getTime() {
-        return now();
-    }
-
-    @RequestMapping(value = "/getUptime", method = RequestMethod.GET)
-    @ResponseBody
-    public DateTime getUptime() {
-        return now().minus(ManagementFactory.getRuntimeMXBean().getUptime());
-    }
-
     @RequestMapping(value = "/getUser", method = RequestMethod.GET)
     @ResponseBody
     public UserInfo getUser(HttpServletRequest request) {
@@ -87,16 +78,33 @@ public class DashboardController {
         return new UserInfo(userName, securityLaunch, lang);
     }
 
-    @RequestMapping(value = "/getNodeName", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/getStatus", method = RequestMethod.GET)
     @ResponseBody
-    public String getNodeName() throws UnknownHostException {
+    public List<StatusData> getStatus() throws UnknownHostException {
+        StatusData statusData = new StatusData();
+
+        statusData.setTime(getTime());
+        statusData.setUptime(getUptime(statusData.getTime()));
+        statusData.setNodeName(getNodeName());
+        statusData.setInboundChannelActive(isInboundChannelActive());
+
+        return Collections.singletonList(statusData);
+    }
+
+    private DateTime getTime() {
+        return now();
+    }
+
+    private DateTime getUptime(DateTime now) {
+        return now.minus(ManagementFactory.getRuntimeMXBean().getUptime());
+    }
+
+    private String getNodeName() throws UnknownHostException {
         InetAddress ip = InetAddress.getLocalHost();
 
         return ip.getHostName();
     }
 
-    @RequestMapping(value = "/isInboundChannelActive", method = RequestMethod.GET)
-    @ResponseBody
     public boolean isInboundChannelActive() throws UnknownHostException {
         return eventConsumerInfo.isRunning();
     }
@@ -110,7 +118,7 @@ public class DashboardController {
     public void setLocaleService(LocaleService localeService) {
         this.localeService = localeService;
     }
-    
+
     @Autowired
     public void setEventConsumerInfo(EventConsumerInfo eventConsumerInfo) {
         this.eventConsumerInfo = eventConsumerInfo;
