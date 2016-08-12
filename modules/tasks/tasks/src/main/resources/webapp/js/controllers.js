@@ -1280,7 +1280,7 @@
         };
     });
 
-    controllers.controller('TriggersModalCtrl', function ($scope, LoadingModal, BootstrapDialogManager, Triggers, ModalFactory) {
+    controllers.controller('TriggersModalCtrl', function ($scope, $timeout, LoadingModal, BootstrapDialogManager, Triggers, ModalFactory) {
 
         $scope.reloadLists = function(staticTriggersPage, dynamicTriggersPage) {
             if ($scope.validatePages(staticTriggersPage, dynamicTriggersPage)) {
@@ -1331,8 +1331,10 @@
                     }
                 });
             } else {
-                $scope.util.trigger.select($scope, channel, trigger);
-                BootstrapDialogManager.close($scope.triggersDialog);
+                $timeout(function () {
+                    $scope.util.trigger.select($scope, channel, trigger);
+                    BootstrapDialogManager.close($scope.triggersDialog);
+                });
             }
         };
 

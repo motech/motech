@@ -1351,8 +1351,7 @@
 
             $http.get(url, {cache: $templateCache})
                 .success(function (html) {
-                    var compiledMessage = $compile(html)(scope);
-                    scope.triggersDialog.setMessage(compiledMessage);
+                    scope.messageBody = html;
                 });
         }
 
@@ -1385,7 +1384,11 @@
                         }
                     }]
                  });
-                 element.on('click', scope.openTriggersModal);
+                 element.on('click', function () {
+                    var compiledMessage = $compile(scope.messageBody)(scope);
+                    scope.triggersDialog.setMessage(compiledMessage);
+                    scope.openTriggersModal();
+                 });
             }
         };
     }]);
