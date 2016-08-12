@@ -314,7 +314,9 @@
                         });
 
                         if (trigger) {
-                            $scope.util.trigger.select($scope, triggerChannel, trigger);
+                            $timeout(function() {
+                                $scope.util.trigger.select($scope, triggerChannel, trigger);
+                            });
                         }
 
                         angular.forEach($scope.task.taskConfig.steps, function (step) {

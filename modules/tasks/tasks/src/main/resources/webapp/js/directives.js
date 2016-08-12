@@ -767,32 +767,40 @@
         };
     }]);
 
-    directives.directive('formatManipulationButton', ['$compile', 'ModalFactory', function ($compile, ModalFactory) {
+    directives.directive('formatManipulationButton', ['$compile', 'ModalFactory', 'BootstrapDialogManager', 'LoadingModal', function ($compile, ModalFactory, BootstrapDialogManager, LoadingModal) {
         return {
             restrict: 'EA',
             templateUrl: '../tasks/partials/widgets/string-manipulation-format-button.html',
             link: function (scope, element, attrs) {
+                var modalScope = scope.$new();
+                modalScope.getAvailableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.getAvailableFields;
+                modalScope.availableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.fields;
+                modalScope.msg = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.taskMsg;
+                modalScope.argument = scope.argument;
+                scope.importDialog = new BootstrapDialog({
+                    size: 'size-wide',
+                    title: scope.msg('task.format.set.header'),
+                    closable: true,
+                    closeByBackdrop: false,
+                    closeByKeyboard: false,
+                    draggable: false,
+                    autodestroy: false,
+                    message: $compile('<format-manipulation ng-model="argument" available-fields="availableFields" get-available-fields="getAvailableFields()" />')(modalScope),
+                    buttons: [{
+                        label: scope.msg('task.button.save'),
+                        cssClass: 'btn-primary',
+                        action: function (dialogItself) {
+                            scope.argument = modalScope.argument;
+                            BootstrapDialogManager.close(dialogItself);
+                        }
+                    }],
+                    onhide: function (dialog) {
+                        BootstrapDialogManager.onhide(dialog);
+                    }
+                });
                 element.on('click', function (event) {
                     event.preventDefault();
-                    var modalScope = scope.$new();
-                    modalScope.getAvailableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.getAvailableFields;
-                    modalScope.availableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.fields;
-                    modalScope.msg = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.taskMsg;
-                    modalScope.argument = scope.argument;
-
-                    ModalFactory.showAlert({
-                        size: 'size-wide',
-                        title: scope.msg('task.format.set.header'),
-                        message: $compile('<format-manipulation ng-model="argument" available-fields="availableFields" get-available-fields="getAvailableFields()" />')(modalScope),
-                        buttons: [{
-                            label: scope.msg('task.button.save'),
-                            cssClass: 'btn-primary',
-                            action: function (dialogRef) {
-                                scope.argument = modalScope.argument;
-                                dialogRef.close();
-                            }
-                        }]
-                    });
+                    BootstrapDialogManager.open(scope.importDialog);
                 });
             }
         };
@@ -809,6 +817,9 @@
             },
             link: function (scope, el, attrs, ngModel) {
                 scope.msg = scope.$parent.msg;
+                scope.formatInput = [];
+                scope.lookupField = {};
+                scope.lookupField.value = "";
 
                 ngModel.$parsers.push(function (value) {
                     var arr = [];
@@ -830,15 +841,16 @@
                 ngModel.$render = function () {
                     scope.formatInput = ngModel.$viewValue;
                 };
-                scope.$watch('formatInput', function(newValue){
-                    ngModel.$setViewValue(scope.formatInput);
-                }, true);
+                scope.$watch(function() { return scope.formatInput; },
+                    function(newValue) {
+                        ngModel.$setViewValue(scope.formatInput);
+                    });
 
                 scope.deleteFormatInput = function (index) {
                     scope.formatInput.splice(index, 1);
                 };
                 scope.addFormatInput = function () {
-                    scope.formatInput.push({});
+                    scope.formatInput.push(scope.lookupField);
                 };
             }
         };
