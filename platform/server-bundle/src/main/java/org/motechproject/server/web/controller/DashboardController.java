@@ -8,7 +8,6 @@ import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.web.dto.StatusData;
 import org.motechproject.server.web.form.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +36,9 @@ public class DashboardController {
     private LocaleService localeService;
     private EventConsumerInfo eventConsumerInfo;
 
-    @RequestMapping({"/index", "/", "/home"})
+    @RequestMapping({
+        "/index", "/", "/home"
+    })
     public ModelAndView index(final HttpServletRequest request) {
         ModelAndView mav;
 
