@@ -2313,7 +2313,7 @@
                         values: {
                             path: advancedPath,
                             advanced: true,
-                            value: [value]
+                            value: [!value]
                         }
                     });
                 });
