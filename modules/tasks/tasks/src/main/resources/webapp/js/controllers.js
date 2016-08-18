@@ -119,7 +119,7 @@
             ModalFactory.showConfirm({
                 title: $scope.msg('task.header.confirm'),
                 message: $scope.msg('task.confirm.remove'),
-                type: 'type-warning',
+                type: 'type-danger',
                 callback: function(result) {
                     if (result) {
                         LoadingModal.open();
