@@ -3266,9 +3266,7 @@
                         if ((value !== null && value.length === 0) || value === null) {
                             value = "";
                         }
-                        scope.safeApply(function () {
-                            scope.field.value = value;
-                        });
+                        scope.field.value = value;
                     }
                 });
             }
