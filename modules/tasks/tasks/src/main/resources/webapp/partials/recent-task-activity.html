@@ -16,7 +16,7 @@
                 </td>
                 <td>
                     <div class="task-element">
-                        <i class="fa fa-arrow-right fa-lg arrow-right"></i>
+                        <i class="fa icon-blue fa-arrow-right fa-lg arrow-right"></i>
                     </div>
                 </td>
                 <td>
@@ -31,10 +31,10 @@
                 <td>
                     <div title="{{msg('task.tooltip.clickToSeeDetails')}}">
                         <a ng-href="#/tasks/task/{{activity.task}}/log">
-                            <div ng-show="activity.type == 'SUCCESS'" class="recent-activity-icon success-icon fa fa-check-circle fa-2x" aria-hidden="true"></div>
-                            <div ng-show="activity.type == 'ERROR'" class="recent-activity-icon error-icon fa fa-exclamation-circle fa-2x" aria-hidden="true"></div>
-                            <div ng-show="activity.type == 'WARNING'" class="recent-activity-icon warning-icon fa fa-question-circle fa-2x" aria-hidden="true"></div>
-                            <div ng-show="activity.type == 'IN PROGRESS'" class="recent-activity-icon progress-icon fa fa-info-circle fa-2x" aria-hidden="true"></div>
+                            <div ng-show="activity.type == 'SUCCESS'" class="recent-activity-icon fa icon-green fa-check-circle fa-2x" aria-hidden="true"></div>
+                            <div ng-show="activity.type == 'ERROR'" class="recent-activity-icon fa icon-red fa-exclamation-circle fa-2x" aria-hidden="true"></div>
+                            <div ng-show="activity.type == 'WARNING'" class="recent-activity-icon fa warning-type fa-question-circle fa-2x" aria-hidden="true"></div>
+                            <div ng-show="activity.type == 'IN PROGRESS'" class="recent-activity-icon fa icon-blue fa-info-circle fa-2x" aria-hidden="true"></div>
                         </a>
                     </div>
                 </td>

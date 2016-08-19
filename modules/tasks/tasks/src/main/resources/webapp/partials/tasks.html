@@ -23,7 +23,7 @@
                                             <img ng-src="../server/module/icon?bundleName={{item.task.trigger.moduleName}}&defaultIcon=iconTaskChannel.png" class="task-list-img" />
                                         </div>
                                     </li>
-                                    <li class="task-element"><i class="fa fa-arrow-right fa-lg arrow-right"></i></li>
+                                    <li class="task-element"><i class="fa icon-blue fa-arrow-right fa-lg arrow-right"></i></li>
                                     <li class="task-element">
                                         <div actions-popover>
                                             <img ui-if="item.task.actions.length == 1" ng-src="../server/module/icon?bundleName={{item.task.actions[0].moduleName}}&defaultIcon=iconTaskChannel.png" class="task-list-img"/>
@@ -38,8 +38,8 @@
                                 </ul>
                             </a>
                             <ul class="task-nav pull-right">
-                                <li ng-show="item.task.description && item.task.enabled" class="task-element" rel="popover" bs-popover="{{item.task.description}}" data-trigger="hover" data-placement="left"><div class="task-list-img task-info-img fa fa-info fa-2x" aria-hidden="true"></div></li>
-                                <li ng-show="item.task.description && !item.task.enabled"  class="task-element" bs-popover="{{item.task.description}}" data-trigger="hover" data-placement="left"><div class="task-list-img task-info-paused-img fa fa-info fa-2x" aria-hidden="true"></div></li>
+                                <li ng-show="item.task.description && item.task.enabled" class="task-element" rel="popover" bs-popover="{{item.task.description}}" data-trigger="hover" data-placement="left"><div class="task-list-img fa icon-blue fa-info fa-2x" aria-hidden="true"></div></li>
+                                <li ng-show="item.task.description && !item.task.enabled"  class="task-element" bs-popover="{{item.task.description}}" data-trigger="hover" data-placement="left"><div class="task-list-img fa paused-task fa-info fa-2x" aria-hidden="true"></div></li>
                                 <li ng-show="item.task.description" class="divider-vertical"></li>
                                 <li ng-show="!item.task.enabled && item.task.hasRegisteredChannel" class="task-element task-paused">
                                     <div class="task-list-button-activity">
