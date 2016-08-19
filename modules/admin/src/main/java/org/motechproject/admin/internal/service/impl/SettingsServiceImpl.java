@@ -1,5 +1,6 @@
 package org.motechproject.admin.internal.service.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.admin.internal.service.SettingsService;
 import org.motechproject.admin.settings.AdminSettings;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -244,7 +246,7 @@ public class SettingsServiceImpl implements SettingsService {
         Enumeration<URL> enumeration = bundle.findEntries("", "*.properties", false);
         Map<String, Properties> allDefaultProperties = new LinkedHashMap<>();
 
-        if(enumeration != null) {
+        if (CollectionUtils.isNotEmpty(Collections.list(enumeration))) {
             while (enumeration.hasMoreElements()) {
                 InputStream is = null;
                 URL url = enumeration.nextElement();
