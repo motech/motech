@@ -2304,9 +2304,7 @@
                         advancedPath = advancedPath.substring(advancedPath.indexOf('.') + 1);
                     }
 
-                    value = _.isBoolean(ngModel.$modelValue)
-                        ? !ngModel.$modelValue
-                        : ngModel.$modelValue;
+                    value = ngModel.$modelValue;
 
                     viewScope.draft({
                         edit: true,
