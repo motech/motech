@@ -728,6 +728,12 @@
                     }
                 });
 
+                scope.changeArgument = function (newVal) {
+                    scope.$apply(function () {
+                        scope.argument = newVal;
+                    });
+                  };
+
                 scope.msg = scope.$parent.$parent.$parent.msg;
                 scope.type = attrs.type;
                 if(attrs.active){
@@ -736,7 +742,7 @@
                     if ((manipulationSettings.input && manipulationSettings.input !== '') || manipulationSettings.name === 'format') {
                         attributeFieldTemplate = '<input type="text" ng-model="argument" />';
                         if(manipulationSettings.name === 'format'){
-                            attributeFieldTemplate = '<format-manipulation-button ng-model="argument" />';
+                            attributeFieldTemplate = '<format-manipulation-button />';
                         }
                         if(!scope.argument){
                             scope.argument = "";
@@ -790,7 +796,7 @@
                         label: scope.msg('task.button.save'),
                         cssClass: 'btn-primary',
                         action: function (dialogItself) {
-                            scope.argument = modalScope.argument;
+                            scope.changeArgument(modalScope.argument);
                             BootstrapDialogManager.close(dialogItself);
                         }
                     }],
@@ -809,48 +815,38 @@
     directives.directive('formatManipulation', function () {
         return {
             restrict: 'EA',
-            require: 'ngModel',
             templateUrl: '../tasks/partials/widgets/string-manipulation-format.html',
-            scope: {
-                availableFields: '=',
-                getAvailableFields: '&'
-            },
-            link: function (scope, el, attrs, ngModel) {
-                scope.msg = scope.$parent.msg;
-                scope.formatInput = [];
-                scope.lookupField = {};
-                scope.lookupField.value = "";
-
-                ngModel.$parsers.push(function (value) {
+            link: function (scope, el, attrs) {
+                var _parse = function (value) {
                     var arr = [];
-                    value.forEach(function(obj){
-                        if(obj.value){
+                    value.forEach(function (obj) {
+                        if (obj.value){
                             arr.push(obj.value);
                         }
                     });
                     return arr.join(",");
-                });
-                ngModel.$formatters.push(function (value) {
+                },
+                _format = function (value) {
                     var parsed = [];
-                    value.split(",").forEach(function(str) {
+                    value.split(",").forEach(function (str) {
                         parsed.push({ value: str });
                     });
                     return parsed;
-                });
-
-                ngModel.$render = function () {
-                    scope.formatInput = ngModel.$viewValue;
                 };
-                scope.$watch(function() { return scope.formatInput; },
-                    function(newValue) {
-                        ngModel.$setViewValue(scope.formatInput);
+
+                scope.formatInput = _format(scope.argument);
+
+                scope.$watchCollection(function () { return scope.formatInput; },
+                    function (newValue) {
+                        scope.argument = _parse(scope.formatInput);
                     });
 
                 scope.deleteFormatInput = function (index) {
                     scope.formatInput.splice(index, 1);
                 };
                 scope.addFormatInput = function () {
-                    scope.formatInput.push(scope.lookupField);
+                    scope.formatInput.push({value: 'test'});
+                    scope.argument = _parse(scope.formatInput);
                 };
             }
         };
