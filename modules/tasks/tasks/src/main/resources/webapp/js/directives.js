@@ -97,15 +97,15 @@
                             message = $("#taskHistoryTable").getCell(rows[k],"message");
                             if (activity !== undefined) {
                                 if (activity === 'success') {
-                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-ok.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-icon fa icon-green fa-check-circle fa-2x"></div>','ok',{ },'');
                                 } else if (activity === 'warning') {
-                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-question.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-task-img fa warning-type fa-question-circle fa-2x"></div>','ok',{ },'');
                                 } else if (activity === 'in progress') {
-                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-info.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-task-img fa icon-blue fa-info-circle fa-2x"></div>','ok',{ },'');
                                 } else if (activity === 'error') {
                                     activityId = $("#taskHistoryTable").getCell(rows[k],"id");
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType',
-                                        '<img src="../tasks/img/icon-exclamation.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                        '<div class="recent-activity-task-img fa icon-red fa-exclamation-circle fa-2x"/>','ok',{ },'');
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'retry',
                                         '&nbsp;&nbsp;<span type="button" class="btn btn-primary btn-xs grid-ng-clickable" ng-click="retryTask(' + activityId + ')">Retry</span>',
                                         'ok',{ },'');
@@ -767,32 +767,40 @@
         };
     }]);
 
-    directives.directive('formatManipulationButton', ['$compile', 'ModalFactory', function ($compile, ModalFactory) {
+    directives.directive('formatManipulationButton', ['$compile', 'ModalFactory', 'BootstrapDialogManager', 'LoadingModal', function ($compile, ModalFactory, BootstrapDialogManager, LoadingModal) {
         return {
             restrict: 'EA',
             templateUrl: '../tasks/partials/widgets/string-manipulation-format-button.html',
             link: function (scope, element, attrs) {
+                var modalScope = scope.$new();
+                modalScope.getAvailableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.getAvailableFields;
+                modalScope.availableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.fields;
+                modalScope.msg = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.taskMsg;
+                modalScope.argument = scope.argument;
+                scope.importDialog = new BootstrapDialog({
+                    size: 'size-wide',
+                    title: scope.msg('task.format.set.header'),
+                    closable: true,
+                    closeByBackdrop: false,
+                    closeByKeyboard: false,
+                    draggable: false,
+                    autodestroy: false,
+                    message: $compile('<format-manipulation ng-model="argument" available-fields="availableFields" get-available-fields="getAvailableFields()" />')(modalScope),
+                    buttons: [{
+                        label: scope.msg('task.button.save'),
+                        cssClass: 'btn-primary',
+                        action: function (dialogItself) {
+                            scope.argument = modalScope.argument;
+                            BootstrapDialogManager.close(dialogItself);
+                        }
+                    }],
+                    onhide: function (dialog) {
+                        BootstrapDialogManager.onhide(dialog);
+                    }
+                });
                 element.on('click', function (event) {
                     event.preventDefault();
-                    var modalScope = scope.$new();
-                    modalScope.getAvailableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.getAvailableFields;
-                    modalScope.availableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.fields;
-                    modalScope.msg = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.taskMsg;
-                    modalScope.argument = scope.argument;
-
-                    ModalFactory.showAlert({
-                        size: 'size-wide',
-                        title: scope.msg('task.format.set.header'),
-                        message: $compile('<format-manipulation ng-model="argument" available-fields="availableFields" get-available-fields="getAvailableFields()" />')(modalScope),
-                        buttons: [{
-                            label: scope.msg('task.button.save'),
-                            cssClass: 'btn-primary',
-                            action: function (dialogRef) {
-                                scope.argument = modalScope.argument;
-                                dialogRef.close();
-                            }
-                        }]
-                    });
+                    BootstrapDialogManager.open(scope.importDialog);
                 });
             }
         };
@@ -809,6 +817,9 @@
             },
             link: function (scope, el, attrs, ngModel) {
                 scope.msg = scope.$parent.msg;
+                scope.formatInput = [];
+                scope.lookupField = {};
+                scope.lookupField.value = "";
 
                 ngModel.$parsers.push(function (value) {
                     var arr = [];
@@ -830,15 +841,16 @@
                 ngModel.$render = function () {
                     scope.formatInput = ngModel.$viewValue;
                 };
-                scope.$watch('formatInput', function(newValue){
-                    ngModel.$setViewValue(scope.formatInput);
-                }, true);
+                scope.$watch(function() { return scope.formatInput; },
+                    function(newValue) {
+                        ngModel.$setViewValue(scope.formatInput);
+                    });
 
                 scope.deleteFormatInput = function (index) {
                     scope.formatInput.splice(index, 1);
                 };
                 scope.addFormatInput = function () {
-                    scope.formatInput.push({});
+                    scope.formatInput.push(scope.lookupField);
                 };
             }
         };
@@ -1392,4 +1404,17 @@
             }
         };
     }]);
+
+    directives.directive('moduleNameImg', function() {
+        var imgSrc = {
+            link: function loadImage(scope, element, attrs) {
+                var url = attrs.moduleNameImg;
+                element.css({
+                    'background-image': 'url(' + url +')',
+                    'background-size' : 'cover'
+                });
+            }
+        };
+        return imgSrc;
+    });
 }());
