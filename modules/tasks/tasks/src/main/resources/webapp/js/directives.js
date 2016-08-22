@@ -97,15 +97,15 @@
                             message = $("#taskHistoryTable").getCell(rows[k],"message");
                             if (activity !== undefined) {
                                 if (activity === 'success') {
-                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-ok.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-icon fa icon-green fa-check-circle fa-2x"></div>','ok',{ },'');
                                 } else if (activity === 'warning') {
-                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-question.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-task-img fa warning-type fa-question-circle fa-2x"></div>','ok',{ },'');
                                 } else if (activity === 'in progress') {
-                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-info.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-task-img fa icon-blue fa-info-circle fa-2x"></div>','ok',{ },'');
                                 } else if (activity === 'error') {
                                     activityId = $("#taskHistoryTable").getCell(rows[k],"id");
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType',
-                                        '<img src="../tasks/img/icon-exclamation.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                        '<div class="recent-activity-task-img fa icon-red fa-exclamation-circle fa-2x"/>','ok',{ },'');
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'retry',
                                         '&nbsp;&nbsp;<span type="button" class="btn btn-primary btn-xs grid-ng-clickable" ng-click="retryTask(' + activityId + ')">Retry</span>',
                                         'ok',{ },'');
@@ -1404,4 +1404,17 @@
             }
         };
     }]);
+
+    directives.directive('moduleNameImg', function() {
+        var imgSrc = {
+            link: function loadImage(scope, element, attrs) {
+                var url = attrs.moduleNameImg;
+                element.css({
+                    'background-image': 'url(' + url +')',
+                    'background-size' : 'cover'
+                });
+            }
+        };
+        return imgSrc;
+    });
 }());

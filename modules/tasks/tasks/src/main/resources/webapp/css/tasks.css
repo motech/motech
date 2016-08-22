@@ -298,6 +298,14 @@ manipulation-sorter .manipulation .remove:before {
     margin: 0 2px;
 }
 
+.tasks .warning-type {
+    color: #ff972f;
+}
+
+.tasks .paused-task {
+    color: #545454;
+}
+
 .tasks .badge-close {
     float: none; !important;
     font-size: 12px; !important;
@@ -322,6 +330,34 @@ manipulation-sorter .manipulation .remove:before {
     padding: 0;
     border: none;
     box-shadow: none;
+}
+
+.task-element .arrow-right:before {
+    content: "\F061";
+    font:normal normal normal 14px/1 FontAwesome;
+}
+
+.tasks-element .arrow-right {
+    float: none; !important;
+    font-size: 12px; !important;
+    text-shadow: 0px 0px #FFF;
+    opacity: 1;
+    width: 12px;
+    overflow:hidden;
+}
+
+.tasks .task-info {
+    float: none; !important;
+    font-size: 12px; !important;
+    text-shadow: 0px 0px #FFF;
+    opacity: 1;
+    width: 12px;
+    overflow:hidden;
+}
+
+.tasks .task-info:before {
+    content: "\F129";
+    font:normal normal normal 14px/1 FontAwesome;
 }
 
 .tasks #task-list .panel-body.task-content {
@@ -418,6 +454,20 @@ manipulation-sorter .manipulation .remove:before {
     padding: 0 1px 2px 2px;
 }
 
+.tasks .tasks-list .task-element .task-list-settings-enabled {
+    background: url('../img/task-settings.png') no-repeat;
+    background-size: contain;
+    background-position: center;
+    min-height: 36px;
+}
+
+.tasks .tasks-list .task-element .task-list-settings-disabled {
+    background: url('../img/task-settings-paused.png') no-repeat;
+    background-size: contain;
+    background-position: center;
+    min-height: 36px;
+}
+
 .tasks .task-active .task-list-button-activity {
     background: #9ECEEF url("../img/bg-light-active.png") repeat-x;
     color: #FFFFFF;
@@ -438,6 +488,11 @@ manipulation-sorter .manipulation .remove:before {
 
 .tasks .task-list-div-activity {
     float: left;
+}
+
+.tasks .task-list-div-activity .fa-play-circle:before {
+    background-color: #1566B1;
+    backgroud-clip: text;
 }
 
 .tasks .tasks-list .task-element.task-paused .task-list-img-activity {
