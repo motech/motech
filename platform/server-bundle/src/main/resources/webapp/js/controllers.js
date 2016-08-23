@@ -599,7 +599,7 @@
     serverModule.controller('MotechHomeCtrl', function ($scope, $state, $ocLazyLoad, $cookieStore, $q, Menu, $rootScope, $http, ModalFactory, LoadingModal) {
         $scope.securityMode = false;
         $scope.moduleMenu = {};
-
+        $state.go('homepage');
         $scope.openInNewTab = function (url) {
             var win = window.open(url, '_blank');
             win.focus();
@@ -693,5 +693,62 @@
         });
 
         jgridDefaultSettings();
+    });
+
+    serverModule.controller('MotechHomepageCtrl', function ($scope, $http, LoadingModal) {
+
+        $scope.links =[];
+        $scope.link = {
+            name: "",
+            url: "",
+            modules: ""
+        };
+
+        $scope.getUser = function()  {
+            LoadingModal.open();
+            $http.get('../server/module/menu').
+            success(function(data) {
+                angular.forEach(data.sections, function(views, key1) {
+                    angular.forEach(views.links, function(links, key2) {
+                        $scope.link.name = links.name;
+                        $scope.link.url = links.url;
+                        $scope.link.modules = links.moduleName;
+                        $scope.links.push($scope.link);
+                        $scope.link = new Object();
+                    });
+                });
+                LoadingModal.close();
+            });
+
+        };
+
+        $scope.isModule = function(moduleName)  {
+            if (arrayObjectIndexOf($scope.links, moduleName, "modules") === -1) {
+                return false;
+            }
+            return true;
+        };
+
+        $scope.isLink = function(linkName)  {
+            if (arrayObjectIndexOf($scope.links, linkName, "name") === -1) {
+                return false;
+            }
+            return true;
+        };
+
+        $scope.openPage = function(linkName)  {
+            var index = arrayObjectIndexOf($scope.links, linkName, "name")
+            $scope.loadModule($scope.links[index]["modules"], $scope.links[index]["url"]);
+        };
+
+        function arrayObjectIndexOf(myArray, searchTerm, property) {
+            for(var i = 0, len = myArray.length; i < len; i++) {
+                if (myArray[i][property] === searchTerm) return i;
+            }
+            return -1;
+        }
+
+        $scope.getUser();
+        innerLayout({});
     });
 }());

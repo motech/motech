@@ -36,11 +36,11 @@
     }]);
 
     serverModule.config(function($stateProvider, $locationProvider, $urlRouterProvider, $ocLazyLoadProvider) {
-        $urlRouterProvider.otherwise("/");
+        $urlRouterProvider.otherwise("/home" );
 
         $stateProvider
             .state('#', {
-            url: "/", // root route
+                url: "/", // root route
                 views: {
                     "moduleToLoad": {
                         controller: 'MotechMasterCtrl',
@@ -54,6 +54,15 @@
                     "moduleToLoad": {
                         controller: 'MotechHomeCtrl',
                         templateUrl: '../server/resources/partials/main.html'
+                    }
+                }
+            })
+            .state('homepage', {
+                url: "/homepage",
+                views: {
+                    "homeview": {
+                        controller: 'MotechHomepageCtrl',
+                        templateUrl: '../server/resources/partials/homepage.html'
                     }
                 }
             });
