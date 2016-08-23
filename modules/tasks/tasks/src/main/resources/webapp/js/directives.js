@@ -722,7 +722,7 @@
             },
             link : function (scope, element, attrs, manipulationSorter) {
                 var attributeFieldTemplate, manipulationSettings = {};
-                ManageTaskUtils.MANIPULATION_SETTINGS.forEach(function(manipulation){
+                ManageTaskUtils.MANIPULATION_SETTINGS.forEach(function (manipulation) {
                     if(attrs.type === manipulation.name){
                         manipulationSettings = manipulation;
                     }
@@ -749,10 +749,10 @@
                         }
                         element.append($compile(attributeFieldTemplate)(scope));
                     }
-                    scope.$watch('argument', function(newValue) {
+                    scope.$watch('argument', function (newValue) {
                         element.data('argument', newValue);
                     });
-                    element.on("click", ".remove", function(){
+                    element.on("click", ".remove", function () {
                         manipulationSorter.removeManipulation(scope.type);
                     });
                 } else {
@@ -791,7 +791,7 @@
                     closeByKeyboard: false,
                     draggable: false,
                     autodestroy: false,
-                    message: $compile('<format-manipulation ng-model="argument" available-fields="availableFields" get-available-fields="getAvailableFields()" />')(modalScope),
+                    message: $compile('<format-manipulation />')(modalScope),
                     buttons: [{
                         label: scope.msg('task.button.save'),
                         cssClass: 'btn-primary',
@@ -836,13 +836,9 @@
 
                 scope.formatInput = _format(scope.argument);
 
-                scope.$watchCollection(function () { return scope.formatInput; },
-                    function (newValue) {
-                        scope.argument = _parse(scope.formatInput);
-                    });
-
                 scope.deleteFormatInput = function (index) {
                     scope.formatInput.splice(index, 1);
+                    scope.argument = _parse(scope.formatInput);
                 };
                 scope.addFormatInput = function () {
                     scope.formatInput.push({value: 'test'});
