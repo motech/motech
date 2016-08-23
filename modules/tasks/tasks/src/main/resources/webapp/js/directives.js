@@ -550,7 +550,7 @@
         };
     });
 
-    directives.directive('manipulationModal', function ($compile, ModalFactory, BootstrapDialogManager) {
+    directives.directive('manipulationModal', function ($compile, BootstrapDialogManager) {
         return {
             restrict: 'A',
             scope: {
@@ -576,6 +576,7 @@
                 if(!scope.manipulations){
                     return false;
                 }
+
                 element.on('click', function (event) {
                     var modalScope,
                         parseManipulationsFunction;
@@ -590,7 +591,7 @@
                             filter.key = filter.displayName + str;
                         };
                         window.getSelection().removeAllRanges(); // Make sure no text is selected...
-                        
+
                         modalScope = scope.$new(true, scope);
                         modalScope.msg = scope.$parent.msg;
                         modalScope.manipulationType = scope.manipulationType;
@@ -599,18 +600,22 @@
                         if(scope.manipulations && Array.isArray(scope.manipulations)) {
                             modalScope.manipulations = jQuery.extend(true, [], scope.manipulations);
                         }
-                        ModalFactory.showAlert({
+                        scope.importDialog = new BootstrapDialog({
+                            closable: false,
+                            closeByBackdrop: false,
+                            closeByKeyboard: false,
+                            autodestroy: false,
                             title: function () {
-                                 switch(scope.manipulationType){
-                                     case 'UNICODE':
-                                     case 'STRING':
-                                         return modalScope.msg('task.stringManipulation');
-                                     case 'DATE':
-                                     case 'DATE2DATE':
-                                         return modalScope.msg('task.dateManipulation');
-                                 }
-                                 return null;
-                              },
+                                switch(scope.manipulationType){
+                                    case 'UNICODE':
+                                    case 'STRING':
+                                        return modalScope.msg('task.stringManipulation');
+                                    case 'DATE':
+                                    case 'DATE2DATE':
+                                        return modalScope.msg('task.dateManipulation');
+                                }
+                                return null;
+                            },
                             message: $compile('<manipulation-sorter type="manipulationType" manipulations="manipulations" />')(modalScope),
                             buttons: [{
                                 label: scope.$parent.msg('task.button.save'),
@@ -621,20 +626,21 @@
                                     BootstrapDialogManager.close(dialogRef);
                                 }
                             }],
-                            onhide: function(){
-                                modalScope.$destroy();
+                            onhide: function(dialog){
+                                BootstrapDialogManager.onhide(dialog);
                                 if (isFilter) {
                                     parseManipulationsFunction();
                                 }
                             }
                         });
-                    }
-                });
+
+                        BootstrapDialogManager.open(scope.importDialog);
+                    }});
             }
         };
     });
 
-    directives.directive('manipulationSorter', function($compile, $http, ManageTaskUtils) {
+    directives.directive('manipulationSorter', function ($compile, $http, ManageTaskUtils) {
         return {
             restrict: 'EA',
             templateUrl: '../tasks/partials/manipulation-sorter.html',
@@ -647,7 +653,7 @@
                     placeholder: "ui-state-highlight",
                     update: function (event, ui) {
                         var sorted = $(event.target), manipulations = [];
-                        $('.manipulation', sorted).each(function(){
+                        $('.manipulation', sorted).each(function () {
                             manipulations.push({
                                 type: $(this).attr('type'),
                                 argument: $(this).data('argument')
@@ -684,10 +690,10 @@
                 this.removeManipulation = function (manipulationStr) {
                     var obj, manipulations = [], returnVal = false;
                     $scope.manipulations.forEach( function (obj) {
-                        if(obj.type !== manipulationStr){
+                        if (obj.type !== manipulationStr) {
                             manipulations.push(obj);
                         }
-                        if(obj.type === manipulationStr){
+                        if (obj.type === manipulationStr) {
                             returnVal = true;
                         }
                     });
@@ -697,7 +703,7 @@
                 };
                 this.isActive = function (manipulationStr) {
                     var index;
-                    for ( index in $scope.manipulations ) {
+                    for (index in $scope.manipulations) {
                         if($scope.manipulations.hasOwnProperty(index)){
                             if ($scope.manipulations[index].type === manipulationStr){
                                 return true;
@@ -723,7 +729,7 @@
             link : function (scope, element, attrs, manipulationSorter) {
                 var attributeFieldTemplate, manipulationSettings = {};
                 ManageTaskUtils.MANIPULATION_SETTINGS.forEach(function (manipulation) {
-                    if(attrs.type === manipulation.name){
+                    if (attrs.type === manipulation.name) {
                         manipulationSettings = manipulation;
                     }
                 });
@@ -732,7 +738,7 @@
                     scope.$apply(function () {
                         scope.argument = newVal;
                     });
-                  };
+                };
 
                 scope.msg = scope.$parent.$parent.$parent.msg;
                 scope.type = attrs.type;
@@ -741,10 +747,10 @@
                     attributeFieldTemplate = false;
                     if ((manipulationSettings.input && manipulationSettings.input !== '') || manipulationSettings.name === 'format') {
                         attributeFieldTemplate = '<input type="text" ng-model="argument" />';
-                        if(manipulationSettings.name === 'format'){
+                        if (manipulationSettings.name === 'format') {
                             attributeFieldTemplate = '<format-manipulation-button />';
                         }
-                        if(!scope.argument){
+                        if (!scope.argument) {
                             scope.argument = "";
                         }
                         element.append($compile(attributeFieldTemplate)(scope));
@@ -773,12 +779,23 @@
         };
     }]);
 
-    directives.directive('formatManipulationButton', ['$compile', 'ModalFactory', 'BootstrapDialogManager', 'LoadingModal', function ($compile, ModalFactory, BootstrapDialogManager, LoadingModal) {
+    directives.directive('formatManipulationButton', ['$compile', function ($compile) {
         return {
             restrict: 'EA',
             templateUrl: '../tasks/partials/widgets/string-manipulation-format-button.html',
             link: function (scope, element, attrs) {
-                var modalScope = scope.$new();
+                var modalScope = scope.$new(),
+                    _parse = function (value) {
+                        var arr = [];
+                        value.forEach(function (obj) {
+                            if (obj.value){
+                                arr.push(obj.value);
+                            }
+                        });
+                        return arr.join(",");
+                    };
+                scope.formatInput = [];
+
                 modalScope.getAvailableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.getAvailableFields;
                 modalScope.availableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.fields;
                 modalScope.msg = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.taskMsg;
@@ -789,24 +806,21 @@
                     closable: true,
                     closeByBackdrop: false,
                     closeByKeyboard: false,
-                    draggable: false,
                     autodestroy: false,
                     message: $compile('<format-manipulation />')(modalScope),
                     buttons: [{
                         label: scope.msg('task.button.save'),
                         cssClass: 'btn-primary',
                         action: function (dialogItself) {
+                            modalScope.argument = _parse(modalScope.formatInput);
                             scope.changeArgument(modalScope.argument);
-                            BootstrapDialogManager.close(dialogItself);
+                            dialogItself.close();
                         }
-                    }],
-                    onhide: function (dialog) {
-                        BootstrapDialogManager.onhide(dialog);
-                    }
+                    }]
                 });
                 element.on('click', function (event) {
                     event.preventDefault();
-                    BootstrapDialogManager.open(scope.importDialog);
+                    scope.importDialog.open();
                 });
             }
         };
@@ -817,16 +831,7 @@
             restrict: 'EA',
             templateUrl: '../tasks/partials/widgets/string-manipulation-format.html',
             link: function (scope, el, attrs) {
-                var _parse = function (value) {
-                    var arr = [];
-                    value.forEach(function (obj) {
-                        if (obj.value){
-                            arr.push(obj.value);
-                        }
-                    });
-                    return arr.join(",");
-                },
-                _format = function (value) {
+                var _format = function (value) {
                     var parsed = [];
                     value.split(",").forEach(function (str) {
                         parsed.push({ value: str });
@@ -838,11 +843,9 @@
 
                 scope.deleteFormatInput = function (index) {
                     scope.formatInput.splice(index, 1);
-                    scope.argument = _parse(scope.formatInput);
                 };
                 scope.addFormatInput = function () {
-                    scope.formatInput.push({value: 'test'});
-                    scope.argument = _parse(scope.formatInput);
+                    scope.formatInput.push({value: ''});
                 };
             }
         };
