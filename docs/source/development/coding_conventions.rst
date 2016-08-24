@@ -299,11 +299,7 @@ Common Conventions for API creation
 HTTP methods and endpoints
 --------------------------
 
-We use following common pattern for endpoints:
-
-``http://<motech-server-address>/module/{module-name}/<<path>>``
-
-|v| **Do** use following general pattern for <<path>>:
+|v| **Do** use the following, general pattern for endpoints:
 
 ``/{resource}``
 
@@ -314,10 +310,19 @@ Path can take params.
 |v| **Do** use HTTP methods verbs:
 
 - GET for read resource by id or collection.
-- GET for read - lookup resource by id or collection.
 - PUT to update resource by id.
 - DELETE to delete resource by id.
 - POST for create new resources and other operations.
+
+|v| **Do** use plurals in resource names.
+
+Correct:
+
+``GET /shoes/<id>``
+
+Incorrect:
+
+``GET /shoe/<id>``
 
 |x| **Avoid** use verbs in URL if there is equivalent in HTTP methods.
 
@@ -335,15 +340,6 @@ Incorrect:
 
 ``PUT /shoes/<id>/update``
 
-|v| **Do** use plurals in resource names.
-
-Correct:
-
-``GET /shoes/<id>``
-
-Incorrect:
-
-``GET /shoe/<id>``
 
 |x| **Avoid** use collection words in URL.
 
@@ -355,21 +351,12 @@ Incorrect:
 
 ``GET /shoe/list``
 
-|v| **Do** use lookups to define queries for resource. The right path pattern is:
-
-``/lookup/{resource}/{lookupName}``
-
-Correct:
-
-``GET /lookup/shoes/byStyle/clog``
-
 Response codes
 --------------
 
 |v| **Do** use response codes:
 
 - **200** *OK* - For successful operation.
-- **201** *Created* - The operation has successful and resulted in a new resource being created.
 - **400** *Bad Request* - The body or parameters provided in the request are invalid.
 - **401** *Unauthorized* - The caller is not authorized and thus not permitted to execute the operation.
 - **403** *Forbidden* - The user does not have necessary rights to execute the operation.
