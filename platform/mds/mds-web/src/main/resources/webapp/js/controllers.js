@@ -3563,13 +3563,12 @@
             });
         };
 
-        $scope.ngFormNameAttrSuffix = "form";
 
         $scope.addNewRelatedInstance = function (field) {
             $scope.relatedMode.isNested = true;
             var relatedClass  = $scope.getRelatedClass(field);
             $scope.editedField = angular.copy(field);
-            $('ng-form[name=' + field.name + $scope.ngFormNameAttrSuffix + '] #new-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
+            $('ng-form[name=' + field.name + '] #new-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
             $scope.editedInstanceId = undefined;
             $('body > #new-related_' + field.id).on('hide.bs.modal', function () {
                 $scope.relatedMode.isNested = false;
@@ -3656,7 +3655,7 @@
             $scope.relatedMode.isNested = true;
             instanceId = parseInt(instanceId, 10);
             $scope.editedInstanceId = instanceId;
-            $('ng-form[name=' + field.name + $scope.ngFormNameAttrSuffix + '] #edit-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
+            $('ng-form[name=' + field.name + '] #edit-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
             var addedNewRecords,
                 editExisting = true,
                 setExisting = function () {

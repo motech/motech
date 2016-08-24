@@ -3536,22 +3536,21 @@
                 var elm = angular.element(element),
                 fieldId = attrs.mdsFieldId,
                 fieldName = attrs.mdsFieldName,
-                typingTimer,
-                ngFormNameAttrSuffix = "form";
+                typingTimer;
 
                 elm.on('keyup', function () {
                     scope.$apply(function () {
                         elm.siblings('#visited-hint-' + fieldId).addClass('hidden');
-                        if (scope[fieldName + ngFormNameAttrSuffix] !== undefined) {
-                            scope[fieldName + ngFormNameAttrSuffix].$dirty = false;
+                        if (scope[fieldName] !== undefined) {
+                            scope[fieldName].$dirty = false;
                         }
                     });
                     clearTimeout(typingTimer);
                     typingTimer = setTimeout( function() {
                         elm.siblings('#visited-hint-' + fieldId).removeClass('hidden');
                         scope.$apply(function () {
-                            if (scope[fieldName + ngFormNameAttrSuffix] !== undefined) {
-                                scope[fieldName + ngFormNameAttrSuffix].$dirty = true;
+                            if (scope[fieldName] !== undefined) {
+                                scope[fieldName].$dirty = true;
                             }
                         });
                     }, 1500);
@@ -3560,8 +3559,8 @@
                 elm.on("blur", function() {
                     scope.$apply(function () {
                         elm.siblings('#visited-hint-' + fieldId).removeClass('hidden');
-                        if (scope[fieldName + ngFormNameAttrSuffix] !== undefined) {
-                            scope[fieldName + ngFormNameAttrSuffix].$dirty = true;
+                        if (scope[fieldName] !== undefined) {
+                            scope[fieldName].$dirty = true;
                         }
                     });
                 });
@@ -3606,7 +3605,7 @@
             priority: 10000,
             terminal: true,
             link: function(scope, element, attrs) {
-                attrs.$set('name', attrs.name + 'form');
+                attrs.$set('name', attrs.name);
                 attrs.$set('preventNameConflicts', null);
                 $compile(element)(scope);
             }
