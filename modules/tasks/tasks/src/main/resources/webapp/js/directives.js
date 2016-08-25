@@ -768,7 +768,7 @@
             templateUrl: '../tasks/partials/widgets/string-manipulation-format-button.html',
             link: function (scope, element, attrs) {
                 var modalScope = scope.$new(),
-                    _parse = function (value) {
+                    parseFormatInput = function (value) {
                         var arr = [];
                         value.forEach(function (obj) {
                             if (obj.value){
@@ -795,7 +795,7 @@
                         label: scope.msg('task.button.save'),
                         cssClass: 'btn-primary',
                         action: function (dialogItself) {
-                            modalScope.argument = _parse(modalScope.formatInput);
+                            modalScope.argument = parseFormatInput(modalScope.formatInput);
                             scope.changeArgument(modalScope.argument);
                             dialogItself.close();
                         }
@@ -814,7 +814,7 @@
             restrict: 'EA',
             templateUrl: '../tasks/partials/widgets/string-manipulation-format.html',
             link: function (scope, el, attrs) {
-                var _format = function (value) {
+                var formatContent = function (value) {
                     var parsed = [];
                     value.split(",").forEach(function (str) {
                         parsed.push({ value: str });
@@ -822,7 +822,7 @@
                     return parsed;
                 };
 
-                scope.formatInput = _format(scope.argument);
+                scope.formatInput = formatContent(scope.argument);
 
                 scope.deleteFormatInput = function (index) {
                     scope.formatInput.splice(index, 1);
