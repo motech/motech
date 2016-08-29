@@ -1,0 +1,374 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "REST API for Scheduler module",
+    "version" : "0.30-SNAPSHOT",
+    "title" : "Scheduler REST API",
+    "license" : {
+      "name" : "MOTECH Platform Opensource License Agreement",
+      "url" : "http://motechsuite.org/index.php/license"
+    }
+  },
+  "basePath" : "null/module/scheduler/",
+  "schemes" : [ "http" ],
+  "paths" : {
+    "/job" : {
+      "get" : {
+        "summary" : "Return a job based on the given information",
+        "description" : "",
+        "operationId" : "getJob",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/JobBasicInfo"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/job/delete" : {
+      "post" : {
+        "summary" : "Deletes the job based on the given",
+        "description" : "",
+        "operationId" : "deleteJob",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/JobBasicInfo"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/job/details" : {
+      "post" : {
+        "summary" : "Retrieves detailed job information",
+        "description" : "",
+        "operationId" : "retrieveJobDetailedInfo",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/JobBasicInfo"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/JobDetailedInfo"
+            }
+          }
+        }
+      }
+    },
+    "/job/pause" : {
+      "post" : {
+        "summary" : "Pauses the job based on the given",
+        "description" : "",
+        "operationId" : "pauseJob",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/JobBasicInfo"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/JobBasicInfo"
+            }
+          }
+        }
+      }
+    },
+    "/job/resume" : {
+      "post" : {
+        "summary" : "Resumes the job based on the given",
+        "description" : "",
+        "operationId" : "resumeJob",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/JobBasicInfo"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/JobBasicInfo"
+            }
+          }
+        }
+      }
+    },
+    "/jobs" : {
+      "get" : {
+        "summary" : "Retrieves job information",
+        "description" : "",
+        "operationId" : "retrieveJobInfo",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/JobsSearchSettings"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/JobsRecords"
+            }
+          }
+        }
+      }
+    },
+    "/jobs/edit" : {
+      "post" : {
+        "summary" : "Edit job with the same job key as the given job",
+        "description" : "",
+        "operationId" : "editJob",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/SchedulableJob"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/jobs/new" : {
+      "post" : {
+        "summary" : "Schedules the given job",
+        "description" : "",
+        "operationId" : "createJob",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/SchedulableJob"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "EventInfo" : {
+      "type" : "object",
+      "properties" : {
+        "subject" : {
+          "type" : "string"
+        },
+        "parameters" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
+        }
+      }
+    },
+    "JobBasicInfo" : {
+      "type" : "object",
+      "properties" : {
+        "activity" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "group" : {
+          "type" : "string"
+        },
+        "startDate" : {
+          "type" : "string"
+        },
+        "nextFireDate" : {
+          "type" : "string"
+        },
+        "endDate" : {
+          "type" : "string"
+        },
+        "jobType" : {
+          "type" : "string"
+        },
+        "info" : {
+          "type" : "string"
+        },
+        "uiDefined" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "JobDetailedInfo" : {
+      "type" : "object",
+      "properties" : {
+        "eventInfoList" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/EventInfo"
+          }
+        }
+      }
+    },
+    "JobsRecords" : {
+      "type" : "object",
+      "properties" : {
+        "page" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "total" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "records" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "rows" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/JobBasicInfo"
+          }
+        }
+      }
+    },
+    "JobsSearchSettings" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "rows" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "page" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sortColumn" : {
+          "type" : "string"
+        },
+        "sortDirection" : {
+          "type" : "string"
+        },
+        "activity" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string"
+        },
+        "timeFrom" : {
+          "type" : "string"
+        },
+        "timeTo" : {
+          "type" : "string"
+        }
+      }
+    },
+    "MotechEvent" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "invalid" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "discarded" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "broadcast" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "subject" : {
+          "type" : "string"
+        },
+        "messageDestination" : {
+          "type" : "string"
+        },
+        "callbackName" : {
+          "type" : "string"
+        },
+        "metadata" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
+        },
+        "parameters" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
+        },
+        "messageRedeliveryCount" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "SchedulableJob" : {
+      "type" : "object",
+      "properties" : {
+        "motechEvent" : {
+          "$ref" : "#/definitions/MotechEvent"
+        },
+        "startDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "uiDefined" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "ignorePastFiresAtStart" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,7 @@
 package org.motechproject.scheduler.web.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.motechproject.scheduler.constants.SchedulerConstants;
 import org.motechproject.scheduler.contract.JobBasicInfo;
 import org.motechproject.scheduler.contract.JobDetailedInfo;
@@ -36,6 +38,8 @@ import java.util.List;
  * */
 
 @Controller
+@Api(value="/", description="API for Scheduler module")
+@RequestMapping("")
 @PreAuthorize(SchedulerConstants.VIEW_SCHEDULER_JOBS)
 public class JobsController {
 
@@ -54,6 +58,7 @@ public class JobsController {
      * @return sorted and filtered job records
      */
     @RequestMapping(value = "/jobs", method = RequestMethod.GET)
+    @ApiOperation(value = "Retrieves job information")
     @ResponseBody
     public JobsRecords retrieveJobInfo(JobsSearchSettings jobsSearchSettings) throws SchedulerException, SQLException {
         List<JobBasicInfo> jobs = motechSchedulerDatabaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
@@ -80,6 +85,7 @@ public class JobsController {
      * @return retailed information about job, null if {@code jobid} was null
      */
     @RequestMapping(value = "/job/details", method = RequestMethod.POST)
+    @ApiOperation(value="Retrieves detailed job information")
     @ResponseBody
     public JobDetailedInfo retrieveJobDetailedInfo(@RequestBody JobBasicInfo jobInfo) throws SchedulerException {
         return motechSchedulerDatabaseService.getScheduledJobDetailedInfo(jobInfo);
@@ -92,6 +98,7 @@ public class JobsController {
      * @return the updated job
      */
     @RequestMapping(value = "/job/pause", method = RequestMethod.POST)
+    @ApiOperation(value="Pauses the job based on the given")
     @ResponseBody
     public JobBasicInfo pauseJob(@RequestBody JobBasicInfo jobInfo) throws SchedulerException {
         return motechSchedulerService.pauseJob(jobInfo);
@@ -104,6 +111,7 @@ public class JobsController {
      * @return the updated job
      */
     @RequestMapping(value = "/job/resume", method = RequestMethod.POST)
+    @ApiOperation(value = "Resumes the job based on the given")
     @ResponseBody
     public JobBasicInfo resumeJob(@RequestBody JobBasicInfo jobInfo) throws SchedulerException {
         return motechSchedulerService.resumeJob(jobInfo);
@@ -115,6 +123,7 @@ public class JobsController {
      * @param jobInfo  the information about a job
      */
     @RequestMapping(value = "/job/delete", method = RequestMethod.POST)
+    @ApiOperation(value = "Deletes the job based on the given")
     @ResponseBody
     public void deleteJob(@RequestBody JobBasicInfo jobInfo) throws SchedulerException {
         motechSchedulerService.deleteJob(jobInfo);
@@ -126,6 +135,7 @@ public class JobsController {
      * @param job  the job to be scheduled
      */
     @RequestMapping(value = "/jobs/new", method = RequestMethod.POST)
+    @ApiOperation(value = "Schedules the given job")
     @ResponseStatus(HttpStatus.OK)
     public void createJob(@RequestBody SchedulableJob job) {
         motechSchedulerService.scheduleJob(job);
@@ -137,6 +147,7 @@ public class JobsController {
      * @param job  the updated job
      */
     @RequestMapping(value = "/jobs/edit", method = RequestMethod.POST)
+    @ApiOperation(value = "Edit job with the same job key as the given job")
     @ResponseStatus(HttpStatus.OK)
     public void editJob(@RequestBody SchedulableJob job) {
         motechSchedulerService.updateJob(job);
@@ -149,6 +160,7 @@ public class JobsController {
      * @return the job matching the information
      */
     @RequestMapping(value = "/job", method = RequestMethod.GET)
+    @ApiOperation(value = "Return a job based on the given information")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public SchedulableJob getJob(JobBasicInfo jobInfo) {
