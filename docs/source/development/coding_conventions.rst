@@ -292,6 +292,76 @@ If this is a link it should refer to where the link goes.
 	<element id="mds.nav.schema-editor"/>
 	<element id="task.sidebar.tasks-toggle-active"/>
 
+
+Common Conventions for API creation
+###################################
+
+HTTP methods and endpoints
+--------------------------
+
+|v| **Do** use the following, general pattern for endpoints:
+
+``/{resource}``
+
+``/{resource}/{path-variable}``
+
+Path can take params.
+
+|v| **Do** use HTTP methods verbs:
+
+- GET for read resource by id or collection.
+- PUT to update resource by id.
+- DELETE to delete resource by id.
+- POST for create new resources and other operations.
+
+|v| **Do** use plurals in resource names.
+
+Correct:
+
+``GET /shoes/<id>``
+
+Incorrect:
+
+``GET /shoe/<id>``
+
+|x| **Avoid** use verbs in URL if there is equivalent in HTTP methods.
+
+Correct:
+
+``DELETE /shoes/<id>``
+
+``PUT /shoes/<id>``
+
+``POST /shoes/<id>/sell``
+
+Incorrect:
+
+``POST /shoes/<id>/delete``
+
+``PUT /shoes/<id>/update``
+
+
+|x| **Avoid** use collection words in URL.
+
+Correct:
+
+``GET /shoes``
+
+Incorrect:
+
+``GET /shoe/list``
+
+Response codes
+--------------
+
+|v| **Do** use response codes:
+
+- **200** *OK* - For successful operation.
+- **400** *Bad Request* - The body or parameters provided in the request are invalid.
+- **401** *Unauthorized* - The caller is not authorized and thus not permitted to execute the operation.
+- **403** *Forbidden* - The user does not have necessary rights to execute the operation.
+- **404** *Not Found* - Either the given entity or the requested object does not exist.
+
 Code Comments
 #############
 

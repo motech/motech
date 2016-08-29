@@ -281,8 +281,6 @@
         LoadingModal.open();
 
         $q.all([$scope.util.doQuery($q, Channels), $scope.util.doQuery($q, DataSources)]).then(function(data) {
-            LoadingModal.open();
-
             $scope.channels = data[0];
             $scope.dataSources = data[1];
 
@@ -294,6 +292,7 @@
                 };
                 $scope.task.retryTaskOnFailure = false;
             } else {
+                LoadingModal.open();
                 $scope.task = Tasks.get({ taskId: $stateParams.taskId }, function () {
                     Triggers.getTrigger($scope.task.trigger, function(trigger) {
                         var triggerChannel, dataSource, object;
@@ -945,6 +944,10 @@
             }
         };
 
+        $scope.$on('triggerSelected', function(event, args) {
+            $scope.selectedTrigger = args.selectedTrigger;
+        });
+
         $scope.getAvailableFields = function () {
             var dataSources, fields = [];
             if($scope.selectedTrigger) {
@@ -1282,7 +1285,7 @@
         };
     });
 
-    controllers.controller('TriggersModalCtrl', function ($scope, $timeout, LoadingModal, BootstrapDialogManager, Triggers, ModalFactory) {
+    controllers.controller('TriggersModalCtrl', function ($scope, $rootScope, $timeout, LoadingModal, BootstrapDialogManager, Triggers, ModalFactory) {
 
         $scope.reloadLists = function(staticTriggersPage, dynamicTriggersPage) {
             if ($scope.validatePages(staticTriggersPage, dynamicTriggersPage)) {
@@ -1329,12 +1332,14 @@
                     if (val) {
                         $scope.util.trigger.remove($scope);
                         $scope.util.trigger.select($scope, channel, trigger);
+                        $rootScope.$broadcast('triggerSelected', { selectedTrigger: trigger });
                         BootstrapDialogManager.close($scope.triggersDialog);
                     }
                 });
             } else {
                 $timeout(function () {
                     $scope.util.trigger.select($scope, channel, trigger);
+                    $rootScope.$broadcast('triggerSelected', { selectedTrigger: trigger });
                     BootstrapDialogManager.close($scope.triggersDialog);
                 });
             }
