@@ -1566,7 +1566,7 @@
         /* ~~~~~ FIELD FUNCTIONS ~~~~~ */
 
         $scope.isUniqueEditable = function(field) {
-            if (field.type) {
+            if (field && field.type) {
                 return !field.readOnly
                                    && field.type.typeClass !== 'java.util.Map'
                                    && field.type.typeClass !== "org.motechproject.mds.domain.OneToManyRelationship"
@@ -1742,7 +1742,7 @@
         */
         $scope.fieldUsedInReferencedLookup = function (field) {
             var i;
-            if (field.lookups) {
+            if (field && field.lookups) {
                 for (i = 0; i < field.lookups.length; i += 1) {
                     if (field.lookups[i].referenced) {
                         return true;
