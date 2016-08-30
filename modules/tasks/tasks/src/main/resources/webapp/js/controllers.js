@@ -6,7 +6,7 @@
 
     var controllers = angular.module('tasks.controllers', []);
 
-    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope, $http, ManageTaskUtils,  ModalFactory, LoadingModal) {
+    controllers.controller('TasksDashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope, $http, ManageTaskUtils, ModalFactory, LoadingModal) {
         var tasks, activities = [],
             searchMatch = function (item, method, searchQuery) {
                 var result;
@@ -119,7 +119,7 @@
             ModalFactory.showConfirm({
                 title: $scope.msg('task.header.confirm'),
                 message: $scope.msg('task.confirm.remove'),
-                type: 'type-warning',
+                type: 'type-danger',
                 callback: function(result) {
                     if (result) {
                         LoadingModal.open();
@@ -178,28 +178,6 @@
             $scope.currentFilter = method;
             $rootScope.search();
             $('#inner-center').trigger("change");
-        };
-
-        $scope.importTask = function () {
-            LoadingModal.open();
-
-            $('#importTaskForm').ajaxSubmit({
-                success: function () {
-                    $scope.getTasks();
-                    $('#importTaskForm').resetForm();
-                    $('#importTaskModal').modal('hide');
-                    LoadingModal.close();
-                },
-                error: function (response) {
-                    LoadingModal.close();
-                    ModalFactory.showErrorAlertWithResponse('task.error.import', 'task.header.error', response);
-                }
-            });
-        };
-
-        $scope.closeImportTaskModal = function () {
-            $('#importTaskForm').resetForm();
-            $('#importTaskModal').modal('hide');
         };
 
         $scope.resetItemsPagination();
@@ -280,7 +258,7 @@
     });
 
     controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers,
-                                     $q, $timeout, $stateParams, $http, $compile, $filter, ModalFactory, LoadingModal) {
+                                     $q, $timeout, $stateParams, $http, $filter, ModalFactory, LoadingModal) {
 
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
@@ -291,79 +269,6 @@
             }
         };
         $scope.task.retryTaskOnFailure = false;
-
-        $scope.openTriggersModal = function(channel) {
-            LoadingModal.open();
-            $scope.staticTriggersPager = 1;
-            $scope.dynamicTriggersPager = 1;
-            $scope.selectedChannel = channel;
-            Triggers.get(
-                {
-                    moduleName: channel.moduleName,
-                    staticTriggersPage: $scope.staticTriggersPager,
-                    dynamicTriggersPage: $scope.dynamicTriggersPager
-                },
-                function(data) {
-                    $scope.dynamicTriggers = data.dynamicTriggersList;
-                    $scope.staticTriggers = data.staticTriggersList;
-                    $scope.staticTriggersPage = $scope.staticTriggers.page;
-                    $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
-                    $("#staticTriggersPager").val($scope.staticTriggersPage);
-                    $("#dynamicTriggersPager").val($scope.dynamicTriggersPage);
-                    $scope.hasDynamicTriggers = $scope.dynamicTriggers.triggers.length > 0;
-                    $scope.hasStaticTriggers = $scope.staticTriggers.triggers.length > 0;
-                    if ($scope.hasStaticTriggers && $scope.hasDynamicTriggers) {
-                        $scope.divSize = "col-md-6";
-                    } else {
-                        $scope.divSize = "col-md-12";
-                    }
-                    $('#triggersModal').modal('show');
-                    LoadingModal.close();
-                }
-            );
-        };
-
-        $scope.validatePages = function(staticTriggersPage, dynamicTriggersPage){
-            var valid = true;
-
-            if ($scope.hasStaticTriggers) {
-                if (staticTriggersPage === null ||
-                    staticTriggersPage === undefined) {
-                    valid = false;
-                }
-            }
-
-            if ($scope.hasDynamicTriggers) {
-                if (dynamicTriggersPage === null ||
-                    dynamicTriggersPage === undefined) {
-                    valid = false;
-                }
-            }
-
-            return valid;
-        };
-
-        $scope.reloadLists = function(staticTriggersPage, dynamicTriggersPage) {
-            if ($scope.validatePages(staticTriggersPage, dynamicTriggersPage)) {
-                LoadingModal.open();
-                Triggers.get(
-                    {
-                        moduleName: $scope.selectedChannel.moduleName,
-                        staticTriggersPage: staticTriggersPage,
-                        dynamicTriggersPage: dynamicTriggersPage
-                    },
-                    function(data) {
-                        $scope.dynamicTriggers = data.dynamicTriggersList;
-                        $scope.staticTriggers = data.staticTriggersList;
-                        $scope.staticTriggersPage = $scope.staticTriggers.page;
-                        $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
-                        $("#staticTriggersPager").val($scope.staticTriggersPage);
-                        $("#dynamicTriggersPager").val($scope.dynamicTriggersPage);
-                        LoadingModal.close();
-                    }
-                );
-            }
-        };
 
         innerLayout({
             spacing_closed: 30,
@@ -376,8 +281,6 @@
         LoadingModal.open();
 
         $q.all([$scope.util.doQuery($q, Channels), $scope.util.doQuery($q, DataSources)]).then(function(data) {
-            LoadingModal.open();
-
             $scope.channels = data[0];
             $scope.dataSources = data[1];
 
@@ -389,6 +292,7 @@
                 };
                 $scope.task.retryTaskOnFailure = false;
             } else {
+                LoadingModal.open();
                 $scope.task = Tasks.get({ taskId: $stateParams.taskId }, function () {
                     Triggers.getTrigger($scope.task.trigger, function(trigger) {
                         var triggerChannel, dataSource, object;
@@ -409,7 +313,9 @@
                         });
 
                         if (trigger) {
-                            $scope.util.trigger.select($scope, triggerChannel, trigger);
+                            $timeout(function() {
+                                $scope.util.trigger.select($scope, triggerChannel, trigger);
+                            });
                         }
 
                         angular.forEach($scope.task.taskConfig.steps, function (step) {
@@ -503,21 +409,6 @@
 
         $scope.isNumericalNonNegativeValue = function (value) {
             return !isNaN(value) && value >= 0;
-        };
-
-        $scope.selectTrigger = function (channel, trigger) {
-            if ($scope.task.trigger) {
-                ModalFactory.showConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
-                    if (val) {
-                        $scope.util.trigger.remove($scope);
-                        $scope.util.trigger.select($scope, channel, trigger);
-                        $('#triggersModal').modal('hide');
-                    }
-                });
-            } else {
-                $scope.util.trigger.select($scope, channel, trigger);
-                $('#triggersModal').modal('hide');
-            }
         };
 
         $scope.removeTrigger = function ($event) {
@@ -1053,6 +944,10 @@
             }
         };
 
+        $scope.$on('triggerSelected', function(event, args) {
+            $scope.selectedTrigger = args.selectedTrigger;
+        });
+
         $scope.getAvailableFields = function () {
             var dataSources, fields = [];
             if($scope.selectedTrigger) {
@@ -1204,7 +1099,10 @@
                     action: function (dialogItself) {
                         BootstrapDialogManager.close(dialogItself);
                     }
-                }]
+                }],
+                onhide: function (dialog) {
+                    BootstrapDialogManager.onhide(dialog);
+                }
             });
             BootstrapDialogManager.open(dialog);
         };
@@ -1384,6 +1282,103 @@
             } else {
                 $scope.data.value = $scope.data.value.concat(pair.key + ":" + pair.value);
             }
+        };
+    });
+
+    controllers.controller('TriggersModalCtrl', function ($scope, $rootScope, $timeout, LoadingModal, BootstrapDialogManager, Triggers, ModalFactory) {
+
+        $scope.reloadLists = function(staticTriggersPage, dynamicTriggersPage) {
+            if ($scope.validatePages(staticTriggersPage, dynamicTriggersPage)) {
+                LoadingModal.open();
+                Triggers.get(
+                {
+                    moduleName: $scope.selectedChannel.moduleName,
+                    staticTriggersPage: staticTriggersPage,
+                    dynamicTriggersPage: dynamicTriggersPage
+                },
+                function(data) {
+                    $scope.dynamicTriggers = data.dynamicTriggersList;
+                    $scope.staticTriggers = data.staticTriggersList;
+                    $scope.staticTriggersPage = $scope.staticTriggers.page;
+                    $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
+                    LoadingModal.close();
+                });
+            }
+        };
+
+        $scope.validatePages = function(staticTriggersPage, dynamicTriggersPage){
+            var valid = true;
+
+            if ($scope.hasStaticTriggers) {
+                if (staticTriggersPage === null ||
+                    staticTriggersPage === undefined) {
+                    valid = false;
+                }
+            }
+
+            if ($scope.hasDynamicTriggers) {
+                if (dynamicTriggersPage === null ||
+                    dynamicTriggersPage === undefined) {
+                    valid = false;
+                }
+            }
+
+            return valid;
+        };
+
+        $scope.selectTrigger = function (channel, trigger) {
+            if ($scope.task.trigger) {
+                ModalFactory.showConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
+                    if (val) {
+                        $scope.util.trigger.remove($scope);
+                        $scope.util.trigger.select($scope, channel, trigger);
+                        $rootScope.$broadcast('triggerSelected', { selectedTrigger: trigger });
+                        BootstrapDialogManager.close($scope.triggersDialog);
+                    }
+                });
+            } else {
+                $timeout(function () {
+                    $scope.util.trigger.select($scope, channel, trigger);
+                    $rootScope.$broadcast('triggerSelected', { selectedTrigger: trigger });
+                    BootstrapDialogManager.close($scope.triggersDialog);
+                });
+            }
+        };
+
+        $scope.openTriggersModal = function() {
+
+             LoadingModal.open();
+             $scope.staticTriggersPager = 1;
+             $scope.dynamicTriggersPager = 1;
+             $scope.selectedChannel = $scope.channel;
+             Triggers.get(
+             {
+                 moduleName: $scope.channel.moduleName,
+                 staticTriggersPage: $scope.staticTriggersPager,
+                 dynamicTriggersPage: $scope.dynamicTriggersPager
+             },
+             function(data) {
+                 $scope.dynamicTriggers = data.dynamicTriggersList;
+                 $scope.staticTriggers = data.staticTriggersList;
+                 $scope.staticTriggersPage = $scope.staticTriggers.page;
+                 $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
+                 $scope.hasDynamicTriggers = $scope.dynamicTriggers.triggers.length > 0;
+                 $scope.hasStaticTriggers = $scope.staticTriggers.triggers.length > 0;
+                 if ($scope.hasStaticTriggers && $scope.hasDynamicTriggers) {
+                     $scope.divSize = "col-md-6";
+                 } else {
+                     $scope.divSize = "col-md-12";
+                 }
+                 BootstrapDialogManager.open($scope.triggersDialog);
+                 LoadingModal.close();
+             });
+        };
+    });
+
+    controllers.controller('ImportModalCtrl', function ($scope, BootstrapDialogManager) {
+
+        $scope.openImportTaskModal = function () {
+            BootstrapDialogManager.open($scope.importDialog);
         };
     });
 }());
