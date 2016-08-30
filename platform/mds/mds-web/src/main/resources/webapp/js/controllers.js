@@ -1566,7 +1566,7 @@
         /* ~~~~~ FIELD FUNCTIONS ~~~~~ */
 
         $scope.isUniqueEditable = function(field) {
-            if (field.type) {
+            if (field && field.type) {
                 return !field.readOnly
                                    && field.type.typeClass !== 'java.util.Map'
                                    && field.type.typeClass !== "org.motechproject.mds.domain.OneToManyRelationship"
@@ -1742,7 +1742,7 @@
         */
         $scope.fieldUsedInReferencedLookup = function (field) {
             var i;
-            if (field.lookups) {
+            if (field && field.lookups) {
                 for (i = 0; i < field.lookups.length; i += 1) {
                     if (field.lookups[i].referenced) {
                         return true;
@@ -3563,13 +3563,12 @@
             });
         };
 
-        $scope.ngFormNameAttrSuffix = "form";
 
         $scope.addNewRelatedInstance = function (field) {
             $scope.relatedMode.isNested = true;
             var relatedClass  = $scope.getRelatedClass(field);
             $scope.editedField = angular.copy(field);
-            $('ng-form[name=' + field.name + $scope.ngFormNameAttrSuffix + '] #new-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
+            $('ng-form[name=' + field.name + '] #new-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
             $scope.editedInstanceId = undefined;
             $('body > #new-related_' + field.id).on('hide.bs.modal', function () {
                 $scope.relatedMode.isNested = false;
@@ -3656,7 +3655,7 @@
             $scope.relatedMode.isNested = true;
             instanceId = parseInt(instanceId, 10);
             $scope.editedInstanceId = instanceId;
-            $('ng-form[name=' + field.name + $scope.ngFormNameAttrSuffix + '] #edit-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
+            $('ng-form[name=' + field.name + '] #edit-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
             var addedNewRecords,
                 editExisting = true,
                 setExisting = function () {
