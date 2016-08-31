@@ -17,14 +17,6 @@
         "summary" : "Return a job based on the given information",
         "description" : "",
         "operationId" : "getJob",
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "body",
-          "required" : false,
-          "schema" : {
-            "$ref" : "#/definitions/JobBasicInfo"
-          }
-        } ],
         "responses" : {
           "200" : {
             "description" : ""
@@ -126,14 +118,6 @@
         "summary" : "Retrieves job information",
         "description" : "",
         "operationId" : "retrieveJobInfo",
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "body",
-          "required" : false,
-          "schema" : {
-            "$ref" : "#/definitions/JobsSearchSettings"
-          }
-        } ],
         "responses" : {
           "200" : {
             "description" : "successful operation",
@@ -267,40 +251,6 @@
           "items" : {
             "$ref" : "#/definitions/JobBasicInfo"
           }
-        }
-      }
-    },
-    "JobsSearchSettings" : {
-      "type" : "object",
-      "properties" : {
-        "name" : {
-          "type" : "string"
-        },
-        "rows" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "page" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sortColumn" : {
-          "type" : "string"
-        },
-        "sortDirection" : {
-          "type" : "string"
-        },
-        "activity" : {
-          "type" : "string"
-        },
-        "status" : {
-          "type" : "string"
-        },
-        "timeFrom" : {
-          "type" : "string"
-        },
-        "timeTo" : {
-          "type" : "string"
         }
       }
     },
