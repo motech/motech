@@ -697,24 +697,24 @@
 
     serverModule.controller('MotechHomepageCtrl', function ($scope, $http, LoadingModal) {
 
-        $scope.links =[];
-        $scope.link = {
-            name: "",
-            url: "",
-            modules: ""
-        };
+        $scope.links = [];
 
-        $scope.getUser = function()  {
+        $scope.getUser = function() {
+            var link = {};
             LoadingModal.open();
-            $http.get('../server/module/menu').
-            success(function(data) {
-                angular.forEach(data.sections, function(views, key1) {
-                    angular.forEach(views.links, function(links, key2) {
-                        $scope.link.name = links.name;
-                        $scope.link.url = links.url;
-                        $scope.link.modules = links.moduleName;
-                        $scope.links.push($scope.link);
-                        $scope.link = new Object();
+            $http.get('../server/module/menu')
+            .success(function(data) {
+                angular.forEach(data.sections, function(views) {
+                    angular.forEach(views.links, function(viewsLink) {
+                        link.name = viewsLink.name;
+                        link.url = viewsLink.url;
+                        link.modules = viewsLink.moduleName;
+                        $scope.links.push(link);
+                        link = {
+                            name: "",
+                            url: "",
+                            modules: ""
+                        };
                     });
                 });
                 LoadingModal.close();
@@ -722,33 +722,43 @@
 
         };
 
-        $scope.isModule = function(moduleName)  {
-            if (arrayObjectIndexOf($scope.links, moduleName, "modules") === -1) {
-                return false;
-            }
-            return true;
-        };
+        $scope.getIndexLink = function (links, searchName, propertyName) {
+            var i, link, linksLength = links.length;
 
-        $scope.isLink = function(linkName)  {
-            if (arrayObjectIndexOf($scope.links, linkName, "name") === -1) {
-                return false;
-            }
-            return true;
-        };
-
-        $scope.openPage = function(linkName)  {
-            var index = arrayObjectIndexOf($scope.links, linkName, "name")
-            $scope.loadModule($scope.links[index]["modules"], $scope.links[index]["url"]);
-        };
-
-        function arrayObjectIndexOf(myArray, searchTerm, property) {
-            for(var i = 0, len = myArray.length; i < len; i++) {
-                if (myArray[i][property] === searchTerm) return i;
+            for(i = 0; i < linksLength; i+=1) {
+                link = links[i];
+                if (link.hasOwnProperty(propertyName) && link[propertyName] === searchName) {
+                    return i;
+                }
             }
             return -1;
-        }
+        };
+
+        $scope.isModule = function (moduleName) {
+            if ($scope.getIndexLink($scope.links, moduleName, "modules") === -1) {
+                return false;
+            }
+            return true;
+        };
+
+        $scope.isLink = function (linkName) {
+            if ($scope.getIndexLink($scope.links, linkName, "name") === -1) {
+                return false;
+            }
+            return true;
+        };
+
+        $scope.goToPage = function (linkName, tabPath) {
+            var linkIndex = $scope.getIndexLink($scope.links, linkName, "name");
+            if (tabPath && linkIndex >= 0) {
+                $scope.loadModule($scope.links[linkIndex].modules, tabPath);
+            } else {
+                $scope.loadModule($scope.links[linkIndex].modules, $scope.links[linkIndex].url);
+            }
+        };
 
         $scope.getUser();
         innerLayout({});
+
     });
 }());
