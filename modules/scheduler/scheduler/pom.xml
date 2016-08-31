@@ -153,13 +153,17 @@
             <plugin>
                 <groupId>com.github.kongchen</groupId>
                 <artifactId>swagger-maven-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.4</version>
                 <configuration>
                     <apiSources>
                         <apiSource>
                             <springmvc>true</springmvc>
-                            <locations>org.motechproject.scheduler.web.controller</locations>
-                            <schemes>http</schemes>
+                            <locations>
+                                <location>org.motechproject.scheduler.web.controller</location>
+                            </locations>
+                            <schemes>
+                                <scheme>http</scheme>
+                            </schemes>
                             <basePath>null/module/scheduler/</basePath>
                             <info>
                                 <title>Scheduler REST API</title>
@@ -171,6 +175,7 @@
                                 </license>
                             </info>
                             <swaggerDirectory>${swagger.dir}</swaggerDirectory>
+                            <swaggerFileName>${project.artifactId}</swaggerFileName>
                         </apiSource>
                     </apiSources>
                 </configuration>
