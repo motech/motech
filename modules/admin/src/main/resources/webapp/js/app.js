@@ -108,7 +108,7 @@
                }
             })
             .state('admin.browse', {
-               url: '/browse',
+               url: '/browse?queueName',
                parent: 'admin',
                views: {
                    'adminView': {
