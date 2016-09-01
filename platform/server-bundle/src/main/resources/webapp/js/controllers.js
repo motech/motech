@@ -719,7 +719,6 @@
                 });
                 LoadingModal.close();
             });
-
         };
 
         $scope.getIndexLink = function (links, searchName, propertyName) {

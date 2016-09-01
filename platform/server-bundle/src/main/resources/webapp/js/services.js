@@ -24,7 +24,7 @@
             }
         };
 
-        this.close = function (dialog) { console.log('Manager.close(dialog) ', dialog.options.id);
+        this.close = function (dialog) {
             dialog.close();
             that.remove(dialog);
             if (modalsList.length > 0) {
@@ -32,7 +32,7 @@
             }
         };
 
-        this.remove = function (dialog) { console.log('Manager.remove(dialog) ', dialog.options.id, ' lmodalsList.length=',modalsList.length);
+        this.remove = function (dialog) {
             var i, modalsListLength = modalsList.length;
 
             for (i = 0; i < modalsListLength; i += 1) {
@@ -41,11 +41,10 @@
                     break;
                 }
             }
-            console.log('Manager.remove(dialog) ',' lmodalsList.length=',modalsList.length);
         };
 
         this.show = function () {
-            if (modalsList.length > 0 && !LoadingModal.isOpen()) { console.log('Manager.show() ', modalsList[modalsList.length-1].options.id);
+            if (modalsList.length > 0 && !LoadingModal.isOpen()) {
                 modalsList[modalsList.length-1].open();
             } else if (modalsList.length > 0) {
                 $timeout(function() {
