@@ -47,6 +47,8 @@ import static org.motechproject.mds.util.Constants.Util.TRUE;
 @Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
 @Unique(name = "DRAFT_USER_IDX", members = {"parentEntity", "draftOwnerUsername"})
 public class Entity {
+    public final static String CLASS_NAME_FIELD = "className";
+    public final static String EXTENDED_CLASS_FILED = "extendedClass";
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
@@ -87,6 +89,9 @@ public class Entity {
 
     @Persistent
     private Integer maxFetchDepth;
+
+    @Persistent
+    private String extendedClass;
 
     @Persistent(mappedBy = ENTITY)
     @Element(dependent = TRUE)
@@ -149,7 +154,7 @@ public class Entity {
         EntityDto dto = new EntityDto(id, className, getName(), module, namespace, tableName,
                 getTracking() != null && getTracking().isRecordHistory(), securityMode, securityMembers,
                 readOnlySecurityMode, readOnlySecurityMembers, superClass, abstractClass, securityOptionsModified,
-                bundleSymbolicName);
+                bundleSymbolicName, extendedClass);
 
         dto.setMaxFetchDepth(maxFetchDepth);
         dto.setNonEditable(getTracking() != null && getTracking().isNonEditable());
@@ -176,6 +181,9 @@ public class Entity {
     }
 
     public String getName() {
+        if(extendedClass != null && !extendedClass.equals("")) {
+            return defaultIfBlank(name, ClassName.getSimpleName(extendedClass));
+        }
         return defaultIfBlank(name, ClassName.getSimpleName(className));
     }
 
@@ -797,5 +805,13 @@ public class Entity {
             }
         }
         return restExposedLookups;
+    }
+
+    public String getExtendedClass() {
+        return extendedClass;
+    }
+
+    public void setExtendedClass(String extendedClass) {
+        this.extendedClass = extendedClass;
     }
 }

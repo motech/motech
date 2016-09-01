@@ -8,10 +8,10 @@ import org.motechproject.mds.annotations.internal.EntityProcessorOutput;
 import org.motechproject.mds.annotations.internal.MDSAnnotationProcessor;
 import org.motechproject.mds.annotations.internal.MDSProcessorOutput;
 import org.motechproject.mds.annotations.internal.SchemaComparator;
-import org.motechproject.mds.dto.EntityDto;
-import org.motechproject.mds.dto.LookupDto;
-import org.motechproject.mds.dto.SchemaHolder;
+import org.motechproject.mds.dto.*;
 import org.motechproject.mds.exception.MdsException;
+import org.motechproject.mds.exception.entity.EntityDoesNotExtendMDSEntityException;
+import org.motechproject.mds.exception.entity.FieldExistInExtendedEntityException;
 import org.motechproject.mds.helper.bundle.MdsBundleHelper;
 import org.motechproject.mds.loader.EditableLookupsLoader;
 import org.motechproject.mds.repository.internal.SchemaChangeLockManager;
@@ -34,14 +34,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.apache.commons.lang.StringUtils.startsWith;
@@ -155,8 +148,32 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
                 bundlesToRefresh.add(bundle);
             }
         }
+        for(Bundle bundle : bundlesToRefresh) {
+            processForExtensions(outputs, bundle, schemaHolder);
+        }
 
         return outputs;
+    }
+
+    private void processForExtensions(List<MDSProcessorOutput> outputs, Bundle bundle, SchemaHolder schemaHolder) {
+        if (skipBundle(bundle)) {
+            return;
+        }
+
+        synchronized (lock) {
+            // Before we process annotations, we wait until bundle resolves its dependencies
+            int count = 0;
+            while (!isBundleResolved(bundle) && count < MAX_WAIT_TO_RESOLVE) {
+                ThreadSuspender.sleep(WAIT_TIME);
+                count++;
+            }
+
+            // Assert the bundle is resolved before processing annotations, to log any problems before annotation processing fails.
+            assertBundleClassLoading(bundle);
+
+            LOGGER.debug("Processing bundle {} for extensions", bundle.getSymbolicName());
+            processor.processAnnotationsExtensions(outputs, bundle, schemaHolder);
+        }
     }
 
     private void handleBundleEvent(final Bundle bundle, final int eventType) {
@@ -308,6 +325,11 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
             if (entity == null) {
                 entity = entityService.createEntity(processedEntity);
                 newEntities.add(entity.getClassName());
+            } else if(entity.getExtensionClass() != null) {
+                entity.setClassName(processedEntity.getClassName());
+                if (!entity.getExtensionClass().equals(processedEntity.getExtensionClass())) {
+                    entityService.updateExtensionClass(entity.getId(), processedEntity.getExtensionClass());
+                }
             }
             entityIdMappings.put(entity.getClassName(), entity.getId());
 

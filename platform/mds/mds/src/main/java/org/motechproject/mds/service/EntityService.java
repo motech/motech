@@ -493,4 +493,6 @@ public interface EntityService {
      * @return the current MDS schema
      */
     SchemaHolder getSchema();
+
+    void updateExtensionClass(Long entityId, String extensionClass);
 }

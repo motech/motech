@@ -28,6 +28,7 @@ public class MDSAnnotationProcessor {
     private LookupProcessor lookupProcessor;
     private InstanceLifecycleListenerProcessor instanceLifecycleListenerProcessor;
     private InstanceLifecycleListenersProcessor instanceLifecycleListenersProcessor;
+    private EntityExtensionProcessor entityExtensionProcessor;
 
     public MDSProcessorOutput processAnnotations(Bundle bundle, SchemaHolder schemaHolder) {
         String symbolicName = bundle.getSymbolicName();
@@ -56,6 +57,32 @@ public class MDSAnnotationProcessor {
         return output;
     }
 
+    public void processAnnotationsExtensions(List<MDSProcessorOutput> outputs, Bundle bundle, SchemaHolder schemaHolder) {
+        String symbolicName = bundle.getSymbolicName();
+        MDSProcessorOutput extendedOutput = null;
+
+        for(MDSProcessorOutput output :outputs) {
+            if(output.getBundle().getSymbolicName().equals(symbolicName)) {
+                extendedOutput = output;
+                break;
+            }
+        }
+
+        LOGGER.debug("Starting scanning bundle {} for MDS annotations' extensions", symbolicName);
+
+        entityExtensionProcessor.setEntityProcessingResult(outputs);
+        entityExtensionProcessor.execute(bundle, schemaHolder);
+        //List<EntityProcessorOutput> extendedEntityProcessorOutput = entityExtensionProcessor.getProcessingResult();
+
+        LOGGER.debug("Finished scanning bundle {} form MDS annotation' extensions. Starting to process results.", symbolicName);
+
+
+
+        if (!extendedOutput.getEntityProcessorOutputs().isEmpty() || !extendedOutput.getLookupProcessorOutputs().isEmpty()) {
+            MDSInterfaceResolver.processMDSInterfaces(bundle);
+        }
+    }
+
     @Autowired
     public void setLookupProcessor(LookupProcessor lookupProcessor) {
         this.lookupProcessor = lookupProcessor;
@@ -65,6 +92,9 @@ public class MDSAnnotationProcessor {
     public void setEntityProcessor(EntityProcessor entityProcessor) {
         this.entityProcessor = entityProcessor;
     }
+
+    @Autowired
+    public void setEntityExtensionProcessor(EntityExtensionProcessor entityExtensionProcessor) { this.entityExtensionProcessor = entityExtensionProcessor; }
 
     @Autowired
     public void setInstanceLifecycleListenerProcessor(InstanceLifecycleListenerProcessor instanceLifecycleListenerProcessor) {

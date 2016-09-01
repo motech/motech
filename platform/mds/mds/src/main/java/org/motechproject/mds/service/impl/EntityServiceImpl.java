@@ -997,6 +997,13 @@ public class EntityServiceImpl implements EntityService {
     }
 
     @Override
+    public void updateExtensionClass(Long entityId, String extensionClass) {
+        Entity entity  = allEntities.retrieveById(entityId);
+        assertEntityExists(entity, entityId);
+        entity.setExtendedClass(extensionClass);
+    }
+
+    @Override
     @Transactional
     public List<FieldDto> getEntityFieldsByClassName(String className) {
         return getEntityFieldsByClassName(className, false);

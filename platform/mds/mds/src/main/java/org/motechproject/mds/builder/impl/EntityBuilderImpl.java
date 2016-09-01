@@ -187,7 +187,11 @@ public class EntityBuilderImpl implements EntityBuilder {
                 }
 
                 if (!shouldLeaveExistingMethod(field, setter, declaring)) {
-                    createSetter(declaring, fieldName, ctField);
+                    if(ctField.getDeclaringClass().equals(declaring)) {
+                        createSetter(declaring, fieldName, ctField);
+                    } else {
+                        createSetter(ctField.getDeclaringClass(), fieldName, ctField);
+                    }
                 }
             } catch (RuntimeException e) {
                 throw new EntityCreationException("Error while processing field " + fieldName, e);
