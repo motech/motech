@@ -114,7 +114,6 @@ public class EntityExtensionProcessor extends AbstractListProcessor<EntityExtens
                 tracking.setRecordHistory(recordHistory);
                 tracking.setNonEditable(nonEditable);
             }
-            extendedEntity.setExtensionClass(clazz.getName());
 
             setSecurityOptions(element, extendedEntity);
 
@@ -146,7 +145,7 @@ public class EntityExtensionProcessor extends AbstractListProcessor<EntityExtens
                 }
             }
 
-            MotechClassPool.registerDDE(extendedEntity.getExtensionClass());
+            MotechClassPool.registerDDE(clazz.getName());
         }
     }
 

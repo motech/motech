@@ -45,7 +45,6 @@ public class EntityDto {
     private Integer maxFetchDepth;
     private boolean readOnlyAccess;
     private Long schemaVersion;
-    private String extensionClass;
 
     public EntityDto() {
         this(null, null, null, null, null, null, null, null);
@@ -85,13 +84,13 @@ public class EntityDto {
     }
 
     public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, String superClass) {
-        this(id, className, name, module, namespace, null, false, securityMode, securityMembers, null, null, superClass, false, false, null, null);
+        this(id, className, name, module, namespace, null, false, securityMode, securityMembers, null, null, superClass, false, false, null);
     }
 
     public EntityDto(Long id, String className, String name, String module, String namespace,
                      String tableName, boolean recordHistory, SecurityMode securityMode, Set<String> securityMembers,
                      SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers, String superClass,
-                     boolean abstractClass, boolean securityOptionsModified, String bundleSymbolicName, String extensionClass) {
+                     boolean abstractClass, boolean securityOptionsModified, String bundleSymbolicName) {
         this.id = id;
         this.className = className;
         this.name = name;
@@ -108,7 +107,6 @@ public class EntityDto {
         this.abstractClass = abstractClass;
         this.securityOptionsModified = securityOptionsModified;
         this.bundleSymbolicName = bundleSymbolicName;
-        this.extensionClass = extensionClass;
     }
 
     public Long getId() {
@@ -285,14 +283,6 @@ public class EntityDto {
 
     public void setSchemaVersion(Long schemaVersion) {
         this.schemaVersion = schemaVersion;
-    }
-
-    public String getExtensionClass() {
-        return extensionClass;
-    }
-
-    public void setExtensionClass(String extensionClass) {
-        this.extensionClass = extensionClass;
     }
 
     @JsonIgnore

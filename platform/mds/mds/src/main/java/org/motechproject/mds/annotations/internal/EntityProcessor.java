@@ -121,7 +121,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                 entity = new EntityDto(
                         null, className, name, module, namespace, tableName, recordHistory,
                         SecurityMode.EVERYONE, null, null, null, clazz.getSuperclass().getName(),
-                        Modifier.isAbstract(clazz.getModifiers()), false, bundleSymbolicName, null
+                        Modifier.isAbstract(clazz.getModifiers()), false, bundleSymbolicName
                 );
             } else {
                 LOGGER.debug("DDE for {} already exists, updating if necessary", className);
@@ -134,12 +134,10 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
 
                 if(!className.equals(entity.getClassName())) {
                     entity.setClassName(className);
-                    entity.setExtensionClass(null);
                 }
 
             }
 
-            entity.setComplete(true);
 
             if (!tracking.isModifiedByUser()) {
                 tracking.setRecordHistory(recordHistory);

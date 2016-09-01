@@ -43,7 +43,6 @@ public class AllEntities extends MotechDataRepository<Entity> {
         tracking.setEntity(entity);
         tracking.setRecordHistory(dto.isRecordHistory());
         entity.setTracking(tracking);
-        entity.setExtendedClass(dto.getExtensionClass());
 
         return create(entity);
     }
@@ -74,12 +73,6 @@ public class AllEntities extends MotechDataRepository<Entity> {
         List<Entity> entities = retrieveAll("className", className);
         for (Entity entity : entities) {
             if (entity.isActualEntity()) {
-                return entity;
-            }
-        }
-        entities = retrieveAll("extendedClass", className);
-        for (Entity entity : entities) {
-            if(entity.isActualEntity()) {
                 return entity;
             }
         }

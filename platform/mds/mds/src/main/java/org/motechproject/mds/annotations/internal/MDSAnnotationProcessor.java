@@ -18,6 +18,7 @@ import java.util.Map;
  *
  * @see org.motechproject.mds.annotations.internal.LookupProcessor
  * @see org.motechproject.mds.annotations.internal.EntityProcessor
+ * @see org.motechproject.mds.annotations.internal.EntityExtensionProcessor
  * @see org.motechproject.mds.annotations.internal.InstanceLifecycleListenerProcessor
  */
 @Component
@@ -72,7 +73,6 @@ public class MDSAnnotationProcessor {
 
         entityExtensionProcessor.setEntityProcessingResult(outputs);
         entityExtensionProcessor.execute(bundle, schemaHolder);
-        //List<EntityProcessorOutput> extendedEntityProcessorOutput = entityExtensionProcessor.getProcessingResult();
 
         LOGGER.debug("Finished scanning bundle {} form MDS annotation' extensions. Starting to process results.", symbolicName);
 
