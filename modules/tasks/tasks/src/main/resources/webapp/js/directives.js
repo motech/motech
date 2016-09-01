@@ -561,7 +561,10 @@
             },
             link: function (scope, element, attrs) {
                 var name = scope.name,
-                    displayNameOnly = scope.displayNameOnly;
+                    displayNameOnly = scope.displayNameOnly,
+                    horizontalPosition =1,
+                    timeInterval = null,
+                    timeOfMouseOut=0;
 
                 if(!scope.manipulationType){
                     return false;
@@ -572,6 +575,33 @@
                 if(!scope.manipulations){
                     return false;
                 }
+
+                element.on({
+                    mouseover: function(){
+                        var timeOfMouseOver = new Date().getTime();
+
+                        /*Changing between the span and remove button triggers the mouseout event.
+                        This prevents from reseting the position of the field in case of such situation.*/
+                        if(timeOfMouseOver-timeOfMouseOut>5){
+                            horizontalPosition = 1;
+                        }
+
+                        /*If the field was removed, the timeout has not been cleared.*/
+                        if(timeInterval!==null){
+                            clearInterval(timeInterval);
+                        }
+
+                        timeInterval = setInterval(function(){
+                            element.scrollLeft(horizontalPosition);
+                            horizontalPosition = horizontalPosition + 1;
+                        }, 10);
+                    },
+                    mouseout: function(){
+                        clearInterval(timeInterval);
+                        timeInterval=null;
+                        timeOfMouseOut = new Date().getTime();
+                    }
+                });
 
                 element.on('click', function (event) {
                     var modalScope,
