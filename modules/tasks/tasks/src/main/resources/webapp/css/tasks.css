@@ -259,7 +259,7 @@ manipulation-sorter .manipulation .remove:before {
 }
 
 .tasks .map-field field span{
-    width: 105%;
+    max-width: 105%;
     overflow: hidden;
 }
 
