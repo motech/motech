@@ -8,10 +8,10 @@ import org.motechproject.mds.annotations.internal.EntityProcessorOutput;
 import org.motechproject.mds.annotations.internal.MDSAnnotationProcessor;
 import org.motechproject.mds.annotations.internal.MDSProcessorOutput;
 import org.motechproject.mds.annotations.internal.SchemaComparator;
-import org.motechproject.mds.dto.*;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.SchemaHolder;
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.exception.MdsException;
-import org.motechproject.mds.exception.entity.EntityDoesNotExtendMDSEntityException;
-import org.motechproject.mds.exception.entity.FieldExistInExtendedEntityException;
 import org.motechproject.mds.helper.bundle.MdsBundleHelper;
 import org.motechproject.mds.loader.EditableLookupsLoader;
 import org.motechproject.mds.repository.internal.SchemaChangeLockManager;
@@ -34,7 +34,14 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.apache.commons.lang.StringUtils.startsWith;
@@ -148,7 +155,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
                 bundlesToRefresh.add(bundle);
             }
         }
-        for(Bundle bundle : bundlesToRefresh) {
+        for(Bundle bundle : bundleContext.getBundles()) {
             processForExtensions(outputs, bundle, schemaHolder);
         }
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The <code>MDSAnnotationProcessor</code> class is responsible for scanning bundle contexts and
@@ -59,27 +60,19 @@ public class MDSAnnotationProcessor {
     }
 
     public void processAnnotationsExtensions(List<MDSProcessorOutput> outputs, Bundle bundle, SchemaHolder schemaHolder) {
+        Set<Bundle> affectedBundles;
         String symbolicName = bundle.getSymbolicName();
-        MDSProcessorOutput extendedOutput = null;
-
-        for(MDSProcessorOutput output :outputs) {
-            if(output.getBundle().getSymbolicName().equals(symbolicName)) {
-                extendedOutput = output;
-                break;
-            }
-        }
 
         LOGGER.debug("Starting scanning bundle {} for MDS annotations' extensions", symbolicName);
 
-        entityExtensionProcessor.setEntityProcessingResult(outputs);
+        entityExtensionProcessor.setEntitiesProcessingResult(outputs);
         entityExtensionProcessor.execute(bundle, schemaHolder);
+        affectedBundles = entityExtensionProcessor.getAffectedBundles();
 
         LOGGER.debug("Finished scanning bundle {} form MDS annotation' extensions. Starting to process results.", symbolicName);
 
-
-
-        if (!extendedOutput.getEntityProcessorOutputs().isEmpty() || !extendedOutput.getLookupProcessorOutputs().isEmpty()) {
-            MDSInterfaceResolver.processMDSInterfaces(bundle);
+        for (Bundle abundle:affectedBundles) {
+            MDSInterfaceResolver.processMDSInterfaces(abundle);
         }
     }
 
