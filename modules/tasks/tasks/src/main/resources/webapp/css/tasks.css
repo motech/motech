@@ -258,6 +258,11 @@ manipulation-sorter .manipulation .remove:before {
     margin: 0px 5px 5px 0;
 }
 
+.tasks .map-field field span{
+    max-width: 105%;
+    overflow: hidden;
+}
+
 .tasks .actionField.period-input {
     height: auto;
     min-height: 36px;
