@@ -138,7 +138,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     }
 
     public void checkForRepeatingFields(Class<?> declaringClass, String fieldName) {
-        if(declaringClass.equals(clazz) && existingFields != null) {
+        if(declaringClass.equals(clazz)) {
             for (FieldDto existingField : existingFields) {
                 if(existingField.getBasic().getName().equals(fieldName)){
                     throw new FieldExistInExtendedEntityException(fieldName, clazz, clazz.getSuperclass());
