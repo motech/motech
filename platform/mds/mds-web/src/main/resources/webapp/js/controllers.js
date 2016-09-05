@@ -4196,7 +4196,7 @@
 
             var values = $scope.currentRecord.fields;
             angular.forEach (values, function(value, key) {
-                if(value.type.defaultName === "str" && value.value === ""){
+                if(value.type.typeClass === "java.lang.String" && value.value === ""){
                     value.value = null;
                 }
                 value.value = value.value === 'null' ? null : value.value;
