@@ -21,12 +21,10 @@ before_install:
   - sudo service tomcat7 stop
   - echo 'CATALINA_OPTS="-Xms512m -Xmx512m"' | sudo tee --append /usr/share/tomcat7/bin/setenv.sh
   - sudo chown -R tomcat7:tomcat7 /var/lib/tomcat7/ /usr/share/tomcat7/ /var/log/tomcat7/
-
-before_script:
   - sudo chmod +x ./travis_before_build.sh
   - ./travis_before_build.sh
 
-script:
+install:
   - mvn clean install -PIT -q
 
 cache:
