@@ -288,13 +288,13 @@ public class KeyEvaluator {
     private String beginningOfMonthManipulation(String value) {
         DateTime dateTime = new DateTime(value);
 
-        return dateTime.dayOfMonth().withMinimumValue().toString();
+        return dateTime.dayOfMonth().withMinimumValue().withTime(0, 0, 0, 0).toString();
     }
 
     private String endOfMonthManipulation(String value) {
         DateTime dateTime = new DateTime(value);
 
-        return dateTime.dayOfMonth().withMaximumValue().toString();
+        return dateTime.dayOfMonth().withMaximumValue().withTime(23, 59, 59, 999).toString();
     }
 
     private String plusMonthsManipulation(String value, String manipulation) {
