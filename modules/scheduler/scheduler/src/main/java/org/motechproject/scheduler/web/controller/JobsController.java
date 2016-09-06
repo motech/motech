@@ -38,8 +38,7 @@ import java.util.List;
  * */
 
 @Controller
-@Api(value="/", description="API for Scheduler module")
-@RequestMapping("")
+@Api(value="/api/", description="API for Scheduler module")
 @PreAuthorize(SchedulerConstants.VIEW_SCHEDULER_JOBS)
 public class JobsController {
 

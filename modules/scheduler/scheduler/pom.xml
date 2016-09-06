@@ -20,7 +20,7 @@
 
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
-        <swagger.dir>${basedir}/src/main/resources/swagger-ui</swagger.dir>
+        <swagger.dir>${basedir}/src/main/resources/webapp/swagger-ui/</swagger.dir>
     </properties>
 
     <dependencies>
@@ -164,7 +164,7 @@
                             <schemes>
                                 <scheme>http</scheme>
                             </schemes>
-                            <basePath>null/module/scheduler/</basePath>
+                            <basePath>/motech-platform-server/module/scheduler/api</basePath>
                             <info>
                                 <title>Scheduler REST API</title>
                                 <version>${project.version}</version>
@@ -175,7 +175,7 @@
                                 </license>
                             </info>
                             <swaggerDirectory>${swagger.dir}</swaggerDirectory>
-                            <swaggerFileName>${project.artifactId}</swaggerFileName>
+                            <!--<swaggerFileName>${project.artifactId}</swaggerFileName>-->
                         </apiSource>
                     </apiSources>
                 </configuration>
