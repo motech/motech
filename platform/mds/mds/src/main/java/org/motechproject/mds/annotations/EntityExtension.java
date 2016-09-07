@@ -9,8 +9,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The <code>EntityExtension</code> annotation is used to point classes, that should be
- * mapped as Motech Dataservices Entities. The discovery login for this annotation is done in
+ * The <code>EntityExtension</code> annotation is used to point classes, that that are used to
+ * extend already existing classes mapped as Motech Dataservices Entities.
+ * The discovery login for this annotation is done in
  * {@link org.motechproject.mds.annotations.internal.EntityExtensionProcessor}
  *
  * @see org.motechproject.mds.annotations.internal.EntityExtensionProcessor

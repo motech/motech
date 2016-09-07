@@ -67,10 +67,10 @@ class EntityProcessor extends EntityAnnotationProcessor<Entity> {
         Class clazz = (Class) element;
         Class<Entity> ann = ReflectionsUtil.getAnnotationClass(clazz, Entity.class);
         Class<EntityExtension> extAnn = ReflectionsUtil.getAnnotationClass(clazz, EntityExtension.class);
-        Annotation annotationExtension = AnnotationUtils.findAnnotation(clazz, extAnn);
+        Annotation extensionAnnotation = AnnotationUtils.findAnnotation(clazz, extAnn);
         Annotation annotation = AnnotationUtils.findAnnotation(clazz, ann);
 
-        if (annotation != null && annotationExtension == null) {
+        if (annotation != null && extensionAnnotation == null) {
             return true;
         }
         return false;
@@ -123,10 +123,6 @@ class EntityProcessor extends EntityAnnotationProcessor<Entity> {
                 tracking = advancedSettings.getTracking();
                 entity.setBundleSymbolicName(bundleSymbolicName);
                 entity.setModule(module);
-
-                if(!className.equals(entity.getClassName())) {
-                    entity.setClassName(className);
-                }
 
             }
 

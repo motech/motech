@@ -52,12 +52,11 @@ public class EntityExtensionProcessor extends EntityAnnotationProcessor<EntityEx
 
 
         if (clazz.getSuperclass().getClass().getName().equals(Object.class.getName())) {
-            LOGGER.error("class {} annotated by EntityExtension does not extend any class", clazz.getName());
             throw new EntityDoesNotExtendEntityException(clazz);
         }
 
         if (annotationExtension == null) {
-            LOGGER.debug("did not found Entity or EntityExtension annotations in class: {}", clazz.getName());
+            LOGGER.debug("Did not found Entity or EntityExtension annotations in class: {}", clazz.getName());
             return false;
         }
 

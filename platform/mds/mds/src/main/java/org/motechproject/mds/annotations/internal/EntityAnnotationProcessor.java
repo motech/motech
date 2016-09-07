@@ -31,8 +31,8 @@ import java.util.Arrays;
 import static org.motechproject.mds.util.Constants.AnnotationFields.MAX_FETCH_DEPTH;
 
 /**
- * The <code>EntityAnnotationProcessor</code> provides a mechanism, allowing adding public classes from other
- * modules as entities in the MDS module and extending them.
+ * The <code>EntityAnnotationProcessor</code> provides a base mechanism, allowing EntityProcessor and EntityExtensionProcessor
+ * adding public classes from other modules as entities in the MDS module and extending them.
  *
  * @see org.motechproject.mds.annotations.EntityExtension
  * @see org.motechproject.mds.annotations.Entity

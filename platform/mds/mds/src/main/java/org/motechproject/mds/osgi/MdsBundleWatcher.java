@@ -168,18 +168,22 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         }
 
         synchronized (lock) {
-            // Before we process annotations, we wait until bundle resolves its dependencies
-            int count = 0;
-            while (!isBundleResolved(bundle) && count < MAX_WAIT_TO_RESOLVE) {
-                ThreadSuspender.sleep(WAIT_TIME);
-                count++;
-            }
+            waitForDependencies(bundle);
 
             // Assert the bundle is resolved before processing annotations, to log any problems before annotation processing fails.
             assertBundleClassLoading(bundle);
 
             LOGGER.debug("Processing bundle {} for extensions", bundle.getSymbolicName());
-            processor.processAnnotationsExtensions(outputs, bundle, schemaHolder);
+            processor.processEntityExtensionAnnotations(outputs, bundle, schemaHolder);
+        }
+    }
+
+    private void waitForDependencies(Bundle bundle){
+        // Before we process annotations, we wait until bundle resolves its dependencies
+        int count = 0;
+        while (!isBundleResolved(bundle) && count < MAX_WAIT_TO_RESOLVE) {
+            ThreadSuspender.sleep(WAIT_TIME);
+            count++;
         }
     }
 
@@ -231,12 +235,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         }
 
         synchronized (lock) {
-            // Before we process annotations, we wait until bundle resolves its dependencies
-            int count = 0;
-            while (!isBundleResolved(bundle) && count < MAX_WAIT_TO_RESOLVE) {
-                ThreadSuspender.sleep(WAIT_TIME);
-                count++;
-            }
+            waitForDependencies(bundle);
 
             // Assert the bundle is resolved before processing annotations, to log any problems before annotation processing fails.
             assertBundleClassLoading(bundle);

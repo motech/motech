@@ -59,17 +59,17 @@ public class MDSAnnotationProcessor {
         return output;
     }
 
-    public void processAnnotationsExtensions(List<MDSProcessorOutput> outputs, Bundle bundle, SchemaHolder schemaHolder) {
+    public void processEntityExtensionAnnotations(List<MDSProcessorOutput> outputs, Bundle bundle, SchemaHolder schemaHolder) {
         Set<Bundle> affectedBundles;
         String symbolicName = bundle.getSymbolicName();
 
-        LOGGER.debug("Starting scanning bundle {} for MDS annotations' extensions", symbolicName);
+        LOGGER.debug("Starting scanning bundle {} for MDS entity extension annotations", symbolicName);
 
         entityExtensionProcessor.setEntitiesProcessingResult(outputs);
         entityExtensionProcessor.execute(bundle, schemaHolder);
         affectedBundles = entityExtensionProcessor.getAffectedBundles();
 
-        LOGGER.debug("Finished scanning bundle {} form MDS annotation' extensions. Starting to process results.", symbolicName);
+        LOGGER.debug("Finished scanning bundle {} form MDS entity extension annotations. Starting to process results.", symbolicName);
 
         for (Bundle abundle:affectedBundles) {
             MDSInterfaceResolver.processMDSInterfaces(abundle);

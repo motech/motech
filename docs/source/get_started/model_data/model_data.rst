@@ -513,6 +513,32 @@ The **@Entity** annotation has the following parameters:
 * ``tableName`` - The actual name of the table in the database for this entity. Allows users to directly control the name in the data store. The default table name will take the form of: ``MDS_<MODULE>_<NAMESPACE>_<ENTITY_NAME>``. If an entity has no namespace or module, those parts will be omitted.
 * ``recordHistory`` - Set to true if MDS should record history for this entity.
 
+Extending entities - the @EntityExtension annotation
+####################################################
+
+It is possible to extend already existing entities that are created in diffrent module using **org.motechproject.mds.annotations.EntityExtension** annotation.
+
+.. code-block:: java
+
+	package org.motechproject.anotherexample;
+	
+	import org.motechproject.example.Patient;
+	import org.motechproject.mds.annotations.EntityExtension;
+	
+	@EntityExtension
+	public class PatientExtension extends Patient {
+	
+	}
+	
+	When MDS finish scanning for **@Entity** annotation it will again scan all modules looking for classes with **@EnntityExtension** annotations. When one is found will modify created schema.
+	Developer can also use **@Entity** annotation to overrite its original parameters.
+	
+.. note::
+
+	* Class annotated with **@EntityExtension** annotation must extend existing class.
+	* Superclass must be annotated with **@Entity** annotation.
+	* Extending class can not overrite fields with **@Field** annotation from its superclass.
+
 DDE entity fields - @Field and @Ignore annotations
 ##################################################
 

@@ -3,7 +3,7 @@ package org.motechproject.mds.exception.entity;
 import org.motechproject.mds.exception.MdsException;
 
 /**
- * Created by user on 25.08.16.
+ * Exception thrown when Class annotated by @EntityExtension does not extends MDS Entity class
  */
 public class EntityDoesNotExtendMDSEntityException extends MdsException{
     public EntityDoesNotExtendMDSEntityException(Class superClazz){
