@@ -681,10 +681,10 @@
                 var manipulationType = $scope.type.toLowerCase();
                 $scope.manipulationTypes = [];
                 if(['unicode', 'string'].indexOf(manipulationType) > -1) {
-                    $scope.manipulationTypes = ['toUpper', 'toLower', 'capitalize', 'URLEncode', 'join', 'split', 'substring', 'format', 'parseDate'];
+                    $scope.manipulationTypes = ['toUpper', 'toLower', 'capitalizeFirstLetter', 'URLEncode', 'join', 'split', 'substring', 'format', 'parseDate'];
                 }
                 if('date' === manipulationType) {
-                    $scope.manipulationTypes.push('dateTime');
+                    $scope.manipulationTypes.push('date.time');
                 }
                 if(['date', 'date2date'].indexOf(manipulationType) > -1) {
                     $scope.manipulationTypes = $scope.manipulationTypes.concat(['plusDays', 'minusDays', 'plusHours', 'minusHours', 'plusMinutes', 'minusMinutes']);
