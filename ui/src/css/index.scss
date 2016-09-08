@@ -2064,12 +2064,12 @@ body {
 #tile6 { background: #FFC107; color: #bd0300; }
 .tile {
     background: #ffffff;
-    min-height: 320px;
+    min-height: 345px;
     border-color: #bce8f1;
     box-shadow: 6px 6px 15px -5px rgba(0, 94, 195, 0.44);
 }
 .tile.big {
-    min-height: 450px;
+    min-height: 460px;
 }
 .tile-link-list {
     list-style-type: none;
@@ -2083,17 +2083,17 @@ body {
 }
 .tile .tile-link a {
     border-radius: 0;
-    min-width: 20em;
+    min-width: 18em;
 }
 .tile .tile-description {
     font-size: 1.2em;
     margin: 1em auto;
-    min-width: 16em;
+    min-width: 18em;
     max-width: 30em;
     padding: 0 1em;
 }
 .tile .fa.big-icon {
-    font-size: 67px;
+    font-size: 4em;
     margin-top: 20px;
     margin-bottom: 10px;
 }
@@ -2109,8 +2109,10 @@ body {
 .tile .tile-link-list.many a {
     text-align: left;
 }
-.listTile .col-sm-2.col-xs-4,
-.listTile .col-sm-4.col-xs-8,
+.listTile .col-xs-8
+.listTile .col-sm-6,
+.listTile .col-md-6,
+.listTile .col-lg-4,
 .listTile .col-sm-12 {
     padding: 5px;
 }
