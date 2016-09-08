@@ -25,7 +25,8 @@
     "path": "~0.12.7",
     "promise": "^7.1.1",
     "require-dir": "~0.3.0",
-    "yargs": "~3.31.0"
+    "yargs": "~3.31.0",
+    "node-sass": "~3.9.3"
   },
   "devDependencies": {
     "bower-files": "~3.11.3"
