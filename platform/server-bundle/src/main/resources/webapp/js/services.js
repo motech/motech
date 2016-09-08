@@ -49,7 +49,7 @@
             } else if (modalsList.length > 0) {
                 $timeout(function() {
                     that.show();
-                }, 400);
+                }, 500);
             }
         };
 
