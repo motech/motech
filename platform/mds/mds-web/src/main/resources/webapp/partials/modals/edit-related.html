@@ -1,4 +1,4 @@
-<div id="edit-related_{{field.id}}" class="mds modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+<div id="edit-related_{{field.id}}" class="mds modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content large">
             <div class="modal-header">
@@ -7,7 +7,7 @@
                 <h4 class="modal-title">{{msg('mds.dataBrowsing.edit')}} - {{field.displayName}}</h4>
             </div>
 
-            <div ui-if="relatedMode.isNested && editRelatedFields !== null && isRelationshipField(field)" class="modal-body clearfix">
+            <div ui-if="relatedMode.isNested && editRelatedFields !== null && isRelationshipField(field) && field.name != 'chapter'" class="modal-body clearfix">
                 <div class="clearfix" editrelatedfieldsform ng-model="editRelatedFields" parent-field="{{relatedMode.isNested}}"></div>
             </div>
 
