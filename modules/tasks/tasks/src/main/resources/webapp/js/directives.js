@@ -687,7 +687,7 @@
                     $scope.manipulationTypes.push('dateTime');
                 }
                 if(['date', 'date2date'].indexOf(manipulationType) > -1) {
-                    $scope.manipulationTypes = $scope.manipulationTypes.concat(['plusDays', 'minusDays', 'plusHours', 'minusHours', 'plusMinutes', 'minusMinutes']);
+                    $scope.manipulationTypes = $scope.manipulationTypes.concat(['beginningOfMonth','endOfMonth','plusMonths','minusMonths','plusDays', 'minusDays', 'plusHours', 'minusHours', 'plusMinutes', 'minusMinutes']);
                 }
 
                 this.addManipulation = function (type, argument) {

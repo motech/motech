@@ -31,6 +31,8 @@ public class KeyEvaluator {
     private static final int FORMAT_PATTERN_BEGIN_INDEX = 7;
     private static final int SUBSTRING_PATTERN_BEGIN_INDEX = 10;
     private static final int SPLIT_PATTERN_BEGIN_INDEX = 6;
+    private static final int PLUS_MONTHS_PATTERN_BEGIN_INDEX = 11;
+    private static final int MINUS_MONTHS_PATTERN_BEGIN_INDEX = 12;
     private static final int PLUS_DAYS_PATTERN_BEGIN_INDEX = 9;
     private static final int MINUS_DAYS_PATTERN_BEGIN_INDEX = 10;
     private static final int PLUS_HOURS_PATTERN_BEGIN_INDEX = 10;
@@ -186,7 +188,7 @@ public class KeyEvaluator {
             result = splitManipulation(value, manipulation);
         } else if (lowerCase.contains("parsedate")) {
             result = parseDate(value, manipulation);
-        } else if (lowerCase.contains("plus") || lowerCase.contains("minus")) {
+        } else if (lowerCase.contains("plus") || lowerCase.contains("minus") || lowerCase.contains("ofmonth")) {
             result = dateTimeChangeManipulation(value, lowerCase);
         } else {
             result = simpleManipulations(value, lowerCase.replace("()", ""));
@@ -220,7 +222,9 @@ public class KeyEvaluator {
     private String dateTimeChangeManipulation(String value, String manipulation) {
         String result = value;
 
-        if (manipulation.contains("plusdays")) {
+        if (manipulation.contains("month")) {
+            result = monthManipulation(value, manipulation);
+        }  else if (manipulation.contains("plusdays")) {
             result = plusDaysManipulation(value, manipulation);
         } else if (manipulation.contains("minusdays")) {
             result = minusDaysManipulation(value, manipulation);
@@ -234,6 +238,21 @@ public class KeyEvaluator {
             result = minusMinutesManipulation(value, manipulation);
         } else {
             throw new MotechException("task.warning.manipulation");
+        }
+        return result;
+    }
+
+    private String monthManipulation(String value, String manipulation) {
+        String result = value;
+
+        if (manipulation.contains("beginningofmonth")) {
+            result = beginningOfMonthManipulation(value);
+        } else if (manipulation.contains("endofmonth")) {
+            result = endOfMonthManipulation(value);
+        } else if (manipulation.contains("plusmonths")) {
+            result = plusMonthsManipulation(value, manipulation);
+        } else if (manipulation.contains("minusmonths")) {
+            result = minusMonthsManipulation(value, manipulation);
         }
         return result;
     }
@@ -264,6 +283,32 @@ public class KeyEvaluator {
         int idx = Integer.parseInt(splitValue[1]);
 
         return value.split(regex)[idx];
+    }
+
+    private String beginningOfMonthManipulation(String value) {
+        DateTime dateTime = new DateTime(value);
+
+        return dateTime.dayOfMonth().withMinimumValue().withTime(0, 0, 0, 0).toString();
+    }
+
+    private String endOfMonthManipulation(String value) {
+        DateTime dateTime = new DateTime(value);
+
+        return dateTime.dayOfMonth().withMaximumValue().withTime(23, 59, 59, 999).toString();
+    }
+
+    private String plusMonthsManipulation(String value, String manipulation) {
+        String pattern = manipulation.substring(PLUS_MONTHS_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
+        DateTime dateTime = new DateTime(value);
+
+        return dateTime.plusMonths(Integer.parseInt(pattern)).toString();
+    }
+
+    private String minusMonthsManipulation(String value, String manipulation) {
+        String pattern = manipulation.substring(MINUS_MONTHS_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
+        DateTime dateTime = new DateTime(value);
+
+        return dateTime.minusMonths(Integer.parseInt(pattern)).toString();
     }
 
     private String plusDaysManipulation(String value, String manipulation) {
