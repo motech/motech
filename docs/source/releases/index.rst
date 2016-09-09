@@ -2,16 +2,17 @@
 Release Notes
 =============
 
-Current Version
----------------
+Current Version: 0.29
+---------------------
 
-:doc:`motech-0.27`
+:doc:`motech-0.29`
 
-Older Versions
---------------
+Major Releases of Older Versions
+--------------------------------
 
-| :doc:`motech-0.26`
+| :doc:`motech-0.28`
 | :doc:`motech-0.27`
+| :doc:`motech-0.26`
 | :doc:`motech-0.24.1`
 | :doc:`motech-0.24`
 | `Version 0.19 Release Notes <http://code.google.com/p/motech/wiki/ReleaseZeroPointNineteen>`_
