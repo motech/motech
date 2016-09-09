@@ -681,7 +681,7 @@
                 var manipulationType = $scope.type.toLowerCase();
                 $scope.manipulationTypes = [];
                 if(['unicode', 'string'].indexOf(manipulationType) > -1) {
-                    $scope.manipulationTypes = ['toUpper', 'toLower', 'capitalize', 'URLEncode', 'join', 'split', 'substring', 'format', 'parseDate'];
+                    $scope.manipulationTypes = ['toUpper', 'toLower', 'capitalizeFirstLetter', 'URLEncode', 'join', 'split', 'substring', 'format', 'parseDate'];
                 }
                 if('date' === manipulationType) {
                     $scope.manipulationTypes.push('dateTime');
