@@ -102,6 +102,11 @@ Integrates the MOTECH platform with OpenMRS, an open source electronic medical r
 
 A flexible reminder system that may be used to alert patients when it is time to take their medications
 
+:std:ref:`RapidPro <rapidpro-module>`
+-----------------------------------------------
+
+Integrates the MOTECH platform with RapidPro
+
 :std:ref:`Schedule Tracking <schedule-tracking-module>`
 -------------------------------------------------------
 
