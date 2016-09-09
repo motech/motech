@@ -72,9 +72,24 @@
         <td>12:08 PM</td>
     </tr>
     <tr>
+        <td>startOfMonth</td>
+        <td>{{msg('task.date')}}</td>
+        <td>Wed, July 10, '96' -> Mon, July 01, '96'</td>
+    </tr>
+    <tr>
+        <td>endOfMonth</td>
+        <td>{{msg('task.date')}}</td>
+        <td>Wed, July 10, '96' -> Wed, July 31, '96'</td>
+    </tr>
+    <tr>
+        <td>plusMonths(1)</td>
+        <td>{{msg('task.date')}}</td>
+        <td>Wed, July 10, '96' -> Sat, August 13, '96'</td>
+    </tr>
+    <tr>
         <td>plusDays(3)</td>
         <td>{{msg('task.date')}}</td>
-        <td>Wed, July 10, '96' -> Wed, July 13, '96'</td>
+        <td>Wed, July 10, '96' -> Sat, July 13, '96'</td>
     </tr>
     <tr>
         <td>plusHours(6)</td>
@@ -87,9 +102,14 @@
         <td>2015/15/07 16:00 -> 2015/15/07 16:20</td>
     </tr>
     <tr>
+        <td>minusMonths(1)</td>
+        <td>{{msg('task.date')}}</td>
+        <td>Wed, July 10, '96' -> Mon, June 10, '96'</td>
+    </tr>
+    <tr>
         <td>minusDays(3)</td>
         <td>{{msg('task.date')}}</td>
-        <td>Wed, July 10, '96' -> Wed, July 7, '96'</td>
+        <td>Wed, July 10, '96' -> Sun, July 7, '96'</td>
     </tr>
     <tr>
         <td>minusHours(6)</td>

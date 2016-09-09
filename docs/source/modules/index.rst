@@ -52,8 +52,8 @@ Forwards individual and aggregate level data to DHIS2.
 
 Sends and logs email messages
 
-:std:ref`Event <event-module>`
-------------------------------
+:std:ref:`Event <event-module>`
+-------------------------------
 
 Allows to publish and subscribe to events in MOTECH.
 
