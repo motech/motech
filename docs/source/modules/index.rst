@@ -72,6 +72,11 @@ Supports transliteration of English strings to Hindi using ITRANS encoding
 
 Provides an implementation of the PubSubHubbub Hub spec; exposes an API so other modules can act as publisher and make contents available to it for distribution
 
+:std:ref:`IHE Interop <ihe-interop-module>`
+-------------------------------------------
+
+Allows MOTECH to send templated XML files based on Integrating the Health Enterprise health standards. Primarily built to convert incoming CommCare forms to Continuity of Care Documents (HL7 v3 CDA CCD)
+
 :std:ref:`IVR <ivr-module>`
 ---------------------------
 
