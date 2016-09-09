@@ -684,7 +684,7 @@
                     $scope.manipulationTypes = ['toUpper', 'toLower', 'capitalizeFirstLetter', 'URLEncode', 'join', 'split', 'substring', 'format', 'parseDate'];
                 }
                 if('date' === manipulationType) {
-                    $scope.manipulationTypes.push('date.time');
+                    $scope.manipulationTypes.push('dateTime');
                 }
                 if(['date', 'date2date'].indexOf(manipulationType) > -1) {
                     $scope.manipulationTypes = $scope.manipulationTypes.concat(['plusDays', 'minusDays', 'plusHours', 'minusHours', 'plusMinutes', 'minusMinutes']);
