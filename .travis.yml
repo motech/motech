@@ -1,0 +1,25 @@
+language: java
+
+jdk:
+  - oraclejdk8
+
+env:
+  - DB=mysql
+  - DB=psql
+
+services:
+  - mysql
+  - postgresql
+
+before_install:
+  - sudo chmod +x ./config_services.sh
+  - ./config_services.sh
+  - sudo chmod +x ./set_up_database.sh
+  - ./set_up_database.sh
+
+install:
+  - mvn clean install -PIT -q -U
+
+cache:
+  directories:
+    - $HOME/.m2
