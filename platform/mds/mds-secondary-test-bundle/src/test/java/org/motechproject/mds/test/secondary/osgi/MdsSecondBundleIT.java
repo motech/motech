@@ -14,8 +14,10 @@ import org.motechproject.mds.test.domain.mapdeserialisation.EntityWithStringObje
 import org.motechproject.mds.test.secondary.domain.DeserializationTestClass;
 import org.motechproject.mds.test.secondary.domain.EntityA;
 import org.motechproject.mds.test.secondary.domain.MessageRecord;
+import org.motechproject.mds.test.secondary.domain.MessageRecordExtension;
 import org.motechproject.mds.test.secondary.service.EntityADataService;
 import org.motechproject.mds.test.secondary.service.MessageRecordDataService;
+import org.motechproject.mds.test.secondary.service.MessageRecordExtensionDataService;
 import org.motechproject.mds.test.service.differentbundles.EntityBDataService;
 import org.motechproject.mds.test.service.differentbundles.EntityCDataService;
 import org.motechproject.mds.test.service.instancelifecyclelistener.JdoListenerTestService;
@@ -70,6 +72,9 @@ public class MdsSecondBundleIT extends BasePaxIT {
     @Inject
     private MessageRecordDataService messageRecordDataService;
 
+    //@Inject
+    //private MessageRecordExtensionDataService messageRecordExtensionDataService;
+
     @After
     public void tearDown() {
         entityADataService.deleteAll();
@@ -93,6 +98,20 @@ public class MdsSecondBundleIT extends BasePaxIT {
     }
 
     @Test
+    public void testSameBundleEntityExtension() {
+        MessageRecordExtension record1 = new MessageRecordExtension("hjkhj", CallStatus.createFrom(MessageStatus.PENDING), "Jokjguie", "jhkhjk");
+        MessageRecordExtension record2 = new MessageRecordExtension("Hjkl", CallStatus.createFrom(MessageStatus.FINISHED), "jklj", "Grjklhj");
+
+        messageRecordDataService.create(record1);
+        messageRecordDataService.create(record2);
+
+        List<MessageRecord> records = messageRecordDataService.retrieveAll();
+
+        assertEquals(2, records.size());
+        //assertEquals(records.get(0).getReceiver(), "jhkhjk");
+    }
+
+    @Test
     public void testEntitiesEnhancement() {
         assertEntityEnhanced(EntityA.class);
         assertEntityEnhanced(EntityB.class);
@@ -100,6 +119,9 @@ public class MdsSecondBundleIT extends BasePaxIT {
     }
 
     @Test
+
+
+
     public void testCrossBundleRelationshipCreate() {
         EntityA a = new EntityA();
         EntityB b = new EntityB();

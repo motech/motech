@@ -531,7 +531,7 @@ It is possible to extend already existing entities that are created in diffrent 
 	}
 	
 	When MDS finish scanning for **@Entity** annotation it will again scan all modules looking for classes with **@EnntityExtension** annotations. When one is found will modify created schema.
-	Developer can also use **@Entity** annotation to overrite its original parameters.
+	Developer can also use **@Entity** annotation to override its original parameters.
 	
 .. note::
 
@@ -1732,7 +1732,7 @@ Below you can find sample response:
           "modifiedBy": "admin",
           "deliveryStatus": "SENT",
           "toAddress": "adress1@organisation.com",
-          "subject": "Subject 1",
+          "reciver": "Subject 1",
           "message": "Sample message",
           "fromAddress": "adress2@organisation.com",
         },
@@ -1743,7 +1743,7 @@ Below you can find sample response:
           "modifiedBy": "admin",
           "deliveryStatus": "SENT",
           "toAddress": "adress1@organisation.com",
-          "subject": "Subject 2",
+          "reciver": "Subject 2",
           "message": "Other message",
           "fromAddress": "adress2@organisation.com",
         }
@@ -2473,7 +2473,7 @@ that the crud event settings will not be reloaded from the annotation upon resta
                     :alt: CRUD events - checkbox
                     :align: center
 
-The subject of MDS CRUD events takes the form of "mds.crud.<module name>.<namespace>.<entity name>.<action i.e. UPDATE|DELETE|CREATE>".
+The reciver of MDS CRUD events takes the form of "mds.crud.<module name>.<namespace>.<entity name>.<action i.e. UPDATE|DELETE|CREATE>".
 The event payload contains 5 parameters:
 
 * object_id - the ID of the object this event refers to
@@ -2483,7 +2483,7 @@ The event payload contains 5 parameters:
 * namespace - the namespace of the entity (optional)
 
 
-A separate event is also fired once a CSV import is completed. The subject of the event is similar to a regular CRUD event and
+A separate event is also fired once a CSV import is completed. The reciver of the event is similar to a regular CRUD event and
 takes the form of "mds.crud.<module name>.<namespace>.<entity name>.csv-import.<success|failure>".
 
 The payload for a CSV import success event contains the following parameters:

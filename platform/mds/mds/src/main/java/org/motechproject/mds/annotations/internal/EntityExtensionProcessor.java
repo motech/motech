@@ -50,14 +50,13 @@ public class EntityExtensionProcessor extends EntityAnnotationProcessor<EntityEx
         Class<EntityExtension> extAnn = ReflectionsUtil.getAnnotationClass(clazz, EntityExtension.class);
         Annotation annotationExtension = AnnotationUtils.findAnnotation(clazz, extAnn);
 
-
-        if (clazz.getSuperclass().getClass().getName().equals(Object.class.getName())) {
-            throw new EntityDoesNotExtendEntityException(clazz);
+        if (annotationExtension == null) {
+            LOGGER.debug("Did not find Entity or EntityExtension annotations in class: {}", clazz.getName());
+            return false;
         }
 
-        if (annotationExtension == null) {
-            LOGGER.debug("Did not found Entity or EntityExtension annotations in class: {}", clazz.getName());
-            return false;
+        if (clazz.getSuperclass().getName().equals(Object.class.getName())) {
+            throw new EntityDoesNotExtendEntityException(clazz);
         }
 
         for (MDSProcessorOutput processorOutput : entitiesProcessingResult) {
@@ -122,21 +121,51 @@ public class EntityExtensionProcessor extends EntityAnnotationProcessor<EntityEx
             add(extendedEntity);
 
 
+            MDSProcessorOutput found = null;
+            EntityProcessorOutput found2 = null;
             for (MDSProcessorOutput processingOutput: entitiesProcessingResult) {
                 for (EntityProcessorOutput entityProcessorOutput : processingOutput.getEntityProcessorOutputs()) {
                     if (entityProcessorOutput.getEntityProcessingResult().getClassName().equals(clazz.getSuperclass().getName())) {
-                        processingOutput.getEntityProcessorOutputs().remove(entityProcessorOutput);
-                        processingOutput.getEntityProcessorOutputs().add(extendedEntityProcessorOutput);
+                        found = processingOutput;
+                        found2 = entityProcessorOutput;
+                        break;
+                        //processingOutput.getEntityProcessorOutputs().remove(entityProcessorOutput);
+                        //processingOutput.getEntityProcessorOutputs().add(extendedEntityProcessorOutput);
                     }
                 }
             }
+
+            found.getEntityProcessorOutputs().remove(found2);
+            found.getEntityProcessorOutputs().add(extendedEntityProcessorOutput);
 
             MotechClassPool.registerDDE(clazz.getName());
         }
     }
 
+    /*public EntityProcessorOutput findEntityToExtend(AnnotatedElement element){
+        Class<AnnotatedElement> clazz = (Class) element;
+        for (MDSProcessorOutput processorOutput : entitiesProcessingResult) {
+            if (processorOutput.getEntityProcessorOutputByClassName(clazz.getSuperclass().getName()) != null) {
+                return processorOutput.getEntityProcessorOutputByClassName(clazz.getSuperclass().getName());
+            }
+        }
+        return null;
+    }
+
+    public EntityProcessorOutput getExtendedEntityProcessorOutput(){
+        return extendedEntityProcessorOutput;
+    }*/
+
+    public void setExtendedEntityProcessorOutput(EntityProcessorOutput extendedEntityProcessorOutput){
+        this.extendedEntityProcessorOutput = extendedEntityProcessorOutput;
+    }
+
     public Set<Bundle> getAffectedBundles(){
         return affectedBundles;
+    }
+
+    public void setAffectedBundles(Set<Bundle> affectedBundles) {
+        this.affectedBundles = affectedBundles;
     }
 
     public void setEntitiesProcessingResult(List<MDSProcessorOutput> entitiesProcessingResult) {

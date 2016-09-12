@@ -1,6 +1,9 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.mds.dto.SchemaHolder;
+import org.motechproject.mds.exception.entity.EntityDoesNotExtendEntityException;
+import org.motechproject.mds.exception.entity.EntityDoesNotExtendMDSEntityException;
+import org.motechproject.mds.exception.entity.FieldExistInExtendedEntityException;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +72,8 @@ abstract class AbstractProcessor<A extends Annotation> implements Processor<A> {
 
             try {
                 process(element);
+            } catch (FieldExistInExtendedEntityException | EntityDoesNotExtendMDSEntityException | EntityDoesNotExtendEntityException e){
+                throw e;
             } catch (RuntimeException e) {
                 LOGGER.error("An error occurred while processing annotated element in Bundle: {}, in Element: {} because of:",
                         bundle.getSymbolicName(), element, e);

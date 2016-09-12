@@ -193,7 +193,7 @@ public abstract class EntityAnnotationProcessor<T extends Annotation> extends Ab
     }
 
     private Set<String> returnSecurityMembersForSecurityMode(SecurityMode securityMode, String[] securityMembersArray, String annotationName) {
-        Boolean hasMembers = securityMembersArray != null && securityMembersArray.length > 0;
+        boolean hasMembers = securityMembersArray != null && securityMembersArray.length > 0;
         Set<String> securityMembers;
         if (securityMode == SecurityMode.USERS || securityMode == SecurityMode.PERMISSIONS) {
             if (hasMembers) {

@@ -7,6 +7,6 @@ import org.motechproject.mds.exception.MdsException;
  */
 public class FieldExistInExtendedEntityException extends MdsException {
     public FieldExistInExtendedEntityException(String fieldName, Class clazz, Class superClazz) {
-        super("Field " + fieldName + " from " + clazz.getName() + " already exist in " + superClazz.getName(), null, "mds.error.fieldExistInExtendedEntity");
+        super("Field '" + fieldName + "' from " + clazz.getName() + " already exist in " + superClazz.getName(), null, "mds.error.fieldExistInExtendedEntity");
     }
 }

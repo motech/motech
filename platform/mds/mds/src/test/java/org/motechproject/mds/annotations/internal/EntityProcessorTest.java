@@ -10,12 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.annotations.Entity;
-import org.motechproject.mds.annotations.internal.samples.AnotherInvalidSecuritySample;
-import org.motechproject.mds.annotations.internal.samples.AnotherSample;
-import org.motechproject.mds.annotations.internal.samples.InvalidSecuritySample;
-import org.motechproject.mds.annotations.internal.samples.ReadAccessSample;
-import org.motechproject.mds.annotations.internal.samples.RelatedSample;
-import org.motechproject.mds.annotations.internal.samples.Sample;
+import org.motechproject.mds.annotations.internal.samples.*;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.SchemaHolder;
@@ -40,11 +35,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EntityProcessorTest extends MockBundle {
@@ -139,14 +130,14 @@ public class EntityProcessorTest extends MockBundle {
 
         Set<? extends AnnotatedElement> actual = processor.getElementsToProcess();
 
-        assertEquals(6, actual.size());
+        assertEquals(8, actual.size());
         assertContainsClass(actual, Sample.class.getName());
         assertContainsClass(actual, RelatedSample.class.getName());
         assertContainsClass(actual, AnotherSample.class.getName());
     }
 
     @Test
-    public void shouldProcessClassWithAnnotation() throws Exception {
+    public void shouldProcessClassWithEntityAnnotation() throws Exception {
         processor.process(Sample.class);
 
         verify(fieldProcessor).setClazz(Sample.class);
@@ -161,6 +152,24 @@ public class EntityProcessorTest extends MockBundle {
 
         verify(nonEditableProcessor).setClazz(Sample.class);
         verify(nonEditableProcessor).execute(bundle, schemaHolder);
+    }
+
+    @Test
+    public void shouldNotProcessClassWithEntityExtensionAnnotation() throws Exception {
+        processor.process(ExtendedSample.class);
+
+        verify(fieldProcessor, never()).setClazz(ExtendedSample.class);
+        verify(fieldProcessor, never()).setEntity(any(EntityDto.class));
+        verify(fieldProcessor, never()).execute(bundle, schemaHolder);
+
+        verify(uiFilterableProcessor, never()).setClazz(ExtendedSample.class);
+        verify(uiFilterableProcessor, never()).execute(bundle, schemaHolder);
+
+        verify(uiDisplayableProcessor, never()).setClazz(ExtendedSample.class);
+        verify(uiDisplayableProcessor, never()).execute(bundle, schemaHolder);
+
+        verify(nonEditableProcessor, never()).setClazz(ExtendedSample.class);
+        verify(nonEditableProcessor, never()).execute(bundle, schemaHolder);
     }
 
     @Test

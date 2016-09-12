@@ -14,4 +14,6 @@
 
     <osgi:reference id="messageRecordDataService" interface="org.motechproject.mds.test.secondary.service.MessageRecordDataService" />
 
+    <!--<osgi:reference id="messageRecordExtensionDataService" interface="org.motechproject.mds.test.secondary.service.MessageRecordExtensionDataService" />-->
+
 </beans>
