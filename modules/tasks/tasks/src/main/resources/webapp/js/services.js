@@ -34,4 +34,36 @@
         });
     });
 
+    services.factory('HelpStringManipulation', function($http, $compile, $templateCache, BootstrapDialogManager) {
+        var dialog,
+            compiledMessage;
+
+        this.open = function ($scope) {
+            $http.get('../tasks/partials/help/manipulation.html', {cache: $templateCache}).success(function (html) {
+               compiledMessage = $compile(html)($scope);
+               dialog = new BootstrapDialog({
+                    size: 'size-wide',
+                    title: jQuery.i18n.prop('task.helpManipulation'),
+                    message: compiledMessage,
+                    buttons: [{
+                        label: jQuery.i18n.prop('task.close'),
+                        cssClass: 'btn btn-default',
+                        action: function (dialogItself) {
+                            BootstrapDialogManager.close(dialogItself);
+                        }
+                    }],
+                    onhide: function (dialog) {
+                        BootstrapDialogManager.onhide(dialog);
+                    }
+                });
+                BootstrapDialogManager.open(dialog);
+            });
+        };
+
+        this.close = function () {
+            BootstrapDialogManager.close(dialog);
+        };
+        return this;
+    });
+
 }());

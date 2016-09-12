@@ -258,7 +258,7 @@
     });
 
     controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers,
-                                     $q, $timeout, $stateParams, $http, $filter, ModalFactory, LoadingModal) {
+                $q, $timeout, $stateParams, $http, $filter, ModalFactory, LoadingModal, BootstrapDialogManager, HelpStringManipulation) {
 
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
@@ -1005,9 +1005,15 @@
         }, function() {
            $scope.fields = $scope.getAvailableFields();
         });
+
+        $scope.openHelpStringManipulation = function () {
+            HelpStringManipulation.open($scope);
+        };
+
     });
 
-    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http, ModalFactory, LoadingModal, BootstrapDialogManager) {
+    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http,
+                            ModalFactory, LoadingModal, BootstrapDialogManager, HelpStringManipulation) {
         var data, task;
 
         $scope.taskId = $stateParams.taskId;
@@ -1379,6 +1385,9 @@
 
         $scope.openImportTaskModal = function () {
             BootstrapDialogManager.open($scope.importDialog);
+        };
+        $scope.openHelpModal = function () {
+            BootstrapDialogManager.open($scope.helpDialog);
         };
     });
 }());

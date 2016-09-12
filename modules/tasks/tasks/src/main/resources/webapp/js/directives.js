@@ -550,7 +550,7 @@
         };
     });
 
-    directives.directive('manipulationModal', function ($compile, BootstrapDialogManager) {
+    directives.directive('manipulationModal', function ($compile, BootstrapDialogManager, HelpStringManipulation) {
         return {
             restrict: 'A',
             scope: {
@@ -641,6 +641,13 @@
                                     scope.manipulations = jQuery.extend(true, [], modalScope.manipulations);
                                     scope.$emit('field.changed');
                                     BootstrapDialogManager.close(dialogRef);
+                                }
+                            }, {
+                                id: 'task-form-help-modifications',
+                                label: scope.$parent.msg('task.help.modifications'),
+                                cssClass: 'btn-default pull-left',
+                                action: function(dialogRef) {
+                                   HelpStringManipulation.open(scope.$parent);
                                 }
                             }],
                             onhide: function(dialog){
