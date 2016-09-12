@@ -257,7 +257,7 @@
         };
     });
 
-    controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers,
+    controllers.controller('TasksManageCtrl', function ($rootScope, $scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers,
                                      $q, $timeout, $stateParams, $http, $filter, ModalFactory, LoadingModal) {
 
         $scope.util = ManageTaskUtils;
@@ -269,6 +269,11 @@
             }
         };
         $scope.task.retryTaskOnFailure = false;
+        $scope.debugging = false;
+
+        $scope.changeCheckbox = function (debugging) {
+            $rootScope.$broadcast('debugging', { debug: debugging});
+        };
 
         innerLayout({
             spacing_closed: 30,

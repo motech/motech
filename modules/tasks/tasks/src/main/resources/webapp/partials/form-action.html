@@ -149,6 +149,8 @@
                 <!------------------------ Help button  ------------------------>
                 <a data-target="#helpModal" role="button" class="btn btn-primary" data-toggle="modal">{{msg('task.help.modifications')}}</a>
                 <a data-target="#helpModalFieldSyntaxWithBrackets" role="button" class="btn btn-primary" data-toggle="modal">{{msg('task.help.customSyntax')}}</a>
+                <!--TO DO: design -->
+                {{msg('task.debug')}}<input type="checkbox" ng-model="debugging" ng-change="changeCheckbox(debugging)">
             </div>
         </div>
     </div>

@@ -242,6 +242,7 @@
             },
             link: function (scope, element, attrs) {
                 scope.msg = scope.$parent.taskMsg || scope.$parent.msg;
+
                 if(!scope.field) {
                     scope.field = {};
                 }
@@ -429,6 +430,7 @@
             restrict: 'A',
             require: '?ngModel',
             link: function (scope, element, attrs, ngModel) {
+                scope.debug=false;
                 if (!ngModel){
                     return false;
                 }
@@ -447,6 +449,44 @@
                     }
                 });
 
+                scope.$on('debugging', function(event, args) {
+                    scope.debug = args.debug;
+                    scope.changeBubble();
+                });
+
+                scope.changeBubble = function () {
+                    if(scope.data.value === null || scope.data.value === "")
+                    {
+                        return;
+                    }
+                    else if(scope.data.type === "MAP") // to do
+                    {
+                        if(scope.debug)
+                        {
+                            element.html(scope.pair.key);
+                        }
+                        else
+                        {
+                            element.html(scope.pair.key);
+                            ngModel.$setViewValue(readContent(element));
+                            ngModel.$rollbackViewValue();
+                        }
+                    }
+                    else
+                    {
+                        if(scope.debug)
+                        {
+                            element.html(scope.data.value);
+                        }
+                        else
+                        {
+                            element.html(scope.data.value);
+                            ngModel.$setViewValue(readContent(element));
+                            ngModel.$rollbackViewValue();
+                        }
+                    }
+                };
+
                 element.bind('blur', function (event) {
                     event.stopPropagation();
                     if(element[0] !== event.target){
@@ -454,12 +494,20 @@
                     }
                     ngModel.$setViewValue(readContent(element));
                     scope.$apply();
+                    if(scope.debug)
+                    {
+                        scope.changeBubble();
+                    }
                 });
 
                 scope.$on('field.changed', function (event) {
                     event.stopPropagation();
                     ngModel.$setViewValue(readContent(element));
                     scope.$apply();
+                    if(scope.debug)
+                    {
+                        scope.changeBubble();
+                    }
                 });
 
                 ngModel.$render = function () {
@@ -510,6 +558,10 @@
                             }
                             ngModel.$setViewValue(readContent(element));
                             scope.$apply();
+                            if(scope.debug)
+                            {
+                                scope.changeBubble();
+                            }
                         }
                     });
                 }
