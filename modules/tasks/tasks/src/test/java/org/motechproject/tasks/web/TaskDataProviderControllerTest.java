@@ -3,8 +3,8 @@ package org.motechproject.tasks.web;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
-import org.motechproject.tasks.service.TaskDataProviderService;
+import org.motechproject.tasks.dto.TaskDataProviderDto;
+import org.motechproject.tasks.service.TaskWebService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class TaskDataProviderControllerTest {
 
     @Mock
-    private TaskDataProviderService taskDataProviderService;
+    private TaskWebService taskWebService;
 
     private TaskDataProviderController controller;
 
@@ -25,16 +25,16 @@ public class TaskDataProviderControllerTest {
     public void setup() throws Exception {
         initMocks(this);
 
-        controller = new TaskDataProviderController(taskDataProviderService);
+        controller = new TaskDataProviderController(taskWebService);
     }
 
     @Test
     public void testGetAllDataProviders() throws Exception {
-        List<TaskDataProvider> expected = new ArrayList<>();
+        List<TaskDataProviderDto> expected = new ArrayList<>();
 
-        when(taskDataProviderService.getProviders()).thenReturn(expected);
+        when(taskWebService.getProviders()).thenReturn(expected);
 
-        List<TaskDataProvider> actual = controller.getAllDataProviders();
+        List<TaskDataProviderDto> actual = controller.getAllDataProviders();
 
         assertNotNull(actual);
         assertEquals(expected, actual);
