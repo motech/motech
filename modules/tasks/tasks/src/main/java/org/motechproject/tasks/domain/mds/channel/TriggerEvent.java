@@ -1,7 +1,6 @@
 package org.motechproject.tasks.domain.mds.channel;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.CrudEvents;
@@ -10,6 +9,8 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.dto.EventParameterDto;
+import org.motechproject.tasks.dto.TriggerEventDto;
 
 import javax.jdo.annotations.Persistent;
 import java.util.ArrayList;
@@ -30,7 +31,6 @@ public class TriggerEvent extends TaskEvent {
     private static final long serialVersionUID = 4235157487991610105L;
 
     @Field
-    @JsonIgnore
     @Persistent(defaultFetchGroup = "false")
     private Channel channel;
 
@@ -112,6 +112,15 @@ public class TriggerEvent extends TaskEvent {
         if (eventParameters != null) {
             this.eventParameters.addAll(eventParameters);
         }
+    }
+
+    public TriggerEventDto toDto() {
+        List<EventParameterDto> eventParameterDtos = new ArrayList<>();
+
+        for (EventParameter eventParameter : eventParameters) {
+            eventParameterDtos.add(eventParameter.toDto());
+        }
+        return new TriggerEventDto(getName(), getDescription(), getDisplayName(), getSubject(), eventParameterDtos, triggerListenerSubject);
     }
 
     @Override
