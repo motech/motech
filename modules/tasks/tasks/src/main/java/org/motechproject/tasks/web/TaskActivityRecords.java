@@ -1,6 +1,6 @@
 package org.motechproject.tasks.web;
 
-import org.motechproject.tasks.domain.mds.task.TaskActivity;
+import org.motechproject.tasks.dto.TaskActivityDto;
 
 import java.io.Serializable;
 import java.util.List;
@@ -30,7 +30,7 @@ public class TaskActivityRecords implements Serializable {
     /**
      * The data to display in the grid.
      */
-    private final List<TaskActivity> rows;
+    private final List<TaskActivityDto> rows;
 
     /**
      * Constructs an sms logging view for the jq grid.
@@ -39,7 +39,7 @@ public class TaskActivityRecords implements Serializable {
      * @param totalRecords the total number of records
      * @param taskActivities the data to display in the grid
      */
-    public TaskActivityRecords(Integer page, Integer rows, Long totalRecords, List<TaskActivity> taskActivities) {
+    public TaskActivityRecords(Integer page, Integer rows, Long totalRecords, List<TaskActivityDto> taskActivities) {
         this.page = page;
         this.records = totalRecords;
         this.total = rows;
@@ -70,7 +70,7 @@ public class TaskActivityRecords implements Serializable {
     /**
      * @return the data display in the grid
      */
-    public List<TaskActivity> getRows() {
+    public List<TaskActivityDto> getRows() {
         return rows;
     }
 
