@@ -78,7 +78,7 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService, Osg
             Set<TaskError> errors = TaskDataProviderValidator.validate(provider);
 
             if (!isEmpty(errors)) {
-                throw new ValidationException(TaskDataProviderValidator.TASK_DATA_PROVIDER, errors);
+                throw new ValidationException(TaskDataProviderValidator.TASK_DATA_PROVIDER, TaskError.toDtos(errors));
             }
 
             addProvider(provider);
