@@ -1,6 +1,6 @@
 <servers>
     <server>
-        <id>nexus.motechproject.org</id>
+        <id>motech.nexus</id>
         <username>${env.SONATYPE_USERNAME}</username>
         <password>${env.SONATYPE_PASSWORD}</password>
     </server>
