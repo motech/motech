@@ -628,6 +628,8 @@
                 return s1Lower > s2Lower? 1 : (s1Lower < s2Lower? -1 : 0);
             });
         };
+
+        innerLayout({});
     });
 
     /**
