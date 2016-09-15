@@ -152,6 +152,7 @@
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
                                 angular, handleResponse,
+                                innerLayout,
                                 $, _, defaultLayout
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
