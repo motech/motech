@@ -1,7 +1,0 @@
-<input class="form-control input-xlarge-fluid" type="text" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-model="field.basic.defaultValue" ng-readonly="field.readOnly"
-       default-field-name-valid="{{field.basic.name}}"
-       ng-class="{'has-error': {{field.basic.name}}.$invalid || checkMaxLength(field.basic.defaultValue, field) || checkMinLength(field.basic.defaultValue, field) || !checkPattern(field.basic.defaultValue, field)}">
-<span class="form-hint" ng-show="(!checkPattern(field.basic.defaultValue, field) || {{field.basic.name}}.$error.pattern)">{{msg('mds.error.noValidatePattern')}}</span>
-<span class="form-hint" ng-show="checkMinLength(field.basic.defaultValue, field) && checkPattern(field.basic.defaultValue, field)">{{msg('mds.error.minLength')}}</span>
-<span class="form-hint" ng-show="checkMaxLength(field.basic.defaultValue, field) && checkPattern(field.basic.defaultValue, field)">{{msg('mds.error.maxLength')}}</span>
-

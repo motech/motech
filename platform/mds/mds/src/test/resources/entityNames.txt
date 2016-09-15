@@ -1,3 +1,0 @@
-org.motechproject.test.EntityClass
-org.motechproject.test.AnotherClass
-org.motechproject.test.EntityWithoutHistoryClass
