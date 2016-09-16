@@ -619,8 +619,6 @@
                         }
                         scope.importDialog = new BootstrapDialog({
                             closable: false,
-                            closeByBackdrop: false,
-                            closeByKeyboard: false,
                             autodestroy: false,
                             title: function () {
                                 switch(scope.manipulationType){
@@ -649,10 +647,7 @@
                                 action: function(dialogRef) {
                                    HelpStringManipulation.open(scope.$parent);
                                 }
-                            }],
-                            onhide: function(dialog){
-                                BootstrapDialogManager.onhide(dialog);
-                            }
+                            }]
                         });
                         BootstrapDialogManager.open(scope.importDialog);
                     }});
