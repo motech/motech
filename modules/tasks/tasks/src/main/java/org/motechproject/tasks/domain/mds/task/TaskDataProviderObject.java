@@ -7,6 +7,9 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.dto.FieldParameterDto;
+import org.motechproject.tasks.dto.LookupFieldsParameterDto;
+import org.motechproject.tasks.dto.TaskDataProviderObjectDto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -120,6 +123,24 @@ public class TaskDataProviderObject implements Serializable {
         if (fields != null) {
             this.fields.addAll(fields);
         }
+    }
+
+    public TaskDataProviderObjectDto toDto() {
+        List<FieldParameterDto> fieldDtos = new ArrayList<>();
+        List<LookupFieldsParameterDto> lookupFieldsDtos = new ArrayList<>();
+
+        if (fields != null) {
+            for (FieldParameter field : fields) {
+                fieldDtos.add(field.toDto());
+            }
+       }
+        if (lookupFields != null) {
+            for (LookupFieldsParameter lookupField : lookupFields) {
+                lookupFieldsDtos.add(lookupField.toDto());
+            }
+        }
+
+        return new TaskDataProviderObjectDto(displayName, type, lookupFieldsDtos, fieldDtos);
     }
 
     @Override

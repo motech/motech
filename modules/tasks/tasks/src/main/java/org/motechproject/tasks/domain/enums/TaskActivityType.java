@@ -1,4 +1,4 @@
-package org.motechproject.tasks.domain.mds.task;
+package org.motechproject.tasks.domain.enums;
 
 import org.codehaus.jackson.annotate.JsonValue;
 

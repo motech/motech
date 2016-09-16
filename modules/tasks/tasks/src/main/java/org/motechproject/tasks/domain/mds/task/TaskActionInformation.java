@@ -7,6 +7,7 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.dto.TaskActionInformationDto;
 
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Value;
@@ -160,6 +161,11 @@ public class TaskActionInformation extends TaskEventInformation {
         if (values != null) {
             this.values.putAll(values);
         }
+    }
+
+    public TaskActionInformationDto toDto() {
+        return new TaskActionInformationDto(getName(), getDisplayName(), getChannelName(), getModuleName(), getModuleVersion(),
+                getSubject(), serviceInterface, serviceMethod, values);
     }
 
     @Override

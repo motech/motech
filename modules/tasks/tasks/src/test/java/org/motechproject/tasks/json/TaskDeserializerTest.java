@@ -29,7 +29,7 @@ import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.junit.runners.Parameterized.Parameters;
-import static org.motechproject.tasks.domain.mds.ParameterType.UNICODE;
+import static org.motechproject.tasks.domain.enums.ParameterType.UNICODE;
 
 @RunWith(Parameterized.class)
 public class TaskDeserializerTest {

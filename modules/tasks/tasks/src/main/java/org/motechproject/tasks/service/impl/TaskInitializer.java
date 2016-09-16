@@ -11,6 +11,7 @@ import org.motechproject.tasks.service.util.TaskContext;
 import org.motechproject.tasks.service.util.TaskFilterExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,6 +54,7 @@ class TaskInitializer {
      * @return  true if all steps were executed, false otherwise
      * @throws TaskHandlerException if there were error while handling task
      */
+    @Transactional
     public boolean evalConfigSteps(Map<String, DataProvider> dataProviders) throws TaskHandlerException {
         LOGGER.info("Executing all config steps for task: {}", taskContext.getTask().getName());
         Iterator<TaskConfigStep> iterator = taskContext.getTask().getTaskConfig().getSteps().iterator();

@@ -2,9 +2,10 @@ package org.motechproject.tasks.web;
 
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Order;
-import org.motechproject.tasks.domain.mds.task.TaskActivity;
-import org.motechproject.tasks.domain.mds.task.TaskActivityType;
+import org.motechproject.tasks.domain.enums.TaskActivityType;
+import org.motechproject.tasks.dto.TaskActivityDto;
 import org.motechproject.tasks.service.TaskActivityService;
+import org.motechproject.tasks.service.TaskWebService;
 import org.motechproject.tasks.service.TriggerHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ public class ActivityController {
 
     private TaskActivityService activityService;
     private TriggerHandler taskTriggerHandler;
+    private TaskWebService taskWebService;
 
     /**
      * Controller constructor.
@@ -33,9 +35,10 @@ public class ActivityController {
      * @param activityService  the activity service, not null
      */
     @Autowired
-    public ActivityController(final TaskActivityService activityService, TriggerHandler taskTriggerHandler) {
+    public ActivityController(final TaskActivityService activityService, TriggerHandler taskTriggerHandler, TaskWebService taskWebService) {
         this.activityService = activityService;
         this.taskTriggerHandler = taskTriggerHandler;
+        this.taskWebService = taskWebService;
     }
 
     /**
@@ -45,8 +48,8 @@ public class ActivityController {
      */
     @RequestMapping(value = "/activity", method = RequestMethod.GET)
     @ResponseBody
-    public List<TaskActivity> getRecentActivities() {
-        return activityService.getLatestActivities();
+    public List<TaskActivityDto> getRecentActivities() {
+        return taskWebService.getLatestActivities();
     }
 
     /**
@@ -62,7 +65,7 @@ public class ActivityController {
             QueryParams params = new QueryParams(settings.getPage(), settings.getRows(), new Order("date", Order.Direction.DESC));
             Set<TaskActivityType> types = settings.getTypesFromString();
 
-            List<TaskActivity> activities = activityService.getTaskActivities(taskId, types, params);
+            List<TaskActivityDto> activities = taskWebService.getTaskActivities(taskId, types, params);
             long count = activityService.getTaskActivitiesCount(taskId, types);
             int totalPages = (int) Math.ceil((double) count / settings.getRows());
 

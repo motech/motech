@@ -7,8 +7,11 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.dto.LookupDto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -37,6 +40,14 @@ public class Lookup implements Serializable {
 
     /**
      * Constructor.
+     * @param dto Lookup data transfer object
+     */
+    public Lookup(LookupDto dto){
+        this(dto.getField(), dto.getValue());
+    }
+
+    /**
+     * Constructor.
      *
      * @param field  the field name
      * @param value  the field value
@@ -60,6 +71,20 @@ public class Lookup implements Serializable {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public LookupDto toDto() {
+        return new LookupDto(field, value);
+    }
+
+    public static List<Lookup> toLookups(List<LookupDto> lookupDtos) {
+        List<Lookup> lookups = new ArrayList<>();
+
+        for (LookupDto lookupDto : lookupDtos) {
+            lookups.add(new Lookup(lookupDto));
+        }
+
+        return lookups;
     }
 
     @Override
