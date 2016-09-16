@@ -1386,8 +1386,5 @@
         $scope.openImportTaskModal = function () {
             BootstrapDialogManager.open($scope.importDialog);
         };
-        $scope.openHelpModal = function () {
-            BootstrapDialogManager.open($scope.helpDialog);
-        };
     });
 }());
