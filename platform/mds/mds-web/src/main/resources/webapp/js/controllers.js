@@ -628,6 +628,8 @@
                 return s1Lower > s2Lower? 1 : (s1Lower < s2Lower? -1 : 0);
             });
         };
+
+        innerLayout({});
     });
 
     /**
@@ -4196,6 +4198,9 @@
 
             var values = $scope.currentRecord.fields;
             angular.forEach (values, function(value, key) {
+                if(value.type.typeClass === "java.lang.String" && value.value === ""){
+                    value.value = null;
+                }
                 value.value = value.value === 'null' ? null : value.value;
             });
 

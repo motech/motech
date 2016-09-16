@@ -68,6 +68,20 @@
                 input: 'input[date-update]',
                 pattern: 9
             }, {
+                name: 'beginningOfMonth',
+                input: ''
+            }, {
+                name: 'endOfMonth',
+                input: ''
+            }, {
+                name: 'plusMonths',
+                input: 'input[manipulation-kind="plusMonths"]',
+                pattern: 11
+            }, {
+                name: 'minusMonths',
+                input: 'input[manipulation-kind="minusMonths"]',
+                pattern: 12
+            }, {
                 name: 'plusDays',
                 input: 'input[manipulation-kind="plusDays"]',
                 pattern: 9

@@ -561,10 +561,7 @@
             },
             link: function (scope, element, attrs) {
                 var name = scope.name,
-                    displayNameOnly = scope.displayNameOnly,
-                    horizontalPosition =1,
-                    timeInterval = null,
-                    timeOfMouseOut=0;
+                    displayNameOnly = scope.displayNameOnly;
 
                 if(!scope.manipulationType){
                     return false;
@@ -575,33 +572,6 @@
                 if(!scope.manipulations){
                     return false;
                 }
-
-                element.on({
-                    mouseover: function(){
-                        var timeOfMouseOver = new Date().getTime();
-
-                        /*Changing between the span and remove button triggers the mouseout event.
-                        This prevents from reseting the position of the field in case of such situation.*/
-                        if(timeOfMouseOver-timeOfMouseOut>5){
-                            horizontalPosition = 1;
-                        }
-
-                        /*If the field was removed, the timeout has not been cleared.*/
-                        if(timeInterval!==null){
-                            clearInterval(timeInterval);
-                        }
-
-                        timeInterval = setInterval(function(){
-                            element.scrollLeft(horizontalPosition);
-                            horizontalPosition = horizontalPosition + 1;
-                        }, 10);
-                    },
-                    mouseout: function(){
-                        clearInterval(timeInterval);
-                        timeInterval=null;
-                        timeOfMouseOut = new Date().getTime();
-                    }
-                });
 
                 element.on('click', function (event) {
                     var modalScope,
@@ -687,7 +657,7 @@
                     $scope.manipulationTypes.push('dateTime');
                 }
                 if(['date', 'date2date'].indexOf(manipulationType) > -1) {
-                    $scope.manipulationTypes = $scope.manipulationTypes.concat(['plusDays', 'minusDays', 'plusHours', 'minusHours', 'plusMinutes', 'minusMinutes']);
+                    $scope.manipulationTypes = $scope.manipulationTypes.concat(['beginningOfMonth','endOfMonth','plusMonths','minusMonths','plusDays', 'minusDays', 'plusHours', 'minusHours', 'plusMinutes', 'minusMinutes']);
                 }
 
                 this.addManipulation = function (type, argument) {
