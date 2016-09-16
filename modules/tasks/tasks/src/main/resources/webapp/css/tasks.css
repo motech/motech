@@ -258,9 +258,35 @@ manipulation-sorter .manipulation .remove:before {
     margin: 0px 5px 5px 0;
 }
 
-.tasks .map-field field span{
-    max-width: 105%;
+.tasks .map-field {
+    width: 30%;
+    float: left;
+    margin: 0px 5px 5px 0;
+}
+
+.tasks .map-field .field-bubble{
+    max-width: 100%;
+}
+
+.tasks .map-field .field-text{
+    float: left;
+    max-width: 82%;
     overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tasks .map-field .field-remove{
+    float: right;
+    display: inline;
+}
+
+.tasks .field-bubble .popover{
+    visibility: hidden;
+}
+
+.tasks .map-field .popover{
+    color: #000000;
+    visibility: visible;
 }
 
 .tasks .actionField.period-input {
