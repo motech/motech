@@ -444,6 +444,10 @@ public class MDSConstructorImpl implements MDSConstructor {
 
         List<ClassData> infrastructure = infrastructureBuilder.buildInfrastructure(entity, schemaHolder);
 
+        if (entity.hasSubEntity()) {
+            //infrastructure.addAll(infrastructureBuilder.buildInfrastructureForExtension(entity, schemaHolder));
+        }
+
         for (ClassData classData : infrastructure) {
             // if we have a DDE service registered, we register the enhanced bytecode
             // so that the weaving hook can weave the interface class and add lookups

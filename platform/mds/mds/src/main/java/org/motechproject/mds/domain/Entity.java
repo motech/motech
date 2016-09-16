@@ -106,6 +106,10 @@ public class Entity {
 
     private Long entityVersion = 1L;
 
+    private boolean subEntity;
+
+    private String subEntityName;
+
     @Persistent(mappedBy = ENTITY, dependent = TRUE)
     private RestOptions restOptions;
 
@@ -149,7 +153,7 @@ public class Entity {
         EntityDto dto = new EntityDto(id, className, getName(), module, namespace, tableName,
                 getTracking() != null && getTracking().isRecordHistory(), securityMode, securityMembers,
                 readOnlySecurityMode, readOnlySecurityMembers, superClass, abstractClass, securityOptionsModified,
-                bundleSymbolicName);
+                bundleSymbolicName, subEntityName, subEntity);
 
         dto.setMaxFetchDepth(maxFetchDepth);
         dto.setNonEditable(getTracking() != null && getTracking().isNonEditable());
@@ -797,5 +801,21 @@ public class Entity {
             }
         }
         return restExposedLookups;
+    }
+
+    public void setSubEntity(boolean subEntity) {
+        this.subEntity = subEntity;
+    }
+
+    public boolean hasSubEntity() {
+        return subEntity;
+    }
+
+    public void setSuperEntity(String subEntityName) {
+        this.subEntityName = subEntityName;
+    }
+
+    public String getSubEntityName() {
+        return subEntityName;
     }
 }

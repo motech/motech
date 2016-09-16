@@ -31,6 +31,7 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 
 import javax.inject.Inject;
+import javax.xml.rpc.Call;
 import java.util.List;
 
 import java.util.HashMap;
@@ -102,6 +103,10 @@ public class MdsSecondBundleIT extends BasePaxIT {
         MessageRecordExtension record1 = new MessageRecordExtension("hjkhj", CallStatus.createFrom(MessageStatus.PENDING), "Jokjguie", "jhkhjk");
         MessageRecordExtension record2 = new MessageRecordExtension("Hjkl", CallStatus.createFrom(MessageStatus.FINISHED), "jklj", "Grjklhj");
 
+        MessageRecord sdf= new MessageRecord("sdfs", CallStatus.createFrom(MessageStatus.FINISHED), "sdf");
+
+        MessageRecordExtension asd = (MessageRecordExtension)sdf;
+
         messageRecordDataService.create(record1);
         messageRecordDataService.create(record2);
 
@@ -119,9 +124,6 @@ public class MdsSecondBundleIT extends BasePaxIT {
     }
 
     @Test
-
-
-
     public void testCrossBundleRelationshipCreate() {
         EntityA a = new EntityA();
         EntityB b = new EntityB();

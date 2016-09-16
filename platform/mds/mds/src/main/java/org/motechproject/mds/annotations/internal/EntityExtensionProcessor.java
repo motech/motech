@@ -87,13 +87,15 @@ public class EntityExtensionProcessor extends EntityAnnotationProcessor<EntityEx
             RestOptionsDto restOptions;
             TrackingDto tracking;
 
-                LOGGER.debug("DDE for {} exists, updating if necessary", clazz.getName());
+            LOGGER.debug("Base Entity for {} exist, updating", clazz.getName());
 
-                extendedEntity = extendedEntityProcessorOutput.getEntityProcessingResult();
-                restOptions = extendedEntityProcessorOutput.getRestProcessingResult();
-                tracking = extendedEntityProcessorOutput.getTrackingProcessingResult();
-                existingFields = extendedEntityProcessorOutput.getFieldProcessingResult();
+            extendedEntity = extendedEntityProcessorOutput.getEntityProcessingResult();
+            restOptions = extendedEntityProcessorOutput.getRestProcessingResult();
+            tracking = extendedEntityProcessorOutput.getTrackingProcessingResult();
+            existingFields = extendedEntityProcessorOutput.getFieldProcessingResult();
 
+            extendedEntity.setSubEntity(true);
+            extendedEntity.setSubEntityName(clazz.getName());
 
             if (!tracking.isModifiedByUser()) {
                 tracking.setRecordHistory(recordHistory);
@@ -120,41 +122,9 @@ public class EntityExtensionProcessor extends EntityAnnotationProcessor<EntityEx
 
             add(extendedEntity);
 
-
-            MDSProcessorOutput found = null;
-            EntityProcessorOutput found2 = null;
-            for (MDSProcessorOutput processingOutput: entitiesProcessingResult) {
-                for (EntityProcessorOutput entityProcessorOutput : processingOutput.getEntityProcessorOutputs()) {
-                    if (entityProcessorOutput.getEntityProcessingResult().getClassName().equals(clazz.getSuperclass().getName())) {
-                        found = processingOutput;
-                        found2 = entityProcessorOutput;
-                        break;
-                        //processingOutput.getEntityProcessorOutputs().remove(entityProcessorOutput);
-                        //processingOutput.getEntityProcessorOutputs().add(extendedEntityProcessorOutput);
-                    }
-                }
-            }
-
-            found.getEntityProcessorOutputs().remove(found2);
-            found.getEntityProcessorOutputs().add(extendedEntityProcessorOutput);
-
             MotechClassPool.registerDDE(clazz.getName());
         }
     }
-
-    /*public EntityProcessorOutput findEntityToExtend(AnnotatedElement element){
-        Class<AnnotatedElement> clazz = (Class) element;
-        for (MDSProcessorOutput processorOutput : entitiesProcessingResult) {
-            if (processorOutput.getEntityProcessorOutputByClassName(clazz.getSuperclass().getName()) != null) {
-                return processorOutput.getEntityProcessorOutputByClassName(clazz.getSuperclass().getName());
-            }
-        }
-        return null;
-    }
-
-    public EntityProcessorOutput getExtendedEntityProcessorOutput(){
-        return extendedEntityProcessorOutput;
-    }*/
 
     public void setExtendedEntityProcessorOutput(EntityProcessorOutput extendedEntityProcessorOutput){
         this.extendedEntityProcessorOutput = extendedEntityProcessorOutput;

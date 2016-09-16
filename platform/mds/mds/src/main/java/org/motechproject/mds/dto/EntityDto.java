@@ -11,6 +11,8 @@ import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.util.TypeHelper;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
@@ -45,6 +47,8 @@ public class EntityDto {
     private Integer maxFetchDepth;
     private boolean readOnlyAccess;
     private Long schemaVersion;
+    private boolean subEntity;
+    private String subEntityName;
 
     public EntityDto() {
         this(null, null, null, null, null, null, null, null);
@@ -84,13 +88,13 @@ public class EntityDto {
     }
 
     public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers, String superClass) {
-        this(id, className, name, module, namespace, null, false, securityMode, securityMembers, null, null, superClass, false, false, null);
+        this(id, className, name, module, namespace, null, false, securityMode, securityMembers, null, null, superClass, false, false, null, null, false);
     }
 
     public EntityDto(Long id, String className, String name, String module, String namespace,
                      String tableName, boolean recordHistory, SecurityMode securityMode, Set<String> securityMembers,
                      SecurityMode readOnlySecurityMode, Set<String> readOnlySecurityMembers, String superClass,
-                     boolean abstractClass, boolean securityOptionsModified, String bundleSymbolicName) {
+                     boolean abstractClass, boolean securityOptionsModified, String bundleSymbolicName, String subEntityName, boolean subEntity) {
         this.id = id;
         this.className = className;
         this.name = name;
@@ -107,6 +111,8 @@ public class EntityDto {
         this.abstractClass = abstractClass;
         this.securityOptionsModified = securityOptionsModified;
         this.bundleSymbolicName = bundleSymbolicName;
+        this.subEntityName = subEntityName;
+        this.subEntity = subEntity;
     }
 
     public Long getId() {
@@ -283,6 +289,22 @@ public class EntityDto {
 
     public void setSchemaVersion(Long schemaVersion) {
         this.schemaVersion = schemaVersion;
+    }
+
+    public boolean hasSubEntity(){
+        return subEntity;
+    }
+
+    public void setSubEntity(boolean subEntity){
+        this.subEntity = subEntity;
+    }
+
+    public String getSubEntityName() {
+        return subEntityName;
+    }
+
+    public void setSubEntityName(String subEntityName) {
+        this.subEntityName = subEntityName;
     }
 
     @JsonIgnore

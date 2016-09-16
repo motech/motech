@@ -55,6 +55,11 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
     }
 
     @Override
+    public List<ClassData> buildInfrastructureForExtension(EntityDto entity, SchemaHolder schemaHolder) {
+        return build(entity.getSubEntityName(), entity, schemaHolder);
+    }
+
+    @Override
     public List<ClassData> buildHistoryInfrastructure(String className) {
         return build(className, null, null);
     }
@@ -63,9 +68,11 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         List<ClassData> list = new ArrayList<>();
 
         // create a repository(dao) for the entity
-        String repositoryClassName = MotechClassPool.getRepositoryName(className);
-        byte[] repositoryCode = getRepositoryCode(repositoryClassName, className, entity.getMaxFetchDepth());
-        list.add(new ClassData(repositoryClassName, repositoryCode));
+        if(entity.getClassName().equals(className)) {
+            String repositoryClassName = MotechClassPool.getRepositoryName(className);
+            byte[] repositoryCode = getRepositoryCode(repositoryClassName, className, entity.getMaxFetchDepth());
+            list.add(new ClassData(repositoryClassName, repositoryCode));
+        }
 
         // create an interface for the service
         String interfaceClassName = MotechClassPool.getInterfaceName(className);

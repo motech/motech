@@ -1,7 +1,6 @@
 package org.motechproject.mds.test.secondary.domain;
 
 
-import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.EntityExtension;
 import org.motechproject.mds.annotations.Field;
 

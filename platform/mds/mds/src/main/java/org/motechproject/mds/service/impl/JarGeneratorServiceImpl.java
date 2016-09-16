@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.commons.api.ThreadSuspender;
+import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.tasks.MDSDataProvider;
 import org.motechproject.mds.builder.MDSConstructor;
 import org.motechproject.mds.domain.ClassData;
@@ -350,6 +351,9 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
                     }
 
                     information.add(info);
+                    if (entity.hasSubEntity()) {
+                        information.add(infoForSubEntity(schemaHolder, entity, output));
+                    }
                 }
             }
 
@@ -366,6 +370,34 @@ public class JarGeneratorServiceImpl implements JarGeneratorService {
 
             return tempFile.toFile();
         }
+    }
+
+    private EntityInfo infoForSubEntity(SchemaHolder schemaHolder, EntityDto entity, JarOutputStream output) {
+
+        String subEntity = entity.getSubEntityName();
+        List<FieldDto> fields = schemaHolder.getFields(entity);
+        AdvancedSettingsDto advancedSettings = schemaHolder.getAdvancedSettings(entity);
+
+        EntityInfo info = buildEntityInfo(entity, fields, advancedSettings);
+
+        String subServiceClass = MotechClassPool.getServiceImplName(subEntity);
+        if (addClass(output, subServiceClass)) {
+            info.setServiceClass(subServiceClass);
+            info.setServiceName(ClassName.getServiceName(subEntity));
+        }
+
+        String subInterfaceName = MotechClassPool.getInterfaceName(subEntity);
+        if (MotechClassPool.isServiceInterfaceRegistered(subEntity)) {
+            info.setInterfaceName(subInterfaceName);
+        } else {
+            if (addClass(output, subInterfaceName)) {
+                info.setInterfaceName(subInterfaceName);
+            }
+        }
+
+
+
+        return info;
     }
 
     private EntityInfo buildEntityInfo(EntityDto entity, List<FieldDto> fields, AdvancedSettingsDto advancedSettings) {

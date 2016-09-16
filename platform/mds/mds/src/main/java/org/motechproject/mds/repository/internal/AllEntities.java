@@ -31,6 +31,8 @@ public class AllEntities extends MotechDataRepository<Entity> {
         entity.setModule(dto.getModule());
         entity.setBundleSymbolicName(dto.getBundleSymbolicName());
         entity.setNamespace(dto.getNamespace());
+
+
         entity.setTableName(dto.getTableName());
         entity.setMaxFetchDepth(dto.getMaxFetchDepth());
         entity.setSecurityMode(dto.getSecurityMode());
@@ -43,6 +45,8 @@ public class AllEntities extends MotechDataRepository<Entity> {
         tracking.setEntity(entity);
         tracking.setRecordHistory(dto.isRecordHistory());
         entity.setTracking(tracking);
+        entity.setSubEntity(dto.hasSubEntity());
+        entity.setSuperEntity(dto.getSubEntityName());
 
         return create(entity);
     }

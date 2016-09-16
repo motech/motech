@@ -113,7 +113,7 @@ class EntityProcessor extends EntityAnnotationProcessor<Entity> {
                 entity = new EntityDto(
                         null, className, name, module, namespace, tableName, recordHistory,
                         SecurityMode.EVERYONE, null, null, null, clazz.getSuperclass().getName(),
-                        Modifier.isAbstract(clazz.getModifiers()), false, bundleSymbolicName
+                        Modifier.isAbstract(clazz.getModifiers()), false, bundleSymbolicName, null, false
                 );
             } else {
                 LOGGER.debug("DDE for {} already exists, updating if necessary", className);
