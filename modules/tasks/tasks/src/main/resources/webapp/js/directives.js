@@ -550,7 +550,7 @@
         };
     });
 
-    directives.directive('manipulationModal', function ($compile, BootstrapDialogManager) {
+    directives.directive('manipulationModal', function ($compile, BootstrapDialogManager, HelpStringManipulation) {
         return {
             restrict: 'A',
             scope: {
@@ -589,8 +589,6 @@
                         }
                         scope.importDialog = new BootstrapDialog({
                             closable: false,
-                            closeByBackdrop: false,
-                            closeByKeyboard: false,
                             autodestroy: false,
                             title: function () {
                                 switch(scope.manipulationType){
@@ -612,10 +610,14 @@
                                     scope.$emit('field.changed');
                                     BootstrapDialogManager.close(dialogRef);
                                 }
-                            }],
-                            onhide: function(dialog){
-                                BootstrapDialogManager.onhide(dialog);
-                            }
+                            }, {
+                                id: 'task-form-help-modifications',
+                                label: scope.$parent.msg('task.help.modifications'),
+                                cssClass: 'btn-default pull-left',
+                                action: function(dialogRef) {
+                                   HelpStringManipulation.open(scope.$parent);
+                                }
+                            }]
                         });
                         BootstrapDialogManager.open(scope.importDialog);
                     }});

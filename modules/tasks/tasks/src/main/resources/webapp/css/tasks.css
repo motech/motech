@@ -1016,11 +1016,7 @@ manipulation-sorter .manipulation .remove:before {
     color: #224477 !important;
 }
 
-#helpModal .modal-dialog {
-    width: 760px;
-}
-
-#helpModal .modal-body .header {
+.tasks .header {
     color: #224477;
     font-size: 16px;
 }
