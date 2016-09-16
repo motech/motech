@@ -68,16 +68,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.tasks.domain.mds.ParameterType.BOOLEAN;
-import static org.motechproject.tasks.domain.mds.ParameterType.DATE;
-import static org.motechproject.tasks.domain.mds.ParameterType.DOUBLE;
-import static org.motechproject.tasks.domain.mds.ParameterType.INTEGER;
-import static org.motechproject.tasks.domain.mds.ParameterType.LIST;
-import static org.motechproject.tasks.domain.mds.ParameterType.LONG;
-import static org.motechproject.tasks.domain.mds.ParameterType.MAP;
-import static org.motechproject.tasks.domain.mds.ParameterType.TEXTAREA;
-import static org.motechproject.tasks.domain.mds.ParameterType.TIME;
-import static org.motechproject.tasks.domain.mds.ParameterType.UNICODE;
+import static org.motechproject.tasks.domain.enums.ParameterType.BOOLEAN;
+import static org.motechproject.tasks.domain.enums.ParameterType.DATE;
+import static org.motechproject.tasks.domain.enums.ParameterType.DOUBLE;
+import static org.motechproject.tasks.domain.enums.ParameterType.INTEGER;
+import static org.motechproject.tasks.domain.enums.ParameterType.LIST;
+import static org.motechproject.tasks.domain.enums.ParameterType.LONG;
+import static org.motechproject.tasks.domain.enums.ParameterType.MAP;
+import static org.motechproject.tasks.domain.enums.ParameterType.TEXTAREA;
+import static org.motechproject.tasks.domain.enums.ParameterType.TIME;
+import static org.motechproject.tasks.domain.enums.ParameterType.UNICODE;
 import static org.motechproject.tasks.domain.mds.task.OperatorType.CONTAINS;
 import static org.motechproject.tasks.domain.mds.task.OperatorType.ENDSWITH;
 import static org.motechproject.tasks.domain.mds.task.OperatorType.EQUALS;
@@ -153,7 +153,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
     @Spy
     @InjectMocks
-    private TaskActionExecutor taskActionExecutor = new TaskActionExecutor(taskService, taskActivityService, eventRelay, postExecutionHandler);
+    private TaskActionExecutor taskActionExecutor = new TaskActionExecutor();
 
     @Captor
     private ArgumentCaptor<TaskHandlerException> exceptionCaptor;

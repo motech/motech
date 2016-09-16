@@ -3,7 +3,7 @@ package org.motechproject.tasks.service;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
-import org.motechproject.tasks.domain.mds.task.TaskActivityType;
+import org.motechproject.tasks.domain.enums.TaskActivityType;
 
 import java.util.List;
 import java.util.Map;

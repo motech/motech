@@ -325,7 +325,7 @@
                                 $(this).collapse('hide');
                             });
 
-                            if (step['@type'] === 'DataSource') {
+                            if (step['@type'] === 'DataSourceDto') {
                                 source = $scope.findDataSource(step.providerName);
                                 object = $scope.util.find({
                                     where: source.objects,
@@ -489,7 +489,7 @@
             var lastStep = $scope.task.taskConfig.steps.last();
 
             $scope.task.taskConfig.steps.push({
-                '@type': 'FilterSet',
+                '@type': 'FilterSetDto',
                 filters: [],
                 operator: "AND",
                 order: (lastStep && lastStep.order + 1) || 0
@@ -566,7 +566,7 @@
                         where: $scope.task.taskConfig.steps,
                         by: [{
                             what: '@type',
-                            equalTo: 'DataSource'
+                            equalTo: 'DataSourceDto'
                         }, {
                             what: 'providerName',
                             equalTo: splitted[1] + '.' + splitted[2]
@@ -653,7 +653,7 @@
             last = sources && sources.last();
 
             $scope.task.taskConfig.steps.push({
-                '@type': 'DataSource',
+                '@type': 'DataSourceDto',
                 objectId: (last && last.objectId + 1) || 0,
                 order: (lastStep && lastStep.order + 1) || 0
             });
@@ -691,7 +691,7 @@
                 where: $scope.task.taskConfig.steps,
                 by: [{
                     what: '@type',
-                    equalTo: 'DataSource'
+                    equalTo: 'DataSourceDto'
                 }],
                 unique: false
             });
@@ -861,7 +861,7 @@
             });
 
             angular.forEach($scope.task.taskConfig.steps, function (step) {
-                if (step['@type'] === 'DataSource') {
+                if (step['@type'] === 'DataSourceDto') {
                     if (step.lookup === undefined) {
                         step.lookup = [];
                     }

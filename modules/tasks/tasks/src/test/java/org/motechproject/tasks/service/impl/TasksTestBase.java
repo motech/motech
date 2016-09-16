@@ -23,12 +23,12 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static org.motechproject.tasks.domain.mds.ParameterType.DATE;
-import static org.motechproject.tasks.domain.mds.ParameterType.INTEGER;
-import static org.motechproject.tasks.domain.mds.ParameterType.LIST;
-import static org.motechproject.tasks.domain.mds.ParameterType.MAP;
-import static org.motechproject.tasks.domain.mds.ParameterType.TEXTAREA;
-import static org.motechproject.tasks.domain.mds.task.TaskActivityType.ERROR;
+import static org.motechproject.tasks.domain.enums.ParameterType.DATE;
+import static org.motechproject.tasks.domain.enums.ParameterType.INTEGER;
+import static org.motechproject.tasks.domain.enums.ParameterType.LIST;
+import static org.motechproject.tasks.domain.enums.ParameterType.MAP;
+import static org.motechproject.tasks.domain.enums.ParameterType.TEXTAREA;
+import static org.motechproject.tasks.domain.enums.TaskActivityType.ERROR;
 
 public abstract class TasksTestBase {
 
