@@ -28,6 +28,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 public class TaskActionInformation extends TaskEventInformation {
 
     private static final long serialVersionUID = -132464255615128442L;
+    private static final int MAX_VALUE_LENGTH = 20000;
 
     @Field
     private String serviceInterface;
@@ -36,7 +37,7 @@ public class TaskActionInformation extends TaskEventInformation {
     private String serviceMethod;
 
     @Field
-    @Value(columns = @Column(sqlType = "text"))
+    @Value(columns = @Column(length = MAX_VALUE_LENGTH))
     private Map<String, String> values;
 
     /**
