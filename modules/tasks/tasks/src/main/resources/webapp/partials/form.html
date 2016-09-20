@@ -12,6 +12,20 @@
         </div>
     </div>
     <div>
+        <div class="sidebar">
+            <div class="navigation-toggle"><i class="fa fa-eject fa-rotate-270"></i></div>
+            <ul class="navigation">
+                <li class="navigation-items">
+                    <span>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="debugging" ng-change="changeCheckbox(debugging)"> {{msg('task.debug')}}
+                            </label>
+                        </div>
+                    </span>
+                </li>
+            </ul>
+        </div>
         <div class="margin-before">
             <form class="inside task form-horizontal">
                 <!------------------ ENTER TASK NAME ------------------>
