@@ -63,6 +63,9 @@
             $timeout(function() {
                 if (modalsList.length > 0) {
                     that.remove(dialog);
+                    if (modalsList.length > 0) {
+                        modalsList[modalsList.length-1].open();
+                    }
                 }
             }, 200);
         };

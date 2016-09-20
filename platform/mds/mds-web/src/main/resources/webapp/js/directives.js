@@ -3598,18 +3598,5 @@
             });
         };
     });
-
-    directives.directive('preventNameConflicts', function($compile) {
-        return {
-            restrict: 'A',
-            priority: -1,
-            terminal: true,
-            link: function(scope, element, attrs) {
-                attrs.$set('name', attrs.name);
-                attrs.$set('preventNameConflicts', null);
-                $compile(element)(scope);
-            }
-        };
-    });
 }());
 

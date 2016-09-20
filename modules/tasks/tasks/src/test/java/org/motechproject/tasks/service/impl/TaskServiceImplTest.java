@@ -41,6 +41,7 @@ import org.motechproject.tasks.domain.mds.channel.TaskEvent;
 import org.motechproject.tasks.domain.mds.task.TaskEventInformation;
 import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
+import org.motechproject.tasks.dto.TaskErrorDto;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 import org.motechproject.tasks.exception.TaskNameAlreadyExistsException;
 import org.motechproject.tasks.exception.TaskNotFoundException;
@@ -82,7 +83,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.tasks.domain.mds.ParameterType.UNICODE;
+import static org.motechproject.tasks.domain.enums.ParameterType.UNICODE;
 import static org.motechproject.tasks.constants.EventDataKeys.CHANNEL_MODULE_NAME;
 import static org.motechproject.tasks.constants.EventDataKeys.DATA_PROVIDER_NAME;
 import static org.motechproject.tasks.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
@@ -791,10 +792,10 @@ public class TaskServiceImplTest {
 
             @Override
             public boolean matchesSafely(ValidationException actualException) {
-                final TaskError triggerChannelError = new TaskError("task.validation.error.triggerChannelNotRegistered");
-                final TaskError actionChannelError = new TaskError("task.validation.error.actionChannelNotRegistered");
+                final TaskErrorDto triggerChannelError = new TaskErrorDto("task.validation.error.triggerChannelNotRegistered");
+                final TaskErrorDto actionChannelError = new TaskErrorDto("task.validation.error.actionChannelNotRegistered");
 
-                Set<TaskError> taskErrors = actualException.getTaskErrors();
+                Set<TaskErrorDto> taskErrors = actualException.getTaskErrors();
                 return taskErrors.contains(triggerChannelError) && taskErrors.contains(actionChannelError);
             }
         });
@@ -817,16 +818,12 @@ public class TaskServiceImplTest {
     private Task captureTask(boolean fromUpdate, VerificationMode verificationMode) {
         VerificationMode mode = (verificationMode == null) ? times(1) : verificationMode;
 
-        ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
-        verify(tasksDataService, mode).doInTransaction(transactionCaptor.capture());
-        transactionCaptor.getValue().doInTransaction(null);
-
         ArgumentCaptor<Task> taskCaptor = ArgumentCaptor.forClass(Task.class);
 
         if (fromUpdate) {
-            verify(tasksDataService).update(taskCaptor.capture());
+            verify(tasksDataService, mode).update(taskCaptor.capture());
         } else {
-            verify(tasksDataService).create(taskCaptor.capture());
+            verify(tasksDataService, mode).create(taskCaptor.capture());
         }
 
         return taskCaptor.getValue();

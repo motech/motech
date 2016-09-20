@@ -1,7 +1,7 @@
 package org.motechproject.tasks.web;
 
-import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
-import org.motechproject.tasks.service.TaskDataProviderService;
+import org.motechproject.tasks.dto.TaskDataProviderDto;
+import org.motechproject.tasks.service.TaskWebService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,16 +16,15 @@ import java.util.List;
 @Controller
 public class TaskDataProviderController {
 
-    private TaskDataProviderService taskDataProviderService;
+    private TaskWebService taskWebService;
 
     /**
      * Controller constructor.
      *
-     * @param taskDataProviderService  the task data provider service, not null
      */
     @Autowired
-    public TaskDataProviderController(TaskDataProviderService taskDataProviderService) {
-        this.taskDataProviderService = taskDataProviderService;
+    public TaskDataProviderController(TaskWebService taskWebService) {
+        this.taskWebService = taskWebService;
     }
 
     /**
@@ -35,7 +34,7 @@ public class TaskDataProviderController {
      */
     @RequestMapping(value = "datasource", method = RequestMethod.GET)
     @ResponseBody
-    public List<TaskDataProvider> getAllDataProviders() {
-        return taskDataProviderService.getProviders();
+    public List<TaskDataProviderDto> getAllDataProviders() {
+        return taskWebService.getProviders();
     }
 }
