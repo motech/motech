@@ -430,8 +430,8 @@
             restrict: 'A',
             require: '?ngModel',
             link: function (scope, element, attrs, ngModel) {
-                scope.debug=false;
-                if (!ngModel){
+                scope.debug = false;
+                if (!ngModel) {
                     return false;
                 }
 
@@ -455,36 +455,35 @@
                 });
 
                 scope.changeBubble = function () {
-                    if(scope.data.value === null || scope.data.value === "")
-                    {
-                        return;
-                    }
-                    else if(scope.data.type === "MAP") // to do
-                    {
-                        if(scope.debug)
-                        {
-                            element.html(scope.pair.key);
-                        }
-                        else
-                        {
-                            element.html(scope.pair.key);
+                     if (scope.data && scope.data.type === 'MAP') {
+                         if (scope.debug) {
+                            if (element.attr('ng-model') === "pair.value") {
+                                element.html(scope.pair.value);
+                            }
+                            if (element.attr('ng-model') === "pair.key") {
+                                element.html(scope.pair.key);
+                            }
+                         } else {
+                            if (element.attr('ng-model') === "pair.value") {
+                                element.html(scope.pair.value);
+                                ngModel.$setViewValue(readContent(element));
+                                ngModel.$rollbackViewValue();
+                            }
+                            if (element.attr('ng-model') === "pair.key") {
+                                element.html(scope.pair.key);
+                                ngModel.$setViewValue(readContent(element));
+                                ngModel.$rollbackViewValue();
+                            }
+                         }
+                     } else {
+                         if (scope.debug) {
+                            element.html(scope.data.value);
+                         } else {
+                            element.html(scope.data.value);
                             ngModel.$setViewValue(readContent(element));
                             ngModel.$rollbackViewValue();
-                        }
-                    }
-                    else
-                    {
-                        if(scope.debug)
-                        {
-                            element.html(scope.data.value);
-                        }
-                        else
-                        {
-                            element.html(scope.data.value);
-                            ngModel.$setViewValue(readContent(element));
-                            ngModel.$rollbackViewValue();
-                        }
-                    }
+                         }
+                     }
                 };
 
                 element.bind('blur', function (event) {
@@ -494,8 +493,7 @@
                     }
                     ngModel.$setViewValue(readContent(element));
                     scope.$apply();
-                    if(scope.debug)
-                    {
+                    if(scope.debug) {
                         scope.changeBubble();
                     }
                 });
@@ -504,8 +502,7 @@
                     event.stopPropagation();
                     ngModel.$setViewValue(readContent(element));
                     scope.$apply();
-                    if(scope.debug)
-                    {
+                    if(scope.debug) {
                         scope.changeBubble();
                     }
                 });
@@ -558,8 +555,7 @@
                             }
                             ngModel.$setViewValue(readContent(element));
                             scope.$apply();
-                            if(scope.debug)
-                            {
+                            if(scope.debug) {
                                 scope.changeBubble();
                             }
                         }
