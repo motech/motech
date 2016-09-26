@@ -184,6 +184,12 @@
         $scope.getTasks();
     });
 
+    controllers.controller('BubbleController', function($scope) {
+
+
+
+    });
+
     controllers.controller('TasksRecentActivityCtrl', function ($scope, Tasks, Activities) {
 
             var RECENT_TASK_COUNT = 7, tasks, activities = [];
@@ -259,6 +265,11 @@
 
     controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers,
                 $q, $timeout, $stateParams, $http, $filter, ModalFactory, LoadingModal, HelpStringManipulation) {
+
+        $scope.showBubbles = true;
+        $scope.bubbleFunction = function() {
+            $scope.showBubbles = !$scope.showBubbles;
+        };
 
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
