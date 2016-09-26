@@ -425,28 +425,28 @@
             return $compile('<field boolean="'+str+'" />')(fieldScope);
         }
 
-        function adjustText(){
+        function adjustText() {
             var textElement, spanElement, inputElement, i;
 
             textElement = angular.element(document.getElementsByClassName('text-field-marker'));
 
-            for(i = 0; i<textElement.length; i = i + 1){
+            for (i = 0; i < textElement.length; i += 1) {
                 spanElement = $(textElement[i]).parent();
                 inputElement = spanElement.parent().parent();
 
-                if($(textElement[i]).hasClass('field-text')){
+                if ($(textElement[i]).hasClass('field-text')) {
                     textElement.removeClass('field-text');
                 }
 
-                if($(textElement[i]).hasClass('field-text-short')){
+                if ($(textElement[i]).hasClass('field-text-short')) {
                     $(textElement[i]).removeClass('field-text-short');
                 }
 
-                if(spanElement.width()>inputElement.width()*0.9){
-                    if($(textElement[i]).width()>spanElement.width()*0.82){
-                        if($(textElement[i]).next().is('.badge')){
+                if (spanElement.width()>inputElement.width()*0.9) {
+                    if ($(textElement[i]).width() > spanElement.width()*0.82) {
+                        if ($(textElement[i]).next().is('.badge')) {
                             $(textElement[i]).addClass('field-text-short');
-                        }else if($(textElement[i]).width()>spanElement.width()*0.90){
+                        } else if ($(textElement[i]).width() > spanElement.width()*0.90) {
                             $(textElement[i]).addClass('field-text');
                         }
                     }
