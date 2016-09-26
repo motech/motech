@@ -261,7 +261,7 @@
                 $q, $timeout, $stateParams, $http, $filter, ModalFactory, LoadingModal, HelpStringManipulation) {
 
         $scope.showBubbles = true;
-        $scope.bubbleFunction = function() {
+        $scope.showHideBubbles = function() {
             $scope.showBubbles = !$scope.showBubbles;
         };
 
