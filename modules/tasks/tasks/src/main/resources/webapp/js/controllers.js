@@ -184,12 +184,6 @@
         $scope.getTasks();
     });
 
-    controllers.controller('BubbleController', function($scope) {
-
-
-
-    });
-
     controllers.controller('TasksRecentActivityCtrl', function ($scope, Tasks, Activities) {
 
             var RECENT_TASK_COUNT = 7, tasks, activities = [];
