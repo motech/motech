@@ -216,7 +216,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
     }
 
     public TaskActivityDto toDto() {
-        return new TaskActivityDto(message, task, fields, date, activityType, stackTraceElement, parameters);
+        return new TaskActivityDto(id, message, task, fields, date, activityType, stackTraceElement, parameters);
     }
 
     @Override
