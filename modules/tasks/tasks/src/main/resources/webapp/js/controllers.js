@@ -260,6 +260,11 @@
     controllers.controller('TasksManageCtrl', function ($rootScope, $scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers,
                 $q, $timeout, $stateParams, $http, $filter, ModalFactory, LoadingModal, HelpStringManipulation) {
 
+        $scope.showBubbles = true;
+        $scope.showOrHideBubbles = function() {
+            $scope.showBubbles = !$scope.showBubbles;
+        };
+
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
         $scope.selectedAction = [];

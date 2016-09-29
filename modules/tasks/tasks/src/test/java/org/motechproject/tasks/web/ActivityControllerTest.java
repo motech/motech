@@ -68,7 +68,7 @@ public class ActivityControllerTest {
         expected.add(new TaskActivityDto(SUCCESS.getValue(), TASK_ID, SUCCESS));
         expected.add(new TaskActivityDto(WARNING.getValue(), TASK_ID, WARNING));
         expected.add(new TaskActivityDto(ERROR.getValue(), TASK_ID, ERROR));
-        expected.add(new TaskActivityDto(ERROR.getValue(), TASK_ID, new ArrayList<>(), null, ERROR, null, params));
+        expected.add(new TaskActivityDto(ACTIVITY_ID, ERROR.getValue(), TASK_ID, new ArrayList<>(), null, ERROR, null, params));
 
         activityTypes = new HashSet<>();
         activityTypes.addAll(Arrays.asList(TaskActivityType.values()));

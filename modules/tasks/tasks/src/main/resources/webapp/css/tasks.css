@@ -7,6 +7,11 @@
     font-weight: normal;
 }
 
+.tasks .btn-show-hide-bubbles {
+    float: right;
+    margin-right: 50px;
+}
+
 .tasks .popover.dragpopover .popover-content {
     padding: 9px 9px 9px 9px;
 }
@@ -258,17 +263,18 @@ manipulation-sorter .manipulation .remove:before {
     margin: 0px 5px 5px 0;
 }
 
-.tasks .map-field {
-    width: 30%;
-    float: left;
-    margin: 0px 5px 5px 0;
-}
-
 .tasks .map-field .field-bubble{
     max-width: 100%;
 }
 
 .tasks .map-field .field-text{
+    float: left;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tasks .map-field .field-text-short{
     float: left;
     max-width: 82%;
     overflow: hidden;

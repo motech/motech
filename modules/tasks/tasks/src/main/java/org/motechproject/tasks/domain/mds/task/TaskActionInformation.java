@@ -29,6 +29,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 public class TaskActionInformation extends TaskEventInformation {
 
     private static final long serialVersionUID = -132464255615128442L;
+    private static final int MAX_VALUE_LENGTH = 20000;
 
     @Field
     private String serviceInterface;
@@ -37,7 +38,7 @@ public class TaskActionInformation extends TaskEventInformation {
     private String serviceMethod;
 
     @Field
-    @Value(columns = @Column(length = 500))
+    @Value(columns = @Column(length = MAX_VALUE_LENGTH))
     private Map<String, String> values;
 
     /**
@@ -50,11 +51,11 @@ public class TaskActionInformation extends TaskEventInformation {
     /**
      * Constructor.
      *
-     * @param displayName  the task display name
-     * @param channelName  the channel name
-     * @param moduleName  the module name
-     * @param moduleVersion  the module version
-     * @param subject  the task subject
+     * @param displayName   the task display name
+     * @param channelName   the channel name
+     * @param moduleName    the module name
+     * @param moduleVersion the module version
+     * @param subject       the task subject
      */
     public TaskActionInformation(String displayName, String channelName, String moduleName, String moduleVersion,
                                  String subject) {
@@ -64,12 +65,12 @@ public class TaskActionInformation extends TaskEventInformation {
     /**
      * Constructor for an action that is an event sent by the task module.
      *
-     * @param displayName  the task display name
-     * @param channelName  the channel name
-     * @param moduleName  the module name
-     * @param moduleVersion  the module  version
-     * @param subject  the task subject
-     * @param values  the map of values
+     * @param displayName   the task display name
+     * @param channelName   the channel name
+     * @param moduleName    the module name
+     * @param moduleVersion the module  version
+     * @param subject       the task subject
+     * @param values        the map of values
      */
     public TaskActionInformation(String displayName, String channelName, String moduleName, String moduleVersion,
                                  String subject, Map<String, String> values) {
@@ -79,12 +80,12 @@ public class TaskActionInformation extends TaskEventInformation {
     /**
      * Constructor for an action that is an OSGi service method call from the tasks module.
      *
-     * @param displayName  the task display name
-     * @param channelName  the channel name
-     * @param moduleName  the module name
-     * @param moduleVersion  the module version
-     * @param serviceInterface  the task service interface
-     * @param serviceMethod  the task service method
+     * @param displayName      the task display name
+     * @param channelName      the channel name
+     * @param moduleName       the module name
+     * @param moduleVersion    the module version
+     * @param serviceInterface the task service interface
+     * @param serviceMethod    the task service method
      */
     public TaskActionInformation(String displayName, String channelName, String moduleName, String moduleVersion,
                                  String serviceInterface, String serviceMethod) {
@@ -95,15 +96,15 @@ public class TaskActionInformation extends TaskEventInformation {
      * Constructor for a task that is an OSGi service call from the tasks module, but falls back to sending an event if
      * the service is not present
      *
-     * @param name  the task name
-     * @param displayName  the task display name
-     * @param channelName  the channel name
-     * @param moduleName  the module name
-     * @param moduleVersion  the module version
-     * @param subject  the task subject
-     * @param serviceInterface  the task service interface
-     * @param serviceMethod  the task service method
-     * @param values  the map of values
+     * @param name             the task name
+     * @param displayName      the task display name
+     * @param channelName      the channel name
+     * @param moduleName       the module name
+     * @param moduleVersion    the module version
+     * @param subject          the task subject
+     * @param serviceInterface the task service interface
+     * @param serviceMethod    the task service method
+     * @param values           the map of values
      */
     public TaskActionInformation(String name, String displayName, // NO CHECKSTYLE More than 7 parameters (found 9).
                                  String channelName, String moduleName, String moduleVersion, String subject,
@@ -118,13 +119,13 @@ public class TaskActionInformation extends TaskEventInformation {
     /**
      * Constructor.
      *
-     * @param name  the task name
-     * @param displayName  the task display name
-     * @param channelName  the channel name
-     * @param moduleName  the module name
-     * @param moduleVersion  the module version
-     * @param serviceInterface  the task service interface
-     * @param serviceMethod  the task service method
+     * @param name             the task name
+     * @param displayName      the task display name
+     * @param channelName      the channel name
+     * @param moduleName       the module name
+     * @param moduleVersion    the module version
+     * @param serviceInterface the task service interface
+     * @param serviceMethod    the task service method
      */
     public TaskActionInformation(String name, String displayName, String channelName, String moduleName, String moduleVersion,
                                  String serviceInterface, String serviceMethod) {

@@ -16,7 +16,7 @@
     </div>
     <div id="collapse-action-{{$index}}" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
         <div class="panel-body inside">
-            <div class="form-group control-section">
+            <div class="form-group control-section" ng-show="showBubbles">
                 <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.info.availableFields')}}:</label>
                 <div class="form-inline col-md-10 col-sm-9 move-element">
                     <field ng-repeat="field in fields | postActionField:$index track by $index" field="field" draggable />

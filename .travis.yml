@@ -3,7 +3,8 @@ jdk:
   - oraclejdk8
 
 env:
-  - DB=mysql
+  - DB=mysql REPOSITORY=motech
+  - DB=mysql REPOSITORY=modules
   - DB=psql
 
 services:
@@ -23,3 +24,10 @@ script:
 cache:
   directories:
     - $HOME/.m2
+
+notifications:
+  email:
+    recipients:
+      - motech-dev@googlegroups.com
+    on_success: never
+    on_failure: always
