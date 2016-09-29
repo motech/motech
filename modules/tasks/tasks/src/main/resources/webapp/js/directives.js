@@ -430,15 +430,20 @@
             restrict: 'A',
             require: '?ngModel',
             link: function (scope, element, attrs, ngModel) {
-                scope.debug = false;
+                scope.debug = scope.$parent.debugging;
+
                 if (!ngModel) {
                     return false;
                 }
 
                 scope.$watch(function () {
                     return ngModel.$viewValue;
-                }, function(){
-                    ngModel.$render();
+                }, function(value){
+                    if (scope.debug) {
+                        scope.changeBubble(ngModel, element);
+                    } else {
+                        ngModel.$render();
+                    }
                 });
 
                 // Disallow enter key being pressed, except on certain data types
@@ -451,19 +456,22 @@
 
                 scope.$on('debugging', function(event, args) {
                     scope.debug = args.debug;
-                    scope.changeBubble();
+                    scope.changeBubble(ngModel, element);
                 });
 
-                scope.changeBubble = function () {
-                     if (scope.data && scope.data.type === 'MAP') {
-                         if (scope.debug) {
+                scope.changeBubble = function (ngModel, element) {
+                    if (scope.data && scope.data.type !== 'MAP' && (scope.data.value === null || scope.data.value === "")) {
+                        return;
+                    }
+                    if (scope.data && scope.data.type === 'MAP') {
+                        if (scope.debug) {
                             if (element.attr('ng-model') === "pair.value") {
                                 element.html(scope.pair.value);
                             }
                             if (element.attr('ng-model') === "pair.key") {
                                 element.html(scope.pair.key);
                             }
-                         } else {
+                        } else {
                             if (element.attr('ng-model') === "pair.value") {
                                 element.html(scope.pair.value);
                                 ngModel.$setViewValue(readContent(element));
@@ -474,16 +482,16 @@
                                 ngModel.$setViewValue(readContent(element));
                                 ngModel.$rollbackViewValue();
                             }
-                         }
-                     } else {
-                         if (scope.debug) {
+                        }
+                    } else {
+                        if (scope.debug) {
                             element.html(scope.data.value);
-                         } else {
+                        } else {
                             element.html(scope.data.value);
                             ngModel.$setViewValue(readContent(element));
                             ngModel.$rollbackViewValue();
-                         }
-                     }
+                        }
+                    }
                 };
 
                 element.bind('blur', function (event) {
@@ -494,7 +502,7 @@
                     ngModel.$setViewValue(readContent(element));
                     scope.$apply();
                     if(scope.debug) {
-                        scope.changeBubble();
+                        scope.changeBubble(ngModel, element);
                     }
                 });
 
@@ -502,21 +510,24 @@
                     event.stopPropagation();
                     ngModel.$setViewValue(readContent(element));
                     scope.$apply();
-                    if(scope.debug) {
-                        scope.changeBubble();
+                    if (scope.debug) {
+                        scope.changeBubble(ngModel, element);
                     }
                 });
 
                 ngModel.$render = function () {
                     var parsedValue, viewValueStr, matches;
                     element.html("");
-                    if(!ngModel.$viewValue){
+                    if (!ngModel.$viewValue) {
+                        if (scope.debug) {
+                            scope.changeBubble(ngModel, element);
+                        }
                         return false;
                     }
                     parseField(ngModel.$viewValue).forEach(function(str){
-                        if(findField(str)){
+                        if (findField(str)) {
                             element.append(makeFieldElement(str, scope));
-                        } else if (element.data('type') === 'BOOLEAN' && (str === 'true' || str === 'false')){
+                        } else if (element.data('type') === 'BOOLEAN' && (str === 'true' || str === 'false')) {
                             element.append(makeBooleanFieldElement(str, scope));
                         } else {
                             element.append(str);
@@ -538,11 +549,11 @@
                                 anchorText = selection.anchorNode.wholeText;
                             }
 
-                            if(!field){
+                            if (!field) {
                                 return false;
                             }
                             field = formatField(field);
-                            if(element[0].contains(selection.anchorNode) && anchorText){
+                            if (element[0].contains(selection.anchorNode) && anchorText) {
                                 $(selection.anchorNode).before(
                                     anchorText.substring(0, selection.anchorOffset)
                                     + field
@@ -555,8 +566,8 @@
                             }
                             ngModel.$setViewValue(readContent(element));
                             scope.$apply();
-                            if(scope.debug) {
-                                scope.changeBubble();
+                            if (scope.debug) {
+                                scope.changeBubble(ngModel, element);
                             }
                         }
                     });

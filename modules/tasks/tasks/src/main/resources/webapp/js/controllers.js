@@ -272,7 +272,8 @@
         $scope.debugging = false;
 
         $scope.changeCheckbox = function (debugging) {
-            $rootScope.$broadcast('debugging', { debug: debugging});
+            $scope.debugging = debugging;
+            $rootScope.$broadcast('debugging', { debug: debugging });
         };
 
         innerLayout({
