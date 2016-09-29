@@ -11,14 +11,14 @@
   },
   "basePath" : "/motech-platform-server/module/scheduler/api",
   "tags" : [ {
-    "name" : "api",
-    "description" : "API for Scheduler module"
+    "name" : "JobsController",
+    "description" : "Its used by view layer for getting information about\nscheduled jobs and about event associated with given Job"
   } ],
   "schemes" : [ "http" ],
   "paths" : {
     "/job" : {
       "get" : {
-        "tags" : [ "api" ],
+        "tags" : [ "JobsController" ],
         "summary" : "Return a job based on the given information",
         "description" : "",
         "operationId" : "getJob",
@@ -31,8 +31,8 @@
     },
     "/job/delete" : {
       "post" : {
-        "tags" : [ "api" ],
-        "summary" : "Deletes the job based on the given",
+        "tags" : [ "JobsController" ],
+        "summary" : "Deletes the job based on the given job information",
         "description" : "",
         "operationId" : "deleteJob",
         "parameters" : [ {
@@ -52,7 +52,7 @@
     },
     "/job/details" : {
       "post" : {
-        "tags" : [ "api" ],
+        "tags" : [ "JobsController" ],
         "summary" : "Retrieves detailed job information",
         "description" : "",
         "operationId" : "retrieveJobDetailedInfo",
@@ -76,8 +76,8 @@
     },
     "/job/pause" : {
       "post" : {
-        "tags" : [ "api" ],
-        "summary" : "Pauses the job based on the given",
+        "tags" : [ "JobsController" ],
+        "summary" : "Pauses the job based on the given job information",
         "description" : "",
         "operationId" : "pauseJob",
         "parameters" : [ {
@@ -100,8 +100,8 @@
     },
     "/job/resume" : {
       "post" : {
-        "tags" : [ "api" ],
-        "summary" : "Resumes the job based on the given",
+        "tags" : [ "JobsController" ],
+        "summary" : "Resumes the job based on the given job information",
         "description" : "",
         "operationId" : "resumeJob",
         "parameters" : [ {
@@ -124,7 +124,7 @@
     },
     "/jobs" : {
       "get" : {
-        "tags" : [ "api" ],
+        "tags" : [ "JobsController" ],
         "summary" : "Retrieves job information",
         "description" : "",
         "operationId" : "retrieveJobInfo",
@@ -140,7 +140,7 @@
     },
     "/jobs/edit" : {
       "post" : {
-        "tags" : [ "api" ],
+        "tags" : [ "JobsController" ],
         "summary" : "Edit job with the same job key as the given job",
         "description" : "",
         "operationId" : "editJob",
@@ -161,7 +161,7 @@
     },
     "/jobs/new" : {
       "post" : {
-        "tags" : [ "api" ],
+        "tags" : [ "JobsController" ],
         "summary" : "Schedules the given job",
         "description" : "",
         "operationId" : "createJob",

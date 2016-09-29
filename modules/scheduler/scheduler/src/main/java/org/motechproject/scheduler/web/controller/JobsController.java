@@ -38,7 +38,8 @@ import java.util.List;
  * */
 
 @Controller
-@Api(value="/api/", description="API for Scheduler module")
+@Api(value="JobsController", description="Its used by view layer for getting information about\n" +
+        "scheduled jobs and about event associated with given Job")
 @PreAuthorize(SchedulerConstants.VIEW_SCHEDULER_JOBS)
 public class JobsController {
 
@@ -97,7 +98,7 @@ public class JobsController {
      * @return the updated job
      */
     @RequestMapping(value = "/job/pause", method = RequestMethod.POST)
-    @ApiOperation(value="Pauses the job based on the given")
+    @ApiOperation(value="Pauses the job based on the given job information")
     @ResponseBody
     public JobBasicInfo pauseJob(@RequestBody JobBasicInfo jobInfo) throws SchedulerException {
         return motechSchedulerService.pauseJob(jobInfo);
@@ -110,7 +111,7 @@ public class JobsController {
      * @return the updated job
      */
     @RequestMapping(value = "/job/resume", method = RequestMethod.POST)
-    @ApiOperation(value = "Resumes the job based on the given")
+    @ApiOperation(value = "Resumes the job based on the given job information")
     @ResponseBody
     public JobBasicInfo resumeJob(@RequestBody JobBasicInfo jobInfo) throws SchedulerException {
         return motechSchedulerService.resumeJob(jobInfo);
@@ -122,7 +123,7 @@ public class JobsController {
      * @param jobInfo  the information about a job
      */
     @RequestMapping(value = "/job/delete", method = RequestMethod.POST)
-    @ApiOperation(value = "Deletes the job based on the given")
+    @ApiOperation(value = "Deletes the job based on the given job information")
     @ResponseBody
     public void deleteJob(@RequestBody JobBasicInfo jobInfo) throws SchedulerException {
         motechSchedulerService.deleteJob(jobInfo);
