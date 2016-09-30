@@ -1213,7 +1213,7 @@ manipulation-sorter .manipulation .remove:before {
 }
 
 .tasks .popover{
-    max-width: 200%;
+    max-width: 300%;
 }
 
 .trigger-lists {
