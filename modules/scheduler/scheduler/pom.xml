@@ -173,7 +173,6 @@
                                 </license>
                             </info>
                             <swaggerDirectory>${swagger.location}</swaggerDirectory>
-                            <!--<swaggerFileName>${project.artifactId}</swaggerFileName>-->
                         </apiSource>
                     </apiSources>
                 </configuration>
