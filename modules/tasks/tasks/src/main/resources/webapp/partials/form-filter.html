@@ -30,8 +30,9 @@
                             <div class="form-inline btn-group">
                                 <span class="validation-area form-group">
                                     <div class="input-append input-group">
-                                        <input typeahead="'trigger.'+param.eventKey for param in selectedTrigger.eventParameters | filter:$viewValue"
-                                               class="form-control input-auto offset-1" ng-change="selectParam(filter, 'trigger', option)" name="autocomplete" type="text"
+                                        <input typeahead="key for key in getKeys(selectedTrigger.eventParameters) | filter:$viewValue"
+                                               class="form-control input-auto offset-1" ng-change="selectParam(filter, 'trigger')"
+                                               typeahead-on-select="selectParam(filter, 'trigger')" name="autocomplete" type="text"
                                                id="appendedDropdownButton" ng-model="filter.displayName"/>
                                         <div class="btn-group">
                                             <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">

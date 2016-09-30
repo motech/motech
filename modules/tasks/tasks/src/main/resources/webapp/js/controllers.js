@@ -562,7 +562,8 @@
                     }
 
                     select = {
-                        'eventKey' : text
+                        'eventKey' : text,
+                        'type': 'UNICODE'
                     };
                 } else if (type === $scope.util.DATA_SOURCE_PREFIX && splitted.length === 5 && splitted[4] !== '') {
                     text = splitted[3].split('#');
@@ -610,9 +611,14 @@
 
             switch(type) {
             case $scope.util.TRIGGER_PREFIX:
-                filter.key = "{0}.{1}".format($scope.util.TRIGGER_PREFIX, select.eventKey);
-                filter.displayName = filter.key;
-                filter.type = select.type;
+                if (select.eventKey) {
+                    filter.key = "{0}.{1}".format($scope.util.TRIGGER_PREFIX, select.eventKey);
+                    filter.displayName = filter.key;
+                    filter.type = select.type;
+                } else {
+                    filter.key = empty;
+                    filter.type = empty;
+                }
                 break;
             case $scope.util.DATA_SOURCE_PREFIX:
                 filter.key = "{0}.{1}.{2}#{3}.{4}".format($scope.util.DATA_SOURCE_PREFIX, select.providerName, select.type, select.objectId, field.fieldKey);
@@ -621,12 +627,13 @@
                 break;
             default:
                 filter.key = empty;
+                filter.type = empty;
             }
         };
 
         $scope.getPopoverType = function(filter) {
             if (!filter.manipulations || !Array.isArray(filter.manipulations)) {
-                if (filter.displayName) {
+                if (filter.displayName && filter.key) {
                     var manipulations, manipulationsBuff;
                     manipulationsBuff = filter.key.split('?');
                     manipulationsBuff.shift();
@@ -1013,6 +1020,14 @@
 
         $scope.openHelpStringManipulation = function () {
             HelpStringManipulation.open($scope);
+        };
+
+        $scope.getKeys = function (eventParameters) {
+            var newArray = [];
+            eventParameters.forEach(function (param) {
+                newArray.push('trigger.'+param.eventKey);
+            });
+            return newArray;
         };
 
     });
