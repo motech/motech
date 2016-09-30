@@ -20,7 +20,7 @@
 
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
-        <swagger.dir>${basedir}/src/main/resources/webapp/swagger-ui/</swagger.dir>
+        <swagger.location>${basedir}/src/main/resources/webapp/</swagger.location>
     </properties>
 
     <dependencies>
@@ -172,7 +172,7 @@
                                     <name>MOTECH Platform Opensource License Agreement</name>
                                 </license>
                             </info>
-                            <swaggerDirectory>${swagger.dir}</swaggerDirectory>
+                            <swaggerDirectory>${swagger.location}</swaggerDirectory>
                             <!--<swaggerFileName>${project.artifactId}</swaggerFileName>-->
                         </apiSource>
                     </apiSources>
