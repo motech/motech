@@ -468,7 +468,7 @@
                 scope.$watch(function () {
                     adjustText();
                     return ngModel.$viewValue;
-                }, function(value){
+                }, function() {
                     if (scope.debug) {
                         scope.changeBubble(ngModel, element);
                     } else {
@@ -490,37 +490,23 @@
                 });
 
                 scope.changeBubble = function (ngModel, element) {
-                    if (scope.data && scope.data.type !== 'MAP' && (scope.data.value === null || scope.data.value === "")) {
+                    if (scope.data && scope.data.type !== 'MAP' && !scope.data.value) {
                         return;
                     }
                     if (scope.data && scope.data.type === 'MAP') {
-                        if (scope.debug) {
-                            if (element.attr('ng-model') === "pair.value") {
-                                element.html(scope.pair.value);
-                            }
-                            if (element.attr('ng-model') === "pair.key") {
-                                element.html(scope.pair.key);
-                            }
-                        } else {
-                            if (element.attr('ng-model') === "pair.value") {
-                                element.html(scope.pair.value);
-                                ngModel.$setViewValue(readContent(element));
-                                ngModel.$rollbackViewValue();
-                            }
-                            if (element.attr('ng-model') === "pair.key") {
-                                element.html(scope.pair.key);
-                                ngModel.$setViewValue(readContent(element));
-                                ngModel.$rollbackViewValue();
-                            }
+                        if (element.attr('ng-model') === "pair.value") {
+                            element.html(scope.pair.value);
+                        }
+                        if (element.attr('ng-model') === "pair.key") {
+                            element.html(scope.pair.key);
                         }
                     } else {
-                        if (scope.debug) {
-                            element.html(scope.data.value);
-                        } else {
-                            element.html(scope.data.value);
-                            ngModel.$setViewValue(readContent(element));
-                            ngModel.$rollbackViewValue();
-                        }
+                         element.html(scope.data.value);
+                    }
+
+                    if (!scope.debug) {
+                         ngModel.$setViewValue(readContent(element));
+                         ngModel.$rollbackViewValue();
                     }
                 };
 
