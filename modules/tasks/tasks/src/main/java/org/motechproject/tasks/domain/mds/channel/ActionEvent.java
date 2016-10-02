@@ -197,13 +197,17 @@ public class ActionEvent extends TaskEvent {
 
     public ActionEventDto toDto() {
         SortedSet<ActionParameterDto> actionParameterDtos = new TreeSet<>();
+        SortedSet<ActionParameterDto> postActionParameterDtos = new TreeSet<>();
 
         for (ActionParameter actionParameter : actionParameters) {
             actionParameterDtos.add(actionParameter.toDto());
         }
+        for (ActionParameter postActionParameter : postActionParameters) {
+            postActionParameterDtos.add(postActionParameter.toDto());
+        }
 
         return new ActionEventDto(getName(), getDescription(), getDisplayName(), getSubject(), actionParameterDtos,
-                serviceInterface, serviceMethod, serviceMethodCallManner);
+                serviceInterface, serviceMethod, serviceMethodCallManner, postActionParameterDtos);
     }
 
     @Override
