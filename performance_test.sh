@@ -1,28 +1,32 @@
 #!/usr/bin/env bash
 
-set -e
+if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
 
-PERF_DIR=../motech-master/platform/mds/mds-performance-tests
+	set -e
 
-PERF_RES_DIR=$PERF_DIR/src/test/resources
+	PERF_DIR=../motech-master/platform/mds/mds-performance-tests
 
-TRESHOLDS_FILE=/tmp/tresholds.csv
+	PERF_RES_DIR=$PERF_DIR/src/test/resources
 
-touch $TRESHOLDS_FILE
+	TRESHOLDS_FILE=/tmp/tresholds.csv
 
-cat > $TRESHOLDS_FILE <<EOL
-MdsStressIT,stressTestCreating,40000
-MdsStressIT,stressTestRetrieval,300
-MdsStressIT,stressTestUpdating,40000
-MdsStressIT,stressTestDeleting,250000
-MdsDiskSpaceUsageIT,testEudeDiskSpaceUsage,25
-EOL
+	touch $TRESHOLDS_FILE
 
-$PERF_RES_DIR/performanceCheck.sh -d ~/perf $PERF_DIR/target/performanceTestResult.log $TRESHOLDS_FILE
-RESULT=$?
+	cat > $TRESHOLDS_FILE <<EOL
+	MdsStressIT,stressTestCreating,40000
+	MdsStressIT,stressTestRetrieval,300
+	MdsStressIT,stressTestUpdating,40000
+	MdsStressIT,stressTestDeleting,250000
+	MdsDiskSpaceUsageIT,testEudeDiskSpaceUsage,25
+	EOL
 
-rm -f $TRESHOLDS_FILE
+	$PERF_RES_DIR/performanceCheck.sh -d ~/perf $PERF_DIR/target/performanceTestResult.log $TRESHOLDS_FILE
+	RESULT=$?
 
-cat $PERF_DIR/target/performanceTestResult.log
+	rm -f $TRESHOLDS_FILE
 
-exit $RESULT
+	cat $PERF_DIR/target/performanceTestResult.log
+
+	exit $RESULT
+
+fi
