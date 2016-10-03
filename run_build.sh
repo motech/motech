@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ "$TRAVIS_EVENT_TYPE" != "cron" ]; then
+if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
     git clone https://github.com/motech/motech.git ../motech-master -b master --single-branch
 
     mkdir ~/.motech
