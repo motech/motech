@@ -1,0 +1,22 @@
+language: java
+jdk:
+  - oraclejdk8
+
+services:
+  - mysql
+
+before_install:
+  - sudo chmod +x ./config_services.sh
+  - ./config_services.sh
+
+install: true
+
+script:
+  - sudo chmod +x ./run_build.sh
+  - ./run_build.sh
+  - sudo chmod +x ./performance_test.sh
+  - ./performance_test.sh
+
+cache:
+  directories:
+    - $HOME/.m2
