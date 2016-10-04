@@ -92,7 +92,7 @@
                                         </a>
                                         <ul class="dropdown-menu" ng-hide="filter.negationOperator == undefined">
                                             <li ng-repeat="operator in filterOperators">
-                                                <a ng-click="filter.operator = operator; filter.type = value.type">{{msg(operator)}}</a>
+                                                <a ng-click="filter.operator = operator">{{msg(operator)}}</a>
                                             </li>
                                         </ul>
                                     </div>
