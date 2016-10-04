@@ -91,13 +91,8 @@
                                             <span class="caret"></span>
                                         </a>
                                         <ul class="dropdown-menu" ng-hide="filter.negationOperator == undefined">
-                                            <li class="dropdown-submenu" ng-repeat="(key, value) in util.FILTER_OPERATORS">
-                                                <a tabindex="-1">{{msg(key)}}</a>
-                                                <ul class="dropdown-menu">
-                                                    <li ng-repeat="operator in value.options">
-                                                        <a ng-click="filter.operator = operator; filter.type = value.type">{{msg(operator)}}</a>
-                                                    </li>
-                                                </ul>
+                                            <li ng-repeat="operator in filterOperators">
+                                                <a ng-click="filter.operator = operator; filter.type = value.type">{{msg(operator)}}</a>
                                             </li>
                                         </ul>
                                     </div>

@@ -629,6 +629,20 @@
                 filter.key = empty;
                 filter.type = empty;
             }
+
+            $scope.setFilterOperators(filter.type);
+        };
+
+        $scope.setFilterOperators = function(type) {
+            if ($scope.util.isNumber(type)) {
+                $scope.filterOperators = $scope.util.FILTER_OPERATORS['task.number'].options;
+            }  else if ($scope.util.isDate(type)) {
+                $scope.filterOperators = $scope.util.FILTER_OPERATORS['task.date'].options;
+            } else if ($scope.util.isBoolean(type)) {
+                $scope.filterOperators = $scope.util.FILTER_OPERATORS['task.boolean'].options;
+            } else {
+                $scope.filterOperators = $scope.util.FILTER_OPERATORS['task.string'].options;
+            }
         };
 
         $scope.getPopoverType = function(filter) {
