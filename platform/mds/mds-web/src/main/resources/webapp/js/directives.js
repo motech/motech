@@ -3535,7 +3535,7 @@
             link: function (scope, element, attrs, ctrl) {
                 var elm = angular.element(element),
                 fieldId = attrs.mdsFieldId,
-                fieldName = attrs.mdsFieldName,
+                fieldName = attrs.mdsFieldName + '_field_name',
                 typingTimer;
 
                 elm.on('keyup', function () {

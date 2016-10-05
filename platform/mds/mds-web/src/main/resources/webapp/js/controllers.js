@@ -318,6 +318,11 @@
             return expression;
         };
 
+        $scope.getProperFieldName = function (fieldName) {
+            var field =  JSON.parse(JSON.stringify(fieldName));
+            return field;
+        };
+
         $scope.generateRandomUUID = function (field, isDefault) {
             if (isDefault) {
                 field.basic.defaultValue = MDSUtils.generateUUID($http);
@@ -3570,7 +3575,7 @@
             $scope.relatedMode.isNested = true;
             var relatedClass  = $scope.getRelatedClass(field);
             $scope.editedField = angular.copy(field);
-            $('ng-form[name=' + field.name + '] #new-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
+            $('ng-form[name=' + field.name + '_field_name] #new-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
             $scope.editedInstanceId = undefined;
             $('body > #new-related_' + field.id).on('hide.bs.modal', function () {
                 $scope.relatedMode.isNested = false;
@@ -3657,7 +3662,7 @@
             $scope.relatedMode.isNested = true;
             instanceId = parseInt(instanceId, 10);
             $scope.editedInstanceId = instanceId;
-            $('ng-form[name=' + field.name + '] #edit-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
+            $('ng-form[name=' + field.name + '_field_name] #edit-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
             var addedNewRecords,
                 editExisting = true,
                 setExisting = function () {
@@ -4436,11 +4441,11 @@
         };
 
         $scope.isMapField = function(field) {
-            return field.type.typeClass === "java.util.Map";
+            return (field && field.type && field.type.typeClass === "java.util.Map") ? true : false;
         };
 
         $scope.isComboboxField = function(field) {
-             return field.type.typeClass === "java.util.Collection";
+             return (field && field.type && field.type.typeClass === "java.util.Collection") ? true : false;
         };
 
         $scope.isMultiSelectCombobox = function(field) {

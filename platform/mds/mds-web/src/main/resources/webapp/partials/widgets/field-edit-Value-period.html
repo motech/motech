@@ -1,5 +1,5 @@
 <input period-amount period-validity ng-required="{{field.required}}" type="text" class="form-control input-xlarge-fluid" ng-model="field.value" placeholder="{{field.placeholder}}" mds-field-id="{{field.id}}" ng-readonly="shouldHideEdition(field)" />
 <button class="btn btn-default" data-toggle="modal" data-backdrop="static" ng-disabled="shouldHideEdition(field)">{{msg('mds.form.changePeriod')}}</button>
 <span class="glyphicon glyphicon-info-sign" data-trigger="hover" data-placement="bottom" bs-popover="{{msg('mds.tooltip.period')}}" data-original-title=""></span>
-<span class="form-hint" ng-show="( {{field.name}}.$error.period || !{{field.name}}.$valid ) && !{{field.name}}.$pristine">{{msg('mds.error.incorrectValuePeriod')}}</span>
+<span class="form-hint" ng-show="( {{field.name}}_field_name.$error.period || !{{field.name}}_field_name.$valid ) && !{{field.name}}_field_name.$pristine">{{msg('mds.error.incorrectValuePeriod')}}</span>
 <period-modal></period-modal>
