@@ -1058,6 +1058,7 @@
 
         $scope.taskId = $stateParams.taskId;
         $scope.activityTypes = ['All', 'In progress', 'Success', 'Warning', 'Error'];
+        $scope.stackTraceEl = [];
 
         $scope.selectedActivityType = 'All';
 
@@ -1135,10 +1136,10 @@
                 });
         };
 
-        $scope.showStackTrace = function () {
+        $scope.showStackTrace = function (index) {
             var dialog = new BootstrapDialog({
                 title: 'Stack trace',
-                message: $scope.stackTraceEl,
+                message: $scope.stackTraceEl[index],
                 buttons: [{
                     label: $scope.msg('task.close'),
                     cssClass: 'btn btn-default',
