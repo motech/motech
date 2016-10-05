@@ -65,8 +65,8 @@
             <div class="form-group" ng-show="selectedAction[$index].description">
                 <label class="col-md-2 col-sm-3 control-label">{{msg(selectedAction.description)}}</label>
             </div>
-            <div ui-if="selectedAction[$index]">
-                <div ng-class="{'has-warning': actionCssClassWarning(i), 'has-error': actionCssClassError(i)}" ng-repeat="i in selectedAction[$index].actionParameters | filter: {hidden: false}" class="form-group clearfix">
+            <div ng-if="selectedAction[$index]">
+                <div ng-class="{'has-warning': actionCssClassWarning(i), 'has-error': actionCssClassError(i)}" ng-repeat="i in selectedAction[$index].actionParameters | filter: {hidden: false} track by $index" class="form-group clearfix">
                     <label class="col-md-2 col-sm-3 control-label tip unselectable">
                         {{taskMsg(i.displayName)}}
                         <!------------------------ Tooltips ------------------------>
