@@ -12,7 +12,7 @@ maven-eclipse.xml
 *.ipr
 *.iws
 *.class
-*.log
+*.log*
 Motech.log*
 debug.txt
 out/

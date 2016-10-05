@@ -257,8 +257,13 @@
         };
     });
 
-    controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers,
-                                     $q, $timeout, $stateParams, $http, $filter, ModalFactory, LoadingModal) {
+    controllers.controller('TasksManageCtrl', function ($rootScope, $scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers,
+                $q, $timeout, $stateParams, $http, $filter, ModalFactory, LoadingModal, HelpStringManipulation) {
+
+        $scope.showBubbles = true;
+        $scope.showOrHideBubbles = function() {
+            $scope.showBubbles = !$scope.showBubbles;
+        };
 
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
@@ -269,6 +274,12 @@
             }
         };
         $scope.task.retryTaskOnFailure = false;
+        $scope.debugging = false;
+
+        $scope.changeCheckbox = function (debugging) {
+            $scope.debugging = debugging;
+            $rootScope.$broadcast('debugging', { debug: debugging });
+        };
 
         innerLayout({
             spacing_closed: 30,
@@ -325,7 +336,7 @@
                                 $(this).collapse('hide');
                             });
 
-                            if (step['@type'] === 'DataSource') {
+                            if (step['@type'] === 'DataSourceDto') {
                                 source = $scope.findDataSource(step.providerName);
                                 object = $scope.util.find({
                                     where: source.objects,
@@ -489,7 +500,7 @@
             var lastStep = $scope.task.taskConfig.steps.last();
 
             $scope.task.taskConfig.steps.push({
-                '@type': 'FilterSet',
+                '@type': 'FilterSetDto',
                 filters: [],
                 operator: "AND",
                 order: (lastStep && lastStep.order + 1) || 0
@@ -557,7 +568,8 @@
                     }
 
                     select = {
-                        'eventKey' : text
+                        'eventKey' : text,
+                        'type': 'UNICODE'
                     };
                 } else if (type === $scope.util.DATA_SOURCE_PREFIX && splitted.length === 5 && splitted[4] !== '') {
                     text = splitted[3].split('#');
@@ -566,7 +578,7 @@
                         where: $scope.task.taskConfig.steps,
                         by: [{
                             what: '@type',
-                            equalTo: 'DataSource'
+                            equalTo: 'DataSourceDto'
                         }, {
                             what: 'providerName',
                             equalTo: splitted[1] + '.' + splitted[2]
@@ -605,9 +617,14 @@
 
             switch(type) {
             case $scope.util.TRIGGER_PREFIX:
-                filter.key = "{0}.{1}".format($scope.util.TRIGGER_PREFIX, select.eventKey);
-                filter.displayName = filter.key;
-                filter.type = select.type;
+                if (select.eventKey) {
+                    filter.key = "{0}.{1}".format($scope.util.TRIGGER_PREFIX, select.eventKey);
+                    filter.displayName = filter.key;
+                    filter.type = select.type;
+                } else {
+                    filter.key = empty;
+                    filter.type = empty;
+                }
                 break;
             case $scope.util.DATA_SOURCE_PREFIX:
                 filter.key = "{0}.{1}.{2}#{3}.{4}".format($scope.util.DATA_SOURCE_PREFIX, select.providerName, select.type, select.objectId, field.fieldKey);
@@ -616,12 +633,27 @@
                 break;
             default:
                 filter.key = empty;
+                filter.type = empty;
+            }
+
+            $scope.setFilterOperators(filter.type);
+        };
+
+        $scope.setFilterOperators = function(type) {
+            if ($scope.util.isNumber(type)) {
+                $scope.filterOperators = $scope.util.FILTER_OPERATORS['task.number'].options;
+            }  else if ($scope.util.isDate(type)) {
+                $scope.filterOperators = $scope.util.FILTER_OPERATORS['task.date'].options;
+            } else if ($scope.util.isBoolean(type)) {
+                $scope.filterOperators = $scope.util.FILTER_OPERATORS['task.boolean'].options;
+            } else {
+                $scope.filterOperators = $scope.util.FILTER_OPERATORS['task.string'].options;
             }
         };
 
         $scope.getPopoverType = function(filter) {
             if (!filter.manipulations || !Array.isArray(filter.manipulations)) {
-                if (filter.displayName) {
+                if (filter.displayName && filter.key) {
                     var manipulations, manipulationsBuff;
                     manipulationsBuff = filter.key.split('?');
                     manipulationsBuff.shift();
@@ -653,7 +685,7 @@
             last = sources && sources.last();
 
             $scope.task.taskConfig.steps.push({
-                '@type': 'DataSource',
+                '@type': 'DataSourceDto',
                 objectId: (last && last.objectId + 1) || 0,
                 order: (lastStep && lastStep.order + 1) || 0
             });
@@ -691,7 +723,7 @@
                 where: $scope.task.taskConfig.steps,
                 by: [{
                     what: '@type',
-                    equalTo: 'DataSource'
+                    equalTo: 'DataSourceDto'
                 }],
                 unique: false
             });
@@ -861,7 +893,7 @@
             });
 
             angular.forEach($scope.task.taskConfig.steps, function (step) {
-                if (step['@type'] === 'DataSource') {
+                if (step['@type'] === 'DataSourceDto') {
                     if (step.lookup === undefined) {
                         step.lookup = [];
                     }
@@ -1005,9 +1037,23 @@
         }, function() {
            $scope.fields = $scope.getAvailableFields();
         });
+
+        $scope.openHelpStringManipulation = function () {
+            HelpStringManipulation.open($scope);
+        };
+
+        $scope.getKeys = function (eventParameters) {
+            var newArray = [];
+            eventParameters.forEach(function (param) {
+                newArray.push('trigger.'+param.eventKey);
+            });
+            return newArray;
+        };
+
     });
 
-    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http, ModalFactory, LoadingModal, BootstrapDialogManager) {
+    controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http,
+                            ModalFactory, LoadingModal, BootstrapDialogManager) {
         var data, task;
 
         $scope.taskId = $stateParams.taskId;

@@ -1,7 +1,6 @@
 package org.motechproject.tasks.domain.mds.channel;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.CrudEvents;
@@ -10,7 +9,10 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.domain.enums.MethodCallManner;
 import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
+import org.motechproject.tasks.dto.ActionEventDto;
+import org.motechproject.tasks.dto.ActionParameterDto;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -97,7 +99,6 @@ public class ActionEvent extends TaskEvent {
                 copyActionParameters(actionEvent.getPostActionParameters()));
     }
 
-    @JsonIgnore
     public boolean accept(TaskActionInformation info) {
         boolean result = false;
 
@@ -192,6 +193,21 @@ public class ActionEvent extends TaskEvent {
 
     public void setServiceMethodCallManner(MethodCallManner serviceMethodCallManner) {
         this.serviceMethodCallManner = serviceMethodCallManner;
+    }
+
+    public ActionEventDto toDto() {
+        SortedSet<ActionParameterDto> actionParameterDtos = new TreeSet<>();
+        SortedSet<ActionParameterDto> postActionParameterDtos = new TreeSet<>();
+
+        for (ActionParameter actionParameter : actionParameters) {
+            actionParameterDtos.add(actionParameter.toDto());
+        }
+        for (ActionParameter postActionParameter : postActionParameters) {
+            postActionParameterDtos.add(postActionParameter.toDto());
+        }
+
+        return new ActionEventDto(getName(), getDescription(), getDisplayName(), getSubject(), actionParameterDtos,
+                serviceInterface, serviceMethod, serviceMethodCallManner, postActionParameterDtos);
     }
 
     @Override

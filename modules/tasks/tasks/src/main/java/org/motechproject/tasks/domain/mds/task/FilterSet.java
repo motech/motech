@@ -8,6 +8,9 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.domain.enums.LogicalOperator;
+import org.motechproject.tasks.dto.FilterDto;
+import org.motechproject.tasks.dto.FilterSetDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +38,15 @@ public class FilterSet extends TaskConfigStep {
      * Constructor.
      */
     public FilterSet() {
-        this(null);
+        this(new ArrayList<>());
+    }
+
+    /**
+     * Constructor.
+     * @param dto FilterSet data transfer object
+     */
+    public FilterSet(FilterSetDto dto) {
+        this(Filter.toFilters(dto.getFilters()), dto.getOperator(), dto.getOrder());
     }
 
     /**
@@ -54,7 +65,12 @@ public class FilterSet extends TaskConfigStep {
      * @param operator  the operator, can be "AND" or "OR
      */
     public FilterSet(List<Filter> filters, LogicalOperator operator) {
-        this.filters = filters == null ? new ArrayList<Filter>() : filters;
+        this(filters, operator, null);
+    }
+
+    public FilterSet(List<Filter> filters, LogicalOperator operator, Integer order) {
+        super(order);
+        this.filters = filters == null ? new ArrayList<>() : filters;
         this.operator = operator;
     }
 
@@ -82,6 +98,16 @@ public class FilterSet extends TaskConfigStep {
 
     public void setOperator(LogicalOperator operator) {
         this.operator = operator;
+    }
+
+    public FilterSetDto toDto() {
+        List<FilterDto> filterDtos = new ArrayList<>();
+
+        for (Filter filter : filters) {
+            filterDtos.add(filter.toDto());
+        }
+
+        return new FilterSetDto(getOrder(), filterDtos, operator);
     }
 
     @Override

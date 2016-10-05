@@ -20,7 +20,7 @@ import org.motechproject.tasks.domain.mds.channel.builder.ChannelBuilder;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
-import org.motechproject.tasks.domain.mds.task.TaskActivityType;
+import org.motechproject.tasks.domain.enums.TaskActivityType;
 import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 import org.motechproject.tasks.repository.ChannelsDataService;

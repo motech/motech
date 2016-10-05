@@ -5,7 +5,7 @@ import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.tasks.domain.KeyInformation;
-import org.motechproject.tasks.domain.mds.ParameterType;
+import org.motechproject.tasks.domain.enums.ParameterType;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.ActionParameter;
 import org.motechproject.tasks.domain.mds.task.Task;
@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -34,8 +35,8 @@ import java.util.SortedSet;
 
 import static org.motechproject.tasks.constants.TaskFailureCause.ACTION;
 import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
-import static org.motechproject.tasks.domain.mds.ParameterType.LIST;
-import static org.motechproject.tasks.domain.mds.ParameterType.MAP;
+import static org.motechproject.tasks.domain.enums.ParameterType.LIST;
+import static org.motechproject.tasks.domain.enums.ParameterType.MAP;
 
 
 /**
@@ -52,15 +53,6 @@ public class TaskActionExecutor {
     private TaskActivityService activityService;
     private TasksPostExecutionHandler postExecutionHandler;
 
-    @Autowired
-    public TaskActionExecutor(TaskService taskService, TaskActivityService activityService,
-                       EventRelay eventRelay, TasksPostExecutionHandler postExecutionHandler) {
-        this.eventRelay = eventRelay;
-        this.taskService = taskService;
-        this.activityService = activityService;
-        this.postExecutionHandler = postExecutionHandler;
-    }
-
     /**
      * Executes the action for the given task.
      *
@@ -71,6 +63,7 @@ public class TaskActionExecutor {
      * @param activityId the ID of the activity associated with this execution
      * @throws TaskHandlerException when the task couldn't be executed
      */
+    @Transactional
     public void execute(Task task, TaskActionInformation actionInformation, Integer actionIndex, TaskContext taskContext, long activityId) throws TaskHandlerException {
         LOGGER.info("Executing task action: {} from task: {}", actionInformation.getName(), task.getName());
         KeyEvaluator keyEvaluator = new KeyEvaluator(taskContext);
@@ -278,7 +271,27 @@ public class TaskActionExecutor {
         }
     }
 
-    void setBundleContext(BundleContext bundleContext) {
+    public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    @Autowired
+    public void setEventRelay(EventRelay eventRelay) {
+        this.eventRelay = eventRelay;
+    }
+
+    @Autowired
+    public void setTaskService(TaskService taskService) {
+        this.taskService = taskService;
+    }
+
+    @Autowired
+    public void setActivityService(TaskActivityService activityService) {
+        this.activityService = activityService;
+    }
+
+    @Autowired
+    public void setTasksPostExecutionHandler(TasksPostExecutionHandler postExecutionHandler) {
+        this.postExecutionHandler = postExecutionHandler;
     }
 }

@@ -242,6 +242,7 @@
             },
             link: function (scope, element, attrs) {
                 scope.msg = scope.$parent.taskMsg || scope.$parent.msg;
+
                 if(!scope.field) {
                     scope.field = {};
                 }
@@ -425,18 +426,54 @@
             return $compile('<field boolean="'+str+'" />')(fieldScope);
         }
 
+        function adjustText() {
+            var textElement, spanElement, inputElement, i;
+
+            textElement = angular.element(document.getElementsByClassName('text-field-marker'));
+
+            for (i = 0; i < textElement.length; i += 1) {
+                spanElement = $(textElement[i]).parent();
+                inputElement = spanElement.parent().parent();
+
+                if ($(textElement[i]).hasClass('field-text')) {
+                    textElement.removeClass('field-text');
+                }
+
+                if ($(textElement[i]).hasClass('field-text-short')) {
+                    $(textElement[i]).removeClass('field-text-short');
+                }
+
+                if (spanElement.width()>inputElement.width()*0.9) {
+                    if ($(textElement[i]).width() > spanElement.width()*0.82) {
+                        if ($(textElement[i]).next().is('.badge')) {
+                            $(textElement[i]).addClass('field-text-short');
+                        } else if ($(textElement[i]).width() > spanElement.width()*0.90) {
+                            $(textElement[i]).addClass('field-text');
+                        }
+                    }
+                }
+            }
+        }
+
         return {
             restrict: 'A',
             require: '?ngModel',
             link: function (scope, element, attrs, ngModel) {
-                if (!ngModel){
+                scope.debug = scope.$parent.debugging;
+
+                if (!ngModel) {
                     return false;
                 }
 
                 scope.$watch(function () {
+                    adjustText();
                     return ngModel.$viewValue;
-                }, function(){
-                    ngModel.$render();
+                }, function() {
+                    if (scope.debug) {
+                        scope.changeBubble(ngModel, element);
+                    } else {
+                        ngModel.$render();
+                    }
                 });
 
                 // Disallow enter key being pressed, except on certain data types
@@ -447,6 +484,32 @@
                     }
                 });
 
+                scope.$on('debugging', function(event, args) {
+                    scope.debug = args.debug;
+                    scope.changeBubble(ngModel, element);
+                });
+
+                scope.changeBubble = function (ngModel, element) {
+                    if (scope.data && scope.data.type !== 'MAP' && !scope.data.value) {
+                        return;
+                    }
+                    if (scope.data && scope.data.type === 'MAP') {
+                        if (element.attr('ng-model') === "pair.value") {
+                            element.html(scope.pair.value);
+                        }
+                        if (element.attr('ng-model') === "pair.key") {
+                            element.html(scope.pair.key);
+                        }
+                    } else {
+                         element.html(scope.data.value);
+                    }
+
+                    if (!scope.debug) {
+                         ngModel.$setViewValue(readContent(element));
+                         ngModel.$rollbackViewValue();
+                    }
+                };
+
                 element.bind('blur', function (event) {
                     event.stopPropagation();
                     if(element[0] !== event.target){
@@ -454,24 +517,33 @@
                     }
                     ngModel.$setViewValue(readContent(element));
                     scope.$apply();
+                    if(scope.debug) {
+                        scope.changeBubble(ngModel, element);
+                    }
                 });
 
                 scope.$on('field.changed', function (event) {
                     event.stopPropagation();
                     ngModel.$setViewValue(readContent(element));
                     scope.$apply();
+                    if (scope.debug) {
+                        scope.changeBubble(ngModel, element);
+                    }
                 });
 
                 ngModel.$render = function () {
                     var parsedValue, viewValueStr, matches;
                     element.html("");
-                    if(!ngModel.$viewValue){
+                    if (!ngModel.$viewValue) {
+                        if (scope.debug) {
+                            scope.changeBubble(ngModel, element);
+                        }
                         return false;
                     }
                     parseField(ngModel.$viewValue).forEach(function(str){
-                        if(findField(str)){
+                        if (findField(str)) {
                             element.append(makeFieldElement(str, scope));
-                        } else if (element.data('type') === 'BOOLEAN' && (str === 'true' || str === 'false')){
+                        } else if (element.data('type') === 'BOOLEAN' && (str === 'true' || str === 'false')) {
                             element.append(makeBooleanFieldElement(str, scope));
                         } else {
                             element.append(str);
@@ -493,11 +565,11 @@
                                 anchorText = selection.anchorNode.wholeText;
                             }
 
-                            if(!field){
+                            if (!field) {
                                 return false;
                             }
                             field = formatField(field);
-                            if(element[0].contains(selection.anchorNode) && anchorText){
+                            if (element[0].contains(selection.anchorNode) && anchorText) {
                                 $(selection.anchorNode).before(
                                     anchorText.substring(0, selection.anchorOffset)
                                     + field
@@ -510,6 +582,9 @@
                             }
                             ngModel.$setViewValue(readContent(element));
                             scope.$apply();
+                            if (scope.debug) {
+                                scope.changeBubble(ngModel, element);
+                            }
                         }
                     });
                 }
@@ -550,7 +625,7 @@
         };
     });
 
-    directives.directive('manipulationModal', function ($compile, BootstrapDialogManager) {
+    directives.directive('manipulationModal', function ($compile, BootstrapDialogManager, HelpStringManipulation) {
         return {
             restrict: 'A',
             scope: {
@@ -589,8 +664,6 @@
                         }
                         scope.importDialog = new BootstrapDialog({
                             closable: false,
-                            closeByBackdrop: false,
-                            closeByKeyboard: false,
                             autodestroy: false,
                             title: function () {
                                 switch(scope.manipulationType){
@@ -612,10 +685,14 @@
                                     scope.$emit('field.changed');
                                     BootstrapDialogManager.close(dialogRef);
                                 }
-                            }],
-                            onhide: function(dialog){
-                                BootstrapDialogManager.onhide(dialog);
-                            }
+                            }, {
+                                id: 'task-form-help-modifications',
+                                label: scope.$parent.msg('task.help.modifications'),
+                                cssClass: 'btn-default pull-left',
+                                action: function(dialogRef) {
+                                   HelpStringManipulation.open(scope.$parent);
+                                }
+                            }]
                         });
                         BootstrapDialogManager.open(scope.importDialog);
                     }});

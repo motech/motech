@@ -7,6 +7,11 @@
     font-weight: normal;
 }
 
+.tasks .btn-show-hide-bubbles {
+    float: right;
+    margin-right: 50px;
+}
+
 .tasks .popover.dragpopover .popover-content {
     padding: 9px 9px 9px 9px;
 }
@@ -258,17 +263,18 @@ manipulation-sorter .manipulation .remove:before {
     margin: 0px 5px 5px 0;
 }
 
-.tasks .map-field {
-    width: 30%;
-    float: left;
-    margin: 0px 5px 5px 0;
-}
-
 .tasks .map-field .field-bubble{
     max-width: 100%;
 }
 
 .tasks .map-field .field-text{
+    float: left;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tasks .map-field .field-text-short{
     float: left;
     max-width: 82%;
     overflow: hidden;
@@ -1016,11 +1022,7 @@ manipulation-sorter .manipulation .remove:before {
     color: #224477 !important;
 }
 
-#helpModal .modal-dialog {
-    width: 760px;
-}
-
-#helpModal .modal-body .header {
+.tasks .header {
     color: #224477;
     font-size: 16px;
 }
@@ -1211,7 +1213,7 @@ manipulation-sorter .manipulation .remove:before {
 }
 
 .tasks .popover{
-    max-width: 200%;
+    max-width: 300%;
 }
 
 .trigger-lists {
@@ -1281,4 +1283,47 @@ editable-content .popover .inner-popover, nonEditable, .no-margin-bottom input[t
     float: left;
     width: 45px;
     font-size: 18px;
+}
+
+.tasks .sidebar {
+    position: fixed;
+    top: 45%;
+    right: -300px;
+    transition: 800ms right;
+    z-index: 999;
+}
+.tasks .sidebar:hover {
+    right: 0;
+    transition: 800ms right;
+}
+.tasks .navigation-toggle {
+    position: absolute;
+    right: 300px;
+    background: #337ab7;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 20px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+.tasks .sidebar:hover .navigation-toggle {
+    opacity: 0;
+}
+.tasks .navigation {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.tasks .navigation-items span {
+    display: block;
+    background-color: #337ab7;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px 20px;
+    width: 300px;
+}
+.tasks .navigation-items span:hover {
+    background-color: #155C8D;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
 }

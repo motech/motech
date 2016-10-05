@@ -8,7 +8,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.tasks.domain.mds.task.DataSource;
 import org.motechproject.tasks.domain.mds.task.Filter;
-import org.motechproject.tasks.domain.mds.task.LogicalOperator;
+import org.motechproject.tasks.domain.enums.LogicalOperator;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 import org.motechproject.tasks.domain.mds.task.builder.TaskBuilder;
@@ -46,11 +46,11 @@ import static org.motechproject.tasks.domain.mds.task.OperatorType.MORE_MONTHS_F
 import static org.motechproject.tasks.domain.mds.task.OperatorType.STARTSWITH;
 import static org.motechproject.tasks.domain.mds.task.OperatorType.AND;
 import static org.motechproject.tasks.domain.mds.task.OperatorType.OR;
-import static org.motechproject.tasks.domain.mds.ParameterType.DATE;
-import static org.motechproject.tasks.domain.mds.ParameterType.INTEGER;
-import static org.motechproject.tasks.domain.mds.ParameterType.TEXTAREA;
-import static org.motechproject.tasks.domain.mds.ParameterType.UNICODE;
-import static org.motechproject.tasks.domain.mds.ParameterType.BOOLEAN;
+import static org.motechproject.tasks.domain.enums.ParameterType.DATE;
+import static org.motechproject.tasks.domain.enums.ParameterType.INTEGER;
+import static org.motechproject.tasks.domain.enums.ParameterType.TEXTAREA;
+import static org.motechproject.tasks.domain.enums.ParameterType.UNICODE;
+import static org.motechproject.tasks.domain.enums.ParameterType.BOOLEAN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskFilterExecutorTest {

@@ -1,7 +1,5 @@
 package org.motechproject.tasks.domain.mds.task;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.CrudEvents;
@@ -10,6 +8,8 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.dto.DataSourceDto;
+import org.motechproject.tasks.dto.LookupDto;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -22,7 +22,6 @@ import java.util.Objects;
  */
 @Entity(recordHistory = true)
 @CrudEvents(CrudEventType.NONE)
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Access(value = SecurityMode.PERMISSIONS, members = {TasksRoles.MANAGE_TASKS})
 public class DataSource extends TaskConfigStep {
     private static final long serialVersionUID = 6652124746431496660L;
@@ -49,6 +48,15 @@ public class DataSource extends TaskConfigStep {
 
     /**
      * Constructor.
+     * @param dto DataSource data transfer object
+     */
+    public DataSource(DataSourceDto dto){
+        this(dto.getProviderName(), dto.getProviderId(), dto.getObjectId(), dto.getType(), dto.getName(),
+                Lookup.toLookups(dto.getLookup()), dto.isFailIfDataNotFound(), dto.getOrder());
+    }
+
+    /**
+     * Constructor.
      *
      * @param providerName  the provider name
      * @param providerId  the provider ID
@@ -60,6 +68,12 @@ public class DataSource extends TaskConfigStep {
      */
     public DataSource(String providerName, Long providerId, Long objectId, String type,
                       String name, List<Lookup> lookup, boolean failIfDataNotFound) {
+        this(providerName, providerId, objectId, type, name, lookup, failIfDataNotFound, null);
+    }
+
+    public DataSource(String providerName, Long providerId, Long objectId, String type,
+                      String name, List<Lookup> lookup, boolean failIfDataNotFound, Integer order) {
+        super(order);
         this.providerName = providerName;
         this.providerId = providerId;
         this.objectId = objectId;
@@ -140,6 +154,16 @@ public class DataSource extends TaskConfigStep {
         this.failIfDataNotFound = failIfDataNotFound;
     }
 
+    public DataSourceDto toDto() {
+        List<LookupDto> lookupDtos = new ArrayList<>();
+
+        for (Lookup lookupFromList : getLookup()) {
+            lookupDtos.add(lookupFromList.toDto());
+        }
+
+        return new DataSourceDto(getOrder(), providerName, providerId, objectId, type, name, lookupDtos, failIfDataNotFound);
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(providerId, objectId, type, lookup, failIfDataNotFound);
@@ -166,7 +190,6 @@ public class DataSource extends TaskConfigStep {
                 && Objects.equals(this.failIfDataNotFound, other.failIfDataNotFound);
     }
 
-    @JsonIgnore
     public boolean objectEquals(String providerName, Long objectId, String type) {
         return Objects.equals(this.providerName, providerName)
                 && Objects.equals(this.objectId, objectId)

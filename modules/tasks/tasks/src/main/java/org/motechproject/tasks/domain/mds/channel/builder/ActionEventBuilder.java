@@ -4,7 +4,7 @@ import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.ActionParameter;
-import org.motechproject.tasks.domain.mds.channel.MethodCallManner;
+import org.motechproject.tasks.domain.enums.MethodCallManner;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
