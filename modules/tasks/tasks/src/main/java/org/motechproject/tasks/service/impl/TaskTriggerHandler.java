@@ -183,7 +183,7 @@ public class TaskTriggerHandler implements TriggerHandler {
             LOGGER.info("Executing all actions from task: {}", task.getName());
             if (initializer.evalConfigSteps(dataProviders)) {
                 while (result && executedActions < task.getActions().size()) {
-                    if (actualFilterIndex < filterSet.size() && filterSet.get(actualFilterIndex).getActionOrder() == checkedFilters) {
+                    if (filterSet.size() > 0 &&  actualFilterIndex < filterSet.size() && filterSet.get(actualFilterIndex).getActionOrder() == checkedFilters) {
                         result = taskFilterExecutor.checkFilters(filterSet.get(actualFilterIndex).getFilters(), filterSet.get(actualFilterIndex).getOperator(), taskContext);
                         actualFilterIndex += 1;
                     } else {

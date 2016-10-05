@@ -85,14 +85,17 @@ class TaskInitializer {
     }
 
     public int getActionFilters() {
-        Integer actionFilterId = null;
+        Integer actionFilterId;
         int i = 0;
-        List<FilterSet> filterSet = new ArrayList<>(taskContext.getTask().getTaskConfig().getFilters());
-        while (actionFilterId == null) {
-            actionFilterId = filterSet.get(i).getActionOrder();
+        List<FilterSet> filterSetList = new ArrayList<>(taskContext.getTask().getTaskConfig().getFilters());
+        for (FilterSet filterSet : filterSetList) {
+            actionFilterId = filterSet.getActionOrder();
+            if(actionFilterId != null) {
+                return i;
+            }
             i++;
         }
-        return i - 1;
+        return i;
     }
 
     private Object getDataSourceObject(DataSource dataSource, Map<String, DataProvider> providers)
