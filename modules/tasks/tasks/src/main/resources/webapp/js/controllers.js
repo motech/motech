@@ -269,6 +269,7 @@
             }
         };
         $scope.task.retryTaskOnFailure = false;
+        $scope.taskStepNumber = 0;
 
         innerLayout({
             spacing_closed: 30,
@@ -295,7 +296,7 @@
                 LoadingModal.open();
                 $scope.task = Tasks.get({ taskId: $stateParams.taskId }, function () {
                     Triggers.getTrigger($scope.task.trigger, function(trigger) {
-                        var triggerChannel, dataSource, object;
+                        var triggerChannel, dataSource, object, actionStep, actionIndex = 0, actionFilterIndex = 0, filtersToDelete = [], actionSteps= [], actionFilters = [];
 
                         if ($scope.task.numberOfRetries > 0) {
                            $scope.task.retryTaskOnFailure = true;
@@ -340,9 +341,31 @@
                                     step.displayName = object.displayName;
                                 }
                             }
+                            if (step['@type'] === 'FilterSetDto' && step.actionOrder !== null) {
+                                actionFilters.push(step);
+                                filtersToDelete.push(step);
+                            }
+                            $scope.taskStepNumber = step.order;
                         });
 
+                        angular.forEach(filtersToDelete, function(filter) {
+                            $scope.task.taskConfig.steps.removeObject(filter);
+                        });
+
+                        for (actionStep = 0; actionStep < ($scope.task.actions.length + actionFilters.length); actionStep += 1) {
+                            if (actionFilterIndex < actionFilters.length && actionFilters[actionFilterIndex].actionOrder === actionStep) {
+                                actionFilters[actionFilterIndex]['@type'] = 'FilterActionSetDto';
+                                actionSteps.push(actionFilters[actionFilterIndex]);
+                                actionFilterIndex += 1;
+                            } else {
+                                actionSteps.push($scope.task.actions[actionIndex]);
+                                actionIndex += 1;
+                            }
+                        }
+                        $scope.task.actions = actionSteps;
+
                         angular.forEach($scope.task.actions, function (info, idx) {
+                            if (info['@type'] !== 'FilterActionSetDto') {
                             var action = null, actionBy = [];
 
                             $scope.selectedActionChannel[idx] = $scope.util.find({
@@ -385,6 +408,7 @@
                                         });
                                     });
                                 }
+                            }
                             }
                         });
                     });
@@ -432,8 +456,8 @@
         $scope.removeAction = function (idx) {
             var removeActionSelected = function (idx) {
                 $scope.task.actions.remove(idx);
-                $scope.selectedActionChannel.remove(idx);
-                $scope.selectedAction.remove(idx);
+                delete $scope.selectedActionChannel[idx];
+                delete $scope.selectedAction[idx];
 
                 if (!$scope.$$phase) {
                     $scope.$apply($scope.task);
@@ -486,20 +510,39 @@
         };
 
         $scope.addFilterSet = function () {
-            var lastStep = $scope.task.taskConfig.steps.last();
+            $scope.taskStepNumber += 1;
 
             $scope.task.taskConfig.steps.push({
                 '@type': 'FilterSetDto',
                 filters: [],
                 operator: "AND",
-                order: (lastStep && lastStep.order + 1) || 0
+                order: $scope.taskStepNumber
+            });
+        };
+
+        $scope.addActionFilterSet = function () {
+            if (!$scope.task.actions) {
+                $scope.task.actions = [];
+            }
+
+            $scope.taskStepNumber += 1;
+            $scope.task.actions.push({
+                '@type': 'FilterActionSetDto',
+                filters: [],
+                operator: "AND",
+                order: $scope.taskStepNumber
             });
         };
 
         $scope.removeFilterSet = function (data) {
             var removeFilterSetSelected = function (data) {
-                $scope.task.taskConfig.steps.removeObject(data);
 
+                if (data['@type'] === 'FilterSetDto') {
+                    $scope.task.taskConfig.steps.removeObject(data);
+                } else if (data['@type'] === 'FilterActionSetDto') {
+                    $scope.task.actions.removeObject(data);
+                }
+                $scope.taskStepNumber -= 1;
                 if (!$scope.$$phase) {
                     $scope.$apply($scope.task);
                 }
@@ -647,15 +690,15 @@
 
         $scope.addDataSource = function () {
             var sources = $scope.getDataSources(),
-                lastStep = $scope.task.taskConfig.steps.last(),
                 last;
 
             last = sources && sources.last();
+            $scope.taskStepNumber += 1;
 
             $scope.task.taskConfig.steps.push({
                 '@type': 'DataSourceDto',
                 objectId: (last && last.objectId + 1) || 0,
-                order: (lastStep && lastStep.order + 1) || 0
+                order: $scope.taskStepNumber
             });
 
             if (!$scope.$$phase) {
@@ -681,6 +724,7 @@
                     $scope.$apply($scope.task);
                 }
             }
+            $scope.taskStepNumber -= 1;
         };
 
         $scope.getDataSources = function () {
@@ -807,7 +851,7 @@
         };
 
         $scope.save = function (enabled) {
-            var success = function (response) {
+            var actionOrder = [], taskOrder = [], filtersToDelete = [], success = function (response) {
                 var alertMessage = enabled ? $scope.msg('task.success.savedAndEnabled') : $scope.msg('task.success.saved'),
                 loc, indexOf, errors = response.validationErrors || response;
 
@@ -829,6 +873,8 @@
             },
             error = function (response) {
                 var data = (response && response.data) || response;
+                $scope.task.actions = actionOrder;
+                $scope.task.taskConfig.steps = taskOrder;
 
                 angular.forEach($scope.task.actions, function (action) {
                     delete action.values;
@@ -858,6 +904,24 @@
                         delete $scope.task.actions[idx].values[param.key];
                     }
                 });
+            });
+            actionOrder = $scope.task.actions;
+            taskOrder = $scope.task.taskConfig.steps;
+
+            angular.forEach($scope.task.actions, function (action, idx) {
+                if (action['@type'] === 'FilterActionSetDto') {
+                    $scope.task.taskConfig.steps.push({
+                        '@type': 'FilterSetDto',
+                        filters: action.filters,
+                        operator: action.operator,
+                        actionOrder: idx
+                    });
+                    filtersToDelete.push(action);
+                }
+            });
+
+            angular.forEach(filtersToDelete, function(filter) {
+                $scope.task.actions.removeObject(filter);
             });
 
             angular.forEach($scope.task.taskConfig.steps, function (step) {

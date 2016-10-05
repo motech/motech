@@ -9,15 +9,17 @@ public class FilterSetDto extends TaskConfigStepDto {
 
     private List<FilterDto> filters;
     private LogicalOperator operator;
+    private Integer actionOrder;
 
     public FilterSetDto() {
         super(null);
     }
 
-    public FilterSetDto(Integer order, List<FilterDto> filters, LogicalOperator operator) {
+    public FilterSetDto(Integer order, List<FilterDto> filters, LogicalOperator operator, Integer actionOrder) {
         super(order);
         this.filters = filters;
         this.operator = operator;
+        this.actionOrder = actionOrder;
     }
 
     public List<FilterDto> getFilters() {
@@ -34,6 +36,14 @@ public class FilterSetDto extends TaskConfigStepDto {
 
     public void setOperator(LogicalOperator operator) {
         this.operator = operator;
+    }
+
+    public Integer getActionOrder() {
+        return actionOrder;
+    }
+
+    public void setActionOrder(Integer actionOrder) {
+        this.actionOrder = actionOrder;
     }
 
     @Override

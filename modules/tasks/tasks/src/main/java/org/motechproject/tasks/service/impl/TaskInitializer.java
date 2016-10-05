@@ -13,9 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.List;
 
 import static org.motechproject.tasks.constants.TaskFailureCause.DATA_SOURCE;
 import static org.motechproject.tasks.constants.TaskFailureCause.FILTER;
@@ -69,7 +71,7 @@ class TaskInitializer {
                 DataSource ds = (DataSource) step;
                 taskContext.addDataSourceObject(ds.getObjectId().toString(), getDataSourceObject(ds, dataProviders), ds.isFailIfDataNotFound());
                 LOGGER.info("Task data source: {} for task: {} added", ds.getName(), taskContext.getTask().getName());
-            } else if (step instanceof FilterSet) {
+            } else if (step instanceof FilterSet && ((FilterSet) step).getActionOrder() == null) {
                 try {
                     FilterSet filterSet = (FilterSet) step;
 
@@ -80,6 +82,17 @@ class TaskInitializer {
             }
         }
         return result;
+    }
+
+    public int getActionFilters() {
+        Integer actionFilterId = null;
+        int i = 0;
+        List<FilterSet> filterSet = new ArrayList<>(taskContext.getTask().getTaskConfig().getFilters());
+        while (actionFilterId == null) {
+            actionFilterId = filterSet.get(i).getActionOrder();
+            i++;
+        }
+        return i - 1;
     }
 
     private Object getDataSourceObject(DataSource dataSource, Map<String, DataProvider> providers)

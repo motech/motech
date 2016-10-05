@@ -9,6 +9,7 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.tasks.constants.EventDataKeys;
+import org.motechproject.tasks.domain.mds.task.FilterSet;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
 import org.motechproject.tasks.exception.TaskHandlerException;
@@ -16,6 +17,7 @@ import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TriggerHandler;
 import org.motechproject.tasks.service.util.TaskContext;
+import org.motechproject.tasks.service.util.TaskFilterExecutor;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,7 @@ import org.springframework.util.ReflectionUtils;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -169,12 +172,25 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         TaskContext taskContext = new TaskContext(task, parameters, metadata, activityService);
         TaskInitializer initializer = new TaskInitializer(taskContext);
+        List<FilterSet> filterSet = new ArrayList<>(task.getTaskConfig().getFilters());
+        TaskFilterExecutor taskFilterExecutor = new TaskFilterExecutor();
+        boolean result = true;
+        int executedActions = 0;
+        int checkedFilters = 0;
+        int actualFilterIndex = initializer.getActionFilters();
 
         try {
             LOGGER.info("Executing all actions from task: {}", task.getName());
             if (initializer.evalConfigSteps(dataProviders)) {
-                for (int i = 0; i < task.getActions().size(); i++) {
-                    executor.execute(task, task.getActions().get(i), i, taskContext, activityId);
+                while (result && executedActions < task.getActions().size()) {
+                    if (actualFilterIndex < filterSet.size() && filterSet.get(actualFilterIndex).getActionOrder() == checkedFilters) {
+                        result = taskFilterExecutor.checkFilters(filterSet.get(actualFilterIndex).getFilters(), filterSet.get(actualFilterIndex).getOperator(), taskContext);
+                        actualFilterIndex += 1;
+                    } else {
+                        executor.execute(task, task.getActions().get(executedActions), executedActions, taskContext, activityId);
+                        executedActions += 1;
+                    }
+                    checkedFilters += 1;
                 }
             }
             LOGGER.warn("Actions from task: {} weren't executed, because config steps didn't pass the evaluation", task.getName());
