@@ -14,10 +14,11 @@ public class ActionEventDto {
     private String serviceInterface;
     private String serviceMethod;
     private MethodCallManner serviceMethodCallManner;
+    private SortedSet<ActionParameterDto> postActionParameters;
 
     public ActionEventDto(String name, String description, String displayName, String subject,
                           SortedSet<ActionParameterDto> actionParameters, String serviceInterface, String serviceMethod,
-                          MethodCallManner serviceMethodCallManner) {
+                          MethodCallManner serviceMethodCallManner, SortedSet<ActionParameterDto> postActionParameters) {
         this.name = name;
         this.description = description;
         this.displayName = displayName;
@@ -26,6 +27,7 @@ public class ActionEventDto {
         this.serviceInterface = serviceInterface;
         this.serviceMethod = serviceMethod;
         this.serviceMethodCallManner = serviceMethodCallManner;
+        this.postActionParameters = postActionParameters;
     }
 
     public String getName() {
@@ -90,5 +92,13 @@ public class ActionEventDto {
 
     public void setServiceMethodCallManner(MethodCallManner serviceMethodCallManner) {
         this.serviceMethodCallManner = serviceMethodCallManner;
+    }
+
+    public SortedSet<ActionParameterDto> getPostActionParameters() {
+        return postActionParameters;
+    }
+
+    public void setPostActionParameters(SortedSet<ActionParameterDto> postActionParameters) {
+        this.postActionParameters = postActionParameters;
     }
 }

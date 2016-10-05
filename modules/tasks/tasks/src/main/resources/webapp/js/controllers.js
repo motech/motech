@@ -257,8 +257,13 @@
         };
     });
 
-    controllers.controller('TasksManageCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers,
+    controllers.controller('TasksManageCtrl', function ($rootScope, $scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers,
                 $q, $timeout, $stateParams, $http, $filter, ModalFactory, LoadingModal, HelpStringManipulation) {
+
+        $scope.showBubbles = true;
+        $scope.showOrHideBubbles = function() {
+            $scope.showBubbles = !$scope.showBubbles;
+        };
 
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
@@ -270,6 +275,12 @@
         };
         $scope.task.retryTaskOnFailure = false;
         $scope.taskStepNumber = 0;
+        $scope.debugging = false;
+
+        $scope.changeCheckbox = function (debugging) {
+            $scope.debugging = debugging;
+            $rootScope.$broadcast('debugging', { debug: debugging });
+        };
 
         innerLayout({
             spacing_closed: 30,
@@ -600,7 +611,8 @@
                     }
 
                     select = {
-                        'eventKey' : text
+                        'eventKey' : text,
+                        'type': 'UNICODE'
                     };
                 } else if (type === $scope.util.DATA_SOURCE_PREFIX && splitted.length === 5 && splitted[4] !== '') {
                     text = splitted[3].split('#');
@@ -648,9 +660,14 @@
 
             switch(type) {
             case $scope.util.TRIGGER_PREFIX:
-                filter.key = "{0}.{1}".format($scope.util.TRIGGER_PREFIX, select.eventKey);
-                filter.displayName = filter.key;
-                filter.type = select.type;
+                if (select.eventKey) {
+                    filter.key = "{0}.{1}".format($scope.util.TRIGGER_PREFIX, select.eventKey);
+                    filter.displayName = filter.key;
+                    filter.type = select.type;
+                } else {
+                    filter.key = empty;
+                    filter.type = empty;
+                }
                 break;
             case $scope.util.DATA_SOURCE_PREFIX:
                 filter.key = "{0}.{1}.{2}#{3}.{4}".format($scope.util.DATA_SOURCE_PREFIX, select.providerName, select.type, select.objectId, field.fieldKey);
@@ -659,12 +676,27 @@
                 break;
             default:
                 filter.key = empty;
+                filter.type = empty;
+            }
+
+            $scope.setFilterOperators(filter.type);
+        };
+
+        $scope.setFilterOperators = function(type) {
+            if ($scope.util.isNumber(type)) {
+                $scope.filterOperators = $scope.util.FILTER_OPERATORS['task.number'].options;
+            }  else if ($scope.util.isDate(type)) {
+                $scope.filterOperators = $scope.util.FILTER_OPERATORS['task.date'].options;
+            } else if ($scope.util.isBoolean(type)) {
+                $scope.filterOperators = $scope.util.FILTER_OPERATORS['task.boolean'].options;
+            } else {
+                $scope.filterOperators = $scope.util.FILTER_OPERATORS['task.string'].options;
             }
         };
 
         $scope.getPopoverType = function(filter) {
             if (!filter.manipulations || !Array.isArray(filter.manipulations)) {
-                if (filter.displayName) {
+                if (filter.displayName && filter.key) {
                     var manipulations, manipulationsBuff;
                     manipulationsBuff = filter.key.split('?');
                     manipulationsBuff.shift();
@@ -1072,6 +1104,14 @@
 
         $scope.openHelpStringManipulation = function () {
             HelpStringManipulation.open($scope);
+        };
+
+        $scope.getKeys = function (eventParameters) {
+            var newArray = [];
+            eventParameters.forEach(function (param) {
+                newArray.push('trigger.'+param.eventKey);
+            });
+            return newArray;
         };
 
     });
