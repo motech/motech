@@ -87,6 +87,7 @@
                 </entry>
             </map>
         </property>
+        <property name="restDocsPath" value="/admin/swagger.json"/>
     </bean>
 
 </beans>

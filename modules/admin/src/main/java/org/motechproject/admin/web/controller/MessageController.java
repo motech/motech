@@ -1,5 +1,7 @@
 package org.motechproject.admin.web.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.motechproject.admin.domain.NotificationRule;
 import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
@@ -24,6 +26,7 @@ import java.util.List;
  * @see org.motechproject.admin.domain.StatusMessage
  */
 @Controller
+@Api(value="MessageController", description = "The controller that handles the status message UI")
 public class MessageController {
 
     @Autowired
@@ -38,6 +41,7 @@ public class MessageController {
      * @return the list of messages
      */
     @RequestMapping(value = "/messages", method = RequestMethod.GET)
+    @ApiOperation(value="Retrieves a list status messages")
     @ResponseBody public List<StatusMessage> getMessages(@RequestParam(defaultValue = "false") boolean all) {
         uiFrameworkService.moduleBackToNormal("admin", "admin.messages");
         return (all ? statusMessageService.getAllMessages() : statusMessageService.getActiveMessages());
@@ -52,6 +56,7 @@ public class MessageController {
      */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "messages", method = RequestMethod.POST)
+    @ApiOperation(value="Used for posting a new message in the system")
     public void postMessage(@RequestParam(required = true) String text, @RequestParam(required = true) String moduleName,
                             @RequestParam String level) {
         Level levelEnum = Level.fromString(level);
@@ -68,6 +73,7 @@ public class MessageController {
      * @see org.motechproject.admin.service.StatusMessageService#getNotificationRules()
      */
     @RequestMapping(value = "/messages/rules", method = RequestMethod.GET)
+    @ApiOperation(value="Returns all notification rules defined in the system")
     @ResponseBody public List<NotificationRule> getNotificationRules() {
         return statusMessageService.getNotificationRules();
     }
@@ -79,6 +85,8 @@ public class MessageController {
      */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/messages/rules/dto", method = RequestMethod.POST)
+    @ApiOperation(value="Used for posting a request with changes to existing notification rules. It also deletes rules\n" +
+            "removed before pressing the save button on the UI.")
     public void saveNotificationRules(@RequestBody NotificationRuleDto notificationRuleDto) {
         for (String id : notificationRuleDto.getIdsToRemove()) {
             statusMessageService.removeNotificationRule(id);
@@ -92,6 +100,7 @@ public class MessageController {
      * @param ruleId the id of the rule to retrieve
      */
     @RequestMapping(value = "/messages/rules/{ruleId}", method = RequestMethod.DELETE)
+    @ApiOperation(value="Retrieves a single notification rule with the id provided in the path")
     @ResponseStatus(HttpStatus.OK)
     public void deleteRule(@PathVariable String ruleId) {
         statusMessageService.removeNotificationRule(ruleId);
@@ -103,6 +112,7 @@ public class MessageController {
      * @see org.motechproject.admin.service.StatusMessageService#saveRule(org.motechproject.admin.domain.NotificationRule)
      */
     @RequestMapping(value = "/messages/rules", method = RequestMethod.POST)
+    @ApiOperation(value="Adds a new notification rule to the system")
     @ResponseStatus(HttpStatus.OK)
     public void addRule(@RequestBody NotificationRule notificationRule) {
         statusMessageService.saveRule(notificationRule);
