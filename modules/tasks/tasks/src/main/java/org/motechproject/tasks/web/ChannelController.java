@@ -1,5 +1,7 @@
 package org.motechproject.tasks.web;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 import org.motechproject.tasks.web.domain.TriggersList;
 import org.motechproject.tasks.web.domain.TriggersLists;
@@ -22,6 +24,7 @@ import java.util.List;
  * Controller for managing channels.
  */
 @Controller
+@Api(value="ChannelController", description = "Controller for managing channels")
 public class ChannelController {
 
     private static final int PAGE_SIZE = 10;
@@ -45,6 +48,7 @@ public class ChannelController {
      * @return  the list of all channels
      */
     @RequestMapping(value = "channel", method = RequestMethod.GET)
+    @ApiOperation(value="Returns the list of all channels")
     @ResponseBody
     public List<ChannelDto> getAllChannels() {
         return taskWebService.getAllChannels();
@@ -59,6 +63,7 @@ public class ChannelController {
      * @return the list of both static and dynamic triggers
      */
     @RequestMapping(value = "channel/triggers", method = RequestMethod.GET)
+    @ApiOperation(value="Returns the list of triggers provider by the module with the given moduleName")
     @ResponseBody
     public TriggersLists getTriggers(@RequestParam String moduleName,
                                      @RequestParam int staticTriggersPage,
@@ -99,6 +104,7 @@ public class ChannelController {
      * @return the trigger matching given information
      */
     @RequestMapping(value = "channel/trigger", method = RequestMethod.POST)
+    @ApiOperation(value="Returns a trigger matching the given instance of the TaskTriggerInformationDto class")
     @ResponseBody
     public TriggerEventDto getTrigger(@RequestBody TaskTriggerInformation info) {
         return taskWebService.getTrigger(info);

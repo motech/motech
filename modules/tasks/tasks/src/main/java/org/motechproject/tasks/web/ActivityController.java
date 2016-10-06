@@ -2,6 +2,8 @@ package org.motechproject.tasks.web;
 
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.enums.TaskActivityType;
@@ -27,6 +29,7 @@ import java.util.Set;
  * Controller for managing activities.
  */
 @Controller
+@Api(value="ActivityController", description="Controller for managing activities")
 public class ActivityController {
 
     private TaskActivityService activityService;
@@ -51,6 +54,7 @@ public class ActivityController {
      * @return  the list of activities
      */
     @RequestMapping(value = "/activity", method = RequestMethod.GET)
+    @ApiOperation(value = "Returns the list of recent activities")
     @ResponseBody
     public List<TaskActivityDto> getRecentActivities() {
         return taskWebService.getLatestActivities();
@@ -92,6 +96,7 @@ public class ActivityController {
      * @return  the list of activities
      */
     @RequestMapping(value = "/activity/{taskId}", method = RequestMethod.GET)
+    @ApiOperation(value = "Returns the list of activities for task with the given ID")
     @ResponseBody
     public TaskActivityRecords getTaskActivities(@PathVariable Long taskId, GridSettings settings) {
         if (settings != null) {
@@ -123,6 +128,7 @@ public class ActivityController {
      * @return  the list of activities
      */
     @RequestMapping(value = "/activity/{taskId}/{activityType}", method = RequestMethod.GET)
+    @ApiOperation(value="Returns the count of specified activity types for the task with the given ID")
     @ResponseBody
     public long getTaskActivityCount(@PathVariable Long taskId, @PathVariable String activityType) {
         TaskActivityType type = TaskActivityType.valueOf(activityType);
@@ -135,6 +141,7 @@ public class ActivityController {
      * @param taskId  the ID of the task
      */
     @RequestMapping(value = "/activity/{taskId}", method = RequestMethod.DELETE)
+    @ApiOperation(value="Deletes all activities for task with the given ID")
     @ResponseStatus(HttpStatus.OK)
     public void deleteActivitiesForTask(@PathVariable Long taskId) {
         activityService.deleteActivitiesForTask(taskId);
@@ -146,6 +153,7 @@ public class ActivityController {
      * @param activityId the ID of activity for which task should be retried
      */
     @RequestMapping(value = "/activity/retry/{activityId}", method = RequestMethod.POST)
+    @ApiOperation(value="Retries task execution for activity with the given ID")
     @ResponseStatus(HttpStatus.OK)
     public void retryTask(@PathVariable Long activityId) {
         //Retry of the task is run in new thread to avoid blocking UI, so user will be able

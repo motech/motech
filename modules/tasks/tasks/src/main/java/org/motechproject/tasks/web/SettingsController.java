@@ -1,6 +1,8 @@
 package org.motechproject.tasks.web;
 
 import org.motechproject.commons.api.MotechException;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.motechproject.config.SettingsFacade;
 import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.web.domain.SettingsDto;
@@ -26,6 +28,7 @@ import static org.motechproject.tasks.web.domain.SettingsDto.TASK_PROPERTIES_FIL
  */
 @PreAuthorize(TasksRoles.HAS_ROLE_MANAGE_TASKS)
 @Controller
+@Api(value="SettingsController", description = "Controller for managing Tasks module settings")
 public class SettingsController {
 
     @Autowired
@@ -37,6 +40,7 @@ public class SettingsController {
      * @return  the settings of Task module
      */
     @RequestMapping(value = "/settings", method = RequestMethod.GET)
+    @ApiOperation(value="Returns the Tasks module settings")
     @ResponseBody
     public SettingsDto getSettings() {
         SettingsDto dto = new SettingsDto();
@@ -51,6 +55,7 @@ public class SettingsController {
      */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings", method = RequestMethod.POST)
+    @ApiOperation(value="Saves the given settings")
     public void saveSettings(@RequestBody SettingsDto settings) {
         String taskPossibleErrors = settings.getTaskPossibleErrors();
 
