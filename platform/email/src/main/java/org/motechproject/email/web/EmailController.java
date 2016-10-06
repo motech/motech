@@ -1,6 +1,8 @@
 package org.motechproject.email.web;
 
 import com.google.common.collect.Sets;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -47,6 +49,9 @@ import static org.apache.commons.lang.CharEncoding.UTF_8;
  */
 
 @Controller
+@Api(value="EmailController", description = "The <code>EmailController</code> class is used by view layer for getting information\n" +
+        "about all {@link EmailRecords} or single {@link EmailRecord}. It stores the most recent\n" +
+        "records and allows filtering and sorting them by given criteria.")
 public class EmailController {
 
     private Map<String, GridSettings> lastFilter = new HashMap<>();
@@ -55,6 +60,7 @@ public class EmailController {
     private EmailAuditService auditService;
 
     @RequestMapping(value = "/emails", method = RequestMethod.GET)
+    @ApiOperation(value="Returns all the email records")
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseBody
     public EmailRecords<? extends BasicEmailRecordDto> getEmails(GridSettings filter, HttpServletRequest request) {
@@ -84,6 +90,7 @@ public class EmailController {
     }
 
     @RequestMapping(value = "/emails/{mailid}", method = RequestMethod.GET)
+    @ApiOperation(value="Returns the email with the given mailid")
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseBody
     public EmailRecords<EmailRecordDto> getEmail(@PathVariable int mailid) {
@@ -92,6 +99,7 @@ public class EmailController {
     }
 
     @RequestMapping(value = "/emails/months/", method = RequestMethod.GET)
+    @ApiOperation(value="Returns the list of available months")
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseBody
     public List<String> getAvailableMonths() {
@@ -111,6 +119,7 @@ public class EmailController {
     }
 
     @RequestMapping(value = "/emails/export", method = RequestMethod.GET)
+    @ApiOperation(value="Exports all the emails as a csv file")
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     public void exportEmailLog(@RequestParam("range") String range,
                                @RequestParam(value = "month", required = false) String month,
@@ -188,6 +197,7 @@ public class EmailController {
     }
 
     @RequestMapping(value = "/emails/available/", method = RequestMethod.GET)
+    @ApiOperation(value="Returns all the list of available email addresses")
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseBody
     public List<String> getAvailableMails(@RequestParam("autoComplete") String autoComplete,
