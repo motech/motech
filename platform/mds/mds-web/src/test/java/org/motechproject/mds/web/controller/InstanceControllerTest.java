@@ -17,7 +17,7 @@ import org.motechproject.mds.web.domain.BasicEntityRecord;
 import org.motechproject.mds.web.domain.BasicFieldRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.GridSettings;
-import org.motechproject.mds.web.domain.Records;
+import org.motechproject.commons.api.Records;
 import org.motechproject.mds.web.domain.RelationshipsUpdate;
 import org.motechproject.mds.web.service.InstanceService;
 import org.motechproject.testing.utils.rest.RestTestUtil;

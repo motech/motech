@@ -12,7 +12,7 @@ import org.motechproject.email.domain.EmailRecord;
 import org.motechproject.email.service.EmailAuditService;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Order;
-import org.motechproject.mds.web.domain.Records;
+import org.motechproject.commons.api.Records;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -80,7 +80,7 @@ public class EmailController {
             lastFilter.put(username, filter);
         }
 
-        return new Records<>((int) total, filter.getPage(), totalPages, rows);
+        return new Records<>(filter.getPage(), totalPages, (int) total, rows);
     }
 
     @RequestMapping(value = "/emails/{mailid}", method = RequestMethod.GET)
