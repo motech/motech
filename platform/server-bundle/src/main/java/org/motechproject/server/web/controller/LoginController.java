@@ -1,5 +1,6 @@
 package org.motechproject.server.web.controller;
 
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.config.SettingsFacade;
 import org.motechproject.server.startup.StartupManager;
@@ -48,6 +49,7 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/loginviewdata", method = RequestMethod.GET)
+    @ApiOperation(value = "Returns the login view data")
     @ResponseBody
     public LoginViewData getLoginViewData(final HttpServletRequest request) {
 

@@ -1,5 +1,7 @@
 package org.motechproject.server.web.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.motechproject.event.listener.EventConsumerInfo;
@@ -29,6 +31,8 @@ import static org.motechproject.commons.date.util.DateUtil.now;
  * The view returned by this controller will embed the UI of the currently requested module.
  */
 @Controller
+@Api(value = "DashboardController", description = "Main application controller. Responsible for retrieving information shared across the UI of different modules.\n" +
+        "The view returned by this controller will embed the UI of the currently requested module.")
 @PreAuthorize("hasRole('viewUI')")
 public class DashboardController {
 
@@ -37,7 +41,7 @@ public class DashboardController {
     private EventConsumerInfo eventConsumerInfo;
 
     @RequestMapping({
-        "/index", "/", "/home"
+            "/index", "/", "/home"
     })
     public ModelAndView index(final HttpServletRequest request) {
         ModelAndView mav;
@@ -70,6 +74,7 @@ public class DashboardController {
     }
 
     @RequestMapping(value = "/getUser", method = RequestMethod.GET)
+    @ApiOperation(value = "Returns the current user's information")
     @ResponseBody
     public UserInfo getUser(HttpServletRequest request) {
         String lang = localeService.getUserLocale(request).getLanguage();
@@ -80,6 +85,7 @@ public class DashboardController {
     }
 
     @RequestMapping(value = "/getStatus", method = RequestMethod.GET)
+    @ApiOperation(value = "Returns the current status")
     @ResponseBody
     public List<StatusData> getStatus() throws UnknownHostException {
         StatusData statusData = new StatusData();

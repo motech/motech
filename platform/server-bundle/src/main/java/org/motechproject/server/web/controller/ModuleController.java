@@ -1,5 +1,7 @@
 package org.motechproject.server.web.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FilenameUtils;
@@ -48,6 +50,7 @@ import static org.motechproject.commons.api.ClassUtils.filterByClass;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Controller
+@Api(value = "ModuleController", description = "This controller is to provide information about modules")
 public class ModuleController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ModuleController.class);
 
@@ -88,6 +91,7 @@ public class ModuleController {
     }
 
     @RequestMapping(value = "/module/menu", method = RequestMethod.GET)
+    @ApiOperation(value = "Returns the module menu for a user")
     @ResponseBody
     public ModuleMenu getMenu(HttpServletRequest request) {
         String username = getUser(request).getUserName();
@@ -95,6 +99,7 @@ public class ModuleController {
     }
 
     @RequestMapping(value = "/module/config", method = RequestMethod.GET)
+    @ApiOperation(value = "Returns modules' configuration")
     @ResponseBody
     public List<ModuleConfig> getConfig() throws IOException {
         List<ModuleConfig> configuration = new ArrayList<>();
@@ -132,19 +137,22 @@ public class ModuleController {
     /**
      * Returns the icon associated with the given bundle. Bundles that do not have their own icons will
      * get a default icon.
-     * @param bundleId the id of the bundle for which the icon should be retrieved
-     * @param bundleName the name of the bundle for which the icon should be retrieved
+     *
+     * @param bundleId    the id of the bundle for which the icon should be retrieved
+     * @param bundleName  the name of the bundle for which the icon should be retrieved
      * @param defaultIcon the name of the default icon which be provided if any standard icon couldn't be searched
-     * @param response the HttpServletResponse, used for writing the icon in its output
+     * @param response    the HttpServletResponse, used for writing the icon in its output
      * @throws IOException if there were failures writing the icon to the output
      */
     @RequestMapping(value = "/module/icon", method = RequestMethod.GET)
+    @ApiOperation(value = "Returns the icon associated with the given bundle. Bundles that do not have their own icons will\n" +
+            "get a default icon.")
     public void getBundleIcon(@RequestParam(required = false) Long bundleId,
                               @RequestParam(required = false) String bundleName,
                               @RequestParam(required = false) String defaultIcon,
                               HttpServletResponse response) throws IOException {
         BundleIcon bundleIcon;
-        if(bundleId != null) {
+        if (bundleId != null) {
             bundleIcon = bundleIconService.getBundleIconById(bundleId, defaultIcon);
         } else {
             bundleIcon = bundleIconService.getBundleIconByName(bundleName, defaultIcon);
@@ -159,10 +167,12 @@ public class ModuleController {
 
     /**
      * Returns the url for rest documentation spec of the given module
+     *
      * @param moduleName the name of the module
      * @return the url at which the REST API spec can be accessed
      */
     @RequestMapping(value = "/module/rest-docs/{moduleName}", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Returns the url for rest documentation spec of the given module")
     @ResponseBody
     public String getRestDocsUrl(@PathVariable String moduleName) {
         return uiFrameworkService.getRestDocLinks().get(moduleName);

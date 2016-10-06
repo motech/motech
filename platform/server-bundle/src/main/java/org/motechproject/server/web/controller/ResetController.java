@@ -1,5 +1,7 @@
 package org.motechproject.server.web.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.exception.InvalidTokenException;
 import org.motechproject.security.exception.PasswordValidatorException;
@@ -30,6 +32,7 @@ import java.util.List;
  * Controller for resetting and changing user password.
  */
 @Controller
+@Api(value = "ResetController", description = "Controller for resetting and changing user password")
 public class ResetController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResetController.class);
@@ -54,6 +57,7 @@ public class ResetController {
     }
 
     @RequestMapping(value = "/changepassword", method = RequestMethod.POST)
+    @ApiOperation(value = "Changes the password of a Motech user")
     @ResponseBody
     public ChangePasswordViewData changePassword(@RequestBody ChangePasswordForm form) {
         ChangePasswordViewData viewData = new ChangePasswordViewData(form);
@@ -87,6 +91,7 @@ public class ResetController {
     }
 
     @RequestMapping(value = "/forgotresetviewdata", method = RequestMethod.GET)
+    @ApiOperation(value = "Returns reset view data")
     @ResponseBody
     public ResetViewData getResetViewData(final HttpServletRequest request) {
         ResetViewData viewData = new ResetViewData();
@@ -109,6 +114,7 @@ public class ResetController {
     }
 
     @RequestMapping(value = "/forgotreset", method = RequestMethod.POST)
+    @ApiOperation(value = "Sets reset view data")
     @ResponseBody
     public ResetViewData reset(@RequestBody ResetForm form, final HttpServletRequest request) {
         ResetViewData viewData = new ResetViewData();
