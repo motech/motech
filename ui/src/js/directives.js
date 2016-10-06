@@ -192,7 +192,21 @@
         };
     });
 
-    widgetModule.directive('serverTime', ['$http', function ($http) {
+    widgetModule.factory('StatusService', ["$http", function($http) {
+        var promise = null;
+        var getData = function() {
+            if (promise == null) {
+                promise = $http.get('getStatus');
+            }
+            return promise;
+        };
+
+        return {
+            getData: getData
+        };
+    }]);
+
+    widgetModule.directive('serverTime', ['$http', 'StatusService', function ($http, StatusService) {
         return function (scope, element, attributes) {
             var localTime, serverTime, calculatedDate, recalculatedDate, diff,
             formatPattern = 'YYYY-MM-DD HH:mm',
@@ -208,11 +222,11 @@
                 }
             },
             getServerTime = function() {
-                $http.get('gettime').success( function(time, status) {
+                StatusService.getData().success( function(data, status) {
                      if (status === 200) {
                          localTime = new Date();
-                         serverTime = new Date(moment(parseInt(time, 10)));
-                         $(element).text(moment(new Date(moment(parseInt(time, 10)))).format(formatPattern));
+                         serverTime = new Date(moment(parseInt(data[0].time, 10)));
+                         $(element).text(moment(new Date(moment(parseInt(data[0].time, 10)))).format(formatPattern));
 
                          // Calculate the difference  in seconds between the server date and the client date
                          diff = parseInt((localTime.getTime() / 1000) - (serverTime.getTime() / 1000), 10);
@@ -233,7 +247,7 @@
         };
     }]);
 
-    widgetModule.directive('serverUpTime', ['$http', function ($http) {
+    widgetModule.directive('serverUpTime', ['$http', 'StatusService', function ($http, StatusService) {
         return function (scope, element, attributes) {
             var currentDate, serverStartTime,
             setUpTime = function () {
@@ -244,12 +258,12 @@
                 }
             },
             getUptime = function() {
-                $http.get('getUptime').success( function(data, status) {
+                StatusService.getData().success( function(data, status) {
                     if (status === 200) {
-                        $(element).text(moment(parseInt(data, 10)).fromNow());
+                        $(element).text(moment(parseInt(data[0].uptime, 10)).fromNow());
 
                         // Store server start time
-                        serverStartTime = data;
+                        serverStartTime = data[0].uptime;
 
                     } else {
                         setUpTime();
@@ -264,12 +278,12 @@
         };
     }]);
 
-    widgetModule.directive('serverNodeName', ['$http', function ($http) {
+    widgetModule.directive('serverNodeName', ['$http', 'StatusService', function ($http, StatusService) {
         return function (scope, element, attributes) {
             var getNodeName = function() {
-                $http.get('getNodeName').success( function(data, status) {
+                StatusService.getData().success( function(data, status) {
                     if (status === 200) {
-                       $(element).text(data);
+                       $(element).text(data[0].nodeName);
                     } else {
                        $(element).text(scope.msg('server.error.unknown'));
                     }
@@ -280,13 +294,13 @@
         };
     }]);
 
-    widgetModule.directive('inboundChannelActive', ['$http', function ($http) {
+    widgetModule.directive('inboundChannelActive', ['$http', 'StatusService', function ($http, StatusService) {
         return function (scope, element, attributes) {
             var isActivemqActive = function() {
-                $http.get('isInboundChannelActive').success( function(data, status) {
+                StatusService.getData().success( function(data, status) {
                     if (status === 200) {
                         var glyphicon = $('<span>').addClass('glyphicon').attr('aria-hidden', 'true');
-                        if (data === true) {
+                        if (data[0].inboundChannelActive === true) {
                             glyphicon.addClass('glyphicon-ok');
                         } else {
                             glyphicon.addClass('glyphicon-remove');

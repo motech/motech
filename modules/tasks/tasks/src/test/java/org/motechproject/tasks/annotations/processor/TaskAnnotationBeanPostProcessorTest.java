@@ -9,12 +9,13 @@ import org.mockito.Mock;
 import org.motechproject.tasks.annotations.TaskAction;
 import org.motechproject.tasks.annotations.TaskActionParam;
 import org.motechproject.tasks.annotations.TaskChannel;
+import org.motechproject.tasks.annotations.TaskPostActionParam;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.builder.ActionEventBuilder;
 import org.motechproject.tasks.domain.mds.channel.ActionParameter;
 import org.motechproject.tasks.domain.mds.channel.builder.ActionParameterBuilder;
 import org.motechproject.tasks.domain.mds.channel.Channel;
-import org.motechproject.tasks.domain.mds.ParameterType;
+import org.motechproject.tasks.domain.enums.ParameterType;
 import org.motechproject.tasks.service.ChannelService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -53,13 +54,16 @@ public class TaskAnnotationBeanPostProcessorTest {
     private static final String EXTERNAL_KEY = "externalId";
     private static final String EXTERNAL_DISPLAY_NAME = "ExternalId";
 
+    private static final String EXTERNAL_KEY_2 = "externalId_2";
+    private static final String EXTERNAL_DISPLAY_NAME_2 = "ExternalId_2";
+
     private static final String MOTECH_KEY = "motechId";
     private static final String MOTECH_DISPLAY_NAME = "MotechId";
 
     private static final String METHOD_NAME = "action";
 
     interface TestAction {
-        void action(String externalId, Integer motechId, String message);
+        void action(String externalId, Integer motechId,  Integer x, String message);
     }
 
     @Controller
@@ -71,6 +75,7 @@ public class TaskAnnotationBeanPostProcessorTest {
         @Override
         public void action(@TaskActionParam(key = EXTERNAL_KEY, displayName = EXTERNAL_DISPLAY_NAME) @PathVariable String externalId,
                            @TaskActionParam(key = MOTECH_KEY, displayName = MOTECH_DISPLAY_NAME, type = ParameterType.INTEGER) @PathVariable Integer motechId,
+                           @TaskPostActionParam(key = EXTERNAL_KEY_2, displayName = EXTERNAL_DISPLAY_NAME_2) @PathVariable Integer externalId_2,
                            String message) {
 
         }
@@ -85,7 +90,7 @@ public class TaskAnnotationBeanPostProcessorTest {
         @RequestMapping
         @TaskAction(displayName = ACTION_DISPLAY_NAME)
         @Override
-        public void action(@PathVariable String externalId, Integer motechId, String message) {
+        public void action(@PathVariable String externalId, Integer motechId, Integer x, String message) {
 
         }
 
@@ -178,7 +183,8 @@ public class TaskAnnotationBeanPostProcessorTest {
         ActionEvent actualActionEvent = (ActionEvent) find(actualChannel.getActionTaskEvents(), new Predicate() {
             @Override
             public boolean evaluate(Object object) {
-                return object instanceof ActionEvent && ((ActionEvent) object).hasService() && ((ActionEvent) object).getActionParameters().size() > 1;
+                return object instanceof ActionEvent && ((ActionEvent) object).hasService() && ((ActionEvent) object).getActionParameters().size() > 1
+                        && ((ActionEvent) object).getPostActionParameters().size() > 0;
             }
         });
 
@@ -189,6 +195,7 @@ public class TaskAnnotationBeanPostProcessorTest {
         assertEquals(METHOD_NAME, actualActionEvent.getServiceMethod());
 
         assertEquals(getExpectedActionParameters(), actualActionEvent.getActionParameters());
+        assertEquals(getExpectedPostActionParameters(), actualActionEvent.getPostActionParameters());
     }
 
     @Test
@@ -243,6 +250,15 @@ public class TaskAnnotationBeanPostProcessorTest {
         return set;
     }
 
+    private SortedSet<ActionParameter> getExpectedPostActionParameters() {
+        SortedSet<ActionParameter> set = new TreeSet<>();
+
+        set.add(new ActionParameterBuilder().setDisplayName(EXTERNAL_DISPLAY_NAME_2)
+                .setKey(EXTERNAL_KEY_2).setOrder(0).build());
+
+        return set;
+    }
+
     private void assertChannel(Channel actualChannel) {
         assertNotNull(actualChannel);
         assertEquals(CHANNEL_NAME, actualChannel.getDisplayName());
@@ -259,6 +275,7 @@ public class TaskAnnotationBeanPostProcessorTest {
         assertEquals(METHOD_NAME, actualActionEvent.getServiceMethod());
 
         assertEquals(0, actualActionEvent.getActionParameters().size());
+        assertEquals(0, actualActionEvent.getPostActionParameters().size());
     }
 
 }

@@ -5,9 +5,10 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.tasks.domain.mds.task.Task;
-import org.motechproject.tasks.domain.mds.task.TaskActivity;
-import org.motechproject.tasks.domain.mds.task.TaskActivityType;
+import org.motechproject.tasks.domain.enums.TaskActivityType;
+import org.motechproject.tasks.dto.TaskActivityDto;
 import org.motechproject.tasks.service.TaskActivityService;
+import org.motechproject.tasks.service.TaskWebService;
 import org.motechproject.tasks.service.impl.TaskTriggerHandler;
 
 import java.util.ArrayList;
@@ -25,9 +26,9 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.tasks.domain.mds.task.TaskActivityType.ERROR;
-import static org.motechproject.tasks.domain.mds.task.TaskActivityType.SUCCESS;
-import static org.motechproject.tasks.domain.mds.task.TaskActivityType.WARNING;
+import static org.motechproject.tasks.domain.enums.TaskActivityType.ERROR;
+import static org.motechproject.tasks.domain.enums.TaskActivityType.SUCCESS;
+import static org.motechproject.tasks.domain.enums.TaskActivityType.WARNING;
 
 public class ActivityControllerTest {
 
@@ -40,10 +41,13 @@ public class ActivityControllerTest {
     @Mock
     TaskTriggerHandler taskTriggerHandler;
 
+    @Mock
+    TaskWebService taskWebService;
+
     ActivityController controller;
 
     Task task;
-    List<TaskActivity> expected;
+    List<TaskActivityDto> expected;
     Set<TaskActivityType> activityTypes;
     QueryParams queryParams;
     Map<String, Object> params;
@@ -55,16 +59,16 @@ public class ActivityControllerTest {
     public void setup() throws Exception {
         initMocks(this);
 
-        controller = new ActivityController(activityService, taskTriggerHandler);
+        controller = new ActivityController(activityService, taskTriggerHandler, taskWebService);
 
         params = new HashMap<String, Object>();
         params.put("errorKey", "errorValue");
 
         expected = new ArrayList<>();
-        expected.add(new TaskActivity(SUCCESS.getValue(), TASK_ID, SUCCESS));
-        expected.add(new TaskActivity(WARNING.getValue(), TASK_ID, WARNING));
-        expected.add(new TaskActivity(ERROR.getValue(), TASK_ID, ERROR));
-        expected.add(new TaskActivity(ERROR.getValue(), new ArrayList<String>(), TASK_ID, ERROR, null, params));
+        expected.add(new TaskActivityDto(SUCCESS.getValue(), TASK_ID, SUCCESS));
+        expected.add(new TaskActivityDto(WARNING.getValue(), TASK_ID, WARNING));
+        expected.add(new TaskActivityDto(ERROR.getValue(), TASK_ID, ERROR));
+        expected.add(new TaskActivityDto(ACTIVITY_ID, ERROR.getValue(), TASK_ID, new ArrayList<>(), null, ERROR, null, params));
 
         activityTypes = new HashSet<>();
         activityTypes.addAll(Arrays.asList(TaskActivityType.values()));
@@ -77,24 +81,24 @@ public class ActivityControllerTest {
 
     @Test
     public void shouldGetAllLatestActivities() {
-        when(activityService.getLatestActivities()).thenReturn(expected);
+        when(taskWebService.getLatestActivities()).thenReturn(expected);
 
-        List<TaskActivity> actual = controller.getRecentActivities();
+        List<TaskActivityDto> actual = controller.getRecentActivities();
 
-        verify(activityService).getLatestActivities();
+        verify(taskWebService).getLatestActivities();
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldGetTaskActivities() {
-        when(activityService.getTaskActivities(eq(TASK_ID), anySet(), any(QueryParams.class))).thenReturn(expected);
+        when(taskWebService.getTaskActivities(eq(TASK_ID), anySet(), any(QueryParams.class))).thenReturn(expected);
         GridSettings settings = new GridSettings();
         settings.setPage(page);
         settings.setRows(pageSize);
 
         TaskActivityRecords actual = controller.getTaskActivities(TASK_ID, settings);
 
-        verify(activityService).getTaskActivities(eq(TASK_ID), anySet(), any(QueryParams.class));
+        verify(taskWebService).getTaskActivities(eq(TASK_ID), anySet(), any(QueryParams.class));
         assertEquals(expected, actual.getRows());
         assertEquals(page, actual.getPage());
     }

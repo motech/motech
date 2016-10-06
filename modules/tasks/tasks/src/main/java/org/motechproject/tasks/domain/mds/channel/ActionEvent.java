@@ -1,7 +1,6 @@
 package org.motechproject.tasks.domain.mds.channel;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.CrudEvents;
@@ -10,7 +9,10 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.domain.enums.MethodCallManner;
 import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
+import org.motechproject.tasks.dto.ActionEventDto;
+import org.motechproject.tasks.dto.ActionParameterDto;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -38,6 +40,10 @@ public class ActionEvent extends TaskEvent {
     private SortedSet<ActionParameter> actionParameters;
 
     @Field
+    @Cascade(delete = true)
+    private SortedSet<ActionParameter> postActionParameters;
+
+    @Field
     private String serviceInterface;
 
     @Field
@@ -50,7 +56,16 @@ public class ActionEvent extends TaskEvent {
      * Constructor.
      */
     public ActionEvent() {
-        this(null, null, null, null, null, null, MethodCallManner.NAMED_PARAMETERS, null);
+        this(null, null, null, null, null, null, MethodCallManner.NAMED_PARAMETERS, null, null);
+    }
+
+    /**
+     * Constructor.
+     */
+    public ActionEvent(String name, String description, String displayName, String subject, String serviceInterface, String serviceMethod,
+                       MethodCallManner serviceMethodCallManner, SortedSet<ActionParameter> actionParameters) {
+
+        this(name, description, displayName, subject, serviceInterface, serviceMethod, serviceMethodCallManner, actionParameters, null);
     }
 
     /**
@@ -64,23 +79,26 @@ public class ActionEvent extends TaskEvent {
      * @param serviceMethod  the event service method
      * @param serviceMethodCallManner  the event service call manner, for supported values see {@see MethodCallManner}
      * @param actionParameters  the action parameters
+     * @param postActionParameters  the post action parameters
      */
     public ActionEvent(String name, String description, String displayName, String subject, String serviceInterface, String serviceMethod,
-                       MethodCallManner serviceMethodCallManner, SortedSet<ActionParameter> actionParameters) {
+                       MethodCallManner serviceMethodCallManner, SortedSet<ActionParameter> actionParameters,
+                       SortedSet<ActionParameter> postActionParameters) {
         super(name, description, displayName, subject);
         this.serviceInterface = serviceInterface;
         this.serviceMethod = serviceMethod;
         this.serviceMethodCallManner = serviceMethodCallManner;
         this.actionParameters = actionParameters == null ? new TreeSet<>() : actionParameters;
+        this.postActionParameters = postActionParameters == null ? new TreeSet<>() : postActionParameters;
     }
 
     public ActionEvent(ActionEvent actionEvent) {
         this(actionEvent.getName(), actionEvent.getDescription(), actionEvent.getDisplayName(),
                 actionEvent.getSubject(), actionEvent.getServiceInterface(), actionEvent.getServiceMethod(),
-                actionEvent.getServiceMethodCallManner(), copyActionParameters(actionEvent.getActionParameters()));
+                actionEvent.getServiceMethodCallManner(), copyActionParameters(actionEvent.getActionParameters()),
+                copyActionParameters(actionEvent.getPostActionParameters()));
     }
 
-    @JsonIgnore
     public boolean accept(TaskActionInformation info) {
         boolean result = false;
 
@@ -141,6 +159,18 @@ public class ActionEvent extends TaskEvent {
         }
     }
 
+    public SortedSet<ActionParameter> getPostActionParameters() {
+        return postActionParameters;
+    }
+
+    public void setPostActionParameters(SortedSet<ActionParameter> postActionParameters) {
+        this.postActionParameters.clear();
+
+        if (postActionParameters != null) {
+            this.postActionParameters.addAll(postActionParameters);
+        }
+    }
+
     public String getServiceInterface() {
         return serviceInterface;
     }
@@ -163,6 +193,21 @@ public class ActionEvent extends TaskEvent {
 
     public void setServiceMethodCallManner(MethodCallManner serviceMethodCallManner) {
         this.serviceMethodCallManner = serviceMethodCallManner;
+    }
+
+    public ActionEventDto toDto() {
+        SortedSet<ActionParameterDto> actionParameterDtos = new TreeSet<>();
+        SortedSet<ActionParameterDto> postActionParameterDtos = new TreeSet<>();
+
+        for (ActionParameter actionParameter : actionParameters) {
+            actionParameterDtos.add(actionParameter.toDto());
+        }
+        for (ActionParameter postActionParameter : postActionParameters) {
+            postActionParameterDtos.add(postActionParameter.toDto());
+        }
+
+        return new ActionEventDto(getName(), getDescription(), getDisplayName(), getSubject(), actionParameterDtos,
+                serviceInterface, serviceMethod, serviceMethodCallManner, postActionParameterDtos);
     }
 
     @Override

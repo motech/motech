@@ -1,0 +1,187 @@
+<div class="listTile">
+    <div class="row">
+        <div class="col-sm-12 clearfix">
+            <div class="welcome">
+                {{msg('server.homepage.title')}}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-8">
+            <div id="tile1" class="tile inverse clearfix">
+                <div class="item text-center">
+                    <div>
+                        <span class="fa fa-book big-icon"></span>
+                    </div>
+                    <div class="tile-title">
+                        {{msg('server.homepage.documentation.title')}}
+                    </div>
+                    <p class="tile-description">
+                        {{msg('server.homepage.documentation.description')}}
+                    </p>
+                    <ul class="tile-link-list">
+                        <li class="tile-link">
+                            <a class="btn btn-default" href="http://docs.motechproject.org/en/latest/index.html" target="_blank">
+                                <span class="fa fa-fw fa-lg fa-arrow-circle-right"></span>
+                                {{msg('server.homepage.documentation.motechDocumentation')}}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-8" ng-if="isModule('data-services')">
+            <div id="tile3" class="tile inverse clearfix">
+                <div class="item text-center">
+                    <div>
+                        <span class="fa fa-cubes big-icon"></span>
+                    </div>
+                    <div class="tile-title">
+                        {{msg('server.homepage.dataServices.title')}}
+                    </div>
+                    <p class="tile-description">
+                        {{msg('server.homepage.dataServices.description')}}
+                    </p>
+                    <ul class="tile-link-list many">
+                        <li class="tile-link" ng-if="isLink('data-services')">
+                            <a class="btn btn-default" ng-click="goToPage('data-services')">
+                                <span class="fa fa-fw fa-lg fa-arrow-circle-right"></span>
+                                {{msg('server.homepage.dataServices.dataBrowser')}}
+                            </a>
+                        </li>
+                        <li class="tile-link" ng-if="isLink('data-services')">
+                            <a class="btn btn-default" ng-click="goToPage('data-services', '/mds/schemaEditor')">
+                                <span class="fa fa-fw fa-lg fa-arrow-circle-right"></span>
+                                {{msg('server.homepage.dataServices.schemaEditor')}}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-8" ng-if="isModule('tasks')">
+            <div id="tile6" class="tile clearfix">
+                <div class="item text-center">
+                    <div>
+                        <span class="fa fa-tasks big-icon"></span>
+                    </div>
+                    <div class="tile-title">
+                        {{msg('server.homepage.tasks.title')}}
+                    </div>
+                    <p class="tile-description">
+                        {{msg('server.homepage.tasks.description')}}
+                    </p>
+                    <ul class="tile-link-list">
+                        <li class="tile-link" ng-if="isLink('tasks')">
+                            <a class="btn btn-default" ng-click="goToPage('tasks')">
+                                <span class="fa fa-fw fa-lg fa-arrow-circle-right"></span>
+                                {{msg('server.homepage.tasks.viewTasks')}}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-8" ng-if="isModule('webSecurity') || isLink('admin.settings') || isLink('admin.manageModules')">
+            <div id="tile4" class="tile big inverse clearfix">
+                <div class="item text-center">
+                    <div>
+                        <span class="fa fa-cogs big-icon"></span>
+                    </div>
+                    <div class="tile-title">
+                        {{msg('server.homepage.configureMotech.title')}}
+                    </div>
+                    <p class="tile-description">
+                        {{msg('server.homepage.configureMotech.description')}}
+                    </p>
+                    <ul class="tile-link-list many">
+                        <li class="tile-link" ng-if="isLink('admin.manageModules')">
+                            <a class="btn btn-default" ng-click="goToPage('admin.manageModules')">
+                                <span class="fa fa-fw fa-lg fa-arrow-circle-right"></span>
+                                {{msg('server.homepage.configureMotech.administerInstalledModules')}}
+                            </a>
+                        </li>
+                        <li class="tile-link" ng-if="isLink('admin.settings')">
+                            <a class="btn btn-default" ng-click="goToPage('admin.settings')">
+                                <span class="fa fa-fw fa-lg fa-arrow-circle-right"></span>
+                                {{msg('server.homepage.configureMotech.platformSettings')}}
+                            </a>
+                        </li>
+                        <li class="tile-link" ng-if="isLink('security.manageURL')">
+                            <a class="btn btn-default" ng-click="goToPage('security.manageURL')">
+                                <span class="fa fa-fw fa-lg fa-arrow-circle-right"></span>
+                                {{msg('server.homepage.configureMotech.dynamicUrls')}}
+                            </a>
+                        </li>
+                        <li class="tile-link" ng-if="isLink('security.managePermissions')">
+                            <a class="btn btn-default" ng-click="goToPage('security.managePermissions')">
+                                <span class="fa fa-fw fa-lg fa-arrow-circle-right"></span>
+                                {{msg('server.homepage.configureMotech.permissions')}}
+                            </a>
+                        </li>
+                        <li class="tile-link" ng-if="isLink('security.manageRoles')">
+                            <a class="btn btn-default" ng-click="goToPage('security.manageRoles')">
+                                <span class="fa fa-fw fa-lg fa-arrow-circle-right"></span>
+                                {{msg('server.homepage.configureMotech.roles')}}
+                            </a>
+                        </li>
+                        <li class="tile-link" ng-if="isLink('security.manageUsers')">
+                            <a class="btn btn-default" ng-click="goToPage('security.manageUsers')">
+                                <span class="fa fa-fw fa-lg fa-arrow-circle-right"></span>
+                                {{msg('server.homepage.configureMotech.users')}}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-8" ng-if="isModule('admin')">
+            <div id="tile5" class="tile big clearfix">
+                <div class="item text-center">
+                    <div>
+                        <span class="fa fa-dashboard big-icon"></span>
+                    </div>
+                    <div class="tile-title">
+                        {{msg('server.homepage.viewDiagnostics.title')}}
+                    </div>
+                    <p class="tile-description">
+                        {{msg('server.homepage.viewDiagnostics.description')}}
+                    </p>
+                    <ul class="tile-link-list many">
+                        <li class="tile-link" ng-if="isLink('admin.messages')">
+                            <a class="btn btn-default" ng-click="goToPage('admin.messages')">
+                                <span class="fa fa-fw fa-lg fa-arrow-circle-right"></span>
+                                {{msg('server.homepage.viewDiagnostics.messages')}}
+                            </a>
+                        </li>
+                        <li class="tile-link" ng-if="isLink('admin.queues')">
+                            <a class="btn btn-default" ng-click="goToPage('admin.queues')">
+                                <span class="fa fa-fw fa-lg fa-arrow-circle-right"></span>
+                                {{msg('server.homepage.viewDiagnostics.queues')}}
+                            </a>
+                        </li>
+                        <li class="tile-link" ng-if="isLink('admin.log')">
+                            <a class="btn btn-default" ng-click="goToPage('admin.log')">
+                                <span class="fa fa-fw fa-lg fa-arrow-circle-right"></span>
+                                {{msg('server.homepage.viewDiagnostics.serverLog')}}
+                            </a>
+                        </li>
+                        <li class="tile-link" ng-if="isLink('admin.topics')">
+                            <a class="btn btn-default" ng-click="goToPage('admin.topics')">
+                                <span class="fa fa-fw fa-lg fa-arrow-circle-right"></span>
+                                {{msg('server.homepage.viewDiagnostics.topics')}}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

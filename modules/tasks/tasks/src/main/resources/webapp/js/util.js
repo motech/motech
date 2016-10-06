@@ -7,6 +7,7 @@
         var utils = {
             TRIGGER_PREFIX: 'trigger',
             DATA_SOURCE_PREFIX: 'ad',
+            POST_ACTION_PREFIX: 'pa',
             FILTER_OPERATORS: {
                 'task.string': {
                     'type': 'UNICODE',
@@ -66,6 +67,20 @@
                 name: 'dateTime',
                 input: 'input[date-update]',
                 pattern: 9
+            }, {
+                name: 'beginningOfMonth',
+                input: ''
+            }, {
+                name: 'endOfMonth',
+                input: ''
+            }, {
+                name: 'plusMonths',
+                input: 'input[manipulation-kind="plusMonths"]',
+                pattern: 11
+            }, {
+                name: 'minusMonths',
+                input: 'input[manipulation-kind="minusMonths"]',
+                pattern: 12
             }, {
                 name: 'plusDays',
                 input: 'input[manipulation-kind="plusDays"]',

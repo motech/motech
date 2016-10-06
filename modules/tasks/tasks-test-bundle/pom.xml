@@ -4,7 +4,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.29-SNAPSHOT</version>
+        <version>0.30-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
 
@@ -12,8 +12,23 @@
 
     <artifactId>motech-tasks-test-bundle</artifactId>
     <name>MOTECH Tasks Test Bundle</name>
-    <version>0.29-SNAPSHOT</version>
+    <version>0.30-SNAPSHOT</version>
     <packaging>bundle</packaging>
+
+    <dependencies>
+        <!-- Test -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-pax-it</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.gemini.blueprint</groupId>
+            <artifactId>org.motechproject.gemini-blueprint-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
@@ -26,11 +41,25 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
+                        <Context-Path>testmodule/api</Context-Path>
+                        <Resource-Path>testmodule</Resource-Path>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
+                        <Export-Package>
+                            org.motechproject.testmodule.service;version=${project.version},
+                            org.motechproject.testmodule.domain;version=${project.version}
+                        </Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
                         <Bundle-SymbolicName>motech-tasks-test-bundle</Bundle-SymbolicName>
                     </instructions>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>

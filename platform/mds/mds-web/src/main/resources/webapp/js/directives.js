@@ -1389,8 +1389,8 @@
                                     firstLoad = false;
                                 }
                             },
-                            loadError: function() {
-                                scope.setDataRetrievalError(true);
+                            loadError: function(e) {
+                                scope.setDataRetrievalError(true, e.responseText);
                             }
                         });
 
@@ -2268,9 +2268,7 @@
                         fieldPath = fieldPath.substring(fieldPath.indexOf('.') + 1);
                     }
 
-                    value = _.isBoolean(ngModel.$modelValue)
-                        ? !ngModel.$modelValue
-                        : ngModel.$modelValue;
+                    value = ngModel.$modelValue;
 
                     viewScope.draft({
                         edit: true,
@@ -2306,9 +2304,7 @@
                         advancedPath = advancedPath.substring(advancedPath.indexOf('.') + 1);
                     }
 
-                    value = _.isBoolean(ngModel.$modelValue)
-                        ? !ngModel.$modelValue
-                        : ngModel.$modelValue;
+                    value = ngModel.$modelValue;
 
                     viewScope.draft({
                         edit: true,
@@ -3268,9 +3264,7 @@
                         if ((value !== null && value.length === 0) || value === null) {
                             value = "";
                         }
-                        scope.safeApply(function () {
-                            scope.field.value = value;
-                        });
+                        scope.field.value = value;
                     }
                 });
             }
@@ -3605,3 +3599,4 @@
         };
     });
 }());
+

@@ -24,8 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.Query;
 import java.io.IOException;
@@ -70,18 +69,21 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
+    @Transactional
     public void registerChannel(ChannelRequest channelRequest) {
         LOGGER.info("Registering channel: {}", channelRequest.getModuleName());
         addOrUpdate(ChannelBuilder.fromChannelRequest(channelRequest).build());
     }
 
     @Override
+    @Transactional
     public void unregisterChannel(String moduleName) {
         LOGGER.info("Unregistering Channel: {}", moduleName);
         delete(moduleName);
     }
 
     @Override
+    @Transactional
     public void registerChannel(final InputStream stream, String moduleName, String moduleVersion) {
         LOGGER.info("Registering channel: {}", moduleName);
 
@@ -102,58 +104,52 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
+    @Transactional
     public synchronized void addOrUpdate(final Channel channel) {
         Set<TaskError> errors = ChannelValidator.validate(channel);
 
         if (!isEmpty(errors)) {
-            throw new ValidationException(ChannelValidator.CHANNEL, errors);
+            throw new ValidationException(ChannelValidator.CHANNEL, TaskError.toDtos(errors));
         }
 
-        channelsDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                final Channel existingChannel = getChannel(channel.getModuleName());
+        final Channel existingChannel = getChannel(channel.getModuleName());
 
-                if (existingChannel != null && !existingChannel.equals(channel)) {
-                    LOGGER.debug("Updating channel {}", channel.getDisplayName());
-                    existingChannel.setActionTaskEvents(channel.getActionTaskEvents());
-                    existingChannel.setTriggerTaskEvents(channel.getTriggerTaskEvents());
-                    existingChannel.setDescription(channel.getDescription());
-                    existingChannel.setDisplayName(channel.getDisplayName());
-                    existingChannel.setModuleName(channel.getModuleName());
-                    existingChannel.setModuleVersion(channel.getModuleVersion());
+        if (existingChannel != null && !existingChannel.equals(channel)) {
+            LOGGER.debug("Updating channel {}", channel.getDisplayName());
+            existingChannel.setActionTaskEvents(channel.getActionTaskEvents());
+            existingChannel.setTriggerTaskEvents(channel.getTriggerTaskEvents());
+            existingChannel.setDescription(channel.getDescription());
+            existingChannel.setDisplayName(channel.getDisplayName());
+            existingChannel.setModuleName(channel.getModuleName());
+            existingChannel.setModuleVersion(channel.getModuleVersion());
 
-                    channelsDataService.update(existingChannel);
-                    sendChannelUpdatedEvent(channel);
-                } else if (existingChannel == null) {
-                    LOGGER.debug("Creating channel {}", channel.getDisplayName());
-                    channelsDataService.create(channel);
-                }
-            }
-        });
+            channelsDataService.update(existingChannel);
+            sendChannelUpdatedEvent(channel);
+        } else if (existingChannel == null) {
+            LOGGER.debug("Creating channel {}", channel.getDisplayName());
+            channelsDataService.create(channel);
+        }
+
         LOGGER.info(String.format("Saved channel: %s", channel.getDisplayName()));
     }
 
     @Override
+    @Transactional
     public synchronized void delete(final String moduleName) {
 
-        channelsDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                final Channel existingChannel = getChannel(moduleName);
+        final Channel existingChannel = getChannel(moduleName);
 
-                if (existingChannel != null) {
-                    LOGGER.debug("Deleting channel {}", moduleName);
-                    channelsDataService.delete(existingChannel);
-                    sendChannelDeleteEvent(moduleName);
-                } else if (existingChannel == null) {
-                    LOGGER.debug("Channel doesn't exists {}", moduleName);
-                }
-            }
-        });
+        if (existingChannel != null) {
+            LOGGER.debug("Deleting channel {}", moduleName);
+            channelsDataService.delete(existingChannel);
+            sendChannelDeleteEvent(moduleName);
+        } else if (existingChannel == null) {
+            LOGGER.debug("Channel doesn't exists {}", moduleName);
+        }
     }
 
     @Override
+    @Transactional
     public List<Channel> getAllChannels() {
         List<Channel> channels = channelsDataService.executeQuery(new QueryExecution<List<Channel>>() {
             @Override
@@ -178,6 +174,7 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
+    @Transactional
     public Channel getChannel(final String moduleName) {
         List<String> symbolicNames = WebBundleUtil.getSymbolicNames(bundleContext);
 
@@ -187,6 +184,7 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
+    @Transactional
     public boolean channelExists(String moduleName) {
         return channelsDataService.countFindByModuleName(moduleName) > 0;
     }

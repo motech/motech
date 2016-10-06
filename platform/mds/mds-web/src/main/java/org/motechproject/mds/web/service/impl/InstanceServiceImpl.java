@@ -23,6 +23,7 @@ import org.motechproject.mds.exception.entity.EntityNotFoundException;
 import org.motechproject.mds.exception.field.FieldNotFoundException;
 import org.motechproject.mds.exception.field.FieldReadOnlyException;
 import org.motechproject.mds.exception.lookup.LookupExecutionException;
+import org.motechproject.mds.exception.lookup.LookupExecutorException;
 import org.motechproject.mds.exception.lookup.LookupNotFoundException;
 import org.motechproject.mds.exception.object.ObjectCreateException;
 import org.motechproject.mds.exception.object.ObjectNotFoundException;
@@ -107,6 +108,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstanceServiceImpl.class);
     private static final int MAX_LENGTH = 80;
+    private static final String LOOKUP_EXCEPTION_MESSAGE_KEY = "mds.error.lookupExecError";
 
     private EntityService entityService;
     private BundleContext bundleContext;
@@ -256,8 +258,14 @@ public class InstanceServiceImpl implements InstanceService {
                 List instances = (List) result;
                 return instancesToBasicRecords(instances, entity, fields, service, EntityType.STANDARD);
             }
+        } catch (LookupExecutorException e) {
+            if (e.getMessageKey() != null) {
+                throw new LookupExecutionException(e, e.getMessageKey());
+            } else {
+                throw new LookupExecutionException(e, LOOKUP_EXCEPTION_MESSAGE_KEY);
+            }
         } catch (RuntimeException e) {
-            throw new LookupExecutionException(e);
+            throw new LookupExecutionException(e, LOOKUP_EXCEPTION_MESSAGE_KEY);
         }
     }
 
@@ -306,7 +314,7 @@ public class InstanceServiceImpl implements InstanceService {
             LookupExecutor lookupExecutor = new LookupExecutor(service, lookup, fieldMap);
             return lookupExecutor.executeCount(lookupMap);
         } catch (RuntimeException e) {
-            throw new LookupExecutionException(e);
+            throw new LookupExecutionException(e, LOOKUP_EXCEPTION_MESSAGE_KEY);
         }
     }
 
@@ -996,6 +1004,10 @@ public class InstanceServiceImpl implements InstanceService {
             return ArrayUtils.EMPTY_BYTE_OBJECT_ARRAY;
         }
 
+        if (isSCOField(field.getType().getTypeClass())) {
+            return service.getDetachedField(instance, fieldName);
+        }
+
         try {
             return readMethod.invoke(instance);
         } catch (InvocationTargetException e) {
@@ -1005,6 +1017,10 @@ public class InstanceServiceImpl implements InstanceService {
             Long id = (Long) PropertyUtil.safeGetProperty(instance, ID_FIELD_NAME);
             return service.getDetachedField(id == null ? instance : service.findById(id), fieldName);
         }
+    }
+
+    private boolean isSCOField(String typeClass) {
+        return TypeDto.COLLECTION.getTypeClass().equals(typeClass) || TypeDto.MAP.getTypeClass().equals(typeClass);
     }
 
     private Object parseValueForDisplay(Object value, List<FieldDto> relatedEntityFields)

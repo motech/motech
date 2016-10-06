@@ -19,6 +19,7 @@ public class ActionEventRequestBuilder {
     private String serviceInterface;
     private String serviceMethod;
     private SortedSet<ActionParameterRequest> actionParameters;
+    private SortedSet<ActionParameterRequest> postActionParameters;
     private String serviceMethodCallManner;
 
     /**
@@ -99,9 +100,20 @@ public class ActionEventRequestBuilder {
     }
 
     /**
+     * Sets the post action parameters of the action event to be built.
+     *
+     * @param postActionParameters  the post action event parameter
+     * @return the reference to this object
+     */
+    public ActionEventRequestBuilder setPostActionParameters(SortedSet<ActionParameterRequest> postActionParameters) {
+        this.postActionParameters = postActionParameters;
+        return this;
+    }
+
+    /**
      * Sets the service method call manner of the action event to be built.
      *
-     * @param serviceMethodCallManner  the action event service method call manner, for supported values see {@see org.motechproject.tasks.domain.mds.channel.MethodCallManner}
+     * @param serviceMethodCallManner  the action event service method call manner, for supported values see {@see org.motechproject.tasks.domain.enums.MethodCallManner}
      * @return the reference to this object
      */
     public ActionEventRequestBuilder setServiceMethodCallManner(String serviceMethodCallManner) {
@@ -115,6 +127,6 @@ public class ActionEventRequestBuilder {
      * @return the created instance
      */
     public ActionEventRequest createActionEventRequest() {
-        return new ActionEventRequest(name, displayName, subject, description, serviceInterface, serviceMethod, serviceMethodCallManner, actionParameters);
+        return new ActionEventRequest(name, displayName, subject, description, serviceInterface, serviceMethod, serviceMethodCallManner, actionParameters, postActionParameters);
     }
 }

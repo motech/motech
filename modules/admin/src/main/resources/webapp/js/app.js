@@ -47,7 +47,7 @@
                    }
                }
             })
-            .state('admin.bundleId', {
+            .state('admin.bundle', {
                url: '/bundle/:bundleId',
                parent: 'admin',
                views: {
@@ -108,7 +108,7 @@
                }
             })
             .state('admin.browse', {
-               url: '/browse',
+               url: '/browse?queueName',
                parent: 'admin',
                views: {
                    'adminView': {

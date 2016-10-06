@@ -28,24 +28,31 @@
                         repeatitems:false
                     },
                     colModel: [{
-                        name: 'activityType',
-                        index: 'activityType',
-                        sortable: false,
-                        width: 50,
-                        title: false
-                    }, {
-                        name: 'message',
-                        index: 'message',
-                        sortable: false,
-                        width: 220
-                    }, {
                         name: 'date',
                         formatter: function (value) {
                             return moment(parseInt(value, 10)).fromNow();
                         },
                         index: 'date',
                         sortable: false,
-                        width: 80
+                        width: 35
+                    }, {
+                        name: 'activityType',
+                        index: 'activityType',
+                        sortable: false,
+                        width: 15,
+                        align: 'center',
+                        title: false
+                    }, {
+                        name: 'message',
+                        index: 'message',
+                        sortable: false,
+                        width: 180
+                    }, {
+                        name: 'retry',
+                        index: 'retry',
+                        sortable: false,
+                        align: 'center',
+                        width: 15
                     }, {
                        name: 'stackTraceElement',
                        index: 'stackTraceElement',
@@ -65,9 +72,10 @@
                     pager: '#' + attrs.taskHistoryGrid,
                     viewrecords: true,
                     gridComplete: function () {
+                        elem.jqGrid('setLabel', 'date', scope.msg('task.subsection.information'));
                         elem.jqGrid('setLabel', 'activityType', scope.msg('task.subsection.status'));
                         elem.jqGrid('setLabel', 'message', scope.msg('task.subsection.message'));
-                        elem.jqGrid('setLabel', 'date', scope.msg('task.subsection.information'));
+                        elem.jqGrid('setLabel', 'retry', 'Retry');
 
                         $('#outsideTaskHistoryTable').children('div').css('width','100%');
                         $('.ui-jqgrid-htable').addClass("table-lightblue");
@@ -89,28 +97,30 @@
                             message = $("#taskHistoryTable").getCell(rows[k],"message");
                             if (activity !== undefined) {
                                 if (activity === 'success') {
-                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-ok.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-icon fa icon-green fa-check-circle fa-2x"></div>','ok',{ },'');
                                 } else if (activity === 'warning') {
-                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<img src="../tasks/img/icon-question.png" class="recent-activity-task-img"/>','ok',{ },'');
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-task-img fa warning-type fa-question-circle fa-2x"></div>','ok',{ },'');
+                                } else if (activity === 'in progress') {
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-task-img fa icon-blue fa-info-circle fa-2x"></div>','ok',{ },'');
                                 } else if (activity === 'error') {
                                     activityId = $("#taskHistoryTable").getCell(rows[k],"id");
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType',
-                                        '<img src="../tasks/img/icon-exclamation.png" class="recent-activity-task-img"/>' +
-                                        '&nbsp;&nbsp;<span class="label label-danger pointer grid-ng-clickable" ng-click="retryTask(' + activityId + ')">Retry</span>',
+                                        '<div class="recent-activity-task-img fa icon-red fa-exclamation-circle fa-2x"/>','ok',{ },'');
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'retry',
+                                        '&nbsp;&nbsp;<span type="button" class="btn btn-primary btn-xs grid-ng-clickable" ng-click="retryTask(' + activityId + ')">Retry</span>',
                                         'ok',{ },'');
                                 }
                             }
 
                             stackTraceElement = $("#taskHistoryTable").getCell(rows[k],"stackTraceElement");
+                            scope.stackTraceEl[k] = stackTraceElement;
                             fields = $("#taskHistoryTable").getCell(rows[k], "fields").split(",");
                             messageToShow = [message].concat(fields);
                             if (message !== undefined && activity === 'error' && stackTraceElement !== undefined && stackTraceElement !== null) {
                                 $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',
-                                    '<p class="wrap-paragraph">' + scope.msg(messageToShow) +
-                                    '&nbsp;&nbsp;<span class="label label-danger pointer" data-toggle="collapse" data-target="#stackTraceElement' + k + '">' +
-                                    scope.msg('task.button.showStackTrace') + '</span></p>' +
-                                    '<pre id="stackTraceElement' + k + '" class="collapse">' + stackTraceElement + '</pre>'
-                                    ,'ok',{ },'');
+                                    '<p class="wrap-paragraph">' + scope.msg(messageToShow) + '&nbsp;&nbsp; <span type="button" class="btn btn-primary btn-xs grid-ng-clickable" ng-click="showStackTrace('+ k +')" data-target="#stackTraceElement' +
+                                    k + '">'+ scope.msg('task.button.showStackTrace') + '</span></p>',
+                                    'ok',{ },'');
                             } else if (message !== undefined) {
                                 $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',scope.msg(messageToShow),'ok',{ },'');
                             }
@@ -232,6 +242,7 @@
             },
             link: function (scope, element, attrs) {
                 scope.msg = scope.$parent.taskMsg || scope.$parent.msg;
+
                 if(!scope.field) {
                     scope.field = {};
                 }
@@ -243,6 +254,13 @@
                     scope.displayName = "{0}.{1}#{2}.{3}".format(
                         scope.msg(scope.field.providerName),
                         scope.msg(scope.field.serviceName),
+                        scope.field.objectId,
+                        scope.msg(scope.field.displayName)
+                    );
+                } else if(scope.field.prefix === ManageTaskUtils.POST_ACTION_PREFIX){
+                    scope.displayName = "{0}.{1}#{2}.{3}".format(
+                        scope.msg(scope.field.channelName),
+                        scope.msg(scope.field.actionName),
                         scope.field.objectId,
                         scope.msg(scope.field.displayName)
                     );
@@ -408,18 +426,54 @@
             return $compile('<field boolean="'+str+'" />')(fieldScope);
         }
 
+        function adjustText() {
+            var textElement, spanElement, inputElement, i;
+
+            textElement = angular.element(document.getElementsByClassName('text-field-marker'));
+
+            for (i = 0; i < textElement.length; i += 1) {
+                spanElement = $(textElement[i]).parent();
+                inputElement = spanElement.parent().parent();
+
+                if ($(textElement[i]).hasClass('field-text')) {
+                    textElement.removeClass('field-text');
+                }
+
+                if ($(textElement[i]).hasClass('field-text-short')) {
+                    $(textElement[i]).removeClass('field-text-short');
+                }
+
+                if (spanElement.width()>inputElement.width()*0.9) {
+                    if ($(textElement[i]).width() > spanElement.width()*0.82) {
+                        if ($(textElement[i]).next().is('.badge')) {
+                            $(textElement[i]).addClass('field-text-short');
+                        } else if ($(textElement[i]).width() > spanElement.width()*0.90) {
+                            $(textElement[i]).addClass('field-text');
+                        }
+                    }
+                }
+            }
+        }
+
         return {
             restrict: 'A',
             require: '?ngModel',
             link: function (scope, element, attrs, ngModel) {
-                if (!ngModel){
+                scope.debug = scope.$parent.debugging;
+
+                if (!ngModel) {
                     return false;
                 }
 
                 scope.$watch(function () {
+                    adjustText();
                     return ngModel.$viewValue;
-                }, function(){
-                    ngModel.$render();
+                }, function() {
+                    if (scope.debug) {
+                        scope.changeBubble(ngModel, element);
+                    } else {
+                        ngModel.$render();
+                    }
                 });
 
                 // Disallow enter key being pressed, except on certain data types
@@ -430,6 +484,32 @@
                     }
                 });
 
+                scope.$on('debugging', function(event, args) {
+                    scope.debug = args.debug;
+                    scope.changeBubble(ngModel, element);
+                });
+
+                scope.changeBubble = function (ngModel, element) {
+                    if (scope.data && scope.data.type !== 'MAP' && !scope.data.value) {
+                        return;
+                    }
+                    if (scope.data && scope.data.type === 'MAP') {
+                        if (element.attr('ng-model') === "pair.value") {
+                            element.html(scope.pair.value);
+                        }
+                        if (element.attr('ng-model') === "pair.key") {
+                            element.html(scope.pair.key);
+                        }
+                    } else {
+                         element.html(scope.data.value);
+                    }
+
+                    if (!scope.debug) {
+                         ngModel.$setViewValue(readContent(element));
+                         ngModel.$rollbackViewValue();
+                    }
+                };
+
                 element.bind('blur', function (event) {
                     event.stopPropagation();
                     if(element[0] !== event.target){
@@ -437,24 +517,33 @@
                     }
                     ngModel.$setViewValue(readContent(element));
                     scope.$apply();
+                    if(scope.debug) {
+                        scope.changeBubble(ngModel, element);
+                    }
                 });
 
                 scope.$on('field.changed', function (event) {
                     event.stopPropagation();
                     ngModel.$setViewValue(readContent(element));
                     scope.$apply();
+                    if (scope.debug) {
+                        scope.changeBubble(ngModel, element);
+                    }
                 });
 
                 ngModel.$render = function () {
                     var parsedValue, viewValueStr, matches;
                     element.html("");
-                    if(!ngModel.$viewValue){
+                    if (!ngModel.$viewValue) {
+                        if (scope.debug) {
+                            scope.changeBubble(ngModel, element);
+                        }
                         return false;
                     }
                     parseField(ngModel.$viewValue).forEach(function(str){
-                        if(findField(str)){
+                        if (findField(str)) {
                             element.append(makeFieldElement(str, scope));
-                        } else if (element.data('type') === 'BOOLEAN' && (str === 'true' || str === 'false')){
+                        } else if (element.data('type') === 'BOOLEAN' && (str === 'true' || str === 'false')) {
                             element.append(makeBooleanFieldElement(str, scope));
                         } else {
                             element.append(str);
@@ -476,11 +565,11 @@
                                 anchorText = selection.anchorNode.wholeText;
                             }
 
-                            if(!field){
+                            if (!field) {
                                 return false;
                             }
                             field = formatField(field);
-                            if(element[0].contains(selection.anchorNode) && anchorText){
+                            if (element[0].contains(selection.anchorNode) && anchorText) {
                                 $(selection.anchorNode).before(
                                     anchorText.substring(0, selection.anchorOffset)
                                     + field
@@ -493,6 +582,9 @@
                             }
                             ngModel.$setViewValue(readContent(element));
                             scope.$apply();
+                            if (scope.debug) {
+                                scope.changeBubble(ngModel, element);
+                            }
                         }
                     });
                 }
@@ -533,7 +625,7 @@
         };
     });
 
-    directives.directive('manipulationModal', function ($compile, ModalFactory) {
+    directives.directive('manipulationModal', function ($compile, BootstrapDialogManager, HelpStringManipulation) {
         return {
             restrict: 'A',
             scope: {
@@ -543,13 +635,9 @@
                 name: "@"
             },
             link: function (scope, element, attrs) {
-                var isFilter = attrs.isFilter,
-                    name = scope.name,
-                    filter,
+                var name = scope.name,
                     displayNameOnly = scope.displayNameOnly;
-                if (isFilter) {
-                    filter = scope.$parent[name];
-                }
+
                 if(!scope.manipulationType){
                     return false;
                 }
@@ -559,21 +647,13 @@
                 if(!scope.manipulations){
                     return false;
                 }
+
                 element.on('click', function (event) {
                     var modalScope,
                         parseManipulationsFunction;
                     if (!$(event.target).hasClass('field-remove')) {
-                        parseManipulationsFunction = function () {
-                            var str = "";
-                            if (scope.manipulations && Array.isArray(scope.manipulations)) {
-                                scope.manipulations.forEach(function(manipulation) {
-                                    str += "?{0}({1})".format(manipulation.type, manipulation.argument);
-                                });
-                            }
-                            filter.key = filter.displayName + str;
-                        };
                         window.getSelection().removeAllRanges(); // Make sure no text is selected...
-                        
+
                         modalScope = scope.$new(true, scope);
                         modalScope.msg = scope.$parent.msg;
                         modalScope.manipulationType = scope.manipulationType;
@@ -582,18 +662,20 @@
                         if(scope.manipulations && Array.isArray(scope.manipulations)) {
                             modalScope.manipulations = jQuery.extend(true, [], scope.manipulations);
                         }
-                        ModalFactory.showAlert({
+                        scope.importDialog = new BootstrapDialog({
+                            closable: false,
+                            autodestroy: false,
                             title: function () {
-                                 switch(scope.manipulationType){
-                                     case 'UNICODE':
-                                     case 'STRING':
-                                         return modalScope.msg('task.stringManipulation');
-                                     case 'DATE':
-                                     case 'DATE2DATE':
-                                         return modalScope.msg('task.dateManipulation');
-                                 }
-                                 return null;
-                              },
+                                switch(scope.manipulationType){
+                                    case 'UNICODE':
+                                    case 'STRING':
+                                        return modalScope.msg('task.stringManipulation');
+                                    case 'DATE':
+                                    case 'DATE2DATE':
+                                        return modalScope.msg('task.dateManipulation');
+                                }
+                                return null;
+                            },
                             message: $compile('<manipulation-sorter type="manipulationType" manipulations="manipulations" />')(modalScope),
                             buttons: [{
                                 label: scope.$parent.msg('task.button.save'),
@@ -601,23 +683,24 @@
                                 action: function(dialogRef) {
                                     scope.manipulations = jQuery.extend(true, [], modalScope.manipulations);
                                     scope.$emit('field.changed');
-                                    dialogRef.close();
+                                    BootstrapDialogManager.close(dialogRef);
                                 }
-                            }],
-                            onhide: function(){
-                                modalScope.$destroy();
-                                if (isFilter) {
-                                    parseManipulationsFunction();
+                            }, {
+                                id: 'task-form-help-modifications',
+                                label: scope.$parent.msg('task.help.modifications'),
+                                cssClass: 'btn-default pull-left',
+                                action: function(dialogRef) {
+                                   HelpStringManipulation.open(scope.$parent);
                                 }
-                            }
+                            }]
                         });
-                    }
-                });
+                        BootstrapDialogManager.open(scope.importDialog);
+                    }});
             }
         };
     });
 
-    directives.directive('manipulationSorter', function($compile, $http, ManageTaskUtils) {
+    directives.directive('manipulationSorter', function ($compile, $http, ManageTaskUtils) {
         return {
             restrict: 'EA',
             templateUrl: '../tasks/partials/manipulation-sorter.html',
@@ -630,7 +713,7 @@
                     placeholder: "ui-state-highlight",
                     update: function (event, ui) {
                         var sorted = $(event.target), manipulations = [];
-                        $('.manipulation', sorted).each(function(){
+                        $('.manipulation', sorted).each(function () {
                             manipulations.push({
                                 type: $(this).attr('type'),
                                 argument: $(this).data('argument')
@@ -651,7 +734,7 @@
                     $scope.manipulationTypes.push('dateTime');
                 }
                 if(['date', 'date2date'].indexOf(manipulationType) > -1) {
-                    $scope.manipulationTypes = $scope.manipulationTypes.concat(['plusDays', 'minusDays', 'plusHours', 'minusHours', 'plusMinutes', 'minusMinutes']);
+                    $scope.manipulationTypes = $scope.manipulationTypes.concat(['beginningOfMonth','endOfMonth','plusMonths','minusMonths','plusDays', 'minusDays', 'plusHours', 'minusHours', 'plusMinutes', 'minusMinutes']);
                 }
 
                 this.addManipulation = function (type, argument) {
@@ -667,10 +750,10 @@
                 this.removeManipulation = function (manipulationStr) {
                     var obj, manipulations = [], returnVal = false;
                     $scope.manipulations.forEach( function (obj) {
-                        if(obj.type !== manipulationStr){
+                        if (obj.type !== manipulationStr) {
                             manipulations.push(obj);
                         }
-                        if(obj.type === manipulationStr){
+                        if (obj.type === manipulationStr) {
                             returnVal = true;
                         }
                     });
@@ -680,7 +763,7 @@
                 };
                 this.isActive = function (manipulationStr) {
                     var index;
-                    for ( index in $scope.manipulations ) {
+                    for (index in $scope.manipulations) {
                         if($scope.manipulations.hasOwnProperty(index)){
                             if ($scope.manipulations[index].type === manipulationStr){
                                 return true;
@@ -705,11 +788,17 @@
             },
             link : function (scope, element, attrs, manipulationSorter) {
                 var attributeFieldTemplate, manipulationSettings = {};
-                ManageTaskUtils.MANIPULATION_SETTINGS.forEach(function(manipulation){
-                    if(attrs.type === manipulation.name){
+                ManageTaskUtils.MANIPULATION_SETTINGS.forEach(function (manipulation) {
+                    if (attrs.type === manipulation.name) {
                         manipulationSettings = manipulation;
                     }
                 });
+
+                scope.changeArgument = function (newVal) {
+                    scope.$apply(function () {
+                        scope.argument = newVal;
+                    });
+                };
 
                 scope.msg = scope.$parent.$parent.$parent.msg;
                 scope.type = attrs.type;
@@ -718,18 +807,18 @@
                     attributeFieldTemplate = false;
                     if ((manipulationSettings.input && manipulationSettings.input !== '') || manipulationSettings.name === 'format') {
                         attributeFieldTemplate = '<input type="text" ng-model="argument" />';
-                        if(manipulationSettings.name === 'format'){
-                            attributeFieldTemplate = '<format-manipulation-button ng-model="argument" />';
+                        if (manipulationSettings.name === 'format') {
+                            attributeFieldTemplate = '<format-manipulation-button />';
                         }
-                        if(!scope.argument){
+                        if (!scope.argument) {
                             scope.argument = "";
                         }
                         element.append($compile(attributeFieldTemplate)(scope));
                     }
-                    scope.$watch('argument', function(newValue) {
+                    scope.$watch('argument', function (newValue) {
                         element.data('argument', newValue);
                     });
-                    element.on("click", ".remove", function(){
+                    element.on("click", ".remove", function () {
                         manipulationSorter.removeManipulation(scope.type);
                     });
                 } else {
@@ -750,32 +839,48 @@
         };
     }]);
 
-    directives.directive('formatManipulationButton', ['$compile', 'ModalFactory', function ($compile, ModalFactory) {
+    directives.directive('formatManipulationButton', ['$compile', function ($compile) {
         return {
             restrict: 'EA',
             templateUrl: '../tasks/partials/widgets/string-manipulation-format-button.html',
             link: function (scope, element, attrs) {
+                var modalScope = scope.$new(),
+                    parseFormatInput = function (value) {
+                        var arr = [];
+                        value.forEach(function (obj) {
+                            if (obj.value){
+                                arr.push(obj.value);
+                            }
+                        });
+                        return arr.join(",");
+                    };
+                scope.formatInput = [];
+
+                modalScope.getAvailableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.getAvailableFields;
+                modalScope.availableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.fields;
+                modalScope.msg = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.taskMsg;
+                modalScope.argument = scope.argument;
+                scope.importDialog = new BootstrapDialog({
+                    size: 'size-wide',
+                    title: scope.msg('task.format.set.header'),
+                    closable: true,
+                    closeByBackdrop: false,
+                    closeByKeyboard: false,
+                    autodestroy: false,
+                    message: $compile('<format-manipulation />')(modalScope),
+                    buttons: [{
+                        label: scope.msg('task.button.save'),
+                        cssClass: 'btn-primary',
+                        action: function (dialogItself) {
+                            modalScope.argument = parseFormatInput(modalScope.formatInput);
+                            scope.changeArgument(modalScope.argument);
+                            dialogItself.close();
+                        }
+                    }]
+                });
                 element.on('click', function (event) {
                     event.preventDefault();
-                    var modalScope = scope.$new();
-                    modalScope.getAvailableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.getAvailableFields;
-                    modalScope.availableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.fields;
-                    modalScope.msg = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.taskMsg;
-                    modalScope.argument = scope.argument;
-
-                    ModalFactory.showAlert({
-                        size: 'size-wide',
-                        title: scope.msg('task.format.set.header'),
-                        message: $compile('<format-manipulation ng-model="argument" available-fields="availableFields" get-available-fields="getAvailableFields()" />')(modalScope),
-                        buttons: [{
-                            label: scope.msg('task.button.save'),
-                            cssClass: 'btn-primary',
-                            action: function (dialogRef) {
-                                scope.argument = modalScope.argument;
-                                dialogRef.close();
-                            }
-                        }]
-                    });
+                    scope.importDialog.open();
                 });
             }
         };
@@ -784,44 +889,23 @@
     directives.directive('formatManipulation', function () {
         return {
             restrict: 'EA',
-            require: 'ngModel',
             templateUrl: '../tasks/partials/widgets/string-manipulation-format.html',
-            scope: {
-                availableFields: '=',
-                getAvailableFields: '&'
-            },
-            link: function (scope, el, attrs, ngModel) {
-                scope.msg = scope.$parent.msg;
-
-                ngModel.$parsers.push(function (value) {
-                    var arr = [];
-                    value.forEach(function(obj){
-                        if(obj.value){
-                            arr.push(obj.value);
-                        }
-                    });
-                    return arr.join(",");
-                });
-                ngModel.$formatters.push(function (value) {
+            link: function (scope, el, attrs) {
+                var formatContent = function (value) {
                     var parsed = [];
-                    value.split(",").forEach(function(str) {
+                    value.split(",").forEach(function (str) {
                         parsed.push({ value: str });
                     });
                     return parsed;
-                });
-
-                ngModel.$render = function () {
-                    scope.formatInput = ngModel.$viewValue;
                 };
-                scope.$watch('formatInput', function(newValue){
-                    ngModel.$setViewValue(scope.formatInput);
-                }, true);
+
+                scope.formatInput = formatContent(scope.argument);
 
                 scope.deleteFormatInput = function (index) {
                     scope.formatInput.splice(index, 1);
                 };
                 scope.addFormatInput = function () {
-                    scope.formatInput.push({});
+                    scope.formatInput.push({value: ''});
                 };
             }
         };
@@ -1260,5 +1344,132 @@
                 });
             }
         };
+    });
+
+    directives.directive('importTaskModal', ['$compile', '$http', '$templateCache', 'BootstrapDialogManager', 'LoadingModal', 'ModalFactory',
+        function ($compile, $http, $templateCache, BootstrapDialogManager, LoadingModal, ModalFactory) {
+
+        function loadTemplate (scope) {
+            var url = '../tasks/partials/widgets/import-modal.html';
+
+            $http.get(url, {cache: $templateCache})
+                .success(function (html) {
+                    var compiledMessage = $compile(html)(scope);
+                    scope.importDialog.setMessage(compiledMessage);
+                });
+        }
+
+        return {
+            restrict: 'A',
+            replace: true,
+            name: 'ctrl',
+            controller: '@',
+            scope: {
+                getTasks: '=',
+                msg: '='
+            },
+            link: function (scope, element, attrs) {
+                loadTemplate(scope);
+                scope.importDialog = new BootstrapDialog({
+                    title: scope.msg('task.import'),
+                    closable: true,
+                    closeByBackdrop: false,
+                    closeByKeyboard: false,
+                    draggable: false,
+                    cssClass: 'tasks',
+                    buttons: [{
+                        label: scope.msg('task.button.import'),
+                        cssClass: 'btn btn-primary',
+                        action: function (dialogItself) {
+                            LoadingModal.open();
+
+                            $('#importTaskForm').ajaxSubmit({
+                                success: function () {
+                                    scope.getTasks();
+                                    $('#importTaskForm').resetForm();
+                                    BootstrapDialogManager.close(dialogItself);
+                                    LoadingModal.close();
+                                },
+                                error: function (response) {
+                                    LoadingModal.close();
+                                    ModalFactory.showErrorAlertWithResponse('task.error.import', 'task.header.error', response);
+                                }
+                            });
+                        }
+                    }, {
+                        label: scope.msg('task.close'),
+                        cssClass: 'btn btn-default',
+                        action: function (dialogItself) {
+                            $('#importTaskForm').resetForm();
+                            BootstrapDialogManager.close(dialogItself);
+                        }
+                    }]
+                });
+                element.on('click', scope.openImportTaskModal);
+            }
+        };
+    }]);
+
+    directives.directive('triggersModal', ['$compile', '$http', '$templateCache', 'BootstrapDialogManager',
+        function ($compile, $http, $templateCache, BootstrapDialogManager) {
+
+        function loadTemplate (scope) {
+            var url = '../tasks/partials/modals/triggersModal.html';
+
+            $http.get(url, {cache: $templateCache})
+                .success(function (html) {
+                    scope.messageBody = html;
+                });
+        }
+
+        return {
+            restrict: 'A',
+            replace: true,
+            name: 'ctrl',
+            controller: '@',
+            scope: {
+                channel: '=',
+                task: '=',
+                util: '=',
+                msg: '='
+            },
+            link: function (scope, element, attrs) {
+                loadTemplate(scope);
+                scope.triggersDialog = new BootstrapDialog({
+                    title: scope.msg('task.tooltip.availableTriggers'),
+                    closable: true,
+                    closeByBackdrop: false,
+                    closeByKeyboard: false,
+                    draggable: false,
+                    cssClass: 'tasks',
+                    autodestroy: false,
+                    buttons: [{
+                        label: scope.msg('task.close'),
+                        cssClass: 'btn btn-default',
+                        action: function (dialogItself) {
+                            BootstrapDialogManager.close(dialogItself);
+                        }
+                    }]
+                 });
+                 element.on('click', function () {
+                    var compiledMessage = $compile(scope.messageBody)(scope);
+                    scope.triggersDialog.setMessage(compiledMessage);
+                    scope.openTriggersModal();
+                 });
+            }
+        };
+    }]);
+
+    directives.directive('moduleNameImg', function() {
+        var imgSrc = {
+            link: function loadImage(scope, element, attrs) {
+                var url = attrs.moduleNameImg;
+                element.css({
+                    'background-image': 'url(' + url +')',
+                    'background-size' : 'cover'
+                });
+            }
+        };
+        return imgSrc;
     });
 }());

@@ -222,13 +222,13 @@
             var convertUrl = function (urlParam) {
                 if(urlParam.indexOf('/') === 0) {urlParam = urlParam.replace('/', '');}
                 if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace('/', '.');}
-                if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace('/.*', '');}
+                if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace(/(\/)\w+((\/)\w*)*/i, '');}
                 return urlParam;
             };
             if (url.indexOf('admin/bundleSettings/') > 0) {
                 $scope.selectedTabState.selectedTab = 'bundleSettings';
             } else {
-                $scope.selectedTabState.selectedTab = url.substring(url.lastIndexOf("/")+1);
+                $scope.selectedTabState.selectedTab = url.replace(/(\/)\d+((\/)\w*)*/i, '').toString().substring(url.replace(/(\/)\d+((\/)\w*)*/i, '').toString().lastIndexOf("/")+1);
             }
             $scope.activeLink = {moduleName: moduleName, url: url};
 
@@ -247,7 +247,7 @@
                     if (url.indexOf('admin/bundleSettings/') > 0) {
                         $state.go('admin.bundleSettings', {'bundleId': url.substring(url.lastIndexOf("/")+1)});
                     } else {
-                        $state.go(convertUrl(url));
+                        $state.go(convertUrl(url), $state.params);
                     }
                     LoadingModal.close();
                     innerLayout({}, { show: false });
@@ -599,7 +599,7 @@
     serverModule.controller('MotechHomeCtrl', function ($scope, $state, $ocLazyLoad, $cookieStore, $q, Menu, $rootScope, $http, ModalFactory, LoadingModal) {
         $scope.securityMode = false;
         $scope.moduleMenu = {};
-
+        $state.go('homepage');
         $scope.openInNewTab = function (url) {
             var win = window.open(url, '_blank');
             win.focus();
@@ -693,5 +693,71 @@
         });
 
         jgridDefaultSettings();
+    });
+
+    serverModule.controller('MotechHomepageCtrl', function ($scope, $http, LoadingModal) {
+
+        $scope.links = [];
+
+        $scope.getUser = function() {
+            var link = {};
+            LoadingModal.open();
+            $http.get('../server/module/menu')
+            .success(function(data) {
+                angular.forEach(data.sections, function(views) {
+                    angular.forEach(views.links, function(viewsLink) {
+                        link.name = viewsLink.name;
+                        link.url = viewsLink.url;
+                        link.modules = viewsLink.moduleName;
+                        $scope.links.push(link);
+                        link = {
+                            name: "",
+                            url: "",
+                            modules: ""
+                        };
+                    });
+                });
+                LoadingModal.close();
+            });
+        };
+
+        $scope.getIndexLink = function (links, searchName, propertyName) {
+            var i, link, linksLength = links.length;
+
+            for(i = 0; i < linksLength; i+=1) {
+                link = links[i];
+                if (link.hasOwnProperty(propertyName) && link[propertyName] === searchName) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+
+        $scope.isModule = function (moduleName) {
+            if ($scope.getIndexLink($scope.links, moduleName, "modules") === -1) {
+                return false;
+            }
+            return true;
+        };
+
+        $scope.isLink = function (linkName) {
+            if ($scope.getIndexLink($scope.links, linkName, "name") === -1) {
+                return false;
+            }
+            return true;
+        };
+
+        $scope.goToPage = function (linkName, tabPath) {
+            var linkIndex = $scope.getIndexLink($scope.links, linkName, "name");
+            if (tabPath && linkIndex >= 0) {
+                $scope.loadModule($scope.links[linkIndex].modules, tabPath);
+            } else {
+                $scope.loadModule($scope.links[linkIndex].modules, $scope.links[linkIndex].url);
+            }
+        };
+
+        $scope.getUser();
+        innerLayout({});
+
     });
 }());

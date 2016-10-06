@@ -11,8 +11,8 @@ import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.motechproject.scheduler.web.domain.JobsRecords;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,6 +58,14 @@ public class JobsController {
     public JobsRecords retrieveJobInfo(JobsSearchSettings jobsSearchSettings) throws SchedulerException, SQLException {
         List<JobBasicInfo> jobs = motechSchedulerDatabaseService.getScheduledJobsBasicInfo(jobsSearchSettings);
         int rowCount = jobs.size() == 0 ? 0 : motechSchedulerDatabaseService.countJobs(jobsSearchSettings);
+        if (jobsSearchSettings.getRows() == null) {
+            int defaultRowsNumber = 10;
+            jobsSearchSettings.setRows(defaultRowsNumber);
+        }
+        if (jobsSearchSettings.getPage() == null) {
+            int defaultPage = 1;
+            jobsSearchSettings.setPage(defaultPage);
+        }
         previousJobsRecords = new JobsRecords(
             jobsSearchSettings.getPage(), jobsSearchSettings.getRows(), rowCount, jobs
         );
@@ -140,10 +148,10 @@ public class JobsController {
      * @param jobInfo  the information about a job
      * @return the job matching the information
      */
-    @RequestMapping(value = "/job", method = RequestMethod.POST)
+    @RequestMapping(value = "/job", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public SchedulableJob getJob(@RequestBody JobBasicInfo jobInfo) {
+    public SchedulableJob getJob(JobBasicInfo jobInfo) {
         return motechSchedulerService.getJob(jobInfo);
     }
 

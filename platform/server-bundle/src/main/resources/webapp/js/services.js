@@ -15,6 +15,7 @@
 
         this.open = function (dialog) {
             modalsList.push(dialog);
+
             if (modalsList.length > 1) {
                 modalsList[modalsList.length-2].close();
             }
@@ -48,7 +49,7 @@
             } else if (modalsList.length > 0) {
                 $timeout(function() {
                     that.show();
-                }, 200);
+                }, 500);
             }
         };
 
@@ -57,6 +58,18 @@
                 modalsList[modalsList.length-1].close();
             }
         };
+
+        this.onhide = function (dialog) {
+            $timeout(function() {
+                if (modalsList.length > 0) {
+                    that.remove(dialog);
+                    if (modalsList.length > 0) {
+                        modalsList[modalsList.length-1].open();
+                    }
+                }
+            }, 200);
+        };
+
     }]);
 
     uiServices.service('LoadingModal', ['$rootScope', function ($rootScope) {
@@ -87,6 +100,7 @@
                 dialog.getModalBody().css('padding', '0');
 
                 dialog.open();
+
                 open = true;
                 $rootScope.$emit('loadingModalOpen');
             }

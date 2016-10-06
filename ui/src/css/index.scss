@@ -2053,3 +2053,74 @@ body {
 .bootstrap-dialog .bootstrap-dialog-message {
     word-wrap: break-word;
 }
+
+/* ----- Homepage style ----- */
+
+#tile1 { background: #337ab7; color: #bd0300; }
+#tile2 { background: #ffffff; }
+#tile3 { background: #153178; }
+#tile4 { background: #596b79; }
+#tile5 { background: #03a70a; color: #d5ff88; }
+#tile6 { background: #FFC107; color: #bd0300; }
+.tile {
+    background: #ffffff;
+    min-height: 345px;
+    border-color: #bce8f1;
+    box-shadow: 6px 6px 15px -5px rgba(0, 94, 195, 0.44);
+}
+.tile.big {
+    min-height: 460px;
+}
+.tile-link-list {
+    list-style-type: none;
+}
+.tile .tile-title {
+    font-size: 2em;
+    font-weight: bold;
+    line-height: 1em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.tile .tile-link a {
+    border-radius: 0;
+    min-width: 18em;
+}
+.tile .tile-description {
+    font-size: 1.2em;
+    margin: 1em auto;
+    min-width: 18em;
+    max-width: 30em;
+    padding: 0 1em;
+}
+.tile .fa.big-icon {
+    font-size: 4em;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+.tile.inverse .fa.big-icon {
+    color: #ffffff;
+}
+.tile.inverse .tile-title {
+    color: #ffffff;
+}
+.tile.inverse .tile-description {
+    color: #ffffff;
+}
+.tile .tile-link-list.many a {
+    text-align: left;
+}
+.listTile .col-xs-8
+.listTile .col-sm-6,
+.listTile .col-md-6,
+.listTile .col-lg-4,
+.listTile .col-sm-12 {
+    padding: 5px;
+}
+.listTile .welcome {
+    font-size: 2em;
+    font-weight: bold;
+    line-height: 1.2em;
+    padding: 0.8em 0.8em 0.8em 0.3em;
+    color: #073863;
+    background: #f6fbff;
+}

@@ -2,7 +2,6 @@ package org.motechproject.tasks.domain.mds.task;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
@@ -14,6 +13,10 @@ import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.json.TaskConfigDeserializer;
+import org.motechproject.tasks.dto.DataSourceDto;
+import org.motechproject.tasks.dto.FilterSetDto;
+import org.motechproject.tasks.dto.TaskConfigDto;
+import org.motechproject.tasks.dto.TaskConfigStepDto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -45,6 +48,10 @@ public class TaskConfig implements Serializable {
     @Cascade(delete = true)
     private List<DataSource> dataSources;
 
+    @Field
+    @Cascade(delete = true)
+    private List<PostActionParameter> postActionParameters;
+
     @Ignore
     public SortedSet<TaskConfigStep> getSteps() {
         SortedSet<TaskConfigStep> steps = new TreeSet<>();
@@ -55,7 +62,6 @@ public class TaskConfig implements Serializable {
         return steps;
     }
 
-    @JsonIgnore
     public List<FilterSet> getFilters() {
         if (filters == null) {
             filters = new ArrayList<>();
@@ -63,12 +69,10 @@ public class TaskConfig implements Serializable {
         return filters;
     }
 
-    @JsonIgnore
     public void setFilters(List<FilterSet> filters) {
         this.filters = filters;
     }
 
-    @JsonIgnore
     public List<DataSource> getDataSources() {
         if (dataSources == null) {
             dataSources = new ArrayList<>();
@@ -76,12 +80,10 @@ public class TaskConfig implements Serializable {
         return dataSources;
     }
 
-    @JsonIgnore
     public void setDataSources(List<DataSource> dataSources) {
         this.dataSources = dataSources;
     }
 
-    @JsonIgnore
     public SortedSet<DataSource> getDataSources(String providerName) {
         SortedSet<DataSource> set = new TreeSet<>();
 
@@ -102,7 +104,6 @@ public class TaskConfig implements Serializable {
      * @param objectType  the object type
      * @return the object matching the given data.
      */
-    @JsonIgnore
     public DataSource getDataSource(final String providerName, final Long objectId,
                                     final String objectType) {
         return (DataSource) CollectionUtils.find(getDataSources(), new Predicate() {
@@ -112,6 +113,17 @@ public class TaskConfig implements Serializable {
                         && ((DataSource) object).objectEquals(providerName, objectId, objectType);
             }
         });
+    }
+
+    public List<PostActionParameter> getPostActionParameters() {
+        if (postActionParameters == null) {
+            postActionParameters = new ArrayList<>();
+        }
+        return postActionParameters;
+    }
+
+    public void setPostActionParameters(List<PostActionParameter> postActionParameters) {
+        this.postActionParameters = postActionParameters;
     }
 
     /**
@@ -143,6 +155,18 @@ public class TaskConfig implements Serializable {
      */
     public TaskConfig removeDataSources() {
         getDataSources().clear();
+        return this;
+    }
+
+    public TaskConfig add(TaskConfigStepDto step) {
+        step.setOrder(getNextOrderNumber());
+
+        if (step instanceof FilterSetDto) {
+            getFilters().add(new FilterSet((FilterSetDto) step));
+        } else if (step instanceof DataSourceDto) {
+            getDataSources().add(new DataSource((DataSourceDto) step));
+        }
+
         return this;
     }
 
@@ -197,6 +221,16 @@ public class TaskConfig implements Serializable {
         }
 
         return order;
+    }
+
+    public TaskConfigDto toDto() {
+        SortedSet<TaskConfigStepDto> stepDtos = new TreeSet<>();
+
+        for (TaskConfigStep step : getSteps()) {
+            stepDtos.add(step.toDto());
+        }
+
+        return new TaskConfigDto(stepDtos);
     }
 
     @Override
