@@ -1333,22 +1333,10 @@
 
     controllers.controller('TriggersModalCtrl', function ($scope, $rootScope, $timeout, LoadingModal, BootstrapDialogManager, Triggers, ModalFactory) {
 
-        $scope.reloadLists = function(staticTriggersPage, dynamicTriggersPage) {
+        $scope.changeCurrentPage = function(staticTriggersPage, dynamicTriggersPage) {
             if ($scope.validatePages(staticTriggersPage, dynamicTriggersPage)) {
-                LoadingModal.open();
-                Triggers.get(
-                {
-                    moduleName: $scope.selectedChannel.moduleName,
-                    staticTriggersPage: staticTriggersPage,
-                    dynamicTriggersPage: dynamicTriggersPage
-                },
-                function(data) {
-                    $scope.dynamicTriggers = data.dynamicTriggersList;
-                    $scope.staticTriggers = data.staticTriggersList;
-                    $scope.staticTriggersPage = $scope.staticTriggers.page;
-                    $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
-                    LoadingModal.close();
-                });
+                $scope.staticTriggers.page = staticTriggersPage;
+                $scope.dynamicTriggers.page = dynamicTriggersPage;
             }
         };
 
@@ -1394,6 +1382,7 @@
         $scope.openTriggersModal = function() {
 
              LoadingModal.open();
+             $scope.pageSize = 10;
              $scope.staticTriggersPager = 1;
              $scope.dynamicTriggersPager = 1;
              $scope.selectedChannel = $scope.channel;
@@ -1406,8 +1395,6 @@
              function(data) {
                  $scope.dynamicTriggers = data.dynamicTriggersList;
                  $scope.staticTriggers = data.staticTriggersList;
-                 $scope.staticTriggersPage = $scope.staticTriggers.page;
-                 $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
                  $scope.hasDynamicTriggers = $scope.dynamicTriggers.triggers.length > 0;
                  $scope.hasStaticTriggers = $scope.staticTriggers.triggers.length > 0;
                  if ($scope.hasStaticTriggers && $scope.hasDynamicTriggers) {
