@@ -79,7 +79,7 @@ public class ChannelController {
         if (triggerEventService.providesDynamicTriggers(moduleName)) {
             dynamicTriggers = new TriggersList();
             long dynamicTriggersCount = triggerEventService.countDynamicTriggers(moduleName);
-            dynamicTriggers.addTriggers(taskWebService.getDynamicTriggers(moduleName, dynamicTriggersPage, PAGE_SIZE));
+            dynamicTriggers.addTriggers(taskWebService.getDynamicTriggers(moduleName, dynamicTriggersPage, (int) dynamicTriggersCount));
             dynamicTriggers.setPage(dynamicTriggersPage);
 
             int dynamicTriggersPages = (int) dynamicTriggersCount / PAGE_SIZE;
