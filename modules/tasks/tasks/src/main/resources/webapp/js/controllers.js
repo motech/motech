@@ -1332,7 +1332,11 @@
         };
     });
 
-    controllers.controller('TriggersModalCtrl', function ($scope, $rootScope, $timeout, LoadingModal, BootstrapDialogManager, Triggers, ModalFactory) {
+    controllers.controller('TriggersModalCtrl', function ($scope, $rootScope, $timeout, LoadingModal, BootstrapDialogManager, Triggers, ModalFactory, $filter) {
+
+        $scope.searchTrigger = {
+            displayName: ""
+        };
 
         $scope.changeCurrentPage = function(staticTriggersPage, dynamicTriggersPage) {
             if ($scope.validatePages(staticTriggersPage, dynamicTriggersPage)) {
@@ -1340,6 +1344,35 @@
                 $scope.dynamicTriggers.page = dynamicTriggersPage;
             }
         };
+
+        $scope.$watch('searchTrigger.displayName', function() {
+            var searchedTriggers = [];
+
+            if ($scope.hasStaticTriggers) {
+                $scope.staticTriggers.page = 1;
+                if ($scope.searchTrigger.displayName !== "") {
+                    searchedTriggers = $filter('filter')($scope.staticTriggers.triggers, $scope.searchTrigger);
+                    $scope.staticTriggers.total = parseInt(searchedTriggers.length / $scope.pageSize, 10);
+                    if (searchedTriggers.length % $scope.pageSize > 0) {
+                        $scope.staticTriggers.total += 1;
+                    }
+                } else {
+                    $scope.staticTriggers.total = $scope.staticTriggersPages;
+                }
+            }
+            if ($scope.hasDynamicTriggers) {
+                $scope.dynamicTriggers.page = 1;
+                if ($scope.searchTrigger.displayName !== "") {
+                    searchedTriggers = $filter('filter')($scope.dynamicTriggers.triggers, $scope.searchTrigger);
+                    $scope.dynamicTriggers.total = parseInt(searchedTriggers.length / $scope.pageSize, 10);
+                    if (searchedTriggers.length % $scope.pageSize > 0) {
+                        $scope.dynamicTriggers.total += 1;
+                    }
+                } else {
+                    $scope.dynamicTriggers.total = $scope.dynamicTriggersPages;
+                }
+            }
+        });
 
         $scope.validatePages = function(staticTriggersPage, dynamicTriggersPage){
             var valid = true;
@@ -1398,6 +1431,8 @@
                  $scope.staticTriggers = data.staticTriggersList;
                  $scope.hasDynamicTriggers = $scope.dynamicTriggers.triggers.length > 0;
                  $scope.hasStaticTriggers = $scope.staticTriggers.triggers.length > 0;
+                 $scope.staticTriggersPages = $scope.staticTriggers.total;
+                 $scope.dynamicTriggersPages = $scope.staticTriggers.total;
                  if ($scope.hasStaticTriggers && $scope.hasDynamicTriggers) {
                      $scope.divSize = "col-md-6";
                  } else {
