@@ -1357,7 +1357,7 @@
             if ($scope.hasDynamicTriggers) {
                 searchActive = $scope.changePagesAfterSearch($scope.dynamicTriggers, searchActive);
                 if(searchActive === false) {
-                    $scope.dynamicTriggers.total = $scope.staticTriggersPages;
+                    $scope.dynamicTriggers.total = $scope.dynamicTriggersPages;
                 }
             }
         });
