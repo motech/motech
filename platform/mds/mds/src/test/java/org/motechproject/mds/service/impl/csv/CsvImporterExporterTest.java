@@ -197,7 +197,7 @@ public class CsvImporterExporterTest {
 
         when(csvImportCustomizer.doCreate(any(Record2.class), eq(motechDataService))).thenAnswer(new CreateAnswer());
 
-        CsvImportResults results = csvImporterExporter.importCsv(ENTITY_ID, reader, csvImportCustomizer, CONTINUE_ON_ERROR);
+        CsvImportResults results = csvImporterExporter.importCsv(ENTITY_ID, reader, csvImportCustomizer, CONTINUE_ON_ERROR, false);
 
         ArgumentCaptor<Record2> captor = ArgumentCaptor.forClass(Record2.class);
         verify(csvImportCustomizer, times(INSTANCE_COUNT)).findExistingInstance(anyMap(), eq(motechDataService));

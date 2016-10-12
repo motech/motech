@@ -73,9 +73,9 @@ public class CsvImporterExporter extends AbstractMdsExporter {
      * @return IDs of instances updated/added during import
      */
     @Transactional
-    public CsvImportResults importCsv(final long entityId, final Reader reader, CsvImportCustomizer importCustomizer, boolean continueOnError) {
+    public CsvImportResults importCsv(final long entityId, final Reader reader, CsvImportCustomizer importCustomizer, boolean continueOnError, boolean clearData) {
         EntityInfo entityInfo = getEntity(entityId);
-        return importCsv(entityInfo, reader, importCustomizer, continueOnError);
+        return importCsv(entityInfo, reader, importCustomizer, continueOnError, clearData);
     }
 
     /**
@@ -227,14 +227,18 @@ public class CsvImporterExporter extends AbstractMdsExporter {
     }
 
     private CsvImportResults importCsv(final EntityInfo entityInfo, final Reader reader, boolean continueOnError) {
-        return importCsv(entityInfo, reader, new DefaultCsvImportCustomizer(), continueOnError);
+        return importCsv(entityInfo, reader, new DefaultCsvImportCustomizer(), continueOnError, false);
     }
 
     private CsvImportResults importCsv(final EntityInfo entityInfo, final Reader reader, CsvImportCustomizer importCustomizer,
-                                       boolean continueOnError) {
+                                       boolean continueOnError, boolean clearData) {
         final MotechDataService dataService = DataServiceHelper.getDataService(getBundleContext(), entityInfo.getClassName());
 
         Map<String, FieldDto> fieldCacheMap = new HashMap<>();
+
+        if (clearData) {
+            dataService.deleteAll();
+        }
 
         try (CsvMapReader csvMapReader = new CsvMapReader(reader, CsvPreference.STANDARD_PREFERENCE)) {
 
