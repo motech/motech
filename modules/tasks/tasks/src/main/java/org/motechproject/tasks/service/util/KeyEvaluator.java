@@ -64,13 +64,17 @@ public class KeyEvaluator {
 
         for (KeyInformation key : parseAll(template)) {
             Object value = getValue(key);
-            String stringValue = value != null ? value.toString() : "";
 
-            stringValue = manipulateValue(key.getManipulations(), stringValue);
+            if (value != null) {
+                String stringValue = value.toString();
+                stringValue = manipulateValue(key.getManipulations(), stringValue);
 
-            conversionTemplate = conversionTemplate.replace(
-                    String.format("{{%s}}", key.getOriginalKey()), stringValue
-            );
+                conversionTemplate = conversionTemplate.replace(
+                        String.format("{{%s}}", key.getOriginalKey()), stringValue
+                );
+            } else {
+                conversionTemplate = null;
+            }
         }
 
         return conversionTemplate;

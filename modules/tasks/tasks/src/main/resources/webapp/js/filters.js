@@ -5,6 +5,12 @@
 
     var filters = angular.module('tasks.filters', []);
 
+    filters.filter('filterPagination', function() {
+        return function (input, start) {
+            return input.slice(+start);
+        };
+    });
+
     filters.filter('fromNow', function () {
         return function (date) {
             return moment(date).fromNow();
