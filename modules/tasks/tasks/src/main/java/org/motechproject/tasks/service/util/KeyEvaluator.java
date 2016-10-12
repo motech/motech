@@ -73,7 +73,7 @@ public class KeyEvaluator {
                         String.format("{{%s}}", key.getOriginalKey()), stringValue
                 );
             } else {
-                conversionTemplate = (String) value;
+                conversionTemplate = null;
             }
         }
 
