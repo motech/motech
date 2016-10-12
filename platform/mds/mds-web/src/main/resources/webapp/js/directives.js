@@ -1571,6 +1571,7 @@
     directives.directive('entityRelationsGrid', function ($timeout, $http, MDSUtils, ModalFactory, LoadingModal) {
         return {
             restrict: 'A',
+            scope: false,
             link: function (scope, element, attrs) {
                 var tableWidth, isHiddenGrid, eventResize, eventChange, relatedClass, relatedEntityId, updatePostData, postdata,
                     filter = {removedIds: [], addedIds: [], addedNewRecords: []},
@@ -1583,6 +1584,9 @@
                     selectedEntityId = scope.selectedEntity.id,
                     selectedInstance = (scope.selectedInstance !== undefined && angular.isNumber(parseInt(scope.selectedInstance, 10)))? parseInt(scope.selectedInstance, 10) : undefined;
 
+                if (scope.field.name === 'answers' && scope.editExisting === false) {
+                    filter = scope.setFilter(filter,scope.field);
+                }
                 relatedClass = scope.getRelatedClass(scope.field);
                     LoadingModal.open();
                     $http.get('../mds/entities/getEntityByClassName?entityClassName=' + relatedClass).success(function (data) {
@@ -1602,6 +1606,10 @@
                                         selectedEntityId = scope.currentRelationRecord.entitySchemaId;
                                     }
                                 } else {
+                                    selectedEntityId = scope.selectedEntity.id;
+                                }
+
+                                if (scope.openedModals < 2) {
                                     colModel.push({
                                         name: scope.msg('mds.form.label.action').toUpperCase(),
                                         width: 150,
@@ -1617,7 +1625,6 @@
                                         },
                                         sortable: false
                                     });
-                                    selectedEntityId = scope.selectedEntity.id;
                                 }
 
                                 buildGridColModel(colModel, result, scope, false, true);
@@ -1635,6 +1642,11 @@
                                     },
                                     jsonReader: {
                                         repeatitems: false
+                                    },
+                                    loadComplete: function(data) {
+                                        if(scope.field.name === 'answers') {
+                                            scope.getAnswers(data);
+                                        }
                                     },
                                     onSelectRow: function (id, status, e) {
                                         if (!scope.field.nonEditable &&  e.target.getAttribute('class') !== null && (e.target.getAttribute('class').indexOf('removeRelatedInstance') >= 0
@@ -1654,9 +1666,6 @@
                                                 scope.editRelatedInstanceOfEntity(selectedInstance, relatedEntityId, scope.field);
                                             }
                                        }
-                                    },
-                                    ondblClickRow : function(id,iRow,iCol,e) {
-
                                     },
                                     resizeStop: function (width, index) {
                                         var widthNew, widthOrg, colModel = $('#' + gridId).jqGrid('getGridParam','colModel');

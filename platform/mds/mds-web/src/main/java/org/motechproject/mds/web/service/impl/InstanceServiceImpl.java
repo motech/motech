@@ -77,6 +77,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -494,7 +495,6 @@ public class InstanceServiceImpl implements InstanceService {
             validateCredentials(entity);
             List<FieldDto> fields = getEntityFields(entityId);
 
-            String entityName = entity.getName();
             MotechDataService service = getServiceForEntity(entity);
 
             // then the related entity
@@ -520,19 +520,16 @@ public class InstanceServiceImpl implements InstanceService {
                 // get the instance of the original entity
                 Object instance = service.findById(instanceId);
 
-                if (instance == null) {
-                    throw new ObjectNotFoundException(entityName, instanceId);
+                if (instance != null) {
+                    relatedAsColl = TypeHelper.asCollection(PropertyUtil.getProperty(instance, fieldName));
                 }
-
-                // the value of the related field
-                relatedAsColl = TypeHelper.asCollection(PropertyUtil.getProperty(instance, fieldName));
             }
 
             relatedAsColl.addAll(relatedDataService.findByIds(filter.getAddedIds()));
 
             List<Long> updatedInstancesIds = new ArrayList<>();
             for (EntityRecord record : filter.getAddedNewRecords()) {
-                Integer id = (Integer) record.getFieldByName(Constants.Util.ID_FIELD_NAME).getValue();
+                Integer id = Integer.valueOf(record.getFieldByName(Constants.Util.ID_FIELD_NAME).getValue().toString());
                 if (id != null && id > 0) {
                     updatedInstancesIds.add(id.longValue());
                 }
@@ -606,13 +603,21 @@ public class InstanceServiceImpl implements InstanceService {
             // we don't want to pre-populate anything for editable fields
             // if we pre-populate the owner field in such a case for example, it will fail validation
             if (Constants.Util.CREATOR_FIELD_NAME.equals(record.getName()) ||
-                    Constants.Util.OWNER_FIELD_NAME.equals(record.getName())) {
+                    Constants.Util.OWNER_FIELD_NAME.equals(record.getName()) ||
+                        Constants.Util.MODIFIED_BY_FIELD_NAME.equals(record.getName())) {
                 if (record.isNonEditable()) {
                     // make sure this is null, we don't want empty strings for these fields
                     record.setValue(null);
                 } else {
                     record.setValue(SecurityContextHolder.getContext().getAuthentication().getName());
                 }
+            }
+            if (Constants.Util.CREATION_DATE_FIELD_NAME.equals(record.getName()) || Constants.Util.MODIFICATION_DATE_FIELD_NAME.equals(record.getName()))
+            {
+                Date date = new Date();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm Z");
+                String dateString = dateFormat.format(date);
+                record.setValue(dateString);
             }
         }
     }
