@@ -85,17 +85,31 @@ class TaskInitializer {
     }
 
     public int getActionFilters() {
-        Integer actionFilterId;
-        int i = 0;
+        int firstActionFilterIndex = 0;
+        boolean actionFilterExist = false;
         List<FilterSet> filterSetList = new ArrayList<>(taskContext.getTask().getTaskConfig().getFilters());
-        for (FilterSet filterSet : filterSetList) {
-            actionFilterId = filterSet.getActionOrder();
-            if(actionFilterId != null) {
-                return i;
+
+        for  (int i = 0; i < filterSetList.size(); i++){
+            if(filterSetList.get(i).getActionOrder() != null && !actionFilterExist) {
+                firstActionFilterIndex = i;
+                actionFilterExist = true;
+            } else if (filterSetList.get(i).getActionOrder() == null) {
+                firstActionFilterIndex = filterSetList.size();
             }
-            i++;
         }
-        return i;
+        return firstActionFilterIndex;
+    }
+
+    public boolean checkActionFilter(int actualFilterIndex, List<FilterSet> filterSetList) throws TaskHandlerException{
+        boolean result;
+        TaskFilterExecutor taskFilterExecutor = new TaskFilterExecutor();
+
+        try {
+            result = taskFilterExecutor.checkFilters(filterSetList.get(actualFilterIndex).getFilters(), filterSetList.get(actualFilterIndex).getOperator(), taskContext);
+        } catch (RuntimeException e) {
+            throw new TaskHandlerException(FILTER, "task.error.filterError", e);
+        }
+        return result;
     }
 
     private Object getDataSourceObject(DataSource dataSource, Map<String, DataProvider> providers)

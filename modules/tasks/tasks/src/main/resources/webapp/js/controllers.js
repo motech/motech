@@ -551,6 +551,7 @@
                 if (data['@type'] === 'FilterSetDto') {
                     $scope.task.taskConfig.steps.removeObject(data);
                 } else if (data['@type'] === 'FilterActionSetDto') {
+                    $scope.changeActionData(data);
                     $scope.task.actions.removeObject(data);
                 }
                 $scope.taskStepNumber -= 1;
@@ -568,6 +569,21 @@
             } else {
                 removeFilterSetSelected(data);
             }
+        };
+
+        $scope.changeActionData = function (data) {
+            var i;
+
+            angular.forEach($scope.task.actions, function (action, idx){
+                if(action === data) {
+                    if($scope.selectedAction[idx+1] !== undefined) {
+                        $scope.selectedAction[idx] = angular.copy($scope.selectedAction[idx+1]);
+                        $scope.selectedAction.removeObject($scope.selectedAction[idx+1]);
+                        $scope.selectedActionChannel[idx] = angular.copy($scope.selectedActionChannel[idx+1]);
+                        $scope.selectedActionChannel.removeObject($scope.selectedActionChannel[idx+1]);
+                    }
+                }
+            });
         };
 
         $scope.addFilter = function (filterSet) {
@@ -905,8 +921,8 @@
             },
             error = function (response) {
                 var data = (response && response.data) || response;
-                $scope.task.actions = actionOrder;
-                $scope.task.taskConfig.steps = taskOrder;
+                $scope.task.actions = angular.copy(actionOrder);
+                $scope.task.taskConfig.steps = angular.copy(taskOrder);
 
                 angular.forEach($scope.task.actions, function (action) {
                     delete action.values;
@@ -937,8 +953,8 @@
                     }
                 });
             });
-            actionOrder = $scope.task.actions;
-            taskOrder = $scope.task.taskConfig.steps;
+            actionOrder = angular.copy($scope.task.actions);
+            taskOrder = angular.copy($scope.task.taskConfig.steps);
 
             angular.forEach($scope.task.actions, function (action, idx) {
                 if (action['@type'] === 'FilterActionSetDto') {

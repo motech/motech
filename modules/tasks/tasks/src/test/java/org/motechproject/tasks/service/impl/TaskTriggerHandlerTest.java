@@ -19,6 +19,7 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.tasks.constants.EventDataKeys;
 import org.motechproject.tasks.constants.TaskFailureCause;
+import org.motechproject.tasks.domain.enums.LogicalOperator;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.ActionParameter;
 import org.motechproject.tasks.domain.mds.channel.EventParameter;
@@ -784,6 +785,40 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
     }
 
     @Test
+    public void shouldPassFiltersCriteriaAndExecuteActions() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+        setActionFilters();
+
+        when(taskService.findActiveTasksForTriggerSubject(TRIGGER_SUBJECT)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(actionEvent);
+
+        handler.handle(createEvent());
+
+        verify(taskService).findActiveTasksForTriggerSubject(TRIGGER_SUBJECT);
+        verify(taskService).getActionEventFor(task.getActions().get(0));
+        verify(eventRelay).sendEventMessage(any(MotechEvent.class));
+    }
+
+    @Test
+    public void shouldPassFiltersCriteriaAndNotExecuteActions() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+        setActionFilters();
+
+        task.getTaskConfig().add(new FilterSet(asList(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, false, EXIST.getValue(), "")),LogicalOperator.AND,1));
+
+        when(taskService.findActiveTasksForTriggerSubject(TRIGGER_SUBJECT)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(actionEvent);
+
+        handler.handle(createEvent());
+
+        verify(taskService).findActiveTasksForTriggerSubject(TRIGGER_SUBJECT);
+        verify(taskService, never()).getActionEventFor(task.getActions().get(0));
+        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
+    }
+
+    @Test
     public void shouldSendEventForGivenTrigger() throws Exception {
         setTriggerEvent();
         setActionEvent();
@@ -1283,6 +1318,23 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, false, GT.getValue(), "1234567891"));
 
         task.getTaskConfig().add(new FilterSet(filters));
+    }
+
+    private void setActionFilters() {
+        List<Filter> filters = new ArrayList<>();
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, CONTAINS.getValue(), "ven"));
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, EXIST.getValue(), ""));
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, EQUALS.getValue(), "event name"));
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, EQUALS_IGNORE_CASE.getValue(), "EvEnT nAmE"));
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, STARTSWITH.getValue(), "ev"));
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, ENDSWITH.getValue(), "me"));
+        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, GT.getValue(), "19"));
+        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, LT.getValue(), "1234567891"));
+        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, EQ_NUMBER.getValue(), "123456789"));
+        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, EXIST.getValue(), ""));
+        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, false, GT.getValue(), "1234567891"));
+
+        task.getTaskConfig().add(new FilterSet(filters, LogicalOperator.AND,0));
     }
 
     private void setNonRequiredField() {

@@ -17,7 +17,6 @@ import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TriggerHandler;
 import org.motechproject.tasks.service.util.TaskContext;
-import org.motechproject.tasks.service.util.TaskFilterExecutor;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -172,25 +171,24 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         TaskContext taskContext = new TaskContext(task, parameters, metadata, activityService);
         TaskInitializer initializer = new TaskInitializer(taskContext);
-        List<FilterSet> filterSet = new ArrayList<>(task.getTaskConfig().getFilters());
-        TaskFilterExecutor taskFilterExecutor = new TaskFilterExecutor();
+        List<FilterSet> filterSetList = new ArrayList<>(task.getTaskConfig().getFilters());
         boolean result = true;
         int executedActions = 0;
-        int checkedFilters = 0;
+        int step = 0;
         int actualFilterIndex = initializer.getActionFilters();
 
         try {
             LOGGER.info("Executing all actions from task: {}", task.getName());
             if (initializer.evalConfigSteps(dataProviders)) {
                 while (result && executedActions < task.getActions().size()) {
-                    if (filterSet.size() > 0 &&  actualFilterIndex < filterSet.size() && filterSet.get(actualFilterIndex).getActionOrder() == checkedFilters) {
-                        result = taskFilterExecutor.checkFilters(filterSet.get(actualFilterIndex).getFilters(), filterSet.get(actualFilterIndex).getOperator(), taskContext);
+                    if (actualFilterIndex < filterSetList.size() && filterSetList.get(actualFilterIndex).getActionOrder() == step) {
+                        result = initializer.checkActionFilter(actualFilterIndex, filterSetList);
                         actualFilterIndex += 1;
                     } else {
                         executor.execute(task, task.getActions().get(executedActions), executedActions, taskContext, activityId);
                         executedActions += 1;
                     }
-                    checkedFilters += 1;
+                    step += 1;
                 }
             }
             LOGGER.warn("Actions from task: {} weren't executed, because config steps didn't pass the evaluation", task.getName());
