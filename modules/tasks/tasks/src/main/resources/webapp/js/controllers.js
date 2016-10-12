@@ -1346,33 +1346,37 @@
         };
 
         $scope.$watch('searchTrigger.displayName', function() {
-            var searchedTriggers = [];
+            var searchActive = true;
 
             if ($scope.hasStaticTriggers) {
-                $scope.staticTriggers.page = 1;
-                if ($scope.searchTrigger.displayName !== "") {
-                    searchedTriggers = $filter('filter')($scope.staticTriggers.triggers, $scope.searchTrigger);
-                    $scope.staticTriggers.total = parseInt(searchedTriggers.length / $scope.pageSize, 10);
-                    if (searchedTriggers.length % $scope.pageSize > 0) {
-                        $scope.staticTriggers.total += 1;
-                    }
-                } else {
+                searchActive = $scope.changePagesAfterSearch($scope.staticTriggers, searchActive);
+                if(searchActive === false) {
                     $scope.staticTriggers.total = $scope.staticTriggersPages;
                 }
             }
             if ($scope.hasDynamicTriggers) {
-                $scope.dynamicTriggers.page = 1;
-                if ($scope.searchTrigger.displayName !== "") {
-                    searchedTriggers = $filter('filter')($scope.dynamicTriggers.triggers, $scope.searchTrigger);
-                    $scope.dynamicTriggers.total = parseInt(searchedTriggers.length / $scope.pageSize, 10);
-                    if (searchedTriggers.length % $scope.pageSize > 0) {
-                        $scope.dynamicTriggers.total += 1;
-                    }
-                } else {
-                    $scope.dynamicTriggers.total = $scope.dynamicTriggersPages;
+                searchActive = $scope.changePagesAfterSearch($scope.dynamicTriggers, searchActive);
+                if(searchActive === false) {
+                    $scope.dynamicTriggers.total = $scope.staticTriggersPages;
                 }
             }
         });
+
+        $scope.changePagesAfterSearch = function(triggersTable, searchActive) {
+            var searchedTriggers = [];
+
+            triggersTable.page = 1;
+            if ($scope.searchTrigger.displayName !== "") {
+                searchedTriggers = $filter('filter')(triggersTable.triggers, $scope.searchTrigger);
+                triggersTable.total = parseInt(searchedTriggers.length / $scope.pageSize, 10);
+                if (searchedTriggers.length % $scope.pageSize > 0) {
+                    triggersTable.total += 1;
+                }
+            } else {
+                searchActive = false;
+            }
+            return searchActive;
+        };
 
         $scope.validatePages = function(staticTriggersPage, dynamicTriggersPage){
             var valid = true;
