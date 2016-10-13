@@ -153,18 +153,18 @@ public class CsvImportExportServiceImpl implements CsvImportExportService {
     }
 
     @Override
-    public CsvImportResults importCsv(long entityId, Reader reader, String fileName, boolean continueOnError) {
-        return importCsv(entityId, reader, fileName, new DefaultCsvImportCustomizer(), continueOnError);
+    public CsvImportResults importCsv(long entityId, Reader reader, String fileName, boolean continueOnError, boolean clearData) {
+        return importCsv(entityId, reader, fileName, new DefaultCsvImportCustomizer(), continueOnError, clearData);
     }
 
     @Override
     public CsvImportResults importCsv(long entityId, Reader reader, String fileName,
-                                      CsvImportCustomizer importCustomizer, boolean continueOnError) {
+                                      CsvImportCustomizer importCustomizer, boolean continueOnError, boolean clearData) {
         LOGGER.debug("Importing instances of entity with ID: {}", entityId);
 
         CsvImportResults importResults;
         try {
-            importResults = csvImporterExporter.importCsv(entityId, reader, importCustomizer, continueOnError);
+            importResults = csvImporterExporter.importCsv(entityId, reader, importCustomizer, continueOnError, clearData);
         } catch (RuntimeException e) {
             EntityDto entity = entityService.getEntity(entityId);
             sendImportFailureEvent(entity, fileName, e);
