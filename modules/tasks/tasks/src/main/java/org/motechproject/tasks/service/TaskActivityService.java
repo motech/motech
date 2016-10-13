@@ -24,7 +24,7 @@ public interface TaskActivityService {
     long addTaskStarted(Task task, Map<String, Object> parameters);
 
     /**
-     * If task was filtered and not executed, it marks the activity as "FILTERED".
+     * Marks the activity as "FILTERED", if task was filtered and not executed.
      *
      * @param activityId the id of the activity
      */
