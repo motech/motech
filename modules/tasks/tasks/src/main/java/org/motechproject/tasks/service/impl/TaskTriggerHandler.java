@@ -172,7 +172,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         TaskContext taskContext = new TaskContext(task, parameters, metadata, activityService);
         TaskInitializer initializer = new TaskInitializer(taskContext);
         List<FilterSet> filterSetList = new ArrayList<>(task.getTaskConfig().getFilters());
-        boolean result = true;
+        boolean actionFilterResult = true;
         int executedActions = 0;
         int step = 0;
         int actualFilterIndex = initializer.getActionFilters();
@@ -180,9 +180,9 @@ public class TaskTriggerHandler implements TriggerHandler {
         try {
             LOGGER.info("Executing all actions from task: {}", task.getName());
             if (initializer.evalConfigSteps(dataProviders)) {
-                while (result && executedActions < task.getActions().size()) {
-                    if (actualFilterIndex < filterSetList.size() && filterSetList.get(actualFilterIndex).getActionOrder() == step) {
-                        result = initializer.checkActionFilter(actualFilterIndex, filterSetList);
+                while (actionFilterResult && executedActions < task.getActions().size()) {
+                    if (shouldCheckFilter(filterSetList, actualFilterIndex, step)) {
+                        actionFilterResult = initializer.checkActionFilter(actualFilterIndex, filterSetList);
                         actualFilterIndex += 1;
                     } else {
                         executor.execute(task, task.getActions().get(executedActions), executedActions, taskContext, activityId);
@@ -213,6 +213,15 @@ public class TaskTriggerHandler implements TriggerHandler {
         if (MapUtils.isNotEmpty(dataProviders)) {
             dataProviders.remove(taskDataProviderId);
         }
+    }
+
+    private boolean shouldCheckFilter(List<FilterSet> filterSetList, int index, int step) {
+        boolean result = false;
+
+        if (index < filterSetList.size() && filterSetList.get(index).getActionFilterOrder() == step) {
+            result = true;
+        }
+        return result;
     }
 
     void setDataProviders(Map<String, DataProvider> dataProviders) {

@@ -352,7 +352,7 @@
                                     step.displayName = object.displayName;
                                 }
                             }
-                            if (step['@type'] === 'FilterSetDto' && step.actionOrder !== null) {
+                            if ($scope.isActionFilterSet(step)) {
                                 actionFilters.push(step);
                                 filtersToDelete.push(step);
                             }
@@ -364,7 +364,7 @@
                         });
 
                         for (actionStep = 0; actionStep < ($scope.task.actions.length + actionFilters.length); actionStep += 1) {
-                            if (actionFilterIndex < actionFilters.length && actionFilters[actionFilterIndex].actionOrder === actionStep) {
+                            if ($scope.shouldAddFilterToActions(actionFilterIndex, actionFilters, actionStep)) {
                                 actionFilters[actionFilterIndex]['@type'] = 'FilterActionSetDto';
                                 actionSteps.push(actionFilters[actionFilterIndex]);
                                 actionFilterIndex += 1;
@@ -377,49 +377,49 @@
 
                         angular.forEach($scope.task.actions, function (info, idx) {
                             if (info['@type'] !== 'FilterActionSetDto') {
-                            var action = null, actionBy = [];
+                                var action = null, actionBy = [];
 
-                            $scope.selectedActionChannel[idx] = $scope.util.find({
-                                where: $scope.channels,
-                                by: {
-                                    what: 'moduleName',
-                                    equalTo: info.moduleName
-                                }
-                            });
-
-                            if ($scope.selectedActionChannel[idx]) {
-                                if (info.name) {
-                                    actionBy.push({ what: 'name', equalTo: info.name });
-                                    action = $scope.util.find({
-                                        where: $scope.selectedActionChannel[idx].actionTaskEvents,
-                                        by: actionBy
-                                    });
-                                } else {
-                                    if (info.subject) {
-                                        actionBy.push({ what: 'subject', equalTo: info.subject });
+                                $scope.selectedActionChannel[idx] = $scope.util.find({
+                                    where: $scope.channels,
+                                    by: {
+                                        what: 'moduleName',
+                                        equalTo: info.moduleName
                                     }
+                                });
 
-                                    if (info.serviceInterface && info.serviceMethod) {
-                                        actionBy.push({ what: 'serviceInterface', equalTo: info.serviceInterface });
-                                        actionBy.push({ what: 'serviceMethod', equalTo: info.serviceMethod });
-                                    }
-
-                                    action = $scope.util.find({
-                                        where: $scope.selectedActionChannel[idx].actionTaskEvents,
-                                        by: actionBy
-                                    });
-                                }
-
-                                if (action) {
-                                    $timeout(function () {
-                                        $scope.util.action.select($scope, idx, action);
-                                        angular.element('#collapse-action-' + idx).collapse('hide');
-                                        angular.forEach($scope.selectedAction[idx].actionParameters, function (param) {
-                                            param.value = info.values[param.key] || '';
+                                if ($scope.selectedActionChannel[idx]) {
+                                    if (info.name) {
+                                        actionBy.push({ what: 'name', equalTo: info.name });
+                                        action = $scope.util.find({
+                                            where: $scope.selectedActionChannel[idx].actionTaskEvents,
+                                            by: actionBy
                                         });
-                                    });
+                                    } else {
+                                        if (info.subject) {
+                                            actionBy.push({ what: 'subject', equalTo: info.subject });
+                                        }
+
+                                        if (info.serviceInterface && info.serviceMethod) {
+                                            actionBy.push({ what: 'serviceInterface', equalTo: info.serviceInterface });
+                                            actionBy.push({ what: 'serviceMethod', equalTo: info.serviceMethod });
+                                        }
+
+                                        action = $scope.util.find({
+                                            where: $scope.selectedActionChannel[idx].actionTaskEvents,
+                                            by: actionBy
+                                        });
+                                    }
+
+                                    if (action) {
+                                        $timeout(function () {
+                                            $scope.util.action.select($scope, idx, action);
+                                            angular.element('#collapse-action-' + idx).collapse('hide');
+                                            angular.forEach($scope.selectedAction[idx].actionParameters, function (param) {
+                                                param.value = info.values[param.key] || '';
+                                            });
+                                        });
+                                    }
                                 }
-                            }
                             }
                         });
                     });
@@ -543,6 +543,22 @@
                 operator: "AND",
                 order: $scope.taskStepNumber
             });
+        };
+
+        $scope.isActionFilterSet = function (step) {
+            var result = false;
+            if (step['@type'] === 'FilterSetDto' && step.actionFilterOrder !== null) {
+                result = true;
+            }
+            return result;
+        };
+
+        $scope.shouldAddFilterToActions = function (index, actionFilters, step) {
+            var result = false;
+            if(index < actionFilters.length && actionFilters[index].actionFilterOrder === step) {
+                result = true;
+            }
+            return result;
         };
 
         $scope.removeFilterSet = function (data) {
@@ -962,7 +978,7 @@
                         '@type': 'FilterSetDto',
                         filters: action.filters,
                         operator: action.operator,
-                        actionOrder: idx
+                        actionFilterOrder: idx
                     });
                     filtersToDelete.push(action);
                 }

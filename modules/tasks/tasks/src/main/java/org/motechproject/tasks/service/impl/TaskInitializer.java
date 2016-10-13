@@ -71,7 +71,7 @@ class TaskInitializer {
                 DataSource ds = (DataSource) step;
                 taskContext.addDataSourceObject(ds.getObjectId().toString(), getDataSourceObject(ds, dataProviders), ds.isFailIfDataNotFound());
                 LOGGER.info("Task data source: {} for task: {} added", ds.getName(), taskContext.getTask().getName());
-            } else if (step instanceof FilterSet && ((FilterSet) step).getActionOrder() == null) {
+            } else if (step instanceof FilterSet && !isActionFilter((FilterSet) step)) {
                 try {
                     FilterSet filterSet = (FilterSet) step;
 
@@ -84,22 +84,24 @@ class TaskInitializer {
         return result;
     }
 
+    @Transactional
     public int getActionFilters() {
         int firstActionFilterIndex = 0;
         boolean actionFilterExist = false;
         List<FilterSet> filterSetList = new ArrayList<>(taskContext.getTask().getTaskConfig().getFilters());
 
         for  (int i = 0; i < filterSetList.size(); i++){
-            if(filterSetList.get(i).getActionOrder() != null && !actionFilterExist) {
+            if(isActionFilter(filterSetList.get(i)) && !actionFilterExist) {
                 firstActionFilterIndex = i;
                 actionFilterExist = true;
-            } else if (filterSetList.get(i).getActionOrder() == null) {
+            } else if (!isActionFilter(filterSetList.get(i))) {
                 firstActionFilterIndex = filterSetList.size();
             }
         }
         return firstActionFilterIndex;
     }
 
+    @Transactional
     public boolean checkActionFilter(int actualFilterIndex, List<FilterSet> filterSetList) throws TaskHandlerException{
         boolean result;
         TaskFilterExecutor taskFilterExecutor = new TaskFilterExecutor();
@@ -108,6 +110,15 @@ class TaskInitializer {
             result = taskFilterExecutor.checkFilters(filterSetList.get(actualFilterIndex).getFilters(), filterSetList.get(actualFilterIndex).getOperator(), taskContext);
         } catch (RuntimeException e) {
             throw new TaskHandlerException(FILTER, "task.error.filterError", e);
+        }
+        return result;
+    }
+
+    @Transactional
+    private boolean isActionFilter(FilterSet filterSet) {
+        boolean result = true;
+        if  (filterSet.getActionFilterOrder() == null) {
+            result = false;
         }
         return result;
     }

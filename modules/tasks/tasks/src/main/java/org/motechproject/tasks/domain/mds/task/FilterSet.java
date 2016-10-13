@@ -35,7 +35,7 @@ public class FilterSet extends TaskConfigStep {
     private LogicalOperator operator;
 
     @Field
-    private Integer actionOrder;
+    private Integer actionFilterOrder;
 
     /**
      * Constructor.
@@ -49,7 +49,7 @@ public class FilterSet extends TaskConfigStep {
      * @param dto FilterSet data transfer object
      */
     public FilterSet(FilterSetDto dto) {
-        this(Filter.toFilters(dto.getFilters()), dto.getOperator(), dto.getOrder(), dto.getActionOrder());
+        this(Filter.toFilters(dto.getFilters()), dto.getOperator(), dto.getOrder(), dto.getActionFilterOrder());
     }
 
     /**
@@ -66,16 +66,17 @@ public class FilterSet extends TaskConfigStep {
      *
      * @param filters  the filters
      * @param operator  the operator, can be "AND" or "OR
+     * @param actionFilterOrder represents order between Actions and Action Filters
      */
-    public FilterSet(List<Filter> filters, LogicalOperator operator, Integer actionOrder ) {
-        this(filters, operator, null, actionOrder);
+    public FilterSet(List<Filter> filters, LogicalOperator operator, Integer actionFilterOrder ) {
+        this(filters, operator, null, actionFilterOrder);
     }
 
-    public FilterSet(List<Filter> filters, LogicalOperator operator, Integer order, Integer actionOrder) {
+    public FilterSet(List<Filter> filters, LogicalOperator operator, Integer order, Integer actionFilterOrder) {
         super(order);
         this.filters = filters == null ? new ArrayList<>() : filters;
         this.operator = operator;
-        this.actionOrder = actionOrder;
+        this.actionFilterOrder = actionFilterOrder;
     }
 
     public void addFilter(Filter filter) {
@@ -104,12 +105,12 @@ public class FilterSet extends TaskConfigStep {
         this.operator = operator;
     }
 
-    public Integer getActionOrder() {
-        return actionOrder;
+    public Integer getActionFilterOrder() {
+        return actionFilterOrder;
     }
 
-    public void setActionOrder(Integer actionOrder) {
-        this.actionOrder = actionOrder;
+    public void setActionFilterOrder(Integer actionOrder) {
+        this.actionFilterOrder = actionOrder;
     }
 
     public FilterSetDto toDto() {
@@ -119,7 +120,7 @@ public class FilterSet extends TaskConfigStep {
             filterDtos.add(filter.toDto());
         }
 
-        return new FilterSetDto(getOrder(), filterDtos, operator, actionOrder);
+        return new FilterSetDto(getOrder(), filterDtos, operator, actionFilterOrder);
     }
 
     @Override

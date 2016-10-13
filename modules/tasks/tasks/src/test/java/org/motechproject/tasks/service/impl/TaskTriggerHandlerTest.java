@@ -785,37 +785,35 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
     }
 
     @Test
-    public void shouldPassFiltersCriteriaAndExecuteActions() throws Exception {
+    public void shouldNotPassFiltersCriteriaAndNotExecuteSecondAction() throws Exception {
         setTriggerEvent();
         setActionEvent();
-        setActionFilters();
+        addActionFilterNotPassingCriteria();
+        setSecondAction();
 
         when(taskService.findActiveTasksForTriggerSubject(TRIGGER_SUBJECT)).thenReturn(tasks);
-        when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(actionEvent);
+        when(taskService.getActionEventFor(any(TaskActionInformation.class))).thenReturn(actionEvent);
+
+        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
 
         handler.handle(createEvent());
 
         verify(taskService).findActiveTasksForTriggerSubject(TRIGGER_SUBJECT);
         verify(taskService).getActionEventFor(task.getActions().get(0));
-        verify(eventRelay).sendEventMessage(any(MotechEvent.class));
-    }
+        verify(taskService, never()).getActionEventFor(task.getActions().get(1));
+        verify(eventRelay, times(1)).sendEventMessage(captor.capture());
 
-    @Test
-    public void shouldPassFiltersCriteriaAndNotExecuteActions() throws Exception {
-        setTriggerEvent();
-        setActionEvent();
-        setActionFilters();
+        List<MotechEvent> events = captor.getAllValues();
 
-        task.getTaskConfig().add(new FilterSet(asList(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, false, EXIST.getValue(), "")),LogicalOperator.AND,1));
+        assertEquals(asList(ACTION_SUBJECT), extract(events, on(MotechEvent.class).getSubject()));
 
-        when(taskService.findActiveTasksForTriggerSubject(TRIGGER_SUBJECT)).thenReturn(tasks);
-        when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(actionEvent);
+        MotechEvent motechEventAction1 = events.get(0);
 
-        handler.handle(createEvent());
-
-        verify(taskService).findActiveTasksForTriggerSubject(TRIGGER_SUBJECT);
-        verify(taskService, never()).getActionEventFor(task.getActions().get(0));
-        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
+        assertEquals(ACTION_SUBJECT, motechEventAction1.getSubject());
+        assertNotNull(motechEventAction1.getParameters());
+        assertEquals(2, motechEventAction1.getParameters().size());
+        assertEquals(task.getActions().get(0).getValues().get("phone"), motechEventAction1.getParameters().get("phone").toString());
+        assertEquals("Hello 123456789, You have an appointment on 2012-11-20", motechEventAction1.getParameters().get("message"));
     }
 
     @Test
@@ -1320,21 +1318,8 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         task.getTaskConfig().add(new FilterSet(filters));
     }
 
-    private void setActionFilters() {
-        List<Filter> filters = new ArrayList<>();
-        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, CONTAINS.getValue(), "ven"));
-        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, EXIST.getValue(), ""));
-        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, EQUALS.getValue(), "event name"));
-        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, EQUALS_IGNORE_CASE.getValue(), "EvEnT nAmE"));
-        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, STARTSWITH.getValue(), "ev"));
-        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, ENDSWITH.getValue(), "me"));
-        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, GT.getValue(), "19"));
-        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, LT.getValue(), "1234567891"));
-        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, EQ_NUMBER.getValue(), "123456789"));
-        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, EXIST.getValue(), ""));
-        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, false, GT.getValue(), "1234567891"));
-
-        task.getTaskConfig().add(new FilterSet(filters, LogicalOperator.AND,0));
+    private void addActionFilterNotPassingCriteria() {
+        task.getTaskConfig().add(new FilterSet(asList(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, false, EXIST.getValue(), "")), LogicalOperator.AND, 1));
     }
 
     private void setNonRequiredField() {
