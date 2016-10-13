@@ -28,6 +28,7 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     private static final String TASK_IN_PROGRESS = "task.inProgress";
     private static final String TASK_SUCCEEDED = "task.success.ok";
     private static final String TASK_DISABLED = "task.warning.taskDisabled";
+    private static final String TASK_FILTERED = "task.filtered";
 
     private TaskActivitiesDataService taskActivitiesDataService;
 
@@ -44,6 +45,16 @@ public class TaskActivityServiceImpl implements TaskActivityService {
                 new TaskActivity(TASK_IN_PROGRESS, Arrays.asList("0", String.valueOf(totalActions)), task.getId(),
                         TaskActivityType.IN_PROGRESS, null, parameters, new TaskExecutionProgress(totalActions)));
         return activity.getId();
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void addTaskFiltered(Long activityId) {
+        TaskActivity activity = taskActivitiesDataService.findById(activityId);
+
+        activity.setActivityType(TaskActivityType.FILTERED);
+        activity.setMessage(TASK_FILTERED);
+        taskActivitiesDataService.update(activity);
     }
 
     @Override

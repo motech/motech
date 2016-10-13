@@ -176,6 +176,8 @@ public class TaskTriggerHandler implements TriggerHandler {
                 for (int i = 0; i < task.getActions().size(); i++) {
                     executor.execute(task, task.getActions().get(i), i, taskContext, activityId);
                 }
+            } else {
+                activityService.addTaskFiltered(activityId);
             }
             LOGGER.warn("Actions from task: {} weren't executed, because config steps didn't pass the evaluation", task.getName());
         } catch (TaskHandlerException e) {
