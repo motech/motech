@@ -114,13 +114,8 @@ class TaskInitializer {
         return result;
     }
 
-    @Transactional
     private boolean isActionFilter(FilterSet filterSet) {
-        boolean result = true;
-        if  (filterSet.getActionFilterOrder() == null) {
-            result = false;
-        }
-        return result;
+        return filterSet.getActionFilterOrder() != null;
     }
 
     private Object getDataSourceObject(DataSource dataSource, Map<String, DataProvider> providers)

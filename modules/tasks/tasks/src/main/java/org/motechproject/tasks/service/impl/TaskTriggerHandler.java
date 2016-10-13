@@ -216,12 +216,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     }
 
     private boolean shouldCheckFilter(List<FilterSet> filterSetList, int index, int step) {
-        boolean result = false;
-
-        if (index < filterSetList.size() && filterSetList.get(index).getActionFilterOrder() == step) {
-            result = true;
-        }
-        return result;
+        return index < filterSetList.size() && filterSetList.get(index).getActionFilterOrder() == step;
     }
 
     void setDataProviders(Map<String, DataProvider> dataProviders) {
