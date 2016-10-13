@@ -178,17 +178,32 @@ public class CsvImporterExporterTest {
 
     @Test
     public void shouldImportEntitiesWithIdFromCsv() {
-        testImport(IdMode.INCLUDE_ID);
+        testImport(IdMode.INCLUDE_ID, false);
     }
 
     @Test
     public void shouldImportEntitiesFromCsvWithNotAllFields() {
-        testImport(IdMode.NO_ID_COLUMN);
+        testImport(IdMode.NO_ID_COLUMN, false);
     }
 
     @Test
     public void shouldImportNewEntitiesFromCsv() {
-        testImport(IdMode.EMPTY_ID_COLUMN);
+        testImport(IdMode.EMPTY_ID_COLUMN, false);
+    }
+
+    @Test
+    public void shouldClearDataAndImportEntitiesWithIdFromCsv() {
+        testImport(IdMode.INCLUDE_ID, true);
+    }
+
+    @Test
+    public void shouldClearDataAndImportEntitiesFromCsvWithNotAllFields() {
+        testImport(IdMode.NO_ID_COLUMN, true);
+    }
+
+    @Test
+    public void shouldClearDataAndImportNewEntitiesFromCsv() {
+        testImport(IdMode.EMPTY_ID_COLUMN, true);
     }
 
     @Test
@@ -197,7 +212,7 @@ public class CsvImporterExporterTest {
 
         when(csvImportCustomizer.doCreate(any(Record2.class), eq(motechDataService))).thenAnswer(new CreateAnswer());
 
-        CsvImportResults results = csvImporterExporter.importCsv(ENTITY_ID, reader, csvImportCustomizer, CONTINUE_ON_ERROR);
+        CsvImportResults results = csvImporterExporter.importCsv(ENTITY_ID, reader, csvImportCustomizer, CONTINUE_ON_ERROR, false);
 
         ArgumentCaptor<Record2> captor = ArgumentCaptor.forClass(Record2.class);
         verify(csvImportCustomizer, times(INSTANCE_COUNT)).findExistingInstance(anyMap(), eq(motechDataService));
@@ -217,7 +232,7 @@ public class CsvImporterExporterTest {
         StringReader reader = new StringReader(getTestEntityRecordsAsCsv(IdMode.INVALID));
 
         // First import call with continueOnError flag on
-        results = csvImporterExporter.importCsv(ENTITY_ID, reader, true);
+        results = csvImporterExporter.importCsv(ENTITY_ID, reader, true, false);
 
         // Check how many times create was called, how many objects were created and how many errors were caught
         // Expecting 17 creates and 3 errors since we got 3 invalid rows in a set of 20 passed as import input
@@ -231,7 +246,7 @@ public class CsvImporterExporterTest {
         StringReader reader2 = new StringReader(getTestEntityRecordsAsCsv(IdMode.INVALID));
         boolean thrown = false;
         try {
-            csvImporterExporter.importCsv(ENTITY_ID, reader2, false);
+            csvImporterExporter.importCsv(ENTITY_ID, reader2, false, false);
         } catch (RuntimeException e){
             thrown = true;
         }
@@ -239,7 +254,7 @@ public class CsvImporterExporterTest {
         assertTrue(thrown);
     }
 
-    private void testImport(IdMode idMode) {
+    private void testImport(IdMode idMode, boolean clearData) {
         StringReader reader = new StringReader(getTestEntityRecordsAsCsv(idMode));
         // if id provided, prepare entities that will be updated
         if (idMode == IdMode.INCLUDE_ID) {
@@ -256,13 +271,17 @@ public class CsvImporterExporterTest {
             when(motechDataService.create(any(Record2.class))).thenAnswer(new CreateAnswer());
         }
 
-        CsvImportResults results = csvImporterExporter.importCsv(ENTITY_ID, reader, CONTINUE_ON_ERROR);
+        CsvImportResults results = csvImporterExporter.importCsv(ENTITY_ID, reader, CONTINUE_ON_ERROR, clearData);
 
         ArgumentCaptor<Record2> captor = ArgumentCaptor.forClass(Record2.class);
         if (idMode == IdMode.INCLUDE_ID) {
             verify(motechDataService, times(INSTANCE_COUNT)).update(captor.capture());
         } else {
             verify(motechDataService, times(INSTANCE_COUNT)).create(captor.capture());
+        }
+
+        if (clearData) {
+            verify(motechDataService).deleteAll();
         }
 
         assertNotNull(results);
