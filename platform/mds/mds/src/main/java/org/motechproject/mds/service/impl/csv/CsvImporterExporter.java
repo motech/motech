@@ -58,9 +58,9 @@ public class CsvImporterExporter extends AbstractMdsExporter {
      * @return IDs of instances updated/added during import
      */
     @Transactional
-    public CsvImportResults importCsv(final long entityId, final Reader reader, boolean continueOnError) {
+    public CsvImportResults importCsv(final long entityId, final Reader reader, boolean continueOnError, boolean clearData) {
         EntityInfo entityInfo = getEntity(entityId);
-        return importCsv(entityInfo, reader, continueOnError);
+        return importCsv(entityInfo, reader, continueOnError, clearData);
     }
 
     /**
@@ -70,6 +70,7 @@ public class CsvImporterExporter extends AbstractMdsExporter {
      * @param importCustomizer the customizer that will be used during instance import from rows
      * @param continueOnError if true, import will continue with next row if exception was encountered,
      *                        if false, import process will stop and rethrow the exception
+     * @param clearData if true, import will clear instances from table
      * @return IDs of instances updated/added during import
      */
     @Transactional
@@ -89,7 +90,7 @@ public class CsvImporterExporter extends AbstractMdsExporter {
     @Transactional
     public CsvImportResults importCsv(final String entityClassName, final Reader reader, boolean continueOnError) {
         EntityInfo entityInfo = getEntity(entityClassName);
-        return importCsv(entityInfo, reader, continueOnError);
+        return importCsv(entityInfo, reader, continueOnError, false);
     }
 
     /**
@@ -226,8 +227,8 @@ public class CsvImporterExporter extends AbstractMdsExporter {
         }
     }
 
-    private CsvImportResults importCsv(final EntityInfo entityInfo, final Reader reader, boolean continueOnError) {
-        return importCsv(entityInfo, reader, new DefaultCsvImportCustomizer(), continueOnError, false);
+    private CsvImportResults importCsv(final EntityInfo entityInfo, final Reader reader, boolean continueOnError, boolean clearData) {
+        return importCsv(entityInfo, reader, new DefaultCsvImportCustomizer(), continueOnError, clearData);
     }
 
     private CsvImportResults importCsv(final EntityInfo entityInfo, final Reader reader, CsvImportCustomizer importCustomizer,
