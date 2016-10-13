@@ -345,7 +345,9 @@
         };
     });
 
-    directives.directive('contenteditable', function ($compile, ManageTaskUtils) {
+    directives.directive('contenteditable', function ($compile, ManageTaskUtils, $timeout) {
+        var intervalAdjustText;
+
         function formatField (field) {
             return '{{{0}}}'.format(
                 ManageTaskUtils.formatField(field)
@@ -431,36 +433,43 @@
         function adjustText() {
             var textElement, spanElement, inputElement, i;
 
-            textElement = angular.element(document.getElementsByClassName('text-field-marker'));
+            clearInterval(intervalAdjustText);
 
-            for (i = 0; i < textElement.length; i += 1) {
-                spanElement = $(textElement[i]).parent();
-                inputElement = spanElement.parent().parent();
+            intervalAdjustText = setInterval( function () {
+                textElement = angular.element(document.getElementsByClassName('text-field-marker'));
 
-                if ($(textElement[i]).hasClass('field-text')) {
-                    textElement.removeClass('field-text');
-                }
+                for (i = 0; i < textElement.length; i += 1) {
+                    spanElement = $(textElement[i]).parent();
+                    inputElement = spanElement.parent().parent();
 
-                if ($(textElement[i]).hasClass('field-text-short')) {
-                    $(textElement[i]).removeClass('field-text-short');
-                }
+                    if ($(textElement[i]).hasClass('field-text')) {
+                        textElement.removeClass('field-text');
+                    }
 
-                if (spanElement.width()>inputElement.width()*0.9) {
-                    if ($(textElement[i]).width() > spanElement.width()*0.82) {
-                        if ($(textElement[i]).next().is('.badge')) {
-                            $(textElement[i]).addClass('field-text-short');
-                        } else if ($(textElement[i]).width() > spanElement.width()*0.90) {
-                            $(textElement[i]).addClass('field-text');
+                    if ($(textElement[i]).hasClass('field-text-short')) {
+                        $(textElement[i]).removeClass('field-text-short');
+                    }
+
+                    if (spanElement.width()>inputElement.width()*0.9) {
+                        if ($(textElement[i]).width() > spanElement.width()*0.84) {
+                            if ($(textElement[i]).next().is('.badge')) {
+                                $(textElement[i]).addClass('field-text-short');
+                            } else if ($(textElement[i]).width() > spanElement.width()*0.90) {
+                                $(textElement[i]).addClass('field-text');
+                            }
                         }
                     }
                 }
-            }
+
+                clearInterval(intervalAdjustText);
+            }, 250);
         }
 
         return {
             restrict: 'A',
             require: '?ngModel',
             link: function (scope, element, attrs, ngModel) {
+                var eventResize;
                 scope.debug = scope.$parent.debugging;
 
                 if (!ngModel) {
@@ -468,12 +477,12 @@
                 }
 
                 scope.$watch(function () {
-                    adjustText();
                     return ngModel.$viewValue;
                 }, function() {
                     if (scope.debug) {
                         scope.changeBubble(ngModel, element);
                     } else {
+                        adjustText();
                         ngModel.$render();
                     }
                 });
@@ -509,6 +518,9 @@
                     if (!scope.debug) {
                          ngModel.$setViewValue(readContent(element));
                          ngModel.$rollbackViewValue();
+                         $timeout(function() {
+                            adjustText();
+                         }, 0);
                     }
                 };
 
@@ -530,6 +542,8 @@
                     scope.$apply();
                     if (scope.debug) {
                         scope.changeBubble(ngModel, element);
+                    } else {
+                        adjustText();
                     }
                 });
 
@@ -545,6 +559,9 @@
                     parseField(ngModel.$viewValue).forEach(function(str){
                         if (findField(str)) {
                             element.append(makeFieldElement(str, scope));
+                            $timeout(function() {
+                                adjustText();
+                             }, 100);
                         } else if (element.data('type') === 'BOOLEAN' && (str === 'true' || str === 'false')) {
                             element.append(makeBooleanFieldElement(str, scope));
                         } else {
@@ -586,10 +603,20 @@
                             scope.$apply();
                             if (scope.debug) {
                                 scope.changeBubble(ngModel, element);
+                            } else {
+                                adjustText();
                             }
                         }
                     });
                 }
+
+                $('#inner-center').on('change', function() {
+                    clearTimeout(eventResize);
+                    eventResize = $timeout(function() {
+                        clearInterval(intervalAdjustText);
+                        adjustText();
+                    }, 200);
+                });
             }
         };
     });
