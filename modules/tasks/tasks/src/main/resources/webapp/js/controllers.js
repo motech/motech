@@ -1428,25 +1428,50 @@
         };
     });
 
-    controllers.controller('TriggersModalCtrl', function ($scope, $rootScope, $timeout, LoadingModal, BootstrapDialogManager, Triggers, ModalFactory) {
+    controllers.controller('TriggersModalCtrl', function ($scope, $rootScope, $timeout, LoadingModal, BootstrapDialogManager, Triggers, ModalFactory, $filter) {
 
-        $scope.reloadLists = function(staticTriggersPage, dynamicTriggersPage) {
+        $scope.searchTrigger = {
+            displayName: ""
+        };
+
+        $scope.changeCurrentPage = function(staticTriggersPage, dynamicTriggersPage) {
             if ($scope.validatePages(staticTriggersPage, dynamicTriggersPage)) {
-                LoadingModal.open();
-                Triggers.get(
-                {
-                    moduleName: $scope.selectedChannel.moduleName,
-                    staticTriggersPage: staticTriggersPage,
-                    dynamicTriggersPage: dynamicTriggersPage
-                },
-                function(data) {
-                    $scope.dynamicTriggers = data.dynamicTriggersList;
-                    $scope.staticTriggers = data.staticTriggersList;
-                    $scope.staticTriggersPage = $scope.staticTriggers.page;
-                    $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
-                    LoadingModal.close();
-                });
+                $scope.staticTriggers.page = staticTriggersPage;
+                $scope.dynamicTriggers.page = dynamicTriggersPage;
             }
+        };
+
+        $scope.$watch('searchTrigger.displayName', function() {
+            var searchActive = true;
+
+            if ($scope.hasStaticTriggers) {
+                searchActive = $scope.changePagesAfterSearch($scope.staticTriggers, searchActive);
+                if(searchActive === false) {
+                    $scope.staticTriggers.total = $scope.staticTriggersPages;
+                }
+            }
+            if ($scope.hasDynamicTriggers) {
+                searchActive = $scope.changePagesAfterSearch($scope.dynamicTriggers, searchActive);
+                if(searchActive === false) {
+                    $scope.dynamicTriggers.total = $scope.dynamicTriggersPages;
+                }
+            }
+        });
+
+        $scope.changePagesAfterSearch = function(triggersTable, searchActive) {
+            var searchedTriggers = [];
+
+            triggersTable.page = 1;
+            if ($scope.searchTrigger.displayName !== "") {
+                searchedTriggers = $filter('filter')(triggersTable.triggers, $scope.searchTrigger);
+                triggersTable.total = parseInt(searchedTriggers.length / $scope.pageSize, 10);
+                if (searchedTriggers.length % $scope.pageSize > 0) {
+                    triggersTable.total += 1;
+                }
+            } else {
+                searchActive = false;
+            }
+            return searchActive;
         };
 
         $scope.validatePages = function(staticTriggersPage, dynamicTriggersPage){
@@ -1491,6 +1516,7 @@
         $scope.openTriggersModal = function() {
 
              LoadingModal.open();
+             $scope.pageSize = 10;
              $scope.staticTriggersPager = 1;
              $scope.dynamicTriggersPager = 1;
              $scope.selectedChannel = $scope.channel;
@@ -1503,10 +1529,10 @@
              function(data) {
                  $scope.dynamicTriggers = data.dynamicTriggersList;
                  $scope.staticTriggers = data.staticTriggersList;
-                 $scope.staticTriggersPage = $scope.staticTriggers.page;
-                 $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
                  $scope.hasDynamicTriggers = $scope.dynamicTriggers.triggers.length > 0;
                  $scope.hasStaticTriggers = $scope.staticTriggers.triggers.length > 0;
+                 $scope.staticTriggersPages = $scope.staticTriggers.total;
+                 $scope.dynamicTriggersPages = $scope.staticTriggers.total;
                  if ($scope.hasStaticTriggers && $scope.hasDynamicTriggers) {
                      $scope.divSize = "col-md-6";
                  } else {
