@@ -61,19 +61,21 @@ public class KeyEvaluator {
      */
     public String evaluateTemplateString(String template) throws TaskHandlerException {
         String conversionTemplate = template;
+        List<KeyInformation> keysList = parseAll(template);
 
-        for (KeyInformation key : parseAll(template)) {
+        for (KeyInformation key : keysList) {
             Object value = getValue(key);
 
-            if (value != null) {
-                String stringValue = value.toString();
+            if (value == null && keysList.size() <=1) {
+                conversionTemplate = null;
+            } else {
+                String stringValue = value != null ? value.toString() : "";
+
                 stringValue = manipulateValue(key.getManipulations(), stringValue);
 
                 conversionTemplate = conversionTemplate.replace(
                         String.format("{{%s}}", key.getOriginalKey()), stringValue
                 );
-            } else {
-                conversionTemplate = null;
             }
         }
 
