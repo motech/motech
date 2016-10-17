@@ -9,6 +9,7 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.tasks.constants.EventDataKeys;
+import org.motechproject.tasks.domain.mds.task.FilterSet;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
 import org.motechproject.tasks.exception.TaskHandlerException;
@@ -27,6 +28,7 @@ import org.springframework.util.ReflectionUtils;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -169,12 +171,24 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         TaskContext taskContext = new TaskContext(task, parameters, metadata, activityService);
         TaskInitializer initializer = new TaskInitializer(taskContext);
+        List<FilterSet> filterSetList = new ArrayList<>(task.getTaskConfig().getFilters());
+        boolean actionFilterResult = true;
+        int executedActions = 0;
+        int step = 0;
+        int actualFilterIndex = initializer.getActionFilters();
 
         try {
             LOGGER.info("Executing all actions from task: {}", task.getName());
             if (initializer.evalConfigSteps(dataProviders)) {
-                for (int i = 0; i < task.getActions().size(); i++) {
-                    executor.execute(task, task.getActions().get(i), i, taskContext, activityId);
+                while (actionFilterResult && executedActions < task.getActions().size()) {
+                    if (shouldCheckFilter(filterSetList, actualFilterIndex, step)) {
+                        actionFilterResult = initializer.checkActionFilter(actualFilterIndex, filterSetList);
+                        actualFilterIndex += 1;
+                    } else {
+                        executor.execute(task, task.getActions().get(executedActions), executedActions, taskContext, activityId);
+                        executedActions += 1;
+                    }
+                    step += 1;
                 }
             } else {
                 activityService.addTaskFiltered(activityId);
@@ -201,6 +215,10 @@ public class TaskTriggerHandler implements TriggerHandler {
         if (MapUtils.isNotEmpty(dataProviders)) {
             dataProviders.remove(taskDataProviderId);
         }
+    }
+
+    private boolean shouldCheckFilter(List<FilterSet> filterSetList, int index, int step) {
+        return index < filterSetList.size() && filterSetList.get(index).getActionFilterOrder() == step;
     }
 
     void setDataProviders(Map<String, DataProvider> dataProviders) {

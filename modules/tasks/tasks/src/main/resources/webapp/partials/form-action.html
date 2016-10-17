@@ -1,5 +1,5 @@
 <!------------------------  ACTION  ------------------------->
-<div class="panel-group task-group" id="select-action-{{$index}}" ng-repeat="action in task.actions" overflow-change expand-accordion ng-cloak>
+<div class="panel-group task-group" id="select-action-{{$index}}" ui-if="step['@type'] != 'FilterActionSetDto'" overflow-change expand-accordion ng-cloak>
 
     <div class="panel-heading panel-header clearfix">
         <div class="pull-right">
