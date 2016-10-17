@@ -782,6 +782,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         verify(taskService).findActiveTasksForTriggerSubject(TRIGGER_SUBJECT);
         verify(taskService, never()).getActionEventFor(task.getActions().get(0));
         verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
+        verify(taskActivityService).addTaskFiltered(TASK_ACTIVITY_ID);
     }
 
     @Test

@@ -190,6 +190,8 @@ public class TaskTriggerHandler implements TriggerHandler {
                     }
                     step += 1;
                 }
+            } else {
+                activityService.addTaskFiltered(activityId);
             }
             LOGGER.warn("Actions from task: {} weren't executed, because config steps didn't pass the evaluation", task.getName());
         } catch (TaskHandlerException e) {
