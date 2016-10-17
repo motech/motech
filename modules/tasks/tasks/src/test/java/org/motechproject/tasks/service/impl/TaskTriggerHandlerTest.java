@@ -803,6 +803,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         verify(taskService).getActionEventFor(task.getActions().get(0));
         verify(taskService, never()).getActionEventFor(task.getActions().get(1));
         verify(eventRelay, times(1)).sendEventMessage(captor.capture());
+        verify(taskActivityService, never()).addTaskFiltered(TASK_ACTIVITY_ID);
 
         List<MotechEvent> events = captor.getAllValues();
 
