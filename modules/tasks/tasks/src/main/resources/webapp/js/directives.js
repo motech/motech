@@ -216,6 +216,7 @@
             link: function (scope, element, attrs) {
                 $('.panel-group').on('show.bs.collapse', function (e) {
                     $(e.target).siblings('.panel-heading').find('.accordion-toggle i.fa-caret-right').removeClass('fa-caret-right').addClass('fa-caret-down');
+                    scope.$broadcast('show.task.actions');
                 });
 
                 $('.tasks-list').on('show.bs.collapse', function (e) {
@@ -431,38 +432,41 @@
         }
 
         function adjustText() {
-            var textElement, spanElement, inputElement, i;
+            var textElements, spanElement, inputElement, i;
 
             clearInterval(intervalAdjustText);
 
             intervalAdjustText = setInterval( function () {
-                textElement = angular.element(document.getElementsByClassName('text-field-marker'));
+                textElements = angular.element(document.getElementsByClassName('text-field-marker'));
 
-                for (i = 0; i < textElement.length; i += 1) {
-                    spanElement = $(textElement[i]).parent();
+                for (i = 0; i < textElements.length; i += 1) {
+                    spanElement = $(textElements[i]).parent();
                     inputElement = spanElement.parent().parent();
 
-                    if ($(textElement[i]).hasClass('field-text')) {
-                        textElement.removeClass('field-text');
-                    }
+                    if (inputElement.hasClass('map-input')) {
 
-                    if ($(textElement[i]).hasClass('field-text-short')) {
-                        $(textElement[i]).removeClass('field-text-short');
-                    }
+                        if ($(textElements[i]).hasClass('field-text')) {
+                            $(textElements[i]).removeClass('field-text');
+                        }
 
-                    if (spanElement.width()>inputElement.width()*0.9) {
-                        if ($(textElement[i]).width() > spanElement.width()*0.84) {
-                            if ($(textElement[i]).next().is('.badge')) {
-                                $(textElement[i]).addClass('field-text-short');
-                            } else if ($(textElement[i]).width() > spanElement.width()*0.90) {
-                                $(textElement[i]).addClass('field-text');
+                        if ($(textElements[i]).hasClass('field-text-short')) {
+                            $(textElements[i]).removeClass('field-text-short');
+                        }
+
+                        if (spanElement.width()>inputElement.width()*0.9) {
+                            if ($(textElements[i]).width() > spanElement.width()*0.84) {
+                                if ($(textElements[i]).next().is('.badge')) {
+                                    $(textElements[i]).addClass('field-text-short');
+                                } else if ($(textElements[i]).width() > spanElement.width()*0.9) {
+                                    $(textElements[i]).addClass('field-text');
+                                }
                             }
                         }
                     }
                 }
 
                 clearInterval(intervalAdjustText);
-            }, 250);
+            }, 50);
         }
 
         return {
@@ -615,7 +619,11 @@
                     eventResize = $timeout(function() {
                         clearInterval(intervalAdjustText);
                         adjustText();
-                    }, 200);
+                    }, 100);
+                });
+
+                scope.$on('show.task.actions', function () {
+                    adjustText();
                 });
             }
         };
