@@ -412,6 +412,10 @@
 
                                     if (action) {
                                         $timeout(function () {
+                                            if (info.specifiedName) {
+                                                action.specifiedName = info.specifiedName;
+                                            }
+
                                             $scope.util.action.select($scope, idx, action);
                                             angular.element('#collapse-action-' + idx).collapse('hide');
                                             angular.forEach($scope.selectedAction[idx].actionParameters, function (param) {
@@ -752,6 +756,20 @@
             }
         };
 
+        $scope.addSpecifiedDSName = function (changedStep) {
+            var steps = $scope.task.taskConfig.steps;
+
+            steps.forEach(function (step) {
+                if (step.order === changedStep.order) {
+                    step.specifiedName = changedStep.specifiedName;
+                }
+            });
+
+            if (!$scope.$$phase) {
+                $scope.$apply($scope.task);
+            }
+        };
+
         $scope.addDataSource = function () {
             var sources = $scope.getDataSources(),
                 last;
@@ -961,6 +979,10 @@
                     $scope.task.actions[idx].name = action.name;
                 }
 
+                if ($scope.task.actions[idx].specifiedName === undefined && action.specifiedName !== undefined) {
+                    $scope.task.actions[idx].specifiedName = action.specifiedName;
+                }
+
                 angular.forEach(action.actionParameters, function (param) {
                     $scope.task.actions[idx].values[param.key] = param.value;
 
@@ -1086,7 +1108,7 @@
                 });
             }
             dataSources = $scope.getDataSources();
-            if(dataSources && Array.isArray(dataSources)){
+            if (dataSources && Array.isArray(dataSources)) {
                 dataSources.forEach(function (source) {
                     var service = $scope.findObject(source.providerName, source.type);
                     if (!service || !service.fields){
@@ -1098,6 +1120,7 @@
                         field.serviceName = service.displayName;
                         field.providerName = source.providerName;
                         field.providerType = source.type;
+                        field.specifiedParentName = source.specifiedName;
                         field.objectId = source.objectId;
                         fields.push(field);
                     });
@@ -1112,6 +1135,7 @@
                             postActionParameter.objectId = idx;
                             postActionParameter.channelName = $scope.task.actions[idx].channelName;
                             postActionParameter.actionName = $scope.task.actions[idx].displayName;
+                            postActionParameter.specifiedParentName = $scope.task.actions[idx].specifiedName;
                             postActionParameter.displayName = postActionParameter.prefix.concat(".", postActionParameter.objectId,
                                                                                                 ".", postActionParameter.key
                                                                                                 );

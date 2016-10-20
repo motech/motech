@@ -38,6 +38,9 @@ public class TaskActionInformation extends TaskEventInformation {
     private String serviceMethod;
 
     @Field
+    private String specifiedName;
+
+    @Field
     @Value(columns = @Column(length = MAX_VALUE_LENGTH))
     private Map<String, String> values;
 
@@ -74,7 +77,7 @@ public class TaskActionInformation extends TaskEventInformation {
      */
     public TaskActionInformation(String displayName, String channelName, String moduleName, String moduleVersion,
                                  String subject, Map<String, String> values) {
-        this(null, displayName, channelName, moduleName, moduleVersion, subject, null, null, values);
+        this(null, null, displayName, channelName, moduleName, moduleVersion, subject, null, null, values);
     }
 
     /**
@@ -89,7 +92,7 @@ public class TaskActionInformation extends TaskEventInformation {
      */
     public TaskActionInformation(String displayName, String channelName, String moduleName, String moduleVersion,
                                  String serviceInterface, String serviceMethod) {
-        this(null, displayName, channelName, moduleName, moduleVersion, null, serviceInterface, serviceMethod, null);
+        this(null, null, displayName, channelName, moduleName, moduleVersion, null, serviceInterface, serviceMethod, null);
     }
 
     /**
@@ -106,13 +109,14 @@ public class TaskActionInformation extends TaskEventInformation {
      * @param serviceMethod    the task service method
      * @param values           the map of values
      */
-    public TaskActionInformation(String name, String displayName, // NO CHECKSTYLE More than 7 parameters (found 9).
+    public TaskActionInformation(String name, String specifiedName, String displayName, // NO CHECKSTYLE More than 7 parameters (found 9).
                                  String channelName, String moduleName, String moduleVersion, String subject,
                                  String serviceInterface, String serviceMethod, Map<String, String> values) {
         super(name, displayName, channelName, moduleName, moduleVersion, subject);
 
         this.serviceInterface = serviceInterface;
         this.serviceMethod = serviceMethod;
+        this.specifiedName = specifiedName;
         this.values = values == null ? new HashMap<String, String>() : values;
     }
 
@@ -129,7 +133,7 @@ public class TaskActionInformation extends TaskEventInformation {
      */
     public TaskActionInformation(String name, String displayName, String channelName, String moduleName, String moduleVersion,
                                  String serviceInterface, String serviceMethod) {
-        this(name, displayName, channelName, moduleName, moduleVersion, null, serviceInterface, serviceMethod, null);
+        this(name, null, displayName, channelName, moduleName, moduleVersion, null, serviceInterface, serviceMethod, null);
     }
 
     public boolean hasService() {
@@ -164,8 +168,16 @@ public class TaskActionInformation extends TaskEventInformation {
         }
     }
 
+    public String getSpecifiedName() {
+        return specifiedName;
+    }
+
+    public void setSpecifiedName(String specifiedName) {
+        this.specifiedName = specifiedName;
+    }
+
     public TaskActionInformationDto toDto() {
-        return new TaskActionInformationDto(getName(), getDisplayName(), getChannelName(), getModuleName(), getModuleVersion(),
+        return new TaskActionInformationDto(getName(), getSpecifiedName(), getDisplayName(), getChannelName(), getModuleName(), getModuleVersion(),
                 getSubject(), serviceInterface, serviceMethod, values);
     }
 
