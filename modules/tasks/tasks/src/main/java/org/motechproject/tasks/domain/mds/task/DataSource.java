@@ -68,6 +68,11 @@ public class DataSource extends TaskConfigStep {
      * @param failIfDataNotFound  defines if task should fail if no data was found
      */
     public DataSource(String providerName, Long providerId, Long objectId, String type,
+                      String name, List<Lookup> lookup, boolean failIfDataNotFound) {
+        this(providerName, providerId, objectId, type, name, null, lookup, failIfDataNotFound, null);
+    }
+
+    public DataSource(String providerName, Long providerId, Long objectId, String type,
                       String name, String specifiedName, List<Lookup> lookup, boolean failIfDataNotFound) {
         this(providerName, providerId, objectId, type, name, specifiedName, lookup, failIfDataNotFound, null);
     }

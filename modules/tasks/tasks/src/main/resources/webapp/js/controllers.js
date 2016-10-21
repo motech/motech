@@ -756,7 +756,7 @@
             }
         };
 
-        $scope.addSpecifiedDSName = function (changedStep) {
+        $scope.addSpecifiedDataSourceName = function (changedStep) {
             var steps = $scope.task.taskConfig.steps;
 
             steps.forEach(function (step) {
