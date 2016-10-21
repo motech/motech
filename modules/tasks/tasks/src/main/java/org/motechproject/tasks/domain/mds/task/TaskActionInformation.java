@@ -92,7 +92,23 @@ public class TaskActionInformation extends TaskEventInformation {
      */
     public TaskActionInformation(String displayName, String channelName, String moduleName, String moduleVersion,
                                  String serviceInterface, String serviceMethod) {
-        this(null, null, displayName, channelName, moduleName, moduleVersion, null, serviceInterface, serviceMethod, null);
+        this(null, displayName, channelName, moduleName, moduleVersion, serviceInterface, serviceMethod);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param name             the task name
+     * @param displayName      the task display name
+     * @param channelName      the channel name
+     * @param moduleName       the module name
+     * @param moduleVersion    the module version
+     * @param serviceInterface the task service interface
+     * @param serviceMethod    the task service method
+     */
+    public TaskActionInformation(String name, String displayName, String channelName, String moduleName, String moduleVersion,
+                                 String serviceInterface, String serviceMethod) {
+        this(name, null, displayName, channelName, moduleName, moduleVersion, null, serviceInterface, serviceMethod, null);
     }
 
     /**
@@ -118,22 +134,6 @@ public class TaskActionInformation extends TaskEventInformation {
         this.serviceMethod = serviceMethod;
         this.specifiedName = specifiedName;
         this.values = values == null ? new HashMap<String, String>() : values;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param name             the task name
-     * @param displayName      the task display name
-     * @param channelName      the channel name
-     * @param moduleName       the module name
-     * @param moduleVersion    the module version
-     * @param serviceInterface the task service interface
-     * @param serviceMethod    the task service method
-     */
-    public TaskActionInformation(String name, String displayName, String channelName, String moduleName, String moduleVersion,
-                                 String serviceInterface, String serviceMethod) {
-        this(name, null, displayName, channelName, moduleName, moduleVersion, null, serviceInterface, serviceMethod, null);
     }
 
     public boolean hasService() {
