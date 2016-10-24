@@ -1269,6 +1269,16 @@ editable-content .popover .inner-popover, nonEditable, .no-margin-bottom input[t
     text-align: center;
 }
 
+.tasks .display-dropdown {
+    display: block;
+    margin-left: 15px;
+}
+
+.tasks .dropdown-menu.open-list {
+    display: block;
+    margin-left: 15px;
+}
+
 #period-year, #period-month, #period-week,
 #period-day, #period-hour, #period-minute,
 #period-second {

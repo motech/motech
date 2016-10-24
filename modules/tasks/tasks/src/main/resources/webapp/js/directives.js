@@ -346,7 +346,7 @@
         };
     });
 
-    directives.directive('contenteditable', function ($compile, ManageTaskUtils, $timeout) {
+    directives.directive('contenteditable', function ($compile, $http, $templateCache, ManageTaskUtils, $timeout) {
         var intervalAdjustText;
 
         function formatField (field) {
@@ -469,12 +469,64 @@
             }, 50);
         }
 
+        function prepareField(field, scope) {
+            switch (field.prefix) {
+                case ManageTaskUtils.TRIGGER_PREFIX:
+                    return "{{{0}.{1}}}".format(
+                        ManageTaskUtils.TRIGGER_PREFIX,
+                        field.eventKey
+                    );
+                case ManageTaskUtils.DATA_SOURCE_PREFIX:
+                    return "{{{0}.{1}.{2}#{3}.{4}}}".format(
+                        ManageTaskUtils.DATA_SOURCE_PREFIX,
+                        field.providerName,
+                        field.providerType,
+                        field.objectId,
+                        field.fieldKey
+                    );
+                case ManageTaskUtils.POST_ACTION_PREFIX:
+                    return "{{{0}.{1}.{2}}}".format(
+                        ManageTaskUtils.POST_ACTION_PREFIX,
+                        field.objectId,
+                        field.key
+                    );
+            }
+        }
+
+        function getFilteredItems(choices, searchText) {
+            var filteredList = [];
+            if (searchText.length < 2) {
+                return filteredList;
+            }
+            choices.filter(function (choice) {
+                if (choice.indexOf(searchText) > 0) {
+                    filteredList.push(choice);
+                }
+            });
+            return filteredList;
+        }
+
+        function findStartIndex(value, endIndex) {
+            value = value.substring(0, endIndex);
+            return (value.lastIndexOf("}}") > value.lastIndexOf(" ")) ? value.lastIndexOf("}}") + 2: value.lastIndexOf(" ");
+        }
+
         return {
             restrict: 'A',
             require: '?ngModel',
             link: function (scope, element, attrs, ngModel) {
-                var eventResize;
                 scope.debug = scope.$parent.debugging;
+                var eventResize,
+                    items = [],
+                    url = '../tasks/partials/widgets/autocomplete-fields.html';
+                    scope.filteredItems = [];
+                    scope.selPos = 0;
+
+                    $http.get(url, {cache: $templateCache})
+                    .success(function (html) {
+                        var compiledContent = $compile(html)(scope);
+                        $(compiledContent).insertBefore(element);
+                    });
 
                 if (!ngModel) {
                     return false;
@@ -522,6 +574,7 @@
                     if (!scope.debug) {
                          ngModel.$setViewValue(readContent(element));
                          ngModel.$rollbackViewValue();
+
                          $timeout(function() {
                             adjustText();
                          }, 0);
@@ -563,15 +616,107 @@
                     parseField(ngModel.$viewValue).forEach(function(str){
                         if (findField(str)) {
                             element.append(makeFieldElement(str, scope));
+
                             $timeout(function() {
                                 adjustText();
                              }, 100);
+
                         } else if (element.data('type') === 'BOOLEAN' && (str === 'true' || str === 'false')) {
                             element.append(makeBooleanFieldElement(str, scope));
                         } else {
                             element.append(str);
                         }
                     });
+                };
+
+                angular.forEach(scope.fields, function (field) {
+                   items.push(prepareField(field, scope));
+                });
+
+                scope.refreshListItems = function (event) {
+                    scope.filteredItems = [];
+                    if(event.keyCode === 8) {event.key = "";scope.rangySelection.anchorOffset = scope.rangySelection.anchorOffset -1;}
+                    if (scope.rangySelection.anchorNode && scope.rangySelection.anchorNode.nodeValue) {
+                        var value = scope.rangySelection.anchorNode.nodeValue;
+                        scope.searchText = value.substring(findStartIndex(value.trimRight(), scope.rangySelection.anchorOffset), scope.rangySelection.anchorOffset) + event.key;//extractText(element.html() + event.key, scope.debug);
+                        scope.filteredItems = getFilteredItems(items, scope.searchText.trim());
+                    }
+                };
+
+                scope.addItem = function (item) {
+                    if (!item) {
+                        return;
+                    }
+                    if (scope.rangySelection && scope.rangySelection.anchorNode) {
+                        var anchorValue = scope.rangySelection.anchorNode.nodeValue;
+                        if (element[0].contains(scope.rangySelection.anchorNode) && anchorValue) {
+                            $(scope.rangySelection.anchorNode).before(
+                                anchorValue.substring(0, findStartIndex(anchorValue, scope.rangySelection.anchorOffset))
+                                + " " + item + "&nbsp;" + anchorValue.substring(scope.rangySelection.anchorOffset + 1)
+                            ).remove();
+                        } else {
+                            element.append(item);
+                        }
+                    }
+                    scope.filteredItems = [];
+                    scope.searchText = "";
+                    ngModel.$setViewValue(readContent(element));
+                };
+
+                scope.keyPress = function(evt) {
+
+                    switch (evt.keyCode) {
+                        case 27: // esc
+                            scope.filteredItems = [];
+                            break;
+                        case 13: // enter
+                            if(scope.selPos > -1 && scope.filteredItems.length > 0) {
+                              scope.addItem(scope.filteredItems[scope.selPos]);
+                            }
+                            break;
+                        case 8: // backspace
+                            scope.rangySelection = rangy.getSelection();
+                            scope.selPos = 0;
+                            scope.refreshListItems(evt);
+                            break;
+                        case 186: // semicolon
+                            if(scope.selPos > -1 && scope.filteredItems.length > 0) {
+                                evt.cancelBubble = true;
+                                evt.returnValue = false;
+                                if (evt.stopPropagation) {
+                                    evt.stopPropagation();
+                                    evt.preventDefault();
+                                }
+                                scope.addItem(scope.filteredItems[scope.selPos]);
+                                return;
+                            }
+                            break;
+                        case 188: // coma
+                            if(scope.selPos > -1 && scope.filteredItems.length > 0) {
+                                evt.cancelBubble = true;
+                                evt.returnValue = false;
+                                if (evt.stopPropagation) {
+                                    evt.stopPropagation();
+                                    evt.preventDefault();
+                                }
+                                scope.addItem(scope.filteredItems[scope.selPos]);
+                            }
+                            break;
+                        case 38: // up
+                            if (scope.selPos > 0) {
+                                scope.selPos = scope.selPos - 1;
+                            }
+                            break;
+                        case 40: // down
+                            if (scope.selPos < scope.filteredItems.length-1) {
+                                scope.selPos = scope.selPos + 1;
+                            }
+                            break;
+                        default:
+                            scope.rangySelection = rangy.getSelection();
+                            scope.selPos = 0;
+                            scope.refreshListItems(evt);
+                    }
                 };
 
                 if(attrs.droppable !== undefined) {
@@ -639,7 +784,8 @@
             scope: {
                 'data': '=',
                 'index': '@',
-                'action': '@'
+                'action': '@',
+                'fields': '='
             },
             compile: function (tElement, tAttrs, scope) {
                 var url = '../tasks/partials/widgets/content-editable-' + tAttrs.type.toLowerCase() + '.html',
