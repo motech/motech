@@ -442,13 +442,13 @@ public class MdsDdeBundleIT extends BasePaxIT {
         departmentDataService.create(department);
 
         // Create and add new employee
-        Employee employee = employeeDataService.create(new Employee("Elliot R."));
-        employees.add(employee);
+        Employee employee3 = employeeDataService.detachedCopy(employeeDataService.create(new Employee("Elliot R.")));
+        employee1 = employeeDataService.detachedCopy(employeeDataService.findById(employee1.getId()));
 
         // Create a set of existing and new employee
         Set<Employee> otherEmployees = new LinkedHashSet<>();
         otherEmployees.add(employee1);
-        otherEmployees.add(employee);
+        otherEmployees.add(employee3);
 
         // Create a new department
         Department anotherDepartment = departmentDataService.create(new Department("Marketing Department"));
@@ -587,39 +587,28 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     @Test
     public void testHistoryTrackingWithRelationships() {
-        final District district = new District();
+        District district = new District();
         district.setName("district1");
-        final State state = new State();
+        State state = new State();
         state.setName("state1");
-        final Language lang = new Language();
+        Language lang = new Language();
         lang.setName("eng");
 
-        districtDataService.create(district);
-        stateDataService.create(state);
-        languageDataService.create(lang);
+        district = districtDataService.detachedCopy(districtDataService.create(district));
+        state = stateDataService.detachedCopy(stateDataService.create(state));
+        lang = languageDataService.detachedCopy(languageDataService.create(lang));
 
-        stateDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                state.getLanguages().add(lang);
-                state.getDistricts().add(district);
-                stateDataService.update(state);
-            }
-        });
+        state.getLanguages().add(lang);
+        state.getDistricts().add(district);
+        stateDataService.update(state);
 
         List audit = historyService.getHistoryForInstance(district, null);
         assertNotNull(audit);
         assertEquals(1, audit.size());
 
-        final State retrievedState = stateDataService.findByName(state.getName());
-
-        stateDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                retrievedState.getLanguages().clear();
-                stateDataService.update(retrievedState);
-            }
-        });
+        State retrievedState = stateDataService.findByName("state1");
+        retrievedState.getLanguages().clear();
+        stateDataService.update(retrievedState);
 
         // check what happened for districts
         // Latest version should not be included in the history audit
@@ -632,23 +621,13 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertNull(safeGetProperty(firstRevision, "state"));
         assertNull(safeGetProperty(firstRevision, "language"));
 
-        final State retrievedState2 = stateDataService.findByName(state.getName());
+        final State retrievedState2 = stateDataService.detachedCopy(stateDataService.findByName(state.getName()));
+        retrievedState2.setDefaultDistrict(district);
+        stateDataService.update(retrievedState2);
 
-        stateDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                retrievedState2.setDefaultDistrict(district);
-                stateDataService.update(retrievedState2);
-            }
-        });
+        retrievedState2.getLanguages().clear();
+        stateDataService.update(retrievedState2);
 
-        stateDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                retrievedState2.getLanguages().clear();
-                stateDataService.update(retrievedState2);
-            }
-        });
 
         audit = historyService.getHistoryForInstance(retrievedState2, null);
         assertNotNull(audit);
@@ -661,28 +640,23 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     @Test
     public void testManyToManyRelationshipWithCustomTableAndColumnNames() {
-        final Patient patient = new Patient("patient1");
-        final Patient patient2 = new Patient("patient2");
+        Patient patient = new Patient("patient1");
+        Patient patient2 = new Patient("patient2");
 
-        final Clinic clinic = new Clinic("clinic1");
-        final Clinic clinic2 = new Clinic("clinic2");
-        final Clinic clinic3 = new Clinic("clinic3");
+        Clinic clinic = new Clinic("clinic1");
+        Clinic clinic2 = new Clinic("clinic2");
+        Clinic clinic3 = new Clinic("clinic3");
 
-        patientDataService.create(patient);
-        patientDataService.create(patient2);
+        patient = patientDataService.detachedCopy(patientDataService.create(patient));
+        patient2 = patientDataService.detachedCopy(patientDataService.create(patient2));
 
-        clinicDataService.create(clinic);
-        clinicDataService.create(clinic2);
-        clinicDataService.create(clinic3);
+        clinic = clinicDataService.detachedCopy(clinicDataService.create(clinic));
+        clinic2 = clinicDataService.detachedCopy(clinicDataService.create(clinic2));
+        clinic3 = clinicDataService.detachedCopy(clinicDataService.create(clinic3));
 
-        patientDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                patient.getClinics().add(clinic);
-                patient.getClinics().add(clinic2);
-                patientDataService.update(patient);
-            }
-        });
+        patient.getClinics().add(clinic);
+        patient.getClinics().add(clinic2);
+        patientDataService.update(patient);
 
         // Test that the relationship was added
         Patient retrievedPatient = patientDataService.findByName("patient1");
@@ -690,24 +664,19 @@ public class MdsDdeBundleIT extends BasePaxIT {
         assertEquals(2, retrievedPatient.getClinics().size());
 
         //Test that the backlink has been created (It's bi-directional relationship)
-        final Clinic retrievedClinic = clinicDataService.findByName("clinic1");
-        final Clinic retrievedClinic2 = clinicDataService.findByName("clinic2");
+        Clinic retrievedClinic = clinicDataService.detachedCopy(clinicDataService.findByName("clinic1"));
+        Clinic retrievedClinic2 = clinicDataService.detachedCopy(clinicDataService.findByName("clinic2"));
         assertNotNull(retrievedClinic);
         assertNotNull(retrievedClinic2);
         assertEquals(1, retrievedClinic.getPatients().size());
         assertEquals(1, retrievedClinic2.getPatients().size());
 
-        patientDataService.doInTransaction(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                // We use the clinic objects we retrieved, since they contain information about existing relationship
-                patient2.getClinics().add(retrievedClinic);
-                patient2.getClinics().add(retrievedClinic2);
-                patient2.getClinics().add(clinic3);
+        // We use the clinic objects we retrieved, since they contain information about existing relationship
+        patient2.getClinics().add(retrievedClinic);
+        patient2.getClinics().add(retrievedClinic2);
+        patient2.getClinics().add(clinic3);
 
-                patientDataService.update(patient2);
-            }
-        });
+        patientDataService.update(patient2);
 
         // Test that the relationship was added
         retrievedPatient = patientDataService.findByName("patient2");
@@ -765,7 +734,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
         verifyMovieActor(m, "actor4", "movie4", 2, 1, 1, 0);
 
         // Delete m1 and a1
-        m = movieDataService.findByName("movie1");
+        m = movieDataService.detachedCopy(movieDataService.findByName("movie1"));
         m.getActors().remove(0);
         movieDataService.update(m);
 
@@ -780,9 +749,9 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         // m2 -> a2, a3, a5
         Actor a5 = new Actor("actor5");
-        a5 = actorDataService.create(a5);
+        a5 = actorDataService.detachedCopy(actorDataService.create(a5));
 
-        m = movieDataService.findByName("movie2");
+        m = movieDataService.detachedCopy(movieDataService.findByName("movie2"));
         m.getActors().add(0, a5);
         a5.getMovies().add(m);
         movieDataService.update(m);
@@ -810,16 +779,16 @@ public class MdsDdeBundleIT extends BasePaxIT {
         Supplier s1 = new Supplier("supplier1");
         Supplier s2 = new Supplier("supplier2");
 
-        p1 = productDataService.create(p1);
-        p2 = productDataService.create(p2);
-        p3 = productDataService.create(p3);
-        p4 = productDataService.create(p4);
-        p5 = productDataService.create(p5);
-        p6 = productDataService.create(p6);
-        p7 = productDataService.create(p7);
+        p1 = productDataService.detachedCopy(productDataService.create(p1));
+        p2 = productDataService.detachedCopy(productDataService.create(p2));
+        p3 = productDataService.detachedCopy(productDataService.create(p3));
+        p4 = productDataService.detachedCopy(productDataService.create(p4));
+        p5 = productDataService.detachedCopy(productDataService.create(p5));
+        p6 = productDataService.detachedCopy(productDataService.create(p6));
+        p7 = productDataService.detachedCopy(productDataService.create(p7));
 
-        s1 = supplierDataService.create(s1);
-        s2 = supplierDataService.create(s2);
+        s1 = supplierDataService.detachedCopy(supplierDataService.create(s1));
+        s2 = supplierDataService.detachedCopy(supplierDataService.create(s2));
 
         s1.getProducts().add(p1);
         s1.getProducts().add(p2);
@@ -870,46 +839,33 @@ public class MdsDdeBundleIT extends BasePaxIT {
         Book b2 = new Book("book2");
         Book b3 = new Book("book3");
 
-        bookDataService.create(b1);
-        bookDataService.create(b2);
-        bookDataService.create(b3);
+        b1 = bookDataService.detachedCopy(bookDataService.create(b1));
+        b2 = bookDataService.detachedCopy(bookDataService.create(b2));
+        b3 = bookDataService.detachedCopy(bookDataService.create(b3));
 
-        authorDataService.create(a1);
-        authorDataService.create(a2);
-        authorDataService.create(a3);
+        a1 = authorDataService.detachedCopy(authorDataService.create(a1));
+        a2 = authorDataService.detachedCopy(authorDataService.create(a2));
+        a3 = authorDataService.detachedCopy(authorDataService.create(a3));
 
         a1.getBooks().add(b1);
         a1.getBooks().add(b2);
 
         // author1 - book1, book2
-        authorDataService.update(a1);
-
-        b3 = bookDataService.findById(b3.getId());
-        a1 = authorDataService.findById(a1.getId());
-
-        // Validate the record is saved and each side points to the other
-        assertEquals(2, a1.getBooks().size());
-        Book b = a1.getBooks().iterator().next();
-        assertEquals(1, b.getAuthors().size());
-        Author a = b.getAuthors().iterator().next();
-        assertEquals("author1", a.getName());
+        a1 = authorDataService.detachedCopy(authorDataService.update(a1));
+        b1 = bookDataService.detachedCopy(bookDataService.findById(b1.getId()));
+        b2 = bookDataService.detachedCopy(bookDataService.findById(b2.getId()));
 
         a1.getBooks().add(b3);
 
         // author1 - book3 ( after this update it should be author1 - book1, book2, book3 )
         authorDataService.update(a1);
-
-        a2 = authorDataService.findById(a2.getId());
-        b2 = bookDataService.findById(b2.getId());
+        b3 = bookDataService.detachedCopy(bookDataService.findById(b3.getId()));
 
         a2.getBooks().add(b2);
 
         // author2 - book2
         authorDataService.update(a2);
-
-        a3 = authorDataService.findById(a3.getId());
-        b2 = bookDataService.findById(b2.getId());
-        b3 = bookDataService.findById(b3.getId());
+        b2 = bookDataService.detachedCopy(bookDataService.findById(b2.getId()));
 
         a3.getBooks().add(b2);
         a3.getBooks().add(b3);
@@ -1201,7 +1157,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         petOwnerDataService.create(person);
 
-        List<PetOwner> created = petOwnerDataService.retrieveAll();
+        List<PetOwner> created = petOwnerDataService.detachedCopyAll(petOwnerDataService.retrieveAll());
 
         assertEquals(1, created.size());
         assertEquals(person.getAge(), created.get(0).getAge());
@@ -1426,15 +1382,15 @@ public class MdsDdeBundleIT extends BasePaxIT {
         Actor a3 = new Actor("actor3");
         Actor a4 = new Actor("actor4");
 
-        movieDataService.create(m1);
-        movieDataService.create(m2);
-        movieDataService.create(m3);
-        movieDataService.create(m4);
+        m1 = movieDataService.detachedCopy(movieDataService.create(m1));
+        m2 = movieDataService.detachedCopy(movieDataService.create(m2));
+        m3 = movieDataService.detachedCopy(movieDataService.create(m3));
+        m4 = movieDataService.detachedCopy(movieDataService.create(m4));
 
-        actorDataService.create(a1);
-        actorDataService.create(a2);
-        actorDataService.create(a3);
-        actorDataService.create(a4);
+        a1 = actorDataService.detachedCopy(actorDataService.create(a1));
+        a2 = actorDataService.detachedCopy(actorDataService.create(a2));
+        a3 = actorDataService.detachedCopy(actorDataService.create(a3));
+        a4 = actorDataService.detachedCopy(actorDataService.create(a4));
 
         // m1 - > a1
         m1.getActors().add(a1);
@@ -1636,30 +1592,29 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     @Test(expected = JdoOptimisticLockingFailureException.class)
     public void shouldUseInstanceVersioningFromMdsVersionedEntityClass() throws InterruptedException {
-        TestMdsVersionedEntity record = testMdsVersionedEntityService.create( new TestMdsVersionedEntity("name"));
-        TestMdsVersionedEntity recordFromDatabase = testMdsVersionedEntityService.findById(record.getId());
-        recordFromDatabase.setStringField("new_name");
+        TestMdsVersionedEntity record = testMdsVersionedEntityService.detachedCopy(testMdsVersionedEntityService.create( new TestMdsVersionedEntity("name")));
+        record.setStringField("new_name");
 
         try {
-            testMdsVersionedEntityService.update(recordFromDatabase);
+            testMdsVersionedEntityService.update(record);
         } catch (Exception e) {
             getLogger().error("Cannot update record of {} class", TestMdsEntity.class.getName());
             fail();
         }
 
-        Thread simpleThread = new SimpleThread(testMdsVersionedEntityService, recordFromDatabase.getId(), "stringField");
-        recordFromDatabase = testMdsVersionedEntityService.findById(recordFromDatabase.getId());
+        Thread simpleThread = new SimpleThread(testMdsVersionedEntityService, record.getId(), "stringField");
+        record = testMdsVersionedEntityService.detachedCopy(testMdsVersionedEntityService.findById(record.getId()));
 
         simpleThread.run();
         simpleThread.join();
 
-        assertEquals("new_name", recordFromDatabase.getStringField());
+        assertEquals("new_name", record.getStringField());
 
-        recordFromDatabase.setStringField("sample_name");
-        recordFromDatabase.setCreator("Somebody");
+        record.setStringField("sample_name");
+        record.setCreator("Somebody");
 
         //should throw exception
-        testMdsVersionedEntityService.update(recordFromDatabase);
+        testMdsVersionedEntityService.update(record);
     }
 
     @Test
@@ -1803,7 +1758,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
         house.setAddress(address);
         house.setUuid(UUID.randomUUID());
 
-        house = houseDataService.create(house);
+        house = houseDataService.detachedCopy(houseDataService.update(house));
         
         //check whether uuid field is set
         assertNotNull(house.getUuid());
@@ -1817,7 +1772,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         // change the name of the house
         house.setName("Second house");
-        house = houseDataService.update(house);
+        house = houseDataService.detachedCopy(houseDataService.update(house));
 
         //check whether uuid field is set
         assertNotNull(house.getUuid());
@@ -1882,7 +1837,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         Network ibmNetwork = new Network("192.168.1.0/24", new ArrayList<>(asList(deepBlue, watson)));
 
-        ibmNetwork = networkDataService.create(ibmNetwork);
+        ibmNetwork = networkDataService.detachedCopy(networkDataService.create(ibmNetwork));
         final DateTime mdDt1 = ibmNetwork.getModificationDate();
         final DateTime creationDate = ibmNetwork.getCreationDate();
 
@@ -1892,7 +1847,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
         // remove one computer from the network
         ibmNetwork.removeComputer("Watson");
 
-        ibmNetwork = networkDataService.update(ibmNetwork);
+        ibmNetwork = networkDataService.detachedCopy(networkDataService.update(ibmNetwork));
         final DateTime mdDt2 = ibmNetwork.getModificationDate();
 
         // add two new computers
@@ -1901,7 +1856,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
         Computer deepFritz = new Computer("Deep Fritz");
         ibmNetwork.getComputers().add(deepFritz);
 
-        ibmNetwork = networkDataService.update(ibmNetwork);
+        ibmNetwork = networkDataService.detachedCopy(networkDataService.update(ibmNetwork));
         final DateTime mdDt3 = ibmNetwork.getModificationDate();
 
         final long deepFritzId = ibmNetwork.getComputerByName("Deep Fritz").getId();
@@ -1958,13 +1913,13 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
     @Test
     public void shouldCreateHistoryForManyToMany() {
-        Company google = companyDataService.create(new Company("Google"));
-        Company microsoft = companyDataService.create(new Company("Microsoft"));
-        Company atari = companyDataService.create(new Company("Atari"));
+        Company google = companyDataService.detachedCopy(companyDataService.create(new Company("Google")));
+        Company microsoft = companyDataService.detachedCopy(companyDataService.create(new Company("Microsoft")));
+        Company atari = companyDataService.detachedCopy(companyDataService.create(new Company("Atari")));
 
-        Consultant jack = consultantDataService.create(new Consultant("Jack"));
-        Consultant tom = consultantDataService.create(new Consultant("Tom"));
-        Consultant mike = consultantDataService.create(new Consultant("Mike"));
+        Consultant jack = consultantDataService.detachedCopy(consultantDataService.create(new Consultant("Jack")));
+        Consultant tom = consultantDataService.detachedCopy(consultantDataService.create(new Consultant("Tom")));
+        Consultant mike = consultantDataService.detachedCopy(consultantDataService.create(new Consultant("Mike")));
 
         final DateTime jackDt1 = jack.getModificationDate();
         final DateTime googleDt1 = google.getModificationDate();
@@ -2084,7 +2039,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
         TestMdsEntity expected = new TestMdsEntity("name");
         testMdsEntityService.create(expected);
 
-        List<TestMdsEntity> testMdsEntities = testMdsEntityService.retrieveAll();
+        List<TestMdsEntity> testMdsEntities = testMdsEntityService.detachedCopyAll(testMdsEntityService.retrieveAll());
         assertEquals(asList(expected), testMdsEntities);
 
         TestMdsEntity actual = testMdsEntities.get(0);

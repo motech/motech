@@ -1,4 +1,4 @@
-<div ui-if="step['@type'] == 'FilterSet'" class="panel-group task-group" id="step-{{step.order}}" overflow-change expand-accordion ng-cloak>
+<div ui-if="step['@type'] == 'FilterSetDto' || step['@type'] == 'FilterActionSetDto'" class="panel-group task-group" id="step-{{step.order}}" overflow-change expand-accordion ng-cloak>
 
     <div class="panel-heading panel-header clearfix">
         <div class="pull-right">
@@ -30,7 +30,10 @@
                             <div class="form-inline btn-group">
                                 <span class="validation-area form-group">
                                     <div class="input-append input-group">
-                                        <input class="form-control input-auto offset-1" ng-change="selectParam(filter, 'trigger', option)" name="autocomplete" type="text" id="appendedDropdownButton" ng-model="filter.displayName"/>
+                                        <input typeahead="key for key in getKeys(selectedTrigger.eventParameters) | filter:$viewValue"
+                                               class="form-control input-auto offset-1" ng-change="selectParam(filter, 'trigger')"
+                                               typeahead-on-select="selectParam(filter, 'trigger')" name="autocomplete" type="text"
+                                               id="appendedDropdownButton" ng-model="filter.displayName"/>
                                         <div class="btn-group">
                                             <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                                                 <span class="caret"></span>
@@ -88,13 +91,8 @@
                                             <span class="caret"></span>
                                         </a>
                                         <ul class="dropdown-menu" ng-hide="filter.negationOperator == undefined">
-                                            <li class="dropdown-submenu" ng-repeat="(key, value) in util.FILTER_OPERATORS">
-                                                <a tabindex="-1">{{msg(key)}}</a>
-                                                <ul class="dropdown-menu">
-                                                    <li ng-repeat="operator in value.options">
-                                                        <a ng-click="filter.operator = operator; filter.type = value.type">{{msg(operator)}}</a>
-                                                    </li>
-                                                </ul>
+                                            <li ng-repeat="operator in filterOperators">
+                                                <a ng-click="filter.operator = operator">{{msg(operator)}}</a>
                                             </li>
                                         </ul>
                                     </div>

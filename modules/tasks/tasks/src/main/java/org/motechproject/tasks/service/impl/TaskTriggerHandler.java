@@ -2,29 +2,25 @@ package org.motechproject.tasks.service.impl;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.joda.time.DateTime;
 import org.motechproject.commons.api.DataProvider;
 import org.motechproject.commons.api.TasksEventParser;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
-import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
-import org.motechproject.config.SettingsFacade;
+import org.motechproject.tasks.constants.EventDataKeys;
+import org.motechproject.tasks.domain.mds.task.FilterSet;
 import org.motechproject.tasks.domain.mds.task.Task;
-import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.service.TaskActivityService;
-import org.motechproject.tasks.service.util.TaskContext;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TriggerHandler;
+import org.motechproject.tasks.service.util.TaskContext;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ReflectionUtils;
@@ -32,28 +28,15 @@ import org.springframework.util.ReflectionUtils;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.motechproject.tasks.service.util.HandlerPredicates.withServiceName;
-import static org.motechproject.tasks.constants.EventDataKeys.HANDLER_ERROR_PARAM;
 import static org.motechproject.tasks.constants.EventDataKeys.JOB_SUBJECT;
-import static org.motechproject.tasks.constants.EventDataKeys.REPEAT_COUNT;
-import static org.motechproject.tasks.constants.EventDataKeys.REPEAT_INTERVAL_TIME;
-import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_FAILURE_DATE;
-import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_FAILURE_NUMBER;
-import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_MESSAGE;
-import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_STACK_TRACE;
-import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_TASK_ID;
-import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_TASK_NAME;
-import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_TRIGGER_DISABLED;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_ID;
-import static org.motechproject.tasks.constants.EventSubjects.SCHEDULE_REPEATING_JOB;
-import static org.motechproject.tasks.constants.EventSubjects.UNSCHEDULE_REPEATING_JOB;
-import static org.motechproject.tasks.constants.EventSubjects.createHandlerFailureSubject;
-import static org.motechproject.tasks.constants.EventSubjects.createHandlerSuccessSubject;
 import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
+import static org.motechproject.tasks.service.util.HandlerPredicates.withServiceName;
 
 /**
  * The <code>TaskTriggerHandler</code> receives events and executes tasks for which the trigger
@@ -63,8 +46,6 @@ import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
 public class TaskTriggerHandler implements TriggerHandler {
 
     private static final String BEAN_NAME = "taskTriggerHandler";
-
-    private static final String TASK_POSSIBLE_ERRORS_KEY = "task.possible.errors";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskTriggerHandler.class);
 
@@ -78,14 +59,13 @@ public class TaskTriggerHandler implements TriggerHandler {
     private EventListenerRegistryService registryService;
 
     @Autowired
-    private EventRelay eventRelay;
-
-    @Autowired
-    @Qualifier("tasksSettings")
-    private SettingsFacade settings;
-
-    @Autowired
     private TaskActionExecutor executor;
+
+    @Autowired
+    private TaskRetryHandler taskRetryHandler;
+
+    @Autowired
+    private TasksPostExecutionHandler postExecutionHandler;
 
     private Map<String, DataProvider> dataProviders;
 
@@ -136,6 +116,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     }
 
     @Override
+    @Transactional
     public void handle(MotechEvent event) {
         LOGGER.info("Handling the motech event with subject: {}", event.getSubject());
 
@@ -156,24 +137,24 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         // Handle all tasks one by one
         for (Task task : tasks) {
-            handleTask(task, parameters);
+            handleTask(task, parameters, false);
         }
     }
 
     @Override
+    @Transactional
     public void handleRetry(MotechEvent event) {
         LOGGER.info("Handling the motech event with subject: {} for task retry", event.getSubject());
 
         Map<String, Object> eventParams = event.getParameters();
         Map<String, Object> eventMetadata = event.getMetadata();
-        eventParams.putAll(eventMetadata);
 
-        Task task = taskService.getTask((Long) eventParams.get(TASK_ID));
+        Task task = taskService.getTask((Long) eventMetadata.get(TASK_ID));
 
         if (task == null || !task.isEnabled()) {
-            unscheduleTaskRetry((String) eventParams.get(JOB_SUBJECT));
+            taskRetryHandler.unscheduleTaskRetry((String) eventMetadata.get(JOB_SUBJECT));
         } else {
-            handleTask(task, eventParams);
+            handleTask(task, eventParams, true);
         }
     }
 
@@ -181,119 +162,43 @@ public class TaskTriggerHandler implements TriggerHandler {
     @Transactional
     public void retryTask(Long activityId) {
         TaskActivity activity = activityService.getTaskActivityById(activityId);
-        handleTask(taskService.getTask(activity.getTask()), activity.getParameters());
+        handleTask(taskService.getTask(activity.getTask()), activity.getParameters(), true);
     }
 
-    private boolean isTaskRetryAlreadyScheduled(Map<String, Object> eventParams) {
-        return eventParams.get(TASK_ID) != null;
-    }
+    private void handleTask(Task task, Map<String, Object> parameters, boolean isRetry) {
+        long activityId = activityService.addTaskStarted(task, parameters);
+        Map<String, Object> metadata = prepareTaskMetadata(task.getId(), activityId, isRetry);
 
-    private void handleTask(Task task, Map<String, Object> parameters) {
-
-        TaskContext taskContext = new TaskContext(task, parameters, activityService);
+        TaskContext taskContext = new TaskContext(task, parameters, metadata, activityService);
         TaskInitializer initializer = new TaskInitializer(taskContext);
-
-        boolean success = true;
+        List<FilterSet> filterSetList = new ArrayList<>(task.getTaskConfig().getFilters());
+        boolean actionFilterResult = true;
+        int executedActions = 0;
+        int step = 0;
+        int actualFilterIndex = initializer.getActionFilters();
 
         try {
             LOGGER.info("Executing all actions from task: {}", task.getName());
             if (initializer.evalConfigSteps(dataProviders)) {
-                for (TaskActionInformation action : task.getActions()) {
-                    executor.execute(task, action, taskContext);
+                while (actionFilterResult && executedActions < task.getActions().size()) {
+                    if (shouldCheckFilter(filterSetList, actualFilterIndex, step)) {
+                        actionFilterResult = initializer.checkActionFilter(actualFilterIndex, filterSetList);
+                        actualFilterIndex += 1;
+                    } else {
+                        executor.execute(task, task.getActions().get(executedActions), executedActions, taskContext, activityId);
+                        executedActions += 1;
+                    }
+                    step += 1;
                 }
-                handleSuccess(parameters, task);
+            } else {
+                activityService.addTaskFiltered(activityId);
             }
             LOGGER.warn("Actions from task: {} weren't executed, because config steps didn't pass the evaluation", task.getName());
         } catch (TaskHandlerException e) {
-            handleError(parameters, task, e);
-            success = false;
+            postExecutionHandler.handleError(parameters, metadata, task, e, activityId);
         } catch (RuntimeException e) {
-            handleError(parameters, task, new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e));
-            success = false;
+            postExecutionHandler.handleError(parameters, metadata, task, new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e), activityId);
         }
-
-        if (task.retryTaskOnFailure()) {
-            if (success && isTaskRetryAlreadyScheduled(parameters)) {
-                unscheduleTaskRetry(task.getTrigger().getEffectiveListenerRetrySubject());
-            } else if (!success && !isTaskRetryAlreadyScheduled(parameters)) {
-                scheduleTaskRetry(task, parameters);
-            }
-        }
-    }
-
-    private void scheduleTaskRetry(Task task, Map<String, Object> parameters) {
-        Map<String, Object> eventParameters = new HashMap<>();
-        Map<String, Object> eventMetadata = new HashMap<>();
-
-        eventParameters.putAll(parameters);
-
-        eventMetadata.put(TASK_ID, task.getId());
-        eventMetadata.put(REPEAT_COUNT, task.getNumberOfRetries());
-        eventMetadata.put(REPEAT_INTERVAL_TIME, task.getRetryIntervalInMilliseconds() / 1000);
-        eventMetadata.put(JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
-
-        eventRelay.sendEventMessage(new MotechEvent(SCHEDULE_REPEATING_JOB, eventParameters, null, eventMetadata));
-    }
-
-    private void unscheduleTaskRetry(String jobSubject) {
-        Map<String, Object> eventParameters = new HashMap<>();
-        Map<String, Object> eventMetadata = new HashMap<>();
-
-        eventMetadata.put(JOB_SUBJECT, jobSubject);
-
-        eventRelay.sendEventMessage(new MotechEvent(UNSCHEDULE_REPEATING_JOB, eventParameters, null, eventMetadata));
-    }
-
-    private void handleError(Map<String, Object> params, Task task, TaskHandlerException e) {
-        LOGGER.warn("Omitted task: {} with ID: {} because: {}", task.getName(), task.getId(), e);
-
-        activityService.addError(task, e, params);
-        task.incrementFailuresInRow();
-
-        LOGGER.warn("The number of failures for task: {} is: {}", task.getName(), task.getFailuresInRow());
-
-        int failureNumber = task.getFailuresInRow();
-        int possibleErrorsNumber = getPossibleErrorsNumber();
-
-        if (failureNumber >= possibleErrorsNumber) {
-            task.setEnabled(false);
-
-            activityService.addWarning(task);
-            publishTaskDisabledMessage(task.getName());
-        }
-
-        taskService.save(task);
-
-        Map<String, Object> errorParam = new HashMap<>();
-        errorParam.put(TASK_FAIL_MESSAGE, e.getMessage());
-        errorParam.put(TASK_FAIL_STACK_TRACE, ExceptionUtils.getStackTrace(e));
-        errorParam.put(TASK_FAIL_FAILURE_DATE, DateTime.now());
-        errorParam.put(TASK_FAIL_FAILURE_NUMBER, failureNumber);
-        errorParam.put(TASK_FAIL_TRIGGER_DISABLED, task.isEnabled());
-        errorParam.put(TASK_FAIL_TASK_ID, task.getId());
-        errorParam.put(TASK_FAIL_TASK_NAME, task.getName());
-
-        Map<String, Object> errorEventParam = new HashMap<>();
-        errorEventParam.putAll(params);
-        errorEventParam.put(HANDLER_ERROR_PARAM, errorParam);
-
-        eventRelay.sendEventMessage(new MotechEvent(
-            createHandlerFailureSubject(task.getName(), e.getFailureCause()),
-            errorEventParam
-        ));
-    }
-
-    private void handleSuccess(Map<String, Object> params, Task task) {
-        LOGGER.debug("All actions from task: {} with ID: {} were successfully executed", task.getName(), task.getId());
-
-        activityService.addSuccess(task);
-        task.resetFailuresInRow();
-        taskService.save(task);
-
-        eventRelay.sendEventMessage(new MotechEvent(
-            createHandlerSuccessSubject(task.getName()),
-            params
-        ));
     }
 
     @Override
@@ -312,38 +217,24 @@ public class TaskTriggerHandler implements TriggerHandler {
         }
     }
 
+    private boolean shouldCheckFilter(List<FilterSet> filterSetList, int index, int step) {
+        return index < filterSetList.size() && filterSetList.get(index).getActionFilterOrder() == step;
+    }
 
     void setDataProviders(Map<String, DataProvider> dataProviders) {
         this.dataProviders = dataProviders;
     }
 
-    private void publishTaskDisabledMessage(String taskName) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("message", "Task disabled automatically: " + taskName);
-        params.put("level", "CRITICAL");
-        params.put("moduleName", settings.getBundleSymbolicName());
+    private Map<String, Object> prepareTaskMetadata(Long taskId, long activityId, Boolean isRetry) {
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put(EventDataKeys.TASK_ID, taskId);
+        metadata.put(EventDataKeys.TASK_ACTIVITY_ID, activityId);
+        metadata.put(EventDataKeys.TASK_RETRY, isRetry);
 
-        eventRelay.sendEventMessage(new MotechEvent("org.motechproject.message", params));
+        return metadata;
     }
 
-    private int getPossibleErrorsNumber() {
-        String property = settings.getProperty(TASK_POSSIBLE_ERRORS_KEY);
-        int number;
-
-        try {
-            number = Integer.parseInt(property);
-        } catch (NumberFormatException e) {
-            LOGGER.error(String.format(
-                    "The value of key: %s is not a number. Possible errors number is set to zero.",
-                    TASK_POSSIBLE_ERRORS_KEY
-            ));
-            number = 0;
-        }
-
-        return number;
-    }
-
-    @Autowired(required = false)
+    @Autowired
     public void setBundleContext(BundleContext bundleContext) {
         this.executor.setBundleContext(bundleContext);
     }

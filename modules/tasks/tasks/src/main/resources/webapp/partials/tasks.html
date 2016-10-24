@@ -3,7 +3,7 @@
     <h4 class="frame-title">{{msg('task.header.tasks')}}</h4>
     <div class="toolbox">
         <div class="btn-group pull-right">
-            <a role="button" class="btn btn-default" data-toggle="modal" data-target="#importTaskModal" data-backdrop="static"><span class="glyphicon glyphicon-import"></span> {{msg('task.import')}}</a>
+            <a role="button" class="btn btn-default" import-task-modal get-tasks="getTasks" msg="msg" ctrl="ImportModalCtrl"><span class="glyphicon glyphicon-import"></span> {{msg('task.import')}}</a>
             <a href="#/tasks/task/new" type="button" class="btn btn-success" ng-click="selectedTabState.selectedTab = 'new'"><i class="fa fa-plus"></i> {{msg('task.new')}}</a>
         </div>
         <div class="btn-group">
@@ -23,7 +23,7 @@
                                             <img ng-src="../server/module/icon?bundleName={{item.task.trigger.moduleName}}&defaultIcon=iconTaskChannel.png" class="task-list-img" />
                                         </div>
                                     </li>
-                                    <li class="task-element"><img src="../tasks/img/arrow.png" class="task-list-img-arrow"/></li>
+                                    <li class="task-element"><i class="fa icon-blue fa-arrow-right fa-lg arrow-right"></i></li>
                                     <li class="task-element">
                                         <div actions-popover>
                                             <img ui-if="item.task.actions.length == 1" ng-src="../server/module/icon?bundleName={{item.task.actions[0].moduleName}}&defaultIcon=iconTaskChannel.png" class="task-list-img"/>
@@ -38,30 +38,30 @@
                                 </ul>
                             </a>
                             <ul class="task-nav pull-right">
-                                <li ng-show="item.task.description && item.task.enabled" class="task-element" rel="popover" bs-popover="{{item.task.description}}" data-trigger="hover" data-placement="left"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
-                                <li ng-show="item.task.description && !item.task.enabled"  class="task-element" bs-popover="{{item.task.description}}" data-trigger="hover" data-placement="left"><img src="../tasks/img/task-info-paused.png"  class="task-list-img" /></li>
+                                <li ng-show="item.task.description && item.task.enabled" class="task-element" rel="popover" bs-popover="{{item.task.description}}" data-trigger="hover" data-placement="left"><div class="task-list-img fa icon-blue fa-info fa-2x" aria-hidden="true"></div></li>
+                                <li ng-show="item.task.description && !item.task.enabled"  class="task-element" bs-popover="{{item.task.description}}" data-trigger="hover" data-placement="left"><div class="task-list-img fa paused-task fa-info fa-2x" aria-hidden="true"></div></li>
                                 <li ng-show="item.task.description" class="divider-vertical"></li>
                                 <li ng-show="!item.task.enabled && item.task.hasRegisteredChannel" class="task-element task-paused">
                                     <div class="task-list-button-activity">
                                         <div class="task-list-text-activity">{{msg('task.paused')}}</div>
-                                        <div class="task-list-div-activity"><img class="task-list-img-activity" src="../tasks/img/task-paused.png" /></div>
+                                        <div class="task-list-div-activity"><i class="task-list-img-activity fa fa-ban"></i></div>
                                     </div>
                                 </li>
                                 <li ng-show="item.task.enabled && item.task.hasRegisteredChannel" class="task-element task-active">
                                     <div class="task-list-button-activity">
-                                        <div class="task-list-div-activity"><img class="task-list-img-activity" src="../tasks/img/task-active.png" /></div>
+                                        <div class="task-list-div-activity"><i class="task-list-img-activity fa fa-play-circle"></i></div>
                                         <div class="task-list-text-activity">{{msg('task.active')}}</div>
                                     </div>
                                 </li>
                                 <li ng-show="!item.task.hasRegisteredChannel" class="task-element task-paused">
                                     <div class="task-list-button-activity">
                                         <div class="task-list-text-activity">{{msg('task.channel.deregistered')}}</div>
-                                        <div class="task-list-div-activity"><img class="task-list-img-activity" src="../tasks/img/task-paused.png" /></div>
+                                        <div class="task-list-div-activity"><i class="task-list-img-activity fa fa-ban"></i></div>
                                     </div>
                                 </li>
                                 <li class="divider-vertical"></li>
-                                <li ng-show="item.task.enabled" class="task-element"><a href="#/tasks/task/{{item.task.id}}/edit"><img src="../tasks/img/task-settings.png" class="task-list-img" /></a></li>
-                                <li ng-hide="item.task.enabled" class="task-element"><a href="#/tasks/task/{{item.task.id}}/edit"><img src="../tasks/img/task-settings-paused.png" class="task-list-img" /></a></li>
+                                <li ng-show="item.task.enabled" class="task-element"><a href="#/tasks/task/{{item.task.id}}/edit"><div class="task-list-img task-list-settings-enabled"></div></a></li>
+                                <li ng-hide="item.task.enabled" class="task-element"><a href="#/tasks/task/{{item.task.id}}/edit"><div class="task-list-img task-list-settings-disabled"></div></a></li>
                             </ul>
                             <div class="clearfix"></div>
                         </div>
@@ -126,8 +126,5 @@
             <strong>{{msg('task.warning')}}:</strong>
             {{msg('task.info.notFoundTasks')}}
         </div>
-
     </div>
-</div>
-<div ng-include="'../tasks/partials/widgets/import-modal.html'"></div>
 </div>

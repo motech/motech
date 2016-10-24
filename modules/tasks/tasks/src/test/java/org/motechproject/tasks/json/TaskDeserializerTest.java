@@ -29,7 +29,7 @@ import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.junit.runners.Parameterized.Parameters;
-import static org.motechproject.tasks.domain.mds.ParameterType.UNICODE;
+import static org.motechproject.tasks.domain.enums.ParameterType.UNICODE;
 
 @RunWith(Parameterized.class)
 public class TaskDeserializerTest {
@@ -56,7 +56,7 @@ public class TaskDeserializerTest {
 
         EXPECTED_TASK = new Task();
         EXPECTED_TASK.getTaskConfig().add(new FilterSet(filters));
-        EXPECTED_TASK.getTaskConfig().add(new DataSource("ProviderName", 6899548L, 1L, "Person", "id", asList(new Lookup("mrs.person.lookupField.id", "trigger.PatientId")), false));
+        EXPECTED_TASK.getTaskConfig().add(new DataSource("ProviderName", 6899548L, 1L, "Person", "id", "specifiedName", asList(new Lookup("mrs.person.lookupField.id", "trigger.PatientId")), false));
         EXPECTED_TASK.setName(name);
         EXPECTED_TASK.setEnabled(false);
         EXPECTED_TASK.setHasRegisteredChannel(true);

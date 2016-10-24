@@ -4,24 +4,25 @@ import com.google.common.collect.Multimap;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.tasks.domain.KeyInformation;
+import org.motechproject.tasks.domain.enums.ParameterType;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.ActionParameter;
-import org.motechproject.tasks.domain.KeyInformation;
-import org.motechproject.tasks.domain.mds.ParameterType;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 import org.motechproject.tasks.exception.TaskHandlerException;
-import org.motechproject.tasks.service.util.KeyEvaluator;
 import org.motechproject.tasks.service.TaskActivityService;
-import org.motechproject.tasks.service.util.TaskContext;
 import org.motechproject.tasks.service.TaskService;
+import org.motechproject.tasks.service.util.KeyEvaluator;
+import org.motechproject.tasks.service.util.TaskContext;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,10 +33,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import static org.motechproject.tasks.domain.mds.ParameterType.LIST;
-import static org.motechproject.tasks.domain.mds.ParameterType.MAP;
 import static org.motechproject.tasks.constants.TaskFailureCause.ACTION;
 import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
+import static org.motechproject.tasks.domain.enums.ParameterType.LIST;
+import static org.motechproject.tasks.domain.enums.ParameterType.MAP;
+
 
 /**
  * Builds action parameters from  {@link TaskContext} and executes the action by invoking its service or raising its event.
@@ -49,44 +51,43 @@ public class TaskActionExecutor {
 
     private TaskService taskService;
     private TaskActivityService activityService;
-
-    @Autowired
-    public TaskActionExecutor(TaskService taskService, TaskActivityService activityService,
-                       EventRelay eventRelay) {
-        this.eventRelay = eventRelay;
-        this.taskService = taskService;
-        this.activityService = activityService;
-    }
+    private TasksPostExecutionHandler postExecutionHandler;
 
     /**
      * Executes the action for the given task.
      *
      * @param task  the task for which its action should be executed, not null
      * @param actionInformation  the information about the action, not null
+     * @param actionIndex the order of the task action
      * @param taskContext  the context of the current task execution, not null
+     * @param activityId the ID of the activity associated with this execution
      * @throws TaskHandlerException when the task couldn't be executed
      */
-    public void execute(Task task, TaskActionInformation actionInformation, TaskContext taskContext) throws TaskHandlerException {
+    @Transactional
+    public void execute(Task task, TaskActionInformation actionInformation, Integer actionIndex, TaskContext taskContext, long activityId) throws TaskHandlerException {
         LOGGER.info("Executing task action: {} from task: {}", actionInformation.getName(), task.getName());
         KeyEvaluator keyEvaluator = new KeyEvaluator(taskContext);
+
         ActionEvent action = getActionEvent(actionInformation);
         Map<String, Object> parameters = createParameters(actionInformation, action, keyEvaluator);
-        LOGGER.debug("Parameters created: {} for task action: {}", parameters.toString(), action.getName());
+        addTriggerParameters(task, action, parameters, taskContext.getTriggerParameters());
 
+        LOGGER.debug("Parameters created: {} for task action: {}", parameters.toString(), action.getName());
         if (action.hasService() && bundleContext != null) {
-            if (callActionServiceMethod(action, parameters)) {
+            if (callActionServiceMethod(action, actionIndex, parameters, taskContext)) {
                 LOGGER.info("Action: {} from task: {} was executed through an OSGi service call", actionInformation.getName(), task.getName());
+                postExecutionHandler.handleActionExecuted(taskContext.getTriggerParameters(), taskContext.getMetadata(), activityId);
                 return;
             }
             LOGGER.info("There is no service: {}", action.getServiceInterface());
+
             activityService.addWarning(task, "task.warning.serviceUnavailable", action.getServiceInterface());
         }
-
         if (!action.hasSubject()) {
             throw new TaskHandlerException(ACTION, "task.error.cantExecuteAction");
         } else {
+            eventRelay.sendEventMessage(new MotechEvent(action.getSubject(), parameters, TasksEventCallbackService.TASKS_EVENT_CALLBACK_NAME, taskContext.getMetadata()));
             LOGGER.info("Event: {} was sent", action.getSubject());
-            eventRelay.sendEventMessage(new MotechEvent(action.getSubject(), parameters));
         }
     }
 
@@ -191,7 +192,7 @@ public class TaskActionExecutor {
 
         for (String template : templates) {
             Object value = getValue(template.trim(), keyEvaluator);
-            if ( value != null) {
+            if (value != null) {
                 if (value instanceof Collection) {
                     tempList.addAll((Collection) value);
                 } else {
@@ -217,23 +218,25 @@ public class TaskActionExecutor {
         return result;
     }
 
-    private boolean callActionServiceMethod(ActionEvent action, Map<String, Object> parameters)
+    private boolean callActionServiceMethod(ActionEvent action, Integer actionIndex, Map<String, Object> parameters, TaskContext taskContext)
             throws TaskHandlerException {
         ServiceReference reference = bundleContext.getServiceReference(
                 action.getServiceInterface()
         );
         boolean serviceAvailable = reference != null;
-
         if (serviceAvailable) {
             Object service = bundleContext.getService(reference);
             String serviceMethod = action.getServiceMethod();
             MethodHandler methodHandler = new MethodHandler(action, parameters);
-
             try {
                 Method method = service.getClass().getMethod(serviceMethod, methodHandler.getClasses());
 
                 try {
-                    method.invoke(service, methodHandler.getObjects());
+                    Object object = method.invoke(service, methodHandler.getObjects());
+
+                    if (object != null) {
+                        addPostActionParametersToTaskContext(action, actionIndex, taskContext, object);
+                    }
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     throw new TaskHandlerException(
                             ACTION, "task.error.serviceMethodInvokeError", e,
@@ -251,7 +254,44 @@ public class TaskActionExecutor {
         return serviceAvailable;
     }
 
-    void setBundleContext(BundleContext bundleContext) {
+    private void addTriggerParameters(Task task, ActionEvent action, Map<String, Object> parameters, Map<String, Object> triggerParameters) {
+        if (task.getNumberOfRetries() > 0 && !action.hasService()) {
+            for (Map.Entry<String, Object> entry : triggerParameters.entrySet()) {
+                if (! parameters.containsKey(entry.getKey())) {
+                    parameters.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+    }
+
+    private void addPostActionParametersToTaskContext(ActionEvent action, Integer actionIndex, TaskContext taskContext, Object object) throws TaskHandlerException {
+        for (ActionParameter postActionParameter : action.getPostActionParameters()) {
+
+            taskContext.addPostActionParameterObject(actionIndex.toString(), postActionParameter.getKey(), object, true);
+        }
+    }
+
+    public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    @Autowired
+    public void setEventRelay(EventRelay eventRelay) {
+        this.eventRelay = eventRelay;
+    }
+
+    @Autowired
+    public void setTaskService(TaskService taskService) {
+        this.taskService = taskService;
+    }
+
+    @Autowired
+    public void setActivityService(TaskActivityService activityService) {
+        this.activityService = activityService;
+    }
+
+    @Autowired
+    public void setTasksPostExecutionHandler(TasksPostExecutionHandler postExecutionHandler) {
+        this.postExecutionHandler = postExecutionHandler;
     }
 }

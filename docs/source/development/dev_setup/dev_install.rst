@@ -22,7 +22,7 @@ The versions below may change, most likely the latest stable release will work f
 		.. code-block:: bash
 
 			sudo apt-get install curl git maven activemq npm
-			curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
+			curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 			sudo apt-get install -y nodejs
 			sudo npm install -g bower gulp
 
@@ -141,7 +141,7 @@ The versions below may change, most likely the latest stable release will work f
 			nano ~/apache-tomcat-7.0.68/webapps/manager/WEB-INF/web.xml
 
 
-	#. Edit the lines in multipart-config defining the max upload value. Change it from 50MB to a bit more, 70MB should suffice:
+	#. Edit the lines in multipart-config defining the max upload value. Change it from 50MB to a bit more, 100MB should suffice:
 
             .. code-block:: xml
 
@@ -159,9 +159,9 @@ The versions below may change, most likely the latest stable release will work f
                 <!-- After changes -->
 
                 <multipart-config>
-                  <!-- 70MB max -->
-                  <max-file-size>71680000</max-file-size>
-                  <max-request-size>71680000</max-request-size>
+                  <!-- 100MB max -->
+                  <max-file-size>100000000</max-file-size>
+                  <max-request-size>100000000</max-request-size>
                   <file-size-threshold>0</file-size-threshold>
                 </multipart-config>
 
@@ -499,7 +499,7 @@ Installing the IDE, Intellij IDEA Community Edition & open MOTECH project
 
 	#. In Select Profiles, do not select any profile, click Next
 
-	#. In Select Maven projects to Import, there should only be one project: org.motechproject:motech:0.29-SNAPSHOT, click Next
+	#. In Select Maven projects to Import, there should only be one project: org.motechproject:motech:0.30-SNAPSHOT, click Next
 
 	#. In Please select project SDK, if the 1.8.0_73 is present, select it, otherwise add it:
 

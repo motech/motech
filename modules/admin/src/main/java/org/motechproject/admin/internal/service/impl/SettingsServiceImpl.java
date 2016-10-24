@@ -244,24 +244,25 @@ public class SettingsServiceImpl implements SettingsService {
         Enumeration<URL> enumeration = bundle.findEntries("", "*.properties", false);
         Map<String, Properties> allDefaultProperties = new LinkedHashMap<>();
 
-        while (enumeration.hasMoreElements()) {
-            InputStream is = null;
-            URL url = enumeration.nextElement();
-            try {
-                is = url.openStream();
-                Properties defaultBundleProperties = new Properties();
-                defaultBundleProperties.load(is);
-                if (!url.getFile().isEmpty()) {
-                    //We want to store plain filename, without unnecessary slash prefix
-                    allDefaultProperties.put(url.getFile().substring(1), defaultBundleProperties);
+        if (enumeration != null) {
+            while (enumeration.hasMoreElements()) {
+                InputStream is = null;
+                URL url = enumeration.nextElement();
+                try {
+                    is = url.openStream();
+                    Properties defaultBundleProperties = new Properties();
+                    defaultBundleProperties.load(is);
+                    if (!url.getFile().isEmpty()) {
+                        //We want to store plain filename, without unnecessary slash prefix
+                        allDefaultProperties.put(url.getFile().substring(1), defaultBundleProperties);
+                    }
+                } catch (IOException e) {
+                    LOGGER.error("Error while reading or retrieving default properties", e);
+                } finally {
+                    IOUtils.closeQuietly(is);
                 }
-            } catch (IOException e) {
-                LOGGER.error("Error while reading or retrieving default properties", e);
-            } finally {
-                IOUtils.closeQuietly(is);
             }
         }
-
         return allDefaultProperties;
     }
 

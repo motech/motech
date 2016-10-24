@@ -1,0 +1,34 @@
+{
+  "displayName": "admin.taskAction.channelName",
+  "triggerTaskEvents" : [],
+  "actionTaskEvents": [
+    {
+      "serviceInterface": "org.motechproject.admin.service.StatusMessageService",
+      "serviceMethod": "postMessage",
+      "displayName": "admin.taskAction.actionName",
+      "actionParameters": [
+        {
+          "key": "text",
+          "displayName": "admin.taskAction.text"
+        },
+        {
+          "key": "moduleName",
+          "displayName": "admin.taskAction.moduleName",
+          "required": false
+        },
+        {
+          "key": "level",
+          "displayName": "admin.taskAction.level",
+          "options": ["admin.log.level.critical", "admin.log.level.debug", "admin.log.level.info", "admin.log.level.warn", "admin.log.level.error"],
+          "type": "SELECT"
+        },
+        {
+          "key": "timeout",
+          "displayName": "admin.taskAction.timeout",
+          "type": "DATE",
+          "required": false
+        }
+      ]
+    }
+  ]
+}

@@ -65,6 +65,14 @@ public class EmailController {
         List<? extends BasicEmailRecordDto> rows = hideColumns(filtered, filter);
 
         long total = auditService.countEmailRecords(criteria);
+        if (filter.getRows() == null) {
+            int defaultRowsAmount = 10;
+            filter.setRows(defaultRowsAmount);
+        }
+        if (filter.getPage() == null) {
+            int defaultPage = 1;
+            filter.setPage(defaultPage);
+        }
         int totalPages = (int) Math.ceil((double) total / filter.getRows());
 
         String username = getUsername(request);

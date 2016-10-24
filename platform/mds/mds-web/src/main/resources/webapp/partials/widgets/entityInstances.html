@@ -3,7 +3,7 @@
     <div class="clearfix toolbox form-horizontal">
         <div class="alert alert-danger" ng-show="dataRetrievalError">
             <h4>{{msg('mds.error')}}</h4>
-            <p>{{msg('mds.error.dataRetrievalError')}}</p>
+            <p>{{retrievalErrorText}}</p>
         </div>
         <div class="btn-group-primary pull-right">
             <button ng-click="importEntityInstances()" type="button" class="btn btn-default" ng-show="showImportButton && !shouldHideButton()">

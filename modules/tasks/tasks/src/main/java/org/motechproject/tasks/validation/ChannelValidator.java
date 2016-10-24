@@ -99,6 +99,10 @@ public final class ChannelValidator extends GeneralValidator {
             for (ActionParameter parameter : action.getActionParameters()) {
                 errors.addAll(validateActionParameter(objectName, "actionParameters[" + parameter.getOrder() + "]", parameter));
             }
+
+            for (ActionParameter parameter: action.getPostActionParameters()) {
+                errors.addAll(validateActionParameter(objectName, "postActionParameters[" + parameter.getOrder() + "]", parameter));
+            }
         }
 
         return errors;

@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>motech</artifactId>
-        <version>0.29-SNAPSHOT</version>
+        <version>0.30-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
 
@@ -211,6 +211,11 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-tomcat-it</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <!-- Required for the calls coming from the Commcare "Data Forwarding" page -->
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
         </dependency>
     </dependencies>
     <build>

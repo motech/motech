@@ -1,11 +1,12 @@
 package org.motechproject.tasks.web;
 
-import org.motechproject.tasks.domain.mds.channel.Channel;
 import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
-import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.web.domain.TriggersList;
 import org.motechproject.tasks.web.domain.TriggersLists;
-import org.motechproject.tasks.service.ChannelService;
+import org.motechproject.tasks.dto.ChannelDto;
+import org.motechproject.tasks.dto.TaskTriggerInformationDto;
+import org.motechproject.tasks.dto.TriggerEventDto;
+import org.motechproject.tasks.service.TaskWebService;
 import org.motechproject.tasks.service.TriggerEventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,17 +26,16 @@ public class ChannelController {
 
     private static final int PAGE_SIZE = 10;
 
-    private ChannelService channelService;
     private TriggerEventService triggerEventService;
+    private TaskWebService taskWebService;
 
     /**
      * Controller constructor.
      *
-     * @param channelService  the channel service, not null
      */
     @Autowired
-    public ChannelController(ChannelService channelService, TriggerEventService triggerEventService) {
-        this.channelService = channelService;
+    public ChannelController(TaskWebService taskWebService, TriggerEventService triggerEventService) {
+        this.taskWebService = taskWebService;
         this.triggerEventService = triggerEventService;
     }
 
@@ -46,8 +46,8 @@ public class ChannelController {
      */
     @RequestMapping(value = "channel", method = RequestMethod.GET)
     @ResponseBody
-    public List<Channel> getAllChannels() {
-        return channelService.getAllChannels();
+    public List<ChannelDto> getAllChannels() {
+        return taskWebService.getAllChannels();
     }
 
     /**
@@ -65,7 +65,7 @@ public class ChannelController {
                                      @RequestParam int dynamicTriggersPage) {
         TriggersList staticTriggers = new TriggersList();
         long staticTriggersCount = triggerEventService.countStaticTriggers(moduleName);
-        staticTriggers.addTriggers(triggerEventService.getStaticTriggers(moduleName, staticTriggersPage, PAGE_SIZE));
+        staticTriggers.addTriggers(taskWebService.getStaticTriggers(moduleName, staticTriggersPage, (int) staticTriggersCount));
         staticTriggers.setPage(staticTriggersPage);
 
         int staticTriggersPages = (int) staticTriggersCount / PAGE_SIZE;
@@ -79,7 +79,7 @@ public class ChannelController {
         if (triggerEventService.providesDynamicTriggers(moduleName)) {
             dynamicTriggers = new TriggersList();
             long dynamicTriggersCount = triggerEventService.countDynamicTriggers(moduleName);
-            dynamicTriggers.addTriggers(triggerEventService.getDynamicTriggers(moduleName, dynamicTriggersPage, PAGE_SIZE));
+            dynamicTriggers.addTriggers(taskWebService.getDynamicTriggers(moduleName, dynamicTriggersPage, (int) dynamicTriggersCount));
             dynamicTriggers.setPage(dynamicTriggersPage);
 
             int dynamicTriggersPages = (int) dynamicTriggersCount / PAGE_SIZE;
@@ -93,14 +93,14 @@ public class ChannelController {
     }
 
     /**
-     * Returns a trigger matching the given instance of the {@link TaskTriggerInformation} class.
+     * Returns a trigger matching the given instance of the {@link TaskTriggerInformationDto} class.
      *
      * @param info  the information about the trigger
      * @return the trigger matching given information
      */
     @RequestMapping(value = "channel/trigger", method = RequestMethod.POST)
     @ResponseBody
-    public TriggerEvent getTrigger(@RequestBody TaskTriggerInformation info) {
-        return triggerEventService.getTrigger(info);
+    public TriggerEventDto getTrigger(@RequestBody TaskTriggerInformation info) {
+        return taskWebService.getTrigger(info);
     }
 }

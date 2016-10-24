@@ -81,6 +81,11 @@ public class TestActionEventRequestBuilder extends ActionEventRequestBuilder {
     }
 
     @Override
+    public TestActionEventRequestBuilder setPostActionParameters(SortedSet<ActionParameterRequest> postActionParameters) {
+        return (TestActionEventRequestBuilder) super.setPostActionParameters(postActionParameters);
+    }
+
+    @Override
     public TestActionEventRequestBuilder setServiceMethodCallManner(String serviceMethodCallManner) {
         return (TestActionEventRequestBuilder) super.setServiceMethodCallManner(serviceMethodCallManner);
     }

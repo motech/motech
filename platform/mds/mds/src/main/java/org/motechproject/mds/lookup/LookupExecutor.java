@@ -14,6 +14,9 @@ import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.MDSClassLoader;
 import org.motechproject.mds.util.TypeHelper;
+import org.datanucleus.store.query.QueryNotUniqueException;
+
+import javax.jdo.JDOUserException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -51,6 +54,8 @@ public class LookupExecutor {
     public Object execute(Map<String, ?> lookupMap, QueryParams queryParams) {
         List<Object> args = getLookupArgs(lookupMap);
         List<Class> argTypes = buildArgTypes();
+        String lookupExceptionMessage = "Unable to execute lookup ";
+        String lookupExceptionMessageKey = "mds.error.lookupExecError";
 
         if (queryParams != null) {
             args.add(queryParams);
@@ -61,8 +66,19 @@ public class LookupExecutor {
             return MethodUtils.invokeMethod(dataService, lookup.getMethodName(),
                     args.toArray(new Object[args.size()]),
                     argTypes.toArray(new Class[argTypes.size()]));
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new LookupExecutorException("Unable to execute lookup " + lookup.getLookupName(), e);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new LookupExecutorException(lookupExceptionMessage + lookup.getLookupName() + ".", e, null);
+        } catch (InvocationTargetException e) {
+            if (e.getTargetException() instanceof JDOUserException) {
+                JDOUserException userException = (JDOUserException) e.getTargetException();
+                lookupExceptionMessageKey = "mds.error.lookupExecUserError";
+                for (Throwable exception : userException.getNestedExceptions()) {
+                    if (exception instanceof QueryNotUniqueException) {
+                        lookupExceptionMessageKey = "mds.error.lookupExecNotUniqueError";
+                    }
+                }
+            }
+            throw new LookupExecutorException(lookupExceptionMessage + lookup.getLookupName() + ".", e, lookupExceptionMessageKey);
         }
     }
 
@@ -77,7 +93,7 @@ public class LookupExecutor {
                     args.toArray(new Object[args.size()]),
                     argTypes.toArray(new Class[argTypes.size()]));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new LookupExecutorException("Unable to execute count lookup " + lookup.getLookupName(), e);
+            throw new LookupExecutorException("Unable to execute count lookup " + lookup.getLookupName() + ".", e, null);
         }
     }
 

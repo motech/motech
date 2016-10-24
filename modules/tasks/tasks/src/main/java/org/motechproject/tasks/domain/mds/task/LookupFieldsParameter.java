@@ -6,6 +6,7 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.dto.LookupFieldsParameterDto;
 
 import java.util.List;
 import java.util.Objects;
@@ -45,6 +46,10 @@ public class LookupFieldsParameter {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public LookupFieldsParameterDto toDto() {
+        return new LookupFieldsParameterDto(displayName, fields);
     }
 
     @Override

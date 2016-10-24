@@ -32,10 +32,18 @@ public final class KeyInformation {
      */
     public static final String ADDITIONAL_DATA_PREFIX = "ad";
 
+    /**
+     * Prefix which is used for post action parameters fields.
+     */
+    public static final String POST_ACTION_PARAMETER_PREFIX = "pa";
+
     private static final int DATA_PROVIDER_NAME_IDX = 1;
     private static final int OBJECT_TYPE_IDX = 2;
     private static final int OBJECT_ID_IDX = 3;
     private static final int EVENT_KEY_IDX = 4;
+
+    private static final int POST_ACTION_PARAM_ID_IDX = 1;
+    private static final int POST_ACTION_PARAM_KEY_IDX = 2;
 
     private String originalKey;
     private String prefix;
@@ -46,10 +54,11 @@ public final class KeyInformation {
     private List<String> manipulations;
 
     private KeyInformation(String originalKey, String prefix, String key, List<String> manipulations) {
-        this.originalKey = originalKey;
-        this.prefix = prefix;
-        this.key = key;
-        this.manipulations = manipulations;
+        this(originalKey, prefix, null, null, null, key, manipulations);
+    }
+
+    private KeyInformation(String originalKey, String prefix, Long objectId, String key, List<String> manipulations) {
+        this(originalKey, prefix, null, null, objectId, key, manipulations);
     }
 
     private KeyInformation(String originalKey, String prefix, String dataProviderName, String objectType,
@@ -73,6 +82,7 @@ public final class KeyInformation {
      * <ul>
      * <li>trigger field format: <b>trigger.<i>eventKey</i></b></li>
      * <li>data source format: <b>ad.<i>dataProviderId</i>.<i>objectType</i>#<i>objectId</i>.<i>fieldKey</i></b></li>
+     * <li>post action parameter format: <b>pa.<i>objectId</i>.<i>fieldKey</i></b></li>
      * </ul>
      * <p/>
      * Argument can also contain list of manipulation which should be executed on field before it
@@ -111,7 +121,7 @@ public final class KeyInformation {
         if (prefix.equalsIgnoreCase(TRIGGER_PREFIX)) {
             key = new KeyInformation(input, prefix, withoutManipulation, manipulations);
         } else if (prefix.equalsIgnoreCase(ADDITIONAL_DATA_PREFIX)) {
-            Pattern pattern = Pattern.compile("([a-zA-Z0-9\\-_]+)\\.([\\.a-zA-Z0-9\\-_]+)#([a-zA-Z0-9])\\.(.+)");
+            Pattern pattern = Pattern.compile("([a-zA-Z0-9\\-_]+)\\.([\\.a-zA-Z0-9\\-_]+)#([a-zA-Z0-9]+)\\.(.+)");
             Matcher matcher = pattern.matcher(withoutManipulation);
 
             if (matcher.matches()) {
@@ -124,8 +134,20 @@ public final class KeyInformation {
             } else {
                 throw new IllegalArgumentException("Incorrect format for key from additional data");
             }
+        } else if (prefix.equalsIgnoreCase(POST_ACTION_PARAMETER_PREFIX)) {
+            Pattern pattern = Pattern.compile("([a-zA-Z0-9\\-_]+)\\.(.+)");
+            Matcher matcher = pattern.matcher(withoutManipulation);
+
+            if (matcher.matches()) {
+                Long objectId = Long.valueOf(matcher.group(POST_ACTION_PARAM_ID_IDX));
+                String fieldKey = matcher.group(POST_ACTION_PARAM_KEY_IDX);
+
+                key = new KeyInformation(input, prefix, objectId, fieldKey, manipulations);
+            } else {
+                throw new IllegalArgumentException("Incorrect format for key from post action parameter.");
+            }
         } else {
-            throw new IllegalArgumentException("Key must be from trigger or additional data");
+            throw new IllegalArgumentException("Key must be from trigger, additional data or post action parameter.");
         }
 
         return key;
@@ -139,6 +161,7 @@ public final class KeyInformation {
      * <ul>
      * <li>trigger field format: <b>{{trigger.<i>eventKey</i>}}</b></li>
      * <li>data source format: <b>{{ad.<i>dataProviderId</i>.<i>objectType</i>#<i>objectId</i>.<i>fieldKey</i>}}</b></li>
+     * <li>post action parameter format: <b>pa.<i>fieldKey</i></b></li>
      * </ul>
      * <p/>
      * To find fields in the input argument this method uses regular expression. When field is found
@@ -192,6 +215,15 @@ public final class KeyInformation {
      */
     public boolean fromAdditionalData() {
         return prefix.equalsIgnoreCase(ADDITIONAL_DATA_PREFIX);
+    }
+
+    /**
+     * Check if the field is from the post action parameter.
+     *
+     * @return true if the field is from the post action parameter otherwise false
+     */
+    public boolean fromPostActionParameter() {
+        return prefix.equalsIgnoreCase(POST_ACTION_PARAMETER_PREFIX);
     }
 
     public String getPrefix() {

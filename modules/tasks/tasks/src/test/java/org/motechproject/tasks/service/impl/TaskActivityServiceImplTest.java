@@ -8,7 +8,8 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
-import org.motechproject.tasks.domain.mds.task.TaskActivityType;
+import org.motechproject.tasks.domain.enums.TaskActivityType;
+import org.motechproject.tasks.domain.mds.task.TaskExecutionProgress;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.repository.TaskActivitiesDataService;
 import org.motechproject.tasks.service.TaskActivityService;
@@ -16,7 +17,6 @@ import org.motechproject.tasks.service.TaskActivityService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,14 +32,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.tasks.domain.mds.task.TaskActivityType.ERROR;
-import static org.motechproject.tasks.domain.mds.task.TaskActivityType.SUCCESS;
-import static org.motechproject.tasks.domain.mds.task.TaskActivityType.WARNING;
 import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
+import static org.motechproject.tasks.domain.enums.TaskActivityType.ERROR;
+import static org.motechproject.tasks.domain.enums.TaskActivityType.SUCCESS;
+import static org.motechproject.tasks.domain.enums.TaskActivityType.WARNING;
 
 public class TaskActivityServiceImplTest {
 
     private static final Long TASK_ID = 12345l;
+    private static final Long TASK_ACTIVITY_ID  = 11L;
     private static final List<String> ERROR_FIELD = asList("phone");
 
     private List<TaskActivity> activities;
@@ -65,32 +66,50 @@ public class TaskActivityServiceImplTest {
 
     @Test
     public void shouldAddErrorActivityWithTaskException() {
+        when(taskActivitiesDataService.findById(TASK_ACTIVITY_ID)).thenReturn(createInProgress());
         String messageKey = "error.notFoundTrigger";
         TaskHandlerException exception = new TaskHandlerException(TRIGGER, messageKey, ERROR_FIELD.get(0));
-        Map<String, Object> errorParameters = new HashMap<>();
-        errorParameters.put("errorKey", "errorValue");
 
         ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
 
-        activityService.addError(task, exception, errorParameters);
+        activityService.addFailedExecution(TASK_ACTIVITY_ID, exception);
 
-        verify(taskActivitiesDataService).create(captor.capture());
+        verify(taskActivitiesDataService).update(captor.capture());
 
-        assertActivity(messageKey, ERROR_FIELD, TASK_ID, TaskActivityType.ERROR, getStackTrace(exception), errorParameters, captor.getValue());
+        assertActivity(messageKey, ERROR_FIELD, TASK_ID, TaskActivityType.ERROR, getStackTrace(exception), null, captor.getValue());
+    }
+
+    @Test
+    public void shouldAddTaskFilteredActivity() {
+        when(taskActivitiesDataService.findById(TASK_ACTIVITY_ID)).thenReturn(createInProgress());
+        String messageKey = "task.filtered";
+
+        ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
+
+        activityService.addTaskFiltered(TASK_ACTIVITY_ID);
+
+        verify(taskActivitiesDataService).findById(TASK_ACTIVITY_ID);
+        verify(taskActivitiesDataService).update(captor.capture());
+
+        assertActivity(messageKey, Collections.<String>emptyList(), TASK_ID, TaskActivityType.FILTERED, null, null, captor.getValue());
     }
 
     @Test
     public void shouldAddTaskSuccessActivity() {
+        when(taskActivitiesDataService.findById(TASK_ACTIVITY_ID)).thenReturn(createInProgress());
         String messageKey = "task.success.ok";
 
         ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
 
-        activityService.addSuccess(task);
+        activityService.addSuccessfulExecution(TASK_ACTIVITY_ID);
 
-        verify(taskActivitiesDataService).create(captor.capture());
+        verify(taskActivitiesDataService).findById(TASK_ACTIVITY_ID);
+        verify(taskActivitiesDataService).update(captor.capture());
 
-        assertActivity(messageKey, Collections.<String>emptyList(), TASK_ID,
-                TaskActivityType.SUCCESS, null, null, captor.getValue());
+        TaskActivity activity = captor.getValue();
+
+        assertEquals(1, activity.getTaskExecutionProgress().getActionsSucceeded());
+        assertActivity(messageKey, Collections.<String>emptyList(), TASK_ID, TaskActivityType.SUCCESS, null, null, activity);
     }
 
     @Test
@@ -99,7 +118,7 @@ public class TaskActivityServiceImplTest {
 
         ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
 
-        activityService.addWarning(task);
+        activityService.addTaskDisabledWarning(task);
 
         verify(taskActivitiesDataService).create(captor.capture());
 
@@ -127,7 +146,7 @@ public class TaskActivityServiceImplTest {
 
         ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
 
-        activityService.addWarning(task, messageKey, ERROR_FIELD.get(0), exception);
+        activityService.addWarningWithException(task, messageKey, ERROR_FIELD.get(0), exception);
 
         verify(taskActivitiesDataService).create(captor.capture());
 
@@ -145,7 +164,7 @@ public class TaskActivityServiceImplTest {
 
     @Test
     public void shouldNotRemoveAnyActivitiesWhenTaskHasNotActivities() {
-        when(taskActivitiesDataService.byTask(TASK_ID)).thenReturn(new ArrayList<TaskActivity>());
+        when(taskActivitiesDataService.byTask(TASK_ID)).thenReturn(new ArrayList<>());
 
         activityService.deleteActivitiesForTask(TASK_ID);
 
@@ -191,12 +210,17 @@ public class TaskActivityServiceImplTest {
         messages.add(createError());
         messages.add(createError());
         messages.add(createError());
+        messages.add(createInProgress());
 
         return messages;
     }
 
+    private TaskActivity createInProgress() {
+        return new TaskActivity("", new ArrayList<>(), TASK_ID, TaskActivityType.IN_PROGRESS, new TaskExecutionProgress(1));
+    }
+
     private TaskActivity createError() {
-        return new TaskActivity(ERROR.getValue(), ERROR_FIELD, TASK_ID, ERROR);
+        return new TaskActivity(ERROR.getValue(), ERROR_FIELD, TASK_ID, ERROR, new TaskExecutionProgress(1));
     }
 
     private TaskActivity createSuccess() {

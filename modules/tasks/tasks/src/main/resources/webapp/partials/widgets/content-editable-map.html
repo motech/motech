@@ -1,4 +1,4 @@
-<div ng-controller="MapsCtrl"  ng-model="data.value" data-index="{{index}}" data-type="{{data.type}}">
+<div ng-controller="MapsCtrl" ng-model="data.value" data-index="{{index}}" data-type="{{data.type}}">
     <div class="clearfix margin-before07">
         <div class="map-field">
             <label class="input-large-fluid">{{msg('task.map.key')}}</label>
@@ -17,7 +17,7 @@
             {{mapError}}
         </span>
     </div>
-    <div class="clearfix" ng-repeat="pair in pairs">
+    <div class="clearfix" ng-repeat="pair in pairs track by $index">
         <div class="clearfix">
             <div contenteditable ng-model="pair.key" droppable class="actionField map-input map-field word-wrap input-extra-fluid" ng-change="updateMap(pair, $index)" data-type="text"></div>
             <div contenteditable ng-model="pair.value" droppable class="actionField map-input map-field word-wrap input-extra-fluid" ng-change="updateMap(pair, $index)" data-type="text"></div>

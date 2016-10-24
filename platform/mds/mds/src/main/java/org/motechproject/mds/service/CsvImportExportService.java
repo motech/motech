@@ -200,9 +200,10 @@ public interface CsvImportExportService {
      * @param fileName the name of the CSV file
      * @param continueOnError if true, import will continue with next row if exception was encountered,
      *                        if false, import process will stop and rethrow the exception
+     * @param clearData if true, import will clear instances from table
      * @return IDs of instances updated/added during import
      */
-    CsvImportResults importCsv(long entityId, Reader reader, String fileName, boolean continueOnError);
+    CsvImportResults importCsv(long entityId, Reader reader, String fileName, boolean continueOnError, boolean clearData);
 
     /**
      * Import instances from a CSV file
@@ -212,9 +213,10 @@ public interface CsvImportExportService {
      * @param importCustomizer the customizer that will be used during import
      * @param continueOnError if true, import will continue with next row if exception was encountered,
      *                        if false, import process will stop and rethrow the exception
+     * @param clearData if true, import will clear instances from table
      * @return IDs of instances updated/added during import
      */
-    CsvImportResults importCsv(long entityId, Reader reader, String fileName, CsvImportCustomizer importCustomizer, boolean continueOnError);
+    CsvImportResults importCsv(long entityId, Reader reader, String fileName, CsvImportCustomizer importCustomizer, boolean continueOnError, boolean clearData);
 
     /**
      * Import instances from a CSV file

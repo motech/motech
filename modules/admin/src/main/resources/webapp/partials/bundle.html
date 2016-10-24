@@ -7,7 +7,7 @@
             </a>
         </div>
         <div class="bundle-prop" ng-if="module.bundleId !== undefined">
-            <span><img ng-src="../admin/api/bundles/{{module.bundleId}}/icon" alt="module-logo" class="large-icon"/></span>
+            <span><img ng-src="../server/module/icon?bundleId={{module.bundleId}}" alt="module-logo" class="large-icon"/></span>
             <span class="inside"><h2>{{module.name}}</h2></span>
         </div>
         <div class="bundle-prop">

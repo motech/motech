@@ -1,5 +1,5 @@
 <!------------------------  ACTION  ------------------------->
-<div class="panel-group task-group" id="select-action-{{$index}}" ng-repeat="action in task.actions" overflow-change expand-accordion ng-cloak>
+<div class="panel-group task-group" id="select-action-{{$index}}" ui-if="step['@type'] != 'FilterActionSetDto'" overflow-change expand-accordion ng-cloak>
 
     <div class="panel-heading panel-header clearfix">
         <div class="pull-right">
@@ -9,17 +9,23 @@
         </div>
         <a class="accordion-toggle cursor-auto" action-sortable-cursor>
             <i class="fa fa-fw fa-lg fa-caret-down pointer" data-toggle="collapse" data-parent="#select-action-{{$index}}" target="_self" href="#collapse-action-{{$index}}"></i> {{msg('task.header.action')}}
-                                    <span ng-hide="!action.displayName">
-                                        &raquo; {{msg(action.channelName)}} : {{taskMsg(action.displayName)}}
-                                    </span>
+            <span ng-hide="!action.displayName">
+                &raquo; {{msg(action.channelName)}} : {{taskMsg(action.displayName)}}
+            </span>
         </a>
     </div>
     <div id="collapse-action-{{$index}}" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
         <div class="panel-body inside">
-            <div class="form-group control-section">
+            <div class="form-group control-section" >
+                <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.datasource.displayName')}}</label>
+                <div class="col-md-8 col-sm-6">
+                    <input class="form-control" type='text' ng-model='action.specifiedName' id="action.specifiedName">
+                </div>
+            </div>
+            <div class="form-group control-section" ng-show="showBubbles">
                 <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.info.availableFields')}}:</label>
                 <div class="form-inline col-md-10 col-sm-9 move-element">
-                    <field ng-repeat="field in fields" field="field" draggable />
+                    <field ng-repeat="field in fields | postActionField:$index track by $index" field="field" draggable />
                 </div>
             </div>
 
@@ -65,8 +71,8 @@
             <div class="form-group" ng-show="selectedAction[$index].description">
                 <label class="col-md-2 col-sm-3 control-label">{{msg(selectedAction.description)}}</label>
             </div>
-            <div ui-if="selectedAction[$index]">
-                <div ng-class="{'has-warning': actionCssClassWarning(i), 'has-error': actionCssClassError(i)}" ng-repeat="i in selectedAction[$index].actionParameters | filter: {hidden: false}" class="form-group clearfix">
+            <div ng-if="selectedAction[$index]">
+                <div ng-class="{'has-warning': actionCssClassWarning(i), 'has-error': actionCssClassError(i)}" ng-repeat="i in selectedAction[$index].actionParameters | filter: {hidden: false} track by $index" class="form-group clearfix">
                     <label class="col-md-2 col-sm-3 control-label tip unselectable">
                         {{taskMsg(i.displayName)}}
                         <!------------------------ Tooltips ------------------------>
@@ -147,7 +153,7 @@
                 </div>
 
                 <!------------------------ Help button  ------------------------>
-                <a data-target="#helpModal" role="button" class="btn btn-primary" data-toggle="modal">{{msg('task.help.modifications')}}</a>
+                <a class="btn btn-primary" ng-click="openHelpStringManipulation()">{{msg('task.help.modifications')}}</a>
                 <a data-target="#helpModalFieldSyntaxWithBrackets" role="button" class="btn btn-primary" data-toggle="modal">{{msg('task.help.customSyntax')}}</a>
             </div>
         </div>

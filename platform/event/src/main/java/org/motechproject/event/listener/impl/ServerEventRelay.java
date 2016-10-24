@@ -206,7 +206,7 @@ public class ServerEventRelay implements EventRelay, EventHandler {
             }
         } catch (InvalidSyntaxException e) {
             //Should never happen
-            LOGGER.error("Passed filter expression is incorrect.");
+            LOGGER.error("Passed filter expression is incorrect.", e);
         }
 
         // If a non-null callback name has been provided, yet it cannot be found in

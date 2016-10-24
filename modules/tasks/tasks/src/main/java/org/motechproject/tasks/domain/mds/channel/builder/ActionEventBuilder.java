@@ -4,7 +4,7 @@ import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.ActionParameter;
-import org.motechproject.tasks.domain.mds.channel.MethodCallManner;
+import org.motechproject.tasks.domain.enums.MethodCallManner;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -25,6 +25,7 @@ public class ActionEventBuilder {
     private String serviceInterface;
     private String serviceMethod;
     private SortedSet<ActionParameter> actionParameters;
+    private SortedSet<ActionParameter> postActionParameters;
     private MethodCallManner serviceMethodCallManner = MethodCallManner.NAMED_PARAMETERS;
 
     public ActionEventBuilder setName(String name) {
@@ -62,6 +63,11 @@ public class ActionEventBuilder {
         return this;
     }
 
+    public ActionEventBuilder setPostActionParameters(SortedSet<ActionParameter> postActionParameters) {
+        this.postActionParameters = postActionParameters;
+        return this;
+    }
+
     public ActionEventBuilder setServiceMethodCallManner(MethodCallManner serviceMethodCallManner) {
         this.serviceMethodCallManner = serviceMethodCallManner;
         return this;
@@ -74,7 +80,7 @@ public class ActionEventBuilder {
      */
     public ActionEvent build() {
         return new ActionEvent(name, description, displayName, subject, serviceInterface, serviceMethod,
-                serviceMethodCallManner, actionParameters);
+                serviceMethodCallManner, actionParameters, postActionParameters);
     }
 
     /**
@@ -93,6 +99,8 @@ public class ActionEventBuilder {
         builder.setServiceMethod(actionEventRequest.getServiceMethod());
         builder.setServiceMethodCallManner(getServiceMethodCallManner(actionEventRequest.getServiceMethodCallManner()));
         builder.setActionParameters(mapActionParameters(actionEventRequest.getActionParameters()));
+        builder.setPostActionParameters(mapActionParameters(actionEventRequest.getPostActionParameters()));
+
         return builder;
     }
 

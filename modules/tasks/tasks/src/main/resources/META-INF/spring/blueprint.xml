@@ -78,4 +78,7 @@
 
     <osgi:service id="taskTriggerHandlerOsgi" auto-export="interfaces" ref="taskTriggerHandler"
                   interface="org.motechproject.tasks.service.TriggerHandler"/>
+
+    <osgi:service id="tasksEventCallbackServiceOSGi" auto-export="interfaces" ref="tasksEventCallbackService"
+                  interface="org.motechproject.event.listener.EventCallbackService"/>
 </beans>

@@ -54,7 +54,7 @@
     "jquery-ui": "~1.11.4",
     "bootstrap-multiselect": "~0.9.13",
     "angular-bootstrap": "0.6.0",
-    "bootstrap3-dialog": "1.34.9",
+    "bootstrap3-dialog": "1.35.2",
     "oclazyload": "1.0.9",
     "jasny-bootstrap": "git://github.com/jasny/bootstrap",
     "bower-parseUri": "bower-parseuri#^1.2.2"

@@ -7,12 +7,16 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.domain.enums.TaskErrorType;
+import org.motechproject.tasks.dto.TaskErrorDto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Represents a single task error. Those error are encountered during validation of a channel if some of the required
@@ -57,6 +61,20 @@ public class TaskError implements Serializable {
     public TaskError(String message, String... args) {
         this.args = args == null ? new ArrayList<String>() : Arrays.asList(args);
         this.message = message;
+    }
+
+    public TaskErrorDto toDto() {
+        return new TaskErrorDto(message, args);
+    }
+
+    public static Set<TaskErrorDto> toDtos(Set<TaskError> errors) {
+        Set<TaskErrorDto> errorDtos = new HashSet<>();
+
+        for (TaskError error : errors) {
+            errorDtos.add(error.toDto());
+        }
+
+        return errorDtos;
     }
 
     public List<String> getArgs() {

@@ -9,6 +9,9 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.dto.TaskActionInformationDto;
+import org.motechproject.tasks.dto.TaskDto;
+import org.motechproject.tasks.dto.TaskErrorDto;
 import org.motechproject.tasks.domain.mds.channel.Channel;
 import org.motechproject.tasks.json.TaskDeserializer;
 
@@ -261,6 +264,23 @@ public class Task {
     public void setRetryIntervalInMilliseconds(int retryIntervalInMilliseconds) {
         this.retryIntervalInMilliseconds = retryIntervalInMilliseconds;
     }
+
+    public TaskDto toDto() {
+        List<TaskActionInformationDto> actionDtos = new ArrayList<>();
+        Set<TaskErrorDto> errorDtos = new HashSet<>();
+
+        for (TaskActionInformation action : actions) {
+            actionDtos.add(action.toDto());
+        }
+
+        for (TaskError error :  validationErrors) {
+            errorDtos.add(error.toDto());
+        }
+
+        return new TaskDto(id, description, name, failuresInRow, actionDtos, trigger.toDto(), enabled, errorDtos,
+                taskConfig.toDto(), hasRegisteredChannel, numberOfRetries, retryIntervalInMilliseconds);
+    }
+
 
     @Override
     public int hashCode() {

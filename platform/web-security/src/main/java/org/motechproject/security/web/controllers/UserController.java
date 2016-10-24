@@ -2,6 +2,8 @@ package org.motechproject.security.web.controllers;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.config.SettingsFacade;
+import org.motechproject.config.domain.MotechSettings;
 import org.motechproject.osgi.web.service.LocaleService;
 import org.motechproject.security.config.SettingService;
 import org.motechproject.security.domain.MotechUserProfile;
@@ -14,8 +16,6 @@ import org.motechproject.security.exception.UserNotFoundException;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.security.validator.ValidatorNames;
-import org.motechproject.config.SettingsFacade;
-import org.motechproject.config.domain.MotechSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -96,9 +97,9 @@ public class UserController {
      * @return user with given name
      */
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/users/getuser", method = RequestMethod.POST)
+    @RequestMapping(value = "/users/getuser", method = RequestMethod.GET)
     @ResponseBody
-    public UserDto getUser(@RequestBody String userName) {
+    public UserDto getUser(@RequestParam(value = "userName", required = true) String userName) {
         return motechUserService.getUser(userName);
     }
 

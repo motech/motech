@@ -3,6 +3,7 @@ package org.motechproject.tasks.annotations.processor;
 import org.motechproject.tasks.annotations.TaskAction;
 import org.motechproject.tasks.annotations.TaskActionParam;
 import org.motechproject.tasks.annotations.TaskChannel;
+import org.motechproject.tasks.annotations.TaskPostActionParam;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.ActionParameter;
 import org.motechproject.tasks.domain.mds.channel.Channel;
@@ -119,6 +120,7 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
         action.setServiceInterface(serviceInterface);
         action.setServiceMethod(method.getName());
         action.setActionParameters(getActionParams(method));
+        action.setPostActionParameters(getPostActionParams(method));
 
         if (!foundAction) {
             channel.addActionTaskEvent(action);
@@ -172,6 +174,26 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
                     TaskActionParam param = (TaskActionParam) annotation;
                     LOGGER.debug("Task action parameter: {} added", param.displayName());
 
+                    parameters.add(new ActionParameterBuilder().setDisplayName(param.displayName()).setKey(param.key())
+                            .setType(param.type()).setOrder(order).setRequired(param.required()).build());
+                    ++order;
+                }
+            }
+        }
+
+        return parameters.isEmpty() ? null : parameters;
+    }
+
+    private SortedSet<ActionParameter> getPostActionParams(Method method) {
+        SortedSet<ActionParameter> parameters = new TreeSet<>();
+        int order = 0;
+
+        for (Annotation[] annotations : method.getParameterAnnotations()) {
+            for (Annotation annotation : annotations) {
+                if (annotation instanceof TaskPostActionParam) {
+                    LOGGER.debug("The @TaskPostActionParam annotation was found in parameters from method: {}", method.getName());
+                    TaskPostActionParam param = (TaskPostActionParam) annotation;
+                    LOGGER.debug("Task action parameter: {} added", param.displayName());
                     parameters.add(new ActionParameterBuilder().setDisplayName(param.displayName()).setKey(param.key())
                             .setType(param.type()).setOrder(order).setRequired(param.required()).build());
                     ++order;

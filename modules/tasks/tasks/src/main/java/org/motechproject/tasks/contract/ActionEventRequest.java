@@ -26,12 +26,23 @@ public class ActionEventRequest {
     private String serviceMethod;
     private String serviceMethodCallManner;
     private SortedSet<ActionParameterRequest> actionParameters;
+    private SortedSet<ActionParameterRequest> postActionParameters;
 
     /**
      * Constructor.
      */
     public ActionEventRequest() {
-        this(null, null, null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null, null, null);
+    }
+
+    /**
+     * Constructor.
+     */
+    public ActionEventRequest(String name, String displayName, String subject, String description,
+                              String serviceInterface, String serviceMethod, String serviceMethodCallManner,
+                              SortedSet<ActionParameterRequest> actionParameters) {
+
+         this(name, displayName, subject, description, serviceInterface, serviceMethod, serviceMethodCallManner, actionParameters, null);
     }
 
     /**
@@ -43,12 +54,12 @@ public class ActionEventRequest {
      * @param description  the event description
      * @param serviceInterface  the event service interface
      * @param serviceMethod  the event service method
-     * @param serviceMethodCallManner  the event service method call manner, for supported values check {@see org.motechproject.tasks.domain.mds.channel.MethodCallManner}
+     * @param serviceMethodCallManner  the event service method call manner, for supported values check {@see org.motechproject.tasks.domain.enums.MethodCallManner}
      * @param actionParameters  the action parameters
      */
     public ActionEventRequest(String name, String displayName, String subject, String description,
                               String serviceInterface, String serviceMethod, String serviceMethodCallManner,
-                              SortedSet<ActionParameterRequest> actionParameters) {
+                              SortedSet<ActionParameterRequest> actionParameters, SortedSet<ActionParameterRequest> postActionParameters) {
         this.name = name;
         this.displayName = displayName;
         this.subject = subject;
@@ -58,6 +69,7 @@ public class ActionEventRequest {
         this.serviceMethodCallManner = isBlank(serviceMethodCallManner) ?
                 NAMED_PARAMETERS : serviceMethodCallManner;
         this.actionParameters = null == actionParameters ? new TreeSet<ActionParameterRequest>() : actionParameters;
+        this.postActionParameters = null == postActionParameters ? new TreeSet<ActionParameterRequest>() : postActionParameters;
     }
 
     /**
@@ -133,6 +145,15 @@ public class ActionEventRequest {
     }
 
     /**
+     * Returns the post action parameters.
+     *
+     * @return the post action parameters
+     */
+    public SortedSet<ActionParameterRequest> getPostActionParameters() {
+        return postActionParameters;
+    }
+
+    /**
      * Adds the given parameter request to the list of stored parameter requests.
      *
      * @param parameter  the action parameter request
@@ -147,6 +168,23 @@ public class ActionEventRequest {
             }
         }
         actionParameters.add(parameter);
+    }
+
+    /**
+     * Adds the given parameter request to the list of stored post action parameter requests.
+     *
+     * @param parameter  the post action parameter request
+     * @param changeOrder  defines if order of the given parameter should continue numeration of the stored list
+     */
+    public void addPostActionParameter(ActionParameterRequest parameter, boolean changeOrder) {
+        if (changeOrder) {
+            if (postActionParameters.isEmpty()) {
+                parameter.setOrder(0);
+            } else {
+                parameter.setOrder(postActionParameters.last().getOrder() + 1);
+            }
+        }
+        postActionParameters.add(parameter);
     }
 
     /**
@@ -178,7 +216,7 @@ public class ActionEventRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hash(actionParameters, serviceInterface, serviceMethod, serviceMethodCallManner);
+        return Objects.hash(actionParameters, postActionParameters, serviceInterface, serviceMethod, serviceMethodCallManner);
     }
 
     @Override
@@ -191,12 +229,11 @@ public class ActionEventRequest {
             return false;
         }
 
-
         final ActionEventRequest other = (ActionEventRequest) obj;
 
         return Objects.equals(this.actionParameters, other.actionParameters) &&
+                Objects.equals(this.postActionParameters, other.postActionParameters) &&
                 equalsService(other.serviceInterface, other.serviceMethod, other.serviceMethodCallManner);
-
     }
 
     @Override
@@ -204,6 +241,7 @@ public class ActionEventRequest {
         return "ActionEventRequest{" +
                 "name='" + name + '\'' +
                 ", actionParameters=" + actionParameters +
+                ", postActionParameters=" + postActionParameters+
                 ", serviceInterface='" + serviceInterface + '\'' +
                 ", serviceMethod='" + serviceMethod + '\'' +
                 ", serviceMethodCallManner='" + serviceMethodCallManner + '\'' +

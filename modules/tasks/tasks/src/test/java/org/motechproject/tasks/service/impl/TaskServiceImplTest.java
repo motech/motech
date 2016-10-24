@@ -41,6 +41,7 @@ import org.motechproject.tasks.domain.mds.channel.TaskEvent;
 import org.motechproject.tasks.domain.mds.task.TaskEventInformation;
 import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
+import org.motechproject.tasks.dto.TaskErrorDto;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 import org.motechproject.tasks.exception.TaskNameAlreadyExistsException;
 import org.motechproject.tasks.exception.TaskNotFoundException;
@@ -82,7 +83,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.tasks.domain.mds.ParameterType.UNICODE;
+import static org.motechproject.tasks.domain.enums.ParameterType.UNICODE;
 import static org.motechproject.tasks.constants.EventDataKeys.CHANNEL_MODULE_NAME;
 import static org.motechproject.tasks.constants.EventDataKeys.DATA_PROVIDER_NAME;
 import static org.motechproject.tasks.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
@@ -212,7 +213,7 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", "specifiedName", asList(new Lookup("id", "trigger.value")), true));
 
         action.setValues(map);
 
@@ -279,7 +280,7 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", "specifiedName", asList(new Lookup("id", "trigger.value")), true));
 
         action.setValues(map);
 
@@ -470,7 +471,7 @@ public class TaskServiceImplTest {
                 .withName("test")
                 .withTrigger(trigger)
                 .addAction(action)
-                .addDataSource(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true))
+                .addDataSource(new DataSource("TestProvider", 1234L, 1L, "Test", "id", "specifiedName", asList(new Lookup("id", "trigger.value")), true))
                 .isEnabled(true)
                 .build();
 
@@ -527,7 +528,7 @@ public class TaskServiceImplTest {
                 .withName("test")
                 .withTrigger(trigger)
                 .addAction(action)
-                .addDataSource(new DataSource("providerName", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true))
+                .addDataSource(new DataSource("providerName", 1234L, 1L, "Test", "id", "specifiedName", asList(new Lookup("id", "trigger.value")), true))
                 .addFilterSet(new FilterSet(asList(new Filter("displayName", "ad.providerName.Test#1.id", UNICODE, true, OperatorType.EXIST.getValue(), ""))))
                 .isEnabled(true)
                 .build();
@@ -565,7 +566,7 @@ public class TaskServiceImplTest {
                 .withName("test")
                 .withTrigger(trigger)
                 .addAction(action)
-                .addDataSource(new DataSource("providerName", 56789L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true))
+                .addDataSource(new DataSource("providerName", 56789L, 1L, "Test", "id", "specifiedName", asList(new Lookup("id", "trigger.value")), true))
                 .addFilterSet(new FilterSet(asList(new Filter("displayName", "ad.providerName.Test#1.id", UNICODE, true, OperatorType.EXIST.getValue(), ""))))
                 .isEnabled(true)
                 .build();
@@ -631,7 +632,7 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldValidateTasksAfterChannelUpdateForInvalidTaskDataProviders() {
-        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", "specifiedName",asList(new Lookup("id", "trigger.value")), true));
         Task task = new Task("name", trigger, asList(action), config, true, false);
         task.setId(12345l);
         List<LookupFieldsParameter> lookupFields = new ArrayList<>();
@@ -686,7 +687,7 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldValidateTasksAfterChannelUpdateForValidTaskDataProviders() {
-        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", "specifiedName", asList(new Lookup("id", "trigger.value")), true));
         Task task = new Task("name", trigger, asList(action), config, true, false);
         Set<TaskError> existingErrors = new HashSet<>();
         existingErrors.add(new TaskError("task.validation.error.providerObjectLookupNotExist"));
@@ -720,7 +721,7 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldNotValidateTasksAfterChannelUpdateIfDataSourceDoesNotExistForGivenProvider() {
-        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", "specifiedName", asList(new Lookup("id", "trigger.value")), true));
         Task task = new Task("name", trigger, asList(action), config, true, false);
 
         TaskDataProvider dataProvider = new TaskDataProvider("abc", null);
@@ -791,10 +792,10 @@ public class TaskServiceImplTest {
 
             @Override
             public boolean matchesSafely(ValidationException actualException) {
-                final TaskError triggerChannelError = new TaskError("task.validation.error.triggerChannelNotRegistered");
-                final TaskError actionChannelError = new TaskError("task.validation.error.actionChannelNotRegistered");
+                final TaskErrorDto triggerChannelError = new TaskErrorDto("task.validation.error.triggerChannelNotRegistered");
+                final TaskErrorDto actionChannelError = new TaskErrorDto("task.validation.error.actionChannelNotRegistered");
 
-                Set<TaskError> taskErrors = actualException.getTaskErrors();
+                Set<TaskErrorDto> taskErrors = actualException.getTaskErrors();
                 return taskErrors.contains(triggerChannelError) && taskErrors.contains(actionChannelError);
             }
         });
@@ -817,16 +818,12 @@ public class TaskServiceImplTest {
     private Task captureTask(boolean fromUpdate, VerificationMode verificationMode) {
         VerificationMode mode = (verificationMode == null) ? times(1) : verificationMode;
 
-        ArgumentCaptor<TransactionCallback> transactionCaptor = ArgumentCaptor.forClass(TransactionCallback.class);
-        verify(tasksDataService, mode).doInTransaction(transactionCaptor.capture());
-        transactionCaptor.getValue().doInTransaction(null);
-
         ArgumentCaptor<Task> taskCaptor = ArgumentCaptor.forClass(Task.class);
 
         if (fromUpdate) {
-            verify(tasksDataService).update(taskCaptor.capture());
+            verify(tasksDataService, mode).update(taskCaptor.capture());
         } else {
-            verify(tasksDataService).create(taskCaptor.capture());
+            verify(tasksDataService, mode).create(taskCaptor.capture());
         }
 
         return taskCaptor.getValue();

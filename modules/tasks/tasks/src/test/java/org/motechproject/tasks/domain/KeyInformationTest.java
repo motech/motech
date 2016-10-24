@@ -10,6 +10,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.motechproject.tasks.domain.KeyInformation.ADDITIONAL_DATA_PREFIX;
+import static org.motechproject.tasks.domain.KeyInformation.POST_ACTION_PARAMETER_PREFIX;
 import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 
 public class KeyInformationTest {
@@ -61,6 +62,14 @@ public class KeyInformationTest {
     }
 
     @Test
+    public void shouldGetInformationFromPostActionParameterKey() {
+        String original = String.format("%s.%s.%s", POST_ACTION_PARAMETER_PREFIX, OBJECT_ID, KEY_VALUE);
+        KeyInformation key = KeyInformation.parse(original);
+
+        assertKeyFromPostActionParameter(original, key);
+    }
+
+    @Test
     public void shouldFindAllKeysInString() {
         String trigger = String.format("%s.%s?toupper?join(-)", TRIGGER_PREFIX, KEY_VALUE);
         String additionalData = String.format("%s.%s.%s#%d.%s?toupper?join(-)", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_NAME, OBJECT_TYPE, OBJECT_ID, KEY_VALUE);
@@ -94,6 +103,15 @@ public class KeyInformationTest {
             assertEquals("toupper", manipulations.get(0));
             assertEquals("join(-)", manipulations.get(1));
         }
+    }
+
+    private void assertKeyFromPostActionParameter(String original, KeyInformation postActionParameterKey) {
+        assertTrue(postActionParameterKey.fromPostActionParameter());
+        assertFalse(postActionParameterKey.fromAdditionalData());
+        assertFalse(postActionParameterKey.fromTrigger());
+
+        assertEquals(KEY_VALUE, postActionParameterKey.getKey());
+        assertEquals(original, postActionParameterKey.getOriginalKey());
     }
 
     private void assertKeyFromTrigger(String original, KeyInformation triggerKey) {

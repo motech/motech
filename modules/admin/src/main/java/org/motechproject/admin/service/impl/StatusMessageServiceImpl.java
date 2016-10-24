@@ -108,6 +108,34 @@ public class StatusMessageServiceImpl implements StatusMessageService {
 
     @Override
     @Transactional
+    public void postMessage(String text, String moduleName, String level, DateTime timeout) {
+        Level levelAsEnum;
+        switch (level) {
+            case "admin.log.level.critical":
+                levelAsEnum = Level.CRITICAL;
+                break;
+            case "admin.log.level.debug":
+                levelAsEnum = Level.DEBUG;
+                break;
+            case "admin.log.level.info":
+                levelAsEnum = Level.INFO;
+                break;
+            case "admin.log.level.warn":
+                levelAsEnum = Level.WARN;
+                break;
+            default:
+                levelAsEnum = Level.ERROR;
+                break;
+        }
+        if (timeout == null) {
+            postMessage(text, moduleName, levelAsEnum);
+        } else {
+            postMessage(text, moduleName, levelAsEnum, timeout);
+        }
+    }
+
+    @Override
+    @Transactional
     public void info(String text, String moduleName) {
         postMessage(text, moduleName, Level.INFO, defaultTimeout());
     }

@@ -11,17 +11,17 @@
             <tr ng-repeat="activity in activities">
                 <td>
                     <div>
-                        <img ng-src="../server/module/icon?bundleName={{activity.trigger.moduleName}}&defaultIcon=iconTaskChannel.png" class="recent-activity-img"/>
+                        <div module-name-img="../server/module/icon?bundleName={{activity.trigger.moduleName}}&defaultIcon=iconTaskChannel.png" class="recent-activity-img"></div>
+                    </div>
+                </td>
+                <td>
+                    <div class="task-element">
+                        <i class="fa icon-blue fa-arrow-right fa-lg arrow-right"></i>
                     </div>
                 </td>
                 <td>
                     <div>
-                        <img src="../tasks/img/arrow.png" class="recent-activity-arrow"/>
-                    </div>
-                </td>
-                <td>
-                    <div>
-                        <img ng-src="../server/module/icon?bundleName={{activity.action.moduleName}}&defaultIcon=iconTaskChannel.png" class="recent-activity-img"/>
+                        <div module-name-img="../server/module/icon?bundleName={{activity.action.moduleName}}&defaultIcon=iconTaskChannel.png" class="recent-activity-img"></div>
                     </div>
                 </td>
                 <td class="recent-info">
@@ -31,9 +31,11 @@
                 <td>
                     <div title="{{msg('task.tooltip.clickToSeeDetails')}}">
                         <a ng-href="#/tasks/task/{{activity.task}}/log">
-                            <img ng-show="activity.type == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-icon"/>
-                            <img ng-show="activity.type == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-icon"/>
-                            <img ng-show="activity.type == 'WARNING'" src="../tasks/img/icon-question.png" class="recent-activity-icon"/>
+                            <div ng-show="activity.type == 'SUCCESS'" class="recent-activity-icon fa icon-green fa-check-circle fa-2x" aria-hidden="true"></div>
+                            <div ng-show="activity.type == 'ERROR'" class="recent-activity-icon fa icon-red fa-exclamation-circle fa-2x" aria-hidden="true"></div>
+                            <div ng-show="activity.type == 'WARNING'" class="recent-activity-icon fa warning-type fa-question-circle fa-2x" aria-hidden="true"></div>
+                            <div ng-show="activity.type == 'IN PROGRESS'" class="recent-activity-icon fa icon-blue fa-info-circle fa-2x" aria-hidden="true"></div>
+                            <div ng-show="activity.type == 'FILTERED'" class="recent-activity-icon fa icon-blue fa-info-circle fa-2x" aria-hidden="true"></div>
                         </a>
                     </div>
                 </td>

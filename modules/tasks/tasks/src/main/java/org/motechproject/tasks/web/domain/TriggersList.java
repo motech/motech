@@ -1,7 +1,7 @@
 package org.motechproject.tasks.web.domain;
 
-import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.web.ChannelController;
+import org.motechproject.tasks.dto.TriggerEventDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class TriggersList {
 
-    private List<TriggerEvent> triggers;
+    private List<TriggerEventDto> triggers;
     private int page;
     private int total;
 
@@ -20,15 +20,15 @@ public class TriggersList {
         this.triggers = new ArrayList<>();
     }
 
-    public List<TriggerEvent> getTriggers() {
+    public List<TriggerEventDto> getTriggers() {
         return triggers;
     }
 
-    public void setTriggers(List<TriggerEvent> triggers) {
+    public void setTriggers(List<TriggerEventDto> triggers) {
         this.triggers = triggers;
     }
 
-    public void addTriggers(List<TriggerEvent> triggers) {
+    public void addTriggers(List<TriggerEventDto> triggers) {
         this.triggers.addAll(triggers);
     }
 
