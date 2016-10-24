@@ -80,6 +80,21 @@ public class TaskActivityServiceImplTest {
     }
 
     @Test
+    public void shouldAddTaskFilteredActivity() {
+        when(taskActivitiesDataService.findById(TASK_ACTIVITY_ID)).thenReturn(createInProgress());
+        String messageKey = "task.filtered";
+
+        ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
+
+        activityService.addTaskFiltered(TASK_ACTIVITY_ID);
+
+        verify(taskActivitiesDataService).findById(TASK_ACTIVITY_ID);
+        verify(taskActivitiesDataService).update(captor.capture());
+
+        assertActivity(messageKey, Collections.<String>emptyList(), TASK_ID, TaskActivityType.FILTERED, null, null, captor.getValue());
+    }
+
+    @Test
     public void shouldAddTaskSuccessActivity() {
         when(taskActivitiesDataService.findById(TASK_ACTIVITY_ID)).thenReturn(createInProgress());
         String messageKey = "task.success.ok";

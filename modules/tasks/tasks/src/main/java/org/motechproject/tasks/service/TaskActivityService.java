@@ -24,6 +24,13 @@ public interface TaskActivityService {
     long addTaskStarted(Task task, Map<String, Object> parameters);
 
     /**
+     * Marks the activity as "FILTERED", if task was filtered and not executed.
+     *
+     * @param activityId the id of the activity
+     */
+    void addTaskFiltered(Long activityId);
+
+    /**
      * Adds successful execution to the activity of the provided id. If all the task actions are executed, it marks
      * the activity as "SUCCESS".
      *

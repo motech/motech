@@ -86,13 +86,16 @@
                             </div>
                         </div>
                     </div>
-
-                    <div ng-include="'../tasks/partials/form-action.html'"></div>
+                    <div ng-repeat="step in task.actions">
+                        <div ng-include="'../tasks/partials/form-action.html'"></div>
+                        <div ng-include="'../tasks/partials/form-filter.html'"></div>
+                    </div>
 
                     <!------------------------ ADDING BUTTONS ------------------------>
                     <div class="row inside section-additives">
                         <div class="form-group centered">
                             <div class="btn-group">
+                                <button class="btn btn-success" ng-click="addActionFilterSet()"><i class="fa fa-plus"></i> {{msg('task.button.addActionFilterSet')}}</button>
                                 <button class="btn btn-success" ng-click="addAction()"><i class="fa fa-plus"></i> {{msg('task.button.addAction')}}</button>
                             </div>
                         </div>

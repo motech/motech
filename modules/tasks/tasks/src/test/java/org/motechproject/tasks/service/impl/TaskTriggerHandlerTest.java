@@ -19,6 +19,7 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.tasks.constants.EventDataKeys;
 import org.motechproject.tasks.constants.TaskFailureCause;
+import org.motechproject.tasks.domain.enums.LogicalOperator;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.ActionParameter;
 import org.motechproject.tasks.domain.mds.channel.EventParameter;
@@ -413,7 +414,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "Patient", "provider",
+        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "Patient", "provider", "specifiedName",
                 asList(new Lookup("patientId", "trigger.patientId")), true));
 
         List<Task> tasks = asList(task);
@@ -466,7 +467,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 3L, 1L, "Patient", "provider", asList(new Lookup("patientId", "trigger.patientId")), false));
+        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 3L, 1L, "Patient", "provider", "specifiedName", asList(new Lookup("patientId", "trigger.patientId")), false));
 
         List<Task> tasks = asList(task);
 
@@ -509,7 +510,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "Patient", "provider",
+        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "Patient", "provider", "specifiedName",
                 asList(new Lookup("patientId", "trigger.patientId")), true));
         taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.12345.Patient#1.patientId", INTEGER, false, EXIST.getValue(), ""))));
 
@@ -552,7 +553,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "Patient", "provider",
+        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "Patient", "provider", "specifiedName",
                 asList(new Lookup("patientId", "trigger.patientId")), false));
         taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.12345.Patient#1.patientId", INTEGER, false, EXIST.getValue(), ""))));
 
@@ -781,6 +782,40 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         verify(taskService).findActiveTasksForTriggerSubject(TRIGGER_SUBJECT);
         verify(taskService, never()).getActionEventFor(task.getActions().get(0));
         verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
+        verify(taskActivityService).addTaskFiltered(TASK_ACTIVITY_ID);
+    }
+
+    @Test
+    public void shouldNotPassFiltersCriteriaAndNotExecuteSecondAction() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+        addActionFilterNotPassingCriteria();
+        setSecondAction();
+
+        when(taskService.findActiveTasksForTriggerSubject(TRIGGER_SUBJECT)).thenReturn(tasks);
+        when(taskService.getActionEventFor(any(TaskActionInformation.class))).thenReturn(actionEvent);
+
+        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
+
+        handler.handle(createEvent());
+
+        verify(taskService).findActiveTasksForTriggerSubject(TRIGGER_SUBJECT);
+        verify(taskService).getActionEventFor(task.getActions().get(0));
+        verify(taskService, never()).getActionEventFor(task.getActions().get(1));
+        verify(eventRelay, times(1)).sendEventMessage(captor.capture());
+        verify(taskActivityService, never()).addTaskFiltered(TASK_ACTIVITY_ID);
+
+        List<MotechEvent> events = captor.getAllValues();
+
+        assertEquals(asList(ACTION_SUBJECT), extract(events, on(MotechEvent.class).getSubject()));
+
+        MotechEvent motechEventAction1 = events.get(0);
+
+        assertEquals(ACTION_SUBJECT, motechEventAction1.getSubject());
+        assertNotNull(motechEventAction1.getParameters());
+        assertEquals(2, motechEventAction1.getParameters().size());
+        assertEquals(task.getActions().get(0).getValues().get("phone"), motechEventAction1.getParameters().get("phone").toString());
+        assertEquals("Hello 123456789, You have an appointment on 2012-11-20", motechEventAction1.getParameters().get("message"));
     }
 
     @Test
@@ -1262,8 +1297,8 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Data source by data source object")
                 .setKey("dataSourceObject").build(), true);
 
-        task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "TestObjectField", "id", asList(new Lookup("id", "{{trigger.externalId}}")), isFail));
-        task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 2L, "TestObject", "id", asList(new Lookup("id", "{{trigger.externalId}}-{{ad.12345.TestObjectField#1.id}}")), isFail));
+        task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "TestObjectField", "id", "specifiedName", asList(new Lookup("id", "{{trigger.externalId}}")), isFail));
+        task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 2L, "TestObject", "id", "specifiedName",asList(new Lookup("id", "{{trigger.externalId}}-{{ad.12345.TestObjectField#1.id}}")), isFail));
 
         handler.addDataProvider(dataProvider);
     }
@@ -1283,6 +1318,10 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, false, GT.getValue(), "1234567891"));
 
         task.getTaskConfig().add(new FilterSet(filters));
+    }
+
+    private void addActionFilterNotPassingCriteria() {
+        task.getTaskConfig().add(new FilterSet(asList(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, false, EXIST.getValue(), "")), LogicalOperator.AND, 1));
     }
 
     private void setNonRequiredField() {

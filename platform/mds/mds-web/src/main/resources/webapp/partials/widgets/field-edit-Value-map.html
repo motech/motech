@@ -1,5 +1,5 @@
 <div class="clearfix" ng-init="initMap(field.value, field.id)">
-    <div ng-repeat="fieldMaps in maps | filter: field.id" class="clearfix" name="{{field.name}}" map-validation="{{field.required}}" ng-model="field.value">
+    <div ng-repeat="fieldMaps in maps | filter: field.id" class="clearfix" name="{{field.name}}_field_name" map-validation="{{field.required}}" ng-model="field.value">
         <div class="clearfix margin-before07">
             <label class="input-large-fluid">{{msg('mds.form.label.keyValuePairs')}}&nbsp;<span class="glyphicon glyphicon-info-sign" data-trigger="hover" data-placement="bottom" bs-popover="{{msg('mds.tooltip.map')}}"></span></label>
         </div>
@@ -19,7 +19,7 @@
                     {{msg('mds.error.emptyMapPair')}}
                 </span>
             </div>
-            <div class="clearfix" ng-show="{{field.name}}.$error.required && !emptyMap(map.key, map.value) && !uniqueMapKey(map.key, field.id, $index) && {{field.required}} && !{{field.name}}.$pristine">
+            <div class="clearfix" ng-show="{{field.name}}_field_name.$error.required && !emptyMap(map.key, map.value) && !uniqueMapKey(map.key, field.id, $index) && {{field.required}} && !{{field.name}}_field_name.$pristine">
                 <span class="form-hint form-hint-bottom">{{msg('mds.error.requiredField')}}</span>
             </div>
         </div>

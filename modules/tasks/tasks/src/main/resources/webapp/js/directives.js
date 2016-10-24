@@ -102,6 +102,8 @@
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-task-img fa warning-type fa-question-circle fa-2x"></div>','ok',{ },'');
                                 } else if (activity === 'in progress') {
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-task-img fa icon-blue fa-info-circle fa-2x"></div>','ok',{ },'');
+                                } else if (activity === 'filtered') {
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-task-img fa icon-blue fa-info-circle fa-2x"></div>','ok',{ },'');
                                 } else if (activity === 'error') {
                                     activityId = $("#taskHistoryTable").getCell(rows[k],"id");
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType',
@@ -214,6 +216,7 @@
             link: function (scope, element, attrs) {
                 $('.panel-group').on('show.bs.collapse', function (e) {
                     $(e.target).siblings('.panel-heading').find('.accordion-toggle i.fa-caret-right').removeClass('fa-caret-right').addClass('fa-caret-down');
+                    scope.$broadcast('show.task.actions');
                 });
 
                 $('.tasks-list').on('show.bs.collapse', function (e) {
@@ -250,20 +253,35 @@
                     scope.field.manipulations = [];
                 }
 
-                if(scope.field.prefix === ManageTaskUtils.DATA_SOURCE_PREFIX){
-                    scope.displayName = "{0}.{1}#{2}.{3}".format(
-                        scope.msg(scope.field.providerName),
-                        scope.msg(scope.field.serviceName),
-                        scope.field.objectId,
-                        scope.msg(scope.field.displayName)
-                    );
+                if(scope.field.prefix === ManageTaskUtils.DATA_SOURCE_PREFIX) {
+                    if (!scope.field.specifiedParentName) {
+                         scope.displayName = "{0}.{1}#{2}.{3}".format(
+                             scope.msg(scope.field.providerName),
+                             scope.msg(scope.field.serviceName),
+                             scope.field.objectId,
+                             scope.msg(scope.field.displayName)
+                         );
+                    } else {
+                        scope.displayName = "{0}.{1}".format(
+                             scope.msg(scope.field.specifiedParentName),
+                             scope.msg(scope.field.displayName)
+                        );
+                    }
+
                 } else if(scope.field.prefix === ManageTaskUtils.POST_ACTION_PREFIX){
-                    scope.displayName = "{0}.{1}#{2}.{3}".format(
-                        scope.msg(scope.field.channelName),
-                        scope.msg(scope.field.actionName),
-                        scope.field.objectId,
-                        scope.msg(scope.field.displayName)
-                    );
+                    if(!scope.field.specifiedParentName) {
+                        scope.displayName = "{0}.{1}#{2}.{3}".format(
+                            scope.msg(scope.field.channelName),
+                            scope.msg(scope.field.actionName),
+                            scope.field.objectId,
+                            scope.msg(scope.field.displayName)
+                        );
+                    } else {
+                        scope.displayName = "{0}.{1}".format(
+                             scope.msg(scope.field.specifiedParentName),
+                             scope.msg(scope.field.displayName)
+                        );
+                    }
                 } else if (scope.boolean) {
                     if(scope.boolean === 'true') {
                         scope.displayName = scope.msg("yes");
@@ -299,7 +317,8 @@
                         }
                     });
                 }
-            },
+            }
+            ,
             templateUrl: '../tasks/partials/field.html'
         };
     }]);
@@ -348,9 +367,20 @@
 
         function formatField (field) {
             return '{{{0}}}'.format(
-                ManageTaskUtils.formatField(field)
+                ManageTaskUtils.formatField(field)[0]
                 );
         }
+
+        function formatToKey (str, scope) {
+            var fetchedField;
+            if(str.substring(0,2) === "{{" && str.substring(str.length-2, str.length) === "}}") {
+                str = str.substring(2, str.length-2);
+                fetchedField = ManageTaskUtils.parseField(str, scope.$parent.getAvailableFields());
+                str = formatField(fetchedField);
+            }
+            return str;
+        }
+
         function isTagForPlaceholder (tag) {
             return (tag.tagName && tag.tagName.toLowerCase() === 'em');
         }
@@ -429,38 +459,41 @@
         }
 
         function adjustText() {
-            var textElement, spanElement, inputElement, i;
+            var textElements, spanElement, inputElement, i;
 
             clearInterval(intervalAdjustText);
 
             intervalAdjustText = setInterval( function () {
-                textElement = angular.element(document.getElementsByClassName('text-field-marker'));
+                textElements = angular.element(document.getElementsByClassName('text-field-marker'));
 
-                for (i = 0; i < textElement.length; i += 1) {
-                    spanElement = $(textElement[i]).parent();
+                for (i = 0; i < textElements.length; i += 1) {
+                    spanElement = $(textElements[i]).parent();
                     inputElement = spanElement.parent().parent();
 
-                    if ($(textElement[i]).hasClass('field-text')) {
-                        textElement.removeClass('field-text');
-                    }
+                    if (inputElement.hasClass('map-input')) {
 
-                    if ($(textElement[i]).hasClass('field-text-short')) {
-                        $(textElement[i]).removeClass('field-text-short');
-                    }
+                        if ($(textElements[i]).hasClass('field-text')) {
+                            $(textElements[i]).removeClass('field-text');
+                        }
 
-                    if (spanElement.width()>inputElement.width()*0.9) {
-                        if ($(textElement[i]).width() > spanElement.width()*0.84) {
-                            if ($(textElement[i]).next().is('.badge')) {
-                                $(textElement[i]).addClass('field-text-short');
-                            } else if ($(textElement[i]).width() > spanElement.width()*0.90) {
-                                $(textElement[i]).addClass('field-text');
+                        if ($(textElements[i]).hasClass('field-text-short')) {
+                            $(textElements[i]).removeClass('field-text-short');
+                        }
+
+                        if (spanElement.width()>inputElement.width()*0.9) {
+                            if ($(textElements[i]).width() > spanElement.width()*0.84) {
+                                if ($(textElements[i]).next().is('.badge')) {
+                                    $(textElements[i]).addClass('field-text-short');
+                                } else if ($(textElements[i]).width() > spanElement.width()*0.9) {
+                                    $(textElements[i]).addClass('field-text');
+                                }
                             }
                         }
                     }
                 }
 
                 clearInterval(intervalAdjustText);
-            }, 250);
+            }, 50);
         }
 
         return {
@@ -546,7 +579,7 @@
                 });
 
                 ngModel.$render = function () {
-                    var parsedValue, viewValueStr, matches;
+                    var parsedValue = "", viewValueStr, matches;
                     element.html("");
                     if (!ngModel.$viewValue) {
                         if (scope.debug) {
@@ -556,6 +589,7 @@
                     }
                     parseField(ngModel.$viewValue).forEach(function(str){
                         if (findField(str)) {
+                            str = formatToKey(str, scope);
                             element.append(makeFieldElement(str, scope));
                             $timeout(function() {
                                 adjustText();
@@ -565,7 +599,11 @@
                         } else {
                             element.append(str);
                         }
+                        parsedValue = parsedValue.concat(str);
                     });
+                    if(parsedValue) {
+                        scope.data.value = parsedValue;
+                    }
                 };
 
                 if(attrs.droppable !== undefined) {
@@ -613,7 +651,11 @@
                     eventResize = $timeout(function() {
                         clearInterval(intervalAdjustText);
                         adjustText();
-                    }, 200);
+                    }, 100);
+                });
+
+                scope.$on('show.task.actions', function () {
+                    adjustText();
                 });
             }
         };
