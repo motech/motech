@@ -72,7 +72,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         for (Task task : taskService.getAllTasks()) {
             registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
 
-            if (task.retryTaskOnFailure()) {
+            if (task.getRetryTaskOnFailure()) {
                 registerHandlerFor(task.getTrigger().getEffectiveListenerRetrySubject(), true);
             }
         }

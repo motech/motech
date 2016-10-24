@@ -1,16 +1,25 @@
 package org.motechproject.tasks.service.impl;
 
+import org.motechproject.commons.api.MotechException;
+import org.motechproject.config.SettingsFacade;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import static org.motechproject.tasks.constants.EventDataKeys.JOB_START;
 import static org.motechproject.tasks.constants.EventDataKeys.JOB_SUBJECT;
 import static org.motechproject.tasks.constants.EventDataKeys.REPEAT_COUNT;
 import static org.motechproject.tasks.constants.EventDataKeys.REPEAT_INTERVAL_TIME;
@@ -26,9 +35,17 @@ import static org.motechproject.tasks.constants.EventSubjects.UNSCHEDULE_REPEATI
 public class TaskRetryHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskRetryHandler.class);
+    private static final String TASK_PROPERTIES_FILE_NAME = "settings.properties";
 
     @Autowired
     private EventRelay eventRelay;
+
+    @Autowired
+    @Qualifier("tasksSettings")
+    private SettingsFacade settings;
+
+    private int numberOfRetries;
+    private List<Integer> retryInterval;
 
     /**
      * Takes necessary actions (schedule/unschedule) for the given task, based on its settings and status of the
@@ -41,7 +58,7 @@ public class TaskRetryHandler {
      * @param retryScheduled whether the tak retry is currently scheduled
      */
     public void handleTaskRetries(Task task, Map<String, Object> parameters, boolean success, boolean retryScheduled) {
-        if (task.retryTaskOnFailure()) {
+        if (task.getRetryTaskOnFailure()) {
             if (success && retryScheduled) {
                 LOGGER.info("Unscheduling the task retries, due to successful execution.");
                 unscheduleTaskRetry(task.getTrigger().getEffectiveListenerRetrySubject());
@@ -67,14 +84,41 @@ public class TaskRetryHandler {
     }
 
     private void scheduleTaskRetry(Task task, Map<String, Object> parameters) {
-        Map<String, Object> eventParameters = new HashMap<>();
-        eventParameters.putAll(parameters);
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put(TASK_ID, task.getId());
-        metadata.put(REPEAT_COUNT, task.getNumberOfRetries());
-        metadata.put(REPEAT_INTERVAL_TIME, task.getRetryIntervalInMilliseconds() / 1000);
-        metadata.put(JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
+        getRetries();
+        int retrySeconds = 0;
+        for(int i = 0; i < numberOfRetries - 1; i++) {
+            retrySeconds += retryInterval.get(i);
+            Map<String, Object> eventParameters = new HashMap<>();
+            eventParameters.putAll(parameters);
+            Map<String, Object> metadata = new HashMap<>();
+            metadata.put(TASK_ID, task.getId());
+            metadata.put(REPEAT_COUNT, 1);
+            metadata.put(REPEAT_INTERVAL_TIME, retryInterval.get(i + 1));
+            metadata.put(JOB_START, retrySeconds);
+            metadata.put(JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
 
-        eventRelay.sendEventMessage(new MotechEvent(SCHEDULE_REPEATING_JOB, eventParameters, null, metadata));
+            eventRelay.sendEventMessage(new MotechEvent(SCHEDULE_REPEATING_JOB, eventParameters, null, metadata));
+        }
+
+    }
+
+    private void getRetries() {
+        InputStream retries = settings.getRawConfig(TASK_PROPERTIES_FILE_NAME);
+        Map<String, String> taskRetries = new HashMap<>();
+        retryInterval = new ArrayList<>();
+
+        try {
+            Properties props = new Properties();
+            props.load(retries);
+            if (props != null) {
+                for (Map.Entry<Object, Object> entry : props.entrySet()) {
+                    taskRetries.put((String) entry.getKey(), (String) entry.getValue());
+                    retryInterval.add(0, Integer.valueOf(entry.getValue().toString()));
+                }
+            }
+            numberOfRetries = taskRetries.size();
+        } catch (IOException e) {
+            throw new MotechException("Error loading raw file config to properties", e);
+        }
     }
 }

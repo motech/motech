@@ -46,7 +46,6 @@ public class MotechScheduledJob implements Job {
             String eventType = jobDataMap.getString(SchedulerConstants.EVENT_TYPE_KEY_NAME);
             Map<String, Object> params = jobDataMap.getWrappedMap();
             params.remove(SchedulerConstants.EVENT_TYPE_KEY_NAME);
-
             MotechEvent motechEvent = new MotechEvent(eventType, params);
             motechEvent.getMetadata().putAll((Map<String, Object>) params.get(SchedulerConstants.EVENT_METADATA));
             params.remove(SchedulerConstants.EVENT_METADATA);

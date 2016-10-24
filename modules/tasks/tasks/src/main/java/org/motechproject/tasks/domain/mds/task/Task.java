@@ -78,6 +78,9 @@ public class Task {
     @Field
     private int retryIntervalInMilliseconds;
 
+    @Field
+    private boolean retryTaskOnFailure;
+
     /**
      * Constructor.
      */
@@ -118,6 +121,7 @@ public class Task {
         this.failuresInRow = 0;
         this.numberOfRetries = DEFAULT_NUMBER_FOR_TASK_RETRIES;
         this.retryIntervalInMilliseconds = DEFAULT_TIME_FOR_RETRY_INTERVAL;
+        this.retryTaskOnFailure = false;
     }
 
     /**
@@ -196,6 +200,14 @@ public class Task {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public void setRetryTaskOnFailure(boolean retryTaskOnFailure) {
+        this.retryTaskOnFailure = retryTaskOnFailure;
+    }
+
+    public boolean getRetryTaskOnFailure() {
+        return retryTaskOnFailure;
     }
 
     public String getDescription() {
@@ -278,7 +290,7 @@ public class Task {
         }
 
         return new TaskDto(id, description, name, failuresInRow, actionDtos, trigger.toDto(), enabled, errorDtos,
-                taskConfig.toDto(), hasRegisteredChannel, numberOfRetries, retryIntervalInMilliseconds);
+                taskConfig.toDto(), hasRegisteredChannel, numberOfRetries, retryIntervalInMilliseconds, retryTaskOnFailure);
     }
 
 

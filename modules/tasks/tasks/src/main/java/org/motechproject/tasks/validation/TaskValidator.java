@@ -62,8 +62,6 @@ public class TaskValidator extends GeneralValidator {
 
         checkBlankValue(errors, TASK, "name", task.getName());
 
-        errors.addAll(validateRetryOnFailureValues(task.getNumberOfRetries(), task.getRetryIntervalInMilliseconds()));
-
         errors.addAll(validateTrigger(task.getTrigger()));
 
         checkEmpty(errors, TASK, "actions", task.getActions());
@@ -452,17 +450,6 @@ public class TaskValidator extends GeneralValidator {
 
         for (DataSource dataSource : config.getDataSources()) {
             errors.addAll(validateDataSource(dataSource));
-        }
-
-        return errors;
-    }
-
-    private static Set<TaskError> validateRetryOnFailureValues(int numberOfRetries, int retryIntervalInMilliseconds) {
-        Set<TaskError> errors = new HashSet<>();
-
-        if (numberOfRetries < 0 || retryIntervalInMilliseconds < 0) {
-            TaskError error = new TaskError("task.validation.error.invalidRetryOnFailureValues");
-            errors.add(error);
         }
 
         return errors;

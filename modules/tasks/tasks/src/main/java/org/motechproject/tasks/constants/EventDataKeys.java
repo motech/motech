@@ -27,6 +27,7 @@ public final class EventDataKeys {
 
     public static final String REPEAT_COUNT = "repeatCount";
     public static final String REPEAT_INTERVAL_TIME = "repeatIntervalInSeconds";
+    public static final String JOB_START = "jobStart";
     public static final String JOB_SUBJECT = "jobSubject";
     public static final String TASK_ID = "task_ID";
     public static final String TASK_ACTIVITY_ID = "task_activity_ID";

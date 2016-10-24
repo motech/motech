@@ -68,25 +68,6 @@
                     </div>
                 </div>
 
-                <div class="inside-0" ng-if="task.retryTaskOnFailure">
-                    <div class="form-group ng-cloak" ng-class="{'has-error': !isNumericalNonNegativeValue(task.numberOfRetries)}">
-                        <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.numberOfRetries')}}</label>
-                        <div class="col-md-10 col-sm-9">
-                            <input class="form-control" type='text' ng-model='task.numberOfRetries' id="task.numberOfRetries">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="inside-0" ng-if="task.retryTaskOnFailure">
-                    <div class="form-group ng-cloak" ng-class="{'has-error': !isNumericalNonNegativeValue(task.retryIntervalInSeconds)}">
-                        <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.retryInterval')}}</label>
-                        <div class="col-md-10 col-sm-9">
-                            <input class="form-control" type='text' ng-model='task.retryIntervalInSeconds' id="task.retryIntervalInSeconds"
-                                   placeholder="{{msg('task.retryIntervalPlaceholder')}}">
-                        </div>
-                    </div>
-                </div>
-
                 <!------------------ SELECT TRIGGER ------------------>
                 <div ng-include="'../tasks/partials/form-trigger.html'"></div>
 

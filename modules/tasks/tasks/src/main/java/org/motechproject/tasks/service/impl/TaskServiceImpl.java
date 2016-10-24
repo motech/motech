@@ -584,8 +584,7 @@ public class TaskServiceImpl implements TaskService {
             existing.setTrigger(task.getTrigger());
             existing.setName(task.getName());
             existing.setValidationErrors(task.getValidationErrors());
-            existing.setNumberOfRetries(task.getNumberOfRetries());
-            existing.setRetryIntervalInMilliseconds(task.getRetryIntervalInMilliseconds());
+            existing.setRetryTaskOnFailure(task.getRetryTaskOnFailure());
 
             checkChannelAvailableInTask(existing);
 
@@ -608,7 +607,7 @@ public class TaskServiceImpl implements TaskService {
             TriggerHandler triggerHandler = bundleContext.getService(serviceReference);
             triggerHandler.registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
 
-            if (task.retryTaskOnFailure()) {
+            if (task.getRetryTaskOnFailure()) {
                 triggerHandler.registerHandlerFor(task.getTrigger().getEffectiveListenerRetrySubject(), true);
             }
         }

@@ -24,6 +24,7 @@ public class MotechSchedulerListener {
     private static final String REPEAT_COUNT = "repeatCount";
     private static final String REPEAT_INTERVAL_TIME = "repeatIntervalInSeconds";
     private static final String JOB_SUBJECT = "jobSubject";
+    private static final String JOB_START = "jobStart";
 
     private MotechSchedulerService schedulerService;
 
@@ -40,11 +41,11 @@ public class MotechSchedulerListener {
         String jobSubject = (String) metadata.get(JOB_SUBJECT);
         Integer repeatCount = (Integer) metadata.get(REPEAT_COUNT);
         Integer repeatIntervalInSeconds = (Integer) metadata.get(REPEAT_INTERVAL_TIME);
-
+        Integer start = (Integer) metadata.get(JOB_START);
         MotechEvent jobEvent = new MotechEvent(jobSubject, parameters, null, metadata);
 
-        RepeatingSchedulableJob repeatingJob = new RepeatingSchedulableJob(jobEvent, repeatCount - 1, repeatIntervalInSeconds,
-                DateTime.now().plusSeconds(repeatIntervalInSeconds), null, false);
+        RepeatingSchedulableJob repeatingJob = new RepeatingSchedulableJob(jobEvent, repeatCount, repeatIntervalInSeconds,
+                DateTime.now().plusSeconds(start), null, false);
 
         schedulerService.scheduleRepeatingJob(repeatingJob);
     }

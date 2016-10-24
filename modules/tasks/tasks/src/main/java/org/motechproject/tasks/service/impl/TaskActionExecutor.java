@@ -255,7 +255,7 @@ public class TaskActionExecutor {
     }
 
     private void addTriggerParameters(Task task, ActionEvent action, Map<String, Object> parameters, Map<String, Object> triggerParameters) {
-        if (task.getNumberOfRetries() > 0 && !action.hasService()) {
+        if (task.getRetryTaskOnFailure() && !action.hasService()) {
             for (Map.Entry<String, Object> entry : triggerParameters.entrySet()) {
                 if (! parameters.containsKey(entry.getKey())) {
                     parameters.put(entry.getKey(), entry.getValue());
