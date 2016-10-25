@@ -496,7 +496,7 @@
             }, 50);
         }
 
-        function prepareField(field, scope) {
+        function prepareField(field, fullName) {
             switch (field.prefix) {
                 case ManageTaskUtils.TRIGGER_PREFIX:
                     return "{{{0}.{1}}}".format(
@@ -504,19 +504,34 @@
                         field.eventKey
                     );
                 case ManageTaskUtils.DATA_SOURCE_PREFIX:
-                    return "{{{0}.{1}.{2}#{3}.{4}}}".format(
-                        ManageTaskUtils.DATA_SOURCE_PREFIX,
-                        field.providerName,
-                        field.providerType,
-                        field.objectId,
-                        field.fieldKey
-                    );
+                    if (!field.specifiedParentName || fullName) {
+                        return "{{{0}.{1}.{2}#{3}.{4}}}".format(
+                            ManageTaskUtils.DATA_SOURCE_PREFIX,
+                            field.providerName,
+                            field.providerType,
+                            field.objectId,
+                            field.fieldKey
+                        );
+                    } else {
+                        return "{{{0}.{1}}}".format(
+                            field.specifiedParentName,
+                            field.fieldKey
+                        );
+                    }
+
                 case ManageTaskUtils.POST_ACTION_PREFIX:
-                    return "{{{0}.{1}.{2}}}".format(
-                        ManageTaskUtils.POST_ACTION_PREFIX,
-                        field.objectId,
-                        field.key
-                    );
+                    if(!field.specifiedParentName || fullName) {
+                        return "{{{0}.{1}.{2}}}".format(
+                            ManageTaskUtils.POST_ACTION_PREFIX,
+                            field.objectId,
+                            field.key
+                        );
+                    } else {
+                        return "{{{0}.{1}}}".format(
+                            field.specifiedParentName,
+                            field.fieldKey
+                        );
+                    }
             }
         }
 
@@ -526,7 +541,7 @@
                 return filteredList;
             }
             choices.filter(function (choice) {
-                if (choice.indexOf(searchText) > 0) {
+                if (prepareField(choice, false).indexOf(searchText) > 0 || prepareField(choice, true).indexOf(searchText) > 0) {
                     filteredList.push(choice);
                 }
             });
@@ -663,8 +678,12 @@
                 };
 
                 angular.forEach(scope.fields, function (field) {
-                   items.push(prepareField(field, scope));
+                   items.push(field);
                 });
+
+                scope.getPreparedName = function (fieldToPrepare, fullName) {
+                    return prepareField(fieldToPrepare, fullName);
+                };
 
                 scope.refreshListItems = function (event) {
                     scope.filteredItems = [];
@@ -685,10 +704,10 @@
                         if (element[0].contains(scope.rangySelection.anchorNode) && anchorValue) {
                             $(scope.rangySelection.anchorNode).before(
                                 anchorValue.substring(0, findStartIndex(anchorValue, scope.rangySelection.anchorOffset))
-                                + " " + item + "&nbsp;" + anchorValue.substring(scope.rangySelection.anchorOffset + 1)
+                                + " " + prepareField(item, scope.debug) + "&nbsp;" + anchorValue.substring(scope.rangySelection.anchorOffset + 1)
                             ).remove();
                         } else {
-                            element.append(item);
+                            element.append(prepareField(item, scope.debug));
                         }
                     }
                     scope.filteredItems = [];
