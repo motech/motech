@@ -18,6 +18,12 @@
     </div>
     <div id="collapse-step-{{step.order}}" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
         <div class="panel-body inside">
+            <div class="form-group control-section" >
+                <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.datasource.displayName')}}</label>
+                <div class="col-md-8 col-sm-6">
+                    <input class="form-control" type='text' ng-change="addSpecifiedDataSourceName(step)" ng-model='step.specifiedName' id="step.specifiedName">
+                </div>
+            </div>
             <div class="form-group control-section" ng-show="showBubbles">
                 <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.info.availableFields')}}:</label>
                 <div class="form-inline col-md-10 col-sm-9 move-element">

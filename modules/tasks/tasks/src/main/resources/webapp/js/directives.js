@@ -253,20 +253,35 @@
                     scope.field.manipulations = [];
                 }
 
-                if(scope.field.prefix === ManageTaskUtils.DATA_SOURCE_PREFIX){
-                    scope.displayName = "{0}.{1}#{2}.{3}".format(
-                        scope.msg(scope.field.providerName),
-                        scope.msg(scope.field.serviceName),
-                        scope.field.objectId,
-                        scope.msg(scope.field.displayName)
-                    );
+                if(scope.field.prefix === ManageTaskUtils.DATA_SOURCE_PREFIX) {
+                    if (!scope.field.specifiedParentName) {
+                         scope.displayName = "{0}.{1}#{2}.{3}".format(
+                             scope.msg(scope.field.providerName),
+                             scope.msg(scope.field.serviceName),
+                             scope.field.objectId,
+                             scope.msg(scope.field.displayName)
+                         );
+                    } else {
+                        scope.displayName = "{0}.{1}".format(
+                             scope.msg(scope.field.specifiedParentName),
+                             scope.msg(scope.field.displayName)
+                        );
+                    }
+
                 } else if(scope.field.prefix === ManageTaskUtils.POST_ACTION_PREFIX){
-                    scope.displayName = "{0}.{1}#{2}.{3}".format(
-                        scope.msg(scope.field.channelName),
-                        scope.msg(scope.field.actionName),
-                        scope.field.objectId,
-                        scope.msg(scope.field.displayName)
-                    );
+                    if(!scope.field.specifiedParentName) {
+                        scope.displayName = "{0}.{1}#{2}.{3}".format(
+                            scope.msg(scope.field.channelName),
+                            scope.msg(scope.field.actionName),
+                            scope.field.objectId,
+                            scope.msg(scope.field.displayName)
+                        );
+                    } else {
+                        scope.displayName = "{0}.{1}".format(
+                             scope.msg(scope.field.specifiedParentName),
+                             scope.msg(scope.field.displayName)
+                        );
+                    }
                 } else if (scope.boolean) {
                     if(scope.boolean === 'true') {
                         scope.displayName = scope.msg("yes");
@@ -302,7 +317,8 @@
                         }
                     });
                 }
-            },
+            }
+            ,
             templateUrl: '../tasks/partials/field.html'
         };
     }]);
@@ -351,9 +367,20 @@
 
         function formatField (field) {
             return '{{{0}}}'.format(
-                ManageTaskUtils.formatField(field)
+                ManageTaskUtils.formatField(field)[0]
                 );
         }
+
+        function formatToKey (str, scope) {
+            var fetchedField;
+            if(str.substring(0,2) === "{{" && str.substring(str.length-2, str.length) === "}}") {
+                str = str.substring(2, str.length-2);
+                fetchedField = ManageTaskUtils.parseField(str, scope.$parent.getAvailableFields());
+                str = formatField(fetchedField);
+            }
+            return str;
+        }
+
         function isTagForPlaceholder (tag) {
             return (tag.tagName && tag.tagName.toLowerCase() === 'em');
         }
@@ -605,7 +632,7 @@
                 });
 
                 ngModel.$render = function () {
-                    var parsedValue, viewValueStr, matches;
+                    var parsedValue = "", viewValueStr, matches;
                     element.html("");
                     if (!ngModel.$viewValue) {
                         if (scope.debug) {
@@ -615,6 +642,7 @@
                     }
                     parseField(ngModel.$viewValue).forEach(function(str){
                         if (findField(str)) {
+                            str = formatToKey(str, scope);
                             element.append(makeFieldElement(str, scope));
 
                             $timeout(function() {
@@ -626,7 +654,12 @@
                         } else {
                             element.append(str);
                         }
+                        parsedValue = parsedValue.concat(str);
                     });
+
+                    if (parsedValue && parsedValue !== scope.data.value) {
+                        scope.data.value = parsedValue;
+                    }
                 };
 
                 angular.forEach(scope.fields, function (field) {

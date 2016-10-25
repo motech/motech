@@ -414,7 +414,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "Patient", "provider",
+        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "Patient", "provider", "specifiedName",
                 asList(new Lookup("patientId", "trigger.patientId")), true));
 
         List<Task> tasks = asList(task);
@@ -467,7 +467,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 3L, 1L, "Patient", "provider", asList(new Lookup("patientId", "trigger.patientId")), false));
+        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 3L, 1L, "Patient", "provider", "specifiedName", asList(new Lookup("patientId", "trigger.patientId")), false));
 
         List<Task> tasks = asList(task);
 
@@ -510,7 +510,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "Patient", "provider",
+        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "Patient", "provider", "specifiedName",
                 asList(new Lookup("patientId", "trigger.patientId")), true));
         taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.12345.Patient#1.patientId", INTEGER, false, EXIST.getValue(), ""))));
 
@@ -553,7 +553,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "Patient", "provider",
+        taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "Patient", "provider", "specifiedName",
                 asList(new Lookup("patientId", "trigger.patientId")), false));
         taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.12345.Patient#1.patientId", INTEGER, false, EXIST.getValue(), ""))));
 
@@ -1297,8 +1297,8 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         actionEvent.addParameter(new ActionParameterBuilder().setDisplayName("Data source by data source object")
                 .setKey("dataSourceObject").build(), true);
 
-        task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "TestObjectField", "id", asList(new Lookup("id", "{{trigger.externalId}}")), isFail));
-        task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 2L, "TestObject", "id", asList(new Lookup("id", "{{trigger.externalId}}-{{ad.12345.TestObjectField#1.id}}")), isFail));
+        task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "TestObjectField", "id", "specifiedName", asList(new Lookup("id", "{{trigger.externalId}}")), isFail));
+        task.getTaskConfig().add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 2L, "TestObject", "id", "specifiedName",asList(new Lookup("id", "{{trigger.externalId}}-{{ad.12345.TestObjectField#1.id}}")), isFail));
 
         handler.addDataProvider(dataProvider);
     }
