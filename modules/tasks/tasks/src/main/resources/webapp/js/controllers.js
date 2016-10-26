@@ -274,8 +274,11 @@
             }
         };
         $scope.task.retryTaskOnFailure = false;
+        $scope.task.useTimeWindow = false;
         $scope.taskStepNumber = 0;
         $scope.debugging = false;
+        $scope.startTime = "";
+        $scope.endTime = "";
 
         $scope.changeCheckbox = function (debugging) {
             $scope.debugging = debugging;
@@ -314,6 +317,10 @@
                            $scope.task.retryIntervalInSeconds = $scope.task.retryIntervalInMilliseconds / 1000;
                         } else {
                            $scope.task.retryTaskOnFailure = false;
+                        }
+                        if ($scope.task.useTimeWindow === true) {
+                           $scope.startTime = $scope.task.startTime + " +0000";
+                           $scope.endTime = $scope.task.endTime + " +0000";
                         }
 
                         triggerChannel = $scope.util.find({
@@ -431,19 +438,46 @@
 
         $scope.isTaskValid = function() {
             // Retry task on failure inputs validation - only numerical non negative values
-            var retryTaskOnFailureValidation;
+            var retryTaskOnFailureValidation, useTimeWindowValidation;
             if ($scope.task.retryTaskOnFailure) {
                 retryTaskOnFailureValidation = $scope.isNumericalNonNegativeValue($scope.task.numberOfRetries)
                 && $scope.isNumericalNonNegativeValue($scope.task.retryIntervalInSeconds);
             } else {
                 retryTaskOnFailureValidation = true;
             }
+            if($scope.task.useTimeWindow) {
+                useTimeWindowValidation = $scope.isTimeFormat($scope.startTime)
+                && $scope.isTimeFormat($scope.endTime);
+            } else {
+                useTimeWindowValidation = true;
+            }
 
-            return $scope.task.name && retryTaskOnFailureValidation;
+            return $scope.task.name && retryTaskOnFailureValidation && useTimeWindowValidation;
         };
 
         $scope.isNumericalNonNegativeValue = function (value) {
             return !isNaN(value) && value >= 0;
+        };
+
+        $scope.isTimeFormat = function (value) {
+            var regexElements, regex = /^(\d{1,2}):(\d{2}) [\+\-](\d{4})$/;
+            if (value !== '') {
+            regexElements = value.match(regex);
+                if (regexElements) {
+                    if (regexElements[1] > 23) {
+                        return false;
+                    }
+                    if (regexElements[2] > 59) {
+                        return false;
+                    }
+                    if (regexElements[3] > 1400) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+            return true;
         };
 
         $scope.removeTrigger = function ($event) {
@@ -914,6 +948,42 @@
             return unknown;
         };
 
+        $scope.parseTime = function (timeString) {
+            var hours, minutes, hoursStr, minutesStr, formatted, regexElements, regex = /^(\d{1,2}):(\d{2}) ([\+\-])(\d{4})$/;
+            regexElements = timeString.match(regex);
+            if(regexElements[3] === "-") {
+                hours = parseInt(regexElements[1], 10) + parseInt(regexElements[4].slice(0,2), 10);
+                minutes = parseInt(regexElements[2], 10) + parseInt(regexElements[4].slice(2,4), 10);
+                if (minutes > 59) {
+                    hours = hours + 1;
+                    minutes = minutes - 60;
+                }
+                if (hours > 23) {
+                    hours = hours - 24;
+                }
+            } else {
+                hours = parseInt(regexElements[1], 10) - parseInt(regexElements[4].slice(0,2), 10);
+                minutes = parseInt(regexElements[2], 10) - parseInt(regexElements[4].slice(2,4), 10);
+                if (minutes < 0) {
+                    hours = hours - 1;
+                    minutes = minutes + 60;
+                }
+                if (hours < 0) {
+                    hours = hours + 24;
+                }
+            }
+            hoursStr = hours.toString();
+            minutesStr = minutes.toString();
+            if(hours < 10) {
+                hoursStr = "0" + hoursStr;
+            }
+            if(minutes < 10) {
+                minutesStr = "0" + minutesStr;
+            }
+            formatted = hoursStr + (":") + minutesStr;
+            return formatted;
+        };
+
         $scope.save = function (enabled) {
             var actionOrder = [], taskOrder = [], filtersToDelete = [], success = function (response) {
                 var alertMessage = enabled ? $scope.msg('task.success.savedAndEnabled') : $scope.msg('task.success.saved'),
@@ -1010,6 +1080,13 @@
             } else {
                 // Convert given value from UI in seconds to milliseconds
                 $scope.task.retryIntervalInMilliseconds = $scope.task.retryIntervalInSeconds * 1000;
+            }
+            if (!$scope.task.useTimeWindow) {
+                $scope.task.startTime = undefined;
+                $scope.task.endTime = undefined;
+            } else {
+                $scope.task.startTime = $scope.parseTime($scope.startTime);
+                $scope.task.endTime = $scope.parseTime($scope.endTime);
             }
 
             LoadingModal.open();

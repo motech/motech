@@ -6,7 +6,10 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
 import org.motechproject.commons.api.TasksEventParser;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListener;
@@ -14,16 +17,16 @@ import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.osgi.web.util.WebBundleUtil;
+import org.motechproject.tasks.compatibility.TaskMigrationManager;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.Channel;
-import org.motechproject.tasks.compatibility.TaskMigrationManager;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.domain.mds.task.DataSource;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
 import org.motechproject.tasks.domain.mds.task.TaskError;
 import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
-import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 import org.motechproject.tasks.exception.CustomParserNotFoundException;
 import org.motechproject.tasks.exception.TaskNameAlreadyExistsException;
@@ -192,7 +195,16 @@ public class TaskServiceImpl implements TaskService {
                 public List<Task> execute(Query query, InstanceSecurityRestriction restriction) {
                     String byTriggerSubject = "trigger.subject == param";
                     String isTaskActive = "enabled == true";
-                    String filter = String.format("(%s) && (%s)", isTaskActive, byTriggerSubject);
+                    String isNotUsingTimeWindow = "useTimeWindow != true";
+                    String now = (new Time(LocalTime.now(DateTimeZone.UTC))).toString();
+                    String isAfterStartTime = String.format("startTime < \"%s\"", now);
+                    String isBeforeEndTime = String.format("endTime > \"%s\"", now);
+                    String isEndTimeNextDay = "endTime < startTime";
+                    String isBetweenStartTimeAndMidnight = String.format("(%s) && (\"24:00\" > \"%s\")", isAfterStartTime, now);
+                    String isBetweenMidnightAndEndTime = String.format("(%s) && (\"00:00\" < \"%s\")", isBeforeEndTime, now);
+                    String isInTimeWindow = String.format("(%s) || ((%s) && (%s)) || ((%s) && ((%s) || (%s)))",
+                            isNotUsingTimeWindow, isAfterStartTime, isBeforeEndTime, isEndTimeNextDay, isBetweenStartTimeAndMidnight, isBetweenMidnightAndEndTime);
+                    String filter = String.format("(%s) && (%s) && (%s)", isTaskActive, byTriggerSubject, isInTimeWindow);
 
                     query.setFilter(filter);
                     query.declareParameters("java.lang.String param");
@@ -586,6 +598,9 @@ public class TaskServiceImpl implements TaskService {
             existing.setValidationErrors(task.getValidationErrors());
             existing.setNumberOfRetries(task.getNumberOfRetries());
             existing.setRetryIntervalInMilliseconds(task.getRetryIntervalInMilliseconds());
+            existing.setUseTimeWindow(task.isUseTimeWindow());
+            existing.setStartTime(task.getStartTime());
+            existing.setEndTime(task.getEndTime());
 
             checkChannelAvailableInTask(existing);
 
