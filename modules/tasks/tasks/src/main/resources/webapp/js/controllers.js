@@ -770,6 +770,20 @@
             }
         };
 
+        $scope.addSpecifiedActionName = function (changedAction, changedActionIndex) {
+            var actions = $scope.task.actions;
+
+            actions.forEach(function (action, index) {
+                if (index === changedActionIndex) {
+                    action.specifiedName = changedAction.specifiedName;
+                }
+            });
+
+            if (!$scope.$$phase) {
+                $scope.$apply($scope.task);
+            }
+        };
+
         $scope.addDataSource = function () {
             var sources = $scope.getDataSources(),
                 last;

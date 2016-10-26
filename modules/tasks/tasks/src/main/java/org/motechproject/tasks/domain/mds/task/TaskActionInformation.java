@@ -183,7 +183,7 @@ public class TaskActionInformation extends TaskEventInformation {
 
     @Override
     public int hashCode() {
-        return Objects.hash(serviceInterface, serviceMethod, values);
+        return Objects.hash(serviceInterface, serviceMethod, specifiedName, values);
     }
 
     @Override
@@ -204,6 +204,7 @@ public class TaskActionInformation extends TaskEventInformation {
 
         return Objects.equals(this.serviceInterface, other.serviceInterface) &&
                 Objects.equals(this.serviceMethod, other.serviceMethod) &&
+                Objects.equals(this.specifiedName, other.specifiedName) &&
                 Objects.equals(this.values, other.values);
     }
 
