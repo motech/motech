@@ -1339,10 +1339,11 @@
                         }
                     }
 
-                    key = keyValue[0];
-                    value =  keyValue[1];
-
-                    $scope.pairs.push({key:key, value:value});
+                    if (keyValue.length === 2) {
+                        key = keyValue[0];
+                        value = keyValue[1];
+                        $scope.pairs.push({key:key, value:value});
+                    }
                 }
 
                 $scope.dataTransformed = true;

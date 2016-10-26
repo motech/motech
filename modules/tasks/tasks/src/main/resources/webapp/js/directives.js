@@ -601,7 +601,8 @@
                         }
                         parsedValue = parsedValue.concat(str);
                     });
-                    if(parsedValue) {
+
+                    if (parsedValue && parsedValue !== scope.data.value) {
                         scope.data.value = parsedValue;
                     }
                 };
