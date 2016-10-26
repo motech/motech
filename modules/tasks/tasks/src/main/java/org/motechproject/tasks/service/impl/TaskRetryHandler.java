@@ -103,11 +103,11 @@ public class TaskRetryHandler {
     }
 
     private void getRetries() {
-        InputStream retries = settings.getRawConfig(TASK_PROPERTIES_FILE_NAME);
         Map<String, String> taskRetries = new HashMap<>();
         retryInterval = new ArrayList<>();
 
         try {
+            InputStream retries = settings.getRawConfig(TASK_PROPERTIES_FILE_NAME);
             Properties props = new Properties();
             props.load(retries);
             if (props != null) {
@@ -119,6 +119,8 @@ public class TaskRetryHandler {
             numberOfRetries = taskRetries.size();
         } catch (IOException e) {
             throw new MotechException("Error loading raw file config to properties", e);
+        } catch (NullPointerException e) {
+            numberOfRetries = 0;
         }
     }
 }

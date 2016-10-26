@@ -286,6 +286,7 @@ public class TaskServiceImplTest {
 
         Task task = new Task("name", trigger, asList(action), config, true, false);
         task.setNumberOfRetries(5);
+        task.setRetryTaskOnFailure(true);
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")), "")), null);
 
         ActionEvent actionEvent = new ActionEventBuilder().setDisplayName("receive").setSubject("RECEIVE")
