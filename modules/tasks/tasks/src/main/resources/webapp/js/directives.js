@@ -553,6 +553,15 @@
             return (value.lastIndexOf("}}") > value.lastIndexOf(" ")) ? value.lastIndexOf("}}") + 2: value.lastIndexOf(" ");
         }
 
+        function stopPropagation(evt) {
+            evt.cancelBubble = true;
+            evt.returnValue = false;
+            if (evt.stopPropagation) {
+                evt.stopPropagation();
+                evt.preventDefault();
+            }
+        }
+
         return {
             restrict: 'A',
             require: '?ngModel',
@@ -564,14 +573,16 @@
                     scope.filteredItems = [];
                     scope.selPos = 0;
 
+                if (!ngModel) {
+                    return false;
+                }
+
+                if (element.attr('field-autocomplete') === "true") {
                     $http.get(url, {cache: $templateCache})
                     .success(function (html) {
                         var compiledContent = $compile(html)(scope);
                         $(compiledContent).insertBefore(element);
                     });
-
-                if (!ngModel) {
-                    return false;
                 }
 
                 scope.$watch(function () {
@@ -646,6 +657,13 @@
                     }
                 });
 
+                element.on('focus', function () {
+                    if (ngModel) {
+                        scope.selectedElement = element;
+                        scope.selectedModel = ngModel;
+                    }
+                });
+
                 ngModel.$render = function () {
                     var parsedValue = "", viewValueStr, matches;
                     element.html("");
@@ -692,6 +710,11 @@
                         var value = scope.rangySelection.anchorNode.nodeValue;
                         scope.searchText = value.substring(findStartIndex(value.trimRight(), scope.rangySelection.anchorOffset), scope.rangySelection.anchorOffset) + event.key;//extractText(element.html() + event.key, scope.debug);
                         scope.filteredItems = getFilteredItems(items, scope.searchText.trim());
+                        if (scope.selectedElement.parent().find('ul').is('ul.dropdown-menu.open-list')
+                            && (scope.selectedElement.attr('ng-model') === "pair.value" || scope.selectedElement.attr('ng-model') === "pair.key")) {
+                            scope.selectedElement.parent().find('ul.dropdown-menu.open-list')
+                            .css({'margin-left': scope.selectedElement.position().left, 'top': scope.selectedElement.position().top + scope.selectedElement.outerHeight()});
+                        }
                     }
                 };
 
@@ -701,18 +724,19 @@
                     }
                     if (scope.rangySelection && scope.rangySelection.anchorNode) {
                         var anchorValue = scope.rangySelection.anchorNode.nodeValue;
-                        if (element[0].contains(scope.rangySelection.anchorNode) && anchorValue) {
+                        if (scope.selectedElement[0].contains(scope.rangySelection.anchorNode) && anchorValue) {
                             $(scope.rangySelection.anchorNode).before(
                                 anchorValue.substring(0, findStartIndex(anchorValue, scope.rangySelection.anchorOffset))
-                                + " " + prepareField(item, scope.debug) + "&nbsp;" + anchorValue.substring(scope.rangySelection.anchorOffset + 1)
+                                + " " + prepareField(item, scope.debug) + " " + anchorValue.substring(scope.rangySelection.anchorOffset + 1)
                             ).remove();
                         } else {
-                            element.append(prepareField(item, scope.debug));
+                            scope.selectedElement.append(prepareField(item, scope.debug));
                         }
                     }
+                    scope.selPos = -1;
                     scope.filteredItems = [];
                     scope.searchText = "";
-                    ngModel.$setViewValue(readContent(element));
+                    scope.selectedModel.$setViewValue(readContent(scope.selectedElement));
                 };
 
                 scope.keyPress = function(evt) {
@@ -723,7 +747,8 @@
                             break;
                         case 13: // enter
                             if(scope.selPos > -1 && scope.filteredItems.length > 0) {
-                              scope.addItem(scope.filteredItems[scope.selPos]);
+                                stopPropagation(evt);
+                                scope.addItem(scope.filteredItems[scope.selPos]);
                             }
                             break;
                         case 8: // backspace
@@ -733,24 +758,14 @@
                             break;
                         case 186: // semicolon
                             if(scope.selPos > -1 && scope.filteredItems.length > 0) {
-                                evt.cancelBubble = true;
-                                evt.returnValue = false;
-                                if (evt.stopPropagation) {
-                                    evt.stopPropagation();
-                                    evt.preventDefault();
-                                }
+                                stopPropagation(evt);
                                 scope.addItem(scope.filteredItems[scope.selPos]);
                                 return;
                             }
                             break;
                         case 188: // coma
                             if(scope.selPos > -1 && scope.filteredItems.length > 0) {
-                                evt.cancelBubble = true;
-                                evt.returnValue = false;
-                                if (evt.stopPropagation) {
-                                    evt.stopPropagation();
-                                    evt.preventDefault();
-                                }
+                                stopPropagation(evt);
                                 scope.addItem(scope.filteredItems[scope.selPos]);
                             }
                             break;
