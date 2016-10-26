@@ -32,6 +32,7 @@ public class DataSource extends TaskConfigStep {
     private Long objectId;
     private String type;
     private String name;
+    private String specifiedName;
 
     @Field
     @Cascade(delete = true)
@@ -43,7 +44,7 @@ public class DataSource extends TaskConfigStep {
      * Constructor.
      */
     public DataSource() {
-        this(null, null, null, null, "id", null, false);
+        this(null, null, null, null, "id", null, null, false);
     }
 
     /**
@@ -51,7 +52,7 @@ public class DataSource extends TaskConfigStep {
      * @param dto DataSource data transfer object
      */
     public DataSource(DataSourceDto dto){
-        this(dto.getProviderName(), dto.getProviderId(), dto.getObjectId(), dto.getType(), dto.getName(),
+        this(dto.getProviderName(), dto.getProviderId(), dto.getObjectId(), dto.getType(), dto.getName(), dto.getSpecifiedName(),
                 Lookup.toLookups(dto.getLookup()), dto.isFailIfDataNotFound(), dto.getOrder());
     }
 
@@ -68,17 +69,23 @@ public class DataSource extends TaskConfigStep {
      */
     public DataSource(String providerName, Long providerId, Long objectId, String type,
                       String name, List<Lookup> lookup, boolean failIfDataNotFound) {
-        this(providerName, providerId, objectId, type, name, lookup, failIfDataNotFound, null);
+        this(providerName, providerId, objectId, type, name, null, lookup, failIfDataNotFound, null);
     }
 
     public DataSource(String providerName, Long providerId, Long objectId, String type,
-                      String name, List<Lookup> lookup, boolean failIfDataNotFound, Integer order) {
+                      String name, String specifiedName, List<Lookup> lookup, boolean failIfDataNotFound) {
+        this(providerName, providerId, objectId, type, name, specifiedName, lookup, failIfDataNotFound, null);
+    }
+
+    public DataSource(String providerName, Long providerId, Long objectId, String type,
+                      String name, String specifiedName, List<Lookup> lookup, boolean failIfDataNotFound, Integer order) {
         super(order);
         this.providerName = providerName;
         this.providerId = providerId;
         this.objectId = objectId;
         this.type = type;
         this.name = name;
+        this.specifiedName = specifiedName;
         this.lookup = lookup;
         this.failIfDataNotFound = failIfDataNotFound;
     }
@@ -161,7 +168,7 @@ public class DataSource extends TaskConfigStep {
             lookupDtos.add(lookupFromList.toDto());
         }
 
-        return new DataSourceDto(getOrder(), providerName, providerId, objectId, type, name, lookupDtos, failIfDataNotFound);
+        return new DataSourceDto(getOrder(), providerName, providerId, objectId, type, name, specifiedName, lookupDtos, failIfDataNotFound);
     }
 
     @Override
@@ -199,8 +206,8 @@ public class DataSource extends TaskConfigStep {
     @Override
     public String toString() {
         return String.format(
-                "DataSource{providerName='%s', providerId='%s', objectId=%d, type='%s', name='%s', lookup=%s, failIfDataNotFound=%s} %s",
-                providerName, providerId, objectId, type, name, lookup, failIfDataNotFound, super.toString()
+                "DataSource{providerName='%s', providerId='%s', objectId=%d, type='%s', name='%s', specifiedName=%s, lookup=%s, failIfDataNotFound=%s} %s",
+                providerName, providerId, objectId, type, name, specifiedName, lookup, failIfDataNotFound, super.toString()
         );
     }
 }
