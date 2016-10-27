@@ -1063,7 +1063,6 @@
                             }
                         });
                     });
-
                 }
             };
         });
@@ -1086,11 +1085,9 @@
                             }
                         });
                     });
-
                 }
             };
         });
-
 
     directives.directive('helpPopover', function($compile, $http) {
         return function(scope, element, attrs) {
