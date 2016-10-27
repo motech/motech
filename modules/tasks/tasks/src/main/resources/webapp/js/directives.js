@@ -708,7 +708,7 @@
                     if(event.keyCode === 8) {event.key = "";scope.rangySelection.anchorOffset = scope.rangySelection.anchorOffset -1;}
                     if (scope.rangySelection.anchorNode && scope.rangySelection.anchorNode.nodeValue) {
                         var value = scope.rangySelection.anchorNode.nodeValue;
-                        scope.searchText = value.substring(findStartIndex(value.trimRight(), scope.rangySelection.anchorOffset), scope.rangySelection.anchorOffset) + event.key;//extractText(element.html() + event.key, scope.debug);
+                        scope.searchText = value.substring(findStartIndex(value.trimRight(), scope.rangySelection.anchorOffset), scope.rangySelection.anchorOffset) + event.key;
                         scope.filteredItems = getFilteredItems(items, scope.searchText.trim());
                         if (scope.selectedElement.parent().find('ul').is('ul.dropdown-menu.open-list')
                             && (scope.selectedElement.attr('ng-model') === "pair.value" || scope.selectedElement.attr('ng-model') === "pair.key")) {
