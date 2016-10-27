@@ -1,0 +1,7 @@
+<ul ng-show="filteredItems.length > 0" class="dropdown-menu open-list">
+    <li ng-class="{'active': selPos == $index}" ng-repeat="item in filteredItems | postActionField:$parent.$parent.$parent.$parent.$parent.$index track by $index">
+        <a ng-mousedown="addItem(item)">
+            {{getPreparedName(item, debug)}}
+        </a>
+    </li>
+</ul>
