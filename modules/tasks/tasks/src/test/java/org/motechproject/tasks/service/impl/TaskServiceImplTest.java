@@ -528,7 +528,7 @@ public class TaskServiceImplTest {
                 .withName("test")
                 .withTrigger(trigger)
                 .addAction(action)
-                .addDataSource(new DataSource("providerName", 1234L, 1L, "Test", "id", "specifiedName", asList(new Lookup("id", "trigger.value")), true))
+                .addDataSource(new DataSource("providerName", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true))
                 .addFilterSet(new FilterSet(asList(new Filter("displayName", "ad.providerName.Test#1.id", UNICODE, true, OperatorType.EXIST.getValue(), ""))))
                 .isEnabled(true)
                 .build();
@@ -566,7 +566,7 @@ public class TaskServiceImplTest {
                 .withName("test")
                 .withTrigger(trigger)
                 .addAction(action)
-                .addDataSource(new DataSource("providerName", 56789L, 1L, "Test", "id", "specifiedName", asList(new Lookup("id", "trigger.value")), true))
+                .addDataSource(new DataSource("providerName", 56789L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true))
                 .addFilterSet(new FilterSet(asList(new Filter("displayName", "ad.providerName.Test#1.id", UNICODE, true, OperatorType.EXIST.getValue(), ""))))
                 .isEnabled(true)
                 .build();
