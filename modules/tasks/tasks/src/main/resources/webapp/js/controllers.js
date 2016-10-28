@@ -966,42 +966,6 @@
             return unknown;
         };
 
-        $scope.parseTime = function (timeString) {
-            var hours, minutes, hoursStr, minutesStr, formatted, regexElements, regex = /^(\d{1,2}):(\d{2}) ([\+\-])(\d{4})$/;
-            regexElements = timeString.match(regex);
-            if(regexElements[3] === "-") {
-                hours = parseInt(regexElements[1], 10) + parseInt(regexElements[4].slice(0,2), 10);
-                minutes = parseInt(regexElements[2], 10) + parseInt(regexElements[4].slice(2,4), 10);
-                if (minutes > 59) {
-                    hours = hours + 1;
-                    minutes = minutes - 60;
-                }
-                if (hours > 23) {
-                    hours = hours - 24;
-                }
-            } else {
-                hours = parseInt(regexElements[1], 10) - parseInt(regexElements[4].slice(0,2), 10);
-                minutes = parseInt(regexElements[2], 10) - parseInt(regexElements[4].slice(2,4), 10);
-                if (minutes < 0) {
-                    hours = hours - 1;
-                    minutes = minutes + 60;
-                }
-                if (hours < 0) {
-                    hours = hours + 24;
-                }
-            }
-            hoursStr = hours.toString();
-            minutesStr = minutes.toString();
-            if(hours < 10) {
-                hoursStr = "0" + hoursStr;
-            }
-            if(minutes < 10) {
-                minutesStr = "0" + minutesStr;
-            }
-            formatted = hoursStr + (":") + minutesStr;
-            return formatted;
-        };
-
         $scope.save = function (enabled) {
             var actionOrder = [], taskOrder = [], filtersToDelete = [], success = function (response) {
                 var alertMessage = enabled ? $scope.msg('task.success.savedAndEnabled') : $scope.msg('task.success.saved'),
@@ -1107,8 +1071,8 @@
                 $scope.task.startTime = undefined;
                 $scope.task.endTime = undefined;
             } else {
-                $scope.task.startTime = $scope.parseTime($scope.startTime);
-                $scope.task.endTime = $scope.parseTime($scope.endTime);
+                $scope.task.startTime = $scope.startTime;
+                $scope.task.endTime = $scope.endTime;
             }
 
             LoadingModal.open();

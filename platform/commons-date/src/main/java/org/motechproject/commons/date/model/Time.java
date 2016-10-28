@@ -2,8 +2,11 @@ package org.motechproject.commons.date.model;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.Serializable;
 
@@ -14,6 +17,8 @@ public class Time implements Comparable<Time>, Serializable {
     private static final long serialVersionUID = -6049964979382913093L;
     private static final int TIME_TOKEN_MIN_LENGTH = 2;
     private static final int TIME_TOKEN_MAX_LENGTH = 3;
+    private static final int MAX_HOUR = 23;
+    private static final int MAX_MINUTE = 59;
     private Integer hour;
     private Integer minute;
 
@@ -50,17 +55,24 @@ public class Time implements Comparable<Time>, Serializable {
      * @throws IllegalArgumentException if {@code timeStr} doesn't match "HH:MM" pattern
      */
     public Time(String timeStr) {
-        String[] tokens = timeStr.split(":");
+        if (timeStr.length() == 11) {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("HH:mm Z");
+            DateTime localTime = DateTime.parse(timeStr, dateTimeFormatter).withZone(DateTimeZone.UTC);
+            this.hour = localTime.getHourOfDay();
+            this.minute = localTime.getMinuteOfHour();
+        } else {
+            String[] tokens = timeStr.split(":");
 
-        if (tokens.length < TIME_TOKEN_MIN_LENGTH || tokens.length > TIME_TOKEN_MAX_LENGTH) {
-            throw new IllegalArgumentException("Invalid time string: " + timeStr);
-        }
+            if (tokens.length < TIME_TOKEN_MIN_LENGTH || tokens.length > TIME_TOKEN_MAX_LENGTH) {
+                throw new IllegalArgumentException("Invalid time string: " + timeStr);
+            }
 
-        try {
-            this.hour = Integer.parseInt(tokens[0]);
-            this.minute = Integer.parseInt(tokens[1]);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid time string: " + timeStr, e);
+            try {
+                this.hour = Integer.parseInt(tokens[0]);
+                this.minute = Integer.parseInt(tokens[1]);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid time string: " + timeStr, e);
+            }
         }
     }
 

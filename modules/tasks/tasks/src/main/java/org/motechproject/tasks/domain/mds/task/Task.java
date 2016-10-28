@@ -128,9 +128,6 @@ public class Task {
         this.failuresInRow = 0;
         this.numberOfRetries = DEFAULT_NUMBER_FOR_TASK_RETRIES;
         this.retryIntervalInMilliseconds = DEFAULT_TIME_FOR_RETRY_INTERVAL;
-        this.useTimeWindow = false;
-        this.startTime = null;
-        this.endTime = null;
     }
 
     /**
