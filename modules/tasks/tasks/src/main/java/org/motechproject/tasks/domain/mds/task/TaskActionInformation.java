@@ -116,6 +116,7 @@ public class TaskActionInformation extends TaskEventInformation {
      * the service is not present
      *
      * @param name             the task name
+     * @param specifiedName    the task action specified name
      * @param displayName      the task display name
      * @param channelName      the channel name
      * @param moduleName       the module name
@@ -183,7 +184,7 @@ public class TaskActionInformation extends TaskEventInformation {
 
     @Override
     public int hashCode() {
-        return Objects.hash(serviceInterface, serviceMethod, values);
+        return Objects.hash(serviceInterface, serviceMethod, specifiedName, values);
     }
 
     @Override
@@ -204,6 +205,7 @@ public class TaskActionInformation extends TaskEventInformation {
 
         return Objects.equals(this.serviceInterface, other.serviceInterface) &&
                 Objects.equals(this.serviceMethod, other.serviceMethod) &&
+                Objects.equals(this.specifiedName, other.specifiedName) &&
                 Objects.equals(this.values, other.values);
     }
 
