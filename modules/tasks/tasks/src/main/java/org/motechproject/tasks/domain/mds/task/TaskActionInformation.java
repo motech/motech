@@ -116,6 +116,7 @@ public class TaskActionInformation extends TaskEventInformation {
      * the service is not present
      *
      * @param name             the task name
+     * @param specifiedName    the task action specified name
      * @param displayName      the task display name
      * @param channelName      the channel name
      * @param moduleName       the module name
