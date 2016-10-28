@@ -3,7 +3,7 @@
 
     <div class="panel-heading panel-header clearfix">
         <div class="pull-right">
-            <button ng-click="removeAction($index)" class="btn btn-danger  btn-in-header btn-sm">
+            <button ng-click="removeAction($index)" class="btn btn-danger btn-in-header btn-sm">
                 <i class="fa fa-times"></i>
             </button>
         </div>
@@ -71,7 +71,7 @@
             <div class="form-group" ng-show="selectedAction[$index].description">
                 <label class="col-md-2 col-sm-3 control-label">{{msg(selectedAction.description)}}</label>
             </div>
-            <div ng-if="selectedAction[$index]">
+            <div ui-if="selectedAction[$index]">
                 <div ng-class="{'has-warning': actionCssClassWarning(i), 'has-error': actionCssClassError(i)}" ng-repeat="i in selectedAction[$index].actionParameters | filter: {hidden: false} track by $index" class="form-group clearfix">
                     <label class="col-md-2 col-sm-3 control-label tip unselectable">
                         {{taskMsg(i.displayName)}}
@@ -85,10 +85,10 @@
                     <!------------------------ Editable fields ------------------------>
                     <div class="form-inline col-md-10 col-sm-9">
                         <div ui-if="i.type == 'UNICODE'" data="i">
-                            <editable-content  index="{{$index}}" data="i" type="UNICODE"> </editable-content>
+                            <editable-content fields="fields" index="{{$index}}" data="i" type="UNICODE"> </editable-content>
                         </div>
                         <div ui-if="i.type == 'TEXTAREA' || i.type == 'LIST'" data="i" >
-                            <editable-content  data="i" index="{{$index}}" type="TEXTAREA" ></editable-content>
+                            <editable-content fields="fields"  data="i" index="{{$index}}" type="TEXTAREA" ></editable-content>
                         </div>
                         <div ui-if="i.type == 'PERIOD'" data="i" >
                             <div ng-include="'../tasks/partials/widgets/content-editable-period.html'" data="i"></div>
