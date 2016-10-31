@@ -690,7 +690,7 @@
                         parsedValue = parsedValue.concat(str);
                     });
 
-                    if (parsedValue && parsedValue !== scope.data.value) {
+                    if (parsedValue && parsedValue !== scope.data.value && scope.data.type !== 'MAP') {
                         scope.data.value = parsedValue;
                     }
                 };
