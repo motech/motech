@@ -17,6 +17,9 @@ public class TaskDto {
     private boolean hasRegisteredChannel;
     private int numberOfRetries;
     private int retryIntervalInMilliseconds;
+    private boolean useTimeWindow;
+    private String startTime;
+    private String endTime;
 
     public TaskDto() {
     }
@@ -29,7 +32,7 @@ public class TaskDto {
 
     public TaskDto(Long id, String description, String name, int failuresInRow, List<TaskActionInformationDto> actions,
                    TaskTriggerInformationDto trigger, boolean enabled, Set<TaskErrorDto> validationErrors, TaskConfigDto taskConfig,
-                   boolean hasRegisteredChannel, int numberOfRetries, int retryIntervalInMilliseconds) {
+                   boolean hasRegisteredChannel, int numberOfRetries, int retryIntervalInMilliseconds, boolean useTimeWindow, String startTime, String endTime) {
         this.id = id;
         this.description = description;
         this.name = name;
@@ -42,6 +45,9 @@ public class TaskDto {
         this.hasRegisteredChannel = hasRegisteredChannel;
         this.numberOfRetries = numberOfRetries;
         this.retryIntervalInMilliseconds = retryIntervalInMilliseconds;
+        this.useTimeWindow = useTimeWindow;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
     public Long getId() {
@@ -138,5 +144,29 @@ public class TaskDto {
 
     public void setRetryIntervalInMilliseconds(int retryIntervalInMilliseconds) {
         this.retryIntervalInMilliseconds = retryIntervalInMilliseconds;
+    }
+
+    public boolean isUseTimeWindow() {
+        return useTimeWindow;
+    }
+
+    public void setUseTimeWindow(boolean useTimeWindow) {
+        this.useTimeWindow = useTimeWindow;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 }

@@ -1225,6 +1225,50 @@
             };
         });
 
+        directives.directive('startTimePicker', function() {
+            return {
+                restrict: 'A',
+                require : 'ngModel',
+                link : function (scope, element, attrs, ngModelCtrl) {
+                    $(function() {
+                        element.timepicker({
+                            showTimezone: true,
+                            useLocalTimezone: true,
+                            timeFormat: 'HH:mm z',
+                            onSelect: function (time) {
+                                ngModelCtrl.$setViewValue(time);
+                                scope.$apply(function() {
+                                    scope.$parent.startTime = time.toString();
+                                });
+                            }
+                        });
+                    });
+                }
+            };
+        });
+
+        directives.directive('endTimePicker', function() {
+            return {
+                restrict: 'A',
+                require : 'ngModel',
+                link : function (scope, element, attrs, ngModelCtrl) {
+                    $(function() {
+                        element.timepicker({
+                            showTimezone: true,
+                            useLocalTimezone: true,
+                            timeFormat: 'HH:mm z',
+                            onSelect: function (time) {
+                                ngModelCtrl.$setViewValue(time);
+                                scope.$apply(function() {
+                                    scope.$parent.endTime = time.toString();
+                                });
+                            }
+                        });
+                    });
+                }
+            };
+        });
+
     directives.directive('helpPopover', function($compile, $http) {
         return function(scope, element, attrs) {
             var msgScope = scope;
