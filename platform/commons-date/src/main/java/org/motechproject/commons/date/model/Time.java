@@ -17,8 +17,6 @@ public class Time implements Comparable<Time>, Serializable {
     private static final long serialVersionUID = -6049964979382913093L;
     private static final int TIME_TOKEN_MIN_LENGTH = 2;
     private static final int TIME_TOKEN_MAX_LENGTH = 3;
-    private static final int MAX_HOUR = 23;
-    private static final int MAX_MINUTE = 59;
     private Integer hour;
     private Integer minute;
 
@@ -52,10 +50,10 @@ public class Time implements Comparable<Time>, Serializable {
      * Constructor.
      *
      * @param timeStr  the time represented as {@code String}
-     * @throws IllegalArgumentException if {@code timeStr} doesn't match "HH:MM" pattern
+     * @throws IllegalArgumentException if {@code timeStr} doesn't match "HH:MM" or "HH:MM Z" pattern
      */
     public Time(String timeStr) {
-        if (timeStr.length() == 11) {
+        if (isTimeContainsZone(timeStr)) {
             DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("HH:mm Z");
             DateTime localTime = DateTime.parse(timeStr, dateTimeFormatter).withZone(DateTimeZone.UTC);
             this.hour = localTime.getHourOfDay();
@@ -74,6 +72,10 @@ public class Time implements Comparable<Time>, Serializable {
                 throw new IllegalArgumentException("Invalid time string: " + timeStr, e);
             }
         }
+    }
+
+    private boolean isTimeContainsZone(String timeStr) {
+        return timeStr.length() == 11;
     }
 
     /**
@@ -225,6 +227,17 @@ public class Time implements Comparable<Time>, Serializable {
      */
     public boolean isAfter(Time other) {
         return compareTo(other) > 0;
+    }
+
+    /**
+     * Checks whether this is before the given time.
+     *
+     * @param start  the {@code Time} to be compared with this object
+     * @param end  the {@code Time} to be compared with this object
+     * @return true if this time is between start and end, false otherwise
+     */
+    public boolean isBetween(Time start, Time end) {
+        return isAfter(start) && isBefore(end);
     }
 
     /**

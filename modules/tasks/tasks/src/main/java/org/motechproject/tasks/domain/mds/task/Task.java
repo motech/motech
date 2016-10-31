@@ -275,7 +275,7 @@ public class Task {
         this.retryIntervalInMilliseconds = retryIntervalInMilliseconds;
     }
 
-    public boolean isUseTimeWindow() {
+    public boolean isUsingTimeWindow() {
         return useTimeWindow;
     }
 

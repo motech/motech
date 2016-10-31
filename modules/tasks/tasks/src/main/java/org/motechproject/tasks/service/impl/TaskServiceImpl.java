@@ -195,16 +195,7 @@ public class TaskServiceImpl implements TaskService {
                 public List<Task> execute(Query query, InstanceSecurityRestriction restriction) {
                     String byTriggerSubject = "trigger.subject == param";
                     String isTaskActive = "enabled == true";
-                    String isNotUsingTimeWindow = "useTimeWindow != true";
-                    String now = (new Time(LocalTime.now(DateTimeZone.UTC))).toString();
-                    String isAfterStartTime = String.format("startTime < \"%s\"", now);
-                    String isBeforeEndTime = String.format("endTime > \"%s\"", now);
-                    String isEndTimeNextDay = "endTime < startTime";
-                    String isBetweenStartTimeAndMidnight = String.format("(%s) && (\"24:00\" > \"%s\")", isAfterStartTime, now);
-                    String isBetweenMidnightAndEndTime = String.format("(%s) && (\"00:00\" < \"%s\")", isBeforeEndTime, now);
-                    String isInTimeWindow = String.format("(%s) || ((%s) && (%s)) || ((%s) && ((%s) || (%s)))",
-                            isNotUsingTimeWindow, isAfterStartTime, isBeforeEndTime, isEndTimeNextDay, isBetweenStartTimeAndMidnight, isBetweenMidnightAndEndTime);
-                    String filter = String.format("(%s) && (%s) && (%s)", isTaskActive, byTriggerSubject, isInTimeWindow);
+                    String filter = String.format("(%s) && (%s)", isTaskActive, byTriggerSubject);
 
                     query.setFilter(filter);
                     query.declareParameters("java.lang.String param");
@@ -215,7 +206,7 @@ public class TaskServiceImpl implements TaskService {
             });
             if (enabledTasks != null) {
                 checkChannelAvailableInTasks(enabledTasks);
-                list = new ArrayList<>(enabledTasks);
+                list = checkTimeWindowInTasks(enabledTasks);
                 CollectionUtils.filter(list, tasksWithRegisteredChannel());
             }
         }
@@ -598,7 +589,7 @@ public class TaskServiceImpl implements TaskService {
             existing.setValidationErrors(task.getValidationErrors());
             existing.setNumberOfRetries(task.getNumberOfRetries());
             existing.setRetryIntervalInMilliseconds(task.getRetryIntervalInMilliseconds());
-            existing.setUseTimeWindow(task.isUseTimeWindow());
+            existing.setUseTimeWindow(task.isUsingTimeWindow());
             existing.setStartTime(task.getStartTime());
             existing.setEndTime(task.getEndTime());
 
@@ -654,6 +645,34 @@ public class TaskServiceImpl implements TaskService {
                 }
             }
         }
+    }
+
+    private List<Task> checkTimeWindowInTasks(List<Task> tasks) {
+        List<Task> checked = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(tasks)) {
+            for (Task task : tasks) {
+                if (checkTimeWindowInTask(task)) {
+                    checked.add(task);
+                }
+            }
+        }
+        return checked;
+    }
+
+    private boolean checkTimeWindowInTask(Task task) {
+        if (task.isUsingTimeWindow()) {
+            if (task.getStartTime() == null || task.getEndTime() == null) {
+                return false;
+            }
+            Time now = new Time(new LocalTime(DateTimeZone.UTC));
+            if (task.getStartTime().isBefore(task.getEndTime())) {
+                return now.isBetween(task.getStartTime(), task.getEndTime());
+            } else {
+                return now.isBetween(task.getStartTime(), new Time(24, 0)) ||
+                        now.isBetween(new Time(LocalTime.MIDNIGHT), task.getEndTime());
+            }
+        }
+        return true;
     }
 
     @Autowired

@@ -464,24 +464,7 @@
         };
 
         $scope.isTimeFormat = function (value) {
-            var regexElements, regex = /^(\d{1,2}):(\d{2}) [\+\-](\d{4})$/;
-            if (value !== '') {
-            regexElements = value.match(regex);
-                if (regexElements) {
-                    if (regexElements[1] > 23) {
-                        return false;
-                    }
-                    if (regexElements[2] > 59) {
-                        return false;
-                    }
-                    if (regexElements[3] > 1400) {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            }
-            return true;
+            return value.length === 11;
         };
 
         $scope.removeTrigger = function ($event) {
