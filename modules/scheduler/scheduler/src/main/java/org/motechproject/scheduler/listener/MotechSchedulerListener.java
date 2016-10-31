@@ -5,11 +5,12 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.scheduler.contract.JobId;
 import org.motechproject.scheduler.contract.RepeatingJobId;
-import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
+import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,7 +25,6 @@ public class MotechSchedulerListener {
     private static final String REPEAT_COUNT = "repeatCount";
     private static final String REPEAT_INTERVAL_TIME = "repeatIntervalInSeconds";
     private static final String JOB_SUBJECT = "jobSubject";
-    private static final String JOB_START = "jobStart";
 
     private MotechSchedulerService schedulerService;
 
@@ -37,17 +37,23 @@ public class MotechSchedulerListener {
     public void handleScheduleRepeatingJobEvent(MotechEvent event) {
         Map<String, Object> parameters = event.getParameters();
         Map<String, Object> metadata = event.getMetadata();
+        int i;
+        int repeatTime = 0;
 
         String jobSubject = (String) metadata.get(JOB_SUBJECT);
         Integer repeatCount = (Integer) metadata.get(REPEAT_COUNT);
-        Integer repeatIntervalInSeconds = (Integer) metadata.get(REPEAT_INTERVAL_TIME);
-        Integer start = (Integer) metadata.get(JOB_START);
-        MotechEvent jobEvent = new MotechEvent(jobSubject, parameters, null, metadata);
+        List<Integer> repeatIntervalInSeconds = (List) metadata.get(REPEAT_INTERVAL_TIME);
+        for(i = 0; i < repeatCount; i++) {
+            metadata.put(REPEAT_COUNT, 1);
+            metadata.put(REPEAT_INTERVAL_TIME, repeatIntervalInSeconds.get(i));
+            repeatTime += repeatIntervalInSeconds.get(i);
 
-        RepeatingSchedulableJob repeatingJob = new RepeatingSchedulableJob(jobEvent, repeatCount, repeatIntervalInSeconds,
-                DateTime.now().plusSeconds(start), null, false);
+            MotechEvent jobEvent = new MotechEvent(jobSubject + Integer.toString(i), parameters, null, metadata);
 
-        schedulerService.scheduleRepeatingJob(repeatingJob);
+            RunOnceSchedulableJob runOnceSchedulableJob = new RunOnceSchedulableJob(jobEvent, DateTime.now().plusSeconds(repeatTime));
+
+            schedulerService.scheduleRunOnceJob(runOnceSchedulableJob);
+        }
     }
 
     /**

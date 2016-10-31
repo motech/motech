@@ -43,6 +43,11 @@ public class MotechScheduledJob implements Job {
             JobDataMap jobDataMap = jobDetail.getJobDataMap();
 
             String jobId = jobDetail.getKey().getName();
+
+            int index = jobId.indexOf("Retry") + "Retry".length();
+            String number = jobId.substring(index, index + 1);
+            jobId = jobId.replace(number, "");
+
             String eventType = jobDataMap.getString(SchedulerConstants.EVENT_TYPE_KEY_NAME);
             Map<String, Object> params = jobDataMap.getWrappedMap();
             params.remove(SchedulerConstants.EVENT_TYPE_KEY_NAME);

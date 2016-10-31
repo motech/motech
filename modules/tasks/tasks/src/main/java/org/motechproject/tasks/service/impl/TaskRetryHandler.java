@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.motechproject.tasks.constants.EventDataKeys.JOB_START;
 import static org.motechproject.tasks.constants.EventDataKeys.JOB_SUBJECT;
 import static org.motechproject.tasks.constants.EventDataKeys.REPEAT_COUNT;
 import static org.motechproject.tasks.constants.EventDataKeys.REPEAT_INTERVAL_TIME;
@@ -85,21 +84,15 @@ public class TaskRetryHandler {
 
     private void scheduleTaskRetry(Task task, Map<String, Object> parameters) {
         getRetries();
-        int retrySeconds = 0;
-        for(int i = 0; i < numberOfRetries - 1; i++) {
-            retrySeconds += retryInterval.get(i);
             Map<String, Object> eventParameters = new HashMap<>();
             eventParameters.putAll(parameters);
             Map<String, Object> metadata = new HashMap<>();
             metadata.put(TASK_ID, task.getId());
-            metadata.put(REPEAT_COUNT, 1);
-            metadata.put(REPEAT_INTERVAL_TIME, retryInterval.get(i + 1));
-            metadata.put(JOB_START, retrySeconds);
+            metadata.put(REPEAT_COUNT, numberOfRetries);
+            metadata.put(REPEAT_INTERVAL_TIME, retryInterval);
             metadata.put(JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
 
             eventRelay.sendEventMessage(new MotechEvent(SCHEDULE_REPEATING_JOB, eventParameters, null, metadata));
-        }
-
     }
 
     private void getRetries() {
