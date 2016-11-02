@@ -195,7 +195,8 @@ public class TaskServiceImpl implements TaskService {
                 public List<Task> execute(Query query, InstanceSecurityRestriction restriction) {
                     String byTriggerSubject = "trigger.subject == param";
                     String isTaskActive = "enabled == true";
-                    String filter = String.format("(%s) && (%s)", isTaskActive, byTriggerSubject);
+                    String isUsingTimeWindow = "useTimeWindow == true";
+                    String filter = String.format("((%s) || (%s)) && (%s)", isTaskActive, isUsingTimeWindow, byTriggerSubject);
 
                     query.setFilter(filter);
                     query.declareParameters("java.lang.String param");
@@ -652,7 +653,16 @@ public class TaskServiceImpl implements TaskService {
         if (CollectionUtils.isNotEmpty(tasks)) {
             for (Task task : tasks) {
                 if (checkTimeWindowInTask(task)) {
+                    if (!task.isEnabled()) {
+                        task.setEnabled(true);
+                        addOrUpdate(task);
+                    }
                     checked.add(task);
+                } else {
+                    if (task.isEnabled()) {
+                        task.setEnabled(false);
+                        addOrUpdate(task);
+                    }
                 }
             }
         }
