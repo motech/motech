@@ -10,7 +10,6 @@ import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,9 +21,8 @@ public class MotechSchedulerListener {
     private static final String SCHEDULE_REPEATING_JOB = "scheduleRepeatingJob";
     private static final String UNSCHEDULE_REPEATING_JOB = "unscheduleRepeatingJob";
 
-    private static final String REPEAT_COUNT = "repeatCount";
-    private static final String REPEAT_INTERVAL_TIME = "repeatIntervalInSeconds";
     private static final String JOB_SUBJECT = "jobSubject";
+    private static final String JOB_START = "jobStart";
 
     private MotechSchedulerService schedulerService;
 
@@ -37,23 +35,15 @@ public class MotechSchedulerListener {
     public void handleScheduleRepeatingJobEvent(MotechEvent event) {
         Map<String, Object> parameters = event.getParameters();
         Map<String, Object> metadata = event.getMetadata();
-        int i;
-        int repeatTime = 0;
 
         String jobSubject = (String) metadata.get(JOB_SUBJECT);
-        Integer repeatCount = (Integer) metadata.get(REPEAT_COUNT);
-        List<Integer> repeatIntervalInSeconds = (List) metadata.get(REPEAT_INTERVAL_TIME);
-        for(i = 0; i < repeatCount; i++) {
-            metadata.put(REPEAT_COUNT, 1);
-            metadata.put(REPEAT_INTERVAL_TIME, repeatIntervalInSeconds.get(i));
-            repeatTime += repeatIntervalInSeconds.get(i);
+        Integer jobStart = (Integer) metadata.get(JOB_START);
 
-            MotechEvent jobEvent = new MotechEvent(jobSubject + Integer.toString(i), parameters, null, metadata);
+        MotechEvent jobEvent = new MotechEvent(jobSubject, parameters, null, metadata);
 
-            RunOnceSchedulableJob runOnceSchedulableJob = new RunOnceSchedulableJob(jobEvent, DateTime.now().plusSeconds(repeatTime));
+        RunOnceSchedulableJob runOnceJob = new RunOnceSchedulableJob(jobEvent, DateTime.now().plusSeconds(jobStart));
 
-            schedulerService.scheduleRunOnceJob(runOnceSchedulableJob);
-        }
+        schedulerService.scheduleRunOnceJob(runOnceJob);
     }
 
     /**

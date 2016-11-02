@@ -36,9 +36,10 @@ public class TasksEventCallbackService implements EventCallbackService {
 
         Map<String, Object> metadata = event.getMetadata();
         Long activityId = (Long) metadata.get(EventDataKeys.TASK_ACTIVITY_ID);
+        int retryNumber = (Integer) metadata.get(EventDataKeys.TASK_RETRY_NUMBER);
         Task task = taskService.getTask((Long) metadata.get(EventDataKeys.TASK_ID));
 
-        postExecutionHandler.handleError(event.getParameters(), metadata, task, new TaskHandlerException(TaskFailureCause.ACTION, "task.error.eventHandlerFailed", throwable), activityId);
+        postExecutionHandler.handleError(event.getParameters(), metadata, task, new TaskHandlerException(TaskFailureCause.ACTION, "task.error.eventHandlerFailed", throwable), activityId, retryNumber);
 
         return false;
     }

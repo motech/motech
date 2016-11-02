@@ -206,7 +206,7 @@ public class Task {
         this.retryTaskOnFailure = retryTaskOnFailure;
     }
 
-    public boolean getRetryTaskOnFailure() {
+    public boolean isRetryTaskOnFailure() {
         return retryTaskOnFailure;
     }
 

@@ -39,8 +39,7 @@ public abstract class TasksTestBase {
     protected static final String ACTION_SUBJECT = "SEND_SMS";
     protected static final String TASK_DATA_PROVIDER_NAME = "12345L";
     protected static final Long TASK_ACTIVITY_ID = 11L;
-    protected static final InputStream TASK_RETRIES = new StringBufferInputStream("#TaskRetries\n#Wed Oct 26 08:44:12 CEST 2016\n2=20\n1=10");
-    protected static final InputStream TASK_ZERO_RETRIES = new StringBufferInputStream("#TaskRetries\n#Wed Oct 26 08:44:12 CEST 2016");
+    protected static final InputStream TASK_RETRIES = new StringBufferInputStream("#TaskRetries\n#Wed Oct 26 08:44:12 CEST 2016\n2=20\n1=10");;
 
     protected Task task;
     protected SettingsFacade settingsFacade;
