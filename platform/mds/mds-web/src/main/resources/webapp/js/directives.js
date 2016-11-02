@@ -1324,7 +1324,7 @@
                                 'Content-Type': 'application/x-www-form-urlencoded'
                             },
                             datatype: 'json',
-                            mtype: "POST",
+                            mtype: "GET",
                             postData: {
                                 fields: JSON.stringify(scope.lookupBy)
                             },
@@ -1459,7 +1459,7 @@
                                     'Content-Type': 'application/x-www-form-urlencoded'
                                 },
                                 datatype: 'json',
-                                mtype: "POST",
+                                mtype: "GET",
                                 postData: {
                                     fields: JSON.stringify(scope.lookupBy),
                                     filter: (scope.filterBy) ? JSON.stringify(scope.filterBy) : ""
