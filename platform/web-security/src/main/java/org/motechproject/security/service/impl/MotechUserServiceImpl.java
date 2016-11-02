@@ -87,14 +87,6 @@ public class MotechUserServiceImpl implements MotechUserService {
         if (!hasActiveMotechAdmin()) {
             List<String> roles = Arrays.asList(MOTECH_ADMIN);
             this.register(username, password, email, null, roles, locale);
-
-            //Sometimes admin is saved in database without roles. This statement is checking how is he written to database.
-            MotechUser createdAdmin = motechUsersDao.findByUserName(username);
-
-            if (createdAdmin.getRoles() == null || createdAdmin.getRoles().isEmpty()) {
-                createdAdmin.setRoles(roles);
-                motechUsersDao.update(createdAdmin);
-            }
             LOGGER.info("User {} has been registered as the MOTECH Admin", username);
         } else {
             throw new IllegalStateException("The MOTECH Platform has already got an active admin user. The registration of " +
