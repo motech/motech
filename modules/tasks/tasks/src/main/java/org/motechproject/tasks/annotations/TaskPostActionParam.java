@@ -1,6 +1,6 @@
 package org.motechproject.tasks.annotations;
 
-import org.motechproject.tasks.domain.mds.ParameterType;
+import org.motechproject.tasks.domain.enums.ParameterType;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

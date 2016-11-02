@@ -357,7 +357,31 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     @Override
     @Transactional
+    public T detachedCopy(T object) {
+        if (JDOHelper.getObjectState(object) == ObjectState.TRANSIENT) {
+            return repository.detachedCopy(findById((Long) getId(object)));
+        }
+        return object;
+    }
+
+    @Override
+    @Transactional
+    public List<T> detachedCopyAll(List<T> objects) {
+        List<T> detachedCopies = new ArrayList<>();
+
+        for (T object : objects) {
+            detachedCopies.add(detachedCopy(object));
+        }
+
+        return detachedCopies;
+    }
+
+    @Override
+    @Transactional
     public Object getDetachedField(T instance, String fieldName) {
+        if (JDOHelper.getObjectState(instance) == ObjectState.TRANSIENT) {
+            return repository.getDetachedField(findById((Long) getId(instance)), fieldName);
+        }
         return repository.getDetachedField(instance, fieldName);
     }
 

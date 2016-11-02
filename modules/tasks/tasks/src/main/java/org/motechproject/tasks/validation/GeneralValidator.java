@@ -4,7 +4,7 @@ import org.motechproject.tasks.domain.mds.task.TaskError;
 import org.motechproject.tasks.domain.mds.channel.EventParameter;
 import org.motechproject.tasks.domain.mds.task.FieldParameter;
 import org.motechproject.tasks.domain.mds.channel.ActionParameter;
-import org.motechproject.tasks.domain.mds.ParameterType;
+import org.motechproject.tasks.domain.enums.ParameterType;
 import org.motechproject.tasks.domain.mds.Parameter;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
@@ -16,10 +16,10 @@ import java.util.Set;
 
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.motechproject.tasks.domain.mds.task.TaskErrorType.BLANK;
-import static org.motechproject.tasks.domain.mds.task.TaskErrorType.EMPTY_COLLECTION;
-import static org.motechproject.tasks.domain.mds.task.TaskErrorType.NULL;
-import static org.motechproject.tasks.domain.mds.task.TaskErrorType.VERSION;
+import static org.motechproject.tasks.domain.enums.TaskErrorType.BLANK;
+import static org.motechproject.tasks.domain.enums.TaskErrorType.EMPTY_COLLECTION;
+import static org.motechproject.tasks.domain.enums.TaskErrorType.NULL;
+import static org.motechproject.tasks.domain.enums.TaskErrorType.VERSION;
 
 /**
  * General class providing utility methods for validating fields for being null, blank or missing. This is an abstract

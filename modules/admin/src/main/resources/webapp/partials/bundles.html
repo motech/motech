@@ -58,26 +58,27 @@
         <thead>
         <tr>
             <th ng-click="setOrder('bundleId')">
-                <img src=../admin/img/trans.gif alt="{{msg('admin.bundles.sortingId')}}" title="{{msg('admin.bundles.sortingId')}}"
-                     ng-class="getSortClass('bundleId')" class="sorting-no"/>{{msg('admin.bundles.id')}}
+                <span class="bundle-thValue">{{msg('admin.bundles.id')}}</span>
+                <div class="sorting-no" ng-class="getSortClass('bundleId')"></div>
             </th>
-            <th><img src='../admin/img/trans.gif' class="sorting-no-img"/>{{msg('admin.bundles.icon')}}</th>
+            <th>
+                <span>{{msg('admin.bundles.icon')}}</span>
+            </th>
             <th ng-click="setOrder('name')">
-                <img src=../admin/img/trans.gif alt="{{msg('admin.bundles.sortingName')}}"
-                     title="{{msg('admin.bundles.sortingName')}}"
-                     ng-class="getSortClass('name')" class="sorting-no"/>{{msg('admin.bundles.name')}}
+                <span class="bundle-thValue">{{msg('admin.bundles.name')}}</span>
+                <div ng-class="getSortClass('name')" class="sorting-no"></div>
             </th>
-            <th ng-click="setOrder(versionOrder)">
-                <img src='../admin/img/trans.gif' alt="{{msg('admin.bundles.sortingVersion')}}"
-                     title="{{msg('admin.bundles.sortingVersion')}}"
-                     ng-class="getSortClass(versionOrder)" class="sorting-no"/>{{msg('admin.bundles.version')}}
+            <th ng-click="setOrder('versionOrder')">
+                <span class="bundle-thValue">{{msg('admin.bundles.version')}}</span>
+                <div ng-class="getSortClass('versionOrder')" class="sorting-no"></div>
             </th>
             <th ng-click="setOrder('state')">
-                <img src='../admin/img/trans.gif' alt="{{msg('admin.bundles.sortingState')}}"
-                     title="{{msg('admin.bundles.sortingState')}}"
-                     ng-class="getSortClass('state')" class="sorting-no"/>{{msg('admin.bundles.state')}}
+                <span class="bundle-thValue">{{msg('admin.bundles.state')}}</span>
+                <div ng-class="getSortClass('state')" class="sorting-no"></div>
             </th>
-            <th><img src='../admin/img/trans.gif' class="sorting-no-img"/>{{msg('admin.bundles.actions')}}</th>
+            <th>
+                <span>{{msg('admin.bundles.actions')}}</span>
+            </th>
         </tr>
         </thead>
         <tbody>
@@ -115,7 +116,7 @@
                     </a>
                 </div>
                 <div class="loader.wrapper" ng-hide="bundleStable(bundle)">
-                    <img class="small-icon" src="../admin/img/load.gif" alt="loading"/>
+                    <i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>
                 </div>
             </td>
         </tr>
@@ -124,4 +125,3 @@
     <div ng-include="'../admin/partials/widgets/remove-bundle-modal.html'"></div>
     <div ng-include="'../admin/partials/widgets/stop-bundle-modal.html'"></div>
 </div>
-

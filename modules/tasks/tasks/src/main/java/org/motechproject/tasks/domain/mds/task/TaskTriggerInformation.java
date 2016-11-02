@@ -10,6 +10,7 @@ import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.event.CrudEventType;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.dto.TaskTriggerInformationDto;
 
 /**
  * Represents information about a single task trigger. A task trigger is an event that triggers execution of a task. It
@@ -83,5 +84,10 @@ public class TaskTriggerInformation extends TaskEventInformation {
     @JsonIgnore
     public String getEffectiveListenerRetrySubject() {
         return getEffectiveListenerSubject() + ".handleRetry";
+    }
+
+    public TaskTriggerInformationDto toDto() {
+        return new TaskTriggerInformationDto(getName(), getDisplayName(), getChannelName(), getModuleName(),
+                getModuleVersion(), getSubject(), triggerListenerSubject);
     }
 }

@@ -502,10 +502,10 @@ public final class Constants {
         public static final String MDS_MIGRATION_NAME = "motech-platform-dataservices-migration";
         public static final String MDS_MIGRATION_SYMBOLIC_NAME = SYMBOLIC_NAME_PREFIX + MDS_MIGRATION_NAME;
 
-        public static final String WEB_SECURITY_MODULE = "MOTECH Web Security";
-        public static final String SERVER_CONFIG_MODULE = "MOTECH Platform Server Config";
-        public static final String SCHEDULER_MODULE = "MOTECH Scheduler";
-
+        public static final String WEB_SECURITY_MODULE = "org.motechproject.motech-platform-web-security";
+        public static final String SERVER_CONFIG_MODULE = "org.motechproject.motech-platform-server-config";
+        public static final String SCHEDULER_MODULE = "org.motechproject.motech-platform-scheduler";
+        public static final String TASKS_MODULE = "org.motechproject.motech-tasks";
         private BundleNames() {
         }
     }

@@ -1,4 +1,4 @@
-<div ui-if="step['@type'] == 'DataSource'" class="panel-group task-group" id="step-{{step.order}}" overflow-change expand-accordion ng-cloak>
+<div ui-if="step['@type'] == 'DataSourceDto'" class="panel-group task-group" id="step-{{step.order}}" overflow-change expand-accordion ng-cloak>
 
     <div class="panel-heading panel-header clearfix">
         <div class="pull-right">
@@ -18,7 +18,13 @@
     </div>
     <div id="collapse-step-{{step.order}}" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
         <div class="panel-body inside">
-            <div class="form-group control-section">
+            <div class="form-group control-section" >
+                <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.datasource.displayName')}}</label>
+                <div class="col-md-8 col-sm-6">
+                    <input class="form-control" type='text' ng-change="addSpecifiedDataSourceName(step)" ng-model='step.specifiedName' id="step.specifiedName">
+                </div>
+            </div>
+            <div class="form-group control-section" ng-show="showBubbles">
                 <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.info.availableFields')}}:</label>
                 <div class="form-inline col-md-10 col-sm-9 move-element">
                     <field ng-repeat="i in fields | idLessThan:step.objectId track by $index" field="i" draggable />​
@@ -39,7 +45,7 @@
                 </div>
                 <span class="offset-4">{{msg('task.subsubsection.object')}}:</span>
                 <div class="btn-group offset-15">
-                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#" ng-init="searchData.displayName='' " ng-click="searchData.displayName='' ">
+                    <button class="btn btn-default dropdown-toggle" ng-disabled="!step.providerName" data-toggle="dropdown" target="_self" href="#" ng-init="searchData.displayName='' " ng-click="searchData.displayName='' ">
                         {{taskMsg(step.displayName) || msg('task.select')}}
                         <span class="caret"></span>
                     </button>
@@ -106,7 +112,7 @@
                     <a target="_self" href="#helpModalFieldSyntaxWithBrackets" role="button" class="btn btn-primary pull-left" data-toggle="modal">{{msg('task.help')}}</a>
                 </div>
             </div>
-            <div class="form-group margin-before3 control-section" ng-hide="step.displayName == undefined">
+            <div class="form-group margin-before3 control-section" ng-hide="step.displayName == undefined || !showBubbles">
                 <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.subsubsection.objectFields')}}</label>
                 <div class="form-inline col-md-10 col-sm-9 move-element">
                     <field ng-repeat="field in findObject(step.providerName, step.type).fields" field="field" />​

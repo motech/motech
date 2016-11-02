@@ -8,13 +8,13 @@
     <p ng-show="field.validation.criteria[2].enabled && field.validation.criteria[2].value">{{msg('mds.info.mustBeInSet')}}&#58; <strong>{{field.validation.criteria[2].value}}</strong></p>
     <p ng-show="field.validation.criteria[3].enabled && field.validation.criteria[3].value">{{msg('mds.info.cannotBeInSet')}}&#58; <strong>{{field.validation.criteria[3].value}}</strong></p>
 </div>
-<span class="form-hint" ng-show="{{field.name}}.$error.decimal && !{{field.name}}.$pristine">{{msg('mds.error.incorrectValueDecimal')}}</span>
-<span class="form-hint" ng-show="{{field.name}}.$error.min && !{{field.name}}.$pristine && !{{field.name}}.$error.decimal">{{msg('mds.error.min')}}</span>
-<span class="form-hint" ng-show="{{field.name}}.$error.max && !{{field.name}}.$pristine && !{{field.name}}.$error.decimal">{{msg('mds.error.max')}}</span>
+<span class="form-hint" ng-show="{{field.name}}_field_name.$error.decimal && !{{field.name}}_field_name.$pristine">{{msg('mds.error.incorrectValueDecimal')}}</span>
+<span class="form-hint" ng-show="{{field.name}}_field_name.$error.min && !{{field.name}}_field_name.$pristine && !{{field.name}}_field_name.$error.decimal">{{msg('mds.error.min')}}</span>
+<span class="form-hint" ng-show="{{field.name}}_field_name.$error.max && !{{field.name}}_field_name.$pristine && !{{field.name}}_field_name.$error.decimal">{{msg('mds.error.max')}}</span>
 <span class="form-hint" ng-class="{hide: checkDecimalValue(field.value, field.settings)}">
     {{getInvalidDecimalMessage(field.settings)}}
 </span>
-<span class="form-hint" ng-show="( {{field.name}}.$error.insetNum || {{field.name}}.$error.outsetNum ) && !{{field.name}}.$pristine && !{{field.name}}.$error.decimal && !{{field.name}}.$error.min && !{{field.name}}.$error.max">
-    <p ng-show="{{field.name}}.$error.insetNum">{{msg('mds.error.inset')}}</p>
-    <p ng-show="{{field.name}}.$error.outsetNum">{{msg('mds.error.outset')}}</p>
+<span class="form-hint" ng-show="( {{field.name}}_field_name.$error.insetNum || {{field.name}}_field_name.$error.outsetNum ) && !{{field.name}}_field_name.$pristine && !{{field.name}}_field_name.$error.decimal && !{{field.name}}_field_name.$error.min && !{{field.name}}_field_name.$error.max">
+    <p ng-show="{{field.name}}_field_name.$error.insetNum">{{msg('mds.error.inset')}}</p>
+    <p ng-show="{{field.name}}_field_name.$error.outsetNum">{{msg('mds.error.outset')}}</p>
 </span>

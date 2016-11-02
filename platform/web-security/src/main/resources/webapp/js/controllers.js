@@ -107,11 +107,13 @@
                $scope.successfulMessage='';
                $scope.failureMessage='';
                $scope.deleteU=false;
-               $http.post('../websecurity/api/users/getuser', user.userName).success(function(data) {
-                       $scope.user = data;
-                       $scope.user.password='';
-                       $scope.confirmPassword="";
+
+               $http.get('../websecurity/api/users/getuser?userName=' + user.userName).success(function (data) {
+                    $scope.user = data;
+                    $scope.user.password='';
+                    $scope.confirmPassword="";
                });
+
                $scope.showUsersView=!$scope.editUserView;
                $scope.editUserView=!$scope.editUserView;
            };
@@ -195,6 +197,8 @@
                $scope.showUsersView=!$scope.editUserView;
                $scope.editUserView=!$scope.editUserView;
           };
+
+          innerLayout({});
     });
 
     controllers.controller('WebSecurityRolePermissionCtrl', function ($scope, Roles, Permissions, $http, ModalFactory) {
@@ -382,6 +386,8 @@
             $scope.belongsToRole = function(permissionName) {
                   return $scope.role.permissionNames.indexOf(permissionName) === -1 ? false : true;
             };
+
+            innerLayout({});
     });
 
     controllers.controller('WebSecurityProfileCtrl', function ($scope, Users, $http, $stateParams, ModalFactory) {
@@ -443,6 +449,8 @@
                     ModalFactory.showErrorAlertWithResponse('security.update.userPass.error', 'server.error', response);
                 });
         };
+
+        innerLayout({});
     });
 
     controllers.controller('WebSecurityDynamicCtrl', function ($scope, Users, Permissions, Dynamic, ModalFactory, LoadingModal) {
@@ -590,5 +598,6 @@
             });
         };
 
+        innerLayout({});
     });
 }());

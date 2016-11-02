@@ -5,6 +5,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.motechproject.mds.annotations.CrudEvents;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.event.CrudEventType;
+import org.motechproject.tasks.dto.TaskConfigStepDto;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -26,6 +27,15 @@ public abstract class TaskConfigStep implements Comparable<TaskConfigStep>, Seri
     private static final long serialVersionUID = -6415130097686935451L;
 
     private Integer order;
+
+    public TaskConfigStep() {
+    }
+
+    public TaskConfigStep(Integer order) {
+        this.order = order;
+    }
+
+    public abstract TaskConfigStepDto toDto();
 
     @Override
     public int compareTo(TaskConfigStep o) {

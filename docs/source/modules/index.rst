@@ -52,6 +52,11 @@ Forwards individual and aggregate level data to DHIS2.
 
 Sends and logs email messages
 
+:std:ref:`Event <event-module>`
+-------------------------------
+
+Allows to publish and subscribe to events in MOTECH.
+
 :std:ref:`Event Logging <event-logging-module>`
 -----------------------------------------------
 
@@ -83,7 +88,7 @@ Enrolls users in message campaigns with flexible content-scheduling rules
 Provides data containers and APIs for defining mobile (e.g. SMS or IVR-based) training courses and tracking user enrollment and progress
 
 :std:ref:`ODK <odk-module>`
------------------------------------
+---------------------------
 
 Integrates the MOTECH platform with OpenDataKit, KoboToolbox, and Ona.io
 
@@ -96,6 +101,11 @@ Integrates the MOTECH platform with OpenMRS, an open source electronic medical r
 -----------------------------------------------
 
 A flexible reminder system that may be used to alert patients when it is time to take their medications
+
+:std:ref:`RapidPro <rapidpro-module>`
+-------------------------------------
+
+Integrates the MOTECH platform with RapidPro
 
 :std:ref:`Schedule Tracking <schedule-tracking-module>`
 -------------------------------------------------------

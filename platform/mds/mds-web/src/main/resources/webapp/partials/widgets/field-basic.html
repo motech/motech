@@ -71,7 +71,7 @@
             {{msg('mds.form.label.defaultValue')}}
         </label>
         <div class="col-md-10 col-sm-9 form-inline">
-            <ng-form name="{{field.basic.name}}">
+            <ng-form name="getProperFieldName(field.basic.name)">
                 <div ng-include="loadDefaultValueForm(field.type)"></div>
             </ng-form>
         </div>

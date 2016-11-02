@@ -1,7 +1,7 @@
 package org.motechproject.tasks.web;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.tasks.domain.mds.task.TaskActivityType;
+import org.motechproject.tasks.domain.enums.TaskActivityType;
 
 import java.util.Arrays;
 import java.util.HashSet;

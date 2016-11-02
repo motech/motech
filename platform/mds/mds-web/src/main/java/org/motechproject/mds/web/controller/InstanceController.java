@@ -319,13 +319,13 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/instances/{entityId}/csvimport", method = RequestMethod.POST)
     @ResponseBody
     public CsvImportResults importCsv(@PathVariable long entityId, @RequestParam(required = true)  MultipartFile file,
-                          @RequestParam(required = false) boolean continueOnError) {
+                          @RequestParam(required = false) boolean continueOnError, @RequestParam(required = false) boolean clearData) {
         instanceService.verifyEntityAccess(entityId);
         instanceService.validateNonEditableProperty(entityId);
         try {
             try (InputStream in = file.getInputStream()) {
                 Reader reader = new InputStreamReader(in);
-                return csvImportExportService.importCsv(entityId, reader, file.getOriginalFilename(), continueOnError);
+                return csvImportExportService.importCsv(entityId, reader, file.getOriginalFilename(), continueOnError, clearData);
             }
         } catch (IOException e) {
             throw new CsvImportException("Unable to open uploaded file", e);

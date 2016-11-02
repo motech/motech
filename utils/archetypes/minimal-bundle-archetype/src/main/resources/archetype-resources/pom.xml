@@ -184,7 +184,6 @@
                             org.springframework.validation.beanvalidation,
 #end
 #if ($settings == 'true')
-                            org.motechproject.server.config.service,
                             org.motechproject.config.service,
 #end
                             *

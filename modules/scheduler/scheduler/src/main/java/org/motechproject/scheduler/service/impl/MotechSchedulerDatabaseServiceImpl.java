@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 /**
@@ -63,6 +64,7 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechSchedulerDatabaseServiceImpl.class);
     private static final String DATE_FORMAT_PATTERN = "Y-MM-dd HH:mm:ss";
     private static final String DATA_SOURCE = "org.quartz.jobStore.dataSource";
+    private static final String TABLE_PREFIX = "org.quartz.jobStore.tablePrefix";
     private static final String UI_DEFINED = "uiDefined";
     private static final String START_TIME = "START_TIME";
     private static final String END_TIME = "END_TIME";
@@ -103,14 +105,26 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         }
     }
 
-
+    private String getQuery(JobsSearchSettings jobsSearchSettings){
+        String query;
+        if (isBlank(jobsSearchSettings.getName()) &&  isBlank(jobsSearchSettings.getActivity()) && isBlank(jobsSearchSettings.getStatus()) && isBlank(jobsSearchSettings.getTimeFrom()) && isBlank(jobsSearchSettings.getTimeTo())) { //NO CHECKSTYLE BooleanExpressionComplexity
+            query = buildJobsAllSqlQuery();
+        } else if (isBlank(jobsSearchSettings.getActivity()) || isBlank(jobsSearchSettings.getStatus())) {
+            query = null;
+        } else {
+            query = buildJobsBasicInfoSqlQuery(jobsSearchSettings);
+        }
+        return query;
+    }
+    
     @Override
     public List<JobBasicInfo> getScheduledJobsBasicInfo(JobsSearchSettings jobsSearchSettings) throws MotechSchedulerJobRetrievalException {
         List<JobBasicInfo> jobBasicInfos = new LinkedList<>();
-        if (!isNotBlank(jobsSearchSettings.getActivity()) || !isNotBlank(jobsSearchSettings.getStatus())) {
+        String query = getQuery(jobsSearchSettings);
+        if(query == null) {
             return jobBasicInfos;
         }
-        String query = buildJobsBasicInfoSqlQuery(jobsSearchSettings);
+
         LOGGER.debug("Executing {}", query);
 
         List<String> columnNames = new LinkedList<>();
@@ -258,24 +272,26 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
 
     private String buildActivityFilter(JobsSearchSettings jobsSearchSettings) {
         StringBuilder activitySb = new StringBuilder();
-        String[] activityElements = jobsSearchSettings.getActivity().split(",");
-        boolean addOr = false;
-        if (activityElements.length < 3) {
-            for(String element : activityElements) {
-                checkAndAddElement(activitySb, OR, addOr);
-                if (JobBasicInfo.ACTIVITY_NOTSTARTED.equals(element)) {
-                    activitySb.append(getCorrectNameRepresentation(START_TIME)).append(" > ").append(DateTime.now().getMillis());
-                } else if (JobBasicInfo.ACTIVITY_FINISHED.equals(element)) {
-                    activitySb.append(getCorrectNameRepresentation(END_TIME)).append(" < ").append(DateTime.now().getMillis())
-                            .append(AND).append(getCorrectNameRepresentation(END_TIME)).append(" != 0");
-                } else {
-                    activitySb.append(" (").append(getCorrectNameRepresentation(START_TIME)).append(" <= ")
-                            .append(DateTime.now().getMillis()).append(" AND (")
-                            .append(getCorrectNameRepresentation(END_TIME)).append(" >= ")
-                            .append(DateTime.now().getMillis()).append(OR)
-                            .append(getCorrectNameRepresentation(END_TIME)).append(" = 0))");
+        if (jobsSearchSettings.getActivity() != null) {
+            String[] activityElements = jobsSearchSettings.getActivity().split(",");
+            boolean addOr = false;
+            if (activityElements.length < 3) {
+                for (String element : activityElements) {
+                    checkAndAddElement(activitySb, OR, addOr);
+                    if (JobBasicInfo.ACTIVITY_NOTSTARTED.equals(element)) {
+                        activitySb.append(getCorrectNameRepresentation(START_TIME)).append(" > ").append(DateTime.now().getMillis());
+                    } else if (JobBasicInfo.ACTIVITY_FINISHED.equals(element)) {
+                        activitySb.append(getCorrectNameRepresentation(END_TIME)).append(" < ").append(DateTime.now().getMillis())
+                                .append(AND).append(getCorrectNameRepresentation(END_TIME)).append(" != 0");
+                    } else {
+                        activitySb.append(" (").append(getCorrectNameRepresentation(START_TIME)).append(" <= ")
+                                .append(DateTime.now().getMillis()).append(" AND (")
+                                .append(getCorrectNameRepresentation(END_TIME)).append(" >= ")
+                                .append(DateTime.now().getMillis()).append(OR)
+                                .append(getCorrectNameRepresentation(END_TIME)).append(" = 0))");
+                    }
+                    addOr = true;
                 }
-                addOr = true;
             }
         }
         return activitySb.toString();
@@ -283,25 +299,28 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
 
     private String buildStatusFilter(JobsSearchSettings jobsSearchSettings) {
         StringBuilder statusSb = new StringBuilder();
-        String[] statusElements = jobsSearchSettings.getStatus().split(",");
-        boolean addOr = false; if (statusElements.length < 4) {
-            for(String element : statusElements) {
-                checkAndAddElement(statusSb, OR, addOr);
-                statusSb.append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ");
-                if (Trigger.TriggerState.ERROR.toString().equals(element)) {
-                    statusSb.append("\'").append(Trigger.TriggerState.ERROR.toString()).append("\'");
-                } else if (Trigger.TriggerState.BLOCKED.toString().equals(element)) {
-                    statusSb.append("\'").append(Trigger.TriggerState.BLOCKED.toString()).append("\'");
-                } else if (Trigger.TriggerState.PAUSED.toString().equals(element)) {
-                    statusSb.append("\'").append(Trigger.TriggerState.PAUSED.toString()).append("\'");
-                } else {
-                    statusSb.append("\'").append(Trigger.TriggerState.NORMAL.toString()).append("\'");
-                    statusSb.append(OR).append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ");
-                    statusSb.append("\'").append(Trigger.TriggerState.COMPLETE.toString()).append("\'");
-                    statusSb.append(OR).append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ");
-                    statusSb.append("\'").append(WAITING).append("\'");
+        if (jobsSearchSettings.getStatus() != null) {
+            String[] statusElements = jobsSearchSettings.getStatus().split(",");
+            boolean addOr = false;
+            if (statusElements.length < 4) {
+                for (String element : statusElements) {
+                    checkAndAddElement(statusSb, OR, addOr);
+                    statusSb.append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ");
+                    if (Trigger.TriggerState.ERROR.toString().equals(element)) {
+                        statusSb.append("\'").append(Trigger.TriggerState.ERROR.toString()).append("\'");
+                    } else if (Trigger.TriggerState.BLOCKED.toString().equals(element)) {
+                        statusSb.append("\'").append(Trigger.TriggerState.BLOCKED.toString()).append("\'");
+                    } else if (Trigger.TriggerState.PAUSED.toString().equals(element)) {
+                        statusSb.append("\'").append(Trigger.TriggerState.PAUSED.toString()).append("\'");
+                    } else {
+                        statusSb.append("\'").append(Trigger.TriggerState.NORMAL.toString()).append("\'")
+                            .append(OR).append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ")
+                            .append("\'").append(Trigger.TriggerState.COMPLETE.toString()).append("\'")
+                            .append(OR).append(getCorrectNameRepresentation(TRIGGER_STATE)).append(" = ")
+                            .append("\'").append(WAITING).append("\'");
+                    }
+                    addOr = true;
                 }
-                addOr = true;
             }
         }
         return statusSb.toString();
@@ -356,9 +375,9 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
     private String buildJobsBasicInfoSqlQuery(JobsSearchSettings jobsSearchSettings) {
 
         StringBuilder sb = new StringBuilder("SELECT A.TRIGGER_NAME, A.TRIGGER_GROUP, B.JOB_DATA FROM ")
-                .append(getCorrectNameRepresentation(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + TRIGGERS))
+                .append(getCorrectNameRepresentation(sqlProperties.get(TABLE_PREFIX).toString() + TRIGGERS))
                 .append(" AS A JOIN ")
-                .append(getCorrectNameRepresentation(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + JOB_DETAILS))
+                .append(getCorrectNameRepresentation(sqlProperties.get(TABLE_PREFIX).toString() + JOB_DETAILS))
                 .append(" AS B")
                 .append(" ON A.TRIGGER_NAME = B.JOB_NAME AND A.TRIGGER_GROUP = B.JOB_GROUP")
                 .append(buildWhereCondition(jobsSearchSettings));
@@ -372,16 +391,23 @@ public class MotechSchedulerDatabaseServiceImpl implements MotechSchedulerDataba
         }
         if (jobsSearchSettings.getRows() != null && jobsSearchSettings.getPage() != null) {
             int offset = (jobsSearchSettings.getPage() == 0) ? 0 : (jobsSearchSettings.getPage() - 1) * jobsSearchSettings.getRows();
-            sb = sb.append(" LIMIT ").append(jobsSearchSettings.getRows()).append(" OFFSET ").append(offset);
+            sb.append(" LIMIT ").append(jobsSearchSettings.getRows()).append(" OFFSET ").append(offset);
         }
 
         return sb.toString();
     }
 
     private String buildJobsCountSqlQuery(JobsSearchSettings jobsSearchSettings) {
-        StringBuilder sb = new StringBuilder("SELECT COUNT(*) FROM ");
-        sb = sb.append(getCorrectNameRepresentation(sqlProperties.get("org.quartz.jobStore.tablePrefix").toString() + TRIGGERS));
-        sb = sb.append(buildWhereCondition(jobsSearchSettings));
+        StringBuilder sb = new StringBuilder("SELECT COUNT(*) FROM ")
+            .append(getCorrectNameRepresentation(sqlProperties.get(TABLE_PREFIX).toString() + TRIGGERS))
+            .append(buildWhereCondition(jobsSearchSettings));
+        return sb.toString();
+    }
+
+    private String buildJobsAllSqlQuery() {
+        StringBuilder sb = new StringBuilder("SELECT A. TRIGGER_NAME, A.TRIGGER_GROUP, B.JOB_DATA FROM ")
+            .append(getCorrectNameRepresentation(sqlProperties.get(TABLE_PREFIX).toString() + TRIGGERS))
+            .append(" AS A JOIN QRTZ_JOB_DETAILS AS B ON A.TRIGGER_NAME = B.JOB_NAME AND A.TRIGGER_GROUP = B.JOB_GROUP");
         return sb.toString();
     }
 

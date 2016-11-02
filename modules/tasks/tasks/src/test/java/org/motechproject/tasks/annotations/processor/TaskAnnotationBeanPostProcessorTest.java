@@ -15,7 +15,7 @@ import org.motechproject.tasks.domain.mds.channel.builder.ActionEventBuilder;
 import org.motechproject.tasks.domain.mds.channel.ActionParameter;
 import org.motechproject.tasks.domain.mds.channel.builder.ActionParameterBuilder;
 import org.motechproject.tasks.domain.mds.channel.Channel;
-import org.motechproject.tasks.domain.mds.ParameterType;
+import org.motechproject.tasks.domain.enums.ParameterType;
 import org.motechproject.tasks.service.ChannelService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;

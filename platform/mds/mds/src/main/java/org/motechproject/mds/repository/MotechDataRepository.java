@@ -206,6 +206,10 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
         return QueryExecutor.executeDelete(query, values, restriction);
     }
 
+    public T detachedCopy(T object) {
+        return getPersistenceManager().detachCopy(object);
+    }
+
     public Object getDetachedField(T instance, String field) {
         T attached = getPersistenceManager().makePersistent(instance);
         return PropertyUtil.safeGetProperty(attached, field);

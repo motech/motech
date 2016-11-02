@@ -68,6 +68,20 @@
                 input: 'input[date-update]',
                 pattern: 9
             }, {
+                name: 'beginningOfMonth',
+                input: ''
+            }, {
+                name: 'endOfMonth',
+                input: ''
+            }, {
+                name: 'plusMonths',
+                input: 'input[manipulation-kind="plusMonths"]',
+                pattern: 11
+            }, {
+                name: 'minusMonths',
+                input: 'input[manipulation-kind="minusMonths"]',
+                pattern: 12
+            }, {
                 name: 'plusDays',
                 input: 'input[manipulation-kind="plusDays"]',
                 pattern: 9
@@ -216,6 +230,7 @@
                 select: function (scope, idx, action) {
                     scope.task.actions[idx] = {
                         displayName: action.displayName,
+                        specifiedName: action.specifiedName,
                         channelName: scope.selectedActionChannel[idx].displayName,
                         moduleName: scope.selectedActionChannel[idx].moduleName,
                         moduleVersion: scope.selectedActionChannel[idx].moduleVersion
@@ -322,26 +337,41 @@
             if(!field){
                 return "";
             }
-            var str = "";
-            switch(field.prefix){
-                case utils.TRIGGER_PREFIX:
-                    str = "{0}.{1}".format(utils.TRIGGER_PREFIX, field.eventKey);
-                    break;
-                case utils.DATA_SOURCE_PREFIX:
-                    str = "{0}.{1}.{2}#{3}.{4}".format(utils.DATA_SOURCE_PREFIX, field.providerName, field.providerType, field.objectId, field.fieldKey);
-                    break;
-                default:
-                    str = field.displayName;
+            var str = [];
+
+            if (!field.specifiedParentName) {
+                switch (field.prefix) {
+                    case utils.TRIGGER_PREFIX:
+                        str.push("{0}.{1}".format(utils.TRIGGER_PREFIX, field.eventKey));
+                        break;
+                    case utils.DATA_SOURCE_PREFIX:
+                        str.push("{0}.{1}.{2}#{3}.{4}".format(utils.DATA_SOURCE_PREFIX, field.providerName, field.providerType, field.objectId, field.fieldKey));
+                        break;
+                    default:
+                        str.push(field.displayName);
+                }
+            } else {
+                switch (field.prefix) {
+                    case utils.TRIGGER_PREFIX:
+                        str.push("{0}.{1}".format(utils.TRIGGER_PREFIX, field.eventKey));
+                        break;
+                    case utils.DATA_SOURCE_PREFIX:
+                        str.push("{0}.{1}.{2}#{3}.{4}".format(utils.DATA_SOURCE_PREFIX, field.providerName, field.providerType, field.objectId, field.fieldKey));
+                        str.push("{0}.{1}".format(field.specifiedParentName, field.fieldKey));
+                        break;
+                    default:
+                        str.push(field.displayName);
+                }
             }
             if (field.manipulations && Array.isArray(field.manipulations)) {
                 field.manipulations.forEach(function(manipulation) {
-                    str += "?{0}({1})".format(manipulation.type, manipulation.argument);
+                    str[0] += "?{0}({1})".format(manipulation.type, manipulation.argument);
                 });
             }
             return str;
         };
         utils.parseField = function (str, existingFields) {
-            var manipulations, field;
+            var manipulations, field, existingField;
             if(!str){
                 return false;
             }
@@ -353,8 +383,16 @@
             field = {};
             field.displayName = str;
             existingFields.forEach(function (exField) {
-                if(str === utils.formatField(exField)){
-                    field = Object.assign({}, exField);
+                existingField = utils.formatField(exField);
+
+                if (existingField.length > 1) {
+                    if(str === existingField[0] || str === existingField[1]) {
+                        field = Object.assign({}, exField);
+                    }
+                } else {
+                    if(str === existingField[0]){
+                        field = Object.assign({}, exField);
+                    }
                 }
             });
             field.manipulations = [];

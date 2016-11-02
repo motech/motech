@@ -7,6 +7,11 @@
     font-weight: normal;
 }
 
+.tasks .btn-show-hide-bubbles {
+    float: right;
+    margin-right: 50px;
+}
+
 .tasks .popover.dragpopover .popover-content {
     padding: 9px 9px 9px 9px;
 }
@@ -62,10 +67,13 @@
 }
 
 .tasks .field-bubble .badge {
-    border-radius: 5px;
+    border-radius: 4px;
     font-size: 0.8em;
     background-color: #FFF;
     color: #333333;
+    min-width: 16px;
+    float: right;
+    padding: 2px 5px;
 }
 
 .tasks .field-trigger .badge {
@@ -258,6 +266,42 @@ manipulation-sorter .manipulation .remove:before {
     margin: 0px 5px 5px 0;
 }
 
+.tasks .map-field .field-bubble{
+    max-width: 100%;
+}
+
+.tasks .map-field .field-text{
+    float: left;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tasks .map-field .field-text-short{
+    float: left;
+    max-width: 82%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tasks .map-field .text-field-marker {
+    line-height: initial;
+}
+
+.tasks .field-remove {
+    display: inline;
+    margin-left: 2px;
+}
+
+.tasks .field-bubble .popover{
+    visibility: hidden;
+}
+
+.tasks .map-field .popover{
+    color: #000000;
+    visibility: visible;
+}
+
 .tasks .actionField.period-input {
     height: auto;
     min-height: 36px;
@@ -298,8 +342,16 @@ manipulation-sorter .manipulation .remove:before {
     margin: 0 2px;
 }
 
+.tasks .warning-type {
+    color: #ff972f;
+}
+
+.tasks .paused-task {
+    color: #545454;
+}
+
 .tasks .badge-close {
-    float: none; !important;
+    float: right;
     font-size: 12px; !important;
     text-shadow: 0px 0px #FFF;
     color: #FFF;
@@ -322,6 +374,34 @@ manipulation-sorter .manipulation .remove:before {
     padding: 0;
     border: none;
     box-shadow: none;
+}
+
+.task-element .arrow-right:before {
+    content: "\F061";
+    font:normal normal normal 14px/1 FontAwesome;
+}
+
+.tasks-element .arrow-right {
+    float: none; !important;
+    font-size: 12px; !important;
+    text-shadow: 0px 0px #FFF;
+    opacity: 1;
+    width: 12px;
+    overflow:hidden;
+}
+
+.tasks .task-info {
+    float: none; !important;
+    font-size: 12px; !important;
+    text-shadow: 0px 0px #FFF;
+    opacity: 1;
+    width: 12px;
+    overflow:hidden;
+}
+
+.tasks .task-info:before {
+    content: "\F129";
+    font:normal normal normal 14px/1 FontAwesome;
 }
 
 .tasks #task-list .panel-body.task-content {
@@ -418,6 +498,20 @@ manipulation-sorter .manipulation .remove:before {
     padding: 0 1px 2px 2px;
 }
 
+.tasks .tasks-list .task-element .task-list-settings-enabled {
+    background: url('../img/task-settings.png') no-repeat;
+    background-size: contain;
+    background-position: center;
+    min-height: 36px;
+}
+
+.tasks .tasks-list .task-element .task-list-settings-disabled {
+    background: url('../img/task-settings-paused.png') no-repeat;
+    background-size: contain;
+    background-position: center;
+    min-height: 36px;
+}
+
 .tasks .task-active .task-list-button-activity {
     background: #9ECEEF url("../img/bg-light-active.png") repeat-x;
     color: #FFFFFF;
@@ -438,6 +532,11 @@ manipulation-sorter .manipulation .remove:before {
 
 .tasks .task-list-div-activity {
     float: left;
+}
+
+.tasks .task-list-div-activity .fa-play-circle:before {
+    background-color: #1566B1;
+    backgroud-clip: text;
 }
 
 .tasks .tasks-list .task-element.task-paused .task-list-img-activity {
@@ -921,11 +1020,16 @@ manipulation-sorter .manipulation .remove:before {
     height: 20px;
 }
 
-#helpModal .modal-dialog {
-    width: 760px;
+.tasks .modal-header {
+    background-color: white !important;
+    font-weight: bold;
 }
 
-#helpModal .modal-body .header {
+.tasks .modal-header .bootstrap-dialog-title {
+    color: #224477 !important;
+}
+
+.tasks .header {
     color: #224477;
     font-size: 16px;
 }
@@ -1116,7 +1220,7 @@ manipulation-sorter .manipulation .remove:before {
 }
 
 .tasks .popover{
-    max-width: 200%;
+    max-width: 300%;
 }
 
 .trigger-lists {
@@ -1165,6 +1269,11 @@ editable-content .popover .inner-popover, nonEditable, .no-margin-bottom input[t
     text-align: center;
 }
 
+.tasks .dropdown-menu.open-list {
+    display: block;
+    margin-left: 15px;
+}
+
 #period-year, #period-month, #period-week,
 #period-day, #period-hour, #period-minute,
 #period-second {
@@ -1186,4 +1295,47 @@ editable-content .popover .inner-popover, nonEditable, .no-margin-bottom input[t
     float: left;
     width: 45px;
     font-size: 18px;
+}
+
+.tasks .sidebar {
+    position: fixed;
+    top: 45%;
+    right: -300px;
+    transition: 800ms right;
+    z-index: 999;
+}
+.tasks .sidebar:hover {
+    right: 0;
+    transition: 800ms right;
+}
+.tasks .navigation-toggle {
+    position: absolute;
+    right: 300px;
+    background: #337ab7;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 20px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+.tasks .sidebar:hover .navigation-toggle {
+    opacity: 0;
+}
+.tasks .navigation {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.tasks .navigation-items span {
+    display: block;
+    background-color: #337ab7;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px 20px;
+    width: 300px;
+}
+.tasks .navigation-items span:hover {
+    background-color: #155C8D;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
 }

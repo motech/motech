@@ -318,6 +318,11 @@
             return expression;
         };
 
+        $scope.getProperFieldName = function (fieldName) {
+            var field =  JSON.parse(JSON.stringify(fieldName));
+            return field;
+        };
+
         $scope.generateRandomUUID = function (field, isDefault) {
             if (isDefault) {
                 field.basic.defaultValue = MDSUtils.generateUUID($http);
@@ -628,6 +633,8 @@
                 return s1Lower > s2Lower? 1 : (s1Lower < s2Lower? -1 : 0);
             });
         };
+
+        innerLayout({});
     });
 
     /**
@@ -1566,7 +1573,7 @@
         /* ~~~~~ FIELD FUNCTIONS ~~~~~ */
 
         $scope.isUniqueEditable = function(field) {
-            if (field.type) {
+            if (field && field.type) {
                 return !field.readOnly
                                    && field.type.typeClass !== 'java.util.Map'
                                    && field.type.typeClass !== "org.motechproject.mds.domain.OneToManyRelationship"
@@ -1742,7 +1749,7 @@
         */
         $scope.fieldUsedInReferencedLookup = function (field) {
             var i;
-            if (field.lookups) {
+            if (field && field.lookups) {
                 for (i = 0; i < field.lookups.length; i += 1) {
                     if (field.lookups[i].referenced) {
                         return true;
@@ -2042,14 +2049,20 @@
             });
 
         };
+
+         $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState) {
+            if(fromState.name === 'mds.schemaEditor') {
+               var modal = angular.element('#advancedObjectSettingsModal');
+               modal.modal('hide');
+            }
+         });
+
         $scope.blockLookups = false;
         $scope.$watch('lookup.lookupName', function () {
             var exists;
 
             if ($scope.advancedSettings !== null && $scope.lookup !== undefined && $scope.lookup.lookupName !== undefined) {
-                LoadingModal.open();
                 $scope.validateLookupName($scope.lookup.lookupName);
-                LoadingModal.close();
             }
         });
 
@@ -3521,7 +3534,10 @@
 
             // load the entity if coming from the 'Add' link in the main DataBrowser page
             if (!$scope.selectedEntity) {
-                $scope.retrieveAndSetEntityData('../mds/entities/getEntity/' + module + '/' + entityName);
+                $http.get('../mds/entities/getEntity/' + module + '/' + entityName)
+                .success(function (data) {
+                    $scope.selectedEntity = data;
+                });
             }
 
             $scope.instanceEditMode = false;
@@ -3554,11 +3570,12 @@
             });
         };
 
+
         $scope.addNewRelatedInstance = function (field) {
             $scope.relatedMode.isNested = true;
             var relatedClass  = $scope.getRelatedClass(field);
             $scope.editedField = angular.copy(field);
-            $('ng-form[name=' + field.name + '] #new-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
+            $('ng-form[name=' + field.name + '_field_name] #new-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
             $scope.editedInstanceId = undefined;
             $('body > #new-related_' + field.id).on('hide.bs.modal', function () {
                 $scope.relatedMode.isNested = false;
@@ -3645,7 +3662,7 @@
             $scope.relatedMode.isNested = true;
             instanceId = parseInt(instanceId, 10);
             $scope.editedInstanceId = instanceId;
-            $('ng-form[name=' + field.name + '] #edit-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
+            $('ng-form[name=' + field.name + '_field_name] #edit-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
             var addedNewRecords,
                 editExisting = true,
                 setExisting = function () {
@@ -4165,7 +4182,11 @@
                 $scope.addedEntity = undefined;
                 $scope.selectedInstance = undefined;
                 $scope.loadedFields = undefined;
-                $scope.removeIdFromUrl();
+                if ($state.current.parent === "mds") {
+                    $state.reload();
+                } else {
+                    $state.transitionTo($state.current);
+                }
             }
             $scope.cancelAddRelatedForm();
             $scope.cancelEditRelatedForm();
@@ -4182,6 +4203,9 @@
 
             var values = $scope.currentRecord.fields;
             angular.forEach (values, function(value, key) {
+                if(value.type.typeClass === "java.lang.String" && value.value === ""){
+                    value.value = null;
+                }
                 value.value = value.value === 'null' ? null : value.value;
             });
 
@@ -4417,11 +4441,11 @@
         };
 
         $scope.isMapField = function(field) {
-            return field.type.typeClass === "java.util.Map";
+            return (field && field.type && field.type.typeClass === "java.util.Map") ? true : false;
         };
 
         $scope.isComboboxField = function(field) {
-             return field.type.typeClass === "java.util.Collection";
+             return (field && field.type && field.type.typeClass === "java.util.Collection") ? true : false;
         };
 
         $scope.isMultiSelectCombobox = function(field) {
@@ -4649,7 +4673,7 @@
         /**
         * Unselects entity to allow user to return to entities list by modules
         */
-        $scope.unselectEntity = function () {
+        $rootScope.unselectEntity = function () {
             $scope.entityAdvanced = undefined;
             $scope.dataRetrievalError = false;
             innerLayout({
@@ -4658,6 +4682,7 @@
                 east__maxSize: 350
             });
             $scope.selectedEntity = undefined;
+            $scope.removeIdFromUrl();
             $scope.showFilters = false;
             resizeLayout();
         };
@@ -5204,8 +5229,6 @@
         };
 
         $scope.checkForModuleConfig();
-
-        $rootScope.unselectEntity = $scope.unselectEntity();
 
         $scope.relatedId = function (obj) {
             if (obj.id) {

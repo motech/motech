@@ -3,40 +3,56 @@ package org.motechproject.tasks.service;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
-import org.motechproject.tasks.domain.mds.task.TaskActivityType;
-import org.motechproject.tasks.exception.TaskHandlerException;
+import org.motechproject.tasks.domain.enums.TaskActivityType;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Service for managing task activities. Task activities are used for storing information about past task executions.
+ * Service for managing task activities. Task activities are used for storing information about current and past task executions.
  */
 public interface TaskActivityService {
 
     /**
-     * Logs an execution error for the given task.
+     * Adds a new task activity log and marks it as "In Progress".
      *
-     * @param task  the failed task, not null
-     * @param e  the cause of the error, not null
-     * @param parameters the parameters used by the task when it failed
+     * @param task The task to add the log for
+     * @param parameters The event trigger parameters the task was initiated with
+     * @return id of the created activity log
      */
-    void addError(Task task, TaskHandlerException e, Map<String, Object> parameters);
+    long addTaskStarted(Task task, Map<String, Object> parameters);
 
     /**
-     * Logs an execution success for the given task.
+     * Marks the activity as "FILTERED", if task was filtered and not executed.
      *
-     * @param task  the succeeded task, not null
+     * @param activityId the id of the activity
      */
-    void addSuccess(Task task);
+    void addTaskFiltered(Long activityId);
+
+    /**
+     * Adds successful execution to the activity of the provided id. If all the task actions are executed, it marks
+     * the activity as "SUCCESS".
+     *
+     * @param activityId the id of the activity
+     * @return whether the task is finished
+     */
+    boolean addSuccessfulExecution(Long activityId);
+
+    /**
+     * Adds failed execution to the activity of the provided id, which in consequence marks it as "FAILED".
+     *
+     * @param activityId the id of the activity
+     * @param e the throwable that has caused the task execution failure
+     */
+    void addFailedExecution(Long activityId, Throwable e);
 
     /**
      * Logs a warning for the given task.
      *
      * @param task  the task, not null
      */
-    void addWarning(Task task);
+    void addTaskDisabledWarning(Task task);
 
     /**
      * Logs a warning for the given task.
@@ -55,7 +71,7 @@ public interface TaskActivityService {
      * @param field  the name of the failed that caused the warning, not null
      * @param e  the exception that caused the warning, not null
      */
-    void addWarning(Task task, String key, String field, Exception e);
+    void addWarningWithException(Task task, String key, String field, Exception e);
 
     /**
      * Deletes all activities for the task with the given ID.

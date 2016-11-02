@@ -10,10 +10,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.commons.api.json.MotechJsonReader;
-import org.motechproject.tasks.domain.mds.channel.MethodCallManner;
+import org.motechproject.tasks.domain.enums.MethodCallManner;
 import org.motechproject.tasks.contract.builder.TestActionEventRequestBuilder;
 import org.motechproject.tasks.contract.builder.ActionParameterRequestBuilder;
-import org.motechproject.tasks.domain.mds.ParameterType;
+import org.motechproject.tasks.domain.enums.ParameterType;
 import org.motechproject.tasks.contract.ActionEventRequest;
 import org.motechproject.tasks.contract.ActionParameterRequest;
 

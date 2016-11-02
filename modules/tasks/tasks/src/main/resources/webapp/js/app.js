@@ -5,7 +5,7 @@
 
     angular.module('tasks', ['motech-dashboard', 'tasks.controllers', 'tasks.directives',
                                     'tasks.filters', 'tasks.services', 'tasks.utils', 'ngCookies',
-                                    'motech-widgets'])
+                                    'motech-widgets', 'ui.bootstrap'])
     .config(function ($stateProvider, $urlRouterProvider) {
         $stateProvider
             .state('tasks', {

@@ -1,6 +1,8 @@
-<span ng-if="!editable" class="field-bubble field-{{field.prefix}}">{{displayName}}</span>
+<span ng-if="!editable && field.eventKey" class="field-bubble field-{{field.prefix}}" data-trigger="hover" data-placement="top" bs-popover="{{field.prefix}}.{{field.eventKey}}">{{displayName}}</span>
+<span ng-if="!editable && field.providerName" class="field-bubble field-{{field.prefix}}" data-trigger="hover" data-placement="top" bs-popover="{{field.prefix}}.{{field.providerName}}.{{field.providerType}}#{{field.objectId}}.{{field.fieldKey}}">{{displayName}}</span>
+<span ng-if="!editable && !field.providerName && !field.eventKey" class="field-bubble field-{{field.prefix}}">{{displayName}}</span>
 <span ng-if="editable" class="field-bubble field-{{field.prefix}}" manipulation-modal manipulation-type="field.type" manipulations="field.manipulations">
-    {{displayName}}
+    <button class="field-remove close badge-close"></button>
+    <span class="text-field-marker" data-toggle="popover" data-placement="top" data-trigger="hover" data-html="true" bs-popover="{{displayName}}">{{displayName}}</span>
     <span ng-if="field.manipulations.length>0" class="badge">{{field.manipulations.length}}</span>
-    <button class="field-remove close badge-close">Remove</button>
 </span>

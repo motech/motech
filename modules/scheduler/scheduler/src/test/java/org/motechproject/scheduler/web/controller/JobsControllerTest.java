@@ -81,6 +81,18 @@ public class JobsControllerTest {
     }
 
     @Test
+    public void shouldGetAllJobsRecordsWhenNoFiltersSet() throws SchedulerException, SQLException {
+        List<JobBasicInfo> jobBasicInfos = getTestJobBasicInfos();
+        JobsSearchSettings jobsSearchSettings = new JobsSearchSettings();
+        when(motechSchedulerDatabaseService.getScheduledJobsBasicInfo(jobsSearchSettings)).thenReturn(jobBasicInfos);
+
+        JobsRecords result = jobsController.retrieveJobInfo(jobsSearchSettings);
+
+        assertEquals(jobBasicInfos, result.getRows());
+        verify(motechSchedulerDatabaseService).getScheduledJobsBasicInfo(jobsSearchSettings);
+    }
+
+    @Test
     public void shouldGetJobeDetailedInfo() throws SchedulerException, SQLException {
         List<JobBasicInfo> jobBasicInfos = getTestJobBasicInfos();
         JobsSearchSettings jobsSearchSettings = getDefaultGridSettings();

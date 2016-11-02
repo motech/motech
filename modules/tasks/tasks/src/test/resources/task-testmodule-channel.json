@@ -1,0 +1,34 @@
+{
+  "displayName" : "Task test",
+  "triggerTaskEvents" : [
+    {
+      "displayName" : "Test Trigger",
+      "subject" : "triggerEvent",
+      "eventParameters" : [
+        {
+          "eventKey" : "key_1",
+          "displayName" : "Key 1"
+        }
+      ]
+    }
+  ],
+  "actionTaskEvents": [
+    {
+      "displayName": "Test Action return Post Action Params",
+      "serviceInterface": "org.motechproject.testmodule.service.TasksTestService",
+      "serviceMethod": "createTestObjectWithPostActionParameter",
+      "actionParameters": [
+        {
+          "key": "testName",
+          "displayName": "testName"
+        }
+      ],
+      "postActionParameters": [
+        {
+          "key": "testNameWithPrefix",
+          "displayName": "testNameWithPrefix"
+        }
+      ]
+    }
+  ]
+}

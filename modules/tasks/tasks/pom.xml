@@ -4,13 +4,13 @@
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>motech</artifactId>
-        <version>0.29-SNAPSHOT</version>
+        <version>0.30-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
 
     <artifactId>motech-tasks</artifactId>
     <name>MOTECH Tasks</name>
-    <version>0.29-SNAPSHOT</version>
+    <version>0.30-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
@@ -61,6 +61,12 @@
             <artifactId>org.motechproject.gemini-blueprint-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-tasks-test-bundle</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -105,7 +111,7 @@
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
                                 $, jQuery, angular, TasksDashboardCtrl, TasksManageCtrl, TasksLogCtrl, moment,
-                                dummyHandler, window, innerLayout, cloneObj, isBlank, defaultLayout, rangy
+                                dummyHandler, window, innerLayout, cloneObj, isBlank, defaultLayout, rangy, BootstrapDialog
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                             <excludes>
@@ -139,7 +145,9 @@
                             org.motechproject.tasks.repository;version=${project.version},
                             org.motechproject.tasks.service;version=${project.version},
                             org.motechproject.tasks.service.osgi;version=${project.version},
-                            org.motechproject.tasks.util;version=${project.version}
+                            org.motechproject.tasks.util;version=${project.version},
+                            org.motechproject.tasks.domain.enums;version=${project.version},
+                            org.motechproject.tasks.dto;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             net.sf.cglib.core,

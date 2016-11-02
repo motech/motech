@@ -1,25 +1,8 @@
-<div id="importTaskModal" class="tasks modal fade" tabindex="-1" role="dialog" aria-labelledby="importTaskModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" ng-click="closeImportTaskModal()">&times;</button>
-                <h4 class="modal-title" id="importTaskModalLabel">{{msg('task.import')}}</h4>
-            </div>
-            <div class="modal-body">
-                <form id="importTaskForm" name="importTaskForm" class="form-horizontal" action="../tasks/api/task/import" enctype="multipart/form-data" method="POST">
-                    <div class="form-group fileinput fileinput-new" data-provides="fileinput">
-                        <label class="col-sm-3 control-label">{{msg('task.fileChosen')}}</label>
-                        <div class="form-inline col-sm-9">
-                            <motech-file-upload></motech-file-upload>
-                        </div>
-                    </div>
-                </form>
-
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" ng-click="importTask()">{{msg('task.button.import')}}</button>
-                <button class="btn btn-default" ng-click="closeImportTaskModal()">{{msg('task.close')}}</button>
-            </div>
+<form id="importTaskForm" name="importTaskForm" class="form-horizontal" action="../tasks/api/task/import" enctype="multipart/form-data" method="POST">
+    <div class="form-group fileinput fileinput-new" data-provides="fileinput">
+        <label class="col-sm-3 control-label">{{msg('task.fileChosen')}}</label>
+        <div class="form-inline col-sm-9">
+            <motech-file-upload></motech-file-upload>
         </div>
     </div>
-</div>
+</form>

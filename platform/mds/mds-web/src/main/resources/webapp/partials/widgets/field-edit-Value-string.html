@@ -1,8 +1,8 @@
 <input mds-visited-input ng-required="{{field.required}}" type="text" class="form-control input-xlarge-fluid" ng-model="field.value" placeholder="{{field.placeholder}}"
        pattern-validity="0" ng-minlength="{{getValidationCriteria(field, 1)}}" ng-maxlength="{{getValidationCriteria(field, 2)}}"
-       mds-field-id="{{field.id}}" mds-field-name="{{field.name}}" ng-readonly="shouldHideEdition(field)" >
+       mds-field-id="{{field.id}}" mds-field-name="{{field.name}}_field_name" ng-readonly="shouldHideEdition(field)" >
 
-<span id="visited-hint-{{field.id}}" class="form-hint hidden" ng-show="{{field.name}}.$error.pattern && {{field.name}}.$dirty && !{{field.name}}.$error.maxlength && !{{field.name}}.$error.minlength">{{msg('mds.error.noValidatePattern')}}</span>
-<span class="form-hint" ng-show="{{field.name}}.$error.minlength && {{field.name}}.$dirty">{{msg('mds.error.minLength')}}</span>
-<span class="form-hint" ng-show="{{field.name}}.$error.maxlength && {{field.name}}.$dirty">{{msg('mds.error.maxLength')}}</span>
+<span id="visited-hint-{{field.id}}" class="form-hint hidden" ng-show="{{field.name}}_field_name.$error.pattern && {{field.name}}_field_name.$dirty && !{{field.name}}_field_name.$error.maxlength && !{{field.name}}_field_name.$error.minlength">{{msg('mds.error.noValidatePattern')}}</span>
+<span class="form-hint" ng-show="{{field.name}}_field_name.$error.minlength && {{field.name}}_field_name.$dirty">{{msg('mds.error.minLength')}}</span>
+<span class="form-hint" ng-show="{{field.name}}_field_name.$error.maxlength && {{field.name}}_field_name.$dirty">{{msg('mds.error.maxLength')}}</span>
 
