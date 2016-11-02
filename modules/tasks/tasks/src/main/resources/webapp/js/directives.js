@@ -19,15 +19,27 @@
                 }
 
                 var elem = angular.element(element), k, rows, activity, message, date, stackTraceElement, fields, messageToShow,
-                activityId;
+                activityId, url, taskId;
+
+                if (scope.taskId) {
+                    url = '../tasks/api/activity/' + scope.taskId;
+                } else {
+                    url = '../tasks/api/activity/all';
+                }
 
                 elem.jqGrid({
-                    url: '../tasks/api/activity/' + scope.taskId,
+                    url: url,
                     datatype: 'json',
                     jsonReader:{
                         repeatitems:false
                     },
                     colModel: [{
+                        name: 'task',
+                        index: 'task',
+                        sortable: false,
+                        width: 25,
+                        align: 'center'
+                    }, {
                         name: 'date',
                         formatter: function (value) {
                             return moment(parseInt(value, 10)).fromNow();
@@ -46,7 +58,7 @@
                         name: 'message',
                         index: 'message',
                         sortable: false,
-                        width: 180
+                        width: 155
                     }, {
                         name: 'retry',
                         index: 'retry',
@@ -72,6 +84,7 @@
                     pager: '#' + attrs.taskHistoryGrid,
                     viewrecords: true,
                     gridComplete: function () {
+                        elem.jqGrid('setLabel', 'task', scope.msg('task.subsection.taskName'));
                         elem.jqGrid('setLabel', 'date', scope.msg('task.subsection.information'));
                         elem.jqGrid('setLabel', 'activityType', scope.msg('task.subsection.status'));
                         elem.jqGrid('setLabel', 'message', scope.msg('task.subsection.message'));
@@ -111,6 +124,7 @@
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'retry',
                                         '&nbsp;&nbsp;<span type="button" class="btn btn-primary btn-xs grid-ng-clickable" ng-click="retryTask(' + activityId + ')">Retry</span>',
                                         'ok',{ },'');
+                                    scope.failedTasks.push(activityId);
                                 }
                             }
 
@@ -126,6 +140,9 @@
                             } else if (message !== undefined) {
                                 $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',scope.msg(messageToShow),'ok',{ },'');
                             }
+
+                            taskId = $("#taskHistoryTable").getCell(rows[k], "task");
+                            $("#taskHistoryTable").jqGrid('setCell', rows[k], 'task', scope.getTaskNameFromId(parseInt(taskId, 10)));
                         }
                     },
                     loadComplete: function() {
@@ -1676,7 +1693,6 @@
                         cssClass: 'btn btn-primary',
                         action: function (dialogItself) {
                             LoadingModal.open();
-
                             $('#importTaskForm').ajaxSubmit({
                                 success: function () {
                                     scope.getTasks();

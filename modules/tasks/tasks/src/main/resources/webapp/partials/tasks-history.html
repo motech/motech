@@ -1,0 +1,21 @@
+<div class="row margin-after">
+    <h4 class="frame-title">{{msg('task.header.taskHistory')}}</h4>
+    <div class="form-group form-inline inside">
+        <label>{{msg('task.history.filter.progress')}}</label>
+        <select class="form-control input-auto" ng-model="selectedActivityType" ng-options="activity for activity in activityTypes"></select>
+        <label>{{msg('task.history.filter.tasks')}}</label>
+        <select class="form-control input-auto" ng-model="selectedTaskType" ng-change="getSelectedTaskId()" ng-options="task for task in allTaskTypes"></select>
+        <label>{{msg('task.history.filter.dateRange')}}</label>
+        <input id="dateTimeFrom" class="form-control" date-picker ng-model="dateTimeFrom" max="dateTimeTo" type="datetime" placeholder="{{msg('task.history.filter.from')}}"/>
+        <input id="dateTimeTo" class="form-control" date-picker ng-model="dateTimeTo" min="dateTimeFrom" type="datetime" placeholder="{{msg('task.history.filter.to')}}"/>
+        <button class="btn btn-primary" ng-click="filterHistory()">{{msg('task.history.filter.submit')}}</button>
+    </div>
+    <div id="outsideTaskHistoryTable" class="overrideJqgridTable">
+        <table id="taskHistoryTable" task-history-grid="pageTaskHistoryTable"></table>
+        <div id="pageTaskHistoryTable"></div>
+    </div>
+    <div class="toolbox">
+        <a class="btn btn-default" ng-click="refresh()"><i class="fa fa-refresh"></i>&nbsp;{{msg('admin.refresh')}}</a>
+        <button class="btn btn-primary pull-right" ng-click="retryFailedTasks()">{{msg('task.history.confirm.retry.label')}}</button>
+    </div>
+</div>

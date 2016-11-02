@@ -1,6 +1,8 @@
 package org.motechproject.tasks.service.impl;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.joda.time.DateTime;
+import org.motechproject.commons.api.Range;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.mds.task.Task;
@@ -144,8 +146,28 @@ public class TaskActivityServiceImpl implements TaskActivityService {
 
     @Override
     @Transactional
+    public List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypes, QueryParams queryParams) {
+        return taskActivitiesDataService.byActivityTypes(activityTypes, queryParams);
+    }
+
+    @Override
+    @Transactional
+    public List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange,
+                                               QueryParams queryParams) {
+        return taskActivitiesDataService.byActivityTypesAndDate(activityTypes, dateRange, queryParams);
+    }
+
+    @Override
+    @Transactional
     public List<TaskActivity> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypes, QueryParams queryParams) {
         return taskActivitiesDataService.byTaskAndActivityTypes(taskId, activityTypes, queryParams);
+    }
+
+    @Override
+    @Transactional
+    public List<TaskActivity> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypes, Range<DateTime> dateRange,
+                                                QueryParams queryParams) {
+        return taskActivitiesDataService.byTaskAndActivityTypesAndDate(taskId, activityTypes, dateRange, queryParams);
     }
 
     @Override
@@ -158,6 +180,24 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     @Transactional
     public long getTaskActivitiesCount(Long taskId, TaskActivityType type) {
         return taskActivitiesDataService.countByTaskAndActivityTypes(taskId, new HashSet<>(Arrays.asList(type)));
+    }
+
+    @Override
+    @Transactional
+    public long getTaskActivitiesCount(Long taskId, Set<TaskActivityType> activityTypes, Range<DateTime> dateRange) {
+        return taskActivitiesDataService.countByTaskAndActivityTypesAndDate(taskId, activityTypes, dateRange);
+    }
+
+    @Override
+    @Transactional
+    public long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes) {
+        return taskActivitiesDataService.countByActivityTypes(activityTypes);
+    }
+
+    @Override
+    @Transactional
+    public long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange) {
+        return taskActivitiesDataService.countByActivityTypesAndDate(activityTypes, dateRange);
     }
 
     private void updateTaskInProgressMessage(TaskActivity activity) {

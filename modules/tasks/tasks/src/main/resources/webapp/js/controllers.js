@@ -1189,13 +1189,16 @@
 
     controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http,
                             ModalFactory, LoadingModal, BootstrapDialogManager) {
-        var data, task;
+        var data, task, allTasks, i, selectedTaskId, url;
 
         $scope.taskId = $stateParams.taskId;
         $scope.activityTypes = ['All', 'In progress', 'Success', 'Warning', 'Error'];
         $scope.stackTraceEl = [];
+        $scope.allTaskTypes = ['All'];
+        $scope.failedTasks = [];
 
         $scope.selectedActivityType = 'All';
+        $scope.selectedTaskType = 'All';
 
         innerLayout({
             spacing_closed: 30,
@@ -1203,7 +1206,13 @@
             east__maxSize: 350
         });
 
-        if ($stateParams.taskId !== undefined) {
+        allTasks = Tasks.query(function () {
+            for (i = 0; i < allTasks.length; i += 1) {
+                $scope.allTaskTypes.push(allTasks[i].name);
+            }
+        });
+
+        if ($stateParams.taskId) {
             data = { taskId: $scope.taskId };
 
             task = Tasks.get(data, function () {
@@ -1232,6 +1241,50 @@
                 $('#inner-center').trigger("change");
             });
         }
+
+        $scope.getSelectedTaskId = function () {
+            if ($scope.selectedTaskType !== 'All') {
+                $scope.selectedTaskId = $.grep(allTasks, function (task) {
+                    return task.name === $scope.selectedTaskType;
+                })[0].id;
+            } else {
+                $scope.selectedTaskId = false;
+            }
+        };
+
+        $scope.getTaskNameFromId = function (id) {
+            return $.grep(allTasks, function (task) {
+                return task.id === id;
+            })[0].name;
+        };
+
+        $scope.retryFailedTasks = function () {
+            $http.post('../tasks/api/activity/retryMultiple', $scope.failedTasks)
+                 .success(function () {
+                      ModalFactory.showSuccessAlert('task.retryMultiple.info', 'task.retryMultiple.header');
+                 })
+                 .error(function() {
+                      ModalFactory.showErrorAlert('task.retryMultiple.failed', 'task.retryMultiple.header');
+                 });
+        };
+
+        $scope.filterHistory = function () {
+            if ($scope.selectedTaskId) {
+                url = '../tasks/api/activity/' + $scope.selectedTaskId;
+            } else {
+                url = '../tasks/api/activity/all';
+            }
+
+            $('#taskHistoryTable').jqGrid('setGridParam', {
+                url: url,
+                page: 1,
+                postData: {
+                    activityType: ($scope.selectedActivityType === 'All') ? '' : $scope.selectedActivityType.toUpperCase().replace(/ /g, "_"),
+                    dateTimeFrom: $('#dateTimeFrom').val() ? $('#dateTimeFrom').val() : null,
+                    dateTimeTo: $('#dateTimeTo').val() ? $('#dateTimeTo').val() : null
+                }
+            }).trigger('reloadGrid');
+        };
 
         $scope.changeActivityTypeFilter = function () {
             $('#taskHistoryTable').jqGrid('setGridParam', {
@@ -1612,4 +1665,5 @@
             BootstrapDialogManager.open($scope.importDialog);
         };
     });
+
 }());
