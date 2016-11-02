@@ -1,6 +1,7 @@
 package org.motechproject.tasks.domain.mds.channel.builder;
 
 import org.motechproject.tasks.contract.EventParameterRequest;
+import org.motechproject.tasks.domain.enums.ParameterType;
 import org.motechproject.tasks.domain.mds.channel.EventParameter;
 
 /**
@@ -12,6 +13,8 @@ public class EventParameterBuilder {
 
     private String eventKey;
 
+    private ParameterType parameterType;
+
     public EventParameterBuilder setDisplayName(String displayName) {
         this.displayName = displayName;
         return this;
@@ -22,13 +25,18 @@ public class EventParameterBuilder {
         return this;
     }
 
+    public EventParameterBuilder setParameterType(String type) {
+        this.parameterType = ParameterType.fromString(type);
+        return this;
+    }
+
     /**
      * Builds an object of {@link EventParameter} class.
      *
      * @return the created instance
      */
     public EventParameter build() {
-        return new EventParameter(displayName, eventKey);
+        return new EventParameter(displayName, eventKey, parameterType);
     }
 
     /**
@@ -40,6 +48,7 @@ public class EventParameterBuilder {
     public static EventParameterBuilder fromEventParameterRequest(EventParameterRequest eventParameterRequest) {
         return new EventParameterBuilder()
                 .setDisplayName(eventParameterRequest.getDisplayName())
-                .setEventKey(eventParameterRequest.getEventKey());
+                .setEventKey(eventParameterRequest.getEventKey())
+                .setParameterType(eventParameterRequest.getType());
     }
 }

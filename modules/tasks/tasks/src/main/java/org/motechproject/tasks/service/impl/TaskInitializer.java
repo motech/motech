@@ -13,9 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.List;
 
 import static org.motechproject.tasks.constants.TaskFailureCause.DATA_SOURCE;
 import static org.motechproject.tasks.constants.TaskFailureCause.FILTER;
@@ -69,7 +71,7 @@ class TaskInitializer {
                 DataSource ds = (DataSource) step;
                 taskContext.addDataSourceObject(ds.getObjectId().toString(), getDataSourceObject(ds, dataProviders), ds.isFailIfDataNotFound());
                 LOGGER.info("Task data source: {} for task: {} added", ds.getName(), taskContext.getTask().getName());
-            } else if (step instanceof FilterSet) {
+            } else if (step instanceof FilterSet && !isActionFilter((FilterSet) step)) {
                 try {
                     FilterSet filterSet = (FilterSet) step;
 
@@ -80,6 +82,40 @@ class TaskInitializer {
             }
         }
         return result;
+    }
+
+    @Transactional
+    public int getActionFilters() {
+        int firstActionFilterIndex = 0;
+        boolean actionFilterExist = false;
+        List<FilterSet> filterSetList = new ArrayList<>(taskContext.getTask().getTaskConfig().getFilters());
+
+        for  (int i = 0; i < filterSetList.size(); i++){
+            if(isActionFilter(filterSetList.get(i)) && !actionFilterExist) {
+                firstActionFilterIndex = i;
+                actionFilterExist = true;
+            } else if (!isActionFilter(filterSetList.get(i))) {
+                firstActionFilterIndex = filterSetList.size();
+            }
+        }
+        return firstActionFilterIndex;
+    }
+
+    @Transactional
+    public boolean checkActionFilter(int actualFilterIndex, List<FilterSet> filterSetList) throws TaskHandlerException{
+        boolean result;
+        TaskFilterExecutor taskFilterExecutor = new TaskFilterExecutor();
+
+        try {
+            result = taskFilterExecutor.checkFilters(filterSetList.get(actualFilterIndex).getFilters(), filterSetList.get(actualFilterIndex).getOperator(), taskContext);
+        } catch (RuntimeException e) {
+            throw new TaskHandlerException(FILTER, "task.error.filterError", e);
+        }
+        return result;
+    }
+
+    private boolean isActionFilter(FilterSet filterSet) {
+        return filterSet.getActionFilterOrder() != null;
     }
 
     private Object getDataSourceObject(DataSource dataSource, Map<String, DataProvider> providers)

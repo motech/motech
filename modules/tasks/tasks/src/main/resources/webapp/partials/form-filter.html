@@ -1,4 +1,4 @@
-<div ui-if="step['@type'] == 'FilterSetDto'" class="panel-group task-group" id="step-{{step.order}}" overflow-change expand-accordion ng-cloak>
+<div ui-if="step['@type'] == 'FilterSetDto' || step['@type'] == 'FilterActionSetDto'" class="panel-group task-group" id="step-{{step.order}}" overflow-change expand-accordion ng-cloak>
 
     <div class="panel-heading panel-header clearfix">
         <div class="pull-right">
@@ -48,10 +48,12 @@
                                                     </ul>
                                                 </li>
                                                 <li ng-show="ds.displayName != undefined" class="dropdown-submenu" ng-repeat="ds in task.taskConfig.steps">
-                                                    <a tabindex="-1">{{taskMsg(ds.displayName)}}#{{ds.objectId}} ({{msg(ds.providerName)}})</a>
+                                                    <a ng-show="ds.specifiedName === undefined || ds.specifiedName === '' " tabindex="-1">{{taskMsg(ds.displayName)}}#{{ds.objectId}} ({{msg(ds.providerName)}})</a>
+                                                    <a ng-show="ds.specifiedName !== undefined && ds.specifiedName !== '' " tabindex="-1">{{ds.specifiedName}}</a>
                                                     <ul class="dropdown-menu">
                                                         <li ng-repeat="field in findObject(ds.providerName, ds.type).fields">
-                                                            <a ng-click="selectParam(filter, 'ad', ds, field)">{{taskMsg(field.displayName)}}</a>
+                                                            <a ng-show="field.specifiedName === undefined || field.specifiedName === '' " ng-click="selectParam(filter, 'ad', ds, field)">{{taskMsg(field.displayName)}}</a>
+                                                            <a ng-show="field.specifiedName !== undefined && field.specifiedName !== '' " ng-click="selectParam(filter, 'ad', ds, field)">{{field.specifiedName}}.{{taskMsg(field.key)}}</a>
                                                         </li>
                                                     </ul>
                                                 </li>

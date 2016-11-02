@@ -213,7 +213,7 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", "specifiedName", asList(new Lookup("id", "trigger.value")), true));
 
         action.setValues(map);
 
@@ -280,7 +280,7 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", "specifiedName", asList(new Lookup("id", "trigger.value")), true));
 
         action.setValues(map);
 
@@ -471,7 +471,7 @@ public class TaskServiceImplTest {
                 .withName("test")
                 .withTrigger(trigger)
                 .addAction(action)
-                .addDataSource(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true))
+                .addDataSource(new DataSource("TestProvider", 1234L, 1L, "Test", "id", "specifiedName", asList(new Lookup("id", "trigger.value")), true))
                 .isEnabled(true)
                 .build();
 
@@ -632,7 +632,7 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldValidateTasksAfterChannelUpdateForInvalidTaskDataProviders() {
-        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", "specifiedName",asList(new Lookup("id", "trigger.value")), true));
         Task task = new Task("name", trigger, asList(action), config, true, false);
         task.setId(12345l);
         List<LookupFieldsParameter> lookupFields = new ArrayList<>();
@@ -687,7 +687,7 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldValidateTasksAfterChannelUpdateForValidTaskDataProviders() {
-        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", "specifiedName", asList(new Lookup("id", "trigger.value")), true));
         Task task = new Task("name", trigger, asList(action), config, true, false);
         Set<TaskError> existingErrors = new HashSet<>();
         existingErrors.add(new TaskError("task.validation.error.providerObjectLookupNotExist"));
@@ -721,7 +721,7 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldNotValidateTasksAfterChannelUpdateIfDataSourceDoesNotExistForGivenProvider() {
-        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("TestProvider", 1234L, 1L, "Test", "id", "specifiedName", asList(new Lookup("id", "trigger.value")), true));
         Task task = new Task("name", trigger, asList(action), config, true, false);
 
         TaskDataProvider dataProvider = new TaskDataProvider("abc", null);

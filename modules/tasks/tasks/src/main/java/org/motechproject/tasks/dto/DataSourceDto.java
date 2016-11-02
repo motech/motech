@@ -13,6 +13,7 @@ public class DataSourceDto extends TaskConfigStepDto {
     private Long objectId;
     private String type;
     private String name;
+    private String specifiedName;
     private List<LookupDto> lookup;
     private boolean failIfDataNotFound;
 
@@ -21,13 +22,14 @@ public class DataSourceDto extends TaskConfigStepDto {
     }
 
     public DataSourceDto(Integer order, String providerName, Long providerId, Long objectId, String type, String name,
-                         List<LookupDto> lookup, boolean failIfDataNotFound) {
+                         String specifiedName, List<LookupDto> lookup, boolean failIfDataNotFound) {
         super(order);
         this.providerName = providerName;
         this.providerId = providerId;
         this.objectId = objectId;
         this.type = type;
         this.name = name;
+        this.specifiedName = specifiedName;
         this.lookup = lookup;
         this.failIfDataNotFound = failIfDataNotFound;
     }
@@ -50,6 +52,10 @@ public class DataSourceDto extends TaskConfigStepDto {
 
     public String getName() {
         return name;
+    }
+
+    public String getSpecifiedName() {
+        return specifiedName;
     }
 
     public List<LookupDto> getLookup() {
@@ -78,6 +84,10 @@ public class DataSourceDto extends TaskConfigStepDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setSpecifiedName(String specifiedName) {
+        this.specifiedName = specifiedName;
     }
 
     public void setLookup(List<LookupDto> lookup) {

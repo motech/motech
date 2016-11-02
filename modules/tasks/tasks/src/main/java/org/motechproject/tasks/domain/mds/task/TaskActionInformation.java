@@ -38,6 +38,9 @@ public class TaskActionInformation extends TaskEventInformation {
     private String serviceMethod;
 
     @Field
+    private String specifiedName;
+
+    @Field
     @Value(columns = @Column(length = MAX_VALUE_LENGTH))
     private Map<String, String> values;
 
@@ -74,7 +77,7 @@ public class TaskActionInformation extends TaskEventInformation {
      */
     public TaskActionInformation(String displayName, String channelName, String moduleName, String moduleVersion,
                                  String subject, Map<String, String> values) {
-        this(null, displayName, channelName, moduleName, moduleVersion, subject, null, null, values);
+        this(null, null, displayName, channelName, moduleName, moduleVersion, subject, null, null, values);
     }
 
     /**
@@ -89,31 +92,7 @@ public class TaskActionInformation extends TaskEventInformation {
      */
     public TaskActionInformation(String displayName, String channelName, String moduleName, String moduleVersion,
                                  String serviceInterface, String serviceMethod) {
-        this(null, displayName, channelName, moduleName, moduleVersion, null, serviceInterface, serviceMethod, null);
-    }
-
-    /**
-     * Constructor for a task that is an OSGi service call from the tasks module, but falls back to sending an event if
-     * the service is not present
-     *
-     * @param name             the task name
-     * @param displayName      the task display name
-     * @param channelName      the channel name
-     * @param moduleName       the module name
-     * @param moduleVersion    the module version
-     * @param subject          the task subject
-     * @param serviceInterface the task service interface
-     * @param serviceMethod    the task service method
-     * @param values           the map of values
-     */
-    public TaskActionInformation(String name, String displayName, // NO CHECKSTYLE More than 7 parameters (found 9).
-                                 String channelName, String moduleName, String moduleVersion, String subject,
-                                 String serviceInterface, String serviceMethod, Map<String, String> values) {
-        super(name, displayName, channelName, moduleName, moduleVersion, subject);
-
-        this.serviceInterface = serviceInterface;
-        this.serviceMethod = serviceMethod;
-        this.values = values == null ? new HashMap<String, String>() : values;
+        this(null, displayName, channelName, moduleName, moduleVersion, serviceInterface, serviceMethod);
     }
 
     /**
@@ -129,7 +108,33 @@ public class TaskActionInformation extends TaskEventInformation {
      */
     public TaskActionInformation(String name, String displayName, String channelName, String moduleName, String moduleVersion,
                                  String serviceInterface, String serviceMethod) {
-        this(name, displayName, channelName, moduleName, moduleVersion, null, serviceInterface, serviceMethod, null);
+        this(name, null, displayName, channelName, moduleName, moduleVersion, null, serviceInterface, serviceMethod, null);
+    }
+
+    /**
+     * Constructor for a task that is an OSGi service call from the tasks module, but falls back to sending an event if
+     * the service is not present
+     *
+     * @param name             the task name
+     * @param specifiedName    the task action specified name
+     * @param displayName      the task display name
+     * @param channelName      the channel name
+     * @param moduleName       the module name
+     * @param moduleVersion    the module version
+     * @param subject          the task subject
+     * @param serviceInterface the task service interface
+     * @param serviceMethod    the task service method
+     * @param values           the map of values
+     */
+    public TaskActionInformation(String name, String specifiedName, String displayName, // NO CHECKSTYLE More than 7 parameters (found 9).
+                                 String channelName, String moduleName, String moduleVersion, String subject,
+                                 String serviceInterface, String serviceMethod, Map<String, String> values) {
+        super(name, displayName, channelName, moduleName, moduleVersion, subject);
+
+        this.serviceInterface = serviceInterface;
+        this.serviceMethod = serviceMethod;
+        this.specifiedName = specifiedName;
+        this.values = values == null ? new HashMap<String, String>() : values;
     }
 
     public boolean hasService() {
@@ -164,14 +169,22 @@ public class TaskActionInformation extends TaskEventInformation {
         }
     }
 
+    public String getSpecifiedName() {
+        return specifiedName;
+    }
+
+    public void setSpecifiedName(String specifiedName) {
+        this.specifiedName = specifiedName;
+    }
+
     public TaskActionInformationDto toDto() {
-        return new TaskActionInformationDto(getName(), getDisplayName(), getChannelName(), getModuleName(), getModuleVersion(),
+        return new TaskActionInformationDto(getName(), getSpecifiedName(), getDisplayName(), getChannelName(), getModuleName(), getModuleVersion(),
                 getSubject(), serviceInterface, serviceMethod, values);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(serviceInterface, serviceMethod, values);
+        return Objects.hash(serviceInterface, serviceMethod, specifiedName, values);
     }
 
     @Override
@@ -192,6 +205,7 @@ public class TaskActionInformation extends TaskEventInformation {
 
         return Objects.equals(this.serviceInterface, other.serviceInterface) &&
                 Objects.equals(this.serviceMethod, other.serviceMethod) &&
+                Objects.equals(this.specifiedName, other.specifiedName) &&
                 Objects.equals(this.values, other.values);
     }
 

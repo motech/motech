@@ -12,7 +12,8 @@ public enum TaskActivityType {
     ERROR("ERROR"),
     WARNING("WARNING"),
     SUCCESS("SUCCESS"),
-    IN_PROGRESS("IN PROGRESS");
+    IN_PROGRESS("IN PROGRESS"),
+    FILTERED("FILTERED");
 
     private final String value;
 

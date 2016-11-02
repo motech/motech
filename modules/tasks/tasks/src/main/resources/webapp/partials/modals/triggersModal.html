@@ -1,5 +1,6 @@
 <div class="row inside" ng-class="{'modal-lg': hasStaticTriggers && hasDynamicTriggers}">
     <div class="col-md-12">
+        <input class="form-control ng-valid ng-dirty ng-touched ng-empty" ng-init="searchTrigger.displayName=''" type="text" ng-model="searchTrigger.displayName" placeholder="{{msg('task.placeholder.searchTrigger')}}">
         <div class="row" ng-if="hasStaticTriggers && hasDynamicTriggers">
             <div class="text-center" ng-class="divSize">
                 <h4>Static triggers</h4>
@@ -11,47 +12,47 @@
         <div class="row trigger-lists" ng-controller="TasksManageCtrl">
             <div ng-class="divSize" ng-if="hasStaticTriggers">
                 <ul class="trigger-list list-group">
-                    <li ng-click="selectTrigger(selectedChannel, trigger)" class="list-group-item" ng-repeat="trigger in staticTriggers.triggers" popover-loader="taskMsg(trigger.displayName)" two-lists="hasStaticTriggers && hasDynamicTriggers">
+                    <li ng-click="selectTrigger(selectedChannel, trigger)" class="list-group-item" ng-repeat="trigger in staticTriggers.triggers | filter:searchTrigger | filterPagination:(staticTriggers.page-1)*pageSize | limitTo:pageSize" popover-loader="taskMsg(trigger.displayName)" two-lists="hasStaticTriggers && hasDynamicTriggers">
                     </li>
                 </ul>
             </div>
             <div ng-class="divSize" ng-if="hasDynamicTriggers">
                 <ul class="trigger-list list-group">
-                    <li ng-click="selectTrigger(selectedChannel, trigger)" class="list-group-item" ng-repeat="trigger in dynamicTriggers.triggers" popover-loader="taskMsg(trigger.displayName)" two-lists="hasStaticTriggers && hasDynamicTriggers">
+                    <li ng-click="selectTrigger(selectedChannel, trigger)" class="list-group-item" ng-repeat="trigger in dynamicTriggers.triggers | filter:searchTrigger | filterPagination:(dynamicTriggers.page-1)*pageSize | limitTo:pageSize" popover-loader="taskMsg(trigger.displayName)" two-lists="hasStaticTriggers && hasDynamicTriggers">
                     </li>
                 </ul>
             </div>
         </div>
         <div class="row triggers-pager">
             <div class="text-center" class="btn btn-default" ng-class="divSize" ng-if="hasStaticTriggers">
-                <span ng-click="reloadLists(1, dynamicTriggers.page)" ng-class="{'invisible': staticTriggers.page <= 1}">
+                <span ng-click="changeCurrentPage(1, dynamicTriggers.page)" ng-class="{'invisible': staticTriggers.page <= 1}">
                     <a aria-label="Previous">{{msg('server.pagination.first')}}</a>
                 </span>
-                <span ng-click="reloadLists(staticTriggers.page - 1, dynamicTriggers.page)" ng-class="{'invisible': staticTriggers.page <= 1}">
+                <span ng-click="changeCurrentPage(staticTriggers.page - 1, dynamicTriggers.page)" ng-class="{'invisible': staticTriggers.page <= 1}">
                     <a aria-label="Previous">{{msg('server.pagination.prev')}}</a>
                 </span>
-                <span><input id="staticTriggersPager" type="number" min="1" max="{{staticTriggers.total}}" ng-model="staticTriggersPage" ng-change="reloadLists(staticTriggersPage, dynamicTriggers.page)" ng-value="staticTriggersPage"/></span>
+                <span><input id="staticTriggersPager" type="number" min="1" max="{{staticTriggers.total}}" ng-model="staticTriggers.page" ng-change="changeCurrentPage(staticTriggers.page)" ng-value="staticTriggers.page"/></span>
                 <span> / {{staticTriggers.total}}</span>
-                <span ng-click="reloadLists(staticTriggers.page + 1, dynamicTriggers.page)" ng-class="{'invisible': staticTriggers.page >= staticTriggers.total}">
+                <span ng-click="changeCurrentPage(staticTriggers.page + 1, dynamicTriggers.page)" ng-class="{'invisible': staticTriggers.page >= staticTriggers.total}">
                     <a aria-label="Next">{{msg('server.pagination.next')}}</a>
                 </span>
-                <span ng-click="reloadLists(staticTriggers.total, dynamicTriggers.page)" ng-class="{'invisible': staticTriggers.page >= staticTriggers.total}">
+                <span ng-click="changeCurrentPage(staticTriggers.total, dynamicTriggers.page)" ng-class="{'invisible': staticTriggers.page >= staticTriggers.total}">
                     <a aria-label="Next">{{msg('server.pagination.last')}}</a>
                 </span>
             </div>
             <div class="text-center" ng-class="divSize" ng-if="hasDynamicTriggers">
-                <span ng-click="reloadLists(staticTriggers.page, 1)" ng-class="{'invisible': dynamicTriggers.page <= 1}">
+                <span ng-click="changeCurrentPage(staticTriggers.page, 1)" ng-class="{'invisible': dynamicTriggers.page <= 1}">
                     <a aria-label="Previous">{{msg('server.pagination.first')}}</a>
                 </span>
-                <span ng-click="reloadLists(staticTriggers.page, dynamicTriggers.page - 1)" ng-class="{'invisible': dynamicTriggers.page <= 1}">
+                <span ng-click="changeCurrentPage(staticTriggers.page, dynamicTriggers.page - 1)" ng-class="{'invisible': dynamicTriggers.page <= 1}">
                     <a aria-label="Previous">{{msg('server.pagination.prev')}}</a>
                 </span>
-                <span><input id="dynamicTriggersPager" type="number" min="1" max="{{dynamicTriggers.total}}" ng-model="dynamicTriggersPage" ng-change="reloadLists(staticTriggers.page, dynamicTriggersPage)" ng-value="dynamicTriggersPage"/></span>
+                <span><input id="dynamicTriggersPager" type="number" min="1" max="{{dynamicTriggers.total}}" ng-model="dynamicTriggers.page" ng-change="changeCurrentPage(staticTriggers.page, dynamicTriggers.page)" ng-value="dynamicTriggers.page"/></span>
                 <span> / {{dynamicTriggers.total}}</span>
-                <span ng-click="reloadLists(staticTriggers.page, dynamicTriggers.page + 1)" ng-class="{'invisible': dynamicTriggers.page >= dynamicTriggers.total}">
+                <span ng-click="changeCurrentPage(staticTriggers.page, dynamicTriggers.page + 1)" ng-class="{'invisible': dynamicTriggers.page >= dynamicTriggers.total}">
                     <a aria-label="Next">{{msg('server.pagination.next')}}</a>
                 </span>
-                <span ng-click="reloadLists(staticTriggers.page, dynamicTriggers.total)" ng-class="{'invisible': dynamicTriggers.page >= dynamicTriggers.total}">
+                <span ng-click="changeCurrentPage(staticTriggers.page, dynamicTriggers.total)" ng-class="{'invisible': dynamicTriggers.page >= dynamicTriggers.total}">
                     <a aria-label="Next">{{msg('server.pagination.last')}}</a>
                 </span>
             </div>

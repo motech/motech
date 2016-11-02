@@ -84,7 +84,7 @@ public class TaskControllerTest {
 
     @Test
     public void shouldGetAllTasks() {
-        TaskActionInformationDto action = new TaskActionInformationDto("receive", "receiveDisplay", "action1", "action",
+        TaskActionInformationDto action = new TaskActionInformationDto("receive", "test", "receiveDisplay", "action1", "action",
                 "0.15", "receive", "serviceInterface", "serviceMethod", new HashMap<>());
         TaskTriggerInformationDto trigger = new TaskTriggerInformationDto("send", "trigger1", "trigger", "0.16", "send",
                 "send", "triggerSubject");

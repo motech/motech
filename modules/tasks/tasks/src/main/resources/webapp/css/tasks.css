@@ -67,10 +67,13 @@
 }
 
 .tasks .field-bubble .badge {
-    border-radius: 5px;
+    border-radius: 4px;
     font-size: 0.8em;
     background-color: #FFF;
     color: #333333;
+    min-width: 16px;
+    float: right;
+    padding: 2px 5px;
 }
 
 .tasks .field-trigger .badge {
@@ -281,9 +284,13 @@ manipulation-sorter .manipulation .remove:before {
     text-overflow: ellipsis;
 }
 
-.tasks .map-field .field-remove{
-    float: right;
+.tasks .map-field .text-field-marker {
+    line-height: initial;
+}
+
+.tasks .field-remove {
     display: inline;
+    margin-left: 2px;
 }
 
 .tasks .field-bubble .popover{
@@ -344,7 +351,7 @@ manipulation-sorter .manipulation .remove:before {
 }
 
 .tasks .badge-close {
-    float: none; !important;
+    float: right;
     font-size: 12px; !important;
     text-shadow: 0px 0px #FFF;
     color: #FFF;
@@ -1260,6 +1267,11 @@ editable-content .popover .inner-popover, nonEditable, .no-margin-bottom input[t
     outline: none;
     border-style: groove;
     text-align: center;
+}
+
+.tasks .dropdown-menu.open-list {
+    display: block;
+    margin-left: 15px;
 }
 
 #period-year, #period-month, #period-week,

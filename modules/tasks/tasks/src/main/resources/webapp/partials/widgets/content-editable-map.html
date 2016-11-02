@@ -1,4 +1,4 @@
-<div ng-controller="MapsCtrl"  ng-model="data.value" data-index="{{$index}}" data-type="{{data.type}}">
+<div ng-controller="MapsCtrl" ng-model="data.value" data-index="{{index}}" data-type="{{data.type}}">
     <div class="clearfix margin-before07">
         <div class="map-field">
             <label class="input-large-fluid">{{msg('task.map.key')}}</label>
@@ -8,8 +8,8 @@
         </div>
     </div>
     <div class="clearfix">
-        <div contenteditable ng-model="pair.key" droppable class="actionField map-input map-field word-wrap input-extra-fluid" data-type="text"></div>
-        <div contenteditable ng-model="pair.value" droppable class="actionField map-input map-field word-wrap input-extra-fluid" data-type="text"></div>
+        <div contenteditable ng-model="pair.key" droppable ng-keydown="keyPress($event)" field-autocomplete="true" class="actionField map-input map-field word-wrap input-extra-fluid" data-type="text"></div>
+        <div contenteditable ng-model="pair.value" droppable ng-keydown="keyPress($event)" class="actionField map-input map-field word-wrap input-extra-fluid" data-type="text"></div>
         <button class="btn btn-success" ng-click="addPair(pair)"> {{msg('task.map.add')}}</button>
     </div>
     <div class="text-danger clearfix" ng-show="mapError">
@@ -19,8 +19,8 @@
     </div>
     <div class="clearfix" ng-repeat="pair in pairs track by $index">
         <div class="clearfix">
-            <div contenteditable ng-model="pair.key" droppable class="actionField map-input map-field word-wrap input-extra-fluid" ng-change="updateMap(pair, $index)" data-type="text"></div>
-            <div contenteditable ng-model="pair.value" droppable class="actionField map-input map-field word-wrap input-extra-fluid" ng-change="updateMap(pair, $index)" data-type="text"></div>
+            <div contenteditable ng-model="pair.key" droppable ng-keydown="keyPress($event)" field-autocomplete="true" class="actionField map-input map-field word-wrap input-extra-fluid" ng-change="updateMap(pair, $index)" data-type="text"></div>
+            <div contenteditable ng-model="pair.value" droppable ng-keydown="keyPress($event)" class="actionField map-input map-field word-wrap input-extra-fluid" ng-change="updateMap(pair, $index)" data-type="text"></div>
             <a class="btn btn-danger btn-sm" ng-click="remove($index)">
                 <i class="fa fa-lg fa-trash-o"></i>
             </a>

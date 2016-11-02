@@ -102,6 +102,8 @@
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-task-img fa warning-type fa-question-circle fa-2x"></div>','ok',{ },'');
                                 } else if (activity === 'in progress') {
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-task-img fa icon-blue fa-info-circle fa-2x"></div>','ok',{ },'');
+                                } else if (activity === 'filtered') {
+                                    $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-task-img fa icon-blue fa-info-circle fa-2x"></div>','ok',{ },'');
                                 } else if (activity === 'error') {
                                     activityId = $("#taskHistoryTable").getCell(rows[k],"id");
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType',
@@ -214,6 +216,7 @@
             link: function (scope, element, attrs) {
                 $('.panel-group').on('show.bs.collapse', function (e) {
                     $(e.target).siblings('.panel-heading').find('.accordion-toggle i.fa-caret-right').removeClass('fa-caret-right').addClass('fa-caret-down');
+                    scope.$broadcast('show.task.actions');
                 });
 
                 $('.tasks-list').on('show.bs.collapse', function (e) {
@@ -250,20 +253,35 @@
                     scope.field.manipulations = [];
                 }
 
-                if(scope.field.prefix === ManageTaskUtils.DATA_SOURCE_PREFIX){
-                    scope.displayName = "{0}.{1}#{2}.{3}".format(
-                        scope.msg(scope.field.providerName),
-                        scope.msg(scope.field.serviceName),
-                        scope.field.objectId,
-                        scope.msg(scope.field.displayName)
-                    );
+                if(scope.field.prefix === ManageTaskUtils.DATA_SOURCE_PREFIX) {
+                    if (!scope.field.specifiedParentName) {
+                         scope.displayName = "{0}.{1}#{2}.{3}".format(
+                             scope.msg(scope.field.providerName),
+                             scope.msg(scope.field.serviceName),
+                             scope.field.objectId,
+                             scope.msg(scope.field.displayName)
+                         );
+                    } else {
+                        scope.displayName = "{0}.{1}".format(
+                             scope.msg(scope.field.specifiedParentName),
+                             scope.msg(scope.field.displayName)
+                        );
+                    }
+
                 } else if(scope.field.prefix === ManageTaskUtils.POST_ACTION_PREFIX){
-                    scope.displayName = "{0}.{1}#{2}.{3}".format(
-                        scope.msg(scope.field.channelName),
-                        scope.msg(scope.field.actionName),
-                        scope.field.objectId,
-                        scope.msg(scope.field.displayName)
-                    );
+                    if(!scope.field.specifiedParentName) {
+                        scope.displayName = "{0}.{1}#{2}.{3}".format(
+                            scope.msg(scope.field.channelName),
+                            scope.msg(scope.field.actionName),
+                            scope.field.objectId,
+                            scope.msg(scope.field.displayName)
+                        );
+                    } else {
+                        scope.displayName = "{0}.{1}".format(
+                             scope.msg(scope.field.specifiedParentName),
+                             scope.msg(scope.field.displayName)
+                        );
+                    }
                 } else if (scope.boolean) {
                     if(scope.boolean === 'true') {
                         scope.displayName = scope.msg("yes");
@@ -299,7 +317,8 @@
                         }
                     });
                 }
-            },
+            }
+            ,
             templateUrl: '../tasks/partials/field.html'
         };
     }]);
@@ -343,12 +362,25 @@
         };
     });
 
-    directives.directive('contenteditable', function ($compile, ManageTaskUtils) {
+    directives.directive('contenteditable', function ($compile, $http, $templateCache, ManageTaskUtils, $timeout) {
+        var intervalAdjustText;
+
         function formatField (field) {
             return '{{{0}}}'.format(
-                ManageTaskUtils.formatField(field)
+                ManageTaskUtils.formatField(field)[0]
                 );
         }
+
+        function formatToKey (str, scope) {
+            var fetchedField;
+            if(str.substring(0,2) === "{{" && str.substring(str.length-2, str.length) === "}}") {
+                str = str.substring(2, str.length-2);
+                fetchedField = ManageTaskUtils.parseField(str, scope.$parent.getAvailableFields());
+                str = formatField(fetchedField);
+            }
+            return str;
+        }
+
         function isTagForPlaceholder (tag) {
             return (tag.tagName && tag.tagName.toLowerCase() === 'em');
         }
@@ -427,31 +459,106 @@
         }
 
         function adjustText() {
-            var textElement, spanElement, inputElement, i;
+            var textElements, spanElement, inputElement, i;
 
-            textElement = angular.element(document.getElementsByClassName('text-field-marker'));
+            clearInterval(intervalAdjustText);
 
-            for (i = 0; i < textElement.length; i += 1) {
-                spanElement = $(textElement[i]).parent();
-                inputElement = spanElement.parent().parent();
+            intervalAdjustText = setInterval( function () {
+                textElements = angular.element(document.getElementsByClassName('text-field-marker'));
 
-                if ($(textElement[i]).hasClass('field-text')) {
-                    textElement.removeClass('field-text');
-                }
+                for (i = 0; i < textElements.length; i += 1) {
+                    spanElement = $(textElements[i]).parent();
+                    inputElement = spanElement.parent().parent();
 
-                if ($(textElement[i]).hasClass('field-text-short')) {
-                    $(textElement[i]).removeClass('field-text-short');
-                }
+                    if (inputElement.hasClass('map-input')) {
 
-                if (spanElement.width()>inputElement.width()*0.9) {
-                    if ($(textElement[i]).width() > spanElement.width()*0.82) {
-                        if ($(textElement[i]).next().is('.badge')) {
-                            $(textElement[i]).addClass('field-text-short');
-                        } else if ($(textElement[i]).width() > spanElement.width()*0.90) {
-                            $(textElement[i]).addClass('field-text');
+                        if ($(textElements[i]).hasClass('field-text')) {
+                            $(textElements[i]).removeClass('field-text');
+                        }
+
+                        if ($(textElements[i]).hasClass('field-text-short')) {
+                            $(textElements[i]).removeClass('field-text-short');
+                        }
+
+                        if (spanElement.width()>inputElement.width()*0.9) {
+                            if ($(textElements[i]).width() > spanElement.width()*0.84) {
+                                if ($(textElements[i]).next().is('.badge')) {
+                                    $(textElements[i]).addClass('field-text-short');
+                                } else if ($(textElements[i]).width() > spanElement.width()*0.9) {
+                                    $(textElements[i]).addClass('field-text');
+                                }
+                            }
                         }
                     }
                 }
+
+                clearInterval(intervalAdjustText);
+            }, 50);
+        }
+
+        function prepareField(field, fullName) {
+            switch (field.prefix) {
+                case ManageTaskUtils.TRIGGER_PREFIX:
+                    return "{{{0}.{1}}}".format(
+                        ManageTaskUtils.TRIGGER_PREFIX,
+                        field.eventKey
+                    );
+                case ManageTaskUtils.DATA_SOURCE_PREFIX:
+                    if (!field.specifiedParentName || fullName) {
+                        return "{{{0}.{1}.{2}#{3}.{4}}}".format(
+                            ManageTaskUtils.DATA_SOURCE_PREFIX,
+                            field.providerName,
+                            field.providerType,
+                            field.objectId,
+                            field.fieldKey
+                        );
+                    } else {
+                        return "{{{0}.{1}}}".format(
+                            field.specifiedParentName,
+                            field.fieldKey
+                        );
+                    }
+
+                case ManageTaskUtils.POST_ACTION_PREFIX:
+                    if(!field.specifiedParentName || fullName) {
+                        return "{{{0}.{1}.{2}}}".format(
+                            ManageTaskUtils.POST_ACTION_PREFIX,
+                            field.objectId,
+                            field.key
+                        );
+                    } else {
+                        return "{{{0}.{1}}}".format(
+                            field.specifiedParentName,
+                            field.fieldKey
+                        );
+                    }
+            }
+        }
+
+        function getFilteredItems(choices, searchText) {
+            var filteredList = [];
+            if (searchText.length < 2) {
+                return filteredList;
+            }
+            choices.filter(function (choice) {
+                if (prepareField(choice, false).indexOf(searchText) > 0 || prepareField(choice, true).indexOf(searchText) > 0) {
+                    filteredList.push(choice);
+                }
+            });
+            return filteredList;
+        }
+
+        function findStartIndex(value, endIndex) {
+            value = value.substring(0, endIndex);
+            return (value.lastIndexOf("}}") > value.lastIndexOf(" ")) ? value.lastIndexOf("}}") + 2: value.lastIndexOf(" ");
+        }
+
+        function stopPropagation(evt) {
+            evt.cancelBubble = true;
+            evt.returnValue = false;
+            if (evt.stopPropagation) {
+                evt.stopPropagation();
+                evt.preventDefault();
             }
         }
 
@@ -460,18 +567,31 @@
             require: '?ngModel',
             link: function (scope, element, attrs, ngModel) {
                 scope.debug = scope.$parent.debugging;
+                var eventResize,
+                    items = [],
+                    url = '../tasks/partials/widgets/autocomplete-fields.html';
+                    scope.filteredItems = [];
+                    scope.selPos = 0;
 
                 if (!ngModel) {
                     return false;
                 }
 
+                if (element.attr('field-autocomplete') === "true") {
+                    $http.get(url, {cache: $templateCache})
+                    .success(function (html) {
+                        var compiledContent = $compile(html)(scope);
+                        $(compiledContent).insertBefore(element);
+                    });
+                }
+
                 scope.$watch(function () {
-                    adjustText();
                     return ngModel.$viewValue;
                 }, function() {
                     if (scope.debug) {
                         scope.changeBubble(ngModel, element);
                     } else {
+                        adjustText();
                         ngModel.$render();
                     }
                 });
@@ -507,6 +627,10 @@
                     if (!scope.debug) {
                          ngModel.$setViewValue(readContent(element));
                          ngModel.$rollbackViewValue();
+
+                         $timeout(function() {
+                            adjustText();
+                         }, 0);
                     }
                 };
 
@@ -528,11 +652,20 @@
                     scope.$apply();
                     if (scope.debug) {
                         scope.changeBubble(ngModel, element);
+                    } else {
+                        adjustText();
+                    }
+                });
+
+                element.on('focus', function () {
+                    if (ngModel) {
+                        scope.selectedElement = element;
+                        scope.selectedModel = ngModel;
                     }
                 });
 
                 ngModel.$render = function () {
-                    var parsedValue, viewValueStr, matches;
+                    var parsedValue = "", viewValueStr, matches;
                     element.html("");
                     if (!ngModel.$viewValue) {
                         if (scope.debug) {
@@ -542,13 +675,115 @@
                     }
                     parseField(ngModel.$viewValue).forEach(function(str){
                         if (findField(str)) {
+                            str = formatToKey(str, scope);
                             element.append(makeFieldElement(str, scope));
+
+                            $timeout(function() {
+                                adjustText();
+                             }, 100);
+
                         } else if (element.data('type') === 'BOOLEAN' && (str === 'true' || str === 'false')) {
                             element.append(makeBooleanFieldElement(str, scope));
                         } else {
                             element.append(str);
                         }
+                        parsedValue = parsedValue.concat(str);
                     });
+
+                    if (parsedValue && parsedValue !== scope.data.value && scope.data.type !== 'MAP') {
+                        scope.data.value = parsedValue;
+                    }
+                };
+
+                angular.forEach(scope.fields, function (field) {
+                   items.push(field);
+                });
+
+                scope.getPreparedName = function (fieldToPrepare, fullName) {
+                    return prepareField(fieldToPrepare, fullName);
+                };
+
+                scope.refreshListItems = function (event) {
+                    scope.filteredItems = [];
+                    if(event.keyCode === 8) {event.key = "";scope.rangySelection.anchorOffset = scope.rangySelection.anchorOffset -1;}
+                    if (scope.rangySelection.anchorNode && scope.rangySelection.anchorNode.nodeValue) {
+                        var value = scope.rangySelection.anchorNode.nodeValue;
+                        scope.searchText = value.substring(findStartIndex(value.trimRight(), scope.rangySelection.anchorOffset), scope.rangySelection.anchorOffset) + event.key;
+                        scope.filteredItems = getFilteredItems(items, scope.searchText.trim());
+                        if (scope.selectedElement.parent().find('ul').is('ul.dropdown-menu.open-list')
+                            && (scope.selectedElement.attr('ng-model') === "pair.value" || scope.selectedElement.attr('ng-model') === "pair.key")) {
+                            scope.selectedElement.parent().find('ul.dropdown-menu.open-list')
+                            .css({'margin-left': scope.selectedElement.position().left, 'top': scope.selectedElement.position().top + scope.selectedElement.outerHeight()});
+                        }
+                    }
+                };
+
+                scope.addItem = function (item) {
+                    if (!item) {
+                        return;
+                    }
+                    if (scope.rangySelection && scope.rangySelection.anchorNode) {
+                        var anchorValue = scope.rangySelection.anchorNode.nodeValue;
+                        if (scope.selectedElement[0].contains(scope.rangySelection.anchorNode) && anchorValue) {
+                            $(scope.rangySelection.anchorNode).before(
+                                anchorValue.substring(0, findStartIndex(anchorValue, scope.rangySelection.anchorOffset))
+                                + " " + prepareField(item, scope.debug) + " " + anchorValue.substring(scope.rangySelection.anchorOffset + 1)
+                            ).remove();
+                        } else {
+                            scope.selectedElement.append(prepareField(item, scope.debug));
+                        }
+                    }
+                    scope.selPos = -1;
+                    scope.filteredItems = [];
+                    scope.searchText = "";
+                    scope.selectedModel.$setViewValue(readContent(scope.selectedElement));
+                };
+
+                scope.keyPress = function(evt) {
+
+                    switch (evt.keyCode) {
+                        case 27: // esc
+                            scope.filteredItems = [];
+                            break;
+                        case 13: // enter
+                            if(scope.selPos > -1 && scope.filteredItems.length > 0) {
+                                stopPropagation(evt);
+                                scope.addItem(scope.filteredItems[scope.selPos]);
+                            }
+                            break;
+                        case 8: // backspace
+                            scope.rangySelection = rangy.getSelection();
+                            scope.selPos = 0;
+                            scope.refreshListItems(evt);
+                            break;
+                        case 186: // semicolon
+                            if(scope.selPos > -1 && scope.filteredItems.length > 0) {
+                                stopPropagation(evt);
+                                scope.addItem(scope.filteredItems[scope.selPos]);
+                                return;
+                            }
+                            break;
+                        case 188: // coma
+                            if(scope.selPos > -1 && scope.filteredItems.length > 0) {
+                                stopPropagation(evt);
+                                scope.addItem(scope.filteredItems[scope.selPos]);
+                            }
+                            break;
+                        case 38: // up
+                            if (scope.selPos > 0) {
+                                scope.selPos = scope.selPos - 1;
+                            }
+                            break;
+                        case 40: // down
+                            if (scope.selPos < scope.filteredItems.length-1) {
+                                scope.selPos = scope.selPos + 1;
+                            }
+                            break;
+                        default:
+                            scope.rangySelection = rangy.getSelection();
+                            scope.selPos = 0;
+                            scope.refreshListItems(evt);
+                    }
                 };
 
                 if(attrs.droppable !== undefined) {
@@ -584,10 +819,24 @@
                             scope.$apply();
                             if (scope.debug) {
                                 scope.changeBubble(ngModel, element);
+                            } else {
+                                adjustText();
                             }
                         }
                     });
                 }
+
+                $('#inner-center').on('change', function() {
+                    clearTimeout(eventResize);
+                    eventResize = $timeout(function() {
+                        clearInterval(intervalAdjustText);
+                        adjustText();
+                    }, 100);
+                });
+
+                scope.$on('show.task.actions', function () {
+                    adjustText();
+                });
             }
         };
     });
@@ -602,7 +851,8 @@
             scope: {
                 'data': '=',
                 'index': '@',
-                'action': '@'
+                'action': '@',
+                'fields': '='
             },
             compile: function (tElement, tAttrs, scope) {
                 var url = '../tasks/partials/widgets/content-editable-' + tAttrs.type.toLowerCase() + '.html',
@@ -970,6 +1220,50 @@
                             parent.filter(parent.selectedAction[$(this).data('action')].actionParameters, {hidden: false})[$(this).data('index')].value = dateTex;
                             parent.$apply();
                         }
+                    });
+                }
+            };
+        });
+
+        directives.directive('startTimePicker', function() {
+            return {
+                restrict: 'A',
+                require : 'ngModel',
+                link : function (scope, element, attrs, ngModelCtrl) {
+                    $(function() {
+                        element.timepicker({
+                            showTimezone: true,
+                            useLocalTimezone: true,
+                            timeFormat: 'HH:mm z',
+                            onSelect: function (time) {
+                                ngModelCtrl.$setViewValue(time);
+                                scope.$apply(function() {
+                                    scope.$parent.startTime = time.toString();
+                                });
+                            }
+                        });
+                    });
+                }
+            };
+        });
+
+        directives.directive('endTimePicker', function() {
+            return {
+                restrict: 'A',
+                require : 'ngModel',
+                link : function (scope, element, attrs, ngModelCtrl) {
+                    $(function() {
+                        element.timepicker({
+                            showTimezone: true,
+                            useLocalTimezone: true,
+                            timeFormat: 'HH:mm z',
+                            onSelect: function (time) {
+                                ngModelCtrl.$setViewValue(time);
+                                scope.$apply(function() {
+                                    scope.$parent.endTime = time.toString();
+                                });
+                            }
+                        });
                     });
                 }
             };

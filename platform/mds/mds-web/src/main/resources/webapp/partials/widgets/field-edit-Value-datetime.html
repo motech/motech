@@ -1,2 +1,2 @@
 <input date-time-validity ng-required="{{field.required}}" class="form-control input-xlarge-fluid" type="text" ng-model="field.value" placeholder="{{field.placeholder}}" mds-field-id="{{field.id}}" mds-datetime-picker ng-readonly="shouldHideEdition(field)">
-<span class="form-hint" ng-show="{{field.name}}.$error.datetime && !{{field.name}}.$pristine">{{msg('mds.error.incorrectDate')}}</span>
+<span class="form-hint" ng-show="{{field.name}}_field_name.$error.datetime && !{{field.name}}_field_name.$pristine">{{msg('mds.error.incorrectDate')}}</span>

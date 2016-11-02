@@ -65,7 +65,7 @@ public class ChannelController {
                                      @RequestParam int dynamicTriggersPage) {
         TriggersList staticTriggers = new TriggersList();
         long staticTriggersCount = triggerEventService.countStaticTriggers(moduleName);
-        staticTriggers.addTriggers(taskWebService.getStaticTriggers(moduleName, staticTriggersPage, PAGE_SIZE));
+        staticTriggers.addTriggers(taskWebService.getStaticTriggers(moduleName, staticTriggersPage, (int) staticTriggersCount));
         staticTriggers.setPage(staticTriggersPage);
 
         int staticTriggersPages = (int) staticTriggersCount / PAGE_SIZE;
@@ -79,7 +79,7 @@ public class ChannelController {
         if (triggerEventService.providesDynamicTriggers(moduleName)) {
             dynamicTriggers = new TriggersList();
             long dynamicTriggersCount = triggerEventService.countDynamicTriggers(moduleName);
-            dynamicTriggers.addTriggers(taskWebService.getDynamicTriggers(moduleName, dynamicTriggersPage, PAGE_SIZE));
+            dynamicTriggers.addTriggers(taskWebService.getDynamicTriggers(moduleName, dynamicTriggersPage, (int) dynamicTriggersCount));
             dynamicTriggers.setPage(dynamicTriggersPage);
 
             int dynamicTriggersPages = (int) dynamicTriggersCount / PAGE_SIZE;

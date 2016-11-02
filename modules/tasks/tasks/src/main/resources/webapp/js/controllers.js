@@ -274,7 +274,11 @@
             }
         };
         $scope.task.retryTaskOnFailure = false;
+        $scope.task.useTimeWindow = false;
+        $scope.taskStepNumber = 0;
         $scope.debugging = false;
+        $scope.startTime = "";
+        $scope.endTime = "";
 
         $scope.changeCheckbox = function (debugging) {
             $scope.debugging = debugging;
@@ -306,13 +310,17 @@
                 LoadingModal.open();
                 $scope.task = Tasks.get({ taskId: $stateParams.taskId }, function () {
                     Triggers.getTrigger($scope.task.trigger, function(trigger) {
-                        var triggerChannel, dataSource, object;
+                        var triggerChannel, dataSource, object, actionStep, actionIndex = 0, actionFilterIndex = 0, filtersToDelete = [], actionSteps= [], actionFilters = [];
 
                         if ($scope.task.numberOfRetries > 0) {
                            $scope.task.retryTaskOnFailure = true;
                            $scope.task.retryIntervalInSeconds = $scope.task.retryIntervalInMilliseconds / 1000;
                         } else {
                            $scope.task.retryTaskOnFailure = false;
+                        }
+                        if ($scope.task.useTimeWindow === true) {
+                           $scope.startTime = $scope.task.startTime + " +0000";
+                           $scope.endTime = $scope.task.endTime + " +0000";
                         }
 
                         triggerChannel = $scope.util.find({
@@ -351,50 +359,77 @@
                                     step.displayName = object.displayName;
                                 }
                             }
+                            if ($scope.isActionFilterSet(step)) {
+                                actionFilters.push(step);
+                                filtersToDelete.push(step);
+                            }
+                            $scope.taskStepNumber = step.order;
                         });
 
+                        angular.forEach(filtersToDelete, function(filter) {
+                            $scope.task.taskConfig.steps.removeObject(filter);
+                        });
+
+                        for (actionStep = 0; actionStep < ($scope.task.actions.length + actionFilters.length); actionStep += 1) {
+                            if ($scope.shouldAddFilterToActions(actionFilterIndex, actionFilters, actionStep)) {
+                                actionFilters[actionFilterIndex]['@type'] = 'FilterActionSetDto';
+                                actionSteps.push(actionFilters[actionFilterIndex]);
+                                actionFilterIndex += 1;
+                            } else {
+                                actionSteps.push($scope.task.actions[actionIndex]);
+                                actionIndex += 1;
+                            }
+                        }
+                        $scope.task.actions = actionSteps;
+
                         angular.forEach($scope.task.actions, function (info, idx) {
-                            var action = null, actionBy = [];
+                            if (info['@type'] !== 'FilterActionSetDto') {
+                                var action = null, actionBy = [];
 
-                            $scope.selectedActionChannel[idx] = $scope.util.find({
-                                where: $scope.channels,
-                                by: {
-                                    what: 'moduleName',
-                                    equalTo: info.moduleName
-                                }
-                            });
-
-                            if ($scope.selectedActionChannel[idx]) {
-                                if (info.name) {
-                                    actionBy.push({ what: 'name', equalTo: info.name });
-                                    action = $scope.util.find({
-                                        where: $scope.selectedActionChannel[idx].actionTaskEvents,
-                                        by: actionBy
-                                    });
-                                } else {
-                                    if (info.subject) {
-                                        actionBy.push({ what: 'subject', equalTo: info.subject });
+                                $scope.selectedActionChannel[idx] = $scope.util.find({
+                                    where: $scope.channels,
+                                    by: {
+                                        what: 'moduleName',
+                                        equalTo: info.moduleName
                                     }
+                                });
 
-                                    if (info.serviceInterface && info.serviceMethod) {
-                                        actionBy.push({ what: 'serviceInterface', equalTo: info.serviceInterface });
-                                        actionBy.push({ what: 'serviceMethod', equalTo: info.serviceMethod });
-                                    }
-
-                                    action = $scope.util.find({
-                                        where: $scope.selectedActionChannel[idx].actionTaskEvents,
-                                        by: actionBy
-                                    });
-                                }
-
-                                if (action) {
-                                    $timeout(function () {
-                                        $scope.util.action.select($scope, idx, action);
-                                        angular.element('#collapse-action-' + idx).collapse('hide');
-                                        angular.forEach($scope.selectedAction[idx].actionParameters, function (param) {
-                                            param.value = info.values[param.key] || '';
+                                if ($scope.selectedActionChannel[idx]) {
+                                    if (info.name) {
+                                        actionBy.push({ what: 'name', equalTo: info.name });
+                                        action = $scope.util.find({
+                                            where: $scope.selectedActionChannel[idx].actionTaskEvents,
+                                            by: actionBy
                                         });
-                                    });
+                                    } else {
+                                        if (info.subject) {
+                                            actionBy.push({ what: 'subject', equalTo: info.subject });
+                                        }
+
+                                        if (info.serviceInterface && info.serviceMethod) {
+                                            actionBy.push({ what: 'serviceInterface', equalTo: info.serviceInterface });
+                                            actionBy.push({ what: 'serviceMethod', equalTo: info.serviceMethod });
+                                        }
+
+                                        action = $scope.util.find({
+                                            where: $scope.selectedActionChannel[idx].actionTaskEvents,
+                                            by: actionBy
+                                        });
+                                    }
+
+                                    if (action) {
+                                        $timeout(function () {
+                                            if (info.specifiedName) {
+                                                action.specifiedName = info.specifiedName;
+                                            }
+
+                                            $scope.util.action.select($scope, idx, action);
+                                            angular.element('#collapse-action-' + idx).collapse('hide');
+                                            angular.forEach($scope.selectedAction[idx].actionParameters, function (param) {
+                                                param.value = info.values[param.key] || '';
+                                            });
+                                        });
+                                    }
                                 }
                             }
                         });
@@ -407,19 +442,29 @@
 
         $scope.isTaskValid = function() {
             // Retry task on failure inputs validation - only numerical non negative values
-            var retryTaskOnFailureValidation;
+            var retryTaskOnFailureValidation, useTimeWindowValidation;
             if ($scope.task.retryTaskOnFailure) {
                 retryTaskOnFailureValidation = $scope.isNumericalNonNegativeValue($scope.task.numberOfRetries)
                 && $scope.isNumericalNonNegativeValue($scope.task.retryIntervalInSeconds);
             } else {
                 retryTaskOnFailureValidation = true;
             }
+            if($scope.task.useTimeWindow) {
+                useTimeWindowValidation = $scope.isTimeFormat($scope.startTime)
+                && $scope.isTimeFormat($scope.endTime);
+            } else {
+                useTimeWindowValidation = true;
+            }
 
-            return $scope.task.name && retryTaskOnFailureValidation;
+            return $scope.task.name && retryTaskOnFailureValidation && useTimeWindowValidation;
         };
 
         $scope.isNumericalNonNegativeValue = function (value) {
             return !isNaN(value) && value >= 0;
+        };
+
+        $scope.isTimeFormat = function (value) {
+            return value.length === 11;
         };
 
         $scope.removeTrigger = function ($event) {
@@ -443,8 +488,8 @@
         $scope.removeAction = function (idx) {
             var removeActionSelected = function (idx) {
                 $scope.task.actions.remove(idx);
-                $scope.selectedActionChannel.remove(idx);
-                $scope.selectedAction.remove(idx);
+                delete $scope.selectedActionChannel[idx];
+                delete $scope.selectedAction[idx];
 
                 if (!$scope.$$phase) {
                     $scope.$apply($scope.task);
@@ -497,20 +542,56 @@
         };
 
         $scope.addFilterSet = function () {
-            var lastStep = $scope.task.taskConfig.steps.last();
+            $scope.taskStepNumber += 1;
 
             $scope.task.taskConfig.steps.push({
                 '@type': 'FilterSetDto',
                 filters: [],
                 operator: "AND",
-                order: (lastStep && lastStep.order + 1) || 0
+                order: $scope.taskStepNumber
             });
+        };
+
+        $scope.addActionFilterSet = function () {
+            if (!$scope.task.actions) {
+                $scope.task.actions = [];
+            }
+
+            $scope.taskStepNumber += 1;
+            $scope.task.actions.push({
+                '@type': 'FilterActionSetDto',
+                filters: [],
+                operator: "AND",
+                order: $scope.taskStepNumber
+            });
+        };
+
+        $scope.isActionFilterSet = function (step) {
+            var result = false;
+            if (step['@type'] === 'FilterSetDto' && step.actionFilterOrder !== null) {
+                result = true;
+            }
+            return result;
+        };
+
+        $scope.shouldAddFilterToActions = function (index, actionFilters, step) {
+            var result = false;
+            if(index < actionFilters.length && actionFilters[index].actionFilterOrder === step) {
+                result = true;
+            }
+            return result;
         };
 
         $scope.removeFilterSet = function (data) {
             var removeFilterSetSelected = function (data) {
-                $scope.task.taskConfig.steps.removeObject(data);
 
+                if (data['@type'] === 'FilterSetDto') {
+                    $scope.task.taskConfig.steps.removeObject(data);
+                } else if (data['@type'] === 'FilterActionSetDto') {
+                    $scope.changeActionData(data);
+                    $scope.task.actions.removeObject(data);
+                }
+                $scope.taskStepNumber -= 1;
                 if (!$scope.$$phase) {
                     $scope.$apply($scope.task);
                 }
@@ -525,6 +606,21 @@
             } else {
                 removeFilterSetSelected(data);
             }
+        };
+
+        $scope.changeActionData = function (data) {
+            var i;
+
+            angular.forEach($scope.task.actions, function (action, idx){
+                if(action === data) {
+                    if($scope.selectedAction[idx+1] !== undefined) {
+                        $scope.selectedAction[idx] = angular.copy($scope.selectedAction[idx+1]);
+                        $scope.selectedAction.removeObject($scope.selectedAction[idx+1]);
+                        $scope.selectedActionChannel[idx] = angular.copy($scope.selectedActionChannel[idx+1]);
+                        $scope.selectedActionChannel.removeObject($scope.selectedActionChannel[idx+1]);
+                    }
+                }
+            });
         };
 
         $scope.addFilter = function (filterSet) {
@@ -677,17 +773,45 @@
             }
         };
 
+        $scope.addSpecifiedDataSourceName = function (changedStep) {
+            var steps = $scope.task.taskConfig.steps;
+
+            steps.forEach(function (step) {
+                if (step.order === changedStep.order) {
+                    step.specifiedName = changedStep.specifiedName;
+                }
+            });
+
+            if (!$scope.$$phase) {
+                $scope.$apply($scope.task);
+            }
+        };
+
+        $scope.addSpecifiedActionName = function (changedAction, changedActionIndex) {
+            var actions = $scope.task.actions;
+
+            actions.forEach(function (action, index) {
+                if (index === changedActionIndex) {
+                    action.specifiedName = changedAction.specifiedName;
+                }
+            });
+
+            if (!$scope.$$phase) {
+                $scope.$apply($scope.task);
+            }
+        };
+
         $scope.addDataSource = function () {
             var sources = $scope.getDataSources(),
-                lastStep = $scope.task.taskConfig.steps.last(),
                 last;
 
             last = sources && sources.last();
+            $scope.taskStepNumber += 1;
 
             $scope.task.taskConfig.steps.push({
                 '@type': 'DataSourceDto',
                 objectId: (last && last.objectId + 1) || 0,
-                order: (lastStep && lastStep.order + 1) || 0
+                order: $scope.taskStepNumber
             });
 
             if (!$scope.$$phase) {
@@ -713,6 +837,7 @@
                     $scope.$apply($scope.task);
                 }
             }
+            $scope.taskStepNumber -= 1;
         };
 
         $scope.getDataSources = function () {
@@ -839,7 +964,7 @@
         };
 
         $scope.save = function (enabled) {
-            var success = function (response) {
+            var actionOrder = [], taskOrder = [], filtersToDelete = [], success = function (response) {
                 var alertMessage = enabled ? $scope.msg('task.success.savedAndEnabled') : $scope.msg('task.success.saved'),
                 loc, indexOf, errors = response.validationErrors || response;
 
@@ -861,6 +986,8 @@
             },
             error = function (response) {
                 var data = (response && response.data) || response;
+                $scope.task.actions = angular.copy(actionOrder);
+                $scope.task.taskConfig.steps = angular.copy(taskOrder);
 
                 angular.forEach($scope.task.actions, function (action) {
                     delete action.values;
@@ -883,6 +1010,10 @@
                     $scope.task.actions[idx].name = action.name;
                 }
 
+                if ($scope.task.actions[idx].specifiedName === undefined && action.specifiedName !== undefined) {
+                    $scope.task.actions[idx].specifiedName = action.specifiedName;
+                }
+
                 angular.forEach(action.actionParameters, function (param) {
                     $scope.task.actions[idx].values[param.key] = param.value;
 
@@ -890,6 +1021,24 @@
                         delete $scope.task.actions[idx].values[param.key];
                     }
                 });
+            });
+            actionOrder = angular.copy($scope.task.actions);
+            taskOrder = angular.copy($scope.task.taskConfig.steps);
+
+            angular.forEach($scope.task.actions, function (action, idx) {
+                if (action['@type'] === 'FilterActionSetDto') {
+                    $scope.task.taskConfig.steps.push({
+                        '@type': 'FilterSetDto',
+                        filters: action.filters,
+                        operator: action.operator,
+                        actionFilterOrder: idx
+                    });
+                    filtersToDelete.push(action);
+                }
+            });
+
+            angular.forEach(filtersToDelete, function(filter) {
+                $scope.task.actions.removeObject(filter);
             });
 
             angular.forEach($scope.task.taskConfig.steps, function (step) {
@@ -914,6 +1063,13 @@
             } else {
                 // Convert given value from UI in seconds to milliseconds
                 $scope.task.retryIntervalInMilliseconds = $scope.task.retryIntervalInSeconds * 1000;
+            }
+            if (!$scope.task.useTimeWindow) {
+                $scope.task.startTime = undefined;
+                $scope.task.endTime = undefined;
+            } else {
+                $scope.task.startTime = $scope.startTime;
+                $scope.task.endTime = $scope.endTime;
             }
 
             LoadingModal.open();
@@ -990,7 +1146,7 @@
                 });
             }
             dataSources = $scope.getDataSources();
-            if(dataSources && Array.isArray(dataSources)){
+            if (dataSources && Array.isArray(dataSources)) {
                 dataSources.forEach(function (source) {
                     var service = $scope.findObject(source.providerName, source.type);
                     if (!service || !service.fields){
@@ -1002,6 +1158,7 @@
                         field.serviceName = service.displayName;
                         field.providerName = source.providerName;
                         field.providerType = source.type;
+                        field.specifiedParentName = source.specifiedName;
                         field.objectId = source.objectId;
                         fields.push(field);
                     });
@@ -1016,6 +1173,7 @@
                             postActionParameter.objectId = idx;
                             postActionParameter.channelName = $scope.task.actions[idx].channelName;
                             postActionParameter.actionName = $scope.task.actions[idx].displayName;
+                            postActionParameter.specifiedParentName = $scope.task.actions[idx].specifiedName;
                             postActionParameter.displayName = postActionParameter.prefix.concat(".", postActionParameter.objectId,
                                                                                                 ".", postActionParameter.key
                                                                                                 );
@@ -1224,10 +1382,11 @@
                         }
                     }
 
-                    key = keyValue[0];
-                    value =  keyValue[1];
-
-                    $scope.pairs.push({key:key, value:value});
+                    if (keyValue.length === 2) {
+                        key = keyValue[0];
+                        value = keyValue[1];
+                        $scope.pairs.push({key:key, value:value});
+                    }
                 }
 
                 $scope.dataTransformed = true;
@@ -1332,25 +1491,50 @@
         };
     });
 
-    controllers.controller('TriggersModalCtrl', function ($scope, $rootScope, $timeout, LoadingModal, BootstrapDialogManager, Triggers, ModalFactory) {
+    controllers.controller('TriggersModalCtrl', function ($scope, $rootScope, $timeout, LoadingModal, BootstrapDialogManager, Triggers, ModalFactory, $filter) {
 
-        $scope.reloadLists = function(staticTriggersPage, dynamicTriggersPage) {
+        $scope.searchTrigger = {
+            displayName: ""
+        };
+
+        $scope.changeCurrentPage = function(staticTriggersPage, dynamicTriggersPage) {
             if ($scope.validatePages(staticTriggersPage, dynamicTriggersPage)) {
-                LoadingModal.open();
-                Triggers.get(
-                {
-                    moduleName: $scope.selectedChannel.moduleName,
-                    staticTriggersPage: staticTriggersPage,
-                    dynamicTriggersPage: dynamicTriggersPage
-                },
-                function(data) {
-                    $scope.dynamicTriggers = data.dynamicTriggersList;
-                    $scope.staticTriggers = data.staticTriggersList;
-                    $scope.staticTriggersPage = $scope.staticTriggers.page;
-                    $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
-                    LoadingModal.close();
-                });
+                $scope.staticTriggers.page = staticTriggersPage;
+                $scope.dynamicTriggers.page = dynamicTriggersPage;
             }
+        };
+
+        $scope.$watch('searchTrigger.displayName', function() {
+            var searchActive = true;
+
+            if ($scope.hasStaticTriggers) {
+                searchActive = $scope.changePagesAfterSearch($scope.staticTriggers, searchActive);
+                if(searchActive === false) {
+                    $scope.staticTriggers.total = $scope.staticTriggersPages;
+                }
+            }
+            if ($scope.hasDynamicTriggers) {
+                searchActive = $scope.changePagesAfterSearch($scope.dynamicTriggers, searchActive);
+                if(searchActive === false) {
+                    $scope.dynamicTriggers.total = $scope.dynamicTriggersPages;
+                }
+            }
+        });
+
+        $scope.changePagesAfterSearch = function(triggersTable, searchActive) {
+            var searchedTriggers = [];
+
+            triggersTable.page = 1;
+            if ($scope.searchTrigger.displayName !== "") {
+                searchedTriggers = $filter('filter')(triggersTable.triggers, $scope.searchTrigger);
+                triggersTable.total = parseInt(searchedTriggers.length / $scope.pageSize, 10);
+                if (searchedTriggers.length % $scope.pageSize > 0) {
+                    triggersTable.total += 1;
+                }
+            } else {
+                searchActive = false;
+            }
+            return searchActive;
         };
 
         $scope.validatePages = function(staticTriggersPage, dynamicTriggersPage){
@@ -1395,6 +1579,7 @@
         $scope.openTriggersModal = function() {
 
              LoadingModal.open();
+             $scope.pageSize = 10;
              $scope.staticTriggersPager = 1;
              $scope.dynamicTriggersPager = 1;
              $scope.selectedChannel = $scope.channel;
@@ -1407,10 +1592,10 @@
              function(data) {
                  $scope.dynamicTriggers = data.dynamicTriggersList;
                  $scope.staticTriggers = data.staticTriggersList;
-                 $scope.staticTriggersPage = $scope.staticTriggers.page;
-                 $scope.dynamicTriggersPage = $scope.dynamicTriggers.page;
                  $scope.hasDynamicTriggers = $scope.dynamicTriggers.triggers.length > 0;
                  $scope.hasStaticTriggers = $scope.staticTriggers.triggers.length > 0;
+                 $scope.staticTriggersPages = $scope.staticTriggers.total;
+                 $scope.dynamicTriggersPages = $scope.staticTriggers.total;
                  if ($scope.hasStaticTriggers && $scope.hasDynamicTriggers) {
                      $scope.divSize = "col-md-6";
                  } else {

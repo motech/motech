@@ -1872,6 +1872,7 @@
                                     <rules>
                                         <requireBackwardCompatibility implementation="org.semver.enforcer.RequireBackwardCompatibility">
                                             <compatibilityType>BACKWARD_COMPATIBLE_IMPLEMENTER</compatibilityType>
+                                            <dumpDetails>true</dumpDetails>
                                         </requireBackwardCompatibility>
                                         <requireSemanticVersioningConformance implementation="org.semver.enforcer.RequireSemanticVersioningConformance" />
                                     </rules>

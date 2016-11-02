@@ -58,9 +58,9 @@ public class CsvImporterExporter extends AbstractMdsExporter {
      * @return IDs of instances updated/added during import
      */
     @Transactional
-    public CsvImportResults importCsv(final long entityId, final Reader reader, boolean continueOnError) {
+    public CsvImportResults importCsv(final long entityId, final Reader reader, boolean continueOnError, boolean clearData) {
         EntityInfo entityInfo = getEntity(entityId);
-        return importCsv(entityInfo, reader, continueOnError);
+        return importCsv(entityInfo, reader, continueOnError, clearData);
     }
 
     /**
@@ -70,12 +70,13 @@ public class CsvImporterExporter extends AbstractMdsExporter {
      * @param importCustomizer the customizer that will be used during instance import from rows
      * @param continueOnError if true, import will continue with next row if exception was encountered,
      *                        if false, import process will stop and rethrow the exception
+     * @param clearData if true, import will clear instances from table
      * @return IDs of instances updated/added during import
      */
     @Transactional
-    public CsvImportResults importCsv(final long entityId, final Reader reader, CsvImportCustomizer importCustomizer, boolean continueOnError) {
+    public CsvImportResults importCsv(final long entityId, final Reader reader, CsvImportCustomizer importCustomizer, boolean continueOnError, boolean clearData) {
         EntityInfo entityInfo = getEntity(entityId);
-        return importCsv(entityInfo, reader, importCustomizer, continueOnError);
+        return importCsv(entityInfo, reader, importCustomizer, continueOnError, clearData);
     }
 
     /**
@@ -89,7 +90,7 @@ public class CsvImporterExporter extends AbstractMdsExporter {
     @Transactional
     public CsvImportResults importCsv(final String entityClassName, final Reader reader, boolean continueOnError) {
         EntityInfo entityInfo = getEntity(entityClassName);
-        return importCsv(entityInfo, reader, continueOnError);
+        return importCsv(entityInfo, reader, continueOnError, false);
     }
 
     /**
@@ -226,15 +227,19 @@ public class CsvImporterExporter extends AbstractMdsExporter {
         }
     }
 
-    private CsvImportResults importCsv(final EntityInfo entityInfo, final Reader reader, boolean continueOnError) {
-        return importCsv(entityInfo, reader, new DefaultCsvImportCustomizer(), continueOnError);
+    private CsvImportResults importCsv(final EntityInfo entityInfo, final Reader reader, boolean continueOnError, boolean clearData) {
+        return importCsv(entityInfo, reader, new DefaultCsvImportCustomizer(), continueOnError, clearData);
     }
 
     private CsvImportResults importCsv(final EntityInfo entityInfo, final Reader reader, CsvImportCustomizer importCustomizer,
-                                       boolean continueOnError) {
+                                       boolean continueOnError, boolean clearData) {
         final MotechDataService dataService = DataServiceHelper.getDataService(getBundleContext(), entityInfo.getClassName());
 
         Map<String, FieldDto> fieldCacheMap = new HashMap<>();
+
+        if (clearData) {
+            dataService.deleteAll();
+        }
 
         try (CsvMapReader csvMapReader = new CsvMapReader(reader, CsvPreference.STANDARD_PREFERENCE)) {
 
