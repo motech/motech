@@ -3,16 +3,17 @@ package org.motechproject.tasks.domain.mds.task;
 import org.apache.commons.collections.Predicate;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.annotations.Access;
 import org.motechproject.mds.annotations.Cascade;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.tasks.constants.TasksRoles;
+import org.motechproject.tasks.domain.mds.channel.Channel;
 import org.motechproject.tasks.dto.TaskActionInformationDto;
 import org.motechproject.tasks.dto.TaskDto;
 import org.motechproject.tasks.dto.TaskErrorDto;
-import org.motechproject.tasks.domain.mds.channel.Channel;
 import org.motechproject.tasks.json.TaskDeserializer;
 
 import javax.jdo.annotations.Unique;
@@ -80,6 +81,15 @@ public class Task {
 
     @Field
     private boolean retryTaskOnFailure;
+
+    @Field
+    private boolean useTimeWindow;
+
+    @Field
+    private Time startTime;
+
+    @Field
+    private Time endTime;
 
     /**
      * Constructor.
@@ -277,6 +287,30 @@ public class Task {
         this.retryIntervalInMilliseconds = retryIntervalInMilliseconds;
     }
 
+    public boolean isUsingTimeWindow() {
+        return useTimeWindow;
+    }
+
+    public void setUseTimeWindow(boolean useTimeWindow) {
+        this.useTimeWindow = useTimeWindow;
+    }
+
+    public Time getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Time startTime) {
+        this.startTime = startTime;
+    }
+
+    public Time getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Time endTime) {
+        this.endTime = endTime;
+    }
+
     public TaskDto toDto() {
         List<TaskActionInformationDto> actionDtos = new ArrayList<>();
         Set<TaskErrorDto> errorDtos = new HashSet<>();
@@ -290,7 +324,8 @@ public class Task {
         }
 
         return new TaskDto(id, description, name, failuresInRow, actionDtos, trigger.toDto(), enabled, errorDtos,
-                taskConfig.toDto(), hasRegisteredChannel, numberOfRetries, retryIntervalInMilliseconds, retryTaskOnFailure);
+                taskConfig.toDto(), hasRegisteredChannel, numberOfRetries, retryIntervalInMilliseconds, retryTaskOnFailure, useTimeWindow,
+                startTime != null ? startTime.toString() : null, endTime != null ? endTime.toString() : null);
     }
 
 

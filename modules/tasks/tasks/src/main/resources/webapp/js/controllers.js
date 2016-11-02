@@ -274,8 +274,11 @@
             }
         };
         $scope.task.retryTaskOnFailure = false;
+        $scope.task.useTimeWindow = false;
         $scope.taskStepNumber = 0;
         $scope.debugging = false;
+        $scope.startTime = "";
+        $scope.endTime = "";
 
         $scope.changeCheckbox = function (debugging) {
             $scope.debugging = debugging;
@@ -307,6 +310,11 @@
                 $scope.task = Tasks.get({ taskId: $stateParams.taskId }, function () {
                     Triggers.getTrigger($scope.task.trigger, function(trigger) {
                         var triggerChannel, dataSource, object, actionStep, actionIndex = 0, actionFilterIndex = 0, filtersToDelete = [], actionSteps= [], actionFilters = [];
+
+                        if ($scope.task.useTimeWindow === true) {
+                           $scope.startTime = $scope.task.startTime + " +0000";
+                           $scope.endTime = $scope.task.endTime + " +0000";
+                        }
 
                         triggerChannel = $scope.util.find({
                             where: $scope.channels,
@@ -426,11 +434,23 @@
         });
 
         $scope.isTaskValid = function() {
-            return $scope.task.name;
+            var retryTaskOnFailureValidation, useTimeWindowValidation;
+            if($scope.task.useTimeWindow) {
+                useTimeWindowValidation = $scope.isTimeFormat($scope.startTime)
+                && $scope.isTimeFormat($scope.endTime);
+            } else {
+                useTimeWindowValidation = true;
+            }
+
+            return $scope.task.name && retryTaskOnFailureValidation && useTimeWindowValidation;
         };
 
         $scope.isNumericalNonNegativeValue = function (value) {
             return !isNaN(value) && value >= 0;
+        };
+
+        $scope.isTimeFormat = function (value) {
+            return value.length === 11;
         };
 
         $scope.removeTrigger = function ($event) {
@@ -753,6 +773,20 @@
             }
         };
 
+        $scope.addSpecifiedActionName = function (changedAction, changedActionIndex) {
+            var actions = $scope.task.actions;
+
+            actions.forEach(function (action, index) {
+                if (index === changedActionIndex) {
+                    action.specifiedName = changedAction.specifiedName;
+                }
+            });
+
+            if (!$scope.$$phase) {
+                $scope.$apply($scope.task);
+            }
+        };
+
         $scope.addDataSource = function () {
             var sources = $scope.getDataSources(),
                 last;
@@ -1006,6 +1040,14 @@
                     delete filter.manipulations;
                 });
             });
+
+            if (!$scope.task.useTimeWindow) {
+                $scope.task.startTime = undefined;
+                $scope.task.endTime = undefined;
+            } else {
+                $scope.task.startTime = $scope.startTime;
+                $scope.task.endTime = $scope.endTime;
+            }
 
             LoadingModal.open();
 

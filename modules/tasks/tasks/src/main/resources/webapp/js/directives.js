@@ -362,7 +362,7 @@
         };
     });
 
-    directives.directive('contenteditable', function ($compile, ManageTaskUtils, $timeout) {
+    directives.directive('contenteditable', function ($compile, $http, $templateCache, ManageTaskUtils, $timeout) {
         var intervalAdjustText;
 
         function formatField (field) {
@@ -496,15 +496,93 @@
             }, 50);
         }
 
+        function prepareField(field, fullName) {
+            switch (field.prefix) {
+                case ManageTaskUtils.TRIGGER_PREFIX:
+                    return "{{{0}.{1}}}".format(
+                        ManageTaskUtils.TRIGGER_PREFIX,
+                        field.eventKey
+                    );
+                case ManageTaskUtils.DATA_SOURCE_PREFIX:
+                    if (!field.specifiedParentName || fullName) {
+                        return "{{{0}.{1}.{2}#{3}.{4}}}".format(
+                            ManageTaskUtils.DATA_SOURCE_PREFIX,
+                            field.providerName,
+                            field.providerType,
+                            field.objectId,
+                            field.fieldKey
+                        );
+                    } else {
+                        return "{{{0}.{1}}}".format(
+                            field.specifiedParentName,
+                            field.fieldKey
+                        );
+                    }
+
+                case ManageTaskUtils.POST_ACTION_PREFIX:
+                    if(!field.specifiedParentName || fullName) {
+                        return "{{{0}.{1}.{2}}}".format(
+                            ManageTaskUtils.POST_ACTION_PREFIX,
+                            field.objectId,
+                            field.key
+                        );
+                    } else {
+                        return "{{{0}.{1}}}".format(
+                            field.specifiedParentName,
+                            field.fieldKey
+                        );
+                    }
+            }
+        }
+
+        function getFilteredItems(choices, searchText) {
+            var filteredList = [];
+            if (searchText.length < 2) {
+                return filteredList;
+            }
+            choices.filter(function (choice) {
+                if (prepareField(choice, false).indexOf(searchText) > 0 || prepareField(choice, true).indexOf(searchText) > 0) {
+                    filteredList.push(choice);
+                }
+            });
+            return filteredList;
+        }
+
+        function findStartIndex(value, endIndex) {
+            value = value.substring(0, endIndex);
+            return (value.lastIndexOf("}}") > value.lastIndexOf(" ")) ? value.lastIndexOf("}}") + 2: value.lastIndexOf(" ");
+        }
+
+        function stopPropagation(evt) {
+            evt.cancelBubble = true;
+            evt.returnValue = false;
+            if (evt.stopPropagation) {
+                evt.stopPropagation();
+                evt.preventDefault();
+            }
+        }
+
         return {
             restrict: 'A',
             require: '?ngModel',
             link: function (scope, element, attrs, ngModel) {
-                var eventResize;
                 scope.debug = scope.$parent.debugging;
+                var eventResize,
+                    items = [],
+                    url = '../tasks/partials/widgets/autocomplete-fields.html';
+                    scope.filteredItems = [];
+                    scope.selPos = 0;
 
                 if (!ngModel) {
                     return false;
+                }
+
+                if (element.attr('field-autocomplete') === "true") {
+                    $http.get(url, {cache: $templateCache})
+                    .success(function (html) {
+                        var compiledContent = $compile(html)(scope);
+                        $(compiledContent).insertBefore(element);
+                    });
                 }
 
                 scope.$watch(function () {
@@ -549,6 +627,7 @@
                     if (!scope.debug) {
                          ngModel.$setViewValue(readContent(element));
                          ngModel.$rollbackViewValue();
+
                          $timeout(function() {
                             adjustText();
                          }, 0);
@@ -578,6 +657,13 @@
                     }
                 });
 
+                element.on('focus', function () {
+                    if (ngModel) {
+                        scope.selectedElement = element;
+                        scope.selectedModel = ngModel;
+                    }
+                });
+
                 ngModel.$render = function () {
                     var parsedValue = "", viewValueStr, matches;
                     element.html("");
@@ -591,9 +677,11 @@
                         if (findField(str)) {
                             str = formatToKey(str, scope);
                             element.append(makeFieldElement(str, scope));
+
                             $timeout(function() {
                                 adjustText();
                              }, 100);
+
                         } else if (element.data('type') === 'BOOLEAN' && (str === 'true' || str === 'false')) {
                             element.append(makeBooleanFieldElement(str, scope));
                         } else {
@@ -602,8 +690,99 @@
                         parsedValue = parsedValue.concat(str);
                     });
 
-                    if (parsedValue && parsedValue !== scope.data.value) {
+                    if (parsedValue && parsedValue !== scope.data.value && scope.data.type !== 'MAP') {
                         scope.data.value = parsedValue;
+                    }
+                };
+
+                angular.forEach(scope.fields, function (field) {
+                   items.push(field);
+                });
+
+                scope.getPreparedName = function (fieldToPrepare, fullName) {
+                    return prepareField(fieldToPrepare, fullName);
+                };
+
+                scope.refreshListItems = function (event) {
+                    scope.filteredItems = [];
+                    if(event.keyCode === 8) {event.key = "";scope.rangySelection.anchorOffset = scope.rangySelection.anchorOffset -1;}
+                    if (scope.rangySelection.anchorNode && scope.rangySelection.anchorNode.nodeValue) {
+                        var value = scope.rangySelection.anchorNode.nodeValue;
+                        scope.searchText = value.substring(findStartIndex(value.trimRight(), scope.rangySelection.anchorOffset), scope.rangySelection.anchorOffset) + event.key;
+                        scope.filteredItems = getFilteredItems(items, scope.searchText.trim());
+                        if (scope.selectedElement.parent().find('ul').is('ul.dropdown-menu.open-list')
+                            && (scope.selectedElement.attr('ng-model') === "pair.value" || scope.selectedElement.attr('ng-model') === "pair.key")) {
+                            scope.selectedElement.parent().find('ul.dropdown-menu.open-list')
+                            .css({'margin-left': scope.selectedElement.position().left, 'top': scope.selectedElement.position().top + scope.selectedElement.outerHeight()});
+                        }
+                    }
+                };
+
+                scope.addItem = function (item) {
+                    if (!item) {
+                        return;
+                    }
+                    if (scope.rangySelection && scope.rangySelection.anchorNode) {
+                        var anchorValue = scope.rangySelection.anchorNode.nodeValue;
+                        if (scope.selectedElement[0].contains(scope.rangySelection.anchorNode) && anchorValue) {
+                            $(scope.rangySelection.anchorNode).before(
+                                anchorValue.substring(0, findStartIndex(anchorValue, scope.rangySelection.anchorOffset))
+                                + " " + prepareField(item, scope.debug) + " " + anchorValue.substring(scope.rangySelection.anchorOffset + 1)
+                            ).remove();
+                        } else {
+                            scope.selectedElement.append(prepareField(item, scope.debug));
+                        }
+                    }
+                    scope.selPos = -1;
+                    scope.filteredItems = [];
+                    scope.searchText = "";
+                    scope.selectedModel.$setViewValue(readContent(scope.selectedElement));
+                };
+
+                scope.keyPress = function(evt) {
+
+                    switch (evt.keyCode) {
+                        case 27: // esc
+                            scope.filteredItems = [];
+                            break;
+                        case 13: // enter
+                            if(scope.selPos > -1 && scope.filteredItems.length > 0) {
+                                stopPropagation(evt);
+                                scope.addItem(scope.filteredItems[scope.selPos]);
+                            }
+                            break;
+                        case 8: // backspace
+                            scope.rangySelection = rangy.getSelection();
+                            scope.selPos = 0;
+                            scope.refreshListItems(evt);
+                            break;
+                        case 186: // semicolon
+                            if(scope.selPos > -1 && scope.filteredItems.length > 0) {
+                                stopPropagation(evt);
+                                scope.addItem(scope.filteredItems[scope.selPos]);
+                                return;
+                            }
+                            break;
+                        case 188: // coma
+                            if(scope.selPos > -1 && scope.filteredItems.length > 0) {
+                                stopPropagation(evt);
+                                scope.addItem(scope.filteredItems[scope.selPos]);
+                            }
+                            break;
+                        case 38: // up
+                            if (scope.selPos > 0) {
+                                scope.selPos = scope.selPos - 1;
+                            }
+                            break;
+                        case 40: // down
+                            if (scope.selPos < scope.filteredItems.length-1) {
+                                scope.selPos = scope.selPos + 1;
+                            }
+                            break;
+                        default:
+                            scope.rangySelection = rangy.getSelection();
+                            scope.selPos = 0;
+                            scope.refreshListItems(evt);
                     }
                 };
 
@@ -672,7 +851,8 @@
             scope: {
                 'data': '=',
                 'index': '@',
-                'action': '@'
+                'action': '@',
+                'fields': '='
             },
             compile: function (tElement, tAttrs, scope) {
                 var url = '../tasks/partials/widgets/content-editable-' + tAttrs.type.toLowerCase() + '.html',
@@ -1040,6 +1220,50 @@
                             parent.filter(parent.selectedAction[$(this).data('action')].actionParameters, {hidden: false})[$(this).data('index')].value = dateTex;
                             parent.$apply();
                         }
+                    });
+                }
+            };
+        });
+
+        directives.directive('startTimePicker', function() {
+            return {
+                restrict: 'A',
+                require : 'ngModel',
+                link : function (scope, element, attrs, ngModelCtrl) {
+                    $(function() {
+                        element.timepicker({
+                            showTimezone: true,
+                            useLocalTimezone: true,
+                            timeFormat: 'HH:mm z',
+                            onSelect: function (time) {
+                                ngModelCtrl.$setViewValue(time);
+                                scope.$apply(function() {
+                                    scope.$parent.startTime = time.toString();
+                                });
+                            }
+                        });
+                    });
+                }
+            };
+        });
+
+        directives.directive('endTimePicker', function() {
+            return {
+                restrict: 'A',
+                require : 'ngModel',
+                link : function (scope, element, attrs, ngModelCtrl) {
+                    $(function() {
+                        element.timepicker({
+                            showTimezone: true,
+                            useLocalTimezone: true,
+                            timeFormat: 'HH:mm z',
+                            onSelect: function (time) {
+                                ngModelCtrl.$setViewValue(time);
+                                scope.$apply(function() {
+                                    scope.$parent.endTime = time.toString();
+                                });
+                            }
+                        });
                     });
                 }
             };

@@ -6,7 +6,10 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
 import org.motechproject.commons.api.TasksEventParser;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListener;
@@ -14,16 +17,16 @@ import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.osgi.web.util.WebBundleUtil;
+import org.motechproject.tasks.compatibility.TaskMigrationManager;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.Channel;
-import org.motechproject.tasks.compatibility.TaskMigrationManager;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.domain.mds.task.DataSource;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
 import org.motechproject.tasks.domain.mds.task.TaskError;
 import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
-import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 import org.motechproject.tasks.exception.CustomParserNotFoundException;
 import org.motechproject.tasks.exception.TaskNameAlreadyExistsException;
@@ -203,7 +206,7 @@ public class TaskServiceImpl implements TaskService {
             });
             if (enabledTasks != null) {
                 checkChannelAvailableInTasks(enabledTasks);
-                list = new ArrayList<>(enabledTasks);
+                list = checkTimeWindowInTasks(enabledTasks);
                 CollectionUtils.filter(list, tasksWithRegisteredChannel());
             }
         }
@@ -585,6 +588,11 @@ public class TaskServiceImpl implements TaskService {
             existing.setName(task.getName());
             existing.setValidationErrors(task.getValidationErrors());
             existing.setRetryTaskOnFailure(task.isRetryTaskOnFailure());
+            existing.setNumberOfRetries(task.getNumberOfRetries());
+            existing.setRetryIntervalInMilliseconds(task.getRetryIntervalInMilliseconds());
+            existing.setUseTimeWindow(task.isUsingTimeWindow());
+            existing.setStartTime(task.getStartTime());
+            existing.setEndTime(task.getEndTime());
 
             checkChannelAvailableInTask(existing);
 
@@ -638,6 +646,34 @@ public class TaskServiceImpl implements TaskService {
                 }
             }
         }
+    }
+
+    private List<Task> checkTimeWindowInTasks(List<Task> tasks) {
+        List<Task> checked = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(tasks)) {
+            for (Task task : tasks) {
+                if (checkTimeWindowInTask(task)) {
+                    checked.add(task);
+                }
+            }
+        }
+        return checked;
+    }
+
+    private boolean checkTimeWindowInTask(Task task) {
+        if (task.isUsingTimeWindow()) {
+            if (task.getStartTime() == null || task.getEndTime() == null) {
+                return false;
+            }
+            Time now = new Time(new LocalTime(DateTimeZone.UTC));
+            if (task.getStartTime().isBefore(task.getEndTime())) {
+                return now.isBetween(task.getStartTime(), task.getEndTime());
+            } else {
+                return now.isBetween(task.getStartTime(), new Time(24, 0)) ||
+                        now.isBetween(new Time(LocalTime.MIDNIGHT), task.getEndTime());
+            }
+        }
+        return true;
     }
 
     @Autowired
