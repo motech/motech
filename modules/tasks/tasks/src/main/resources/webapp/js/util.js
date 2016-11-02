@@ -365,7 +365,7 @@
             }
             if (field.manipulations && Array.isArray(field.manipulations)) {
                 field.manipulations.forEach(function(manipulation) {
-                    str += "?{0}({1})".format(manipulation.type, manipulation.argument);
+                    str[0] += "?{0}({1})".format(manipulation.type, manipulation.argument);
                 });
             }
             return str;

@@ -274,8 +274,11 @@
             }
         };
         $scope.task.retryTaskOnFailure = false;
+        $scope.task.useTimeWindow = false;
         $scope.taskStepNumber = 0;
         $scope.debugging = false;
+        $scope.startTime = "";
+        $scope.endTime = "";
 
         $scope.changeCheckbox = function (debugging) {
             $scope.debugging = debugging;
@@ -314,6 +317,10 @@
                            $scope.task.retryIntervalInSeconds = $scope.task.retryIntervalInMilliseconds / 1000;
                         } else {
                            $scope.task.retryTaskOnFailure = false;
+                        }
+                        if ($scope.task.useTimeWindow === true) {
+                           $scope.startTime = $scope.task.startTime + " +0000";
+                           $scope.endTime = $scope.task.endTime + " +0000";
                         }
 
                         triggerChannel = $scope.util.find({
@@ -435,19 +442,29 @@
 
         $scope.isTaskValid = function() {
             // Retry task on failure inputs validation - only numerical non negative values
-            var retryTaskOnFailureValidation;
+            var retryTaskOnFailureValidation, useTimeWindowValidation;
             if ($scope.task.retryTaskOnFailure) {
                 retryTaskOnFailureValidation = $scope.isNumericalNonNegativeValue($scope.task.numberOfRetries)
                 && $scope.isNumericalNonNegativeValue($scope.task.retryIntervalInSeconds);
             } else {
                 retryTaskOnFailureValidation = true;
             }
+            if($scope.task.useTimeWindow) {
+                useTimeWindowValidation = $scope.isTimeFormat($scope.startTime)
+                && $scope.isTimeFormat($scope.endTime);
+            } else {
+                useTimeWindowValidation = true;
+            }
 
-            return $scope.task.name && retryTaskOnFailureValidation;
+            return $scope.task.name && retryTaskOnFailureValidation && useTimeWindowValidation;
         };
 
         $scope.isNumericalNonNegativeValue = function (value) {
             return !isNaN(value) && value >= 0;
+        };
+
+        $scope.isTimeFormat = function (value) {
+            return value.length === 11;
         };
 
         $scope.removeTrigger = function ($event) {
@@ -770,6 +787,20 @@
             }
         };
 
+        $scope.addSpecifiedActionName = function (changedAction, changedActionIndex) {
+            var actions = $scope.task.actions;
+
+            actions.forEach(function (action, index) {
+                if (index === changedActionIndex) {
+                    action.specifiedName = changedAction.specifiedName;
+                }
+            });
+
+            if (!$scope.$$phase) {
+                $scope.$apply($scope.task);
+            }
+        };
+
         $scope.addDataSource = function () {
             var sources = $scope.getDataSources(),
                 last;
@@ -1032,6 +1063,13 @@
             } else {
                 // Convert given value from UI in seconds to milliseconds
                 $scope.task.retryIntervalInMilliseconds = $scope.task.retryIntervalInSeconds * 1000;
+            }
+            if (!$scope.task.useTimeWindow) {
+                $scope.task.startTime = undefined;
+                $scope.task.endTime = undefined;
+            } else {
+                $scope.task.startTime = $scope.startTime;
+                $scope.task.endTime = $scope.endTime;
             }
 
             LoadingModal.open();
@@ -1344,10 +1382,11 @@
                         }
                     }
 
-                    key = keyValue[0];
-                    value =  keyValue[1];
-
-                    $scope.pairs.push({key:key, value:value});
+                    if (keyValue.length === 2) {
+                        key = keyValue[0];
+                        value = keyValue[1];
+                        $scope.pairs.push({key:key, value:value});
+                    }
                 }
 
                 $scope.dataTransformed = true;

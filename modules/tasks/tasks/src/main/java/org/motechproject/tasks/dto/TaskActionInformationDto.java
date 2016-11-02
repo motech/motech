@@ -1,6 +1,7 @@
 package org.motechproject.tasks.dto;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class TaskActionInformationDto extends TaskEventInformationDto {
 
@@ -48,5 +49,32 @@ public class TaskActionInformationDto extends TaskEventInformationDto {
 
     public void setValues(Map<String, String> values) {
         this.values = values;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(serviceInterface, serviceMethod, specifiedName, values);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        if (!super.equals(obj)) {
+            return false;
+        }
+
+        final TaskActionInformationDto other = (TaskActionInformationDto) obj;
+
+        return Objects.equals(this.serviceInterface, other.serviceInterface) &&
+                Objects.equals(this.serviceMethod, other.serviceMethod) &&
+                Objects.equals(this.specifiedName, other.specifiedName) &&
+                Objects.equals(this.values, other.values);
     }
 }
