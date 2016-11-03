@@ -33,6 +33,7 @@ import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_TASK_ID;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_TASK_NAME;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_TRIGGER_DISABLED;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_RETRY;
+import static org.motechproject.tasks.constants.EventDataKeys.TASK_RETRY_NUMBER;
 import static org.motechproject.tasks.constants.EventSubjects.createHandlerFailureSubject;
 import static org.motechproject.tasks.constants.EventSubjects.createHandlerSuccessSubject;
 
@@ -93,23 +94,7 @@ public class TasksPostExecutionHandler {
      * @param e the exception that caused the failure
      * @param activityId the id of an activity
      */
-    public void handleError(Map<String, Object> params, Map<String, Object> metadata, Task task, TaskHandlerException e, Long activityId)
-    {
-        handleError(params, metadata, task, e, activityId, 0);
-    }
-
-    /**
-     * Handles task action failure. It sets the specified task activity as failed and raises the failures in a row count of
-     * a task. If the failure threshold is reached, it disables the task and publishes an event. It passes the
-     * info about failed execution to {@link TaskRetryHandler}.
-     *
-     * @param params trigger event parameters that invoked the task
-     * @param task the task that has failed
-     * @param e the exception that caused the failure
-     * @param activityId the id of an activity
-     * @param retryNumber the number of current retry
-     */
-    public void handleError(Map<String, Object> params, Map<String, Object> metadata, Task task, TaskHandlerException e, Long activityId, int retryNumber) {
+    public void handleError(Map<String, Object> params, Map<String, Object> metadata, Task task, TaskHandlerException e, Long activityId) {
         LOGGER.warn("Omitted task: {} with ID: {} because: {}", task.getName(), task.getId(), e);
 
         activityService.addFailedExecution(activityId, e);
@@ -147,7 +132,8 @@ public class TasksPostExecutionHandler {
                 errorEventParam
         ));
 
-        boolean retryScheduled = shouldScheduleRetry(task, metadata, retryNumber);
+        getRetriesFromSettings(task, params, metadata);
+        boolean retryScheduled = shouldScheduleRetry(metadata);
 
         retryHandler.handleTaskRetries(task, params, false, retryScheduled);
     }
@@ -163,7 +149,7 @@ public class TasksPostExecutionHandler {
                 params
         ));
 
-        boolean retryScheduled = isRetryScheduled(metadata);
+        boolean retryScheduled = shouldScheduleRetry(metadata);
 
         retryHandler.handleTaskRetries(task, params, true, retryScheduled);
     }
@@ -194,38 +180,53 @@ public class TasksPostExecutionHandler {
         return number;
     }
 
-    private boolean isRetryScheduled(Map<String, Object> metadata) {
+    private boolean shouldScheduleRetry(Map<String, Object> metadata) {
         return metadata.get(TASK_RETRY) != null && (boolean) metadata.get(TASK_RETRY);
     }
 
 
-    private boolean shouldScheduleRetry(Task task, Map<String, Object> metadata, int retryNumber) {
+    private void getRetriesFromSettings(Task task, Map<String, Object> params, Map<String, Object> metadata) {
         Map<String, String> taskRetries = new HashMap<>();
         List<Integer> retryInterval = new ArrayList<>();
         int numberOfRetries;
 
         try {
             InputStream retries = settings.getRawConfig(TASK_PROPERTIES_FILE_NAME);
-            Properties props = new Properties();
-            props.load(retries);
-            if (props != null) {
-                for (Map.Entry<Object, Object> entry : props.entrySet()) {
-                    taskRetries.put((String) entry.getKey(), (String) entry.getValue());
-                    retryInterval.add(0, Integer.valueOf(entry.getValue().toString()));
+
+            if(retries != null) {
+                Properties props = new Properties();
+                props.load(retries);
+                if (props != null) {
+                    for (Map.Entry<Object, Object> entry : props.entrySet()) {
+                        taskRetries.put((String) entry.getKey(), (String) entry.getValue());
+                        retryInterval.add(0, Integer.valueOf(entry.getValue().toString()));
+                    }
                 }
+                numberOfRetries = taskRetries.size();
+            } else {
+                numberOfRetries = 0;
             }
-            numberOfRetries = taskRetries.size();
+
+            if (retries != null) {
+                retries.close();
+            }
         } catch (IOException e) {
             throw new MotechException("Error loading raw file config to properties", e);
         }
+
+        setRetryParameters(task, metadata, params, retryInterval, numberOfRetries);
+    }
+
+    private void setRetryParameters(Task task,  Map<String, Object> metadata, Map<String, Object> params, List<Integer> retryInterval, int numberOfRetries)
+    {
+        int retryNumber = params.containsKey(TASK_RETRY_NUMBER) ? (Integer) params.get(TASK_RETRY_NUMBER) + 1 : 0;
+        params.put(TASK_RETRY_NUMBER, retryNumber);
 
         if(retryNumber < numberOfRetries) {
             task.setRetryIntervalInMilliseconds(retryInterval.get(retryNumber) * 1000);
         } else {
             metadata.put(TASK_RETRY, true);
         }
-
-        return metadata.get(TASK_RETRY) != null && (boolean) metadata.get(TASK_RETRY);
     }
 
 }

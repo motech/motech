@@ -112,7 +112,7 @@ public class TaskDto {
         this.retryTaskOnFailure = retryTaskOnFailure;
     }
 
-    public boolean getRetryTaskOnFailure() {
+    public boolean isRetryTaskOnFailure() {
         return retryTaskOnFailure;
     }
 

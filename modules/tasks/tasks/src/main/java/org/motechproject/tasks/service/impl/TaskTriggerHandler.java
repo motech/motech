@@ -68,7 +68,6 @@ public class TaskTriggerHandler implements TriggerHandler {
     private TasksPostExecutionHandler postExecutionHandler;
 
     private Map<String, DataProvider> dataProviders;
-    private int retryNumber;
 
     @PostConstruct
     public void init() {
@@ -124,7 +123,6 @@ public class TaskTriggerHandler implements TriggerHandler {
         // Look for custom event parser
         Map<String, Object> eventParams = event.getParameters();
         eventParams.putAll(event.getMetadata());
-        retryNumber = 0;
 
         TasksEventParser parser = null;
         if (eventParams != null) {
@@ -139,7 +137,7 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         // Handle all tasks one by one
         for (Task task : tasks) {
-            handleTask(task, parameters, false, retryNumber);
+            handleTask(task, parameters, false);
         }
     }
 
@@ -150,14 +148,13 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         Map<String, Object> eventParams = event.getParameters();
         Map<String, Object> eventMetadata = event.getMetadata();
-        retryNumber += 1;
 
         Task task = taskService.getTask((Long) eventMetadata.get(TASK_ID));
 
         if (task == null || !task.isEnabled()) {
             taskRetryHandler.unscheduleTaskRetry((String) eventMetadata.get(JOB_SUBJECT));
         } else {
-            handleTask(task, eventParams, false, retryNumber);
+            handleTask(task, eventParams, false);
         }
     }
 
@@ -165,13 +162,12 @@ public class TaskTriggerHandler implements TriggerHandler {
     @Transactional
     public void retryTask(Long activityId) {
         TaskActivity activity = activityService.getTaskActivityById(activityId);
-        retryNumber += 1;
-        handleTask(taskService.getTask(activity.getTask()), activity.getParameters(), true , retryNumber);
+        handleTask(taskService.getTask(activity.getTask()), activity.getParameters(), true);
     }
 
-    private void handleTask(Task task, Map<String, Object> parameters, boolean isRetry, int retryNumber) {
+    private void handleTask(Task task, Map<String, Object> parameters, boolean isRetry) {
         long activityId = activityService.addTaskStarted(task, parameters);
-        Map<String, Object> metadata = prepareTaskMetadata(task.getId(), activityId, isRetry, retryNumber);
+        Map<String, Object> metadata = prepareTaskMetadata(task.getId(), activityId, isRetry);
 
         TaskContext taskContext = new TaskContext(task, parameters, metadata, activityService);
         TaskInitializer initializer = new TaskInitializer(taskContext);
@@ -199,9 +195,9 @@ public class TaskTriggerHandler implements TriggerHandler {
             }
             LOGGER.warn("Actions from task: {} weren't executed, because config steps didn't pass the evaluation", task.getName());
         } catch (TaskHandlerException e) {
-            postExecutionHandler.handleError(parameters, metadata, task, e, activityId, retryNumber);
+            postExecutionHandler.handleError(parameters, metadata, task, e, activityId);
         } catch (RuntimeException e) {
-            postExecutionHandler.handleError(parameters, metadata, task, new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e), activityId, retryNumber);
+            postExecutionHandler.handleError(parameters, metadata, task, new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e), activityId);
         }
     }
 
@@ -229,12 +225,11 @@ public class TaskTriggerHandler implements TriggerHandler {
         this.dataProviders = dataProviders;
     }
 
-    private Map<String, Object> prepareTaskMetadata(Long taskId, long activityId, Boolean isRetry, int retryNumber) {
+    private Map<String, Object> prepareTaskMetadata(Long taskId, long activityId, Boolean isRetry) {
         Map<String, Object> metadata = new HashMap<>();
         metadata.put(EventDataKeys.TASK_ID, taskId);
         metadata.put(EventDataKeys.TASK_ACTIVITY_ID, activityId);
         metadata.put(EventDataKeys.TASK_RETRY, isRetry);
-        metadata.put(EventDataKeys.TASK_RETRY_NUMBER, retryNumber);
 
         return metadata;
     }

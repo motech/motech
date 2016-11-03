@@ -14,6 +14,7 @@ import java.util.Map;
 import static org.motechproject.tasks.constants.EventDataKeys.JOB_START;
 import static org.motechproject.tasks.constants.EventDataKeys.JOB_SUBJECT;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_ID;
+import static org.motechproject.tasks.constants.EventDataKeys.TASK_RETRY_NUMBER;
 import static org.motechproject.tasks.constants.EventSubjects.SCHEDULE_REPEATING_JOB;
 import static org.motechproject.tasks.constants.EventSubjects.UNSCHEDULE_REPEATING_JOB;
 
@@ -72,6 +73,7 @@ public class TaskRetryHandler {
         metadata.put(TASK_ID, task.getId());
         metadata.put(JOB_START, task.getRetryIntervalInMilliseconds() / 1000);
         metadata.put(JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
+        metadata.put(TASK_RETRY_NUMBER, parameters.get(TASK_RETRY_NUMBER));
 
         eventRelay.sendEventMessage(new MotechEvent(SCHEDULE_REPEATING_JOB, eventParameters, null, metadata));
     }

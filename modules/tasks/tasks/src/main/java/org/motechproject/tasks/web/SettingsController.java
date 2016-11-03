@@ -57,14 +57,16 @@ public class SettingsController {
 
         try {
             settings.getTaskRetriesProps().store(os, "TaskRetries");
+
+            if (settings.isValid()) {
+                settingsFacade.setProperty(TASK_POSSIBLE_ERRORS, taskPossibleErrors);
+                settingsFacade.saveRawConfig(TASK_PROPERTIES_FILE_NAME, new String(os.toString()));
+            } else {
+                throw new IllegalArgumentException("Settings are not valid");
+            }
+            os.close();
         } catch (IOException e) {
             throw new MotechException("Error parsing task retries", e);
-        }
-        if (settings.isValid()) {
-            settingsFacade.setProperty(TASK_POSSIBLE_ERRORS, taskPossibleErrors);
-            settingsFacade.saveRawConfig(TASK_PROPERTIES_FILE_NAME, new String(os.toString()));
-        } else {
-            throw new IllegalArgumentException("Settings are not valid");
         }
     }
 

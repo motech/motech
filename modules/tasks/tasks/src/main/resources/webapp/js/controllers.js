@@ -434,7 +434,7 @@
         });
 
         $scope.isTaskValid = function() {
-            var retryTaskOnFailureValidation, useTimeWindowValidation;
+            var useTimeWindowValidation;
             if($scope.task.useTimeWindow) {
                 useTimeWindowValidation = $scope.isTimeFormat($scope.startTime)
                 && $scope.isTimeFormat($scope.endTime);
@@ -442,7 +442,7 @@
                 useTimeWindowValidation = true;
             }
 
-            return $scope.task.name && retryTaskOnFailureValidation && useTimeWindowValidation;
+            return $scope.task.name && useTimeWindowValidation;
         };
 
         $scope.isNumericalNonNegativeValue = function (value) {

@@ -46,11 +46,7 @@ public class SettingsDto {
     }
 
     public void setTaskRetries(Map<String, String> taskRetries)  {
-        if (this.taskRetries == null) {
-            this.taskRetries = new HashMap<String, String>();
-        } else {
             this.taskRetries = taskRetries;
-        }
     }
 
     public SettingsDto getProperties(SettingsDto dto, SettingsFacade settingsFacade) {
@@ -58,18 +54,24 @@ public class SettingsDto {
 
         try {
             InputStream retries = settingsFacade.getRawConfig(TASK_PROPERTIES_FILE_NAME);
-            Properties props = new Properties();
-            props.load(retries);
-            //props
-            if (props != null) {
-                for (Map.Entry<Object, Object> entry : props.entrySet()) {
-                    dto.taskRetries.put((String) entry.getKey(), (String) entry.getValue());
+
+            if(retries != null) {
+                Properties props = new Properties();
+                props.load(retries);
+                if (props != null) {
+                    for (Map.Entry<Object, Object> entry : props.entrySet()) {
+                        dto.taskRetries.put((String) entry.getKey(), (String) entry.getValue());
+                    }
                 }
+            } else {
+                dto.taskRetries = new HashMap<String, String>();
+            }
+
+            if (retries != null) {
+                retries.close();
             }
         } catch (IOException e) {
             throw new MotechException("Error loading raw file config to properties", e);
-        } catch (NullPointerException e) {
-            dto.setTaskRetries(new HashMap<String, String>());
         }
 
         return dto;
