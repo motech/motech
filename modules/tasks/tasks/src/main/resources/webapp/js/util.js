@@ -230,7 +230,7 @@
                 select: function (scope, idx, action) {
                     scope.task.actions[idx] = {
                         displayName: action.displayName,
-                        specifiedName: action.specifiedName,
+                        specifiedName: scope.task.actions[idx].specifiedName,
                         channelName: scope.selectedActionChannel[idx].displayName,
                         moduleName: scope.selectedActionChannel[idx].moduleName,
                         moduleVersion: scope.selectedActionChannel[idx].moduleVersion
