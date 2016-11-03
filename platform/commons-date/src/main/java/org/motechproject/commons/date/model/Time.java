@@ -210,16 +210,6 @@ public class Time implements Comparable<Time>, Serializable {
     }
 
     /**
-     * Checks whether this is the same as the given time.
-     *
-     * @param other  the {@code Time} to be compared with this object
-     * @return true if this time is same as other, false otherwise
-     */
-    public boolean equals(Time other) {
-        return compareTo(other) == 0;
-    }
-
-    /**
      * Checks whether this is before the given time.
      *
      * @param other  the {@code Time} to be compared with this object
@@ -242,12 +232,32 @@ public class Time implements Comparable<Time>, Serializable {
     /**
      * Checks whether this is before the given time.
      *
+     * @param other  the {@code Time} to be compared with this object
+     * @return true if this time is before or equal to other, false otherwise
+     */
+    public boolean isBeforeOrEqual(Time other) {
+        return compareTo(other) <= 0;
+    }
+
+    /**
+     * Checks whether this is after the given time.
+     *
+     * @param other  the {@code Time} to be compared with this object
+     * @return true if this time is after or equal to other, false otherwise
+     */
+    public boolean isAfterOrEqual(Time other) {
+        return compareTo(other) >= 0;
+    }
+
+    /**
+     * Checks whether this is before the given time.
+     *
      * @param start  the {@code Time} to be compared with this object
      * @param end  the {@code Time} to be compared with this object
      * @return true if this time is between start and end (inclusive), false otherwise
      */
     public boolean isBetween(Time start, Time end) {
-        return isAfter(start) && isBefore(end) || equals(start) || equals (end);
+        return isAfterOrEqual(start) && isBeforeOrEqual(end);
     }
 
     /**
