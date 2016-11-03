@@ -129,6 +129,10 @@ public class TaskServiceImpl implements TaskService {
             task.setValidationErrors(null);
         }
 
+        if(!checkTimeWindowInTask(task)) {
+            task.setEnabled(false);
+        }
+
         addOrUpdate(task);
         registerHandler(task);
         LOGGER.info("Saved task: {} with ID: {}", task.getName(), task.getId());
