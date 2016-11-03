@@ -2448,7 +2448,7 @@
         */
         $scope.targetItemMoveUp = function(index) {
             if (index > 0) {
-                MDSUtils.moveItems($scope, index);
+                MDSUtils.moveItemsInSchemaList($scope, index);
             }
         };
 
@@ -2457,7 +2457,7 @@
         */
         $scope.targetItemMoveDown = function(index) {
             if (index < $scope.browsingDisplayed.length - 1) {
-                MDSUtils.moveItems($scope, index + 1);
+                MDSUtils.moveItemsInSchemaList($scope, index + 1);
             }
         };
 
@@ -2520,7 +2520,7 @@
         */
         $scope.canMoveUp = function() {
             var isDown = false;
-            return MDSUtils.canMoveUpOrDown($scope, isDown);
+            return MDSUtils.canMoveUpOrDownInSettingsView($scope, isDown);
         };
 
         /**
@@ -2528,7 +2528,7 @@
         */
         $scope.canMoveDown = function() {
             var isDown = true;
-            return MDSUtils.canMoveUpOrDown($scope, isDown);
+            return MDSUtils.canMoveUpOrDownInSettingsView($scope, isDown);
         };
 
         /**
@@ -3101,7 +3101,7 @@
         */
         $scope.checkMin = function (viewValue, field) {
             var min = $scope.getValidationCriteria(field, 0);
-            return MDSUtils.isEnabled(viewValue, field, min, 0)
+            return MDSUtils.isFieldValidationEnabled(viewValue, field, min, 0)
                 ? MDSUtils.validateMin(parseFloat(viewValue), parseFloat(min))
                 : false;
         };
@@ -3116,7 +3116,7 @@
         */
         $scope.checkInSet = function (viewValue, field) {
             var inset = $scope.getValidationCriteria(field, 2);
-            return MDSUtils.isEnabled(viewValue, field, inset, 2)
+            return MDSUtils.isFieldValidationEnabled(viewValue, field, inset, 2)
                 ? MDSUtils.validateInSet(viewValue, inset)
                 : false;
         };
@@ -3447,7 +3447,7 @@
             $scope.relatedMode.isNested = true;
             var relatedClass  = $scope.getRelatedClass(field);
             $scope.editedField = angular.copy(field);
-            $('ng-form[name=' + field.name + '_field_name] #new-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
+            $('ng-form[name=' + field.name + '] #new-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
             $scope.editedInstanceId = undefined;
             $('body > #new-related_' + field.id).on('hide.bs.modal', function () {
                 $scope.relatedMode.isNested = false;
@@ -3534,7 +3534,7 @@
             $scope.relatedMode.isNested = true;
             instanceId = parseInt(instanceId, 10);
             $scope.editedInstanceId = instanceId;
-            $('ng-form[name=' + field.name + '_field_name] #edit-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
+            $('ng-form[name=' + field.name + '] #edit-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
             var addedNewRecords,
                 editExisting = true,
                 setExisting = function () {
@@ -4313,11 +4313,11 @@
         };
 
         $scope.isMapField = function(field) {
-            return (field && field.type && field.type.typeClass === "java.util.Map") ? true : false;
+            return field && field.type && field.type.typeClass === "java.util.Map";
         };
 
         $scope.isComboboxField = function(field) {
-             return (field && field.type && field.type.typeClass === "java.util.Collection") ? true : false;
+             return field && field.type && field.type.typeClass === "java.util.Collection";
         };
 
         $scope.isMultiSelectCombobox = function(field) {
@@ -5430,7 +5430,7 @@
         * after clicking on button 'Collapse All'.
         */
         $scope.collapseAll = function (tableName) {
-            MDSUtils.collapseOrExpandAll($scope, tableName, true);
+            MDSUtils.collapseOrExpandAllEntities($scope, tableName, true);
         };
 
         /**
@@ -5438,7 +5438,7 @@
         * after clicking on button 'Expand All'.
         */
         $scope.expandAll = function (tableName) {
-            MDSUtils.collapseOrExpandAll($scope, tableName, false);
+            MDSUtils.collapseOrExpandAllEntities($scope, tableName, false);
         };
     });
 }());

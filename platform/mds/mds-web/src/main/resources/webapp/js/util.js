@@ -203,7 +203,7 @@
                };
             },
             
-            moveItems : function($scope, index) {
+            moveItemsInSchemaList : function($scope, index) {
                 var tmp;
                 tmp = $scope.browsingDisplayed[index];
                 $scope.browsingDisplayed[index] = $scope.browsingDisplayed[index - 1];
@@ -234,7 +234,7 @@
                         });
             },
             
-            canMoveUpOrDown : function($scope, isDown) {
+            canMoveUpOrDownInSettingsView : function($scope, isDown) {
                 var items = $('.target-item.browsing'),
                             wasLastSelected = true,
                             ret = false;
@@ -255,7 +255,7 @@
                 return ret;
             },
             
-            isEnabled : function(viewValue, field, criterion, criterionNum) {
+            isFieldValidationEnabled : function(viewValue, field, criterion, criterionNum) {
                 var enabled = false;
                 if (field.validation !== null && criterion !== '' && (field.validation.criteria[criterionNum].enabled && viewValue !== null && viewValue !== undefined && viewValue !== '')) {
                     enabled = true;
@@ -263,7 +263,7 @@
                 return enabled;
             },
             
-            collapseOrExpandAll : function($scope, tableName, toCollapse) {
+            collapseOrExpandAllEntities : function($scope, tableName, toCollapse) {
                 var i, modulesLength;
 
                 if (tableName !== 'export-module') {
