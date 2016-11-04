@@ -30,7 +30,20 @@ public class MotechUsersDao {
      */
     @Transactional
     public MotechUser findByUserName(String userName) {
-        return null == userName ? null : dataService.findByUserName(userName.toLowerCase());
+        MotechUser retrievedUser = null;
+
+        if (userName != null) {
+
+            // MOTECH-3023 fix
+            // Datanucleus sometimes isn't reading user roles properly. If this bug occurs
+            // roles will be read separately as detached object.
+            retrievedUser = dataService.findByUserName(userName.toLowerCase());
+
+            if (retrievedUser != null && retrievedUser.getRoles() == null) {
+                retrievedUser.setRoles((List<String>) dataService.getDetachedField(retrievedUser, "roles"));
+            }
+        }
+        return retrievedUser;
     }
 
     /**
