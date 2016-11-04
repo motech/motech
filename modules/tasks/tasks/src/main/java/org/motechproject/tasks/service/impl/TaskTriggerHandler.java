@@ -69,7 +69,7 @@ public class TaskTriggerHandler implements TriggerHandler {
 
     private Map<String, DataProvider> dataProviders;
 
-    private boolean isHandled;
+    private List<Long> handledTasksId;
 
     @PostConstruct
     public void init() {
@@ -120,55 +120,55 @@ public class TaskTriggerHandler implements TriggerHandler {
     @Override
     @Transactional
     public void handle(MotechEvent event) {
-        if (!getIsHandled()) {
-            setIsHandled(true);
+        LOGGER.info("Handling the motech event with subject: {}", event.getSubject());
 
-            LOGGER.info("Handling the motech event with subject: {}", event.getSubject());
+        // Look for custom event parser
+        Map<String, Object> eventParams = event.getParameters();
+        eventParams.putAll(event.getMetadata());
 
-            // Look for custom event parser
-            Map<String, Object> eventParams = event.getParameters();
-            eventParams.putAll(event.getMetadata());
+        TasksEventParser parser = null;
+        if (eventParams != null) {
+            parser = taskService.findCustomParser((String) eventParams.get(TasksEventParser.CUSTOM_PARSER_EVENT_KEY));
+        }
 
-            TasksEventParser parser = null;
-            if (eventParams != null) {
-                parser = taskService.findCustomParser((String) eventParams.get(TasksEventParser.CUSTOM_PARSER_EVENT_KEY));
-            }
+        // Use custom event parser, if it exists, to modify event
+        String triggerSubject = parser == null ? event.getSubject() : parser.parseEventSubject(event.getSubject(), eventParams);
+        Map<String, Object> parameters = parser == null ? eventParams : parser.parseEventParameters(event.getSubject(), eventParams);
 
-            // Use custom event parser, if it exists, to modify event
-            String triggerSubject = parser == null ? event.getSubject() : parser.parseEventSubject(event.getSubject(), eventParams);
-            Map<String, Object> parameters = parser == null ? eventParams : parser.parseEventParameters(event.getSubject(), eventParams);
+        List<Task> tasks = taskService.findActiveTasksForTriggerSubject(triggerSubject);
 
-            List<Task> tasks = taskService.findActiveTasksForTriggerSubject(triggerSubject);
+        // Handle all tasks one by one
+        for (Task task : tasks) {
+            if (!isTaskHandled(task) ) {
+                addTaskHandled(task);
 
-            // Handle all tasks one by one
-            for (Task task : tasks) {
                 handleTask(task, parameters, false);
-            }
 
-            setIsHandled(false);
+                deleteTaskHandled(task);
+            }
         }
     }
 
     @Override
     @Transactional
     public void handleRetry(MotechEvent event) {
-        if (!getIsHandled()) {
-            setIsHandled(true);
+        LOGGER.info("Handling the motech event with subject: {} for task retry", event.getSubject());
 
-            LOGGER.info("Handling the motech event with subject: {} for task retry", event.getSubject());
+        Map<String, Object> eventParams = event.getParameters();
+        Map<String, Object> eventMetadata = event.getMetadata();
 
-            Map<String, Object> eventParams = event.getParameters();
-            Map<String, Object> eventMetadata = event.getMetadata();
+        Task task = taskService.getTask((Long) eventMetadata.get(TASK_ID));
 
-            Task task = taskService.getTask((Long) eventMetadata.get(TASK_ID));
+        if (task == null || !task.isEnabled()) {
+            taskRetryHandler.unscheduleTaskRetry((String) eventMetadata.get(JOB_SUBJECT));
+        } else {
+            if (!isTaskHandled(task)) {
+                addTaskHandled(task);
 
-            if (task == null || !task.isEnabled()) {
-                taskRetryHandler.unscheduleTaskRetry((String) eventMetadata.get(JOB_SUBJECT));
-            } else {
                 handleTask(task, eventParams, true);
-            }
 
-            setIsHandled(false);
+                deleteTaskHandled(task);
+            }
         }
     }
 
@@ -253,11 +253,27 @@ public class TaskTriggerHandler implements TriggerHandler {
         this.executor.setBundleContext(bundleContext);
     }
 
-    public void setIsHandled(boolean isHandled) {
-        this.isHandled = isHandled;
+    public void addTaskHandled(Task task) {
+        this.handledTasksId.add(task.getId());
     }
 
-    public boolean getIsHandled() {
-        return isHandled;
+    public void deleteTaskHandled(Task task) {
+        this.handledTasksId.remove(task.getId());
+    }
+
+    public boolean isTaskHandled(Task task) {
+        boolean handled = false;
+
+        if(this.handledTasksId == null) {
+            this.handledTasksId = new ArrayList<>();
+        }
+
+        for (Long handledTaskId : this.handledTasksId) {
+            if (handledTaskId.equals(task.getId())) {
+                handled = true;
+                break;
+            }
+        }
+        return handled;
     }
 }
