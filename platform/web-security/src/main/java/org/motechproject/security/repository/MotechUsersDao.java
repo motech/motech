@@ -30,7 +30,17 @@ public class MotechUsersDao {
      */
     @Transactional
     public MotechUser findByUserName(String userName) {
-        return null == userName ? null : dataService.detachedCopy(dataService.findByUserName(userName.toLowerCase()));
+        if (userName == null) {
+            return null;
+        }
+
+        MotechUser retrievedUser = dataService.findByUserName(userName.toLowerCase());
+
+        if (retrievedUser != null && retrievedUser.getRoles() == null) {
+            return findByUserName(userName);
+        }
+
+        return retrievedUser;
     }
 
     /**
