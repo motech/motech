@@ -37,7 +37,7 @@ public class MotechUsersDao {
         MotechUser retrievedUser = dataService.findByUserName(userName.toLowerCase());
 
         if (retrievedUser != null && retrievedUser.getRoles() == null) {
-            return findByUserName(userName);
+            retrievedUser.setRoles((List<String>) dataService.getDetachedField(retrievedUser, "roles"));
         }
 
         return retrievedUser;
