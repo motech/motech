@@ -30,8 +30,10 @@ import javax.annotation.PreDestroy;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.motechproject.tasks.constants.EventDataKeys.JOB_SUBJECT;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_ID;
@@ -68,6 +70,8 @@ public class TaskTriggerHandler implements TriggerHandler {
     private TasksPostExecutionHandler postExecutionHandler;
 
     private Map<String, DataProvider> dataProviders;
+
+    private Set<Long> handledTasksId = new HashSet<>();
 
     @PostConstruct
     public void init() {
@@ -137,7 +141,7 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         // Handle all tasks one by one
         for (Task task : tasks) {
-            handleTask(task, parameters, false);
+            checkAndHandleTask(task, parameters, false);
         }
     }
 
@@ -154,7 +158,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         if (task == null || !task.isEnabled()) {
             taskRetryHandler.unscheduleTaskRetry((String) eventMetadata.get(JOB_SUBJECT));
         } else {
-            handleTask(task, eventParams, false);
+            checkAndHandleTask(task, eventParams, true);
         }
     }
 
@@ -201,6 +205,25 @@ public class TaskTriggerHandler implements TriggerHandler {
         }
     }
 
+    /**
+     * Checks if the given task is still running. If not the task will be handled.
+     *
+     * @param task the given task.
+     * @param eventParameters parameters from the given event
+     * @param isRetry true if handler is for task retry system; false otherwise
+     */
+    private void checkAndHandleTask(Task task, Map<String, Object> eventParameters, boolean isRetry) {
+        if (!isTaskHandled(task) ) { //Checks
+            addTaskHandled(task);
+
+            handleTask(task, eventParameters, isRetry);
+
+            deleteTaskHandled(task);
+        } else {
+            LOGGER.warn("The task {} didn't execute, because the previous invocation is still running.", task.getName());
+        }
+    }
+
     @Override
     public void addDataProvider(DataProvider provider) {
         if (dataProviders == null) {
@@ -232,6 +255,24 @@ public class TaskTriggerHandler implements TriggerHandler {
         metadata.put(EventDataKeys.TASK_RETRY, isRetry);
 
         return metadata;
+    }
+
+    private void addTaskHandled(Task task) {
+        this.handledTasksId.add(task.getId());
+    }
+
+    private void deleteTaskHandled(Task task) {
+        this.handledTasksId.remove(task.getId());
+    }
+
+    private boolean isTaskHandled(Task task) {
+        boolean handled = false;
+
+        if (this.handledTasksId.contains(task.getId())) {
+            handled = true;
+        }
+
+        return handled;
     }
 
     @Autowired
