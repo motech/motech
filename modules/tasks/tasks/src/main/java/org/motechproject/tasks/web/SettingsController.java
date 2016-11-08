@@ -53,9 +53,8 @@ public class SettingsController {
     @RequestMapping(value = "/settings", method = RequestMethod.POST)
     public void saveSettings(@RequestBody SettingsDto settings) {
         String taskPossibleErrors = settings.getTaskPossibleErrors();
-        OutputStream os = new ByteArrayOutputStream();
 
-        try {
+        try(OutputStream os = new ByteArrayOutputStream()) {
             settings.getTaskRetriesProps().store(os, "TaskRetries");
 
             if (settings.isValid()) {

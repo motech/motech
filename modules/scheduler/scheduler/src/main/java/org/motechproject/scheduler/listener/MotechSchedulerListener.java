@@ -23,6 +23,7 @@ public class MotechSchedulerListener {
 
     private static final String JOB_SUBJECT = "jobSubject";
     private static final String JOB_START = "jobStart";
+    private static final String JOB_ID = "JobID";
 
     private MotechSchedulerService schedulerService;
 
@@ -38,6 +39,7 @@ public class MotechSchedulerListener {
 
         String jobSubject = (String) metadata.get(JOB_SUBJECT);
         Integer jobStart = (Integer) metadata.get(JOB_START);
+        parameters.put(JOB_ID, null);
 
         MotechEvent jobEvent = new MotechEvent(jobSubject, parameters, null, metadata);
 

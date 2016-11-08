@@ -186,29 +186,20 @@ public class TasksPostExecutionHandler {
 
 
     private void getRetriesFromSettings(Task task, Map<String, Object> params, Map<String, Object> metadata) {
-        Map<String, String> taskRetries = new HashMap<>();
         List<Integer> retryInterval = new ArrayList<>();
         int numberOfRetries;
 
-        try {
-            InputStream retries = settings.getRawConfig(TASK_PROPERTIES_FILE_NAME);
-
+        try (InputStream retries = settings.getRawConfig(TASK_PROPERTIES_FILE_NAME)){
             if(retries != null) {
                 Properties props = new Properties();
                 props.load(retries);
-                if (props != null) {
-                    for (Map.Entry<Object, Object> entry : props.entrySet()) {
-                        taskRetries.put((String) entry.getKey(), (String) entry.getValue());
-                        retryInterval.add(0, Integer.valueOf(entry.getValue().toString()));
-                    }
+                for (Map.Entry<Object, Object> entry : props.entrySet()) {
+                    retryInterval.add(0, Integer.valueOf(entry.getValue().toString()));
                 }
-                numberOfRetries = taskRetries.size();
+                numberOfRetries = retryInterval.size();
+                retries.close();
             } else {
                 numberOfRetries = 0;
-            }
-
-            if (retries != null) {
-                retries.close();
             }
         } catch (IOException e) {
             throw new MotechException("Error loading raw file config to properties", e);

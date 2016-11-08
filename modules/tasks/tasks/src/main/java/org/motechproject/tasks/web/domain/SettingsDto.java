@@ -52,23 +52,16 @@ public class SettingsDto {
     public SettingsDto getProperties(SettingsDto dto, SettingsFacade settingsFacade) {
         dto.setTaskPossibleErrors(settingsFacade.getProperty(TASK_POSSIBLE_ERRORS));
 
-        try {
-            InputStream retries = settingsFacade.getRawConfig(TASK_PROPERTIES_FILE_NAME);
-
+        try (InputStream retries = settingsFacade.getRawConfig(TASK_PROPERTIES_FILE_NAME)){
             if(retries != null) {
                 Properties props = new Properties();
                 props.load(retries);
-                if (props != null) {
-                    for (Map.Entry<Object, Object> entry : props.entrySet()) {
+                for (Map.Entry<Object, Object> entry : props.entrySet()) {
                         dto.taskRetries.put((String) entry.getKey(), (String) entry.getValue());
-                    }
                 }
+                retries.close();
             } else {
                 dto.taskRetries = new HashMap<String, String>();
-            }
-
-            if (retries != null) {
-                retries.close();
             }
         } catch (IOException e) {
             throw new MotechException("Error loading raw file config to properties", e);

@@ -26,7 +26,6 @@ import java.util.Map;
 public class MotechScheduledJob implements Job {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechScheduledJob.class);
-    private static final String HANDLE_RETRY = "mds.crud.websecurity.MotechPermission.CREATE.handleRetry-null-runonce";
 
     /**
      * Executes the job called by Quartz.
@@ -43,9 +42,6 @@ public class MotechScheduledJob implements Job {
             JobDetail jobDetail = jobExecutionContext.getJobDetail();
             JobDataMap jobDataMap = jobDetail.getJobDataMap();
             String jobId = jobDetail.getKey().getName();
-            if(jobId.contains(HANDLE_RETRY)) {
-                jobId = HANDLE_RETRY;
-            }
             String eventType = jobDataMap.getString(SchedulerConstants.EVENT_TYPE_KEY_NAME);
             Map<String, Object> params = jobDataMap.getWrappedMap();
             params.remove(SchedulerConstants.EVENT_TYPE_KEY_NAME);

@@ -158,7 +158,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         if (task == null || !task.isEnabled()) {
             taskRetryHandler.unscheduleTaskRetry((String) eventMetadata.get(JOB_SUBJECT));
         } else {
-            checkAndHandleTask(task, eventParams, true);
+            checkAndHandleTask(task, eventParams, false);
         }
     }
 
