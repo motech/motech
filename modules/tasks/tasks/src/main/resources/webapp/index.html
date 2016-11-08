@@ -5,6 +5,7 @@
             <li><a role="menu" ui-sref="tasks.dashboard">{{msg('task.tab')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'dashboard'" ng-class="{'active': selectedTabState.selectedTab === 'dashboard'}">{{msg('task.tab')}} list</li>
             <li ng-show="selectedTabState.selectedTab === 'settings'" ng-class="{'active': selectedTabState.selectedTab === 'settings'}">{{msg('task.tab.settings')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'history'" ng-class="{'active': selectedTabState.selectedTab === 'history'}">{{msg('task.tab.history')}}</li>
             <li ng-show="selectedTabState.selectedTab === 'new'" ng-class="{'active': selectedTabState.selectedTab === 'new'}">{{msg('task.new')}}</li>
         </ul>
     </div>

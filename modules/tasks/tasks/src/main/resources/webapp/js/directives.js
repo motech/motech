@@ -19,7 +19,7 @@
                 }
 
                 var elem = angular.element(element), k, rows, activity, message, date, stackTraceElement, fields, messageToShow,
-                activityId, url, taskId;
+                activityId, url, taskId, taskExists;
 
                 if (scope.taskId) {
                     url = '../tasks/api/activity/' + scope.taskId;
@@ -105,9 +105,12 @@
                             $(this).find('table').width('100%');
                         });
                         rows = $("#taskHistoryTable").getDataIDs();
+                        scope.failedTasks = [];
+                        scope.failedActivitiesWithTaskId = {};
                         for (k = 0; k < rows.length; k+=1) {
                             activity = $("#taskHistoryTable").getCell(rows[k],"activityType").toLowerCase();
                             message = $("#taskHistoryTable").getCell(rows[k],"message");
+                            taskId = parseInt($("#taskHistoryTable").getCell(rows[k], "task"), 10);
                             if (activity !== undefined) {
                                 if (activity === 'success') {
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-icon fa icon-green fa-check-circle fa-2x"></div>','ok',{ },'');
@@ -124,7 +127,10 @@
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'retry',
                                         '&nbsp;&nbsp;<span type="button" class="btn btn-primary btn-xs grid-ng-clickable" ng-click="retryTask(' + activityId + ')">Retry</span>',
                                         'ok',{ },'');
-                                    scope.failedTasks.push(activityId);
+                                    if (!scope.doesTaskExist(taskId)) {
+                                        scope.failedActivitiesWithTaskId[activityId] = taskId;
+                                        scope.failedTasks.push(activityId);
+                                    }
                                 }
                             }
 
@@ -140,9 +146,7 @@
                             } else if (message !== undefined) {
                                 $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',scope.msg(messageToShow),'ok',{ },'');
                             }
-
-                            taskId = $("#taskHistoryTable").getCell(rows[k], "task");
-                            $("#taskHistoryTable").jqGrid('setCell', rows[k], 'task', scope.getTaskNameFromId(parseInt(taskId, 10)));
+                            $("#taskHistoryTable").jqGrid('setCell', rows[k], 'task', scope.getTaskNameFromId(taskId));
                         }
                     },
                     loadComplete: function() {

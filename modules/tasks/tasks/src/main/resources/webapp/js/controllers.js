@@ -1189,7 +1189,7 @@
 
     controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http,
                             ModalFactory, LoadingModal, BootstrapDialogManager) {
-        var data, task, allTasks, i, selectedTaskId, url;
+        var data, task, allTasks, i, selectedTaskId, url, keys;
 
         $scope.taskId = $stateParams.taskId;
         $scope.activityTypes = ['All', 'In progress', 'Success', 'Warning', 'Error'];
@@ -1210,6 +1210,7 @@
             for (i = 0; i < allTasks.length; i += 1) {
                 $scope.allTaskTypes.push(allTasks[i].name);
             }
+            $("#taskHistoryTable").trigger('reloadGrid');
         });
 
         if ($stateParams.taskId) {
@@ -1243,19 +1244,33 @@
         }
 
         $scope.getSelectedTaskId = function () {
-            if ($scope.selectedTaskType !== 'All') {
-                $scope.selectedTaskId = $.grep(allTasks, function (task) {
-                    return task.name === $scope.selectedTaskType;
-                })[0].id;
-            } else {
-                $scope.selectedTaskId = false;
+            if (allTasks.$resolved) {
+                if ($scope.selectedTaskType !== 'All') {
+                    $scope.selectedTaskId = $.grep(allTasks, function (task) {
+                        return task.name === $scope.selectedTaskType;
+                    })[0].id;
+                } else {
+                    $scope.selectedTaskId = false;
+                }
             }
         };
 
+        $scope.doesTaskExist = function (taskId) {
+            keys = Object.keys($scope.failedActivitiesWithTaskId);
+            for(i = 0; i < keys.length; i += 1) {
+                if ($scope.failedActivitiesWithTaskId[keys[i]] === taskId) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
         $scope.getTaskNameFromId = function (id) {
-            return $.grep(allTasks, function (task) {
-                return task.id === id;
-            })[0].name;
+            if (allTasks.$resolved) {
+                return $.grep(allTasks, function (task) {
+                    return task.id === id;
+                })[0].name;
+            }
         };
 
         $scope.retryFailedTasks = function () {
