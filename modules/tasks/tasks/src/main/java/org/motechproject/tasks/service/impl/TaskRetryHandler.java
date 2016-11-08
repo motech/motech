@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.motechproject.tasks.constants.EventDataKeys.JOB_START;
 import static org.motechproject.tasks.constants.EventDataKeys.JOB_SUBJECT;
-import static org.motechproject.tasks.constants.EventDataKeys.REPEAT_COUNT;
-import static org.motechproject.tasks.constants.EventDataKeys.REPEAT_INTERVAL_TIME;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_ID;
+import static org.motechproject.tasks.constants.EventDataKeys.TASK_RETRY_NUMBER;
 import static org.motechproject.tasks.constants.EventSubjects.SCHEDULE_REPEATING_JOB;
 import static org.motechproject.tasks.constants.EventSubjects.UNSCHEDULE_REPEATING_JOB;
 
@@ -41,7 +41,7 @@ public class TaskRetryHandler {
      * @param retryScheduled whether the tak retry is currently scheduled
      */
     public void handleTaskRetries(Task task, Map<String, Object> parameters, boolean success, boolean retryScheduled) {
-        if (task.retryTaskOnFailure()) {
+        if (task.isRetryTaskOnFailure()) {
             if (success && retryScheduled) {
                 LOGGER.info("Unscheduling the task retries, due to successful execution.");
                 unscheduleTaskRetry(task.getTrigger().getEffectiveListenerRetrySubject());
@@ -71,9 +71,9 @@ public class TaskRetryHandler {
         eventParameters.putAll(parameters);
         Map<String, Object> metadata = new HashMap<>();
         metadata.put(TASK_ID, task.getId());
-        metadata.put(REPEAT_COUNT, task.getNumberOfRetries());
-        metadata.put(REPEAT_INTERVAL_TIME, task.getRetryIntervalInMilliseconds() / 1000);
+        metadata.put(JOB_START, task.getRetryIntervalInMilliseconds() / 1000);
         metadata.put(JOB_SUBJECT, task.getTrigger().getEffectiveListenerRetrySubject());
+        metadata.put(TASK_RETRY_NUMBER, parameters.get(TASK_RETRY_NUMBER));
 
         eventRelay.sendEventMessage(new MotechEvent(SCHEDULE_REPEATING_JOB, eventParameters, null, metadata));
     }

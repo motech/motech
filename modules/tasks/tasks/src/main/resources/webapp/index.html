@@ -5,6 +5,7 @@
             <li><a role="menu" ui-sref="tasks.dashboard">{{msg('task.tab')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'dashboard'" ng-class="{'active': selectedTabState.selectedTab === 'dashboard'}">{{msg('task.tab')}} list</li>
             <li ng-show="selectedTabState.selectedTab === 'settings'" ng-class="{'active': selectedTabState.selectedTab === 'settings'}">{{msg('task.tab.settings')}}</li>
+            <li ng-show="selectedTabState.selectedTab === 'history'" ng-class="{'active': selectedTabState.selectedTab === 'history'}">{{msg('task.tab.history')}}</li>
             <li ng-show="selectedTabState.selectedTab === 'new'" ng-class="{'active': selectedTabState.selectedTab === 'new'}">{{msg('task.new')}}</li>
         </ul>
     </div>
@@ -12,6 +13,7 @@
         <ul id="content-tabs" class="nav nav-tabs tasks ">
             <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'dashboard'"><a id="tab-tasks-dashboard" ui-sref="tasks.dashboard">{{msg('task.tab')}}</a></li>
             <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'settings'"><a id="tab-tasks-settings" ui-sref="tasks.settings">{{msg('task.tab.settings')}}</a></li>
+            <li ui-sref-active="active" ng-click="selectedTabState.selectedTab = 'history'"><a id="tab-tasks-history" ui-sref="tasks.history">{{msg('task.tab.history')}}</a></li>
         </ul>
     </div>
     <div class="ui-layout-content">

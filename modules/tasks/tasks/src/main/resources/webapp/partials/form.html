@@ -1,14 +1,6 @@
 <div class="row create-edit-task" data-ng-cloak>
-    <h4 ng-hide="task.id" class="frame-title"><span ng-bind="msg('task.section.newTask')"></span>
-        <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-danger btn-in-frame-header pull-right"><i class="fa fa-times"></i></a>
-        <button ng-hide="showBubbles" type="button" class="btn btn-sm btn-in-frame-header btn-success btn-show-hide-bubbles" ng-click="showOrHideBubbles()">{{msg('task.section.showBubbles')}}</button>
-        <button ng-show="showBubbles" type="button" class="btn btn-sm btn-in-frame-header btn-danger btn-show-hide-bubbles" ng-click="showOrHideBubbles()">{{msg('task.section.hideBubbles')}}</button>
-    </h4>
-    <h4 ng-show="task.id" class="frame-title"><span ng-bind="msg('task.section.editTask')"></span>
-        <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="fa fa-level-up"></i></a>
-        <button ng-hide="showBubbles" type="button" class="btn btn-sm btn-in-frame-header btn-success btn-show-hide-bubbles" ng-click="showOrHideBubbles()">{{msg('task.section.showBubbles')}}</button>
-        <button ng-show="showBubbles" type="button" class="btn btn-sm btn-in-frame-header btn-danger btn-show-hide-bubbles" ng-click="showOrHideBubbles()">{{msg('task.section.hideBubbles')}}</button>
-    </h4>
+    <h4 ng-hide="task.id" class="frame-title"><span ng-bind="msg('task.section.newTask')"></span> <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-danger btn-in-frame-header pull-right"><i class="fa fa-times"></i></a></h4>
+    <h4 ng-show="task.id" class="frame-title"><span ng-bind="msg('task.section.editTask')"></span> <a href="#/tasks/dashboard" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="fa fa-level-up"></i></a></h4>
     <div ng-show="task.validationErrors.length" class="inside ng-cloak">
         <div class="alert alert-block alert-danger">
             <strong>{{msg('task.header.taskErrors')}}:</strong>
@@ -28,6 +20,11 @@
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" ng-model="debugging" ng-change="changeCheckbox(debugging)"> {{msg('task.bubbles.rawSyntax')}}
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="toggleBubbles" ng-change="showOrHideBubbles()"> {{msg('task.section.hideBubbles')}}
                             </label>
                         </div>
                     </span>
@@ -68,21 +65,34 @@
                     </div>
                 </div>
 
-                <div class="inside-0" ng-if="task.retryTaskOnFailure">
-                    <div class="form-group ng-cloak" ng-class="{'has-error': !isNumericalNonNegativeValue(task.numberOfRetries)}">
-                        <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.numberOfRetries')}}</label>
+                <!------------------ SET TIME WINDOW ------------------>
+                <div class="inside-0">
+                    <div class="form-group ng-cloak">
+                        <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.useTimeWindow')}}</label>
                         <div class="col-md-10 col-sm-9">
-                            <input class="form-control" type='text' ng-model='task.numberOfRetries' id="task.numberOfRetries">
+                            <div class="checkbox">
+                                <input type="checkbox" ng-model="task.useTimeWindow"/>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="inside-0" ng-if="task.retryTaskOnFailure">
-                    <div class="form-group ng-cloak" ng-class="{'has-error': !isNumericalNonNegativeValue(task.retryIntervalInSeconds)}">
-                        <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.retryInterval')}}</label>
+                <div class="inside-0" ng-if="task.useTimeWindow">
+                    <div class="form-group ng-cloak" ng-class="{'has-error': !isTimeFormat(startTime)}">
+                        <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.startTime')}}</label>
                         <div class="col-md-10 col-sm-9">
-                            <input class="form-control" type='text' ng-model='task.retryIntervalInSeconds' id="task.retryIntervalInSeconds"
-                                   placeholder="{{msg('task.retryIntervalPlaceholder')}}">
+                            <input class="form-control" type='text' ng-model='startTime' start-time-picker id="startTime"
+                                   placeholder="{{msg('task.timeFormatPlaceholder')}}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="inside-0" ng-if="task.useTimeWindow">
+                    <div class="form-group ng-cloak" ng-class="{'has-error': !isTimeFormat(endTime)}">
+                        <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.endTime')}}</label>
+                        <div class="col-md-10 col-sm-9">
+                            <input class="form-control" type='text' ng-model='endTime' end-time-picker id="endTime"
+                                   placeholder="{{msg('task.timeFormatPlaceholder')}}">
                         </div>
                     </div>
                 </div>

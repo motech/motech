@@ -1,5 +1,6 @@
 package org.motechproject.tasks.web;
 
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.SettingsFacade;
 import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.web.domain.SettingsDto;
@@ -13,7 +14,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import static org.motechproject.tasks.web.domain.SettingsDto.TASK_POSSIBLE_ERRORS;
+import static org.motechproject.tasks.web.domain.SettingsDto.TASK_PROPERTIES_FILE_NAME;
 
 /**
  * Controller for managing Tasks module settings.
@@ -21,8 +27,6 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 @PreAuthorize(TasksRoles.HAS_ROLE_MANAGE_TASKS)
 @Controller
 public class SettingsController {
-
-    private static final String TASK_POSSIBLE_ERRORS = "task.possible.errors";
 
     @Autowired
     private SettingsFacade settingsFacade;
@@ -36,7 +40,7 @@ public class SettingsController {
     @ResponseBody
     public SettingsDto getSettings() {
         SettingsDto dto = new SettingsDto();
-        dto.setTaskPossibleErrors(getPropertyValue(TASK_POSSIBLE_ERRORS));
+        dto.getProperties(dto, settingsFacade);
         return dto;
     }
 
@@ -48,16 +52,20 @@ public class SettingsController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings", method = RequestMethod.POST)
     public void saveSettings(@RequestBody SettingsDto settings) {
-        if (settings.isValid()) {
-            settingsFacade.setProperty(TASK_POSSIBLE_ERRORS, settings.getTaskPossibleErrors());
-        } else {
-            throw new IllegalArgumentException("Settings are not valid");
-        }
-    }
+        String taskPossibleErrors = settings.getTaskPossibleErrors();
 
-    private String getPropertyValue(final String propertyKey) {
-        String propertyValue = settingsFacade.getProperty(propertyKey);
-        return isNotBlank(propertyValue) ? propertyValue : null;
+        try(OutputStream os = new ByteArrayOutputStream()) {
+            settings.getTaskRetriesProps().store(os, "TaskRetries");
+
+            if (settings.isValid()) {
+                settingsFacade.setProperty(TASK_POSSIBLE_ERRORS, taskPossibleErrors);
+                settingsFacade.saveRawConfig(TASK_PROPERTIES_FILE_NAME, new String(os.toString()));
+            } else {
+                throw new IllegalArgumentException("Settings are not valid");
+            }
+        } catch (IOException e) {
+            throw new MotechException("Error parsing task retries", e);
+        }
     }
 
 }

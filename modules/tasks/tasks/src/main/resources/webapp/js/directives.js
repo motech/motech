@@ -19,15 +19,27 @@
                 }
 
                 var elem = angular.element(element), k, rows, activity, message, date, stackTraceElement, fields, messageToShow,
-                activityId;
+                activityId, url, taskId, taskExists;
+
+                if (scope.taskId) {
+                    url = '../tasks/api/activity/' + scope.taskId;
+                } else {
+                    url = '../tasks/api/activity/all';
+                }
 
                 elem.jqGrid({
-                    url: '../tasks/api/activity/' + scope.taskId,
+                    url: url,
                     datatype: 'json',
                     jsonReader:{
                         repeatitems:false
                     },
                     colModel: [{
+                        name: 'task',
+                        index: 'task',
+                        sortable: false,
+                        width: 25,
+                        align: 'center'
+                    }, {
                         name: 'date',
                         formatter: function (value) {
                             return moment(parseInt(value, 10)).fromNow();
@@ -46,7 +58,7 @@
                         name: 'message',
                         index: 'message',
                         sortable: false,
-                        width: 180
+                        width: 155
                     }, {
                         name: 'retry',
                         index: 'retry',
@@ -72,6 +84,7 @@
                     pager: '#' + attrs.taskHistoryGrid,
                     viewrecords: true,
                     gridComplete: function () {
+                        elem.jqGrid('setLabel', 'task', scope.msg('task.subsection.taskName'));
                         elem.jqGrid('setLabel', 'date', scope.msg('task.subsection.information'));
                         elem.jqGrid('setLabel', 'activityType', scope.msg('task.subsection.status'));
                         elem.jqGrid('setLabel', 'message', scope.msg('task.subsection.message'));
@@ -92,9 +105,12 @@
                             $(this).find('table').width('100%');
                         });
                         rows = $("#taskHistoryTable").getDataIDs();
+                        scope.failedTasks = [];
+                        scope.failedActivitiesWithTaskId = {};
                         for (k = 0; k < rows.length; k+=1) {
                             activity = $("#taskHistoryTable").getCell(rows[k],"activityType").toLowerCase();
                             message = $("#taskHistoryTable").getCell(rows[k],"message");
+                            taskId = parseInt($("#taskHistoryTable").getCell(rows[k], "task"), 10);
                             if (activity !== undefined) {
                                 if (activity === 'success') {
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'activityType','<div class="recent-activity-icon fa icon-green fa-check-circle fa-2x"></div>','ok',{ },'');
@@ -111,6 +127,10 @@
                                     $("#taskHistoryTable").jqGrid('setCell',rows[k],'retry',
                                         '&nbsp;&nbsp;<span type="button" class="btn btn-primary btn-xs grid-ng-clickable" ng-click="retryTask(' + activityId + ')">Retry</span>',
                                         'ok',{ },'');
+                                    if (!scope.doesTaskExist(taskId)) {
+                                        scope.failedActivitiesWithTaskId[activityId] = taskId;
+                                        scope.failedTasks.push(activityId);
+                                    }
                                 }
                             }
 
@@ -126,6 +146,7 @@
                             } else if (message !== undefined) {
                                 $("#taskHistoryTable").jqGrid('setCell',rows[k],'message',scope.msg(messageToShow),'ok',{ },'');
                             }
+                            $("#taskHistoryTable").jqGrid('setCell', rows[k], 'task', scope.getTaskNameFromId(taskId));
                         }
                     },
                     loadComplete: function() {
@@ -724,7 +745,7 @@
                         parsedValue = parsedValue.concat(str);
                     });
 
-                    if (parsedValue && parsedValue !== scope.data.value) {
+                    if (parsedValue && parsedValue !== scope.data.value && scope.data.type !== 'MAP') {
                         scope.data.value = parsedValue;
                     }
                 };
@@ -1275,6 +1296,50 @@
             };
         });
 
+        directives.directive('startTimePicker', function() {
+            return {
+                restrict: 'A',
+                require : 'ngModel',
+                link : function (scope, element, attrs, ngModelCtrl) {
+                    $(function() {
+                        element.timepicker({
+                            showTimezone: true,
+                            useLocalTimezone: true,
+                            timeFormat: 'HH:mm z',
+                            onSelect: function (time) {
+                                ngModelCtrl.$setViewValue(time);
+                                scope.$apply(function() {
+                                    scope.$parent.startTime = time.toString();
+                                });
+                            }
+                        });
+                    });
+                }
+            };
+        });
+
+        directives.directive('endTimePicker', function() {
+            return {
+                restrict: 'A',
+                require : 'ngModel',
+                link : function (scope, element, attrs, ngModelCtrl) {
+                    $(function() {
+                        element.timepicker({
+                            showTimezone: true,
+                            useLocalTimezone: true,
+                            timeFormat: 'HH:mm z',
+                            onSelect: function (time) {
+                                ngModelCtrl.$setViewValue(time);
+                                scope.$apply(function() {
+                                    scope.$parent.endTime = time.toString();
+                                });
+                            }
+                        });
+                    });
+                }
+            };
+        });
+
     directives.directive('helpPopover', function($compile, $http) {
         return function(scope, element, attrs) {
             var msgScope = scope;
@@ -1682,7 +1747,6 @@
                         cssClass: 'btn btn-primary',
                         action: function (dialogItself) {
                             LoadingModal.open();
-
                             $('#importTaskForm').ajaxSubmit({
                                 success: function () {
                                     scope.getTasks();

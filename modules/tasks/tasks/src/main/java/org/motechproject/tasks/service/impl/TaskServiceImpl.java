@@ -6,7 +6,10 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
 import org.motechproject.commons.api.TasksEventParser;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListener;
@@ -14,16 +17,16 @@ import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.osgi.web.util.WebBundleUtil;
+import org.motechproject.tasks.compatibility.TaskMigrationManager;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.Channel;
-import org.motechproject.tasks.compatibility.TaskMigrationManager;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.domain.mds.task.DataSource;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
 import org.motechproject.tasks.domain.mds.task.TaskError;
 import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
-import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 import org.motechproject.tasks.exception.CustomParserNotFoundException;
 import org.motechproject.tasks.exception.TaskNameAlreadyExistsException;
@@ -126,6 +129,10 @@ public class TaskServiceImpl implements TaskService {
             task.setValidationErrors(null);
         }
 
+        if(!checkTimeWindowInTask(task)) {
+            task.setEnabled(false);
+        }
+
         addOrUpdate(task);
         registerHandler(task);
         LOGGER.info("Saved task: {} with ID: {}", task.getName(), task.getId());
@@ -192,7 +199,8 @@ public class TaskServiceImpl implements TaskService {
                 public List<Task> execute(Query query, InstanceSecurityRestriction restriction) {
                     String byTriggerSubject = "trigger.subject == param";
                     String isTaskActive = "enabled == true";
-                    String filter = String.format("(%s) && (%s)", isTaskActive, byTriggerSubject);
+                    String isUsingTimeWindow = "useTimeWindow == true";
+                    String filter = String.format("((%s) || (%s)) && (%s)", isTaskActive, isUsingTimeWindow, byTriggerSubject);
 
                     query.setFilter(filter);
                     query.declareParameters("java.lang.String param");
@@ -203,7 +211,7 @@ public class TaskServiceImpl implements TaskService {
             });
             if (enabledTasks != null) {
                 checkChannelAvailableInTasks(enabledTasks);
-                list = new ArrayList<>(enabledTasks);
+                list = checkTimeWindowInTasks(enabledTasks);
                 CollectionUtils.filter(list, tasksWithRegisteredChannel());
             }
         }
@@ -584,8 +592,12 @@ public class TaskServiceImpl implements TaskService {
             existing.setTrigger(task.getTrigger());
             existing.setName(task.getName());
             existing.setValidationErrors(task.getValidationErrors());
+            existing.setRetryTaskOnFailure(task.isRetryTaskOnFailure());
             existing.setNumberOfRetries(task.getNumberOfRetries());
             existing.setRetryIntervalInMilliseconds(task.getRetryIntervalInMilliseconds());
+            existing.setUseTimeWindow(task.isUsingTimeWindow());
+            existing.setStartTime(task.getStartTime());
+            existing.setEndTime(task.getEndTime());
 
             checkChannelAvailableInTask(existing);
 
@@ -608,7 +620,7 @@ public class TaskServiceImpl implements TaskService {
             TriggerHandler triggerHandler = bundleContext.getService(serviceReference);
             triggerHandler.registerHandlerFor(task.getTrigger().getEffectiveListenerSubject());
 
-            if (task.retryTaskOnFailure()) {
+            if (task.isRetryTaskOnFailure()) {
                 triggerHandler.registerHandlerFor(task.getTrigger().getEffectiveListenerRetrySubject(), true);
             }
         }
@@ -639,6 +651,43 @@ public class TaskServiceImpl implements TaskService {
                 }
             }
         }
+    }
+
+    private List<Task> checkTimeWindowInTasks(List<Task> tasks) {
+        List<Task> checked = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(tasks)) {
+            for (Task task : tasks) {
+                if (checkTimeWindowInTask(task)) {
+                    if (!task.isEnabled()) {
+                        task.setEnabled(true);
+                        addOrUpdate(task);
+                    }
+                    checked.add(task);
+                } else {
+                    if (task.isEnabled()) {
+                        task.setEnabled(false);
+                        addOrUpdate(task);
+                    }
+                }
+            }
+        }
+        return checked;
+    }
+
+    private boolean checkTimeWindowInTask(Task task) {
+        if (task.isUsingTimeWindow()) {
+            if (task.getStartTime() == null || task.getEndTime() == null) {
+                return false;
+            }
+            Time now = new Time(new LocalTime(DateTimeZone.UTC));
+            if (task.getStartTime().isBefore(task.getEndTime())) {
+                return now.isBetween(task.getStartTime(), task.getEndTime());
+            } else {
+                return now.isBetween(task.getStartTime(), new Time(24, 0)) ||
+                        now.isBetween(new Time(LocalTime.MIDNIGHT), task.getEndTime());
+            }
+        }
+        return true;
     }
 
     @Autowired

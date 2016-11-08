@@ -2,8 +2,11 @@ package org.motechproject.commons.date.model;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.Serializable;
 
@@ -47,21 +50,32 @@ public class Time implements Comparable<Time>, Serializable {
      * Constructor.
      *
      * @param timeStr  the time represented as {@code String}
-     * @throws IllegalArgumentException if {@code timeStr} doesn't match "HH:MM" pattern
+     * @throws IllegalArgumentException if {@code timeStr} doesn't match "HH:MM" or "HH:MM Z" pattern
      */
     public Time(String timeStr) {
-        String[] tokens = timeStr.split(":");
+        if (isTimeContainsZone(timeStr)) {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("HH:mm Z");
+            DateTime localTime = DateTime.parse(timeStr, dateTimeFormatter).withZone(DateTimeZone.UTC);
+            this.hour = localTime.getHourOfDay();
+            this.minute = localTime.getMinuteOfHour();
+        } else {
+            String[] tokens = timeStr.split(":");
 
-        if (tokens.length < TIME_TOKEN_MIN_LENGTH || tokens.length > TIME_TOKEN_MAX_LENGTH) {
-            throw new IllegalArgumentException("Invalid time string: " + timeStr);
-        }
+            if (tokens.length < TIME_TOKEN_MIN_LENGTH || tokens.length > TIME_TOKEN_MAX_LENGTH) {
+                throw new IllegalArgumentException("Invalid time string: " + timeStr);
+            }
 
-        try {
-            this.hour = Integer.parseInt(tokens[0]);
-            this.minute = Integer.parseInt(tokens[1]);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid time string: " + timeStr, e);
+            try {
+                this.hour = Integer.parseInt(tokens[0]);
+                this.minute = Integer.parseInt(tokens[1]);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid time string: " + timeStr, e);
+            }
         }
+    }
+
+    private boolean isTimeContainsZone(String timeStr) {
+        return timeStr.length() == 11;
     }
 
     /**
@@ -213,6 +227,37 @@ public class Time implements Comparable<Time>, Serializable {
      */
     public boolean isAfter(Time other) {
         return compareTo(other) > 0;
+    }
+
+    /**
+     * Checks whether this is before the given time.
+     *
+     * @param other  the {@code Time} to be compared with this object
+     * @return true if this time is before or equal to other, false otherwise
+     */
+    public boolean isBeforeOrEqual(Time other) {
+        return compareTo(other) <= 0;
+    }
+
+    /**
+     * Checks whether this is after the given time.
+     *
+     * @param other  the {@code Time} to be compared with this object
+     * @return true if this time is after or equal to other, false otherwise
+     */
+    public boolean isAfterOrEqual(Time other) {
+        return compareTo(other) >= 0;
+    }
+
+    /**
+     * Checks whether this is before the given time.
+     *
+     * @param start  the {@code Time} to be compared with this object
+     * @param end  the {@code Time} to be compared with this object
+     * @return true if this time is between start and end (inclusive), false otherwise
+     */
+    public boolean isBetween(Time start, Time end) {
+        return isAfterOrEqual(start) && isBeforeOrEqual(end);
     }
 
     /**

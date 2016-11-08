@@ -33,6 +33,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.tasks.constants.EventSubjects.createHandlerFailureSubject;
 import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
+import static org.motechproject.tasks.web.domain.SettingsDto.TASK_PROPERTIES_FILE_NAME;
 
 public class TasksPostExecutionHandlerTest extends TasksTestBase {
 
@@ -109,6 +110,8 @@ public class TasksPostExecutionHandlerTest extends TasksTestBase {
         setActionEvent();
         setTaskActivities();
         task.setFailuresInRow(taskActivities.size());
+
+        when(settingsFacade.getRawConfig(TASK_PROPERTIES_FILE_NAME)).thenReturn(TASK_RETRIES);
 
         assertTrue(task.isEnabled());
         postExecutionHandler.handleError(createEventParameters(), new HashMap<>(), task, taskHandlerException, TASK_ACTIVITY_ID);

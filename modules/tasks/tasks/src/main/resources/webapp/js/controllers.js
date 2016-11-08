@@ -274,8 +274,11 @@
             }
         };
         $scope.task.retryTaskOnFailure = false;
+        $scope.task.useTimeWindow = false;
         $scope.taskStepNumber = 0;
         $scope.debugging = false;
+        $scope.startTime = "";
+        $scope.endTime = "";
 
         $scope.changeCheckbox = function (debugging) {
             $scope.debugging = debugging;
@@ -302,18 +305,15 @@
                         steps: []
                     }
                 };
-                $scope.task.retryTaskOnFailure = false;
             } else {
                 LoadingModal.open();
                 $scope.task = Tasks.get({ taskId: $stateParams.taskId }, function () {
                     Triggers.getTrigger($scope.task.trigger, function(trigger) {
                         var triggerChannel, dataSource, object, actionStep, actionIndex = 0, actionFilterIndex = 0, filtersToDelete = [], actionSteps= [], actionFilters = [];
 
-                        if ($scope.task.numberOfRetries > 0) {
-                           $scope.task.retryTaskOnFailure = true;
-                           $scope.task.retryIntervalInSeconds = $scope.task.retryIntervalInMilliseconds / 1000;
-                        } else {
-                           $scope.task.retryTaskOnFailure = false;
+                        if ($scope.task.useTimeWindow === true) {
+                           $scope.startTime = $scope.task.startTime + " +0000";
+                           $scope.endTime = $scope.task.endTime + " +0000";
                         }
 
                         triggerChannel = $scope.util.find({
@@ -434,20 +434,23 @@
         });
 
         $scope.isTaskValid = function() {
-            // Retry task on failure inputs validation - only numerical non negative values
-            var retryTaskOnFailureValidation;
-            if ($scope.task.retryTaskOnFailure) {
-                retryTaskOnFailureValidation = $scope.isNumericalNonNegativeValue($scope.task.numberOfRetries)
-                && $scope.isNumericalNonNegativeValue($scope.task.retryIntervalInSeconds);
+            var useTimeWindowValidation;
+            if($scope.task.useTimeWindow) {
+                useTimeWindowValidation = $scope.isTimeFormat($scope.startTime)
+                && $scope.isTimeFormat($scope.endTime);
             } else {
-                retryTaskOnFailureValidation = true;
+                useTimeWindowValidation = true;
             }
 
-            return $scope.task.name && retryTaskOnFailureValidation;
+            return $scope.task.name && useTimeWindowValidation;
         };
 
         $scope.isNumericalNonNegativeValue = function (value) {
             return !isNaN(value) && value >= 0;
+        };
+
+        $scope.isTimeFormat = function (value) {
+            return value.length === 11;
         };
 
         $scope.removeTrigger = function ($event) {
@@ -1038,14 +1041,12 @@
                 });
             });
 
-            if (!$scope.task.retryTaskOnFailure) {
-                // If the retryTaskOnFailure flag is set on false, we set the following properties to undefined.
-                // The default values will be set for them in the backend.
-                $scope.task.numberOfRetries = undefined;
-                $scope.task.retryIntervalInMilliseconds = undefined;
+            if (!$scope.task.useTimeWindow) {
+                $scope.task.startTime = undefined;
+                $scope.task.endTime = undefined;
             } else {
-                // Convert given value from UI in seconds to milliseconds
-                $scope.task.retryIntervalInMilliseconds = $scope.task.retryIntervalInSeconds * 1000;
+                $scope.task.startTime = $scope.startTime;
+                $scope.task.endTime = $scope.endTime;
             }
 
             LoadingModal.open();
@@ -1188,13 +1189,16 @@
 
     controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http,
                             ModalFactory, LoadingModal, BootstrapDialogManager) {
-        var data, task;
+        var data, task, allTasks, i, selectedTaskId, url, keys;
 
         $scope.taskId = $stateParams.taskId;
         $scope.activityTypes = ['All', 'In progress', 'Success', 'Warning', 'Error'];
         $scope.stackTraceEl = [];
+        $scope.allTaskTypes = ['All'];
+        $scope.failedTasks = [];
 
         $scope.selectedActivityType = 'All';
+        $scope.selectedTaskType = 'All';
 
         innerLayout({
             spacing_closed: 30,
@@ -1202,7 +1206,14 @@
             east__maxSize: 350
         });
 
-        if ($stateParams.taskId !== undefined) {
+        allTasks = Tasks.query(function () {
+            for (i = 0; i < allTasks.length; i += 1) {
+                $scope.allTaskTypes.push(allTasks[i].name);
+            }
+            $("#taskHistoryTable").trigger('reloadGrid');
+        });
+
+        if ($stateParams.taskId) {
             data = { taskId: $scope.taskId };
 
             task = Tasks.get(data, function () {
@@ -1231,6 +1242,64 @@
                 $('#inner-center').trigger("change");
             });
         }
+
+        $scope.getSelectedTaskId = function () {
+            if (allTasks.$resolved) {
+                if ($scope.selectedTaskType !== 'All') {
+                    $scope.selectedTaskId = $.grep(allTasks, function (task) {
+                        return task.name === $scope.selectedTaskType;
+                    })[0].id;
+                } else {
+                    $scope.selectedTaskId = false;
+                }
+            }
+        };
+
+        $scope.doesTaskExist = function (taskId) {
+            keys = Object.keys($scope.failedActivitiesWithTaskId);
+            for(i = 0; i < keys.length; i += 1) {
+                if ($scope.failedActivitiesWithTaskId[keys[i]] === taskId) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        $scope.getTaskNameFromId = function (id) {
+            if (allTasks.$resolved) {
+                return $.grep(allTasks, function (task) {
+                    return task.id === id;
+                })[0].name;
+            }
+        };
+
+        $scope.retryFailedTasks = function () {
+            $http.post('../tasks/api/activity/retryMultiple', $scope.failedTasks)
+                 .success(function () {
+                      ModalFactory.showSuccessAlert('task.retryMultiple.info', 'task.retryMultiple.header');
+                 })
+                 .error(function() {
+                      ModalFactory.showErrorAlert('task.retryMultiple.failed', 'task.retryMultiple.header');
+                 });
+        };
+
+        $scope.filterHistory = function () {
+            if ($scope.selectedTaskId) {
+                url = '../tasks/api/activity/' + $scope.selectedTaskId;
+            } else {
+                url = '../tasks/api/activity/all';
+            }
+
+            $('#taskHistoryTable').jqGrid('setGridParam', {
+                url: url,
+                page: 1,
+                postData: {
+                    activityType: ($scope.selectedActivityType === 'All') ? '' : $scope.selectedActivityType.toUpperCase().replace(/ /g, "_"),
+                    dateTimeFrom: $('#dateTimeFrom').val() ? $('#dateTimeFrom').val() : null,
+                    dateTimeTo: $('#dateTimeTo').val() ? $('#dateTimeTo').val() : null
+                }
+            }).trigger('reloadGrid');
+        };
 
         $scope.changeActivityTypeFilter = function () {
             $('#taskHistoryTable').jqGrid('setGridParam', {
@@ -1293,6 +1362,10 @@
     controllers.controller('TasksSettingsCtrl', function ($scope, Settings, ModalFactory) {
         $scope.settings = Settings.get();
 
+        $scope.retry = {
+            value: undefined
+        };
+
         innerLayout({
             spacing_closed: 30,
             east__minSize: 200,
@@ -1305,6 +1378,24 @@
             }, function() {
                 ModalFactory.showErrorAlert('task.settings.error.saved', 'server.error');
             });
+        };
+
+        $scope.addTaskRetry = function(retry) {
+            var number = $scope.getRetryNumber();
+            $scope.settings.taskRetries[number.toString()] = retry.value;
+            $scope.retry = {};
+        };
+
+        $scope.removeTaskRetry = function(name) {
+            delete $scope.settings.taskRetries[name];
+        };
+
+        $scope.getRetryNumber = function() {
+            var key,parts, number = 0;
+            for (key in $scope.settings.taskRetries) {
+                number = parseInt(key, 10);
+            }
+            return number + 1;
         };
 
         $scope.cssClass = function(prop) {
@@ -1589,4 +1680,5 @@
             BootstrapDialogManager.open($scope.importDialog);
         };
     });
+
 }());

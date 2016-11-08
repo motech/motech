@@ -2,6 +2,7 @@ package org.motechproject.tasks.service.impl;
 
 import org.joda.time.LocalDate;
 import org.motechproject.commons.api.TasksEventParser;
+import org.motechproject.config.SettingsFacade;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
 import org.motechproject.tasks.domain.mds.channel.ActionParameter;
@@ -15,6 +16,8 @@ import org.motechproject.tasks.domain.mds.task.TaskActivity;
 import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 import org.motechproject.tasks.service.SampleTasksEventParser;
 
+import java.io.InputStream;
+import java.io.StringBufferInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,13 +39,16 @@ public abstract class TasksTestBase {
     protected static final String ACTION_SUBJECT = "SEND_SMS";
     protected static final String TASK_DATA_PROVIDER_NAME = "12345L";
     protected static final Long TASK_ACTIVITY_ID = 11L;
+    protected static final InputStream TASK_RETRIES = new StringBufferInputStream("#TaskRetries\n#Wed Oct 26 08:44:12 CEST 2016\n2=20\n1=10");;
 
     protected Task task;
+    protected SettingsFacade settingsFacade;
     protected List<Task> tasks = new ArrayList<>(1);
 
     protected List<TaskActivity> taskActivities;
     protected TriggerEvent triggerEvent;
     protected ActionEvent actionEvent;
+    protected Map<String, String> taskRetries;
 
     protected void initTask() throws Exception {
         Map<String, String> actionValues = new HashMap<>();

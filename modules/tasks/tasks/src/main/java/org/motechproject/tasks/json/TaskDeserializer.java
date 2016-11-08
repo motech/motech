@@ -10,6 +10,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
 import org.codehaus.jackson.type.JavaType;
 import org.joda.time.DateTime;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 import org.motechproject.tasks.domain.mds.task.TaskConfig;
@@ -53,6 +54,8 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
         JavaType longType = typeFactory.constructType(Long.class);
         JavaType intType = typeFactory.constructType(Integer.class);
         JavaType dateTime = typeFactory.constructType(DateTime.class);
+        JavaType booleanType = typeFactory.constructType(boolean.class);
+        JavaType timeType = typeFactory.constructType(Time.class);
 
         setProperty("id", longType);
         setProperty("owner", stringType);
@@ -68,6 +71,10 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
         setProperty("trigger", typeFactory.constructType(TaskTriggerInformation.class));
         setProperty("numberOfRetries", intType);
         setProperty("retryIntervalInMilliseconds", intType);
+        setProperty("retryTaskOnFailure", stringType);
+        setProperty("useTimeWindow", booleanType);
+        setProperty("startTime", timeType);
+        setProperty("endTime", timeType);
 
         setProperty(
                 "validationErrors",

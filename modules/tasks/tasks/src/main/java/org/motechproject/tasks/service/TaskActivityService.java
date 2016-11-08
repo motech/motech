@@ -1,5 +1,7 @@
 package org.motechproject.tasks.service;
 
+import org.joda.time.DateTime;
+import org.motechproject.commons.api.Range;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
@@ -96,6 +98,25 @@ public interface TaskActivityService {
     List<TaskActivity> getLatestActivities();
 
     /**
+     * Returns all the activities as a list.
+     *
+     * @param activityTypeSet the type of activities
+     * @param queryParams query parameters to use while retrieving
+     * @return the list of all activities
+     */
+    List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams);
+
+    /**
+     * Returns all the activities as a list.
+     *
+     * @param activityTypes the type of activities
+     * @param dateRange the date range
+     * @param queryParams query parameters to use while retrieving
+     * @return the list of all activities
+     */
+    List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange,
+                                               QueryParams queryParams);
+    /**
      * Returns list of all activities for task with the given ID.
      *
      * @param taskId  the task ID, null returns null
@@ -104,6 +125,18 @@ public interface TaskActivityService {
      * @return  the list of all activities for task with given ID
      */
     List<TaskActivity> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypeSet, QueryParams queryParams);
+
+    /**
+     * Returns list of all activities for task with the given ID, of specific activity type and the given date range.
+     *
+     * @param taskId  the task ID, null returns null
+     * @param activityTypeSet the type of activities
+     * @param dateRange the range of datetime
+     * @param queryParams query parameters to use while retrieving
+     * @return  the list of all activities for task with given ID
+     */
+    List<TaskActivity> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypeSet, Range<DateTime> dateRange,
+                                         QueryParams queryParams);
 
     /**
      * Returns the count of all activities for the given task, of the specified type.
@@ -122,4 +155,31 @@ public interface TaskActivityService {
      * @return the count of matching activities
      */
     long getTaskActivitiesCount(Long taskId, TaskActivityType type);
+
+    /**
+     * Returns the count of all activities for the given task, of the specified type and the given date range.
+     *
+     * @param taskId the task ID
+     * @param activityTypes the type of activities to include in count
+     * @param dateRange the range of datetime
+     * @return the count of matching activities
+     */
+    long getTaskActivitiesCount(Long taskId, Set<TaskActivityType> activityTypes, Range<DateTime> dateRange);
+
+    /**
+     * Returns the count of all activities.
+     *
+     * @param activityTypes the type of activities to include in count
+     * @return the count of matching activities
+     */
+    long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes);
+
+    /**
+     * Returns the count of all activities.
+     *
+     * @param activityTypes the type of activities to include in count
+     * @param dateRange the date range
+     * @return the count of matching activities
+     */
+    long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange);
 }
