@@ -63,7 +63,6 @@ public class SettingsController {
             } else {
                 throw new IllegalArgumentException("Settings are not valid");
             }
-            os.close();
         } catch (IOException e) {
             throw new MotechException("Error parsing task retries", e);
         }

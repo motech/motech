@@ -197,7 +197,6 @@ public class TasksPostExecutionHandler {
                     retryInterval.add(0, Integer.valueOf(entry.getValue().toString()));
                 }
                 numberOfRetries = retryInterval.size();
-                retries.close();
             } else {
                 numberOfRetries = 0;
             }

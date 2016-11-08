@@ -59,7 +59,6 @@ public class SettingsDto {
                 for (Map.Entry<Object, Object> entry : props.entrySet()) {
                         dto.taskRetries.put((String) entry.getKey(), (String) entry.getValue());
                 }
-                retries.close();
             } else {
                 dto.taskRetries = new HashMap<String, String>();
             }

@@ -39,6 +39,7 @@ public class MotechSchedulerListener {
 
         String jobSubject = (String) metadata.get(JOB_SUBJECT);
         Integer jobStart = (Integer) metadata.get(JOB_START);
+        //Reset jobID that is appended with each retry and becomes too long
         parameters.put(JOB_ID, null);
 
         MotechEvent jobEvent = new MotechEvent(jobSubject, parameters, null, metadata);
