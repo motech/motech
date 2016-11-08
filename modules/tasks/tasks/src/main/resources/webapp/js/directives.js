@@ -386,7 +386,7 @@
         }
         function readContent (element) {
             var container = $('<div></div>');
-            element.contents().each(function(){
+            element.contents().each(function() {
                 var field, ele = $(this);
                 if(this.tagName && this.tagName.toLowerCase() === 'field'){
                     if(ele.attr("boolean")){
@@ -395,6 +395,8 @@
                         field = ele.data('value');
                         container.append(formatField(field));
                     }
+                } else if (this.tagName && this.tagName.toLowerCase() === 'br') {
+                    container.append('\n');
                 } else if (!isTagForPlaceholder(this)) {
                     container.append(ele.text());
                 }
@@ -562,6 +564,23 @@
             }
         }
 
+        function addNewLine() {
+            var selection = window.getSelection(),
+                range = selection.getRangeAt(0),
+                brNode = document.createElement("br"),
+                textNode = document.createTextNode("\u00a0");
+
+            range.deleteContents();
+            range.insertNode(brNode);
+            range.collapse(false);
+            range.insertNode(textNode);
+            range.selectNodeContents(textNode);
+
+            selection.removeAllRanges();
+            selection.addRange(range);
+            return false;
+        }
+
         return {
             restrict: 'A',
             require: '?ngModel',
@@ -569,6 +588,7 @@
                 scope.debug = scope.$parent.debugging;
                 var eventResize,
                     items = [],
+                    fieldType = scope.data.type,
                     url = '../tasks/partials/widgets/autocomplete-fields.html';
                     scope.filteredItems = [];
                     scope.selPos = 0;
@@ -593,14 +613,6 @@
                     } else {
                         adjustText();
                         ngModel.$render();
-                    }
-                });
-
-                // Disallow enter key being pressed, except on certain data types
-                element.on('keypress', function (event) {
-                    var type = $(this).data('type');
-                    if (type !== 'TEXTAREA' && type !== 'MAP' && type !== 'LIST' && type !== 'PERIOD') {
-                        return event.which !== 13;
                     }
                 });
 
@@ -685,7 +697,29 @@
                         } else if (element.data('type') === 'BOOLEAN' && (str === 'true' || str === 'false')) {
                             element.append(makeBooleanFieldElement(str, scope));
                         } else {
-                            element.append(str);
+                            if (fieldType === 'TEXTAREA' && str.includes('\n')) {
+                                var stringValue = str, val;
+                                while (stringValue.includes('\n')) {
+                                    if(stringValue.indexOf('\n') === 0) {
+                                        stringValue = stringValue.substring(stringValue.indexOf('\n')+1);
+                                        val = stringValue.substring(0, stringValue.indexOf('\n'));
+                                        if (val === '') {
+                                            val = stringValue;
+                                        }
+                                        element.append('<br>');
+                                        element.append(val);
+                                        stringValue = stringValue.substring(val.length, stringValue.length);
+                                    } else if (stringValue.indexOf('\n') > 0) {
+                                        val = stringValue.substring(0, stringValue.indexOf('\n'));
+                                        element.append(val);
+                                        stringValue = stringValue.substring(stringValue.indexOf('\n'), stringValue.length);
+                                    } else {
+                                        element.append(stringValue);
+                                    }
+                                }
+                            } else {
+                                element.append(str);
+                            }
                         }
                         parsedValue = parsedValue.concat(str);
                     });
@@ -727,7 +761,7 @@
                         if (scope.selectedElement[0].contains(scope.rangySelection.anchorNode) && anchorValue) {
                             $(scope.rangySelection.anchorNode).before(
                                 anchorValue.substring(0, findStartIndex(anchorValue, scope.rangySelection.anchorOffset))
-                                + " " + prepareField(item, scope.debug) + " " + anchorValue.substring(scope.rangySelection.anchorOffset + 1)
+                                + " " + prepareField(item, scope.debug) + "&nbsp;" + anchorValue.substring(scope.rangySelection.anchorOffset + 1)
                             ).remove();
                         } else {
                             scope.selectedElement.append(prepareField(item, scope.debug));
@@ -749,6 +783,20 @@
                             if(scope.selPos > -1 && scope.filteredItems.length > 0) {
                                 stopPropagation(evt);
                                 scope.addItem(scope.filteredItems[scope.selPos]);
+                            } else {
+                                // Disallow enter key being pressed, except on certain data types
+                                if (fieldType !== 'TEXTAREA' && fieldType !== 'MAP' && fieldType !== 'LIST' && fieldType !== 'PERIOD') {
+                                        stopPropagation(evt);
+                                        return false;
+                                    } else {
+                                        if (fieldType === 'TEXTAREA') {
+                                            evt.preventDefault();
+                                            if (window.getSelection) {
+                                                addNewLine();
+                                            }
+
+                                        }
+                                    }
                             }
                             break;
                         case 8: // backspace
@@ -772,11 +820,13 @@
                         case 38: // up
                             if (scope.selPos > 0) {
                                 scope.selPos = scope.selPos - 1;
+                                stopPropagation(evt);
                             }
                             break;
                         case 40: // down
                             if (scope.selPos < scope.filteredItems.length-1) {
                                 scope.selPos = scope.selPos + 1;
+                                stopPropagation(evt);
                             }
                             break;
                         default:
