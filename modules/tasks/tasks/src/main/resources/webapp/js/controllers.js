@@ -305,19 +305,12 @@
                         steps: []
                     }
                 };
-                $scope.task.retryTaskOnFailure = false;
             } else {
                 LoadingModal.open();
                 $scope.task = Tasks.get({ taskId: $stateParams.taskId }, function () {
                     Triggers.getTrigger($scope.task.trigger, function(trigger) {
                         var triggerChannel, dataSource, object, actionStep, actionIndex = 0, actionFilterIndex = 0, filtersToDelete = [], actionSteps= [], actionFilters = [];
 
-                        if ($scope.task.numberOfRetries > 0) {
-                           $scope.task.retryTaskOnFailure = true;
-                           $scope.task.retryIntervalInSeconds = $scope.task.retryIntervalInMilliseconds / 1000;
-                        } else {
-                           $scope.task.retryTaskOnFailure = false;
-                        }
                         if ($scope.task.useTimeWindow === true) {
                            $scope.startTime = $scope.task.startTime + " +0000";
                            $scope.endTime = $scope.task.endTime + " +0000";
@@ -441,14 +434,7 @@
         });
 
         $scope.isTaskValid = function() {
-            // Retry task on failure inputs validation - only numerical non negative values
-            var retryTaskOnFailureValidation, useTimeWindowValidation;
-            if ($scope.task.retryTaskOnFailure) {
-                retryTaskOnFailureValidation = $scope.isNumericalNonNegativeValue($scope.task.numberOfRetries)
-                && $scope.isNumericalNonNegativeValue($scope.task.retryIntervalInSeconds);
-            } else {
-                retryTaskOnFailureValidation = true;
-            }
+            var useTimeWindowValidation;
             if($scope.task.useTimeWindow) {
                 useTimeWindowValidation = $scope.isTimeFormat($scope.startTime)
                 && $scope.isTimeFormat($scope.endTime);
@@ -456,7 +442,7 @@
                 useTimeWindowValidation = true;
             }
 
-            return $scope.task.name && retryTaskOnFailureValidation && useTimeWindowValidation;
+            return $scope.task.name && useTimeWindowValidation;
         };
 
         $scope.isNumericalNonNegativeValue = function (value) {
@@ -1055,15 +1041,6 @@
                 });
             });
 
-            if (!$scope.task.retryTaskOnFailure) {
-                // If the retryTaskOnFailure flag is set on false, we set the following properties to undefined.
-                // The default values will be set for them in the backend.
-                $scope.task.numberOfRetries = undefined;
-                $scope.task.retryIntervalInMilliseconds = undefined;
-            } else {
-                // Convert given value from UI in seconds to milliseconds
-                $scope.task.retryIntervalInMilliseconds = $scope.task.retryIntervalInSeconds * 1000;
-            }
             if (!$scope.task.useTimeWindow) {
                 $scope.task.startTime = undefined;
                 $scope.task.endTime = undefined;
@@ -1317,6 +1294,10 @@
     controllers.controller('TasksSettingsCtrl', function ($scope, Settings, ModalFactory) {
         $scope.settings = Settings.get();
 
+        $scope.retry = {
+            value: undefined
+        };
+
         innerLayout({
             spacing_closed: 30,
             east__minSize: 200,
@@ -1329,6 +1310,24 @@
             }, function() {
                 ModalFactory.showErrorAlert('task.settings.error.saved', 'server.error');
             });
+        };
+
+        $scope.addTaskRetry = function(retry) {
+            var number = $scope.getRetryNumber();
+            $scope.settings.taskRetries[number.toString()] = retry.value;
+            $scope.retry = {};
+        };
+
+        $scope.removeTaskRetry = function(name) {
+            delete $scope.settings.taskRetries[name];
+        };
+
+        $scope.getRetryNumber = function() {
+            var key,parts, number = 0;
+            for (key in $scope.settings.taskRetries) {
+                number = parseInt(key, 10);
+            }
+            return number + 1;
         };
 
         $scope.cssClass = function(prop) {

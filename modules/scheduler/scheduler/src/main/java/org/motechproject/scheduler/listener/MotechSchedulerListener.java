@@ -5,7 +5,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.scheduler.contract.JobId;
 import org.motechproject.scheduler.contract.RepeatingJobId;
-import org.motechproject.scheduler.contract.RepeatingSchedulableJob;
+import org.motechproject.scheduler.contract.RunOnceSchedulableJob;
 import org.motechproject.scheduler.service.MotechSchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,9 +21,9 @@ public class MotechSchedulerListener {
     private static final String SCHEDULE_REPEATING_JOB = "scheduleRepeatingJob";
     private static final String UNSCHEDULE_REPEATING_JOB = "unscheduleRepeatingJob";
 
-    private static final String REPEAT_COUNT = "repeatCount";
-    private static final String REPEAT_INTERVAL_TIME = "repeatIntervalInSeconds";
     private static final String JOB_SUBJECT = "jobSubject";
+    private static final String JOB_START = "jobStart";
+    private static final String JOB_ID = "JobID";
 
     private MotechSchedulerService schedulerService;
 
@@ -38,15 +38,15 @@ public class MotechSchedulerListener {
         Map<String, Object> metadata = event.getMetadata();
 
         String jobSubject = (String) metadata.get(JOB_SUBJECT);
-        Integer repeatCount = (Integer) metadata.get(REPEAT_COUNT);
-        Integer repeatIntervalInSeconds = (Integer) metadata.get(REPEAT_INTERVAL_TIME);
+        Integer jobStart = (Integer) metadata.get(JOB_START);
+        //Reset jobID that is appended with each retry and becomes too long
+        parameters.put(JOB_ID, null);
 
         MotechEvent jobEvent = new MotechEvent(jobSubject, parameters, null, metadata);
 
-        RepeatingSchedulableJob repeatingJob = new RepeatingSchedulableJob(jobEvent, repeatCount - 1, repeatIntervalInSeconds,
-                DateTime.now().plusSeconds(repeatIntervalInSeconds), null, false);
+        RunOnceSchedulableJob runOnceJob = new RunOnceSchedulableJob(jobEvent, DateTime.now().plusSeconds(jobStart));
 
-        schedulerService.scheduleRepeatingJob(repeatingJob);
+        schedulerService.scheduleRunOnceJob(runOnceJob);
     }
 
     /**

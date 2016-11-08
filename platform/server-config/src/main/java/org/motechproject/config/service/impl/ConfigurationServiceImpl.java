@@ -510,7 +510,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public InputStream getRawConfig(String bundle, String filename, Resource resource) throws IOException {
         if (ConfigSource.UI.equals(configSource)) {
             ModulePropertiesRecord rec = getBundlePropertiesRecord(bundle, filename);
-            if (rec.isRaw()) {
+            if (rec != null && rec.isRaw()) {
                 return IOUtils.toInputStream(rec.getProperties().get("rawData").toString());
             } else {
                 return null;

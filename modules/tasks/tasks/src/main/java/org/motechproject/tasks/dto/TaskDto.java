@@ -17,6 +17,7 @@ public class TaskDto {
     private boolean hasRegisteredChannel;
     private int numberOfRetries;
     private int retryIntervalInMilliseconds;
+    private boolean retryTaskOnFailure;
     private boolean useTimeWindow;
     private String startTime;
     private String endTime;
@@ -32,7 +33,7 @@ public class TaskDto {
 
     public TaskDto(Long id, String description, String name, int failuresInRow, List<TaskActionInformationDto> actions,
                    TaskTriggerInformationDto trigger, boolean enabled, Set<TaskErrorDto> validationErrors, TaskConfigDto taskConfig,
-                   boolean hasRegisteredChannel, int numberOfRetries, int retryIntervalInMilliseconds, boolean useTimeWindow, String startTime, String endTime) {
+                   boolean hasRegisteredChannel, int numberOfRetries, int retryIntervalInMilliseconds, boolean retryTaskOnFailure, boolean useTimeWindow, String startTime, String endTime) {
         this.id = id;
         this.description = description;
         this.name = name;
@@ -45,6 +46,7 @@ public class TaskDto {
         this.hasRegisteredChannel = hasRegisteredChannel;
         this.numberOfRetries = numberOfRetries;
         this.retryIntervalInMilliseconds = retryIntervalInMilliseconds;
+        this.retryTaskOnFailure = retryTaskOnFailure;
         this.useTimeWindow = useTimeWindow;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -104,6 +106,14 @@ public class TaskDto {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public void setRetryTaskOnFailure(boolean retryTaskOnFailure) {
+        this.retryTaskOnFailure = retryTaskOnFailure;
+    }
+
+    public boolean isRetryTaskOnFailure() {
+        return retryTaskOnFailure;
     }
 
     public Set<TaskErrorDto> getValidationErrors() {

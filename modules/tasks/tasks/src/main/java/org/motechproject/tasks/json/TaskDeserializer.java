@@ -71,6 +71,7 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
         setProperty("trigger", typeFactory.constructType(TaskTriggerInformation.class));
         setProperty("numberOfRetries", intType);
         setProperty("retryIntervalInMilliseconds", intType);
+        setProperty("retryTaskOnFailure", stringType);
         setProperty("useTimeWindow", booleanType);
         setProperty("startTime", timeType);
         setProperty("endTime", timeType);

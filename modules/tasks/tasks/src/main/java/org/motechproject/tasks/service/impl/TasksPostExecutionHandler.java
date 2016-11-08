@@ -2,6 +2,7 @@ package org.motechproject.tasks.service.impl;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.SettingsFacade;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
@@ -15,8 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.motechproject.tasks.constants.EventDataKeys.HANDLER_ERROR_PARAM;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_FAILURE_DATE;
@@ -27,6 +33,7 @@ import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_TASK_ID;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_TASK_NAME;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_TRIGGER_DISABLED;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_RETRY;
+import static org.motechproject.tasks.constants.EventDataKeys.TASK_RETRY_NUMBER;
 import static org.motechproject.tasks.constants.EventSubjects.createHandlerFailureSubject;
 import static org.motechproject.tasks.constants.EventSubjects.createHandlerSuccessSubject;
 
@@ -41,6 +48,7 @@ public class TasksPostExecutionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TasksPostExecutionHandler.class);
     private static final String TASK_POSSIBLE_ERRORS_KEY = "task.possible.errors";
+    private static final String TASK_PROPERTIES_FILE_NAME = "settings.properties";
 
     @Autowired
     private TaskService taskService;
@@ -124,7 +132,8 @@ public class TasksPostExecutionHandler {
                 errorEventParam
         ));
 
-        boolean retryScheduled = isRetryScheduled(metadata);
+        getRetriesFromSettings(task, params, metadata);
+        boolean retryScheduled = shouldScheduleRetry(metadata);
 
         retryHandler.handleTaskRetries(task, params, false, retryScheduled);
     }
@@ -140,7 +149,7 @@ public class TasksPostExecutionHandler {
                 params
         ));
 
-        boolean retryScheduled = isRetryScheduled(metadata);
+        boolean retryScheduled = shouldScheduleRetry(metadata);
 
         retryHandler.handleTaskRetries(task, params, true, retryScheduled);
     }
@@ -171,7 +180,43 @@ public class TasksPostExecutionHandler {
         return number;
     }
 
-    private boolean isRetryScheduled(Map<String, Object> metadata) {
+    private boolean shouldScheduleRetry(Map<String, Object> metadata) {
         return metadata.get(TASK_RETRY) != null && (boolean) metadata.get(TASK_RETRY);
     }
+
+
+    private void getRetriesFromSettings(Task task, Map<String, Object> params, Map<String, Object> metadata) {
+        List<Integer> retryInterval = new ArrayList<>();
+        int numberOfRetries;
+
+        try (InputStream retries = settings.getRawConfig(TASK_PROPERTIES_FILE_NAME)){
+            if(retries != null) {
+                Properties props = new Properties();
+                props.load(retries);
+                for (Map.Entry<Object, Object> entry : props.entrySet()) {
+                    retryInterval.add(0, Integer.valueOf(entry.getValue().toString()));
+                }
+                numberOfRetries = retryInterval.size();
+            } else {
+                numberOfRetries = 0;
+            }
+        } catch (IOException e) {
+            throw new MotechException("Error loading raw file config to properties", e);
+        }
+
+        setRetryParameters(task, metadata, params, retryInterval, numberOfRetries);
+    }
+
+    private void setRetryParameters(Task task,  Map<String, Object> metadata, Map<String, Object> params, List<Integer> retryInterval, int numberOfRetries)
+    {
+        int retryNumber = params.containsKey(TASK_RETRY_NUMBER) ? (Integer) params.get(TASK_RETRY_NUMBER) + 1 : 0;
+        params.put(TASK_RETRY_NUMBER, retryNumber);
+
+        if(retryNumber < numberOfRetries) {
+            task.setRetryIntervalInMilliseconds(retryInterval.get(retryNumber) * 1000);
+        } else {
+            metadata.put(TASK_RETRY, true);
+        }
+    }
+
 }

@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.config.SettingsFacade;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.tasks.constants.EventDataKeys;
@@ -30,6 +31,9 @@ public class TaskRetryHandlerTest extends TasksTestBase {
     @Mock
     private EventRelay eventRelay;
 
+    @Mock
+    private SettingsFacade settings;
+
     @InjectMocks
     private TaskRetryHandler taskRetryHandler = new TaskRetryHandler();
 
@@ -44,7 +48,7 @@ public class TaskRetryHandlerTest extends TasksTestBase {
         setTriggerEvent();
         setActionEvent();
 
-        task.setNumberOfRetries(5);
+        task.setRetryTaskOnFailure(true);
         task.setRetryIntervalInMilliseconds(5000);
 
         actionEvent.setServiceInterface("TestService");
@@ -62,9 +66,8 @@ public class TaskRetryHandlerTest extends TasksTestBase {
         assertEquals(SCHEDULE_REPEATING_JOB, scheduleJobEvent.getSubject());
 
         Map<String, Object> metadata = scheduleJobEvent.getMetadata();
-        assertEquals(5, metadata.get(EventDataKeys.REPEAT_COUNT));
-        // We send repeat interval time in seconds
-        assertEquals(5, metadata.get(EventDataKeys.REPEAT_INTERVAL_TIME));
+        // We send job start time in seconds
+        assertEquals(5, metadata.get(EventDataKeys.JOB_START));
         assertEquals(task.getId(), metadata.get(EventDataKeys.TASK_ID));
         assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), metadata.get(EventDataKeys.JOB_SUBJECT));
     }
@@ -96,8 +99,7 @@ public class TaskRetryHandlerTest extends TasksTestBase {
         setTriggerEvent();
         setActionEvent();
 
-        task.setNumberOfRetries(0);
-        task.setRetryIntervalInMilliseconds(0);
+        task.setRetryTaskOnFailure(true);
 
         actionEvent.setServiceInterface("TestService");
         actionEvent.setServiceMethod("abc");
@@ -106,7 +108,7 @@ public class TaskRetryHandlerTest extends TasksTestBase {
         when(taskService.getActionEventFor(task.getActions().get(0))).thenThrow(new RuntimeException());
 
         MotechEvent event = createEvent();
-        taskRetryHandler.handleTaskRetries(task, event.getParameters(), false, false);
+        taskRetryHandler.handleTaskRetries(task, event.getParameters(), false, true);
         // task number of retries is 0, we should not send schedule job event
         verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
     }
@@ -116,8 +118,7 @@ public class TaskRetryHandlerTest extends TasksTestBase {
         setTriggerEvent();
         setActionEvent();
 
-        task.setNumberOfRetries(5);
-        task.setRetryIntervalInMilliseconds(5000);
+        task.setRetryTaskOnFailure(true);
 
         actionEvent.setServiceInterface("TestService");
         actionEvent.setServiceMethod("abc");
@@ -139,4 +140,5 @@ public class TaskRetryHandlerTest extends TasksTestBase {
         Map<String, Object> metadata = scheduleJobEvent.getMetadata();
         assertEquals(task.getTrigger().getEffectiveListenerRetrySubject(), metadata.get(EventDataKeys.JOB_SUBJECT));
     }
+
 }
