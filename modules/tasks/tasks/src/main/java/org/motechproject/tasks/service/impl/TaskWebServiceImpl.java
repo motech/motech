@@ -1,5 +1,7 @@
 package org.motechproject.tasks.service.impl;
 
+import org.joda.time.DateTime;
+import org.motechproject.commons.api.Range;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.tasks.domain.mds.channel.Channel;
 import org.motechproject.tasks.domain.mds.task.Task;
@@ -54,8 +56,28 @@ public class TaskWebServiceImpl implements TaskWebService {
 
     @Override
     @Transactional
+    public List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams) {
+        return activityToDtos(taskActivityService.getAllActivities(activityTypeSet, queryParams));
+    }
+
+    @Override
+    @Transactional
+    public List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet,
+                                                  Range<DateTime> dateRange, QueryParams queryParams) {
+        return activityToDtos(taskActivityService.getAllActivities(activityTypeSet, dateRange, queryParams));
+    }
+
+    @Override
+    @Transactional
     public List<TaskActivityDto> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypeSet, QueryParams queryParams) {
         return activityToDtos(taskActivityService.getTaskActivities(taskId, activityTypeSet, queryParams));
+    }
+
+    @Override
+    @Transactional
+    public List<TaskActivityDto> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypeSet,
+                                                   Range<DateTime> dateRange, QueryParams queryParams) {
+        return activityToDtos(taskActivityService.getTaskActivities(taskId, activityTypeSet, dateRange, queryParams));
     }
 
     @Override

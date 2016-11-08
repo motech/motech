@@ -1,5 +1,7 @@
 package org.motechproject.tasks.web;
 
+import org.joda.time.DateTime;
+import org.motechproject.commons.api.Range;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.enums.TaskActivityType;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Set;
@@ -53,6 +56,34 @@ public class ActivityController {
     }
 
     /**
+     * Returns the list of all the task activities.
+     *
+     * @return the list of activities
+     */
+    @RequestMapping(value = "/activity/all", method = RequestMethod.GET)
+    @ResponseBody
+    public TaskActivityRecords getAllActivities(GridSettings settings) {
+        if (settings != null) {
+            QueryParams params = new QueryParams(settings.getPage(), settings.getRows(), new Order("date", Order.Direction.DESC));
+            Set<TaskActivityType> types = settings.getTypesFromString();
+            Range<DateTime> dateTimeRange = settings.convertToDateRange(settings.getDateTimeFrom(), settings.getDateTimeTo());
+            List<TaskActivityDto> activities;
+            long count;
+            if (dateTimeRange != null) {
+                activities = taskWebService.getAllActivities(types, dateTimeRange, params);
+                count = activityService.getAllTaskActivitiesCount(types, dateTimeRange);
+            } else {
+                activities = taskWebService.getAllActivities(types, params);
+                count = activityService.getAllTaskActivitiesCount(types);
+            }
+            int totalPages = (int) Math.ceil((double) count / settings.getRows());
+
+            return new TaskActivityRecords(settings.getPage(), totalPages, count, activities);
+        } else {
+            return null;
+        }
+    }
+    /**
      * Returns the list of activities for task with the given ID.
      *
      * @param taskId  the ID of the task
@@ -64,9 +95,16 @@ public class ActivityController {
         if (settings != null) {
             QueryParams params = new QueryParams(settings.getPage(), settings.getRows(), new Order("date", Order.Direction.DESC));
             Set<TaskActivityType> types = settings.getTypesFromString();
-
-            List<TaskActivityDto> activities = taskWebService.getTaskActivities(taskId, types, params);
-            long count = activityService.getTaskActivitiesCount(taskId, types);
+            Range<DateTime> dateTimeRange = settings.convertToDateRange(settings.getDateTimeFrom(), settings.getDateTimeTo());
+            List<TaskActivityDto> activities;
+            long count;
+            if (dateTimeRange != null) {
+                activities = taskWebService.getTaskActivities(taskId, types, dateTimeRange, params);
+                count = activityService.getTaskActivitiesCount(taskId, types, dateTimeRange);
+            } else {
+                activities = taskWebService.getTaskActivities(taskId, types, params);
+                count = activityService.getTaskActivitiesCount(taskId, types);
+            }
             int totalPages = (int) Math.ceil((double) count / settings.getRows());
 
             return new TaskActivityRecords(settings.getPage(), totalPages, count, activities);
@@ -118,5 +156,18 @@ public class ActivityController {
             }
         });
         retryThread.start();
+    }
+
+    /**
+     * Retries task execution for the given list of activities' ids.
+     *
+     * @param activityIds the list of activity ids that are to be retried
+     */
+    @RequestMapping(value = "/activity/retryMultiple", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void retryMultipleTasks(@RequestBody List<Long> activityIds) {
+        for (Long activityId : activityIds) {
+            retryTask(activityId);
+        }
     }
 }

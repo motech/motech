@@ -1,5 +1,7 @@
 package org.motechproject.tasks.service;
 
+import org.joda.time.DateTime;
+import org.motechproject.commons.api.Range;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.enums.TaskActivityType;
@@ -25,9 +27,25 @@ public interface TaskWebService {
     List<TaskActivityDto> getLatestActivities();
 
     /**
+     * @see TaskActivityService#getAllActivities(Set, QueryParams)
+     */
+    List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams);
+
+    /**
+     * @see TaskActivityService#getAllActivities(Set, Range, QueryParams)
+     */
+    List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet, Range<DateTime> dateRange, QueryParams queryParams);
+
+    /**
      * @see TaskActivityService#getTaskActivities(Long, Set, QueryParams)
      */
     List<TaskActivityDto> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypeSet, QueryParams queryParams);
+
+    /**
+     * @see TaskActivityService#getTaskActivities(Long, Set, Range, QueryParams)
+     */
+    List<TaskActivityDto> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypeSet, Range<DateTime> dateRange,
+                                            QueryParams queryParams);
 
     /**
      * @see ChannelService#getAllChannels()
