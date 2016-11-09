@@ -637,6 +637,14 @@
                     }
                 });
 
+                // Disallow enter key being pressed, except on certain data types
+                element.on('keypress', function (event) {
+                    var type = $(this).data('type');
+                    if (type !== 'TEXTAREA' && type !== 'MAP' && type !== 'LIST' && type !== 'PERIOD') {
+                        return event.which !== 13;
+                    }
+                });
+
                 scope.$on('debugging', function(event, args) {
                     scope.debug = args.debug;
                     scope.changeBubble(ngModel, element);
