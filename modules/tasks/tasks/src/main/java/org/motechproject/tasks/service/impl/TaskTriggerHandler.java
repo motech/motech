@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.motechproject.tasks.constants.EventDataKeys.JOB_SUBJECT;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_ID;
 import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
 import static org.motechproject.tasks.service.util.HandlerPredicates.withServiceName;
@@ -62,9 +61,6 @@ public class TaskTriggerHandler implements TriggerHandler {
 
     @Autowired
     private TaskActionExecutor executor;
-
-    @Autowired
-    private TaskRetryHandler taskRetryHandler;
 
     @Autowired
     private TasksPostExecutionHandler postExecutionHandler;
@@ -141,7 +137,7 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         // Handle all tasks one by one
         for (Task task : tasks) {
-            checkAndHandleTask(task, parameters, false);
+            checkAndHandleTask(task, parameters);
         }
     }
 
@@ -155,10 +151,8 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         Task task = taskService.getTask((Long) eventMetadata.get(TASK_ID));
 
-        if (task == null || !task.isEnabled()) {
-            taskRetryHandler.unscheduleTaskRetry((String) eventMetadata.get(JOB_SUBJECT));
-        } else {
-            checkAndHandleTask(task, eventParams, false);
+        if(task != null && task.isEnabled()) {
+            checkAndHandleTask(task, eventParams);
         }
     }
 
@@ -166,12 +160,12 @@ public class TaskTriggerHandler implements TriggerHandler {
     @Transactional
     public void retryTask(Long activityId) {
         TaskActivity activity = activityService.getTaskActivityById(activityId);
-        handleTask(taskService.getTask(activity.getTask()), activity.getParameters(), true);
+        handleTask(taskService.getTask(activity.getTask()), activity.getParameters());
     }
 
-    private void handleTask(Task task, Map<String, Object> parameters, boolean isRetry) {
+    private void handleTask(Task task, Map<String, Object> parameters) {
         long activityId = activityService.addTaskStarted(task, parameters);
-        Map<String, Object> metadata = prepareTaskMetadata(task.getId(), activityId, isRetry);
+        Map<String, Object> metadata = prepareTaskMetadata(task.getId(), activityId);
 
         TaskContext taskContext = new TaskContext(task, parameters, metadata, activityService);
         TaskInitializer initializer = new TaskInitializer(taskContext);
@@ -210,13 +204,12 @@ public class TaskTriggerHandler implements TriggerHandler {
      *
      * @param task the given task.
      * @param eventParameters parameters from the given event
-     * @param isRetry true if handler is for task retry system; false otherwise
      */
-    private void checkAndHandleTask(Task task, Map<String, Object> eventParameters, boolean isRetry) {
+    private void checkAndHandleTask(Task task, Map<String, Object> eventParameters) {
         if (!isTaskHandled(task) ) { //Checks
             addTaskHandled(task);
 
-            handleTask(task, eventParameters, isRetry);
+            handleTask(task, eventParameters);
 
             deleteTaskHandled(task);
         } else {
@@ -248,11 +241,10 @@ public class TaskTriggerHandler implements TriggerHandler {
         this.dataProviders = dataProviders;
     }
 
-    private Map<String, Object> prepareTaskMetadata(Long taskId, long activityId, Boolean isRetry) {
+    private Map<String, Object> prepareTaskMetadata(Long taskId, long activityId) {
         Map<String, Object> metadata = new HashMap<>();
         metadata.put(EventDataKeys.TASK_ID, taskId);
         metadata.put(EventDataKeys.TASK_ACTIVITY_ID, activityId);
-        metadata.put(EventDataKeys.TASK_RETRY, isRetry);
 
         return metadata;
     }
