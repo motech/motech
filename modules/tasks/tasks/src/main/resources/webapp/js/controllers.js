@@ -279,6 +279,7 @@
         $scope.debugging = false;
         $scope.startTime = "";
         $scope.endTime = "";
+        $scope.lastSelectedField = "";
 
         $scope.changeCheckbox = function (debugging) {
             $scope.debugging = debugging;
@@ -1185,6 +1186,32 @@
             return newArray;
         };
 
+        $(document).click(function (event) {
+            if ($(event.target).hasClass("field-bubble")) {
+                $scope.lastSelectedField = $(event.target).parent().data("value");
+                $scope.$apply();
+            }
+        });
+
+        $(document).ready(function() {
+            var ctrlDown = false, ctrlKey = 17, cmdKey = 91, cKey = 67;
+
+            $(document).keydown(function(event) {
+                if (event.keyCode === ctrlKey || event.keyCode === cmdKey) {
+                    ctrlDown = true;
+                }
+            }).keyup(function(event) {
+                if (event.keyCode === ctrlKey || event.keyCode === cmdKey) {
+                    ctrlDown = false;
+                }
+            });
+
+            $(document).keydown(function(event) {
+                if (ctrlDown && event.keyCode === cKey) {
+                    ManageTaskUtils.copyFieldKeyToClipboard($scope.lastSelectedField);
+                }
+            });
+        });
     });
 
     controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http,
