@@ -61,6 +61,15 @@
                         controller: 'TasksSettingsCtrl'
                     }
                 }
+            })
+            .state('tasks.history', {
+                url: '/history',
+                views: {
+                    'tasksview': {
+                        templateUrl: '../tasks/partials/tasks-history.html',
+                        controller: 'TasksLogCtrl'
+                    }
+                }
             });
     });
 }());

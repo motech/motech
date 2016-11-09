@@ -1,6 +1,10 @@
 package org.motechproject.tasks.web;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.motechproject.commons.api.Range;
+import org.joda.time.DateTime;
 import org.motechproject.tasks.domain.enums.TaskActivityType;
 
 import java.util.Arrays;
@@ -27,6 +31,43 @@ public class GridSettings {
      */
     private String activityType;
 
+    /**
+     * From date to search for.
+     */
+    private String dateTimeFrom;
+
+    /**
+     * To date to search for.
+     */
+    private String dateTimeTo;
+
+    /**
+     * @return To date for searching activities
+     */
+    public String getDateTimeTo() {
+        return dateTimeTo;
+    }
+
+    /**
+     * @param dateTimeTo To date for searching activities
+     */
+    public void setDateTimeTo(String dateTimeTo) {
+        this.dateTimeTo = dateTimeTo;
+    }
+
+    /**
+     * @return From date for searching activities
+     */
+    public String getDateTimeFrom() {
+        return dateTimeFrom;
+    }
+
+    /**
+     * @param dateTimeFrom From date for searching activities
+     */
+    public void setDateTimeFrom(String dateTimeFrom) {
+        this.dateTimeFrom = dateTimeFrom;
+    }
 
     /**
      * @return the number of rows to display per page
@@ -83,6 +124,19 @@ public class GridSettings {
             types.addAll(Arrays.asList(TaskActivityType.values()));
         }
         return types;
+    }
+
+    public Range<DateTime> convertToDateRange(String fromDate, String toDate) {
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+        if ((fromDate != null && !fromDate.isEmpty()) && (toDate != null && !toDate.isEmpty())) {
+            return new Range<>(formatter.parseDateTime(fromDate), formatter.parseDateTime(toDate));
+        } else if (fromDate != null && !fromDate.isEmpty()) {
+            return new Range<>(formatter.parseDateTime(fromDate), null);
+        } else if (toDate != null && !toDate.isEmpty()) {
+            return new Range<>(null, formatter.parseDateTime(toDate));
+        } else {
+            return null;
+        }
     }
 
     @Override
