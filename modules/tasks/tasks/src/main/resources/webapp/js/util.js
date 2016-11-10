@@ -408,22 +408,6 @@
             return field;
         };
 
-        utils.copyFieldKeyToClipboard = function (field) {
-            var text = "{{" + utils.formatField(field)[0] + "}}", elementToCopy, selector;
-            
-             elementToCopy = document.createElement('textarea');
-             elementToCopy.id = 'elementToCopy';
-
-             document.body.appendChild(elementToCopy);
-            
-             elementToCopy.value = text;
-             
-             selector = document.querySelector('#elementToCopy');
-             selector.select();
-             document.execCommand('copy');
-             document.body.removeChild(elementToCopy);
-        };
-
         return utils;
     });
 

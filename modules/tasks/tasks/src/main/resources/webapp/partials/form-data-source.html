@@ -27,7 +27,7 @@
             <div class="form-group control-section" ng-show="showBubbles">
                 <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.info.availableFields')}}:</label>
                 <div class="form-inline col-md-10 col-sm-9 move-element">
-                    <field ng-repeat="i in fields | idLessThan:step.objectId track by $index" field="i" draggable />​
+                    <field ng-repeat="i in fields | idLessThan:step.objectId track by $index" field="i" draggable copyable />​
                 </div>
             </div>
             <div class="form-group">
