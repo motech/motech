@@ -279,6 +279,7 @@
         $scope.debugging = false;
         $scope.startTime = "";
         $scope.endTime = "";
+        $scope.lastSelectedField = "";
 
         $scope.changeCheckbox = function (debugging) {
             $scope.debugging = debugging;
@@ -1185,6 +1186,13 @@
             return newArray;
         };
 
+        $scope.getLastSelectedField = function () {
+            return $scope.lastSelectedField;
+        };
+
+        $scope.setLastSelectedField = function (lastSelectedField) {
+            $scope.lastSelectedField = lastSelectedField;
+        };
     });
 
     controllers.controller('TasksLogCtrl', function ($scope, Tasks, Activities, $stateParams, $filter, $http,

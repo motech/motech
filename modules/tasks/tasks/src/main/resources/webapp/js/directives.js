@@ -344,6 +344,55 @@
         };
     }]);
 
+    directives.directive('copyable', ['ManageTaskUtils', function (ManageTaskUtils) {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                var ctrlDown = false, ctrlKey = 17, cmdKey = 91, cKey = 67;
+
+                function copyFieldKeyToClipboard(field) {
+                    var text = "{{" + ManageTaskUtils.formatField(field)[0] + "}}", elementToCopy, selector;
+
+                     elementToCopy = document.createElement('textarea');
+                     elementToCopy.id = 'elementToCopy';
+
+                     document.body.appendChild(elementToCopy);
+
+                     elementToCopy.value = text;
+
+                     selector = document.querySelector('#elementToCopy');
+                     selector.select();
+                     document.execCommand('copy');
+                     document.body.removeChild(elementToCopy);
+                }
+
+                element.click(function (event) {
+                    if ($(event.target).hasClass("field-bubble")) {
+                        scope.$parent.setLastSelectedField(element.data("value"));
+                        scope.$apply();
+                    }
+                });
+
+
+                $(".inside.task.form-horizontal").keydown(function(event) {
+                    if (event.keyCode === ctrlKey || event.keyCode === cmdKey) {
+                        ctrlDown = true;
+                    }
+                }).keyup(function(event) {
+                    if (event.keyCode === ctrlKey || event.keyCode === cmdKey) {
+                        ctrlDown = false;
+                    }
+                });
+
+                $(".inside.task.form-horizontal").keydown(function(event) {
+                    if (ctrlDown && event.keyCode === cKey) {
+                        copyFieldKeyToClipboard(scope.$parent.getLastSelectedField());
+                    }
+                });
+            }
+        };
+    }]);
+
     directives.directive('integer', function () {
         return {
             restrict: 'A',
