@@ -260,7 +260,7 @@
     controllers.controller('TasksManageCtrl', function ($rootScope, $scope, ManageTaskUtils, Channels, DataSources, Tasks, Triggers,
                 $q, $timeout, $stateParams, $http, $filter, ModalFactory, LoadingModal, HelpStringManipulation) {
 
-        $scope.showBubbles = true;
+        $scope.showBubbles = false;
         $scope.toggleBubbles = function(toggleBubbles) {
             $scope.showBubbles = toggleBubbles;
         };
