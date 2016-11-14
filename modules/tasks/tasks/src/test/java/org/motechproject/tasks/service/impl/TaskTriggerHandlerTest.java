@@ -1217,6 +1217,25 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         verify(retryHandler).unscheduleTaskRetry((String) event.getMetadata().get(EventDataKeys.JOB_SUBJECT));
     }
 
+    @Test
+    public void shouldNotInvokeHandleTask() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+
+        when(taskService.findActiveTasksForTriggerSubject(TRIGGER_SUBJECT)).thenReturn(tasks);
+        when(taskService.getTask(9L)).thenReturn(task);
+
+        handler.setBundleContext(bundleContext);
+
+        Set<Long> handledTasksId = new HashSet<>();
+        handledTasksId.add(9l);
+        handler.setHandledTasksId(handledTasksId);
+
+        handler.handle(createEvent());
+
+        verify(taskActivityService, never()).addTaskStarted(task, createEventParameters());
+    }
+
     private void verifyErrorHandling(String exceptionKey) throws ActionNotFoundException {
         verify(taskService).findActiveTasksForTriggerSubject(TRIGGER_SUBJECT);
         verify(taskService).getActionEventFor(task.getActions().get(0));

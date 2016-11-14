@@ -213,12 +213,12 @@ public class TaskTriggerHandler implements TriggerHandler {
      * @param isRetry true if handler is for task retry system; false otherwise
      */
     private void checkAndHandleTask(Task task, Map<String, Object> eventParameters, boolean isRetry) {
-        if (!isTaskHandled(task) ) { //Checks
+        if (!isTaskHandled(task)) {
             addTaskHandled(task);
 
             handleTask(task, eventParameters, isRetry);
 
-            deleteTaskHandled(task);
+            removeTaskHandled(task);
         } else {
             LOGGER.warn("The task {} didn't execute, because the previous invocation is still running.", task.getName());
         }
@@ -248,6 +248,10 @@ public class TaskTriggerHandler implements TriggerHandler {
         this.dataProviders = dataProviders;
     }
 
+    void setHandledTasksId(Set<Long> handledTasksId) {
+        this.handledTasksId = handledTasksId;
+    }
+
     private Map<String, Object> prepareTaskMetadata(Long taskId, long activityId, Boolean isRetry) {
         Map<String, Object> metadata = new HashMap<>();
         metadata.put(EventDataKeys.TASK_ID, taskId);
@@ -261,18 +265,12 @@ public class TaskTriggerHandler implements TriggerHandler {
         this.handledTasksId.add(task.getId());
     }
 
-    private void deleteTaskHandled(Task task) {
+    private void removeTaskHandled(Task task) {
         this.handledTasksId.remove(task.getId());
     }
 
     private boolean isTaskHandled(Task task) {
-        boolean handled = false;
-
-        if (this.handledTasksId.contains(task.getId())) {
-            handled = true;
-        }
-
-        return handled;
+        return this.handledTasksId.contains(task.getId()) ? true : false;
     }
 
     @Autowired
