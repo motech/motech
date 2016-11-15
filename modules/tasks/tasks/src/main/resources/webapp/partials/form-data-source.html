@@ -24,10 +24,16 @@
                     <input class="form-control" type='text' ng-change="addSpecifiedDataSourceName(step)" ng-model='step.specifiedName' id="step.specifiedName">
                 </div>
             </div>
-            <div class="form-group control-section" ng-if="showBubbles === false">
+            <div class="form-group control-section" >
+                <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.info.showBubbles')}}</label>
+                <div class="col-md-8 col-sm-6">
+                    <input type="checkbox" ng-model="stepShowBubbles">
+                </div>
+            </div>
+            <div class="form-group control-section" ng-if="showBubbles || stepShowBubbles">
                 <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.info.availableFields')}}:</label>
                 <div class="form-inline col-md-10 col-sm-9 move-element">
-                    <field ng-repeat="i in fields | idLessThan:step.objectId track by $index" field="i" draggable />​
+                    <field ng-repeat="i in fields | idLessThan:step.objectId track by $index" field="i" draggable copyable />​
                 </div>
             </div>
             <div class="form-group">
@@ -112,7 +118,7 @@
                     <a target="_self" href="#helpModalFieldSyntaxWithBrackets" role="button" class="btn btn-primary pull-left" data-toggle="modal">{{msg('task.help')}}</a>
                 </div>
             </div>
-            <div class="form-group margin-before3 control-section" ng-hide="step.displayName == undefined || showBubbles">
+            <div class="form-group margin-before3 control-section" ng-hide="step.displayName == undefined || (!showBubbles && !stepShowBubbles)">
                 <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.subsubsection.objectFields')}}</label>
                 <div class="form-inline col-md-10 col-sm-9 move-element">
                     <field ng-repeat="field in findObject(step.providerName, step.type).fields" field="field" />​
