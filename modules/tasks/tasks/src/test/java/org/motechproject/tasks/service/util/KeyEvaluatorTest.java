@@ -36,7 +36,7 @@ public class KeyEvaluatorTest {
         assertEquals(now.dayOfMonth().withMinimumValue().withTime(0, 0, 0, 0).toString(), keyEvaluator.manipulate("beginningOfMonth", toString));
         assertEquals(now.dayOfMonth().withMaximumValue().withTime(23, 59, 59, 999).toString(), keyEvaluator.manipulate("endOfMonth", toString));
         assertEquals(now.plusMonths(1).toString(), keyEvaluator.manipulate("plusMonths(1)", toString));
-        assertEquals(now.minusMonths(1).toString(), keyEvaluator.manipulate("minusMonths(1)", toString));
+        assertEquals("Q" + ((now.monthOfYear().get() / 3) + 1) + "-" + now.year().getAsString(), keyEvaluator.manipulate("quarter", toString));
         assertEquals(now.plusDays(1).toString(), keyEvaluator.manipulate("plusDays(1)", toString));
         assertEquals(now.minusDays(1).toString(), keyEvaluator.manipulate("minusDays(1)", toString));
         assertEquals(now.plusHours(2).toString(), keyEvaluator.manipulate("plusHours(2)", toString));

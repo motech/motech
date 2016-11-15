@@ -74,6 +74,9 @@
                 name: 'endOfMonth',
                 input: ''
             }, {
+                name: 'quarter',
+                input: ''
+            }, {
                 name: 'plusMonths',
                 input: 'input[manipulation-kind="plusMonths"]',
                 pattern: 11

@@ -30,6 +30,7 @@ public enum ManipulationType {
     MINUSHOURS("minusHours", ManipulationTarget.DATE),
     PLUSMINUTES("plusMinutes", ManipulationTarget.DATE),
     MINUSMINUTES("minusMinutes", ManipulationTarget.DATE),
+    QUARTER("quarter", ManipulationTarget.DATE),
     UNKNOWN("unknown", ManipulationTarget.ALL);
 
     private final String value;
