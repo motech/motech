@@ -1002,6 +1002,11 @@
                 }
 
                 angular.forEach(action.actionParameters, function (param) {
+                    if (param && typeof param.value === "string") {
+                        while(param.value.indexOf("\u00a0") >= 0) {
+                            param.value = param.value.replace("\u00a0", " ");
+                        }
+                    }
                     $scope.task.actions[idx].values[param.key] = param.value;
 
                     if (!param.required && isBlank($scope.task.actions[idx].values[param.key])) {
