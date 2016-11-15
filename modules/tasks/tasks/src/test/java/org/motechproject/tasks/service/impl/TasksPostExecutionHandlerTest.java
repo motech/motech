@@ -19,6 +19,7 @@ import org.motechproject.tasks.service.TaskService;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
@@ -27,6 +28,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMap;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -98,7 +100,6 @@ public class TasksPostExecutionHandlerTest extends TasksTestBase {
 
         ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay).sendEventMessage(captorEvent.capture());
-        verify(retryHandler).handleTaskRetries(task, createEventParameters(), true, false);
 
         MotechEvent motechEvent = captorEvent.getValue();
         assertEquals(EventSubjects.createHandlerSuccessSubject(task.getName()), motechEvent.getSubject());
@@ -132,9 +133,60 @@ public class TasksPostExecutionHandlerTest extends TasksTestBase {
                 extract(capturedEvents, on(MotechEvent.class).getSubject()));
     }
 
+    @Test
+    public void shouldNotScheduleTaskRetryOnFailureWhenNumberOfRetriesIsZero() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+        Map<String, Object> params = setEventParameters();
+
+        task.setRetryTaskOnFailure(true);
+
+        actionEvent.setServiceInterface("TestService");
+        actionEvent.setServiceMethod("abc");
+
+        when(taskService.findActiveTasksForTriggerSubject(triggerEvent.getSubject())).thenReturn(tasks);
+        when(taskService.getActionEventFor(task.getActions().get(0))).thenThrow(new RuntimeException());
+        when(settingsFacade.getRawConfig(TASK_PROPERTIES_FILE_NAME)).thenReturn(null);
+
+        postExecutionHandler.handleError(params, new HashMap<>(), task, taskHandlerException, TASK_ACTIVITY_ID);
+
+        params.put(TASK_RETRY_NUMBER, 2);
+
+        // task number of retries is 0, we should not send schedule job event
+        verify(retryHandler, never()).handleTaskRetries(task, params);
+    }
+
+    @Test
+    public void shouldNotScheduleTaskRetryOnFailureWhenAllRetriesWereExecuted() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+        Map<String, Object> params = setEventParameters();
+
+        task.setRetryTaskOnFailure(true);
+
+        actionEvent.setServiceInterface("TestService");
+        actionEvent.setServiceMethod("abc");
+
+        when(taskService.findActiveTasksForTriggerSubject(triggerEvent.getSubject())).thenReturn(tasks);
+        when(taskService.getActionEventFor(task.getActions().get(0))).thenThrow(new RuntimeException());
+        when(settingsFacade.getRawConfig(TASK_PROPERTIES_FILE_NAME)).thenReturn(TASK_RETRIES);
+
+        postExecutionHandler.handleError(params, new HashMap<>(), task, taskHandlerException, TASK_ACTIVITY_ID);
+
+        params.put(TASK_RETRY_NUMBER, 2);
+
+        verify(retryHandler, never()).handleTaskRetries(task, params);
+    }
+
     private void initTaskActivity() {
         taskActivity = new TaskActivity();
         taskActivity.setId(TASK_ACTIVITY_ID);
         taskActivity.setTask(task.getId());
+    }
+
+    private Map<String, Object> setEventParameters() {
+        Map<String, Object> params = createEventParameters();
+        params.put(TASK_RETRY_NUMBER, 1);
+        return params;
     }
 }

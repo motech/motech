@@ -32,7 +32,6 @@ import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_STACK_TR
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_TASK_ID;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_TASK_NAME;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_FAIL_TRIGGER_DISABLED;
-import static org.motechproject.tasks.constants.EventDataKeys.TASK_RETRY;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_RETRY_NUMBER;
 import static org.motechproject.tasks.constants.EventSubjects.createHandlerFailureSubject;
 import static org.motechproject.tasks.constants.EventSubjects.createHandlerSuccessSubject;
@@ -80,7 +79,7 @@ public class TasksPostExecutionHandler {
             Long taskId = activityService.getTaskActivityById(activityId).getTask();
             Task task = taskService.getTask(taskId);
 
-            handleSuccess(params, metadata, task);
+            handleSuccess(params, task);
         }
     }
 
@@ -132,13 +131,14 @@ public class TasksPostExecutionHandler {
                 errorEventParam
         ));
 
-        getRetriesFromSettings(task, params, metadata);
-        boolean retryScheduled = shouldScheduleRetry(metadata);
+        int numberOfRetries = getRetriesFromSettings(task, params);
 
-        retryHandler.handleTaskRetries(task, params, false, retryScheduled);
+        if(shouldScheduleRetry(params, numberOfRetries)) {
+            retryHandler.handleTaskRetries(task, params);
+        }
     }
 
-    private void handleSuccess(Map<String, Object> params, Map<String, Object> metadata, Task task) {
+    private void handleSuccess(Map<String, Object> params, Task task) {
         LOGGER.debug("All actions from task: {} with ID: {} were successfully executed", task.getName(), task.getId());
 
         task.resetFailuresInRow();
@@ -148,10 +148,6 @@ public class TasksPostExecutionHandler {
                 createHandlerSuccessSubject(task.getName()),
                 params
         ));
-
-        boolean retryScheduled = shouldScheduleRetry(metadata);
-
-        retryHandler.handleTaskRetries(task, params, true, retryScheduled);
     }
 
     private void publishTaskDisabledMessage(String taskName) {
@@ -180,12 +176,11 @@ public class TasksPostExecutionHandler {
         return number;
     }
 
-    private boolean shouldScheduleRetry(Map<String, Object> metadata) {
-        return metadata.get(TASK_RETRY) != null && (boolean) metadata.get(TASK_RETRY);
+    private boolean shouldScheduleRetry(Map<String, Object> params, int numberOfRetries) {
+        return (Integer) params.get(TASK_RETRY_NUMBER) < numberOfRetries;
     }
 
-
-    private void getRetriesFromSettings(Task task, Map<String, Object> params, Map<String, Object> metadata) {
+    private int getRetriesFromSettings(Task task, Map<String, Object> params) {
         List<Integer> retryInterval = new ArrayList<>();
         int numberOfRetries;
 
@@ -204,18 +199,17 @@ public class TasksPostExecutionHandler {
             throw new MotechException("Error loading raw file config to properties", e);
         }
 
-        setRetryParameters(task, metadata, params, retryInterval, numberOfRetries);
+        setRetryParameters(task, params, retryInterval, numberOfRetries);
+        return numberOfRetries;
     }
 
-    private void setRetryParameters(Task task,  Map<String, Object> metadata, Map<String, Object> params, List<Integer> retryInterval, int numberOfRetries)
+    private void setRetryParameters(Task task, Map<String, Object> params, List<Integer> retryInterval, int numberOfRetries)
     {
         int retryNumber = params.containsKey(TASK_RETRY_NUMBER) ? (Integer) params.get(TASK_RETRY_NUMBER) + 1 : 0;
         params.put(TASK_RETRY_NUMBER, retryNumber);
 
         if(retryNumber < numberOfRetries) {
             task.setRetryIntervalInMilliseconds(retryInterval.get(retryNumber) * 1000);
-        } else {
-            metadata.put(TASK_RETRY, true);
         }
     }
 

@@ -192,9 +192,20 @@ public class KeyEvaluator {
             result = substringManipulation(value, manipulation);
         } else if (lowerCase.contains("split")) {
             result = splitManipulation(value, manipulation);
-        } else if (lowerCase.contains("parsedate")) {
+        } else {
+            result = dateOrSimpleManipulation(value, manipulation);
+        }
+
+        return result;
+    }
+
+    private String dateOrSimpleManipulation(String value, String manipulation) {
+        String lowerCase = manipulation.toLowerCase();
+        String result = value;
+
+        if (lowerCase.contains("parsedate")) {
             result = parseDate(value, manipulation);
-        } else if (lowerCase.contains("plus") || lowerCase.contains("minus") || lowerCase.contains("ofmonth")) {
+        } else if (lowerCase.contains("plus") || lowerCase.contains("minus") || lowerCase.contains("ofmonth") || lowerCase.contains("quarter")) {
             result = dateTimeChangeManipulation(value, lowerCase);
         } else {
             result = simpleManipulations(value, lowerCase.replace("()", ""));
@@ -242,6 +253,8 @@ public class KeyEvaluator {
             result = plusMinutesManipulation(value, manipulation);
         } else if (manipulation.contains("minusminutes")) {
             result = minusMinutesManipulation(value, manipulation);
+        } else if (manipulation.contains("quarter")) {
+            result = quarterManipulation(value);
         } else {
             throw new MotechException("task.warning.manipulation");
         }
@@ -289,6 +302,13 @@ public class KeyEvaluator {
         int idx = Integer.parseInt(splitValue[1]);
 
         return value.split(regex)[idx];
+    }
+
+    private String quarterManipulation(String value) {
+        DateTime dateTime = new DateTime(value);
+        int numberOfMonth = dateTime.monthOfYear().get();
+
+        return "Q" + ((numberOfMonth / 3) + 1) + "-" + dateTime.year().getAsString();
     }
 
     private String beginningOfMonthManipulation(String value) {
