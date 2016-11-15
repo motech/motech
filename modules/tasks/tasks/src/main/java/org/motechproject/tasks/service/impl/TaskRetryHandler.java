@@ -16,10 +16,9 @@ import static org.motechproject.tasks.constants.EventDataKeys.JOB_SUBJECT;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_ID;
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_RETRY_NUMBER;
 import static org.motechproject.tasks.constants.EventSubjects.SCHEDULE_REPEATING_JOB;
-import static org.motechproject.tasks.constants.EventSubjects.UNSCHEDULE_REPEATING_JOB;
 
 /**
- * This class is responsible for managing, scheduling and unscheduling jobs, connected to
+ * This class is responsible for managing and scheduling jobs, connected to
  * repeating the task executions.
  */
 @Component
@@ -31,39 +30,17 @@ public class TaskRetryHandler {
     private EventRelay eventRelay;
 
     /**
-     * Takes necessary actions (schedule/unschedule) for the given task, based on its settings and status of the
-     * execution. It makes sure that the retry job is scheduled only once and that it gets unscheduled when the task
-     * executes successfully.
+     * Takes schedule action for the given task, based on its settings and status of the
+     * execution.
      *
      * @param task the task to handle repeat jobs for
      * @param parameters trigger event parameters
-     * @param success whether the execution was successful
-     * @param retryScheduled whether the tak retry is currently scheduled
      */
-    public void handleTaskRetries(Task task, Map<String, Object> parameters, boolean success, boolean retryScheduled) {
+    public void handleTaskRetries(Task task, Map<String, Object> parameters) {
         if (task.isRetryTaskOnFailure()) {
-            if (success && retryScheduled) {
-                LOGGER.info("Unscheduling the task retries, due to successful execution.");
-                unscheduleTaskRetry(task.getTrigger().getEffectiveListenerRetrySubject());
-            } else if (!success && !retryScheduled) {
-                LOGGER.info("Scheduling task retries, since the execution of a task failed.");
-                scheduleTaskRetry(task, parameters);
-            }
+            LOGGER.info("Scheduling task retries, since the execution of a task failed.");
+            scheduleTaskRetry(task, parameters);
         }
-    }
-
-    /**
-     * Unschedules the task repeat job of the given subject.
-     *
-     * @param jobSubject the subject of a job to unschedule
-     */
-    public void unscheduleTaskRetry(String jobSubject) {
-        LOGGER.info("Unscheduling the task retries.");
-
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put(JOB_SUBJECT, jobSubject);
-
-        eventRelay.sendEventMessage(new MotechEvent(UNSCHEDULE_REPEATING_JOB, new HashMap<>(), null, metadata));
     }
 
     private void scheduleTaskRetry(Task task, Map<String, Object> parameters) {

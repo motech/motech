@@ -1170,7 +1170,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
     }
 
     @Test
-    public void shouldUnscheduleTaskRetriesWhenTaskIsDeleted() throws Exception {
+    public void shouldNotScheduleTaskRetriesWhenTaskIsDeleted() throws Exception {
         setTriggerEvent();
         setActionEvent();
 
@@ -1190,11 +1190,11 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         handler.setBundleContext(bundleContext);
         handler.handleRetry(event);
 
-        verify(retryHandler).unscheduleTaskRetry((String) event.getMetadata().get(EventDataKeys.JOB_SUBJECT));
+        verify(retryHandler, never()).handleTaskRetries(task, event.getParameters());
     }
 
     @Test
-    public void shouldUnscheduleTaskRetriesWhenTaskIsDisabled() throws Exception {
+    public void shouldNotScheduleTaskRetriesWhenTaskIsDisabled() throws Exception {
         setTriggerEvent();
         setActionEvent();
 
@@ -1214,7 +1214,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         handler.setBundleContext(bundleContext);
         handler.handleRetry(event);
 
-        verify(retryHandler).unscheduleTaskRetry((String) event.getMetadata().get(EventDataKeys.JOB_SUBJECT));
+        verify(retryHandler, never()).handleTaskRetries(task, event.getParameters());
     }
 
     private void verifyErrorHandling(String exceptionKey) throws ActionNotFoundException {
