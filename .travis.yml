@@ -18,7 +18,7 @@ install: true
 
 script:
   - sudo chmod +x ./run_build.sh
-  - ./run_build.sh
+  - travis_wait 30 ./run_build.sh
 
 cache:
   directories:
