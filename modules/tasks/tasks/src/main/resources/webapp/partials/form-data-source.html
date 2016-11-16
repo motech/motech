@@ -16,7 +16,7 @@
             </span>
         </a>
     </div>
-    <div id="collapse-step-{{step.order}}" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
+    <div ng-if="selectedTrigger" id="collapse-step-{{step.order}}" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
         <div class="panel-body inside">
             <div class="form-group control-section" >
                 <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.datasource.displayName')}}</label>
