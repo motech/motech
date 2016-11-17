@@ -51,6 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.jdo.Query;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -598,6 +599,7 @@ public class TaskServiceImpl implements TaskService {
             existing.setUseTimeWindow(task.isUsingTimeWindow());
             existing.setStartTime(task.getStartTime());
             existing.setEndTime(task.getEndTime());
+            existing.setDays(task.getDays());
 
             checkChannelAvailableInTask(existing);
 
@@ -676,7 +678,7 @@ public class TaskServiceImpl implements TaskService {
 
     private boolean checkTimeWindowInTask(Task task) {
         if (task.isUsingTimeWindow()) {
-            if (task.getStartTime() == null || task.getEndTime() == null) {
+            if (task.getStartTime() == null || task.getEndTime() == null || !checkCurrentDay(task)) {
                 return false;
             }
             Time now = new Time(new LocalTime(DateTimeZone.UTC));
@@ -688,6 +690,15 @@ public class TaskServiceImpl implements TaskService {
             }
         }
         return true;
+    }
+
+    private boolean checkCurrentDay(Task task) {
+        int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2;
+        List<String> days = task.getDays();
+        if(days.get(day).equals("true")) {
+            return true;
+        }
+        return false;
     }
 
     @Autowired

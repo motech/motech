@@ -91,6 +91,9 @@ public class Task {
     @Field
     private Time endTime;
 
+    @Field
+    private List<String> days;
+
     /**
      * Constructor.
      */
@@ -109,7 +112,11 @@ public class Task {
         this(name, trigger, actions, null, true, true);
     }
 
-    /**
+    public Task(String name, TaskTriggerInformation trigger, List<TaskActionInformation> actions, TaskConfig taskConfig, boolean enabled, boolean hasRegisteredChannel) {
+        this(name, trigger, actions, taskConfig, enabled, hasRegisteredChannel, null);
+    }
+
+    /**enabled
      * Constructor.
      *
      * @param name  the task name
@@ -120,7 +127,7 @@ public class Task {
      * @param hasRegisteredChannel  defines if this task has a registered channel
      */
     public Task(String name, TaskTriggerInformation trigger, List<TaskActionInformation> actions,
-                TaskConfig taskConfig, boolean enabled, boolean hasRegisteredChannel) {
+                TaskConfig taskConfig, boolean enabled, boolean hasRegisteredChannel, List<String> days) {
         this.name = name;
         this.actions = actions == null ? new ArrayList<TaskActionInformation>() : actions;
         this.trigger = trigger;
@@ -132,6 +139,7 @@ public class Task {
         this.numberOfRetries = DEFAULT_NUMBER_FOR_TASK_RETRIES;
         this.retryIntervalInMilliseconds = DEFAULT_TIME_FOR_RETRY_INTERVAL;
         this.retryTaskOnFailure = false;
+        this.days = days == null ? new ArrayList<String>() : days;
     }
 
     /**
@@ -255,6 +263,14 @@ public class Task {
         return validationErrors;
     }
 
+    public List<String> getDays() {
+        return days;
+    }
+
+    public void setDays(List<String> days) {
+        this.days = days;
+    }
+
     public boolean hasValidationErrors() {
         return isNotEmpty(validationErrors);
     }
@@ -325,7 +341,7 @@ public class Task {
 
         return new TaskDto(id, description, name, failuresInRow, actionDtos, trigger.toDto(), enabled, errorDtos,
                 taskConfig.toDto(), hasRegisteredChannel, numberOfRetries, retryIntervalInMilliseconds, retryTaskOnFailure, useTimeWindow,
-                startTime != null ? startTime.toString() : null, endTime != null ? endTime.toString() : null);
+                startTime != null ? startTime.toString() : null, endTime != null ? endTime.toString() : null, days != null ? days : null);
     }
 
 

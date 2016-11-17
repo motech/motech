@@ -280,6 +280,8 @@
         $scope.startTime = "";
         $scope.endTime = "";
         $scope.lastSelectedField = "";
+        $scope.days = [{id:0, day: 'Monday'},{id:1, day: 'Tuesday'},{id:2, day: 'Wednesday'},{id:3, day: 'Thursday'}, {id:4, day: 'Friday'}, {id:5, day:'Saturday'}, {id:6, day:'Sunday'}];
+        $scope.checkedDays = [false, false, false, false, false, false, false];
 
         $scope.changeCheckbox = function (debugging) {
             $scope.debugging = debugging;
@@ -315,6 +317,13 @@
                         if ($scope.task.useTimeWindow === true) {
                            $scope.startTime = $scope.task.startTime + " +0000";
                            $scope.endTime = $scope.task.endTime + " +0000";
+                           $scope.task.days.forEach(function(day, idx) {
+                                if (day === "true") {
+                                    $scope.checkedDays[idx] = true;
+                                } else if  (day === "false") {
+                                    $scope.checkedDays[idx] = false;
+                                }
+                           });
                         }
 
                         triggerChannel = $scope.util.find({
@@ -1053,6 +1062,10 @@
             } else {
                 $scope.task.startTime = $scope.startTime;
                 $scope.task.endTime = $scope.endTime;
+                $scope.task.days = [];
+                $scope.checkedDays.forEach(function(day, idx) {
+                    $scope.task.days[idx] = day.toString();
+                });
             }
 
             LoadingModal.open();

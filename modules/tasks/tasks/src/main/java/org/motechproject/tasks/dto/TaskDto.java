@@ -21,6 +21,7 @@ public class TaskDto {
     private boolean useTimeWindow;
     private String startTime;
     private String endTime;
+    private List<String> days;
 
     public TaskDto() {
     }
@@ -33,7 +34,7 @@ public class TaskDto {
 
     public TaskDto(Long id, String description, String name, int failuresInRow, List<TaskActionInformationDto> actions,
                    TaskTriggerInformationDto trigger, boolean enabled, Set<TaskErrorDto> validationErrors, TaskConfigDto taskConfig,
-                   boolean hasRegisteredChannel, int numberOfRetries, int retryIntervalInMilliseconds, boolean retryTaskOnFailure, boolean useTimeWindow, String startTime, String endTime) {
+                   boolean hasRegisteredChannel, int numberOfRetries, int retryIntervalInMilliseconds, boolean retryTaskOnFailure, boolean useTimeWindow, String startTime, String endTime, List<String> days) {
         this.id = id;
         this.description = description;
         this.name = name;
@@ -50,6 +51,7 @@ public class TaskDto {
         this.useTimeWindow = useTimeWindow;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.days = days;
     }
 
     public Long getId() {
@@ -130,6 +132,14 @@ public class TaskDto {
 
     public void setTaskConfig(TaskConfigDto taskConfig) {
         this.taskConfig = taskConfig;
+    }
+
+    public List<String> getDays() {
+        return days;
+    }
+
+    public void setDays(List<String> days) {
+        this.days = days;
     }
 
     public boolean isHasRegisteredChannel() {

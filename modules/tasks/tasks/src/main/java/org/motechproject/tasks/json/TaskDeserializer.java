@@ -86,6 +86,11 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
                 typeFactory.constructCollectionType(List.class, TaskActionInformation.class)
         );
 
+        setProperty(
+                "days",
+                typeFactory.constructCollectionType(List.class, String.class)
+        );
+
         return task;
     }
 
