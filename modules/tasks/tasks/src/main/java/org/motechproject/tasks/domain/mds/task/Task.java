@@ -116,7 +116,7 @@ public class Task {
         this(name, trigger, actions, taskConfig, enabled, hasRegisteredChannel, null);
     }
 
-    /**enabled
+    /**
      * Constructor.
      *
      * @param name  the task name

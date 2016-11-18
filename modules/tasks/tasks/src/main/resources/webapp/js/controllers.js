@@ -280,8 +280,9 @@
         $scope.startTime = "";
         $scope.endTime = "";
         $scope.lastSelectedField = "";
-        $scope.days = [{id:0, day: 'Monday'},{id:1, day: 'Tuesday'},{id:2, day: 'Wednesday'},{id:3, day: 'Thursday'}, {id:4, day: 'Friday'}, {id:5, day:'Saturday'}, {id:6, day:'Sunday'}];
-        $scope.checkedDays = [false, false, false, false, false, false, false];
+        $scope.days = [{id:0, day: 'Monday', checked: false}, {id:1, day: 'Tuesday', checked: false}, {id:2, day: 'Wednesday', checked: false},
+                       {id:3, day: 'Thursday', checked: false}, {id:4, day: 'Friday', checked: false}, {id:5, day:'Saturday', checked: false},
+                       {id:6, day: 'Sunday', checked: false}];
 
         $scope.changeCheckbox = function (debugging) {
             $scope.debugging = debugging;
@@ -319,9 +320,9 @@
                            $scope.endTime = $scope.task.endTime + " +0000";
                            $scope.task.days.forEach(function(day, idx) {
                                 if (day === "true") {
-                                    $scope.checkedDays[idx] = true;
+                                    $scope.days[idx].checked = true;
                                 } else if  (day === "false") {
-                                    $scope.checkedDays[idx] = false;
+                                    $scope.days[idx].checked = false;
                                 }
                            });
                         }
@@ -1063,8 +1064,8 @@
                 $scope.task.startTime = $scope.startTime;
                 $scope.task.endTime = $scope.endTime;
                 $scope.task.days = [];
-                $scope.checkedDays.forEach(function(day, idx) {
-                    $scope.task.days[idx] = day.toString();
+                $scope.days.forEach(function(day, idx) {
+                    $scope.task.days[idx] = day.checked.toString();
                 });
             }
 

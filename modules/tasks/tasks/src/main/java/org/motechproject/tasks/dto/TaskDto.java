@@ -31,6 +31,12 @@ public class TaskDto {
         this.trigger = trigger;
         this.actions = actions;
     }
+    public TaskDto(Long id, String description, String name, int failuresInRow, List<TaskActionInformationDto> actions,
+                   TaskTriggerInformationDto trigger, boolean enabled, Set<TaskErrorDto> validationErrors, TaskConfigDto taskConfig,
+                   boolean hasRegisteredChannel, int numberOfRetries, int retryIntervalInMilliseconds, boolean retryTaskOnFailure, boolean useTimeWindow, String startTime, String endTime) {
+        this(id, description, name, failuresInRow, actions, trigger, enabled, validationErrors, taskConfig, hasRegisteredChannel,
+                numberOfRetries, retryIntervalInMilliseconds, retryTaskOnFailure, useTimeWindow, startTime, endTime, null);
+    }
 
     public TaskDto(Long id, String description, String name, int failuresInRow, List<TaskActionInformationDto> actions,
                    TaskTriggerInformationDto trigger, boolean enabled, Set<TaskErrorDto> validationErrors, TaskConfigDto taskConfig,
