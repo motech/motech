@@ -695,10 +695,8 @@ public class TaskServiceImpl implements TaskService {
     private boolean checkCurrentDay(Task task) {
         int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2;
         List<String> days = task.getDays();
-        if(days.get(day).equals("true")) {
-            return true;
-        }
-        return false;
+
+        return days.get(day).equals("true") ? true : false;
     }
 
     @Autowired
