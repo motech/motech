@@ -1325,6 +1325,8 @@
                             },
                             datatype: 'json',
                             mtype: "POST",
+                            multiselect: true,
+                            multiboxonly: true,
                             postData: {
                                 fields: JSON.stringify(scope.lookupBy)
                             },
@@ -1334,6 +1336,9 @@
                             },
                             jsonReader: {
                                 repeatitems: false
+                            },
+                            beforeSelectRow: function(rowid, e) {
+                               return !($(e.target).is('input[type=checkbox]'));
                             },
                             prmNames: {
                                sort: 'sortColumn',
@@ -1380,6 +1385,13 @@
                                 }
                                 $('#entityInstancesTable .ui-jqgrid-hdiv').addClass("table-lightblue");
                                 $('#entityInstancesTable .ui-jqgrid-btable').addClass("table-lightblue");
+                                var gridInstancesLength = $('#instancesTable').find('tr').length;
+                                if (gridInstancesLength === 1){
+                                    $("#deleteAllButton").prop("disabled",true);
+                                }
+                                else{
+                                    $("#deleteAllButton").prop("disabled",false);
+                                }
                                 $timeout(function() {
                                     resizeGridHeight(gridId);
                                     resizeGridWidth(gridId);
@@ -1388,6 +1400,7 @@
                                     resizeIfNarrow(gridId);
                                     firstLoad = false;
                                 }
+
                             },
                             loadError: function(e) {
                                 scope.setDataRetrievalError(true, e.responseText);
@@ -1426,12 +1439,22 @@
                                 resizeGridWidth(gridId);
                             }, 200);
                         });
+                        $('#entityInstancesTable').on('change', function() {
+                            var checkedInstanceLength = $('#instancesTable').find('input:checked').length;
+                            if (checkedInstanceLength === 0){
+                                $("#deleteSelectedButton").prop("disabled",true);
+                            }
+                            else{
+                                $("#deleteSelectedButton").prop("disabled",false);
+                            }
+                        });
+
                     }
                 });
+
             }
         };
     });
-
     /**
     * Displays related instances data using jqGrid
     */

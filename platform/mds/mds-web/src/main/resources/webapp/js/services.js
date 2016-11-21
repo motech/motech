@@ -38,6 +38,8 @@
                 newInstance: { method: 'GET', params: { action: 'new' }},
                 selectInstance: { method: 'GET', params: { action: 'instance' }},
                 deleteInstance: { method: 'DELETE', params: { action: 'delete' }},
+                deleteAllInstances: { method: 'DELETE', params: { action: 'deleteAll' }},
+                deleteSelectedInstances: { method: 'DELETE', params: { action: 'deleteSelected' }},
                 getTrash: { method : 'GET', params : { action: 'trash' }},
                 revertInstanceFromTrash: { method: 'GET', params: {action: 'revertFromTrash'}}
             }

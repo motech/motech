@@ -3381,6 +3381,15 @@
         * This variable is set after user choose field in history instance view.
         */
         $scope.previousInstance = undefined;
+        /**
+        * This variable contains a JSON string of checked instances of a particular entity.
+        */
+        $scope.checkedEntitiesJSON = undefined;
+        /**
+        * This variable contains a number of  checked instances of a particular entity.
+        */
+        $scope.checkedInstancesLength = undefined;
+
 
         /**
         * An array of selected instance fields.
@@ -3415,6 +3424,15 @@
 
         // fields which won't be persisted in the user preferences
         $scope.autoDisplayFields = [];
+
+        // Gets a JSON string containing the list of checked entities of a entity.
+        $scope.getCheckedEntitiesJSON = function (){
+            var selectedId = {};
+            $('#instancesTable').find('input:checked').each(function(index){
+                selectedId[index] =  $(this).parent().parent().attr('id');
+            });
+            return JSON.stringify(selectedId);
+        };
 
         /**
         * Check if there are any entities to display
@@ -3504,6 +3522,8 @@
 
         $scope.showBackToEntityListButton = true;
         $scope.showAddInstanceButton = true;
+        $scope.showDeleteSelectedInstancesButton = true;
+        $scope.showDeleteAllInstancesButton = true;
         $scope.showLookupButton = true;
         $scope.showFieldsButton = true;
         $scope.showImportButton = true;
@@ -3514,7 +3534,6 @@
         $scope.editRelatedFields = null;
         $scope.newRelatedFields = null;
         $scope.relatedMode = {isNested: false};
-
         $scope.customModals = [];
 
         $scope.deleteSelectedInstance = function() {
@@ -3523,6 +3542,16 @@
 
         $scope.importEntityInstances = function() {
             $('#importInstanceModal').modal('show');
+        };
+
+        $scope.deleteSelectedInstances = function() {
+            $scope.checkedEntitiesJSON = $scope.getCheckedEntitiesJSON();
+            $scope.checkedInstancesLength = $('#instancesTable').find('input:checked').length;
+            $("#deleteSelectedInstancesModal").modal('show');
+        };
+
+        $scope.deleteAllInstances = function() {
+            $("#deleteAllInstancesModal").modal('show');
         };
 
         /**
@@ -4232,6 +4261,39 @@
             }, function (response) {
                 LoadingModal.close();
                 ModalFactory.showErrorAlertWithResponse('mds.error.cannotDeleteInstance', 'mds.error', response);
+            });
+        };
+
+        /**
+        * Delete every instances of the currently selected entity.
+        */
+        $scope.deleteEveryInstance = function(){
+            LoadingModal.open();
+            Instances.deleteAllInstances({
+                id:$scope.selectedEntity.id
+            }, function() {
+                $scope.unselectInstance();
+                LoadingModal.close();
+            }, function (response) {
+                LoadingModal.close();
+                ModalFactory.showErrorAlertWithResponse('mds.error.cannotDeleteInstance', 'mds.error', response);
+            });
+        };
+
+        /**
+        * Deletes every selected instances of the currently selected entity.
+        */
+        $scope.deleteEverySelectedInstance = function (selected) {
+            LoadingModal.open();
+            Instances.deleteSelectedInstances({
+                id: $scope.selectedEntity.id,
+                param: selected
+            }, function() {
+                $scope.unselectInstance();
+                LoadingModal.close();
+            }, function (response) {
+                LoadingModal.close();
+                ModalFactory.showErrorAlertWithResponse('mds.error.cannotDeleteSelectedInstances', 'mds.error', response);
             });
         };
 
