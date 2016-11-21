@@ -1,5 +1,18 @@
 #!/usr/bin/env bash
 
+#Release
+if [ "$TRAVIS_EVENT_TYPE" = "api" ] && [ ! -z "$developmentVersion" ] && [ ! -z "$scmTag" ] && [ ! -z "$releaseVersion" ] && [ ! -z "$githubMail" ] && [ ! -z "$githubUsername" ]; then
+    mvn --settings deploy-settings.xml clean deploy -e -PIT,DEB,RPM -B -U
+
+    git config --global user.email "$githubMail"
+    git config --global user.name "$githubUsername"
+    git checkout -f $TRAVIS_BRANCH
+    git reset --hard $TRAVIS_BRANCH
+
+    mvn -DdevelopmentVersion=$developmentVersion -Dscm.tag=$scmTag -DreleaseVersion=$releaseVersion -Dmaven.test.failure.ignore=false -Dscm.developerConnection=scm:git:git@github.com:motech/motech.git -Dscm.connection=scm:git:git@github.com:motech/motech.git release:clean release:prepare release:perform
+
+fi
+
 if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
     if [ "$DB" = "mysql" ]; then
         echo "USE mysql;\nUPDATE user SET password=PASSWORD('password') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root

@@ -1411,6 +1411,10 @@
                 <version>2.3.2</version>
                 <configuration>
                     <preparationGoals>clean install</preparationGoals>
+                    <checkModificationExcludes>
+                        <checkModificationExclude>run_build.sh</checkModificationExclude>
+                        <checkModificationExclude>config_services.sh</checkModificationExclude>
+                    </checkModificationExcludes>
                 </configuration>
             </plugin>
             <plugin>
