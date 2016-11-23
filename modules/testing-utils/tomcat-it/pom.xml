@@ -6,14 +6,14 @@
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>motech</artifactId>
-        <version>0.29.1-SNAPSHOT</version>
+        <version>0.29.1</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
     <artifactId>motech-tomcat-it</artifactId>
     <name>MOTECH Tomcat IT</name>
     <description>Base for Integration tests using Tomcat</description>
-    <version>0.29.1-SNAPSHOT</version>
+    <version>0.29.1</version>
 
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>

@@ -3,12 +3,12 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.29.1-SNAPSHOT</version>
+        <version>0.29.1</version>
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <version>0.29.1-SNAPSHOT</version>
+    <version>0.29.1</version>
     <artifactId>motech-osgi-integration-tests</artifactId>
     <name>MOTECH OSGi Integration Tests</name>
     <packaging>bundle</packaging>

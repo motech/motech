@@ -3,7 +3,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.29.1-SNAPSHOT</version>
+        <version>0.29.1</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -14,7 +14,7 @@
     </properties>
 
     <artifactId>motech-pax-it-container</artifactId>
-    <version>0.29.1-SNAPSHOT</version>
+    <version>0.29.1</version>
     <name>MOTECH Pax Test Container</name>
 
     <dependencies>

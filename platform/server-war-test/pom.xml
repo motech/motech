@@ -6,13 +6,13 @@
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>motech</artifactId>
-        <version>0.29.1-SNAPSHOT</version>
+        <version>0.29.1</version>
         <relativePath>../../</relativePath>
     </parent>
 
     <artifactId>motech-platform-server-war-test</artifactId>
     <name>MOTECH Platform Server WAR Test</name>
-    <version>0.29.1-SNAPSHOT</version>
+    <version>0.29.1</version>
 
     <properties>
         <modules.root.dir>${basedir}/../..</modules.root.dir>

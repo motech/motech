@@ -4,7 +4,7 @@
 
     <groupId>org.motechproject</groupId>
     <artifactId>minimal-bundle-archetype</artifactId>
-    <version>0.29.1-SNAPSHOT</version>
+    <version>0.29.1</version>
     <packaging>maven-archetype</packaging>
 
     <name>MOTECH Minimal Bundle Archetype</name>

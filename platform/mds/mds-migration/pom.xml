@@ -2,13 +2,13 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.29.1-SNAPSHOT</version>
+        <version>0.29.1</version>
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>motech-platform-dataservices-migration</artifactId>
-    <version>0.29.1-SNAPSHOT</version>
+    <version>0.29.1</version>
     <packaging>bundle</packaging>
     <name>MOTECH Platform Data Services Migration</name>
     <properties>
