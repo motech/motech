@@ -2,6 +2,10 @@
 
 #Release
 if [ "$TRAVIS_EVENT_TYPE" = "api" ] && [ ! -z "$developmentVersion" ] && [ ! -z "$scmTag" ] && [ ! -z "$releaseVersion" ] && [ ! -z "$githubMail" ] && [ ! -z "$githubUsername" ]; then
+    sudo apt-get install -y rpm -qq
+
+    echo "USE mysql;\nUPDATE user SET password=PASSWORD('password') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
+
     mvn --settings deploy-settings.xml clean deploy -e -PIT,DEB,RPM -B -U
 
     git config --global user.email "$githubMail"
