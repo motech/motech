@@ -3,6 +3,7 @@
 #Release
 if [ "$TRAVIS_EVENT_TYPE" = "api" ] && [ ! -z "$developmentVersion" ] && [ ! -z "$scmTag" ] && [ ! -z "$releaseVersion" ] && [ ! -z "$githubMail" ] && [ ! -z "$githubUsername" ]; then
     sudo apt-get install -y rpm -qq
+    sudo apt-get install -y lintian -qq
 
     echo "USE mysql;\nUPDATE user SET password=PASSWORD('password') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
 
