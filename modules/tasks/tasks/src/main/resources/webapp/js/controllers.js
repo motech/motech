@@ -97,11 +97,27 @@
 
                         $scope.allTasks.push(item);
                     }
-
+                    $scope.allTasks=$scope.sortTasksAlphabetically($scope.allTasks);
                     $rootScope.search();
                     $('#inner-center').trigger("change");
                 });
             });
+        };
+
+        $scope.sortTasksAlphabetically = function(tasks){
+            var taskNames = [], sortedTasks = [], i, j, k;
+            for (i=0; i<tasks.length; i += 1){
+                taskNames.push(tasks[i].task.name);
+            }
+            taskNames.sort();
+            for (j=0; j<taskNames.length; j += 1){
+                for (k=0; k<tasks.length; k += 1){
+                    if(taskNames[j] === tasks[k].task.name){
+                        sortedTasks.push(tasks[k]);
+                    }
+                }
+            }
+            return sortedTasks;
         };
 
         $scope.enableTask = function (item, enabled) {
