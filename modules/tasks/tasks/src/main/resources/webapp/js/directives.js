@@ -658,6 +658,7 @@
                 scope.debug = scope.$parent.debugging;
                 var eventResize,
                     items = [],
+                    fetchedAvailableFields = [],
                     fieldType = scope.data.type,
                     url = '../tasks/partials/widgets/autocomplete-fields.html';
                     scope.filteredItems = [];
@@ -807,7 +808,13 @@
                     }
                 };
 
-                angular.forEach(scope.fields, function (field) {
+                if (scope.fields) {
+                    fetchedAvailableFields = scope.fields; // fields for action
+                } else {
+                    fetchedAvailableFields = scope.$parent.fields; // fields for datasource
+                }
+
+                angular.forEach(fetchedAvailableFields, function (field) {
                    items.push(field);
                 });
 
