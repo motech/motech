@@ -1959,6 +1959,6 @@
         <connection>${scm.connection}</connection>
         <developerConnection>${scm.developerConnection}</developerConnection>
         <url>${scm.url}</url>
-        <tag>motech-0.29.1</tag>
+        <tag>HEAD</tag>
     </scm>
 </project>
