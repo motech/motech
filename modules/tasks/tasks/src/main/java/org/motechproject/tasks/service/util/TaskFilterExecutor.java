@@ -1,5 +1,6 @@
 package org.motechproject.tasks.service.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Months;
@@ -135,7 +136,7 @@ public class TaskFilterExecutor {
                     result = param.contains(expression);
                     break;
                 case EXIST:
-                    result = true;
+                    result = StringUtils.isNotEmpty(param);
                     break;
                 case STARTSWITH:
                     result = param.startsWith(expression);
