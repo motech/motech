@@ -29,6 +29,7 @@ public class TaskActivityServiceImpl implements TaskActivityService {
 
     private static final String TASK_IN_PROGRESS = "task.inProgress";
     private static final String TASK_SUCCEEDED = "task.success.ok";
+    private static final String TASK_SUCCEEDED_WITH_FILTERED_ACTIONS = "task.success.filtered.ok";
     private static final String TASK_DISABLED = "task.warning.taskDisabled";
     private static final String TASK_FILTERED = "task.filtered";
 
@@ -69,18 +70,20 @@ public class TaskActivityServiceImpl implements TaskActivityService {
 
         TaskExecutionProgress progress = activity.getTaskExecutionProgress();
         progress.addSuccess();
-        boolean taskFinished = progress.getActionsSucceeded() == progress.getTotalActions();
 
-        if (taskFinished) {
-            activity.setActivityType(TaskActivityType.SUCCESS);
-            activity.setMessage(TASK_SUCCEEDED);
-            activity.getFields().clear();
+        return updateTaskProgress(progress, activity);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void addFilteredExecution(Long activityId) {
+        TaskActivity activity = taskActivitiesDataService.findById(activityId);
+        if (activity != null) {
+            TaskExecutionProgress progress = activity.getTaskExecutionProgress();
+            progress.addActionFiltered();
+
+            updateTaskProgress(progress, activity);
         }
-
-        updateTaskInProgressMessage(activity);
-        taskActivitiesDataService.update(activity);
-
-        return taskFinished;
     }
 
     @Override
@@ -198,6 +201,25 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     @Transactional
     public long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange) {
         return taskActivitiesDataService.countByActivityTypesAndDate(activityTypes, dateRange);
+    }
+
+    private boolean updateTaskProgress(TaskExecutionProgress progress, TaskActivity activity) {
+        boolean taskFinished = (progress.getActionsSucceeded() + progress.getActionsFiltered()) == progress.getTotalActions();
+
+        if (taskFinished) {
+            activity.setActivityType(TaskActivityType.SUCCESS);
+            if (progress.getActionsFiltered() > 0) {
+                activity.setMessage(TASK_SUCCEEDED_WITH_FILTERED_ACTIONS);
+            } else {
+                activity.setMessage(TASK_SUCCEEDED);
+            }
+            activity.getFields().clear();
+        }
+
+        updateTaskInProgressMessage(activity);
+        taskActivitiesDataService.update(activity);
+
+        return taskFinished;
     }
 
     private void updateTaskInProgressMessage(TaskActivity activity) {

@@ -42,6 +42,13 @@ public interface TaskActivityService {
     boolean addSuccessfulExecution(Long activityId);
 
     /**
+     * Adds filtered execution to the activity of the provided id.
+     *
+     * @param activityId the id of the activity
+     */
+    void addFilteredExecution(Long activityId);
+
+    /**
      * Adds failed execution to the activity of the provided id, which in consequence marks it as "FAILED".
      *
      * @param activityId the id of the activity

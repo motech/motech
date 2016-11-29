@@ -17,6 +17,9 @@ public class TaskExecutionProgress {
     @Field
     private int actionsSucceeded;
 
+    @Field
+    private int actionsFiltered;
+
     public TaskExecutionProgress(int totalActions) {
         this.totalActions = totalActions;
     }
@@ -37,6 +40,14 @@ public class TaskExecutionProgress {
         actionsSucceeded++;
     }
 
+    public int getActionsFiltered() {
+        return actionsFiltered;
+    }
+
+    public void addActionFiltered() {
+        actionsFiltered++;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -47,7 +58,8 @@ public class TaskExecutionProgress {
         }
         TaskExecutionProgress that = (TaskExecutionProgress) o;
         return totalActions == that.totalActions &&
-                actionsSucceeded == that.actionsSucceeded;
+                actionsSucceeded == that.actionsSucceeded &&
+                actionsFiltered == that.actionsFiltered;
     }
 
     @Override
