@@ -78,14 +78,12 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void addFilteredExecution(Long activityId) {
         TaskActivity activity = taskActivitiesDataService.findById(activityId);
-        if (activity == null) {
-            return;
+        if (activity != null) {
+            TaskExecutionProgress progress = activity.getTaskExecutionProgress();
+            progress.addActionFiltered();
+
+            updateTaskProgress(progress, activity);
         }
-
-        TaskExecutionProgress progress = activity.getTaskExecutionProgress();
-        progress.addActionFiltered();
-
-        updateTaskProgress(progress, activity);
     }
 
     @Override
@@ -206,7 +204,7 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     }
 
     private boolean updateTaskProgress(TaskExecutionProgress progress, TaskActivity activity) {
-        boolean taskFinished = progress.getActionsSucceeded() + progress.getActionsFiltered() == progress.getTotalActions();
+        boolean taskFinished = (progress.getActionsSucceeded() + progress.getActionsFiltered()) == progress.getTotalActions();
 
         if (taskFinished) {
             activity.setActivityType(TaskActivityType.SUCCESS);
