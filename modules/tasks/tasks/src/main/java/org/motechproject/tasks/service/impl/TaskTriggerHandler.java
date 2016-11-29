@@ -171,22 +171,29 @@ public class TaskTriggerHandler implements TriggerHandler {
         TaskInitializer initializer = new TaskInitializer(taskContext);
         List<FilterSet> filterSetList = new ArrayList<>(task.getTaskConfig().getFilters());
         boolean actionFilterResult = true;
-        int executedActions = 0;
-        int step = 0;
+        int executedAndFilteredActions = 0;
+        int stepIndex = 0;
         int actualFilterIndex = initializer.getActionFilters();
 
         try {
             LOGGER.info("Executing all actions from task: {}", task.getName());
             if (initializer.evalConfigSteps(dataProviders)) {
-                while (actionFilterResult && executedActions < task.getActions().size()) {
-                    if (shouldCheckFilter(filterSetList, actualFilterIndex, step)) {
+                while (executedAndFilteredActions< task.getActions().size()) {
+                    if (isActionFilter(filterSetList, actualFilterIndex, stepIndex)) {
                         actionFilterResult = initializer.checkActionFilter(actualFilterIndex, filterSetList);
-                        actualFilterIndex += 1;
-                    } else {
-                        executor.execute(task, task.getActions().get(executedActions), executedActions, taskContext, activityId);
-                        executedActions += 1;
+                        actualFilterIndex++;
+                        stepIndex++;
                     }
-                    step += 1;
+
+                    if (actionFilterResult) {
+                        executor.execute(task, task.getActions().get(executedAndFilteredActions), executedAndFilteredActions, taskContext, activityId);
+                        executedAndFilteredActions++;
+                    } else {
+                        activityService.addFilteredExecution(activityId);
+                        executedAndFilteredActions++;
+                    }
+                    stepIndex++;
+                    actionFilterResult = true;
                 }
             } else {
                 activityService.addTaskFiltered(activityId);
@@ -233,7 +240,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         }
     }
 
-    private boolean shouldCheckFilter(List<FilterSet> filterSetList, int index, int step) {
+    private boolean isActionFilter(List<FilterSet> filterSetList, int index, int step) {
         return index < filterSetList.size() && filterSetList.get(index).getActionFilterOrder() == step;
     }
 
