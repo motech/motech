@@ -846,7 +846,7 @@
                         if (scope.selectedElement[0].contains(scope.rangySelection.anchorNode) && anchorValue) {
                             $(scope.rangySelection.anchorNode).before(
                                 anchorValue.substring(0, findStartIndex(anchorValue, scope.rangySelection.anchorOffset))
-                                + " " + prepareField(item, scope.debug) + "&nbsp;" + anchorValue.substring(scope.rangySelection.anchorOffset + 1)
+                                + prepareField(item, scope.debug) + anchorValue.substring(scope.rangySelection.anchorOffset + 1)
                             ).remove();
                         } else {
                             scope.selectedElement.append(prepareField(item, scope.debug));
