@@ -42,6 +42,16 @@ public class GridSettings {
     private String dateTimeTo;
 
     /**
+     * Sort by column
+     */
+    private String sidx;
+
+    /**
+     * Sort direction.
+     */
+    private String sord;
+
+    /**
      * @return To date for searching activities
      */
     public String getDateTimeTo() {
@@ -97,6 +107,21 @@ public class GridSettings {
         this.page = page;
     }
 
+    public String getSidx() {
+        return sidx;
+    }
+
+    public void setSidx(String sidx) {
+        this.sidx = sidx;
+    }
+
+    public String getSord() {
+        return sord;
+    }
+
+    public void setSord(String sord) {
+        this.sord = sord;
+    }
     /**
      * @return the activity types to display
      */

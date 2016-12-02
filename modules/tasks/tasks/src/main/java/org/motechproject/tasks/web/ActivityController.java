@@ -12,6 +12,7 @@ import org.motechproject.tasks.service.TriggerHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -64,7 +65,8 @@ public class ActivityController {
     @ResponseBody
     public TaskActivityRecords getAllActivities(GridSettings settings) {
         if (settings != null) {
-            QueryParams params = new QueryParams(settings.getPage(), settings.getRows(), new Order("date", Order.Direction.DESC));
+            QueryParams params = getParams(settings);
+
             Set<TaskActivityType> types = settings.getTypesFromString();
             Range<DateTime> dateTimeRange = settings.convertToDateRange(settings.getDateTimeFrom(), settings.getDateTimeTo());
             List<TaskActivityDto> activities;
@@ -169,5 +171,21 @@ public class ActivityController {
         for (Long activityId : activityIds) {
             retryTask(activityId);
         }
+    }
+
+    private QueryParams getParams(GridSettings settings) {
+        QueryParams result;
+
+        if (StringUtils.isEmpty(settings.getSidx())) {
+            result = new QueryParams(settings.getPage(), settings.getRows(), new Order("date", Order.Direction.DESC));
+        } else {
+            if ("asc".equals(settings.getSord())) {
+                result = new QueryParams(settings.getPage(), settings.getRows(), new Order(settings.getSidx(), Order.Direction.ASC));
+            } else {
+                result = new QueryParams(settings.getPage(), settings.getRows(), new Order(settings.getSidx(), Order.Direction.DESC));
+            }
+        }
+
+        return result;
     }
 }
