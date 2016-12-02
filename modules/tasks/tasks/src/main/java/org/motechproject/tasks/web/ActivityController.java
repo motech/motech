@@ -12,6 +12,7 @@ import org.motechproject.tasks.service.TriggerHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -175,10 +176,10 @@ public class ActivityController {
     private QueryParams getParams(GridSettings settings) {
         QueryParams result;
 
-        if (settings.getSidx().equals("")) {
+        if (StringUtils.isEmpty(settings.getSidx())) {
             result = new QueryParams(settings.getPage(), settings.getRows(), new Order("date", Order.Direction.DESC));
         } else {
-            if (settings.getSord().equals("asc")) {
+            if ("asc".equals(settings.getSord())) {
                 result = new QueryParams(settings.getPage(), settings.getRows(), new Order(settings.getSidx(), Order.Direction.ASC));
             } else {
                 result = new QueryParams(settings.getPage(), settings.getRows(), new Order(settings.getSidx(), Order.Direction.DESC));
