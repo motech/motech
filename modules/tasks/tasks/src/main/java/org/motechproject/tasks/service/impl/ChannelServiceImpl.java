@@ -112,22 +112,33 @@ public class ChannelServiceImpl implements ChannelService {
             throw new ValidationException(ChannelValidator.CHANNEL, TaskError.toDtos(errors));
         }
 
-        final Channel existingChannel = getChannel(channel.getModuleName());
+        //MOTECH-3049 There is a bug in datanucleus and sometimes ActionParameter is not found in TaskBundleClassLoader,
+        //so we temporary change contextClassLoader to TaskBundleClassLoader while updating channel
 
-        if (existingChannel != null && !existingChannel.equals(channel)) {
-            LOGGER.debug("Updating channel {}", channel.getDisplayName());
-            existingChannel.setActionTaskEvents(channel.getActionTaskEvents());
-            existingChannel.setTriggerTaskEvents(channel.getTriggerTaskEvents());
-            existingChannel.setDescription(channel.getDescription());
-            existingChannel.setDisplayName(channel.getDisplayName());
-            existingChannel.setModuleName(channel.getModuleName());
-            existingChannel.setModuleVersion(channel.getModuleVersion());
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
 
-            channelsDataService.update(existingChannel);
-            sendChannelUpdatedEvent(channel);
-        } else if (existingChannel == null) {
-            LOGGER.debug("Creating channel {}", channel.getDisplayName());
-            channelsDataService.create(channel);
+        try {
+            Thread.currentThread().setContextClassLoader(channel.getClass().getClassLoader());
+
+            final Channel existingChannel = getChannel(channel.getModuleName());
+
+            if (existingChannel != null && !existingChannel.equals(channel)) {
+                LOGGER.debug("Updating channel {}", channel.getDisplayName());
+                existingChannel.setActionTaskEvents(channel.getActionTaskEvents());
+                existingChannel.setTriggerTaskEvents(channel.getTriggerTaskEvents());
+                existingChannel.setDescription(channel.getDescription());
+                existingChannel.setDisplayName(channel.getDisplayName());
+                existingChannel.setModuleName(channel.getModuleName());
+                existingChannel.setModuleVersion(channel.getModuleVersion());
+
+                channelsDataService.update(existingChannel);
+                sendChannelUpdatedEvent(channel);
+            } else if (existingChannel == null) {
+                LOGGER.debug("Creating channel {}", channel.getDisplayName());
+                channelsDataService.create(channel);
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(contextClassLoader);
         }
 
         LOGGER.info(String.format("Saved channel: %s", channel.getDisplayName()));
