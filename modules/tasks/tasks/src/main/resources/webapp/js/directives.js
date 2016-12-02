@@ -36,7 +36,8 @@
                     colModel: [{
                         name: 'task',
                         index: 'task',
-                        sortable: false,
+                        sortable: true,
+                        sorttype: 'text',
                         width: 25,
                         align: 'center'
                     }, {
@@ -151,7 +152,9 @@
                     },
                     loadComplete: function() {
                         $compile($('.grid-ng-clickable'))(scope);
-                    }
+                    },
+                    sortcolumn: 'task',
+                    sortdirection: 'asc'
                 });
             }
         };

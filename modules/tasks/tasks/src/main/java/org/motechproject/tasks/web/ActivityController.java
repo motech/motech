@@ -64,7 +64,8 @@ public class ActivityController {
     @ResponseBody
     public TaskActivityRecords getAllActivities(GridSettings settings) {
         if (settings != null) {
-            QueryParams params = new QueryParams(settings.getPage(), settings.getRows(), new Order("date", Order.Direction.DESC));
+            QueryParams params = getParams(settings);
+
             Set<TaskActivityType> types = settings.getTypesFromString();
             Range<DateTime> dateTimeRange = settings.convertToDateRange(settings.getDateTimeFrom(), settings.getDateTimeTo());
             List<TaskActivityDto> activities;
@@ -169,5 +170,21 @@ public class ActivityController {
         for (Long activityId : activityIds) {
             retryTask(activityId);
         }
+    }
+
+    private QueryParams getParams(GridSettings settings) {
+        QueryParams result;
+
+        if (settings.getSidx().equals("")) {
+            result = new QueryParams(settings.getPage(), settings.getRows(), new Order("date", Order.Direction.DESC));
+        } else {
+            if (settings.getSord().equals("asc")) {
+                result = new QueryParams(settings.getPage(), settings.getRows(), new Order(settings.getSidx(), Order.Direction.ASC));
+            } else {
+                result = new QueryParams(settings.getPage(), settings.getRows(), new Order(settings.getSidx(), Order.Direction.DESC));
+            }
+        }
+
+        return result;
     }
 }
