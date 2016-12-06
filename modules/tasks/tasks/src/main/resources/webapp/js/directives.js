@@ -46,7 +46,7 @@
                             return moment(parseInt(value, 10)).fromNow();
                         },
                         index: 'date',
-                        sortable: false,
+                        sortable: true,
                         width: 35
                     }, {
                         name: 'activityType',
