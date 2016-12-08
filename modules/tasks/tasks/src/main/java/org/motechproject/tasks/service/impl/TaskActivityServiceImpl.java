@@ -9,6 +9,7 @@ import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
 import org.motechproject.tasks.domain.enums.TaskActivityType;
 import org.motechproject.tasks.domain.mds.task.TaskExecutionProgress;
+import org.motechproject.tasks.dto.TaskDto;
 import org.motechproject.tasks.exception.TaskHandlerException;
 import org.motechproject.tasks.repository.TaskActivitiesDataService;
 import org.motechproject.tasks.service.TaskActivityService;
@@ -45,7 +46,7 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     public long addTaskStarted(Task task, Map<String, Object> parameters) {
         int totalActions = task.getActions().size();
         TaskActivity activity = taskActivitiesDataService.create(
-                new TaskActivity(TASK_IN_PROGRESS, Arrays.asList("0", String.valueOf(totalActions)), task.getId(),
+                new TaskActivity(TASK_IN_PROGRESS, Arrays.asList("0", String.valueOf(totalActions)), task.getId(), task.getTrigger().getDisplayName(),
                         TaskActivityType.IN_PROGRESS, null, parameters, new TaskExecutionProgress(totalActions)));
         return activity.getId();
     }
@@ -201,6 +202,21 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     @Transactional
     public long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange) {
         return taskActivitiesDataService.countByActivityTypesAndDate(activityTypes, dateRange);
+    }
+
+    @Override
+    @Transactional
+    public void updateActivitiesTriggerName(List<TaskDto> tasks) {
+        List<TaskActivity> activities = taskActivitiesDataService.retrieveAll();
+
+        for (TaskActivity activity : activities) {
+            for (TaskDto task : tasks) {
+                if(activity.getTask().equals(task.getId())) {
+                    activity.setTriggerName(task.getTrigger().getDisplayName());
+                    taskActivitiesDataService.update(activity);
+                }
+            }
+        }
     }
 
     private boolean updateTaskProgress(TaskExecutionProgress progress, TaskActivity activity) {

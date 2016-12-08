@@ -65,6 +65,8 @@ public class ActivityController {
     @ResponseBody
     public TaskActivityRecords getAllActivities(GridSettings settings) {
         if (settings != null) {
+            activityService.updateActivitiesTriggerName(taskWebService.getAllTasks());
+
             QueryParams params = getParams(settings);
 
             Set<TaskActivityType> types = settings.getTypesFromString();

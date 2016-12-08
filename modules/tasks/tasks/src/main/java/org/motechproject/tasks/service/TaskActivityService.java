@@ -6,6 +6,7 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
 import org.motechproject.tasks.domain.enums.TaskActivityType;
+import org.motechproject.tasks.dto.TaskDto;
 
 import java.util.List;
 import java.util.Map;
@@ -189,4 +190,11 @@ public interface TaskActivityService {
      * @return the count of matching activities
      */
     long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange);
+
+    /**
+     * Updates a triggerName field in the all activities.  
+     *
+     * @param tasks The list of the task.
+     */
+    void updateActivitiesTriggerName(List<TaskDto> tasks);
 }
