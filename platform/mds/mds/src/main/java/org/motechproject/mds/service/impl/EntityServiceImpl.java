@@ -112,6 +112,7 @@ public class EntityServiceImpl implements EntityService {
 
     private static final String NAME_PATH = "basic.name";
     private static final String UNIQUE_PATH = "basic.unique";
+    private static final String REQUIRED_PATH = "basic.required";
 
     private AllEntities allEntities;
     private AllTypes allTypes;
@@ -292,6 +293,12 @@ public class EntityServiceImpl implements EntityService {
                     }
                     // Perform update
                     field.update(dto);
+                } else if (REQUIRED_PATH.equals(path)) {
+                    Field originalField = draft.getParentEntity().getField(field.getName());
+                    handleRequiredChanges(originalField, draft, value, field);
+
+                    // Perform update
+                    field.update(dto);
                 } else {
                     // Perform update
                     field.update(dto);
@@ -386,10 +393,25 @@ public class EntityServiceImpl implements EntityService {
         // will throw exception if it is used
         entityValidator.validateFieldNotUsedByLookups(draft, fieldId);
 
+        String fieldName = draft.getField(fieldId).getName();
+        //Drop only columns that have already existed in db
+        if (draft.getParentEntity().getField(fieldName) != null) {
+            draft.addFieldToRemove(fieldName);
+        }
+
         draft.removeField(fieldId);
         allEntityDrafts.update(draft);
     }
 
+    private void handleRequiredChanges(Field originalField, EntityDraft draft, List value, Field field) {
+        if (originalField != null) {
+            boolean originalRequired = originalField.isRequired();
+            boolean newVal = (boolean) value.get(0);
+            if (originalRequired != newVal) {
+                draft.addRequiredToChange(field.getName(), newVal);
+            }
+        }
+    }
 
     @Override
     @Transactional
@@ -414,8 +436,10 @@ public class EntityServiceImpl implements EntityService {
         Entity parent = draft.getParentEntity();
         String username = draft.getDraftOwnerUsername();
 
+        mdsConstructor.removeFields(parent, draft.getFieldsToRemove());
         mdsConstructor.updateFields(parent, draft.getFieldNameChanges());
         mdsConstructor.removeUniqueIndexes(parent, draft.getUniqueIndexesToDrop());
+        mdsConstructor.updateRequired(parent, draft.getFieldNameRequired());
         comboboxDataMigrationHelper.migrateComboboxDataIfNecessary(parent, draft);
 
         List<UserPreferencesDto> oldEntityPreferences = userPreferencesService.getEntityPreferences(parent.getId());

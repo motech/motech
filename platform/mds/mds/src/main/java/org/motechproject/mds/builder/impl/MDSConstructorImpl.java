@@ -5,6 +5,7 @@ import javassist.CannotCompileException;
 import javassist.CtClass;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.motechproject.commons.sql.service.SqlDBManager;
 import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.builder.EntityInfrastructureBuilder;
@@ -61,6 +62,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Default implementation of {@link org.motechproject.mds.builder.MDSConstructor} interface.
@@ -69,6 +71,8 @@ import java.util.Properties;
 public class MDSConstructorImpl implements MDSConstructor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MDSConstructorImpl.class);
+
+    private static final String DATA_TRANSACTION_MANAGER = "dataTransactionManager";
 
     private MdsConfig mdsConfig;
     private EntityBuilder entityBuilder;
@@ -301,10 +305,10 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     @Override
-    @Transactional("dataTransactionManager")
+    @Transactional(DATA_TRANSACTION_MANAGER)
     public void updateFields(Entity entity, Map<String, String> fieldNameChanges) {
         for (String key : fieldNameChanges.keySet()) {
-            String tableName = ClassTableName.getTableName(entity.getClassName(), entity.getModule(), entity.getNamespace(), entity.getTableName(), null);
+            String tableName = ClassTableName.getTableName(entity, EntityType.STANDARD);
             updateFieldName(key, fieldNameChanges.get(key), tableName);
             if (entity.isRecordHistory()) {
                 updateFieldName(key, fieldNameChanges.get(key), ClassTableName.getTableName(entity, EntityType.HISTORY));
@@ -314,14 +318,57 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     @Override
-    @Transactional("dataTransactionManager")
-    public void removeUniqueIndexes(Entity entity, Collection<String> fields) {
-        String tableName = ClassTableName.getTableName(entity.getClassName(), entity.getModule(),
-                entity.getNamespace(), entity.getTableName(), null);
+    @Transactional(DATA_TRANSACTION_MANAGER)
+    public void updateRequired(Entity entity, Map<String, String> fieldNameRequired) {
+        String tableName = ClassTableName.getTableName(entity, EntityType.STANDARD);
+        String historyTableName = entity.isRecordHistory() ? ClassTableName.getTableName(entity, EntityType.HISTORY) : null;
+        String trashTableName = ClassTableName.getTableName(entity, EntityType.TRASH);
+
+        boolean isMySqlDriver = isMysql();
+
+        for (String field : fieldNameRequired.keySet()) {
+            boolean required = Boolean.valueOf(fieldNameRequired.get(field));
+            updateRequired(field, required, tableName, isMySqlDriver);
+
+            //update history and trash tables only if column is not required
+            if (!required) {
+                updateRequired(field, false, trashTableName, isMySqlDriver);
+
+                if (StringUtils.isNotEmpty(historyTableName)) {
+                    updateRequired(field, false, historyTableName, isMySqlDriver);
+                }
+            }
+        }
+    }
+
+    @Override
+    @Transactional(DATA_TRANSACTION_MANAGER)
+    public void removeFields(Entity entity, Set<String> fieldsToRemove) {
+        String tableName = ClassTableName.getTableName(entity, EntityType.STANDARD);
+        String historyTableName = entity.isRecordHistory() ? ClassTableName.getTableName(entity, EntityType.HISTORY) : null;
+        String trashTableName = ClassTableName.getTableName(entity, EntityType.TRASH);
 
         PersistenceManager pm = persistenceManagerFactory.getPersistenceManager();
 
-        boolean isMySql = sqlDBManager.getChosenSQLDriver().equals(Constants.Config.MYSQL_DRIVER_CLASSNAME);
+        boolean isMySql = isMysql();
+
+        for (String field : fieldsToRemove) {
+            removeField(pm, isMySql, tableName, field);
+            if (StringUtils.isNotEmpty(historyTableName)) {
+                removeField(pm, isMySql, historyTableName, field);
+            }
+            removeField(pm, isMySql, trashTableName, field);
+        }
+    }
+
+    @Override
+    @Transactional(DATA_TRANSACTION_MANAGER)
+    public void removeUniqueIndexes(Entity entity, Collection<String> fields) {
+        String tableName = ClassTableName.getTableName(entity, EntityType.STANDARD);
+
+        PersistenceManager pm = persistenceManagerFactory.getPersistenceManager();
+
+        boolean isMySql = isMysql();
 
         for (String field : fields) {
             String constraintName = KeyNames.uniqueKeyName(entity.getName(), field);
@@ -481,7 +528,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         JDOConnection con = persistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
         Connection nativeCon = (Connection) con.getNativeConnection();
 
-        boolean isMySqlDriver = sqlDBManager.getChosenSQLDriver().equals(Constants.Config.MYSQL_DRIVER_CLASSNAME);
+        boolean isMySqlDriver = isMysql();
 
         try {
             Statement stmt = nativeCon.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -501,11 +548,11 @@ public class MDSConstructorImpl implements MDSConstructor {
             stmt = nativeCon.createStatement();
 
             StringBuilder updateQuery = new StringBuilder("ALTER TABLE ");
-            updateQuery.append(getDatabaseValidName(tableName, isMySqlDriver));
+            updateQuery.append(enquoteIfPostgres(tableName, isMySqlDriver));
             updateQuery.append(isMySqlDriver ? " CHANGE " : " RENAME COLUMN ");
-            updateQuery.append(getDatabaseValidName(oldName, isMySqlDriver));
+            updateQuery.append(enquoteIfPostgres(oldName, isMySqlDriver));
             updateQuery.append(isMySqlDriver ? " " : " TO ");
-            updateQuery.append(getDatabaseValidName(newName, isMySqlDriver));
+            updateQuery.append(enquoteIfPostgres(newName, isMySqlDriver));
 
             if (isMySqlDriver) {
                 updateQuery.append(" ");
@@ -529,8 +576,66 @@ public class MDSConstructorImpl implements MDSConstructor {
         }
     }
 
-    private String getDatabaseValidName(String name, boolean isMySqlDriver) {
+    private void removeField(PersistenceManager pm, boolean isMySql, String tableName, String field) {
+        String sql = String.format("ALTER TABLE %s DROP COLUMN %s", enquoteIfPostgres(tableName, isMySql),
+                enquoteIfPostgres(field, isMySql));
+
+        Query query = pm.newQuery(Constants.Util.SQL_QUERY, sql);
+
+        query.execute();
+    }
+
+    private void updateRequired(String field, boolean required, String tableName, boolean isMySqlDriver) {
+        JDOConnection con = persistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
+        Connection nativeCon = (Connection) con.getNativeConnection();
+
+        try {
+            Statement stmt = nativeCon.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+            StringBuilder fieldTypeQuery = new StringBuilder("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '");
+            fieldTypeQuery.append(tableName);
+            fieldTypeQuery.append("' AND COLUMN_NAME = '");
+            fieldTypeQuery.append(field);
+            fieldTypeQuery.append("';");
+            ResultSet resultSet = stmt.executeQuery(fieldTypeQuery.toString());
+            resultSet.first();
+            String fieldType = resultSet.getString("DATA_TYPE");
+            con.close();
+
+            con = persistenceManagerFactory.getPersistenceManager().getDataStoreConnection();
+            nativeCon = (Connection) con.getNativeConnection();
+            stmt = nativeCon.createStatement();
+
+            StringBuilder updateQuery = new StringBuilder("ALTER TABLE ");
+            updateQuery.append(enquoteIfPostgres(tableName, isMySqlDriver));
+            updateQuery.append(isMySqlDriver ? " MODIFY " : " ALTER COLUMN ");
+            updateQuery.append(enquoteIfPostgres(field, isMySqlDriver));
+
+            if (isMySqlDriver) {
+                updateQuery.append(" ");
+                updateQuery.append("varchar".equals(fieldType) ? "varchar(255)" : fieldType);
+
+                updateQuery.append(required ? " NOT NULL" : " DEFAULT NULL");
+            } else {
+                updateQuery.append(required ? " SET NOT NULL" : "DROP NOT NULL");
+            }
+
+            updateQuery.append(";");
+
+            stmt.executeUpdate(updateQuery.toString());
+        } catch (SQLException e) {
+            LOGGER.error(String.format("Error while updating required constraints for %s", tableName), e);
+        } finally {
+            con.close();
+        }
+    }
+
+    private String enquoteIfPostgres(String name, boolean isMySqlDriver) {
         return isMySqlDriver ? name : "\"".concat(name).concat("\"");
+    }
+
+    private boolean isMysql() {
+        return sqlDBManager.getChosenSQLDriver().equals(Constants.Config.MYSQL_DRIVER_CLASSNAME);
     }
 
     private MdsJDOEnhancer createEnhancer(ClassLoader enhancerClassLoader) {
