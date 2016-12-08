@@ -42,7 +42,6 @@ public class SendEmailController {
     @ApiOperation(value="Sends the email to the given address")
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseStatus(HttpStatus.OK)
-
     public void sendEmail(@RequestBody Mail email) throws EmailSendException {
         senderService.send(email.getFromAddress(), email.getToAddress(), email.getSubject(), email.getMessage());
     }

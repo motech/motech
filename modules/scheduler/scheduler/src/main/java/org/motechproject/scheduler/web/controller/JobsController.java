@@ -161,7 +161,6 @@ public class JobsController {
      */
     @RequestMapping(value = "/job", method = RequestMethod.GET)
     @ApiOperation(value = "Return a job based on the given information")
-    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public SchedulableJob getJob(JobBasicInfo jobInfo) {
         return motechSchedulerService.getJob(jobInfo);
