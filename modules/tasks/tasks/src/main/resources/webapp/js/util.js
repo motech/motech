@@ -362,6 +362,10 @@
                         str.push("{0}.{1}.{2}#{3}.{4}".format(utils.DATA_SOURCE_PREFIX, field.providerName, field.providerType, field.objectId, field.fieldKey));
                         str.push("{0}.{1}".format(field.specifiedParentName, field.fieldKey));
                         break;
+                    case utils.POST_ACTION_PREFIX:
+                        str.push(field.displayName);
+                        str.push("{0}.{1}".format(field.specifiedParentName, field.displayName));
+                        break;
                     default:
                         str.push(field.displayName);
                 }
