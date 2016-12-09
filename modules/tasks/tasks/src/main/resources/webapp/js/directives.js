@@ -605,7 +605,7 @@
                     } else {
                         return "{{{0}.{1}}}".format(
                             field.specifiedParentName,
-                            field.fieldKey
+                            field.displayName
                         );
                     }
             }
