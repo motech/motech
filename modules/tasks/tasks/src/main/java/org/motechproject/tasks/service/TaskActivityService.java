@@ -190,11 +190,4 @@ public interface TaskActivityService {
      * @return the count of matching activities
      */
     long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange);
-
-    /**
-     * Updates a triggerName field in the all activities.  
-     *
-     * @param tasks The list of the task.
-     */
-    void updateActivitiesTriggerName(List<TaskDto> tasks);
 }

@@ -204,21 +204,6 @@ public class TaskActivityServiceImpl implements TaskActivityService {
         return taskActivitiesDataService.countByActivityTypesAndDate(activityTypes, dateRange);
     }
 
-    @Override
-    @Transactional
-    public void updateActivitiesTriggerName(List<TaskDto> tasks) {
-        List<TaskActivity> activities = taskActivitiesDataService.retrieveAll();
-
-        for (TaskActivity activity : activities) {
-            for (TaskDto task : tasks) {
-                if(activity.getTask().equals(task.getId())) {
-                    activity.setTriggerName(task.getTrigger().getDisplayName());
-                    taskActivitiesDataService.update(activity);
-                }
-            }
-        }
-    }
-
     private boolean updateTaskProgress(TaskExecutionProgress progress, TaskActivity activity) {
         boolean taskFinished = (progress.getActionsSucceeded() + progress.getActionsFiltered()) == progress.getTotalActions();
 
