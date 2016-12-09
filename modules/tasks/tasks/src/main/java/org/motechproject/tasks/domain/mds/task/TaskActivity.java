@@ -118,7 +118,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
      *
      * @param message  the activity message
      * @param fields  the field names
-     * @param task  the activity ID
+     * @param task  the task ID
      * @param activityType  the activity type
      * @param stackTraceElement  the stack trace that caused the task failure
      * @param parameters the parameters used by the task in this execution
@@ -134,7 +134,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
      *
      * @param message  the activity message
      * @param fields  the field names
-     * @param task  the activity ID
+     * @param task  the task ID
      * @param triggerName the task trigger name
      * @param activityType  the activity type
      * @param stackTraceElement  the stack trace that caused the task failure
@@ -185,7 +185,6 @@ public class TaskActivity implements Comparable<TaskActivity> {
     public void setTriggerName(final String triggerName) {
         this.triggerName = triggerName;
     }
-
 
     public List<String> getFields() {
         return fields;

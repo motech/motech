@@ -6,7 +6,6 @@ import org.motechproject.mds.query.QueryParams;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
 import org.motechproject.tasks.domain.enums.TaskActivityType;
-import org.motechproject.tasks.dto.TaskDto;
 
 import java.util.List;
 import java.util.Map;
