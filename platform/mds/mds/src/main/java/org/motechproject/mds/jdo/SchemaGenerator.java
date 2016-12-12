@@ -44,6 +44,8 @@ public class SchemaGenerator implements InitializingBean {
 
     public static final String FLYWAY_PLACEHOLDER_PREFIX = "$flyway{";
 
+    private static final String FLYWAY_MIGRATION_PREFIX_PROPERTY = "flyway.sqlMigrationPrefix";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SchemaGenerator.class);
 
     private JDOPersistenceManagerFactory persistenceManagerFactory;
@@ -84,6 +86,8 @@ public class SchemaGenerator implements InitializingBean {
             Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
 
             Properties flywayConfig = mdsConfig.getFlywayDataProperties();
+
+            flywayConfig.setProperty(FLYWAY_MIGRATION_PREFIX_PROPERTY, "M");
 
             LOGGER.debug("Starting the flyway modules migrations from {}.", migrationDirectory.getAbsolutePath());
             //No migration directory
