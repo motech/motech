@@ -341,8 +341,11 @@ public class MdsBundleIT extends BasePaxIT {
     }
 
     private EntityDto createEntityForPreferencesTest() {
-        EntityDto entityDto = new EntityDto(null, CLASS_NAME);
+        EntityDto entityDto = new EntityDto(null, FOO);
         entityDto = entityService.createEntity(entityDto);
+
+        SchemaHolder schemaHolder = entityService.getSchema();
+        generator.regenerateMdsDataBundle(schemaHolder);
 
         List<FieldDto> fields = new ArrayList<>();
         fields.add(new FieldDto(null, entityDto.getId(),
@@ -374,6 +377,9 @@ public class MdsBundleIT extends BasePaxIT {
         displayedFields.put("someString", 3L);
 
         entityService.addDisplayedFields(entityDto, displayedFields);
+
+        schemaHolder = entityService.getSchema();
+        generator.regenerateMdsDataBundle(schemaHolder);
 
         return entityDto;
     }
