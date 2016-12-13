@@ -5,6 +5,7 @@ import org.motechproject.mds.dto.SchemaHolder;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This interface provides methods to create a class for the given entity. The implementation of this
@@ -39,6 +40,10 @@ public interface MDSConstructor {
      * @param fieldNameChanges A map, indexed by current field names and values being updated field names.
      */
     void updateFields(Entity entity, Map<String, String> fieldNameChanges);
+
+    void updateRequired(Entity entity, Map<String, String> fieldNameRequired);
+
+    void removeFields(Entity entity, Set<String> fieldsToRemove);
 
     /**
      * Removes unique indexes from an entity table.

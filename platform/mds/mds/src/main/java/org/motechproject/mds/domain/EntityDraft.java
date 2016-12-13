@@ -27,6 +27,7 @@ import java.util.Set;
 @PersistenceCapable
 @Inheritance(strategy = InheritanceStrategy.SUPERCLASS_TABLE)
 public class EntityDraft extends Entity {
+    private static final String ID_OID = "id_OID";
 
     @Persistent
     @Column(allowsNull = "false")
@@ -44,14 +45,23 @@ public class EntityDraft extends Entity {
     @Persistent
     private boolean changesMade;
 
-    @Join(table = "EntityDraft_fieldNameChanges", column = "id_OID")
+    @Join(table = "EntityDraft_fieldNameChanges", column = ID_OID)
     @Key(column = "oldName")
     @Value(column = "newName")
     private Map<String, String> fieldNameChanges = new HashMap<>();
 
-    @Join(table = "EntityDraft_uniqueIndexesToDropV2", column = "id_OID")
+    @Join(table = "EntityDraft_uniqueIndexesToDropV2", column = ID_OID)
     @Element(column = "fieldName")
     private Set<String> uniqueIndexesToDrop = new HashSet<>();
+
+    @Join(table = "EntityDraft_fieldsToRemove", column = ID_OID)
+    @Element(column = "fieldName")
+    private Set<String> fieldsToRemove = new HashSet<>();
+
+    @Join(table = "EntityDraft_fieldNameRequired", column = ID_OID)
+    @Key(column = "fieldName")
+    @Value(column = "required")
+    private Map<String, String> fieldNameRequired = new HashMap<>();
 
     @Override
     public void updateAdvancedSetting(AdvancedSettingsDto advancedSettings) {
@@ -117,11 +127,39 @@ public class EntityDraft extends Entity {
         this.uniqueIndexesToDrop = uniqueIndexesToDrop;
     }
 
+    public Set<String> getFieldsToRemove() {
+        return fieldsToRemove;
+    }
+
+    public void setFieldsToRemove(Set<String> fieldsToRemove) {
+        this.fieldsToRemove = fieldsToRemove;
+    }
+
+    public void addFieldToRemove(String fieldName) {
+        this.fieldsToRemove.add(fieldName);
+    }
+
+    public Map<String, String> getFieldNameRequired() {
+        return fieldNameRequired;
+    }
+
+    public void setFieldNameRequired(Map<String, String> fieldNameRequired) {
+        this.fieldNameRequired = fieldNameRequired;
+    }
+
     public void addUniqueToRemove(String fieldName) {
         String actualName = getFieldNameChanges().containsKey(fieldName) ?
                 getFieldNameChanges().get(fieldName) :
                 fieldName;
         getUniqueIndexesToDrop().add(actualName);
+    }
+
+    public void addRequiredToChange(String fieldName, boolean newValue) {
+        String actualName = getFieldNameChanges().containsKey(fieldName) ?
+                getFieldNameChanges().get(fieldName) :
+                fieldName;
+
+        this.fieldNameRequired.put(actualName, Boolean.toString(newValue));
     }
 
     public void addFieldNameChange(String originalName, String newName) {
