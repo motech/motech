@@ -32,7 +32,7 @@ public class TaskError implements Serializable {
     @Field
     private List<String> args;
 
-    @Field(required = true)
+    @Field(required = true, type = "text")
     private String message;
 
     /**

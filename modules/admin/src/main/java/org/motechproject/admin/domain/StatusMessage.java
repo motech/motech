@@ -7,7 +7,6 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.util.SecurityMode;
 
-import javax.jdo.annotations.Column;
 import javax.validation.constraints.Size;
 
 /**
@@ -19,7 +18,7 @@ import javax.validation.constraints.Size;
  * @see org.motechproject.admin.domain.NotificationRule
  */
 @Entity(nonEditable = true)
-@Access(value = SecurityMode.PERMISSIONS, members = {"manageMessages"})
+@Access(value = SecurityMode.PERMISSIONS, members = { "manageMessages" })
 public class StatusMessage {
 
     @Field(required = true)
