@@ -514,7 +514,6 @@ public class EntityServiceContextIT extends BaseIT {
         entityDto3.setName("RelationTestEnt3");
         entityDto3 = entityService.createEntity(entityDto3);
 
-
         EntityDraft entityDraft1 = entityService.getEntityDraft(entityDto1.getId());
         Set<Lookup> fieldLookups = new HashSet<>();
         Field field = new Field(entityDraft1, "newField", "Display Name", fieldLookups);
@@ -564,13 +563,6 @@ public class EntityServiceContextIT extends BaseIT {
         entityService.commitChanges(entityDto1.getId());
         relatedField = getField(entityDto3.getId(), "newNameForRelatedField");
         assertRelatedField(entityDto1, relatedField, "java.util.List");
-
-        entityDraft1 = entityService.getEntityDraft(entityDto1.getId());
-        draftData = DraftBuilder.forFieldRemoval(entityDraft1.getField("newField").getId());
-        entityService.saveDraftEntityChanges(entityDto1.getId(), draftData);
-        entityService.commitChanges(entityDto1.getId());
-        assertNull(getField(entityDto1.getId(), "newField"));
-        assertNull(getField(entityDto3.getId(), "newNameForRelatedField"));
     }
 
     @Test
