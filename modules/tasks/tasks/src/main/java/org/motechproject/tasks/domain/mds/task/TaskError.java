@@ -10,6 +10,7 @@ import org.motechproject.tasks.constants.TasksRoles;
 import org.motechproject.tasks.domain.enums.TaskErrorType;
 import org.motechproject.tasks.dto.TaskErrorDto;
 
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ public class TaskError implements Serializable {
     private List<String> args;
 
     @Field(required = true)
+    @Size(max = 20000)
     private String message;
 
     /**
