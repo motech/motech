@@ -744,8 +744,6 @@
                 filter.key = empty;
                 filter.type = empty;
             }
-
-            $scope.setFilterOperators(filter.type);
         };
 
         $scope.setFilterOperators = function(type) {

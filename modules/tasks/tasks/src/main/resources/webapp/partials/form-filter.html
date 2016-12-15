@@ -88,7 +88,8 @@
                                 </span>
                                 <span class="validation-area form-group">
                                     <div class="btn-group offset-1">
-                                        <a class="btn dropdown-toggle dropdown-medium-fluid" data-toggle="dropdown" target="_self" href="#" ng-class="{'btn-danger': !filter.operator, 'btn-default': filter.operator}" ng-disabled="filter.negationOperator == undefined">
+                                        <a class="btn dropdown-toggle dropdown-medium-fluid" data-toggle="dropdown" target="_self" href="#" ng-class="{'btn-danger': !filter.operator, 'btn-default': filter.operator}"
+                                           ng-disabled="filter.negationOperator == undefined" ng-click="setFilterOperators(filter.type)">
                                             {{msg(filter.operator || 'task.info.filter.select')}}
                                             <span class="caret"></span>
                                         </a>
