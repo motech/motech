@@ -375,6 +375,7 @@
                      selector.select();
                      document.execCommand('copy');
                      document.body.removeChild(elementToCopy);
+                     ctrlDown = false;
                 }
 
                 element.click(function (event) {
@@ -612,7 +613,7 @@
                     } else {
                         return "{{{0}.{1}}}".format(
                             field.specifiedParentName,
-                            field.fieldKey
+                            field.displayName
                         );
                     }
             }
