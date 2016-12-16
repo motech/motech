@@ -38,7 +38,7 @@
                         index: 'triggerName',
                         sortable: true,
                         sorttype: 'text',
-                        width: 25,
+                        width: 45,
                         align: 'center'
                     }, {
                         name: 'task',
@@ -66,7 +66,7 @@
                         name: 'message',
                         index: 'message',
                         sortable: false,
-                        width: 155
+                        width: 135
                     }, {
                         name: 'retry',
                         index: 'retry',
