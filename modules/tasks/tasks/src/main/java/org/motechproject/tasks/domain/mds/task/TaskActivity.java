@@ -36,6 +36,9 @@ public class TaskActivity implements Comparable<TaskActivity> {
     @Field(displayName = "Task", required = true)
     private Long task;
 
+    @Field(displayName = "Trigger")
+    private String triggerName;
+
     @Field(displayName = "Fields")
     private List<String> fields;
 
@@ -115,7 +118,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
      *
      * @param message  the activity message
      * @param fields  the field names
-     * @param task  the activity ID
+     * @param task  the task ID
      * @param activityType  the activity type
      * @param stackTraceElement  the stack trace that caused the task failure
      * @param parameters the parameters used by the task in this execution
@@ -123,9 +126,27 @@ public class TaskActivity implements Comparable<TaskActivity> {
      */
     public TaskActivity(String message, List<String> fields, Long task, TaskActivityType activityType, String stackTraceElement,
                         Map<String, Object> parameters, TaskExecutionProgress executionProgress) {
+        this(message, fields, task, null, activityType, stackTraceElement, parameters, executionProgress);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param message  the activity message
+     * @param fields  the field names
+     * @param task  the task ID
+     * @param triggerName the task trigger name
+     * @param activityType  the activity type
+     * @param stackTraceElement  the stack trace that caused the task failure
+     * @param parameters the parameters used by the task in this execution
+     * @param executionProgress the progress of task action executions
+     */
+    public TaskActivity(String message, List<String> fields, Long task, String triggerName, TaskActivityType activityType, String stackTraceElement,
+                        Map<String, Object> parameters, TaskExecutionProgress executionProgress) {
         this.message = message;
         this.fields = fields;
         this.task = task;
+        this.triggerName = triggerName;
         this.date = DateTimeSourceUtil.now();
         this.activityType = activityType;
         this.stackTraceElement = stackTraceElement;
@@ -155,6 +176,14 @@ public class TaskActivity implements Comparable<TaskActivity> {
 
     public void setTask(final Long task) {
         this.task = task;
+    }
+
+    public String getTriggerName() {
+        return triggerName;
+    }
+
+    public void setTriggerName(final String triggerName) {
+        this.triggerName = triggerName;
     }
 
     public List<String> getFields() {
@@ -216,7 +245,7 @@ public class TaskActivity implements Comparable<TaskActivity> {
     }
 
     public TaskActivityDto toDto() {
-        return new TaskActivityDto(id, message, task, fields, date, activityType, stackTraceElement, parameters);
+        return new TaskActivityDto(id, message, task, triggerName, fields, date, activityType, stackTraceElement, parameters);
     }
 
     @Override

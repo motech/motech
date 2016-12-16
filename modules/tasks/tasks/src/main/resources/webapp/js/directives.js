@@ -33,7 +33,14 @@
                     jsonReader:{
                         repeatitems:false
                     },
-                    colModel: [{
+                    colModel: [ {
+                        name: 'triggerName',
+                        index: 'triggerName',
+                        sortable: true,
+                        sorttype: 'text',
+                        width: 25,
+                        align: 'center'
+                    }, {
                         name: 'task',
                         index: 'task',
                         sortable: true,
@@ -85,6 +92,7 @@
                     pager: '#' + attrs.taskHistoryGrid,
                     viewrecords: true,
                     gridComplete: function () {
+                        elem.jqGrid('setLabel', 'triggerName', scope.msg('task.subsection.trigger'));
                         elem.jqGrid('setLabel', 'task', scope.msg('task.subsection.taskName'));
                         elem.jqGrid('setLabel', 'date', scope.msg('task.subsection.information'));
                         elem.jqGrid('setLabel', 'activityType', scope.msg('task.subsection.status'));

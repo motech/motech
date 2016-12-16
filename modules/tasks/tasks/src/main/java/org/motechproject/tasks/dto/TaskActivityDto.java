@@ -12,6 +12,7 @@ public class TaskActivityDto {
     private Long id;
     private String message;
     private Long task;
+    private String triggerName;
     private List<String> fields;
     private DateTime date;
     private TaskActivityType activityType;
@@ -25,9 +26,14 @@ public class TaskActivityDto {
     }
 
     public TaskActivityDto(Long id, String message, Long task, List<String> fields, DateTime date, TaskActivityType activityType, String stackTraceElement, Map<String, Object> parameters) {
+        this(id, message, task, null, fields, date, activityType, stackTraceElement, parameters);
+    }
+
+    public TaskActivityDto(Long id, String message, Long task, String triggerName, List<String> fields, DateTime date, TaskActivityType activityType, String stackTraceElement, Map<String, Object> parameters) {
         this.id = id;
         this.message = message;
         this.task = task;
+        this.triggerName = triggerName;
         this.fields = fields;
         this.date = date;
         this.activityType = activityType;
@@ -57,6 +63,14 @@ public class TaskActivityDto {
 
     public void setTask(Long task) {
         this.task = task;
+    }
+
+    public String getTriggerName() {
+        return triggerName;
+    }
+
+    public void setTriggerName(String triggerName) {
+        this.triggerName = triggerName;
     }
 
     public List<String> getFields() {
