@@ -45,7 +45,7 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     public long addTaskStarted(Task task, Map<String, Object> parameters) {
         int totalActions = task.getActions().size();
         TaskActivity activity = taskActivitiesDataService.create(
-                new TaskActivity(TASK_IN_PROGRESS, Arrays.asList("0", String.valueOf(totalActions)), task.getId(),
+                new TaskActivity(TASK_IN_PROGRESS, Arrays.asList("0", String.valueOf(totalActions)), task.getId(), task.getTrigger().getDisplayName(),
                         TaskActivityType.IN_PROGRESS, null, parameters, new TaskExecutionProgress(totalActions)));
         return activity.getId();
     }
