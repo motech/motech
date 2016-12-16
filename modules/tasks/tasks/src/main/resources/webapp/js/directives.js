@@ -1014,7 +1014,7 @@
         };
     });
 
-    directives.directive('manipulationModal', function ($compile, BootstrapDialogManager, HelpStringManipulation) {
+    directives.directive('manipulationModal', function ($compile, $templateCache, BootstrapDialogManager, HelpStringManipulation) {
         return {
             restrict: 'A',
             scope: {
@@ -1051,6 +1051,9 @@
                         if(scope.manipulations && Array.isArray(scope.manipulations)) {
                             modalScope.manipulations = jQuery.extend(true, [], scope.manipulations);
                         }
+
+                        $templateCache.removeAll();
+
                         scope.importDialog = new BootstrapDialog({
                             closable: false,
                             autodestroy: false,
