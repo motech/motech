@@ -74,37 +74,39 @@ public class TaskFilterExecutorTest {
         assertTrue(taskFilterExecutor.checkFilters(new ArrayList<>(), null, taskContext));
 
         List<Filter> filters = new ArrayList<>();
-        filters.add(new Filter("EventName", "trigger.eventName", UNICODE, true, CONTAINS.getValue(), "ven"));
-        filters.add(new Filter("EventName", "trigger.eventName", TEXTAREA, true, EXIST.getValue(), ""));
-        filters.add(new Filter("EventName", "trigger.eventName", UNICODE, true, EQUALS.getValue(), "event name"));
-        filters.add(new Filter("EventName", "trigger.eventName", UNICODE, true, EQUALS_IGNORE_CASE.getValue(), "EvEnT nAmE"));
-        filters.add(new Filter("EventName", "trigger.eventName", UNICODE, true, STARTSWITH.getValue(), "ev"));
-        filters.add(new Filter("EventName", "trigger.eventName", UNICODE, true, ENDSWITH.getValue(), "me"));
+        List<String> filtersManipulations = new ArrayList<>();
 
-        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, true, GT.getValue(), "19"));
-        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, false, GT.getValue(), "1234567891"));
-        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, true, LT.getValue(), "1234567891"));
-        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, false, LT.getValue(), "123"));
-        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, true, EQ_NUMBER.getValue(), "123456789"));
-        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, false, EQ_NUMBER.getValue(), "789"));
-        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, true, EXIST.getValue(), ""));
+        filters.add(new Filter("EventName", "trigger.eventName", UNICODE, true, CONTAINS.getValue(), "ven", filtersManipulations));
+        filters.add(new Filter("EventName", "trigger.eventName", TEXTAREA, true, EXIST.getValue(), "", filtersManipulations));
+        filters.add(new Filter("EventName", "trigger.eventName", UNICODE, true, EQUALS.getValue(), "event name", filtersManipulations));
+        filters.add(new Filter("EventName", "trigger.eventName", UNICODE, true, EQUALS_IGNORE_CASE.getValue(), "EvEnT nAmE", filtersManipulations));
+        filters.add(new Filter("EventName", "trigger.eventName", UNICODE, true, STARTSWITH.getValue(), "ev", filtersManipulations));
+        filters.add(new Filter("EventName", "trigger.eventName", UNICODE, true, ENDSWITH.getValue(), "me", filtersManipulations));
 
-        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, CONTAINS.getValue(), "am"));
-        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, EXIST.getValue(), ""));
-        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, EQUALS.getValue(), "name"));
-        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, EQUALS_IGNORE_CASE.getValue(), "nAmE"));
-        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, STARTSWITH.getValue(), "na"));
-        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, ENDSWITH.getValue(), "me"));
+        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, true, GT.getValue(), "19", filtersManipulations));
+        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, false, GT.getValue(), "1234567891", filtersManipulations));
+        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, true, LT.getValue(), "1234567891", filtersManipulations));
+        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, false, LT.getValue(), "123", filtersManipulations));
+        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, true, EQ_NUMBER.getValue(), "123456789", filtersManipulations));
+        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, false, EQ_NUMBER.getValue(), "789", filtersManipulations));
+        filters.add(new Filter("ExternalID", "trigger.externalId", INTEGER, true, EXIST.getValue(), "", filtersManipulations));
 
-        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, GT.getValue(), "30"));
-        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, LT.getValue(), "50"));
-        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, EQ_NUMBER.getValue(), "46"));
-        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, EXIST.getValue(), ""));
-        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, false, GT.getValue(), "100"));
+        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, CONTAINS.getValue(), "am", filtersManipulations));
+        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, EXIST.getValue(), "", filtersManipulations));
+        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, EQUALS.getValue(), "name", filtersManipulations));
+        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, EQUALS_IGNORE_CASE.getValue(), "nAmE", filtersManipulations));
+        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, STARTSWITH.getValue(), "na", filtersManipulations));
+        filters.add(new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, ENDSWITH.getValue(), "me", filtersManipulations));
 
-        filters.add(new Filter("MRS.Person#1.Dead", "ad.2.Person#1.dead", BOOLEAN, false, EXIST.getValue(), ""));
-        filters.add(new Filter("MRS.Person#1.Dead", "ad.2.Person#1.dead", BOOLEAN, false, AND.getValue(), "false"));
-        filters.add(new Filter("MRS.Person#1.Dead", "ad.2.Person#1.dead", BOOLEAN, true, OR.getValue(), "true"));
+        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, GT.getValue(), "30", filtersManipulations));
+        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, LT.getValue(), "50", filtersManipulations));
+        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, EQ_NUMBER.getValue(), "46", filtersManipulations));
+        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, EXIST.getValue(), "", filtersManipulations));
+        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, false, GT.getValue(), "100", filtersManipulations));
+
+        filters.add(new Filter("MRS.Person#1.Dead", "ad.2.Person#1.dead", BOOLEAN, false, EXIST.getValue(), "", filtersManipulations));
+        filters.add(new Filter("MRS.Person#1.Dead", "ad.2.Person#1.dead", BOOLEAN, false, AND.getValue(), "false", filtersManipulations));
+        filters.add(new Filter("MRS.Person#1.Dead", "ad.2.Person#1.dead", BOOLEAN, true, OR.getValue(), "true", filtersManipulations));
 
         taskContext = new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService);
         assertFalse(taskFilterExecutor.checkFilters(filters, LogicalOperator.AND, taskContext));
@@ -127,20 +129,20 @@ public class TaskFilterExecutorTest {
         taskContext.addDataSourceObject("1", new Person(46, false), false);
         assertTrue(taskFilterExecutor.checkFilters(filters, LogicalOperator.AND, taskContext));
 
-        Filter equals = new Filter("Test date", "trigger.test_date", DATE, true, EQUALS.getValue(), dateTime.toString());
-        Filter after = new Filter("Test date", "trigger.test_date", DATE, false, AFTER.getValue(), DateUtil.now().toString());
-        Filter afterNow = new Filter("Test date", "trigger.test_date", DATE, false, AFTER_NOW.getValue(), "");
-        Filter before = new Filter("Test date", "trigger.test_date", DATE, true, BEFORE.getValue(), DateUtil.now().toString());
-        Filter beforeNow = new Filter("Test date", "trigger.test_date", DATE, true, BEFORE_NOW.getValue(), "");
-        Filter lessDays = new Filter("Test date", "trigger.test_date", DATE, true, LESS_DAYS_FROM_NOW.getValue(), "3");
-        Filter moreDays = new Filter("Test date", "trigger.test_date", DATE, true, MORE_DAYS_FROM_NOW.getValue(), "0");
+        Filter equals = new Filter("Test date", "trigger.test_date", DATE, true, EQUALS.getValue(), dateTime.toString(), filtersManipulations);
+        Filter after = new Filter("Test date", "trigger.test_date", DATE, false, AFTER.getValue(), DateUtil.now().toString(), filtersManipulations);
+        Filter afterNow = new Filter("Test date", "trigger.test_date", DATE, false, AFTER_NOW.getValue(), "", filtersManipulations);
+        Filter before = new Filter("Test date", "trigger.test_date", DATE, true, BEFORE.getValue(), DateUtil.now().toString(), filtersManipulations);
+        Filter beforeNow = new Filter("Test date", "trigger.test_date", DATE, true, BEFORE_NOW.getValue(), "", filtersManipulations);
+        Filter lessDays = new Filter("Test date", "trigger.test_date", DATE, true, LESS_DAYS_FROM_NOW.getValue(), "3", filtersManipulations);
+        Filter moreDays = new Filter("Test date", "trigger.test_date", DATE, true, MORE_DAYS_FROM_NOW.getValue(), "0", filtersManipulations);
 
         filters.add(equals);
         filters.add(after);
         filters.add(afterNow);
         filters.add(before);
         filters.add(beforeNow);
-        filters.add(new Filter("Test date", "trigger.test_date", DATE, true, EXIST.getValue(), ""));
+        filters.add(new Filter("Test date", "trigger.test_date", DATE, true, EXIST.getValue(), "", filtersManipulations));
         filters.add(lessDays);
         filters.add(moreDays);
 
@@ -160,8 +162,8 @@ public class TaskFilterExecutorTest {
         filters.remove(beforeNow);
         filters.remove(lessDays);
         filters.remove(moreDays);
-        filters.add(new Filter("Test date", "trigger.test_date", DATE, true, LESS_MONTHS_FROM_NOW.getValue(), "5"));
-        filters.add(new Filter("Test date", "trigger.test_date", DATE, true, MORE_MONTHS_FROM_NOW.getValue(), "1"));
+        filters.add(new Filter("Test date", "trigger.test_date", DATE, true, LESS_MONTHS_FROM_NOW.getValue(), "5", filtersManipulations));
+        filters.add(new Filter("Test date", "trigger.test_date", DATE, true, MORE_MONTHS_FROM_NOW.getValue(), "1", filtersManipulations));
         dateTime = DateTime.now().minusMonths(3);
 
         triggerParameters.put("test_date", dateTime.toString());
@@ -189,9 +191,9 @@ public class TaskFilterExecutorTest {
         taskContext.addDataSourceObject("1", new Person(46, false), false);
         assertTrue(taskFilterExecutor.checkFilters(filters, LogicalOperator.AND, taskContext));
 
-        Filter triggerFilter = new Filter("Trigger.Event Name", "trigger.eventName", UNICODE, true, "abc", "");
+        Filter triggerFilter = new Filter("Trigger.Event Name", "trigger.eventName", UNICODE, true, "abc", "", filtersManipulations);
         filters.add(triggerFilter);
-        Filter additionalDataFilter = new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, "abc", "");
+        Filter additionalDataFilter = new Filter("CMS Lite.StreamContent#0.Name", "ad.1.StreamContent#0.name", UNICODE, true, "abc", "", filtersManipulations);
         filters.add(additionalDataFilter);
 
         taskContext = new TaskContext(task, triggerParameters, new HashMap<>(), activityService);
@@ -201,9 +203,9 @@ public class TaskFilterExecutorTest {
         assertTrue(taskFilterExecutor.checkFilters(filters, LogicalOperator.OR, taskContext));
 
         filters.remove(triggerFilter);
-        filters.add(new Filter("Trigger.External Id", "trigger.externalId", INTEGER, true, "abc", ""));
+        filters.add(new Filter("Trigger.External Id", "trigger.externalId", INTEGER, true, "abc", "", filtersManipulations));
         filters.remove(additionalDataFilter);
-        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, "abc", ""));
+        filters.add(new Filter("MRS.Person#1.Age", "ad.2.Person#1.age", INTEGER, true, "abc", "", filtersManipulations));
 
         taskContext = new TaskContext(task, triggerParameters, new HashMap<>(), activityService);
         taskContext.addDataSourceObject("0", new StreamContent("name"), false);
@@ -215,7 +217,8 @@ public class TaskFilterExecutorTest {
     @Test(expected = TaskHandlerException.class)
     public void shouldThrowExceptionIfDataSourceObjectIsNotFound() throws TaskHandlerException {
         List<Filter> filters = new ArrayList<>();
-        filters.add(new Filter("MRS.Person#2.Age", "ad.2.Person#2.age", INTEGER, false, EXIST.getValue(), ""));
+        List<String> filtersManipulations = new ArrayList<>();
+        filters.add(new Filter("MRS.Person#2.Age", "ad.2.Person#2.age", INTEGER, false, EXIST.getValue(), "", filtersManipulations));
 
         Task task = new TaskBuilder().addAction(new TaskActionInformation()).build();
         TaskContext taskContext = new TaskContext(task, new HashMap<>(), new HashMap<>(), activityService);

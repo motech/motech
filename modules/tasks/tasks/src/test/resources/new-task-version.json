@@ -10,14 +10,16 @@
                     "type": "UNICODE",
                     "negationOperator": true,
                     "operator": "equals",
-                    "expression": "pregnancy_urine_test"
+                    "expression": "pregnancy_urine_test",
+                    "manipulations": []
                 }, {
                     "displayName": "Observation value (Trigger)",
                     "key": "trigger.ObservationValue",
                     "type": "UNICODE",
                     "negationOperator": true,
                     "operator": "equals",
-                    "expression": "positive"
+                    "expression": "positive",
+                    "manipulations": []
                 }
             ]
         }, {
