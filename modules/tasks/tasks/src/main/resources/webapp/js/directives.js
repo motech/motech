@@ -1085,6 +1085,9 @@
                                 cssClass: 'btn-primary',
                                 action: function(dialogRef) {
                                     scope.manipulations = jQuery.extend(true, [], modalScope.manipulations);
+                                    if (scope.$parent.$parent.filter && scope.$parent.$parent.filter.manipulations) {
+                                        scope.$parent.$parent.filter.manipulations = scope.manipulations;
+                                    }
                                     scope.$emit('field.changed');
                                     BootstrapDialogManager.close(dialogRef);
                                 }
