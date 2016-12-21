@@ -1067,7 +1067,11 @@
 
             angular.forEach($scope.task.taskConfig.steps, function (step) {
                 angular.forEach(step.filters, function (filter) {
-                    delete filter.manipulations;
+                    var manipulations = [];
+                    angular.forEach(filter.manipulations, function (manipulation) {
+                        manipulations.push(manipulation.type + '=' + manipulation.argument);
+                    });
+                    filter.manipulations = manipulations;
                 });
             });
 

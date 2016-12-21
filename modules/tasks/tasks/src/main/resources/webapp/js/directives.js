@@ -1035,13 +1035,13 @@
                 var name = scope.name,
                     displayNameOnly = scope.displayNameOnly;
 
-                if(!scope.manipulationType){
+                if (!scope.manipulationType){
                     return false;
                 }
                 if (['UNICODE', 'TEXTAREA', 'DATE'].indexOf(scope.manipulationType) === -1){
                     return false;
                 }
-                if(!scope.manipulations){
+                if (!scope.manipulations){
                     return false;
                 }
 
@@ -1054,7 +1054,10 @@
                         modalScope = scope.$new(true, scope);
                         modalScope.msg = scope.$parent.msg;
                         modalScope.manipulationType = scope.manipulationType;
-                        modalScope.manipulations = [];
+
+                        if (!scope.manipulations) {
+                            modalScope.manipulations = [];
+                        }
 
                         if(scope.manipulations && Array.isArray(scope.manipulations)) {
                             modalScope.manipulations = jQuery.extend(true, [], scope.manipulations);
@@ -1100,7 +1103,7 @@
         };
     });
 
-    directives.directive('manipulationSorter', function ($compile, $http, ManageTaskUtils) {
+    directives.directive('manipulationSorter', function ($compile, $http, $timeout, ManageTaskUtils) {
         return {
             restrict: 'EA',
             templateUrl: '../tasks/partials/manipulation-sorter.html',
@@ -1125,8 +1128,12 @@
                 });
             },
             controller: ['$scope', function ($scope) {
-                var manipulationType = $scope.type.toLowerCase();
+                var manipulationType = $scope.type.toLowerCase(),
+                    splittedManipulations = [],
+                    manipulationsCopy = [],
+                    that = this;
                 $scope.manipulationTypes = [];
+
                 if(['unicode', 'string'].indexOf(manipulationType) > -1) {
                     $scope.manipulationTypes = ['toUpper', 'toLower', 'capitalize', 'URLEncode', 'join', 'split', 'substring', 'format', 'parseDate'];
                 }
@@ -1138,14 +1145,16 @@
                 }
 
                 this.addManipulation = function (type, argument) {
-                    if(!argument){
-                        argument = "";
-                    }
-                    $scope.manipulations.push({
-                        type: type,
-                        argument: argument
+                    $timeout(function () {
+                        if(!argument){
+                            argument = "";
+                        }
+                        $scope.manipulations.push({
+                            type: type,
+                            argument: argument
+                        });
+                        $scope.$apply();
                     });
-                    $scope.$apply();
                 };
                 this.removeManipulation = function (manipulationStr) {
                     var obj, manipulations = [], returnVal = false;
@@ -1172,6 +1181,18 @@
                     }
                     return false;
                 };
+
+                manipulationsCopy = angular.copy($scope.manipulations);
+                $scope.manipulations = [];
+
+                angular.forEach(manipulationsCopy, function (manipulation) {
+                    if (typeof (manipulation) === "string") {
+                        splittedManipulations = manipulation.split('=');
+                        that.addManipulation(splittedManipulations[0], splittedManipulations[1]);
+                    } else {
+                        that.addManipulation(manipulation.type, manipulation.argument);
+                    }
+                });
             }]
         };
     });

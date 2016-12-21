@@ -45,11 +45,14 @@ public class Filter implements Serializable {
     @Field
     private String expression;
 
+    @Field
+    private List<String> manipulations;
+
     /**
      * Constructor.
      */
     public Filter() {
-        this(null, null, null, false, null, null);
+        this(null, null, null, false, null, null, null);
     }
 
     /**
@@ -58,7 +61,7 @@ public class Filter implements Serializable {
      */
     public Filter(FilterDto dto){
         this (dto.getDisplayName(), dto.getKey(), dto.getType(), dto.isNegationOperator(), dto.getOperator(),
-                dto.getExpression());
+                dto.getExpression(), dto.getManipulations());
     }
 
     /**
@@ -72,13 +75,14 @@ public class Filter implements Serializable {
      * @param expression  the filter exception
      */
     public Filter(String displayName, String key, ParameterType type, boolean negationOperator,
-                  String operator, String expression) {
+                  String operator, String expression, List<String> manipulations) {
         this.displayName = displayName;
         this.key = key;
         this.type = type;
         this.negationOperator = negationOperator;
         this.operator = operator;
         this.expression = expression;
+        this.manipulations = manipulations;
     }
 
     public String getDisplayName() {
@@ -129,8 +133,16 @@ public class Filter implements Serializable {
         this.expression = expression;
     }
 
+    public List<String> getManipulations () {
+        return manipulations;
+    }
+
+    public void setManipulations (List<String> manipulations) {
+        this.manipulations = manipulations;
+    }
+
     public FilterDto toDto() {
-        return new FilterDto(displayName, key, type, operator, negationOperator, expression);
+        return new FilterDto(displayName, key, type, operator, negationOperator, expression, manipulations);
     }
 
     public static List<Filter> toFilters(List<FilterDto> filterDtos) {
@@ -145,7 +157,7 @@ public class Filter implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(displayName, key, type, negationOperator, operator, expression);
+        return Objects.hash(displayName, key, type, negationOperator, operator, expression, manipulations);
     }
 
     @Override
@@ -165,14 +177,15 @@ public class Filter implements Serializable {
                Objects.equals(this.type, other.type) &&
                Objects.equals(this.negationOperator, other.negationOperator) &&
                Objects.equals(this.operator, other.operator) &&
-               Objects.equals(this.expression, other.expression);
+               Objects.equals(this.expression, other.expression) &&
+               Objects.equals(this.manipulations, other.manipulations);
     }
 
     @Override
     public String toString() {
         return String.format(
-                "Filter{displayName=%s, key=%s, type=%s, negationOperator=%s, operator='%s', expression='%s'}",
-                displayName, key, type, negationOperator, operator, expression
+                "Filter{displayName=%s, key=%s, type=%s, negationOperator=%s, operator='%s', expression='%s', manipulations='%s'}",
+                displayName, key, type, negationOperator, operator, expression, manipulations
         );
     }
 }
