@@ -7,8 +7,6 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.util.SecurityMode;
 
-import javax.validation.constraints.Size;
-
 /**
  * Represents a message displayed in the 'messages' section of the Admin UI. Persisted by MDS.
  * Apart from the message and its {@link Level}, it contains also information about the module that
@@ -21,8 +19,7 @@ import javax.validation.constraints.Size;
 @Access(value = SecurityMode.PERMISSIONS, members = { "manageMessages" })
 public class StatusMessage {
 
-    @Field(required = true)
-    @Size(max = 20000)
+    @Field(required = true, type = "text")
     private String text;
 
     @Field(required = true)

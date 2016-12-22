@@ -1813,9 +1813,7 @@
                 loadTemplate(scope);
                 scope.importDialog = new BootstrapDialog({
                     title: scope.msg('task.import'),
-                    closable: true,
-                    closeByBackdrop: false,
-                    closeByKeyboard: false,
+                    closable: false,
                     draggable: false,
                     cssClass: 'tasks',
                     buttons: [{
@@ -1877,9 +1875,7 @@
                 loadTemplate(scope);
                 scope.triggersDialog = new BootstrapDialog({
                     title: scope.msg('task.tooltip.availableTriggers'),
-                    closable: true,
-                    closeByBackdrop: false,
-                    closeByKeyboard: false,
+                    closable: false,
                     draggable: false,
                     cssClass: 'tasks',
                     autodestroy: false,
