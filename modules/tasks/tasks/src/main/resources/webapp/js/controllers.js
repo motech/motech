@@ -1032,6 +1032,7 @@
                         while(param.value.indexOf("\u00a0") >= 0) {
                             param.value = param.value.replace("\u00a0", " ");
                         }
+                        param.value = param.value.trim();
                     }
                     $scope.task.actions[idx].values[param.key] = param.value;
 
