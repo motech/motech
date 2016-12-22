@@ -1,3 +1,5 @@
 -- Changing column 'TEXT' from VARCHAR(255) to MEDIUMTEXT
 
 alter table MOTECH_ADMIN_STATUSMESSAGE modify text MEDIUMTEXT NOT NULL;
+
+alter table MOTECH_ADMIN_STATUSMESSAGE__TRASH modify text MEDIUMTEXT NOT NULL;
