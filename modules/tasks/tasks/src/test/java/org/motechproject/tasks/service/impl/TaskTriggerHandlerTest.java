@@ -490,6 +490,8 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         Map<String, DataProvider> providers = new HashMap<>();
         DataProvider provider = mock(DataProvider.class);
         Map<String, String> lookup = new HashMap<>();
+        List<String> filtersManipulations = new ArrayList<>();
+
         lookup.put("patientId", "123");
         when(provider.lookup("Patient", null, lookup)).thenReturn(null);
         providers.put(TASK_DATA_PROVIDER_NAME, provider);
@@ -512,7 +514,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         task.setTaskConfig(taskConfig);
         taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "Patient", "provider", "specifiedName",
                 asList(new Lookup("patientId", "trigger.patientId")), true));
-        taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.12345.Patient#1.patientId", INTEGER, false, EXIST.getValue(), ""))));
+        taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.12345.Patient#1.patientId", INTEGER, false, EXIST.getValue(), "", filtersManipulations))));
 
         List<Task> tasks = asList(task);
 
@@ -533,6 +535,8 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         Map<String , DataProvider> providers = new HashMap<>();
         DataProvider provider = mock(DataProvider.class);
         Map<String, String> lookup = new HashMap<>();
+        List<String> filtersManipulations = new ArrayList<>();
+
         lookup.put("patientId", "123");
         when(provider.lookup("Patient", null, lookup)).thenReturn(null);
         providers.put(TASK_DATA_PROVIDER_NAME, provider);
@@ -555,7 +559,7 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
         task.setTaskConfig(taskConfig);
         taskConfig.add(new DataSource(TASK_DATA_PROVIDER_NAME, 4L, 1L, "Patient", "provider", "specifiedName",
                 asList(new Lookup("patientId", "trigger.patientId")), false));
-        taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.12345.Patient#1.patientId", INTEGER, false, EXIST.getValue(), ""))));
+        taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.12345.Patient#1.patientId", INTEGER, false, EXIST.getValue(), "", filtersManipulations))));
 
         List<Task> tasks = asList(task);
 
@@ -768,11 +772,13 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
     @Test
     public void shouldNotPassFiltersCriteria() throws Exception {
+        List<String> filtersManipulations = new ArrayList<>();
+
         setTriggerEvent();
         setActionEvent();
         setFilters();
 
-        task.getTaskConfig().add(new FilterSet(asList(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, false, EXIST.getValue(), ""))));
+        task.getTaskConfig().add(new FilterSet(asList(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, false, EXIST.getValue(), "", filtersManipulations))));
 
         when(taskService.findActiveTasksForTriggerSubject(TRIGGER_SUBJECT)).thenReturn(tasks);
         when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(actionEvent);
@@ -1324,23 +1330,27 @@ public class TaskTriggerHandlerTest extends TasksTestBase {
 
     private void setFilters() {
         List<Filter> filters = new ArrayList<>();
-        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, CONTAINS.getValue(), "ven"));
-        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, EXIST.getValue(), ""));
-        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, EQUALS.getValue(), "event name"));
-        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, EQUALS_IGNORE_CASE.getValue(), "EvEnT nAmE"));
-        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, STARTSWITH.getValue(), "ev"));
-        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, ENDSWITH.getValue(), "me"));
-        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, GT.getValue(), "19"));
-        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, LT.getValue(), "1234567891"));
-        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, EQ_NUMBER.getValue(), "123456789"));
-        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, EXIST.getValue(), ""));
-        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, false, GT.getValue(), "1234567891"));
+        List<String> filtersManipulations = new ArrayList<>();
+
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, CONTAINS.getValue(), "ven", filtersManipulations));
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, EXIST.getValue(), "", filtersManipulations));
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, EQUALS.getValue(), "event name", filtersManipulations));
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, EQUALS_IGNORE_CASE.getValue(), "EvEnT nAmE", filtersManipulations));
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, STARTSWITH.getValue(), "ev", filtersManipulations));
+        filters.add(new Filter("EventName (Trigger)", "trigger.eventName", UNICODE, true, ENDSWITH.getValue(), "me", filtersManipulations));
+        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, GT.getValue(), "19", filtersManipulations));
+        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, LT.getValue(), "1234567891", filtersManipulations));
+        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, EQ_NUMBER.getValue(), "123456789", filtersManipulations));
+        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, true, EXIST.getValue(), "", filtersManipulations));
+        filters.add(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, false, GT.getValue(), "1234567891", filtersManipulations));
 
         task.getTaskConfig().add(new FilterSet(filters));
     }
 
     private void addActionFilterNotPassingCriteria() {
-        task.getTaskConfig().add(new FilterSet(asList(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, false, EXIST.getValue(), "")), LogicalOperator.AND, 1));
+        List<String> filtersManipulations = new ArrayList<>();
+        task.getTaskConfig().add(new FilterSet(asList(new Filter("ExternalID (Trigger)", "trigger.externalId", INTEGER, false, EXIST.getValue(), "", filtersManipulations)),
+                LogicalOperator.AND, 1));
     }
 
     private void setNonRequiredField() {

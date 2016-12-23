@@ -38,8 +38,9 @@ public class TaskDeserializerTest {
 
     static {
         List<Filter> filters = new ArrayList<>();
-        filters.add(new Filter("Concept name (Trigger)", "trigger.ObservationConceptName", UNICODE, true, "equals", "pregnancy_urine_test"));
-        filters.add(new Filter("Observation value (Trigger)", "trigger.ObservationValue", UNICODE, true, "equals", "positive"));
+        List<String> filtersManipulations = new ArrayList<>();
+        filters.add(new Filter("Concept name (Trigger)", "trigger.ObservationConceptName", UNICODE, true, "equals", "pregnancy_urine_test", filtersManipulations));
+        filters.add(new Filter("Observation value (Trigger)", "trigger.ObservationValue", UNICODE, true, "equals", "positive", filtersManipulations));
 
         String name = "Pregnancy SMS";
 
