@@ -48,8 +48,8 @@
                                                     </ul>
                                                 </li>
                                                 <li ng-show="ds.displayName != undefined" class="dropdown-submenu" ng-repeat="ds in task.taskConfig.steps">
-                                                    <a ng-show="ds.specifiedName === undefined || ds.specifiedName === '' " tabindex="-1">{{taskMsg(ds.displayName)}}#{{ds.objectId}} ({{msg(ds.providerName)}})</a>
-                                                    <a ng-show="ds.specifiedName !== undefined && ds.specifiedName !== '' " tabindex="-1">{{ds.specifiedName}}</a>
+                                                    <a ng-show="!ds.specifiedName" tabindex="-1">{{taskMsg(ds.displayName)}}#{{ds.objectId}} ({{msg(ds.providerName)}})</a>
+                                                    <a ng-show="ds.specifiedName" tabindex="-1">{{ds.specifiedName}}</a>
                                                     <ul class="dropdown-menu">
                                                         <li ng-repeat="field in findObject(ds.providerName, ds.type).fields">
                                                             <a ng-show="field.specifiedName === undefined || field.specifiedName === '' " ng-click="selectParam(filter, 'ad', ds, field)">{{taskMsg(field.displayName)}}</a>
@@ -88,7 +88,8 @@
                                 </span>
                                 <span class="validation-area form-group">
                                     <div class="btn-group offset-1">
-                                        <a class="btn dropdown-toggle dropdown-medium-fluid" data-toggle="dropdown" target="_self" href="#" ng-class="{'btn-danger': !filter.operator, 'btn-default': filter.operator}" ng-disabled="filter.negationOperator == undefined">
+                                        <a class="btn dropdown-toggle dropdown-medium-fluid" data-toggle="dropdown" target="_self" href="#" ng-class="{'btn-danger': !filter.operator, 'btn-default': filter.operator}"
+                                           ng-disabled="filter.negationOperator == undefined" ng-click="setFilterOperators(filter.type)">
                                             {{msg(filter.operator || 'task.info.filter.select')}}
                                             <span class="caret"></span>
                                         </a>
