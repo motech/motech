@@ -2,6 +2,8 @@ package org.motechproject.tasks.dto;
 
 import org.motechproject.tasks.domain.enums.ParameterType;
 
+import java.util.List;
+
 public class FilterDto {
 
     private String displayName;
@@ -10,17 +12,20 @@ public class FilterDto {
     private String operator;
     private boolean negationOperator;
     private String expression;
+    private List<String> manipulations;
 
     public FilterDto() {
     }
 
-    public FilterDto(String displayName, String key, ParameterType type, String operator, boolean negationOperator, String expression) {
+    public FilterDto(String displayName, String key, ParameterType type, String operator, boolean negationOperator, String expression,
+                     List<String> manipulations) {
         this.displayName = displayName;
         this.key = key;
         this.type = type;
         this.operator = operator;
         this.negationOperator = negationOperator;
         this.expression = expression;
+        this.manipulations = manipulations;
     }
 
     public String getDisplayName() {
@@ -69,5 +74,13 @@ public class FilterDto {
 
     public void setExpression(String expression) {
         this.expression = expression;
+    }
+
+    public List<String> getManipulations () {
+        return manipulations;
+    }
+
+    public void setManipulations (List<String> manipulations) {
+        this.manipulations = manipulations;
     }
 }

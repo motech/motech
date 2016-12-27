@@ -525,12 +525,14 @@ public class TaskServiceImplTest {
         ObjectMapper mapper = new ObjectMapper();
         action.getValues().put("phone", "{{ad.providerName.Test#1.id}}");
 
+        List<String> filtersManipulations = new ArrayList<>();
+
         Task given = new TaskBuilder()
                 .withName("test")
                 .withTrigger(trigger)
                 .addAction(action)
                 .addDataSource(new DataSource("providerName", 1234L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true))
-                .addFilterSet(new FilterSet(asList(new Filter("displayName", "ad.providerName.Test#1.id", UNICODE, true, OperatorType.EXIST.getValue(), ""))))
+                .addFilterSet(new FilterSet(asList(new Filter("displayName", "ad.providerName.Test#1.id", UNICODE, true, OperatorType.EXIST.getValue(), "", filtersManipulations))))
                 .isEnabled(true)
                 .build();
 
@@ -568,7 +570,7 @@ public class TaskServiceImplTest {
                 .withTrigger(trigger)
                 .addAction(action)
                 .addDataSource(new DataSource("providerName", 56789L, 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true))
-                .addFilterSet(new FilterSet(asList(new Filter("displayName", "ad.providerName.Test#1.id", UNICODE, true, OperatorType.EXIST.getValue(), ""))))
+                .addFilterSet(new FilterSet(asList(new Filter("displayName", "ad.providerName.Test#1.id", UNICODE, true, OperatorType.EXIST.getValue(), "", filtersManipulations))))
                 .isEnabled(true)
                 .build();
 
