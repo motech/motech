@@ -668,10 +668,12 @@
             require: '?ngModel',
             link: function (scope, element, attrs, ngModel) {
                 scope.debug = scope.$parent.debugging;
-                var eventResize,
+                var elem = angular.element(element),
+                    eventResize,
                     items = [],
                     fetchedAvailableFields = [],
-                    fieldType = scope.data.type,
+                    fieldType = scope.data ? scope.data.type : elem.attr("data-type"),
+                    fieldValue = scope.data ? scope.data.value : "",
                     url = '../tasks/partials/widgets/autocomplete-fields.html';
                     scope.filteredItems = [];
                     scope.selPos = 0;
@@ -713,7 +715,7 @@
                 });
 
                 scope.changeBubble = function (ngModel, element) {
-                    if (scope.data && scope.data.type !== 'MAP' && !scope.data.value) {
+                    if (fieldType !== 'MAP' && !fieldValue) {
                         return;
                     }
                     if (scope.data && scope.data.type === 'MAP') {
@@ -815,7 +817,7 @@
                         parsedValue = parsedValue.concat(str);
                     });
 
-                    if (parsedValue && parsedValue !== scope.data.value && scope.data.type !== 'MAP') {
+                    if (parsedValue && scope.data && parsedValue !== scope.data.value && scope.data.type !== 'MAP') {
                         scope.data.value = parsedValue;
                     }
                 };
@@ -1686,7 +1688,10 @@
                     periodSlider.children( "#amount-period-hour" ).val( hour );
                     periodSlider.children( "#amount-period-minute" ).val( minute );
                     periodSlider.children( "#amount-period-second" ).val( second );
-                    elem.val( valueFromInputs );
+
+                    scope.$apply(function () {
+                       elem.val( valueFromInputs );
+                    });
 
                     scope.$apply(function() {
                        ctrl.$setViewValue(valueFromInputs);
