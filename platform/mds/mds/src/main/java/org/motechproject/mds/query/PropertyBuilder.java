@@ -55,6 +55,9 @@ public final class PropertyBuilder {
         } else if (value instanceof Range) {
             Range range = (Range) value;
             return new RangeProperty<>(name, range, type);
+        } else if (type.equals("java.lang.String") && StringUtils.isNotBlank(operator) && operator
+                .equals(Constants.Operators.EQ_IGNORE_CASE)) {
+            return new EqualsCaseInsensitiveProperty(name, (String) value, type, operator);
         } else if (StringUtils.isNotBlank(operator)) {
             switch (operator) {
                 case Constants.Operators.MATCHES:
