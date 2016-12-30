@@ -670,7 +670,6 @@
                 scope.debug = scope.$parent.debugging;
                 var eventResize,
                     items = [],
-                    fetchedAvailableFields = [],
                     fieldType = scope.data.type,
                     url = '../tasks/partials/widgets/autocomplete-fields.html';
                     scope.filteredItems = [];
@@ -820,15 +819,13 @@
                     }
                 };
 
-                if (scope.fields) {
-                    fetchedAvailableFields = scope.fields; // fields for action
-                } else {
-                    fetchedAvailableFields = scope.$parent.fields; // fields for datasource
-                }
-
-                angular.forEach(fetchedAvailableFields, function (field) {
-                   items.push(field);
-                });
+                scope.refreshAutoCompleteList = function () {
+                    if (scope.fields) {
+                        items = scope.fields; // fields for action
+                    } else {
+                        items = scope.$parent.fields; // fields for datasource
+                    }
+                };
 
                 scope.getPreparedName = function (fieldToPrepare, fullName) {
                     return prepareField(fieldToPrepare, fullName);
@@ -836,6 +833,8 @@
 
                 scope.refreshListItems = function (event) {
                     scope.filteredItems = [];
+                    scope.refreshAutoCompleteList();
+
                     if(event.keyCode === 8) {event.key = "";scope.rangySelection.anchorOffset = scope.rangySelection.anchorOffset -1;}
                     if (scope.rangySelection.anchorNode && scope.rangySelection.anchorNode.nodeValue) {
                         var value = scope.rangySelection.anchorNode.nodeValue;
