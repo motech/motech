@@ -142,7 +142,7 @@ public final class QueryUtil {
     }
 
     public static String asEqualsPattern(String string) {
-        return StringUtils.isNotEmpty(string) ? String.format("%s", string) : "";
+        return StringUtils.defaultString(string);
     }
 
     public static void setCountResult(Query query) {

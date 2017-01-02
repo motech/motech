@@ -55,15 +55,16 @@ public final class PropertyBuilder {
         } else if (value instanceof Range) {
             Range range = (Range) value;
             return new RangeProperty<>(name, range, type);
-        } else if (type.equals("java.lang.String") && StringUtils.isNotBlank(operator) && operator
-                .equals(Constants.Operators.EQ_IGNORE_CASE)) {
-            return new EqualsCaseInsensitiveProperty(name, (String) value, type, operator);
         } else if (StringUtils.isNotBlank(operator)) {
             switch (operator) {
                 case Constants.Operators.MATCHES:
                     return new MatchesProperty(name, (String) value);
                 case Constants.Operators.MATCHES_CASE_INSENSITIVE:
                     return new MatchesCaseInsensitiveProperty(name, (String) value);
+                case Constants.Operators.EQ_IGNORE_CASE:
+                    if (String.class.getName().equals(type)) {
+                        return new EqualsCaseInsensitiveProperty(name, (String) value, type, operator);
+                    }
                 default:
                     return new CustomOperatorProperty<>(name, value, type, operator);
             }
