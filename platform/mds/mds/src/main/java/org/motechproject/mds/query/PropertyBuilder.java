@@ -61,6 +61,10 @@ public final class PropertyBuilder {
                     return new MatchesProperty(name, (String) value);
                 case Constants.Operators.MATCHES_CASE_INSENSITIVE:
                     return new MatchesCaseInsensitiveProperty(name, (String) value);
+                case Constants.Operators.EQ_IGNORE_CASE:
+                    if (String.class.getName().equals(type)) {
+                        return new EqualsCaseInsensitiveProperty(name, (String) value, type, operator);
+                    }
                 default:
                     return new CustomOperatorProperty<>(name, value, type, operator);
             }

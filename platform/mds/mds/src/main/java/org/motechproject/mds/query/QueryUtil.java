@@ -141,6 +141,10 @@ public final class QueryUtil {
         return StringUtils.isNotEmpty(string) ? String.format(".*%s.*", string) : string;
     }
 
+    public static String asEqualsPattern(String string) {
+        return StringUtils.defaultString(string);
+    }
+
     public static void setCountResult(Query query) {
         if (query == null) {
             throw new IllegalArgumentException(QUERY_CANNOT_BE_NULL);
