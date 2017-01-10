@@ -142,14 +142,12 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public Set<TaskError> setEnabledOrDisabled(final Task task) {
+    public void setEnabledOrDisabled(final Task task) {
         LOGGER.info("Saving task: {} with ID: {}", task.getName(), task.getId());
         Set<String> fieldsToUpdate = new HashSet<>();
         fieldsToUpdate.add("enabled");
 
         tasksDataService.updateFromTransient(task, fieldsToUpdate);
-
-        return taskValidator.validate(tasksDataService.findById(task.getId()));
     }
 
     @Override

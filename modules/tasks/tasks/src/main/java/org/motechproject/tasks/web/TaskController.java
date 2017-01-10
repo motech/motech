@@ -116,21 +116,18 @@ public class TaskController {
     }
 
     /**
-     * Sets the task with the given ID enabled or disabled and returns the list
-     * of errors that will occur when enabling task.
+     * Sets the task with the given ID enabled or disabled.
      * If ID isn't specified in passed task nothing will happen.
      *
      * @param task  the task to be set, not null
-     * @return list of task errors
      */
     @RequestMapping(value = "/task/enable-or-disable/{taskId}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Set<TaskErrorDto> setTaskEnabledOrDisabled(@RequestBody Task task) {
+    public void setTaskEnabledOrDisabled(@RequestBody Task task) {
         if (task.getId() != null) {
-            return taskWebService.setEnabledOrDisabled(task);
+            taskWebService.setEnabledOrDisabled(task);
         }
-        return null;
     }
 
     /**

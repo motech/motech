@@ -130,8 +130,8 @@ public class TaskWebServiceImpl implements TaskWebService {
 
     @Override
     @Transactional
-    public Set<TaskErrorDto> setEnabledOrDisabled(Task task) {
-        return TaskError.toDtos(taskService.setEnabledOrDisabled(task));
+    public void setEnabledOrDisabled(Task task) {
+        taskService.setEnabledOrDisabled(task);
     }
 
 

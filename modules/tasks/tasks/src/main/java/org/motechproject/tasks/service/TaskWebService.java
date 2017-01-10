@@ -90,5 +90,5 @@ public interface TaskWebService {
     /**
      * @see TaskService#setEnabledOrDisabled(Task)
      */
-    Set<TaskErrorDto> setEnabledOrDisabled(final Task task);
+    void setEnabledOrDisabled(final Task task);
 }

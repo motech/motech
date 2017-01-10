@@ -27,13 +27,11 @@ public interface TaskService {
     Set<TaskError> save(final Task task);
 
     /**
-     * Sets the task with the given ID enabled or disabled and returns the list
-     * of errors that will occur when enabling task.
+     * Sets the task with the given ID enabled or disabled.
      *
      * @param task  the task to be set, not null
-     * @return list of task errors
      */
-    Set<TaskError> setEnabledOrDisabled(final Task task);
+    void setEnabledOrDisabled(final Task task);
 
     /**
      * Returns the action event that matches the given information about the task action.
