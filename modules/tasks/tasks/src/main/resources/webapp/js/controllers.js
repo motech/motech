@@ -121,12 +121,22 @@
         };
 
         $scope.enableTask = function (item, enabled) {
-            item.task.enabled = enabled;
+            var task = {};
 
-            $http.post('../tasks/api/task/' + item.task.id, item.task)
-                .success(dummyHandler)
+            LoadingModal.open();
+
+            task.enabled = item.task.enabled = enabled;
+            task.id = item.task.id;
+            task.name = item.task.name;
+
+            $http.post('../tasks/api/task/enable-or-disable/' + task.id, task)
+                .success(function () {
+                    LoadingModal.close();
+                })
                 .error(function (response) {
-                    item.task.enabled = !enabled;
+                    task.enabled = item.task.enabled = !enabled;
+
+                    LoadingModal.close();
                     ModalFactory.showErrorAlert(null, 'task.error.actionNotChangeTitle', $scope.util.createErrorMessage($scope, response, false));
                 });
         };

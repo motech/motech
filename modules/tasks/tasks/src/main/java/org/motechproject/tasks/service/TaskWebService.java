@@ -86,4 +86,9 @@ public interface TaskWebService {
      * @see TaskService#save(Task)
      */
     Set<TaskErrorDto> save(Task task);
+
+    /**
+     * @see TaskService#setEnabledOrDisabled(Task)
+     */
+    void setEnabledOrDisabled(final Task task);
 }

@@ -128,6 +128,13 @@ public class TaskWebServiceImpl implements TaskWebService {
         return TaskError.toDtos(taskService.save(task));
     }
 
+    @Override
+    @Transactional
+    public void setEnabledOrDisabled(Task task) {
+        taskService.setEnabledOrDisabled(task);
+    }
+
+
     private List<TaskActivityDto> activityToDtos(List<TaskActivity> activities) {
         List<TaskActivityDto> activityDtos = new ArrayList<>();
 
