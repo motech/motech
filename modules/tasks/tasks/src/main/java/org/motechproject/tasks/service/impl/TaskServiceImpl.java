@@ -142,6 +142,16 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
+    public void setEnabledOrDisabled(final Task task) {
+        LOGGER.info("Saving task: {} with ID: {}", task.getName(), task.getId());
+        Set<String> fieldsToUpdate = new HashSet<>();
+        fieldsToUpdate.add("enabled");
+
+        tasksDataService.updateFromTransient(task, fieldsToUpdate);
+    }
+
+    @Override
+    @Transactional
     public ActionEvent getActionEventFor(TaskActionInformation taskActionInformation)
             throws ActionNotFoundException {
         Channel channel = channelService.getChannel(taskActionInformation.getModuleName());
