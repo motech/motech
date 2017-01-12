@@ -668,9 +668,12 @@
             require: '?ngModel',
             link: function (scope, element, attrs, ngModel) {
                 scope.debug = scope.$parent.debugging;
-                var eventResize,
+                var elem = angular.element(element),
+                    eventResize,
                     items = [],
-                    fieldType = scope.data.type,
+                    fetchedAvailableFields = [],
+                    fieldType = scope.data ? scope.data.type : elem.attr("data-type"),
+                    fieldValue = scope.data ? scope.data.value : "",
                     url = '../tasks/partials/widgets/autocomplete-fields.html';
                     scope.filteredItems = [];
                     scope.selPos = 0;
@@ -712,7 +715,7 @@
                 });
 
                 scope.changeBubble = function (ngModel, element) {
-                    if (scope.data && scope.data.type !== 'MAP' && !scope.data.value) {
+                    if (fieldType !== 'MAP' && !fieldValue) {
                         return;
                     }
                     if (scope.data && scope.data.type === 'MAP') {
@@ -814,7 +817,7 @@
                         parsedValue = parsedValue.concat(str);
                     });
 
-                    if (parsedValue && parsedValue !== scope.data.value && scope.data.type !== 'MAP') {
+                    if (parsedValue && scope.data && parsedValue !== scope.data.value && scope.data.type !== 'MAP') {
                         scope.data.value = parsedValue;
                     }
                 };
@@ -1620,6 +1623,7 @@
                 var elem = angular.element(element),
                 periodSliders = elem.parent().find("#period-slider > div"),
                 periodSlider = elem.parent().find("#period-slider"),
+                periodInput = elem.parent().find("#period-input"),
                 parent = elem.parent(),
                 openPeriodModal,
                 closePeriodModal,
@@ -1667,25 +1671,102 @@
                     });
                     return 'P' + valueInputs.join( "" ).toUpperCase();
                 },
+                parseViewValue = function (viewValue) {
+                    var dateInputsName = ['Y', 'M', 'W', 'D'],
+                        timeInputsName = ['H', 'M', 'S'],
+                        dateNames = ['year', 'month', 'week', 'day'],
+                        timeNames = ['hour', 'minute', 'second'],
+                        splittedViewValue = viewValue.split('T'),
+                        parsedViewValue = {};
+
+                    $.each(dateInputsName, function (index, value) {
+                        if (splittedViewValue[0] && splittedViewValue[0].indexOf(value) !== -1) {
+                            parsedViewValue[dateNames[index]] = splittedViewValue[0].substring(0, splittedViewValue[0].indexOf(value));
+                            splittedViewValue[0] = splittedViewValue[0].substring(splittedViewValue[0].indexOf(value) + 1);
+
+                            if (parseInt(parsedViewValue[dateNames[index]], 10) > sliderMax[dateNames[index]]) {
+                                parsedViewValue[dateNames[index]] = sliderMax[dateNames[index]].toString( 10 );
+                            }
+
+                        } else {
+                            parsedViewValue[dateNames[index]] = '0';
+                        }
+                    });
+                    $.each(timeInputsName, function (index, value) {
+                        if (splittedViewValue[1] && splittedViewValue[1].indexOf(value) !== -1) {
+                            parsedViewValue[timeNames[index]] = splittedViewValue[1].substring(0, splittedViewValue[1].indexOf(value));
+                            splittedViewValue[1] = splittedViewValue[1].substring(splittedViewValue[1].indexOf(value) + 1);
+
+                            if (parseInt(parsedViewValue[timeNames[index]], 10) > sliderMax[timeNames[index]]) {
+                                parsedViewValue[timeNames[index]] = sliderMax[timeNames[index]].toString( 10 );
+                            }
+
+                        } else {
+                            parsedViewValue[timeNames[index]] = '0';
+                        }
+                    });
+
+                    return parsedViewValue;
+                },
+                refreshDateTime = function (parsedPeriod) {
+                    scope.$apply(function () {
+                        year = parsedPeriod.year;
+                        month = parsedPeriod.month;
+                        week = parsedPeriod.week;
+                        day = parsedPeriod.day;
+                        hour = parsedPeriod.hour;
+                        minute = parsedPeriod.minute;
+                        second = parsedPeriod.second;
+
+                        periodSlider.children( "#period-year" ).slider( "value", year);
+                        periodSlider.children( "#period-month" ).slider( "value", month);
+                        periodSlider.children( "#period-week" ).slider( "value", week);
+                        periodSlider.children( "#period-day" ).slider( "value", day);
+                        periodSlider.children( "#period-hour" ).slider( "value", hour);
+                        periodSlider.children( "#period-minute" ).slider( "value", minute);
+                        periodSlider.children( "#period-second" ).slider( "value", second );
+                    });
+                },
                 refreshPeriod = function () {
-                    var year = periodSlider.children( "#period-year" ).slider( "value" ),
-                    month = periodSlider.children( "#period-month" ).slider( "value" ),
-                    week = periodSlider.children( "#period-week" ).slider( "value" ),
-                    day = periodSlider.children( "#period-day" ).slider( "value" ),
-                    hour = periodSlider.children( "#period-hour" ).slider( "value" ),
-                    minute = periodSlider.children( "#period-minute" ).slider( "value" ),
-                    second = periodSlider.children( "#period-second" ).slider( "value" ),
+                    var sliderYear = periodSlider.children( "#period-year" ).slider( "value" ),
+                    sliderMonth = periodSlider.children( "#period-month" ).slider( "value" ),
+                    sliderWeek = periodSlider.children( "#period-week" ).slider( "value" ),
+                    sliderDay = periodSlider.children( "#period-day" ).slider( "value" ),
+                    sliderHour = periodSlider.children( "#period-hour" ).slider( "value" ),
+                    sliderMinute = periodSlider.children( "#period-minute" ).slider( "value" ),
+                    sliderSecond = periodSlider.children( "#period-second" ).slider( "value" ),
 
-                    valueFromInputs = compileValueInputs(year, month, week, day, hour, minute, second);
+                    valueFromInputs = compileValueInputs(sliderYear, sliderMonth, sliderWeek, sliderDay, sliderHour, sliderMinute, sliderSecond),
+                    parsedPeriod = {};
 
-                    periodSlider.children( "#amount-period-year" ).val( year );
-                    periodSlider.children( "#amount-period-month" ).val( month );
-                    periodSlider.children( "#amount-period-week" ).val( week );
-                    periodSlider.children( "#amount-period-day" ).val( day );
-                    periodSlider.children( "#amount-period-hour" ).val( hour );
-                    periodSlider.children( "#amount-period-minute" ).val( minute );
-                    periodSlider.children( "#amount-period-second" ).val( second );
-                    elem.val( valueFromInputs );
+                    if ((valueFromInputs === 'P' && ctrl.$viewValue && ctrl.$viewValue !== "") || (ctrl.$viewValue && periodInput.context.value !== ctrl.$viewValue)) {
+
+                        parsedPeriod = parseViewValue(ctrl.$viewValue.substring(1));
+                        sliderYear = parsedPeriod.year;
+                        sliderMonth = parsedPeriod.month;
+                        sliderWeek = parsedPeriod.week;
+                        sliderDay = parsedPeriod.day;
+                        sliderHour = parsedPeriod.hour;
+                        sliderMinute = parsedPeriod.minute;
+                        sliderSecond = parsedPeriod.second;
+
+                        refreshDateTime(parsedPeriod);
+
+                        valueFromInputs = compileValueInputs(parsedPeriod.year, parsedPeriod.month, parsedPeriod.week,
+                            parsedPeriod.day, parsedPeriod.hour, parsedPeriod.minute, parsedPeriod.second);
+                    }
+
+                    periodSlider.children( "#amount-period-year" ).val( sliderYear );
+                    periodSlider.children( "#amount-period-month" ).val( sliderMonth );
+                    periodSlider.children( "#amount-period-week" ).val( sliderWeek );
+                    periodSlider.children( "#amount-period-day" ).val( sliderDay );
+                    periodSlider.children( "#amount-period-hour" ).val( sliderHour );
+                    periodSlider.children( "#amount-period-minute" ).val( sliderMinute );
+                    periodSlider.children( "#amount-period-second" ).val( sliderSecond );
+
+                    scope.$apply(function () {
+                       elem.val( valueFromInputs );
+                    });
 
                     scope.$apply(function() {
                        ctrl.$setViewValue(valueFromInputs);
