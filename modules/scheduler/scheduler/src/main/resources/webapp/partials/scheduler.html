@@ -2,7 +2,7 @@
     <h4 class="frame-title">{{msg('scheduler')}}</h4>
     <div id="operations-scheduler" class="toolbox">
         <div class="btn-group pull-right">
-            <button class="btn btn-success" ng-click="newJob()" ui-sref="scheduler.createJob({ action: 'new' })" type="button"><i class="fa fa-plus"></i>&nbsp;{{msg('scheduler.scheduleJob')}}</button>
+            <button class="btn btn-success" ui-sref="scheduler.createJob({ action: 'new' })" type="button"><i class="fa fa-plus"></i>&nbsp;{{msg('scheduler.scheduleJob')}}</button>
         </div>
         <div class="btn-group">
             <button class="btn btn-default" id="scheduler-filters" type="button"><i class="fa fa-filter"></i>&nbsp;{{msg('scheduler.filters')}}</button>
@@ -30,7 +30,7 @@
                         <button ng-if="job.status === 'PAUSED'" ng-click="resumeJob(job)" type="button" class="btn btn-sm btn-default"><i class="fa fa-1 fa-play"></i> Resume</button>
                     </div>
                     <div class="btn-group pull-right">
-                        <button class="btn btn-sm btn-default" type="button" ng-click="editJob(job)" ui-sref="scheduler.createJob({ action: 'edit' })"><i class="fa fa-1 fa-edit"></i> Edit</button>
+                        <button class="btn btn-sm btn-default" type="button" ui-sref="scheduler.createJob({ action: 'edit', currJob: job.name })"><i class="fa fa-1 fa-edit"></i> Edit</button>
                         <button ng-click="deleteJob(job)" class="btn btn-sm btn-danger"><i class="fa fa-1 fa-trash"></i> Delete</button>
                     </div>
                 </span>

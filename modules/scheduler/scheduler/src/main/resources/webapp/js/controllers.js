@@ -82,15 +82,6 @@
             })
         };
 
-        $scope.newJob = function() {
-            LoadingModal.open();
-        }
-
-        $scope.editJob = function(job) {
-            JobsService.setCurrentJob(job);
-            LoadingModal.open();
-        }
-
         $scope.deleteJob = function(job) {
             ModalFactory.showConfirm("scheduler.confirm.delete", "scheduler.confirm", function(response) {
                 if (response) {
@@ -132,6 +123,11 @@
     });
 
     controllers.controller('SchedulerCreateJobCtrl', function($scope, $timeout, $stateParams, JobsService, ModalFactory, LoadingModal) {
+        LoadingModal.open();
+
+        if ($stateParams.currJob != null) {
+            JobsService.setCurrentJob(findJobByName($stateParams.currJob, JobsService.get()));
+        }
 
         innerLayout({}, {
             show: false,
@@ -212,7 +208,7 @@
             return null;
         };
 
-        $scope.createOrUpdateJob = function(action) {
+        $scope.createOrUpdateJob = function(action, currentJob) {
             var job = {};
 
             job.motechEvent = {};
@@ -332,6 +328,14 @@
         }
 
         LoadingModal.close();
+
+        function findJobByName (name, jobs) {
+            for (var i = 0; i < jobs.rows.length; i++) {
+                if (jobs.rows[i].name == name) {
+                    return jobs.rows[i];
+                }
+            }
+        }
     });
 
 }());
