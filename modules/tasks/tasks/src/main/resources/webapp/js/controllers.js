@@ -552,7 +552,8 @@
             return ($scope.selectedActionChannel[idx] && $scope.selectedActionChannel[idx].actionTaskEvents) || [];
         };
 
-        $scope.selectAction = function (idx, action) {
+        $scope.selectAction = function (idx, action,stepShowBubbles) {
+            $scope.stepShowBubbles=stepShowBubbles;
             if ($scope.selectedAction[idx]) {
                 ModalFactory.showConfirm('task.confirm.action', "task.header.confirm", function (val) {
                     if (val) {

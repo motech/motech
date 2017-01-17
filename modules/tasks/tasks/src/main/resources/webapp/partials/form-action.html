@@ -64,7 +64,7 @@
                         <li>
                             <ul class="select-limit">
                                 <li ng-repeat="a in getActions($index) | filter:searchAction">
-                                    <a ng-click="selectAction($parent.$index, a)">{{taskMsg(a.displayName)}}</a>
+                                    <a ng-click="selectAction($parent.$index, a,$parent.stepShowBubbles)">{{taskMsg(a.displayName)}}</a>
                                 </li>
                             </ul>
                         </li>
