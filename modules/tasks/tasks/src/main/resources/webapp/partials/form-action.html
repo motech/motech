@@ -45,7 +45,7 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li ng-repeat="channel in util.channels.withActions(channels)">
-                            <a ng-click="selectActionChannel($parent.$index, channel)">{{msg(channel.displayName)}}</a>
+                            <a ng-click="selectActionChannel($parent.$index, channel,$parent.stepShowBubbles)">{{msg(channel.displayName)}}</a>
                         </li>
                     </ul>
                 </div>
