@@ -25,7 +25,7 @@ public class DynamicChannelLoaderImpl implements DynamicChannelLoader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicChannelLoaderImpl.class);
 
-    private static final String PROVIDER_NOT_FOUND = "Dynamic channel provider not found for module %s";
+    private static final String PROVIDER_NOT_FOUND = "Dynamic channel provider not found for module {}";
 
     private BundleContext bundleContext;
 
