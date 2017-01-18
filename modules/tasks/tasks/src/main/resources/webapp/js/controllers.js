@@ -530,7 +530,8 @@
             }
         };
 
-        $scope.selectActionChannel = function (idx, channel) {
+        $scope.selectActionChannel = function (idx, channel,stepShowBubbles) {
+             $scope.stepShowBubbles=stepShowBubbles;
             if ($scope.selectedActionChannel[idx] && $scope.selectedAction[idx]) {
                 ModalFactory.showConfirm('task.confirm.action', "task.header.confirm", function (val) {
                     if (val) {
@@ -552,7 +553,8 @@
             return ($scope.selectedActionChannel[idx] && $scope.selectedActionChannel[idx].actionTaskEvents) || [];
         };
 
-        $scope.selectAction = function (idx, action) {
+        $scope.selectAction = function (idx, action,stepShowBubbles) {
+            $scope.stepShowBubbles=stepShowBubbles;
             if ($scope.selectedAction[idx]) {
                 ModalFactory.showConfirm('task.confirm.action', "task.header.confirm", function (val) {
                     if (val) {
