@@ -92,7 +92,6 @@ public interface ConfigurationService {
      *
      * @param settings  the settings to be saved
      */
-    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
     void savePlatformSettings(Properties settings);
 
     /**
@@ -101,7 +100,6 @@ public interface ConfigurationService {
      * @param key  the setting name
      * @param value  the value to be set
      */
-    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
     void setPlatformSetting(String key, String value);
 
     /**
@@ -115,7 +113,6 @@ public interface ConfigurationService {
      *
      * @param settings  the settings to be saved
      */
-    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
     void savePlatformSettings(MotechSettings settings);
 
     /**
