@@ -351,4 +351,10 @@ public interface ConfigurationService {
      * @param record a record to store
      */
     void addOrUpdateBundleRecord(ModulePropertiesRecord record);
+
+    /**
+     * Adds or updates a MOTECH settings to the settings service.
+     * @param settingsRecord a settings record to store
+     */
+    void addOrUpdateSettings(SettingsRecord settingsRecord);
 }

@@ -127,6 +127,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
     @Caching(cacheable = {@Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName") })
     public MotechSettings getPlatformSettings() {
         if (settingsDataService == null) {
@@ -647,6 +648,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
      *
      * @param settingsRecord  the settings to be add
      */
+    @Override
     @Transactional
     public void addOrUpdateSettings(SettingsRecord settingsRecord) {
         SettingsRecord record = getSettingsRecord();
