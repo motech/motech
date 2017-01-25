@@ -715,6 +715,7 @@
                 });
 
                 scope.changeBubble = function (ngModel, element) {
+                    fieldValue = scope.data ? scope.data.value : "";
                     if (fieldType !== 'MAP' && !fieldValue) {
                         return;
                     }
