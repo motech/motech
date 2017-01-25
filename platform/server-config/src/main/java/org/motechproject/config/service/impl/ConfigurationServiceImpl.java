@@ -24,6 +24,8 @@ import org.motechproject.config.loader.ConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
@@ -125,6 +127,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional
+    @Caching(cacheable = {@Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName") })
     public MotechSettings getPlatformSettings() {
         if (settingsDataService == null) {
             return null;
