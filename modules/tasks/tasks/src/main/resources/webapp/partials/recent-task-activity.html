@@ -8,7 +8,7 @@
             </tr>
             </tbody>
             <tbody ng-hide="activities.length == 0">
-            <tr ng-repeat="activity in activities">
+            <tr ng-repeat="activity in activities" ng-if="activity.type != 'WARNING'">
                 <td>
                     <div>
                         <div module-name-img="../server/module/icon?bundleName={{activity.trigger.moduleName}}&defaultIcon=iconTaskChannel.png" class="recent-activity-img"></div>
@@ -33,7 +33,6 @@
                         <a ng-href="#/tasks/task/{{activity.task}}/log">
                             <div ng-show="activity.type == 'SUCCESS'" class="recent-activity-icon fa icon-green fa-check-circle fa-2x" aria-hidden="true"></div>
                             <div ng-show="activity.type == 'ERROR'" class="recent-activity-icon fa icon-red fa-exclamation-circle fa-2x" aria-hidden="true"></div>
-                            <div ng-show="activity.type == 'WARNING'" class="recent-activity-icon fa warning-type fa-question-circle fa-2x" aria-hidden="true"></div>
                             <div ng-show="activity.type == 'IN PROGRESS'" class="recent-activity-icon fa icon-blue fa-info-circle fa-2x" aria-hidden="true"></div>
                             <div ng-show="activity.type == 'FILTERED'" class="recent-activity-icon fa icon-blue fa-info-circle fa-2x" aria-hidden="true"></div>
                         </a>

@@ -161,6 +161,9 @@
                     loadComplete: function() {
                         $compile($('.grid-ng-clickable'))(scope);
                     },
+                    postData: {
+                        activityType: scope.selectedActivityType.join(',').replace(' ', '_').toUpperCase()
+                    },
                     sortcolumn: 'task',
                     sortdirection: 'asc'
                 });
@@ -2015,5 +2018,53 @@
             }
         };
         return imgSrc;
+    });
+
+    directives.directive('multiselectDropdown', function () {
+        return {
+            restrict: 'A',
+            require : 'ngModel',
+            link: function (scope, element, attrs) {
+                var selectAll = scope.msg('task.button.selectAll');
+
+                element.multiselect({
+                    buttonClass : 'btn btn-default',
+                    buttonWidth : 'auto',
+                    buttonContainer : '<div class="btn-group" />',
+                    maxHeight : false,
+                    buttonText : function() {
+                            return scope.selectedActivityType.length !== 0 ? scope.selectedActivityType.join(", ") :
+                                scope.msg('task.history.filter.tasks');
+                    },
+                    selectAllText: selectAll,
+                    selectAllValue: 'multiselect-all',
+                    includeSelectAllOption: true,
+                    onChange: function (optionElement, checked) {
+                        if (optionElement) {
+                            optionElement.removeAttr('selected');
+                            if (checked) {
+                                optionElement.prop('selected', true);
+                            }
+                        }
+
+                        element.change();
+                    }
+                });
+
+                scope.$watch(function () {
+                    return element[0].length;
+                }, function () {
+                    element.multiselect('rebuild');
+                });
+
+                $(element).parent().on("click", function () {
+                    element.multiselect('rebuild');
+                });
+
+                scope.$watch(attrs.ngModel, function () {
+                    element.multiselect('refresh');
+                });
+            }
+        };
     });
 }());

@@ -1250,12 +1250,12 @@
         var data, task, allTasks, i, selectedTaskId, url, keys;
 
         $scope.taskId = $stateParams.taskId;
-        $scope.activityTypes = ['All', 'In progress', 'Success', 'Warning', 'Error'];
+        $scope.activityTypes = ['In progress', 'Success', 'Warning', 'Error', 'Filtered'];
         $scope.stackTraceEl = [];
         $scope.allTaskTypes = ['All'];
         $scope.failedTasks = [];
 
-        $scope.selectedActivityType = 'All';
+        $scope.selectedActivityType = ['In progress', 'Success', 'Error', 'Filtered'];
         $scope.selectedTaskType = 'All';
 
         innerLayout({
@@ -1352,7 +1352,7 @@
                 url: url,
                 page: 1,
                 postData: {
-                    activityType: ($scope.selectedActivityType === 'All') ? '' : $scope.selectedActivityType.toUpperCase().replace(/ /g, "_"),
+                    activityType: $scope.selectedActivityType.join(',').replace(' ', '_').toUpperCase(),
                     dateTimeFrom: $('#dateTimeFrom').val() ? $('#dateTimeFrom').val() : null,
                     dateTimeTo: $('#dateTimeTo').val() ? $('#dateTimeTo').val() : null
                 }
@@ -1363,7 +1363,7 @@
             $('#taskHistoryTable').jqGrid('setGridParam', {
                 page: 1,
                 postData: {
-                    activityType: ($scope.selectedActivityType === 'All') ? '' : $scope.selectedActivityType.toUpperCase().replace(/ /g, "_")
+                    activityType: $scope.selectedActivityType.join(',').replace(' ', '_').toUpperCase()
                 }}).trigger('reloadGrid');
         };
 
