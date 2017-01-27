@@ -2020,7 +2020,7 @@
         return imgSrc;
     });
 
-    directives.directive('multiselectDropdown', function () {
+    directives.directive('historyFilterDropdown', function () {
         return {
             restrict: 'A',
             require : 'ngModel',
