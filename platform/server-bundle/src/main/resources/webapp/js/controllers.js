@@ -20,7 +20,7 @@
     });
 
     serverModule.controller('MotechMasterCtrl', function ($scope, $rootScope, $ocLazyLoad, $state, $stateParams, $http,
-          i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout, ModalFactory, LoadingModal) {
+          i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout, ModalFactory, LoadingModal, $window) {
 
         var handle = function () {
                 if (!$scope.$$phase) {
@@ -225,54 +225,71 @@
                 if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace(/(\/)\w+((\/)\w*)*/i, '');}
                 return urlParam;
             };
-            if (url.indexOf('admin/bundleSettings/') > 0) {
-                $scope.selectedTabState.selectedTab = 'bundleSettings';
-            } else {
-                $scope.selectedTabState.selectedTab = url.replace(/(\/)\d+((\/)\w*)*/i, '').toString().substring(url.replace(/(\/)\d+((\/)\w*)*/i, '').toString().lastIndexOf("/")+1);
-            }
-            $scope.activeLink = {moduleName: moduleName, url: url};
 
-            if (moduleName) {
-                LoadingModal.open();
-
-                $http.get('../server/module/critical/' + moduleName).success(function (response) {
-                    if (response.data !== undefined && response.data !== '' && response.status !== 408) {
-                        ModalFactory.showErrorAlert(null, null, response.status + ": " + response.statusText);
-                        LoadingModal.close();
-                    }
-                });
-
-                if ($scope.moduleToLoad === moduleName || url === '/login') {
-                    $location.path(url);
-                    if (url.indexOf('admin/bundleSettings/') > 0) {
-                        $state.go('admin.bundleSettings', {'bundleId': url.substring(url.lastIndexOf("/")+1)});
-                    } else {
-                        $state.go(convertUrl(url), $state.params);
-                    }
-                    LoadingModal.close();
-                    innerLayout({}, { show: false });
+            $scope.checkAuth(function() {
+                if (url.indexOf('admin/bundleSettings/') > 0) {
+                    $scope.selectedTabState.selectedTab = 'bundleSettings';
                 } else {
-                    $scope.moduleToLoad = moduleName;
-                    if (!$ocLazyLoad.isLoaded(moduleName)) {
-                        $ocLazyLoad.load(moduleName);
-                    }
+                    $scope.selectedTabState.selectedTab = url.replace(/(\/)\d+((\/)\w*)*/i, '').toString().substring(url.replace(/(\/)\d+((\/)\w*)*/i, '').toString().lastIndexOf("/")+1);
+                }
+                $scope.activeLink = {moduleName: moduleName, url: url};
 
-                    if (url) {
-                        if ($ocLazyLoad.isLoaded(moduleName)) {
-                            $location.path(url);
+                if (moduleName) {
+                    LoadingModal.open();
+
+                    $http.get('../server/module/critical/' + moduleName).success(function (response) {
+                        if (response.data !== undefined && response.data !== '' && response.status !== 408) {
+                            ModalFactory.showErrorAlert(null, null, response.status + ": " + response.statusText);
                             LoadingModal.close();
                         }
-                        $scope.$on('ocLazyLoad.moduleLoaded', function(e, params) {
+                    });
+
+                    if ($scope.moduleToLoad === moduleName || url === '/login') {
+                        $location.path(url);
+                        if (url.indexOf('admin/bundleSettings/') > 0) {
+                            $state.go('admin.bundleSettings', {'bundleId': url.substring(url.lastIndexOf("/")+1)});
+                        } else {
+                            $state.go(convertUrl(url), $state.params);
+                        }
+                        LoadingModal.close();
+                        innerLayout({}, { show: false });
+                    } else {
+                        $scope.moduleToLoad = moduleName;
+                        if (!$ocLazyLoad.isLoaded(moduleName)) {
+                            $ocLazyLoad.load(moduleName);
+                        }
+
+                        if (url) {
                             if ($ocLazyLoad.isLoaded(moduleName)) {
                                 $location.path(url);
                                 LoadingModal.close();
                             }
-                        });
-                    } else {
-                        LoadingModal.close();
+                            $scope.$on('ocLazyLoad.moduleLoaded', function(e, params) {
+                                if ($ocLazyLoad.isLoaded(moduleName)) {
+                                    $location.path(url);
+                                    LoadingModal.close();
+                                }
+                            });
+                        } else {
+                            LoadingModal.close();
+                        }
                     }
                 }
-            }
+            });
+        };
+
+        $scope.checkAuth = function(callback) {
+            var user = {};
+
+            $http.get('../server/getUser').success(function (response) {
+                user = response;
+
+                if (typeof user.userName === 'undefined') {
+                    $window.location.reload();
+                } else {
+                    callback();
+                }
+            });
         };
 
         $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
