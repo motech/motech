@@ -2,7 +2,7 @@
     <h4 class="frame-title">{{msg('task.header.taskHistory')}}</h4>
     <div class="form-group form-inline inside">
         <label>{{msg('task.history.filter.progress')}}</label>
-        <select class="form-control input-auto" ng-model="selectedActivityType" ng-options="activity for activity in activityTypes"></select>
+        <select class="form-control input-auto" ng-model="selectedActivityType" multiple="multiple" history-filter-dropdown ng-options="activity for activity in activityTypes"></select>
         <label>{{msg('task.history.filter.tasks')}}</label>
         <select class="form-control input-auto" ng-model="selectedTaskType" ng-change="getSelectedTaskId()" ng-options="task for task in allTaskTypes"></select>
         <label>{{msg('task.history.filter.dateRange')}}</label>
