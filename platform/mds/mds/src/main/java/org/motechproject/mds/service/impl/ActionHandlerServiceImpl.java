@@ -43,7 +43,6 @@ public class ActionHandlerServiceImpl implements ActionHandlerService {
     private AllEntities allEntities;
 
     @Override
-    @Transactional
     public void create(Map<String, Object> parameters) throws ActionHandlerException {
         LOGGER.debug("Action CREATE: params: {}", parameters);
 

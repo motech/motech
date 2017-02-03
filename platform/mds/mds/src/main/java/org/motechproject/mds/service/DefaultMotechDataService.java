@@ -129,7 +129,7 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public T create(final T object) {
         validateCredentials();
 
