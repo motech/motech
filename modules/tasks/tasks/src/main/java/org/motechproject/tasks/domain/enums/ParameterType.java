@@ -106,6 +106,7 @@ public enum ParameterType {
             try {
                 DateTimeParser[] parsers = {
                         DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ").getParser(),
+                        DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ").getParser(),
                         DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z").getParser(),
                         DateTimeFormat.forPattern("yyyy-MM-dd").getParser(),
                         DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss ZZZ yyyy").getParser()
