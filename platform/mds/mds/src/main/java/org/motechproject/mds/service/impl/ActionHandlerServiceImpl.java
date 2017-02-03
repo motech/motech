@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -43,7 +42,6 @@ public class ActionHandlerServiceImpl implements ActionHandlerService {
     private AllEntities allEntities;
 
     @Override
-    @Transactional
     public void create(Map<String, Object> parameters) throws ActionHandlerException {
         LOGGER.debug("Action CREATE: params: {}", parameters);
 
@@ -58,7 +56,6 @@ public class ActionHandlerServiceImpl implements ActionHandlerService {
     }
 
     @Override
-    @Transactional
     public void update(Map<String, Object> parameters) throws ActionHandlerException {
         LOGGER.debug("Action UPDATE: params: {}", parameters);
 
@@ -74,7 +71,6 @@ public class ActionHandlerServiceImpl implements ActionHandlerService {
     }
 
     @Override
-    @Transactional
     public void createOrUpdate(Map<String, Object> parameters) throws ActionHandlerException {
         LOGGER.debug("Action CREATE OR UPDATE: params {}", parameters);
 
@@ -91,7 +87,6 @@ public class ActionHandlerServiceImpl implements ActionHandlerService {
     }
 
     @Override
-    @Transactional
     public void delete(Map<String, Object> parameters) throws ActionHandlerException {
         LOGGER.debug("Action DELETE: params: {}", parameters);
 
