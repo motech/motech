@@ -146,6 +146,7 @@ public class TaskServiceImpl implements TaskService {
         LOGGER.info("Saving task: {} with ID: {}", task.getName(), task.getId());
         Set<String> fieldsToUpdate = new HashSet<>();
         fieldsToUpdate.add("enabled");
+        fieldsToUpdate.add("failuresInRow");
 
         tasksDataService.updateFromTransient(task, fieldsToUpdate);
     }

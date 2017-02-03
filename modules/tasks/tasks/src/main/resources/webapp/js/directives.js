@@ -1462,6 +1462,7 @@
                     placement: 'top',
                     trigger: 'hover',
                     html: true,
+                    container: 'body',
                     content: function() {
                         var elem = angular.element(html);
 

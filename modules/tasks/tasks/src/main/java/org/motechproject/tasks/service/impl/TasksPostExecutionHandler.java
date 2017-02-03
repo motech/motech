@@ -104,7 +104,7 @@ public class TasksPostExecutionHandler {
         int failureNumber = task.getFailuresInRow();
         int possibleErrorsNumber = getPossibleErrorsNumber();
 
-        if (failureNumber >= possibleErrorsNumber) {
+        if (possibleErrorsNumber != 0 && failureNumber >= possibleErrorsNumber) {
             task.setEnabled(false);
 
             activityService.addTaskDisabledWarning(task);

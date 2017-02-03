@@ -2,7 +2,9 @@
     <h4 class="frame-title">{{msg('task.settings.title')}}</h4>
     <form id="tasksSettingsForm" name="tasksSettingsForm" class="form-horizontal col-sm-12" novalidate>
         <div ng-class="cssClass('taskPossibleErrors')" class="form-group">
-            <label class="col-md-2 col-sm-3 control-label" for="taskPossibleErrors">{{msg('task.settings.label.possibleErrors')}}:</label>
+            <label class="col-md-2 col-sm-3 control-label" for="taskPossibleErrors">{{msg('task.settings.label.possibleErrors')}}:
+                <span class="help-inline" help-popover="possibleErrors" data-title="{{msg('task.header.errorCountHelp')}}"><i class="fa fa-question-circle"></i></span>
+            </label>
             <div class="form-inline col-md-10 col-sm-9">
                 <input class="form-control input-auto" ng-model="settings.taskPossibleErrors" type="text" id="taskPossibleErrors" required/>
                 <span ng-hide="isNumeric('taskPossibleErrors')" class="form-hint">{{msg('task.settings.error.possibleErrors')}}</span>
