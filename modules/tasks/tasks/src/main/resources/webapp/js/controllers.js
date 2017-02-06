@@ -129,6 +129,10 @@
             task.id = item.task.id;
             task.name = item.task.name;
 
+            if (enabled) {
+                task.failuresInRow = 0;
+            }
+
             $http.post('../tasks/api/task/enable-or-disable/' + task.id, task)
                 .success(function () {
                     LoadingModal.close();
