@@ -38,7 +38,7 @@
     "swagger-ui": "git://github.com/swagger-api/swagger-ui.git#2.1.1-M1",
     "swagger-js": "git://github.com/swagger-api/swagger-js.git#2.1.1-M1",
     "jquery.caret": "~1.5.2",
-    "jquery.cookie": "~1.4.1",
+    "jquery-cookie": "git://github.com/kmadej/jquery-cookie",
     "form": "git://github.com/malsup/form/",
     "jquery-i18n-properties": "git://github.com/jquery-i18n-properties/jquery-i18n-properties",
     "livequery": "git://github.com/brandonaaron/livequery",
