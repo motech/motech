@@ -177,12 +177,12 @@ public class ActivityController {
         QueryParams result;
 
         if (StringUtils.isEmpty(settings.getSidx())) {
-            result = new QueryParams(settings.getPage(), settings.getRows(), new Order("date", Order.Direction.DESC));
+            result = new QueryParams(settings.getPage(), settings.getRows(), new Order("date", Order.Direction.DESC), settings.getGroupingColumn());
         } else {
             if ("asc".equals(settings.getSord())) {
-                result = new QueryParams(settings.getPage(), settings.getRows(), new Order(settings.getSidx(), Order.Direction.ASC));
+                result = new QueryParams(settings.getPage(), settings.getRows(), new Order(settings.getSidx(), Order.Direction.ASC), settings.getGroupingColumn());
             } else {
-                result = new QueryParams(settings.getPage(), settings.getRows(), new Order(settings.getSidx(), Order.Direction.DESC));
+                result = new QueryParams(settings.getPage(), settings.getRows(), new Order(settings.getSidx(), Order.Direction.DESC), settings.getGroupingColumn());
             }
         }
 

@@ -5,6 +5,7 @@ import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
+import org.motechproject.mds.query.SetProperty;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.PropertyUtil;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -27,10 +29,12 @@ import java.util.Map;
  */
 @Repository
 public abstract class MotechDataRepository<T> extends AbstractRepository {
+    private static final String TASK_ACTIVITY_CLASS_NAME = "org.motechproject.tasks.domain.mds.task.TaskActivity";
 
     private Class<T> classType;
     private Integer fetchDepth;
     private Map<String, String> fieldTypeMap;
+
 
     protected MotechDataRepository(Class<T> classType) {
         this.classType = classType;
@@ -143,6 +147,10 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
     }
 
     public List<T> retrieveAll(List<Property> properties, QueryParams queryParams, InstanceSecurityRestriction restriction) {
+        if(queryParams.isGroupingSet()) {
+            preparePropertiesForGroupingTask(properties, queryParams.getGroupingColumn(), restriction);
+        }
+
         Query query = createQuery(properties, restriction);
         QueryUtil.setQueryParams(query, queryParams);
 
@@ -267,5 +275,23 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
         QueryUtil.useFilters(query, filters);
 
         return query;
+    }
+
+    private void preparePropertiesForGroupingTask(List<Property> properties, String groupingColumn,  InstanceSecurityRestriction restriction) {
+        Collection ids = null;
+        HashSet<Long> hashSetProperty = null;
+
+        if(TASK_ACTIVITY_CLASS_NAME.equals(classType.getName())) {
+            Query queryIds = getPersistenceManager().newQuery(classType);
+            queryIds.setResult("max(id)");
+            queryIds.setGrouping(groupingColumn);
+            ids = (Collection) QueryExecutor.execute(queryIds, restriction);
+            hashSetProperty = new HashSet<>(ids);
+        }
+
+        if (ids != null) {
+            SetProperty property = new SetProperty("id", hashSetProperty, "java.lang.Long");
+            properties.add(property);
+        }
     }
 }

@@ -52,6 +52,11 @@ public class GridSettings {
     private String sord;
 
     /**
+     * Group by column
+     */
+    private String groupingColumn;
+
+    /**
      * @return To date for searching activities
      */
     public String getDateTimeTo() {
@@ -122,6 +127,15 @@ public class GridSettings {
     public void setSord(String sord) {
         this.sord = sord;
     }
+
+    public void setGroupingColumn(String groupingColumn) {
+        this.groupingColumn = groupingColumn;
+    }
+
+    public String getGroupingColumn() {
+        return this.groupingColumn;
+    }
+
     /**
      * @return the activity types to display
      */
@@ -170,6 +184,7 @@ public class GridSettings {
                 "rows=" + rows +
                 ", page=" + page +
                 ", activityType='" + activityType + '\'' +
+                ", groupingColumn=" + groupingColumn +
                 '}';
     }
 }

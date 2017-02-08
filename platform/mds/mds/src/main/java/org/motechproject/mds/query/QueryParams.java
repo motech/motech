@@ -20,6 +20,7 @@ public class QueryParams implements Serializable {
     private final Integer page;
     private final Integer pageSize;
     private final List<Order> orderList;
+    private final String groupingColumn;
 
     /**
      * Constant query parameter, that orders records ascending by ID.
@@ -62,12 +63,17 @@ public class QueryParams implements Serializable {
      * @param order specifies order of the records
      */
     public QueryParams(Integer page, Integer pageSize, Order order) {
+        this(page, pageSize, order, null);
+    }
+
+    public QueryParams(Integer page, Integer pageSize, Order order, String groupingColumn) {
         this.page = page;
         this.pageSize = pageSize;
         this.orderList = new ArrayList<>();
         if (order != null) {
             orderList.add(order);
         }
+        this.groupingColumn = groupingColumn != null ? groupingColumn : "";
     }
 
     /**
@@ -78,9 +84,14 @@ public class QueryParams implements Serializable {
      * @param orderList the list of order instructions that will be applied to the query
      */
     public QueryParams(Integer page, Integer pageSize, List<Order> orderList) {
+        this(page, pageSize, orderList, "");
+    }
+
+    public QueryParams(Integer page, Integer pageSize, List<Order> orderList, String groupingColumn) {
         this.page = page;
         this.pageSize = pageSize;
-        this.orderList = (orderList == null) ? new ArrayList<Order>() : orderList;
+        this.orderList = (orderList == null) ? new ArrayList<>() : orderList;
+        this.groupingColumn = groupingColumn;
     }
 
     public Integer getPage() {
@@ -95,8 +106,16 @@ public class QueryParams implements Serializable {
         return orderList;
     }
 
+    public String getGroupingColumn() {
+        return this.groupingColumn;
+    }
+
     public boolean isOrderSet() {
         return !orderList.isEmpty();
+    }
+
+    public boolean isGroupingSet() {
+        return !this.groupingColumn.isEmpty();
     }
 
     public boolean isPagingSet() {
@@ -147,7 +166,8 @@ public class QueryParams implements Serializable {
 
             return ObjectUtils.equals(page, other.page)
                     && ObjectUtils.equals(pageSize, other.pageSize)
-                    && ObjectUtils.equals(orderList, other.orderList);
+                    && ObjectUtils.equals(orderList, other.orderList)
+                    && ObjectUtils.equals(groupingColumn, other.groupingColumn);
         }
 
         return false;
@@ -159,6 +179,7 @@ public class QueryParams implements Serializable {
                 .append(page)
                 .append(pageSize)
                 .append(orderList)
+                .append(groupingColumn)
                 .toHashCode();
     }
 }

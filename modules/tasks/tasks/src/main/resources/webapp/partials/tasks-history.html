@@ -8,6 +8,8 @@
         <label>{{msg('task.history.filter.dateRange')}}</label>
         <input id="dateTimeFrom" class="form-control" date-picker ng-model="dateTimeFrom" max="dateTimeTo" type="datetime" placeholder="{{msg('task.history.filter.from')}}"/>
         <input id="dateTimeTo" class="form-control" date-picker ng-model="dateTimeTo" min="dateTimeFrom" type="datetime" placeholder="{{msg('task.history.filter.to')}}"/>
+        <label>{{msg('task.history.filter.onlyLastExecution')}}</label>
+        <input type="checkbox" ng-model="groupTask "ng-change="setGrouping()">
         <button class="btn btn-primary" ng-click="filterHistory()">{{msg('task.history.filter.submit')}}</button>
     </div>
     <div id="outsideTaskHistoryTable" class="overrideJqgridTable">
