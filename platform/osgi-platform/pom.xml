@@ -3,13 +3,13 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.27.8-SNAPSHOT</version>
+        <version>0.27.7-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>motech-osgi-platform</artifactId>
-    <version>0.27.8-SNAPSHOT</version>
+    <version>0.27.7-SNAPSHOT</version>
     <name>MOTECH OSGi Platform</name>
     <packaging>bundle</packaging>
 
