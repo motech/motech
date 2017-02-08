@@ -4,13 +4,13 @@
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>motech</artifactId>
-        <version>0.27.7-SNAPSHOT</version>
+        <version>0.27.7</version>
         <relativePath>../../../</relativePath>
     </parent>
 
     <artifactId>motech-tasks</artifactId>
     <name>MOTECH Tasks</name>
-    <version>0.27.7-SNAPSHOT</version>
+    <version>0.27.7</version>
     <packaging>bundle</packaging>
 
     <properties>
