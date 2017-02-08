@@ -4,7 +4,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.27.8-SNAPSHOT</version>
+        <version>0.27.7-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -16,7 +16,7 @@
         It contains several tools that allow to test performance, including ready-to-run tests and
         dummy data generator.
     </description>
-    <version>0.27.8-SNAPSHOT</version>
+    <version>0.27.7-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
