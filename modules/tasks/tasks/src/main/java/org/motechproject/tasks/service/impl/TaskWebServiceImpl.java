@@ -56,15 +56,15 @@ public class TaskWebServiceImpl implements TaskWebService {
 
     @Override
     @Transactional
-    public List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams) {
-        return activityToDtos(taskActivityService.getAllActivities(activityTypeSet, queryParams));
+    public List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams, boolean grouping) {
+        return activityToDtos(taskActivityService.getAllActivities(activityTypeSet, queryParams, grouping));
     }
 
     @Override
     @Transactional
     public List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet,
-                                                  Range<DateTime> dateRange, QueryParams queryParams) {
-        return activityToDtos(taskActivityService.getAllActivities(activityTypeSet, dateRange, queryParams));
+                                                  Range<DateTime> dateRange, QueryParams queryParams, boolean grouping) {
+        return activityToDtos(taskActivityService.getAllActivities(activityTypeSet, dateRange, queryParams, grouping));
     }
 
     @Override

@@ -27,14 +27,14 @@ public interface TaskWebService {
     List<TaskActivityDto> getLatestActivities();
 
     /**
-     * @see TaskActivityService#getAllActivities(Set, QueryParams)
+     * @see TaskActivityService#getAllActivities(Set, QueryParams, boolean)
      */
-    List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams);
+    List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams, boolean grouping);
 
     /**
-     * @see TaskActivityService#getAllActivities(Set, Range, QueryParams)
+     * @see TaskActivityService#getAllActivities(Set, Range, QueryParams, boolean)
      */
-    List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet, Range<DateTime> dateRange, QueryParams queryParams);
+    List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet, Range<DateTime> dateRange, QueryParams queryParams, boolean grouping);
 
     /**
      * @see TaskActivityService#getTaskActivities(Long, Set, QueryParams)

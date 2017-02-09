@@ -109,9 +109,10 @@ public interface TaskActivityService {
      *
      * @param activityTypeSet the type of activities
      * @param queryParams query parameters to use while retrieving
+     * @param grouping
      * @return the list of all activities
      */
-    List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams);
+    List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams, boolean grouping);
 
     /**
      * Returns all the activities as a list.
@@ -119,10 +120,11 @@ public interface TaskActivityService {
      * @param activityTypes the type of activities
      * @param dateRange the date range
      * @param queryParams query parameters to use while retrieving
+     * @param grouping
      * @return the list of all activities
      */
     List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange,
-                                               QueryParams queryParams);
+                                               QueryParams queryParams, boolean grouping);
     /**
      * Returns list of all activities for task with the given ID.
      *
@@ -189,9 +191,4 @@ public interface TaskActivityService {
      * @return the count of matching activities
      */
     long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange);
-
-    /**
-     * @return the set of latest activity ids for any task.
-     */
-    Set<Long> getLatestActivitiesForTasks();
 }

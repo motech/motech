@@ -72,10 +72,10 @@ public class ActivityController {
             List<TaskActivityDto> activities;
             long count;
             if (dateTimeRange != null) {
-                activities = taskWebService.getAllActivities(types, dateTimeRange, params);
+                activities = taskWebService.getAllActivities(types, dateTimeRange, params, settings.isGrouping());
                 count = activityService.getAllTaskActivitiesCount(types, dateTimeRange);
             } else {
-                activities = taskWebService.getAllActivities(types, params);
+                activities = taskWebService.getAllActivities(types, params, settings.isGrouping());
                 count = activityService.getAllTaskActivitiesCount(types);
             }
             int totalPages = (int) Math.ceil((double) count / settings.getRows());
@@ -177,12 +177,12 @@ public class ActivityController {
         QueryParams result;
 
         if (StringUtils.isEmpty(settings.getSidx())) {
-            result = new QueryParams(settings.getPage(), settings.getRows(), new Order("date", Order.Direction.DESC), settings.getGroupingColumn());
+            result = new QueryParams(settings.getPage(), settings.getRows(), new Order("date", Order.Direction.DESC));
         } else {
             if ("asc".equals(settings.getSord())) {
-                result = new QueryParams(settings.getPage(), settings.getRows(), new Order(settings.getSidx(), Order.Direction.ASC), settings.getGroupingColumn());
+                result = new QueryParams(settings.getPage(), settings.getRows(), new Order(settings.getSidx(), Order.Direction.ASC));
             } else {
-                result = new QueryParams(settings.getPage(), settings.getRows(), new Order(settings.getSidx(), Order.Direction.DESC), settings.getGroupingColumn());
+                result = new QueryParams(settings.getPage(), settings.getRows(), new Order(settings.getSidx(), Order.Direction.DESC));
             }
         }
 

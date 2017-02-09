@@ -54,7 +54,7 @@ public class GridSettings {
     /**
      * Group by column
      */
-    private String groupingColumn;
+    private boolean grouping;
 
     /**
      * @return To date for searching activities
@@ -128,12 +128,12 @@ public class GridSettings {
         this.sord = sord;
     }
 
-    public void setGroupingColumn(String groupingColumn) {
-        this.groupingColumn = groupingColumn;
+    public void setGrouping(boolean grouping) {
+        this.grouping = grouping;
     }
 
-    public String getGroupingColumn() {
-        return this.groupingColumn;
+    public boolean isGrouping() {
+        return this.grouping;
     }
 
     /**
@@ -184,7 +184,7 @@ public class GridSettings {
                 "rows=" + rows +
                 ", page=" + page +
                 ", activityType='" + activityType + '\'' +
-                ", groupingColumn=" + groupingColumn +
+                ", grouping=" + grouping +
                 '}';
     }
 }

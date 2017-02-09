@@ -31,7 +31,6 @@ public abstract class MotechDataRepository<T> extends AbstractRepository {
     private Integer fetchDepth;
     private Map<String, String> fieldTypeMap;
 
-
     protected MotechDataRepository(Class<T> classType) {
         this.classType = classType;
     }

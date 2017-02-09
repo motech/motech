@@ -1259,7 +1259,6 @@
         $scope.allTaskTypes = ['All'];
         $scope.failedTasks = [];
         $scope.groupTask = true;
-        $scope.groupingColumn = 'task';
 
         $scope.selectedActivityType = ['In progress', 'Success', 'Error', 'Filtered'];
         $scope.selectedTaskType = 'All';
@@ -1319,14 +1318,6 @@
             }
         };
 
-        $scope.setGrouping = function () {
-            if ($scope.groupTask) {
-                $scope.groupingColumn = 'task';
-            } else {
-                $scope.groupingColumn = '';
-            }
-        };
-
         $scope.doesTaskExist = function (taskId) {
             keys = Object.keys($scope.failedActivitiesWithTaskId);
             for(i = 0; i < keys.length; i += 1) {
@@ -1366,7 +1357,7 @@
                 url: url,
                 page: 1,
                 postData: {
-                    groupingColumn: $scope.groupingColumn,
+                    grouping: $scope.groupTask,
                     activityType: $scope.selectedActivityType.join(',').replace(' ', '_').toUpperCase(),
                     dateTimeFrom: $('#dateTimeFrom').val() ? $('#dateTimeFrom').val() : null,
                     dateTimeTo: $('#dateTimeTo').val() ? $('#dateTimeTo').val() : null
@@ -1378,7 +1369,7 @@
             $('#taskHistoryTable').jqGrid('setGridParam', {
                 page: 1,
                 postData: {
-                    groupingColumn: "",
+                    grouping: $scope.groupTask,
                     activityType: $scope.selectedActivityType.join(',').replace(' ', '_').toUpperCase()
                 }}).trigger('reloadGrid');
         };

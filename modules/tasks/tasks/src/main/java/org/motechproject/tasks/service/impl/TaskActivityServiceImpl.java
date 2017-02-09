@@ -152,9 +152,9 @@ public class TaskActivityServiceImpl implements TaskActivityService {
 
     @Override
     @Transactional
-    public List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypes, QueryParams queryParams) {
+    public List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypes, QueryParams queryParams, boolean grouping) {
         Set<Long> activityIds = new HashSet<>();
-        if (queryParams.isGroupingSet()) {
+        if (grouping) {
             activityIds = getLatestActivitiesForTasks();
         }
 
@@ -164,9 +164,9 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     @Override
     @Transactional
     public List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange,
-                                               QueryParams queryParams) {
+                                               QueryParams queryParams, boolean grouping) {
         Set<Long> activityIds = new HashSet<>();
-        if (queryParams.isGroupingSet()) {
+        if (grouping) {
             activityIds = getLatestActivitiesForTasks();
         }
 
@@ -216,9 +216,8 @@ public class TaskActivityServiceImpl implements TaskActivityService {
         return taskActivitiesDataService.countByActivityTypesAndDate(activityTypes, dateRange);
     }
 
-    @Override
     @Transactional
-    public Set<Long> getLatestActivitiesForTasks() {
+    private Set<Long> getLatestActivitiesForTasks() {
         List<Long> activitiesIds = taskActivitiesDataService.executeQuery(new QueryExecution<List<Long>>() {
             @Override
             public List<Long> execute(Query query, InstanceSecurityRestriction restriction) {

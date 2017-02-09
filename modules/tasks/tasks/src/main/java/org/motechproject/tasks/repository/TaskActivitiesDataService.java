@@ -138,7 +138,7 @@ public interface TaskActivitiesDataService extends MotechDataService<TaskActivit
      * @param queryParams   the query parameters to use
      * @return the list of matching task activities
      */
-    @Lookup(name = "By Activity Types and Date range")
+    @Lookup(name = "By Activity Types and Activity IDs and Date range")
     List<TaskActivity> byActivityTypesIdsAndDate(@LookupField(name = ACTIVITY_TYPE) final Set<TaskActivityType> activityTypes,
                                                  @LookupField(name = ACTIVITY_ID) final Set<Long> activityIds,
                                               @LookupField(name = DATE) final Range<DateTime> dateRange, QueryParams queryParams);
