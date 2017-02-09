@@ -95,7 +95,6 @@ public class QueryParams implements Serializable {
         return orderList;
     }
 
-
     public boolean isOrderSet() {
         return !orderList.isEmpty();
     }

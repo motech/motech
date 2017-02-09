@@ -22,7 +22,7 @@
                 activityId, url, taskId, taskExists;
 
                 if (scope.taskId) {
-                    scope.groupTask = false;
+                    scope.lastExecution = false;
                     url = '../tasks/api/activity/' + scope.taskId;
                 } else {
                     url = '../tasks/api/activity/all';
@@ -165,7 +165,7 @@
                         $compile($('.grid-ng-clickable'))(scope);
                     },
                     postData: {
-                        grouping: scope.groupTask,
+                        lastExecution: scope.lastExecution,
                         activityType: scope.selectedActivityType.join(',').replace(' ', '_').toUpperCase()
                     },
                     sortcolumn: 'task',

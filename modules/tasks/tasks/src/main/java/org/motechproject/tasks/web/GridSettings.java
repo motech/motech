@@ -52,9 +52,9 @@ public class GridSettings {
     private String sord;
 
     /**
-     * Group by column
+     * Get only last execution
      */
-    private boolean grouping;
+    private boolean lastExecution;
 
     /**
      * @return To date for searching activities
@@ -128,12 +128,12 @@ public class GridSettings {
         this.sord = sord;
     }
 
-    public void setGrouping(boolean grouping) {
-        this.grouping = grouping;
+    public void setLastExecution(boolean lastExecution) {
+        this.lastExecution = lastExecution;
     }
 
-    public boolean isGrouping() {
-        return this.grouping;
+    public boolean isLastExecution() {
+        return this.lastExecution;
     }
 
     /**
@@ -184,7 +184,7 @@ public class GridSettings {
                 "rows=" + rows +
                 ", page=" + page +
                 ", activityType='" + activityType + '\'' +
-                ", grouping=" + grouping +
+                ", lastExecution=" + lastExecution +
                 '}';
     }
 }

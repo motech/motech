@@ -109,10 +109,10 @@ public interface TaskActivityService {
      *
      * @param activityTypeSet the type of activities
      * @param queryParams query parameters to use while retrieving
-     * @param grouping
+     * @param lastExecution
      * @return the list of all activities
      */
-    List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams, boolean grouping);
+    List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams, boolean lastExecution);
 
     /**
      * Returns all the activities as a list.
@@ -120,11 +120,11 @@ public interface TaskActivityService {
      * @param activityTypes the type of activities
      * @param dateRange the date range
      * @param queryParams query parameters to use while retrieving
-     * @param grouping
+     * @param lastExecution
      * @return the list of all activities
      */
     List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange,
-                                               QueryParams queryParams, boolean grouping);
+                                               QueryParams queryParams, boolean lastExecution);
     /**
      * Returns list of all activities for task with the given ID.
      *
@@ -179,16 +179,18 @@ public interface TaskActivityService {
      * Returns the count of all activities.
      *
      * @param activityTypes the type of activities to include in count
+     * @param lastExecution
      * @return the count of matching activities
      */
-    long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes);
+    long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, boolean lastExecution);
 
     /**
      * Returns the count of all activities.
      *
      * @param activityTypes the type of activities to include in count
      * @param dateRange the date range
+     * @param lastExecution
      * @return the count of matching activities
      */
-    long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange);
+    long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange, boolean lastExecution);
 }
