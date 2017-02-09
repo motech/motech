@@ -19,6 +19,7 @@ public interface TaskActivitiesDataService extends MotechDataService<TaskActivit
 
     String TASK = "task";
     String ACTIVITY_TYPE = "activityType";
+    String ACTIVITY_ID = "id";
     String DATE = "date";
 
     /**
@@ -94,6 +95,20 @@ public interface TaskActivitiesDataService extends MotechDataService<TaskActivit
                                               QueryParams queryParams);
 
     /**
+     * Returns the list of activities of specified type, id and with QueryParams for
+     * pagination support.
+     *
+     * @param activityTypes the set of activity types
+     * @param activityIds the set of activity ids
+     * @param queryParams   the query parameters to use
+     * @return the list of matching task activities
+     */
+
+    @Lookup(name = "By Activity Types And Ids")
+    List<TaskActivity> byActivityTypesAndIds(@LookupField(name = ACTIVITY_TYPE) final Set<TaskActivityType> activityTypes,
+                                       @LookupField(name = ACTIVITY_ID) final Set<Long> activityIds, QueryParams queryParams);
+
+    /**
      * Returns the count of all the task activities
      *
      * @return the count of all task activities
@@ -111,6 +126,21 @@ public interface TaskActivitiesDataService extends MotechDataService<TaskActivit
      */
     @Lookup(name = "By Activity Types and Date range")
     List<TaskActivity> byActivityTypesAndDate(@LookupField(name = ACTIVITY_TYPE) final Set<TaskActivityType> activityTypes,
+                                              @LookupField(name = DATE) final Range<DateTime> dateRange, QueryParams queryParams);
+
+    /**
+     * Returns the list of activities of specified type, id and with QueryParams for
+     * pagination support.
+     *
+     * @param activityTypes the set of activity types
+     * @param activityIds the set of activity ids
+     * @param dateRange     the range of date
+     * @param queryParams   the query parameters to use
+     * @return the list of matching task activities
+     */
+    @Lookup(name = "By Activity Types and Date range")
+    List<TaskActivity> byActivityTypesIdsAndDate(@LookupField(name = ACTIVITY_TYPE) final Set<TaskActivityType> activityTypes,
+                                                 @LookupField(name = ACTIVITY_ID) final Set<Long> activityIds,
                                               @LookupField(name = DATE) final Range<DateTime> dateRange, QueryParams queryParams);
 
     /**

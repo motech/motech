@@ -3,7 +3,9 @@ package org.motechproject.tasks.service.impl;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;
+import org.motechproject.mds.query.QueryExecution;
 import org.motechproject.mds.query.QueryParams;
+import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.Order;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActivity;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.jdo.Query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -150,14 +153,24 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     @Override
     @Transactional
     public List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypes, QueryParams queryParams) {
-        return taskActivitiesDataService.byActivityTypes(activityTypes, queryParams);
+        Set<Long> activityIds = new HashSet<>();
+        if (queryParams.isGroupingSet()) {
+            activityIds = getLatestActivitiesForTasks();
+        }
+
+        return taskActivitiesDataService.byActivityTypesAndIds(activityTypes, activityIds, queryParams);
     }
 
     @Override
     @Transactional
     public List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange,
                                                QueryParams queryParams) {
-        return taskActivitiesDataService.byActivityTypesAndDate(activityTypes, dateRange, queryParams);
+        Set<Long> activityIds = new HashSet<>();
+        if (queryParams.isGroupingSet()) {
+            activityIds = getLatestActivitiesForTasks();
+        }
+
+        return taskActivitiesDataService.byActivityTypesIdsAndDate(activityTypes, activityIds, dateRange, queryParams);
     }
 
     @Override
@@ -201,6 +214,22 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     @Transactional
     public long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange) {
         return taskActivitiesDataService.countByActivityTypesAndDate(activityTypes, dateRange);
+    }
+
+    @Override
+    @Transactional
+    public Set<Long> getLatestActivitiesForTasks() {
+        List<Long> activitiesIds = taskActivitiesDataService.executeQuery(new QueryExecution<List<Long>>() {
+            @Override
+            public List<Long> execute(Query query, InstanceSecurityRestriction restriction) {
+                query.setResult("max(id)");
+                query.setGrouping("task");
+
+                return (List<Long>) query.execute();
+            }
+        });
+
+        return new HashSet<>(activitiesIds);
     }
 
     private boolean updateTaskProgress(TaskExecutionProgress progress, TaskActivity activity) {

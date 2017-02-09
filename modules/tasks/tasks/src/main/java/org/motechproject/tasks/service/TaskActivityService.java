@@ -189,4 +189,9 @@ public interface TaskActivityService {
      * @return the count of matching activities
      */
     long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange);
+
+    /**
+     * @return the set of latest activity ids for any task.
+     */
+    Set<Long> getLatestActivitiesForTasks();
 }
