@@ -27,7 +27,6 @@ import java.util.Map;
  */
 @Repository
 public abstract class MotechDataRepository<T> extends AbstractRepository {
-
     private Class<T> classType;
     private Integer fetchDepth;
     private Map<String, String> fieldTypeMap;

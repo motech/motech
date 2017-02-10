@@ -218,9 +218,10 @@ public class ActionParametersBundleIT extends BasePaxIT {
 
     private boolean hasTaskExecuted(Long taskID) {
         Set<TaskActivityType> activityTypes = new HashSet<>();
+        Set<Long> activityIds = new HashSet<>();
         activityTypes.add(TaskActivityType.SUCCESS);
         QueryParams queryParams = new QueryParams((Order) null);
-        List<TaskActivity> taskActivities = taskActivitiesDataService.byTaskAndActivityTypes(taskID, activityTypes, queryParams);
+        List<TaskActivity> taskActivities = taskActivitiesDataService.byTaskAndActivityTypesAndIds(taskID, activityTypes, activityIds, queryParams);
 
         return taskActivities.size() == 1;
     }

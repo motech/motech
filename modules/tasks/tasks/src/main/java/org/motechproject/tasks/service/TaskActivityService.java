@@ -109,9 +109,10 @@ public interface TaskActivityService {
      *
      * @param activityTypeSet the type of activities
      * @param queryParams query parameters to use while retrieving
+     * @param lastExecution
      * @return the list of all activities
      */
-    List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams);
+    List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams, boolean lastExecution);
 
     /**
      * Returns all the activities as a list.
@@ -119,19 +120,21 @@ public interface TaskActivityService {
      * @param activityTypes the type of activities
      * @param dateRange the date range
      * @param queryParams query parameters to use while retrieving
+     * @param lastExecution
      * @return the list of all activities
      */
     List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange,
-                                               QueryParams queryParams);
+                                               QueryParams queryParams, boolean lastExecution);
     /**
      * Returns list of all activities for task with the given ID.
      *
      * @param taskId  the task ID, null returns null
      * @param activityTypeSet the type of activities
      * @param queryParams query parameters to use while retrieving
+     * @param lastExecution
      * @return  the list of all activities for task with given ID
      */
-    List<TaskActivity> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypeSet, QueryParams queryParams);
+    List<TaskActivity> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypeSet, QueryParams queryParams, boolean lastExecution);
 
     /**
      * Returns list of all activities for task with the given ID, of specific activity type and the given date range.
@@ -140,19 +143,21 @@ public interface TaskActivityService {
      * @param activityTypeSet the type of activities
      * @param dateRange the range of datetime
      * @param queryParams query parameters to use while retrieving
+     * @param lastExecution
      * @return  the list of all activities for task with given ID
      */
     List<TaskActivity> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypeSet, Range<DateTime> dateRange,
-                                         QueryParams queryParams);
+                                         QueryParams queryParams, boolean lastExecution);
 
     /**
      * Returns the count of all activities for the given task, of the specified type.
      *
      * @param taskId the task ID
      * @param activityTypes the type of activities to include in count
+     * @param lastExecution
      * @return the count of matching activities
      */
-    long getTaskActivitiesCount(Long taskId, Set<TaskActivityType> activityTypes);
+    long getTaskActivitiesCount(Long taskId, Set<TaskActivityType> activityTypes, boolean lastExecution);
 
     /**
      * Returns the count of all activities for the given task, of the specified type.
@@ -169,24 +174,27 @@ public interface TaskActivityService {
      * @param taskId the task ID
      * @param activityTypes the type of activities to include in count
      * @param dateRange the range of datetime
+     * @param lastExecution
      * @return the count of matching activities
      */
-    long getTaskActivitiesCount(Long taskId, Set<TaskActivityType> activityTypes, Range<DateTime> dateRange);
+    long getTaskActivitiesCount(Long taskId, Set<TaskActivityType> activityTypes, Range<DateTime> dateRange, boolean lastExecution);
 
     /**
      * Returns the count of all activities.
      *
      * @param activityTypes the type of activities to include in count
+     * @param lastExecution
      * @return the count of matching activities
      */
-    long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes);
+    long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, boolean lastExecution);
 
     /**
      * Returns the count of all activities.
      *
      * @param activityTypes the type of activities to include in count
      * @param dateRange the date range
+     * @param lastExecution
      * @return the count of matching activities
      */
-    long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange);
+    long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange, boolean lastExecution);
 }

@@ -56,28 +56,28 @@ public class TaskWebServiceImpl implements TaskWebService {
 
     @Override
     @Transactional
-    public List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams) {
-        return activityToDtos(taskActivityService.getAllActivities(activityTypeSet, queryParams));
+    public List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams, boolean lastExecution) {
+        return activityToDtos(taskActivityService.getAllActivities(activityTypeSet, queryParams, lastExecution));
     }
 
     @Override
     @Transactional
     public List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet,
-                                                  Range<DateTime> dateRange, QueryParams queryParams) {
-        return activityToDtos(taskActivityService.getAllActivities(activityTypeSet, dateRange, queryParams));
+                                                  Range<DateTime> dateRange, QueryParams queryParams, boolean lastExecution) {
+        return activityToDtos(taskActivityService.getAllActivities(activityTypeSet, dateRange, queryParams, lastExecution));
     }
 
     @Override
     @Transactional
-    public List<TaskActivityDto> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypeSet, QueryParams queryParams) {
-        return activityToDtos(taskActivityService.getTaskActivities(taskId, activityTypeSet, queryParams));
+    public List<TaskActivityDto> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypeSet, QueryParams queryParams, boolean lastExecution) {
+        return activityToDtos(taskActivityService.getTaskActivities(taskId, activityTypeSet, queryParams, lastExecution));
     }
 
     @Override
     @Transactional
     public List<TaskActivityDto> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypeSet,
-                                                   Range<DateTime> dateRange, QueryParams queryParams) {
-        return activityToDtos(taskActivityService.getTaskActivities(taskId, activityTypeSet, dateRange, queryParams));
+                                                   Range<DateTime> dateRange, QueryParams queryParams, boolean lastExecution) {
+        return activityToDtos(taskActivityService.getTaskActivities(taskId, activityTypeSet, dateRange, queryParams, lastExecution));
     }
 
     @Override
