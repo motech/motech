@@ -32,18 +32,20 @@ public interface TaskActivitiesDataService extends MotechDataService<TaskActivit
     List<TaskActivity> byTask(@LookupField(name = TASK) final Long task);
 
     /**
-     * Returns the list of activities for the given task id, of specified type and with QueryParams for
+     * Returns the list of activities for the given task id, of specified type, id and with QueryParams for
      * pagination support.
      *
      * @param task          the id of the task
      * @param activityTypes the set of activity types
+     * @param activityIds   the set of activity ids
      * @param queryParams   the query parameters to use
      * @return the list of matching task activities
      */
-    @Lookup(name = "By Task and Activity Types")
-    List<TaskActivity> byTaskAndActivityTypes(@LookupField(name = TASK) final Long task,
-                                              @LookupField(name = ACTIVITY_TYPE) final Set<TaskActivityType> activityTypes,
-                                              QueryParams queryParams);
+    @Lookup(name = "By Task, Activity Types and Ids")
+    List<TaskActivity> byTaskAndActivityTypesAndIds(@LookupField(name = TASK) final Long task,
+                                                    @LookupField(name = ACTIVITY_TYPE) final Set<TaskActivityType> activityTypes,
+                                                    @LookupField(name = ACTIVITY_ID) final Set<Long> activityIds,
+                                                    QueryParams queryParams);
 
     /**
      * Returns the count of activities for the given task id and of specified type.
@@ -56,31 +58,47 @@ public interface TaskActivitiesDataService extends MotechDataService<TaskActivit
                                      @LookupField(name = ACTIVITY_TYPE) final Set<TaskActivityType> activityTypes);
 
     /**
-     * Returns the list of activities for the given task id, of specified type, the given date range and with QueryParams for
+     * Returns the count of activities for the given task id, specified  activity type and id.
+     *
+     * @param task          the id of the task
+     * @param activityTypes the set of activity types
+     * @param activityIds   the set of activity ids
+     * @return the count of matching task activities
+     */
+    long countByTaskAndActivityTypesAndIds(@LookupField(name = TASK) final Long task,
+                                           @LookupField(name = ACTIVITY_TYPE) final Set<TaskActivityType> activityTypes,
+                                           @LookupField(name = ACTIVITY_ID) final Set<Long> activityIds);
+
+    /**
+     * Returns the list of activities for the given task id, of specified type and id, the given date range and with QueryParams for
      * pagination support.
      *
      * @param task          the id of the task
      * @param activityTypes the set of activity types
+     * @param activityIds   the set of activity ids
      * @param dateRange     the range of date
      * @param queryParams   the query parameters to use
      * @return the list of matching task activities
      */
-    @Lookup(name = "By Task and Activity Types And Date")
-    List<TaskActivity> byTaskAndActivityTypesAndDate(@LookupField(name = TASK) final Long task,
-                                              @LookupField(name = ACTIVITY_TYPE) final Set<TaskActivityType> activityTypes,
-                                              @LookupField(name = DATE) final Range<DateTime> dateRange, QueryParams queryParams);
+    @Lookup(name = "By Task, Activity Types, Ids And Date")
+    List<TaskActivity> byTaskAndActivityTypesIdsAndDate(@LookupField(name = TASK) final Long task,
+                                                     @LookupField(name = ACTIVITY_TYPE) final Set<TaskActivityType> activityTypes,
+                                                     @LookupField(name = ACTIVITY_ID) final Set<Long> activityIds,
+                                                     @LookupField(name = DATE) final Range<DateTime> dateRange, QueryParams queryParams);
 
     /**
-     * Returns the count of activities for the given task id, of specified type and the given date range.
+     * Returns the count of activities for the given task id, of specified type, id and the given date range.
      *
      * @param task          the id of the task
      * @param activityTypes the set of activity types
+     * @param activityIds   the set of activity ids
      * @param dateRange     the range of date
      * @return the count of matching task activities
      */
-    long countByTaskAndActivityTypesAndDate(@LookupField(name = TASK) final Long task,
-                                     @LookupField(name = ACTIVITY_TYPE) final Set<TaskActivityType> activityTypes,
-                                     @LookupField(name = DATE) final Range<DateTime> dateRange);
+    long countByTaskAndActivityTypesIdsAndDate(@LookupField(name = TASK) final Long task,
+                                            @LookupField(name = ACTIVITY_TYPE) final Set<TaskActivityType> activityTypes,
+                                            @LookupField(name = ACTIVITY_ID) final Set<Long> activityIds,
+                                            @LookupField(name = DATE) final Range<DateTime> dateRange);
 
     /**
      * Returns the list of activities of specified type and with QueryParams for

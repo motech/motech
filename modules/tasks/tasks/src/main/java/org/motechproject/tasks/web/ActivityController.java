@@ -103,11 +103,11 @@ public class ActivityController {
             List<TaskActivityDto> activities;
             long count;
             if (dateTimeRange != null) {
-                activities = taskWebService.getTaskActivities(taskId, types, dateTimeRange, params);
-                count = settings.isLastExecution() ? 1 : activityService.getTaskActivitiesCount(taskId, types, dateTimeRange);
+                activities = taskWebService.getTaskActivities(taskId, types, dateTimeRange, params, settings.isLastExecution());
+                count = activityService.getTaskActivitiesCount(taskId, types, dateTimeRange, settings.isLastExecution());
             } else {
-                activities = taskWebService.getTaskActivities(taskId, types, params);
-                count = settings.isLastExecution() ? 1 : activityService.getTaskActivitiesCount(taskId, types);
+                activities = taskWebService.getTaskActivities(taskId, types, params, settings.isLastExecution());
+                count = activityService.getTaskActivitiesCount(taskId, types, settings.isLastExecution());
             }
             int totalPages = (int) Math.ceil((double) count / settings.getRows());
 

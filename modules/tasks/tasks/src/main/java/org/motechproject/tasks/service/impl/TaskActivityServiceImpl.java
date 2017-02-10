@@ -165,21 +165,21 @@ public class TaskActivityServiceImpl implements TaskActivityService {
 
     @Override
     @Transactional
-    public List<TaskActivity> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypes, QueryParams queryParams) {
-        return taskActivitiesDataService.byTaskAndActivityTypes(taskId, activityTypes, queryParams);
+    public List<TaskActivity> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypes, QueryParams queryParams, boolean lastExecution) {
+        return taskActivitiesDataService.byTaskAndActivityTypesAndIds(taskId, activityTypes, getActivityIdsIfLastExecution(lastExecution), queryParams);
     }
 
     @Override
     @Transactional
     public List<TaskActivity> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypes, Range<DateTime> dateRange,
-                                                QueryParams queryParams) {
-        return taskActivitiesDataService.byTaskAndActivityTypesAndDate(taskId, activityTypes, dateRange, queryParams);
+                                                QueryParams queryParams, boolean lastExecution) {
+        return taskActivitiesDataService.byTaskAndActivityTypesIdsAndDate(taskId, activityTypes, getActivityIdsIfLastExecution(lastExecution), dateRange, queryParams);
     }
 
     @Override
     @Transactional
-    public long getTaskActivitiesCount(Long taskId, Set<TaskActivityType> activityTypes) {
-        return taskActivitiesDataService.countByTaskAndActivityTypes(taskId, activityTypes);
+    public long getTaskActivitiesCount(Long taskId, Set<TaskActivityType> activityTypes, boolean lastExecution) {
+        return taskActivitiesDataService.countByTaskAndActivityTypesAndIds(taskId, activityTypes, getActivityIdsIfLastExecution(lastExecution));
     }
 
     @Override
@@ -190,8 +190,8 @@ public class TaskActivityServiceImpl implements TaskActivityService {
 
     @Override
     @Transactional
-    public long getTaskActivitiesCount(Long taskId, Set<TaskActivityType> activityTypes, Range<DateTime> dateRange) {
-        return taskActivitiesDataService.countByTaskAndActivityTypesAndDate(taskId, activityTypes, dateRange);
+    public long getTaskActivitiesCount(Long taskId, Set<TaskActivityType> activityTypes, Range<DateTime> dateRange, boolean lastExecution) {
+        return taskActivitiesDataService.countByTaskAndActivityTypesIdsAndDate(taskId, activityTypes, getActivityIdsIfLastExecution(lastExecution), dateRange);
     }
 
     @Override
@@ -203,7 +203,6 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     @Override
     @Transactional
     public long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange, boolean lastExecution) {
-
         return taskActivitiesDataService.countByActivityTypesIdsAndDate(activityTypes, getActivityIdsIfLastExecution(lastExecution), dateRange);
     }
 

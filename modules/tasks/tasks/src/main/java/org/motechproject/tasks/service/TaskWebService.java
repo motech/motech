@@ -29,23 +29,23 @@ public interface TaskWebService {
     /**
      * @see TaskActivityService#getAllActivities(Set, QueryParams, boolean)
      */
-    List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams, boolean grouping);
+    List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet, QueryParams queryParams, boolean lastExecution);
 
     /**
      * @see TaskActivityService#getAllActivities(Set, Range, QueryParams, boolean)
      */
-    List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet, Range<DateTime> dateRange, QueryParams queryParams, boolean grouping);
+    List<TaskActivityDto> getAllActivities(Set<TaskActivityType> activityTypeSet, Range<DateTime> dateRange, QueryParams queryParams, boolean lastExecution);
 
     /**
-     * @see TaskActivityService#getTaskActivities(Long, Set, QueryParams)
+     * @see TaskActivityService#getTaskActivities(Long, Set, QueryParams, boolean)
      */
-    List<TaskActivityDto> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypeSet, QueryParams queryParams);
+    List<TaskActivityDto> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypeSet, QueryParams queryParams, boolean lastExecution);
 
     /**
-     * @see TaskActivityService#getTaskActivities(Long, Set, Range, QueryParams)
+     * @see TaskActivityService#getTaskActivities(Long, Set, Range, QueryParams, boolean)
      */
     List<TaskActivityDto> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypeSet, Range<DateTime> dateRange,
-                                            QueryParams queryParams);
+                                            QueryParams queryParams, boolean lastExecution);
 
     /**
      * @see ChannelService#getAllChannels()
