@@ -391,6 +391,12 @@
                                 if (source && object) {
                                     step.providerName = source.name;
                                     step.displayName = object.displayName;
+                                    step.isLookupAvailable = true;
+                                }
+
+                                if (!object) {
+                                    step.displayName = step.type;
+                                    step.isLookupAvailable = false;
                                 }
                             }
                             if ($scope.isActionFilterSet(step)) {
@@ -484,6 +490,15 @@
             }
 
             return $scope.task.name && useTimeWindowValidation;
+        };
+
+        $scope.isLookupAvailable = function (step) {
+            if ($stateParams.taskId) {
+                if (step.displayName && step.providerName) {
+                    return step.isLookupAvailable;
+                }
+            }
+            return true;
         };
 
         $scope.isNumericalNonNegativeValue = function (value) {
@@ -934,10 +949,15 @@
                 ModalFactory.showConfirm('task.confirm.changeObject', 'task.header.confirm', function (val) {
                     if (val) {
                         object.name = '';
-                        $scope.util.dataSource.selectObject($scope, object, selected);
+                        if (object.isLookupAvailable) {
+                            $scope.util.dataSource.selectObject($scope, object, selected);
+                        } else {
+                            $scope.util.dataSource.selectExistingObject($scope, object, selected);
+                        }
                     }
                 });
             } else {
+                object.isLookupAvailable = true;
                 $scope.util.dataSource.selectObject($scope, object, selected);
             }
         };
