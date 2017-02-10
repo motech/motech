@@ -95,7 +95,7 @@ public class ActivityController {
     @ResponseBody
     public TaskActivityRecords getTaskActivities(@PathVariable Long taskId, GridSettings settings) {
         if (settings != null) {
-            QueryParams params = new QueryParams(settings.getPage(), settings.getRows(), new Order("date", Order.Direction.DESC));
+            QueryParams params = getParams(settings);
 
             Set<TaskActivityType> types = settings.getTypesFromString();
             Range<DateTime> dateTimeRange = settings.convertToDateRange(settings.getDateTimeFrom(), settings.getDateTimeTo());
