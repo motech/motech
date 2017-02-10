@@ -22,6 +22,7 @@
                 activityId, url, taskId, taskExists;
 
                 if (scope.taskId) {
+                    scope.lastExecution = false;
                     url = '../tasks/api/activity/' + scope.taskId;
                 } else {
                     url = '../tasks/api/activity/all';
@@ -33,7 +34,13 @@
                     jsonReader:{
                         repeatitems:false
                     },
-                    colModel: [ {
+                    colModel: [{
+                       name: 'id',
+                       index: 'id',
+                       sortable: false,
+                       align: 'center',
+                       width: 25
+                    }, {
                         name: 'triggerName',
                         index: 'triggerName',
                         sortable: true,
@@ -83,15 +90,11 @@
                        index: 'fields',
                        sortable: false,
                        hidden: true
-                    }, {
-                       name: 'id',
-                       index: 'id',
-                       sortable: false,
-                       hidden: true
                     }],
                     pager: '#' + attrs.taskHistoryGrid,
                     viewrecords: true,
                     gridComplete: function () {
+                        elem.jqGrid('setLabel', 'id', scope.msg('task.subsection.activityId'));
                         elem.jqGrid('setLabel', 'triggerName', scope.msg('task.subsection.trigger'));
                         elem.jqGrid('setLabel', 'task', scope.msg('task.subsection.taskName'));
                         elem.jqGrid('setLabel', 'date', scope.msg('task.subsection.information'));
@@ -162,6 +165,7 @@
                         $compile($('.grid-ng-clickable'))(scope);
                     },
                     postData: {
+                        lastExecution: scope.lastExecution,
                         activityType: scope.selectedActivityType.join(',').replace(' ', '_').toUpperCase()
                     },
                     sortcolumn: 'task',

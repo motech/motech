@@ -80,7 +80,7 @@ public class QueryParams implements Serializable {
     public QueryParams(Integer page, Integer pageSize, List<Order> orderList) {
         this.page = page;
         this.pageSize = pageSize;
-        this.orderList = (orderList == null) ? new ArrayList<Order>() : orderList;
+        this.orderList = (orderList == null) ? new ArrayList<>() : orderList;
     }
 
     public Integer getPage() {

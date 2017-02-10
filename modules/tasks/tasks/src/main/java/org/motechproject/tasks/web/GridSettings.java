@@ -52,6 +52,11 @@ public class GridSettings {
     private String sord;
 
     /**
+     * Get only last execution
+     */
+    private boolean lastExecution;
+
+    /**
      * @return To date for searching activities
      */
     public String getDateTimeTo() {
@@ -122,6 +127,15 @@ public class GridSettings {
     public void setSord(String sord) {
         this.sord = sord;
     }
+
+    public void setLastExecution(boolean lastExecution) {
+        this.lastExecution = lastExecution;
+    }
+
+    public boolean isLastExecution() {
+        return this.lastExecution;
+    }
+
     /**
      * @return the activity types to display
      */
@@ -170,6 +184,7 @@ public class GridSettings {
                 "rows=" + rows +
                 ", page=" + page +
                 ", activityType='" + activityType + '\'' +
+                ", lastExecution=" + lastExecution +
                 '}';
     }
 }

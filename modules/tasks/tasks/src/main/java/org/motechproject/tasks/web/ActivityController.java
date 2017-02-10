@@ -72,11 +72,11 @@ public class ActivityController {
             List<TaskActivityDto> activities;
             long count;
             if (dateTimeRange != null) {
-                activities = taskWebService.getAllActivities(types, dateTimeRange, params);
-                count = activityService.getAllTaskActivitiesCount(types, dateTimeRange);
+                activities = taskWebService.getAllActivities(types, dateTimeRange, params, settings.isLastExecution());
+                count = activityService.getAllTaskActivitiesCount(types, dateTimeRange, settings.isLastExecution());
             } else {
-                activities = taskWebService.getAllActivities(types, params);
-                count = activityService.getAllTaskActivitiesCount(types);
+                activities = taskWebService.getAllActivities(types, params, settings.isLastExecution());
+                count = activityService.getAllTaskActivitiesCount(types, settings.isLastExecution());
             }
             int totalPages = (int) Math.ceil((double) count / settings.getRows());
 
@@ -95,17 +95,18 @@ public class ActivityController {
     @ResponseBody
     public TaskActivityRecords getTaskActivities(@PathVariable Long taskId, GridSettings settings) {
         if (settings != null) {
-            QueryParams params = new QueryParams(settings.getPage(), settings.getRows(), new Order("date", Order.Direction.DESC));
+            QueryParams params = getParams(settings);
+
             Set<TaskActivityType> types = settings.getTypesFromString();
             Range<DateTime> dateTimeRange = settings.convertToDateRange(settings.getDateTimeFrom(), settings.getDateTimeTo());
             List<TaskActivityDto> activities;
             long count;
             if (dateTimeRange != null) {
-                activities = taskWebService.getTaskActivities(taskId, types, dateTimeRange, params);
-                count = activityService.getTaskActivitiesCount(taskId, types, dateTimeRange);
+                activities = taskWebService.getTaskActivities(taskId, types, dateTimeRange, params, settings.isLastExecution());
+                count = activityService.getTaskActivitiesCount(taskId, types, dateTimeRange, settings.isLastExecution());
             } else {
-                activities = taskWebService.getTaskActivities(taskId, types, params);
-                count = activityService.getTaskActivitiesCount(taskId, types);
+                activities = taskWebService.getTaskActivities(taskId, types, params, settings.isLastExecution());
+                count = activityService.getTaskActivitiesCount(taskId, types, settings.isLastExecution());
             }
             int totalPages = (int) Math.ceil((double) count / settings.getRows());
 

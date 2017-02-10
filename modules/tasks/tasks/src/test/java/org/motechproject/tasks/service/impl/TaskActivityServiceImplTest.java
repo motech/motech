@@ -175,10 +175,13 @@ public class TaskActivityServiceImplTest {
     public void shouldReturnPaginatedActivitiesForGivenTask() {
         Set<TaskActivityType> types = new HashSet<>();
         types.addAll(Arrays.asList(TaskActivityType.values()));
-        QueryParams queryParams = new QueryParams((Order) null);
-        when(taskActivitiesDataService.byTaskAndActivityTypes(TASK_ID, types, queryParams)).thenReturn(activities);
+        Set<Long> activitiesIds = new HashSet<>();
 
-        List<TaskActivity> actual = activityService.getTaskActivities(TASK_ID, types, queryParams);
+        QueryParams queryParams = new QueryParams((Order) null);
+        boolean lastExecution = false;
+        when(taskActivitiesDataService.byTaskAndActivityTypesAndIds(TASK_ID, types, activitiesIds, queryParams)).thenReturn(activities);
+
+        List<TaskActivity> actual = activityService.getTaskActivities(TASK_ID, types, queryParams, lastExecution);
 
         assertNotNull(actual);
         assertEquals(activities, actual);

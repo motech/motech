@@ -1258,6 +1258,7 @@
         $scope.stackTraceEl = [];
         $scope.allTaskTypes = ['All'];
         $scope.failedTasks = [];
+        $scope.lastExecution = true;
 
         $scope.selectedActivityType = ['In progress', 'Success', 'Error', 'Filtered'];
         $scope.selectedTaskType = 'All';
@@ -1356,6 +1357,7 @@
                 url: url,
                 page: 1,
                 postData: {
+                    lastExecution: $scope.lastExecution,
                     activityType: $scope.selectedActivityType.join(',').replace(' ', '_').toUpperCase(),
                     dateTimeFrom: $('#dateTimeFrom').val() ? $('#dateTimeFrom').val() : null,
                     dateTimeTo: $('#dateTimeTo').val() ? $('#dateTimeTo').val() : null
@@ -1367,6 +1369,7 @@
             $('#taskHistoryTable').jqGrid('setGridParam', {
                 page: 1,
                 postData: {
+                    lastExecution: $scope.lastExecution,
                     activityType: $scope.selectedActivityType.join(',').replace(' ', '_').toUpperCase()
                 }}).trigger('reloadGrid');
         };

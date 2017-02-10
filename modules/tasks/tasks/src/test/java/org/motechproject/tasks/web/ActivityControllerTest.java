@@ -21,6 +21,7 @@ import java.util.Set;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
@@ -91,14 +92,14 @@ public class ActivityControllerTest {
 
     @Test
     public void shouldGetTaskActivities() {
-        when(taskWebService.getTaskActivities(eq(TASK_ID), anySet(), any(QueryParams.class))).thenReturn(expected);
+        when(taskWebService.getTaskActivities(eq(TASK_ID), anySet(), any(QueryParams.class), anyBoolean())).thenReturn(expected);
         GridSettings settings = new GridSettings();
         settings.setPage(page);
         settings.setRows(pageSize);
 
         TaskActivityRecords actual = controller.getTaskActivities(TASK_ID, settings);
 
-        verify(taskWebService).getTaskActivities(eq(TASK_ID), anySet(), any(QueryParams.class));
+        verify(taskWebService).getTaskActivities(eq(TASK_ID), anySet(), any(QueryParams.class), anyBoolean());
         assertEquals(expected, actual.getRows());
         assertEquals(page, actual.getPage());
     }
