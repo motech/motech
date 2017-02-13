@@ -272,17 +272,6 @@
                 selectObject: function (scope, data, selected) {
                     data.displayName = selected.displayName;
                     data.type = selected.type;
-
-                    delete data.lookup;
-                    delete data.failIfDataNotFound;
-
-                    if (!scope.$$phase) {
-                        scope.$apply(data);
-                    }
-                },
-                selectExistingObject: function (scope, data, selected) {
-                    data.displayName = selected.displayName;
-                    data.type = selected.type;
                     data.isLookupAvailable = true;
 
                     delete data.lookup;

@@ -949,15 +949,10 @@
                 ModalFactory.showConfirm('task.confirm.changeObject', 'task.header.confirm', function (val) {
                     if (val) {
                         object.name = '';
-                        if (object.isLookupAvailable) {
-                            $scope.util.dataSource.selectObject($scope, object, selected);
-                        } else {
-                            $scope.util.dataSource.selectExistingObject($scope, object, selected);
-                        }
+                        $scope.util.dataSource.selectObject($scope, object, selected);
                     }
                 });
             } else {
-                object.isLookupAvailable = true;
                 $scope.util.dataSource.selectObject($scope, object, selected);
             }
         };
@@ -1190,7 +1185,7 @@
 
         $scope.getAvailableFields = function () {
             var dataSources, fields = [];
-            if($scope.selectedTrigger) {
+            if($scope.selectedTrigger && $scope.selectedTrigger.eventParameters) {
                 $scope.selectedTrigger.eventParameters.forEach(function (_field) {
                     var field = JSON.parse(JSON.stringify(_field));
                     field.prefix = ManageTaskUtils.TRIGGER_PREFIX;
