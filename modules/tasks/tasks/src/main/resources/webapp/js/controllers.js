@@ -1014,6 +1014,33 @@
             return unknown;
         };
 
+        $scope.hasUnknownDataSource = function (value) {
+            var regex = new RegExp("\\{\\{.*?\\}\\}", "g"), match, bubbles = [],
+                steps = $scope.task.taskConfig.steps, bubbleIdx = 0, stepIdx;
+
+            do {
+                match = regex.exec(value);
+                if (match) {
+                    bubbles.push(match[bubbleIdx]);
+                    bubbleIdx += 1;
+                }
+            } while (match);
+
+            if (value) {
+                for (stepIdx = 0; stepIdx < steps.length; stepIdx += 1) {
+                    for (bubbleIdx = 0; bubbleIdx < bubbles.length; bubbleIdx += 1) {
+
+                        if (bubbles[bubbleIdx].indexOf(steps[stepIdx].type) !== -1 &&
+                            steps[stepIdx].isLookupAvailable !== undefined) {
+
+                            return !steps[stepIdx].isLookupAvailable;
+                        }
+                    }
+                }
+            }
+            return false;
+        };
+
         $scope.save = function (enabled) {
             var actionOrder = [], taskOrder = [], filtersToDelete = [], success = function (response) {
                 var alertMessage = enabled ? $scope.msg('task.success.savedAndEnabled') : $scope.msg('task.success.saved'),
@@ -1148,6 +1175,8 @@
             if (expression && $scope.isTriggerValid === undefined) {
                 $scope.isTriggerValid = false;
             }
+
+            expression = expression || $scope.hasUnknownDataSource(value);
 
             return expression;
         };
