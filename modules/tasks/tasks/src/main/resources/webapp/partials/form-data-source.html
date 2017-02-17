@@ -15,7 +15,7 @@
                 {{msg('task.by')}} {{taskMsg(step.name)}}
             </span>
             <span ng-hide="isLookupAvailable(step)">
-                <i class="fa fa-exclamation-triangle" style="color: red" aria-hidden="true"></i>
+                <i class="warning-mark fa fa-exclamation-triangle" aria-hidden="true"></i>
             </span>
         </a>
     </div>
@@ -106,7 +106,7 @@
                 </div>
             </div>
             <div ng-if="!isLookupAvailable(step)" class="form-group">
-                <span class="form-inline col-md-10 col-sm-9 offset-15">
+                <span class="form-inline col-md-10 col-sm-9 offset-15 warning-mark">
                     {{msg('task.info.lookupNotAvailable')}}
                 </span>
             </div>
@@ -132,5 +132,4 @@
             </div>
         </div>
     </div>
-
 </div>

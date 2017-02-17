@@ -501,6 +501,15 @@
             return true;
         };
 
+        $scope.isTriggerAvailable = function () {
+            if ($stateParams.taskId) {
+                if ($scope.isTriggerValid !== undefined) {
+                    return $scope.isTriggerValid;
+                }
+            }
+            return true;
+        };
+
         $scope.isNumericalNonNegativeValue = function (value) {
             return !isNaN(value) && value >= 0;
         };
@@ -1136,6 +1145,10 @@
                 expression = $scope.hasUnknownTrigger(value);
             }
 
+            if (expression && $scope.isTriggerValid === undefined) {
+                $scope.isTriggerValid = false;
+            }
+
             return expression;
         };
 
@@ -1709,6 +1722,7 @@
                 ModalFactory.showConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
                     if (val) {
                         $scope.util.trigger.remove($scope);
+                        $scope.$parent.$parent.$parent.isTriggerValid = true;
                         $scope.util.trigger.select($scope, channel, trigger);
                         $rootScope.$broadcast('triggerSelected', { selectedTrigger: trigger });
                         BootstrapDialogManager.close($scope.triggersDialog);
