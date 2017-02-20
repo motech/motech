@@ -87,8 +87,10 @@
                 </div>
             </div>
             <div ng-repeat="lookupField in step.lookup">
-                <div class="form-group" ng-class="{'has-error': actionCssClassError(lookupField)}" class="form-group form-inline clearfix">
-                    <label class="col-md-2 col-sm-3 control-label">{{taskMsg(lookupField.field)}}</label>
+                <div class="form-group" ng-class="{'has-warning': actionCssClassWarning(lookupField), 'has-error': actionCssClassError(lookupField)}" class="form-group form-inline clearfix">
+                    <label class="col-md-2 col-sm-3 control-label">{{taskMsg(lookupField.field)}}
+                        <span class="help-inline" ui-if="actionCssClassWarning(lookupField)" help-popover="warning" data-title="{{msg('task.header.warning')}}"><i class="fa fa-exclamation-triangle"></i></span>
+                    </label>
 
                     <!------------------------ editable fields ------------------------>
                     <div class="form-inline col-md-10 col-sm-9">
