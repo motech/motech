@@ -19,6 +19,7 @@ import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
 import org.motechproject.tasks.domain.mds.task.TaskConfig;
 import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
+import org.motechproject.tasks.domain.mds.task.TaskDataProviderObject;
 import org.motechproject.tasks.domain.mds.task.TaskError;
 import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
 import org.motechproject.tasks.service.TriggerEventService;
@@ -339,6 +340,8 @@ public class TaskValidator extends GeneralValidator {
             }
         }
 
+        errors.addAll(validateDataProviderObjects(key, providers));
+
         return errors;
     }
 
@@ -452,6 +455,28 @@ public class TaskValidator extends GeneralValidator {
 
         for (DataSource dataSource : config.getDataSources()) {
             errors.addAll(validateDataSource(dataSource));
+        }
+
+        return errors;
+    }
+
+    private Set<TaskError> validateDataProviderObjects (KeyInformation key, Map<Long, TaskDataProvider> providers) {
+        Set<TaskError> errors = new HashSet<>();
+        boolean isObjectValid = false;
+
+        if (key.fromAdditionalData()) {
+            for (Map.Entry<Long, TaskDataProvider> entry : providers.entrySet()) {
+                for (TaskDataProviderObject dataProviderObject : entry.getValue().getObjects()) {
+                    if (dataProviderObject.getType().equals(key.getObjectType())) {
+                        isObjectValid = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!isObjectValid) {
+                errors.add(new TaskError("task.validation.error.providerObjectFieldNotExist", key.getKey(), key.getObjectType()));
+            }
         }
 
         return errors;
