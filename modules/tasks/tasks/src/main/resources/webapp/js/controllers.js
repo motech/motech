@@ -539,8 +539,8 @@
         $scope.removeAction = function (idx) {
             var removeActionSelected = function (idx) {
                 $scope.task.actions.remove(idx);
-                delete $scope.selectedActionChannel[idx];
-                delete $scope.selectedAction[idx];
+                $scope.selectedActionChannel.remove(idx);
+                $scope.selectedAction.remove(idx);
 
                 if (!$scope.$$phase) {
                     $scope.$apply($scope.task);
