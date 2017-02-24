@@ -1339,3 +1339,8 @@ editable-content .popover .inner-popover, nonEditable, .no-margin-bottom input[t
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
 }
+
+.tasks .warning-mark {
+    color: #8a6d3b;
+    font-weight: bold;
+}

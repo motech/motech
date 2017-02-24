@@ -3,9 +3,12 @@
     <div class="panel-heading panel-header">
         <div class="accordion-toggle cursor-auto">
             <i class="fa fa-fw fa-lg fa-caret-down pointer" data-toggle="collapse" data-parent="#select-trigger" target="_self" href="#collapse-trigger"></i> {{msg('task.header.trigger')}}
-                            <span ng-hide="!task.trigger.displayName">
-                                &raquo; {{msg(task.trigger.channelName)}} : {{taskMsg(task.trigger.displayName)}}
-                            </span>
+            <span ng-hide="!task.trigger.displayName">
+                &raquo; {{msg(task.trigger.channelName)}} : {{taskMsg(task.trigger.displayName)}}
+            </span>
+            <span ng-hide="isTriggerAvailable()">
+                <i class="warning-mark fa fa-exclamation-triangle" aria-hidden="true"></i>
+            </span>
         </div>
     </div>
     <div id="collapse-trigger" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
@@ -25,6 +28,11 @@
                     </li>
                 </ul>
             </div>
+        </div>
+        <div ng-if="!isTriggerAvailable()" class="form-group">
+                <span class="form-inline col-md-10 col-sm-9 offset-15 warning-mark">
+                    {{msg('task.info.triggerNotAvailable')}}
+                </span>
         </div>
     </div>
 

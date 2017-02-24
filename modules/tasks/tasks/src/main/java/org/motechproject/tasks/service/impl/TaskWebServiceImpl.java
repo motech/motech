@@ -101,7 +101,8 @@ public class TaskWebServiceImpl implements TaskWebService {
     @Override
     @Transactional
     public TriggerEventDto getTrigger(TaskTriggerInformation triggerInformation) {
-        return triggerEventService.getTrigger(triggerInformation).toDto();
+        TriggerEvent trigger = triggerEventService.getTrigger(triggerInformation);
+        return trigger != null ? trigger.toDto() : null;
     }
 
     @Override
