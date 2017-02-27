@@ -212,13 +212,13 @@ public class TaskTriggerHandler implements TriggerHandler {
      * @param task the given task.
      * @param eventParameters parameters from the given event
      */
-    private void checkAndHandleTask(Task task, Map<String, Object> eventParameters) {
-        if (!isTaskHandled(task)) {
-            addTaskHandled(task);
+    private synchronized void checkAndHandleTask(Task task, Map<String, Object> eventParameters) {
+        if (!this.handledTasksId.contains(task.getId())) {
+            this.handledTasksId.add(task.getId());
 
             handleTask(task, eventParameters);
 
-            removeTaskHandled(task);
+            this.handledTasksId.remove(task.getId());
         } else {
             LOGGER.warn("The task {} didn't execute, because the previous invocation is still running.", task.getName());
         }
@@ -258,18 +258,6 @@ public class TaskTriggerHandler implements TriggerHandler {
         metadata.put(EventDataKeys.TASK_ACTIVITY_ID, activityId);
 
         return metadata;
-    }
-
-    private void addTaskHandled(Task task) {
-        this.handledTasksId.add(task.getId());
-    }
-
-    private void removeTaskHandled(Task task) {
-        this.handledTasksId.remove(task.getId());
-    }
-
-    private boolean isTaskHandled(Task task) {
-        return this.handledTasksId.contains(task.getId()) ? true : false;
     }
 
     @Autowired
