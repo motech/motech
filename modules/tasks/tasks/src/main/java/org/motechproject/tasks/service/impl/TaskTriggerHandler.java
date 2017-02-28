@@ -30,10 +30,8 @@ import javax.annotation.PreDestroy;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.motechproject.tasks.constants.EventDataKeys.TASK_ID;
 import static org.motechproject.tasks.constants.TaskFailureCause.TRIGGER;
@@ -66,8 +64,6 @@ public class TaskTriggerHandler implements TriggerHandler {
     private TasksPostExecutionHandler postExecutionHandler;
 
     private Map<String, DataProvider> dataProviders;
-
-    private Set<Long> handledTasksId = new HashSet<>();
 
     @PostConstruct
     public void init() {
@@ -212,15 +208,9 @@ public class TaskTriggerHandler implements TriggerHandler {
      * @param task the given task.
      * @param eventParameters parameters from the given event
      */
-    private synchronized void checkAndHandleTask(Task task, Map<String, Object> eventParameters) {
-        if (!this.handledTasksId.contains(task.getId())) {
-            this.handledTasksId.add(task.getId());
-
+    private void checkAndHandleTask(Task task, Map<String, Object> eventParameters) {
+        synchronized (task.getName()) {
             handleTask(task, eventParameters);
-
-            this.handledTasksId.remove(task.getId());
-        } else {
-            LOGGER.warn("The task {} didn't execute, because the previous invocation is still running.", task.getName());
         }
     }
 
@@ -246,10 +236,6 @@ public class TaskTriggerHandler implements TriggerHandler {
 
     void setDataProviders(Map<String, DataProvider> dataProviders) {
         this.dataProviders = dataProviders;
-    }
-
-    void setHandledTasksId(Set<Long> handledTasksId) {
-        this.handledTasksId = handledTasksId;
     }
 
     private Map<String, Object> prepareTaskMetadata(Long taskId, long activityId) {
