@@ -3,5 +3,5 @@
        ng-class="{'has-error': {{field.basic.name}}.$invalid }">
 <button class="btn btn-default period-modal-opener" data-toggle="modal" data-backdrop="static" ng-disabled="field.readOnly">{{msg('mds.form.changePeriod')}}</button>
 <span class="glyphicon glyphicon-info-sign" data-trigger="hover" data-placement="bottom" bs-popover="{{msg('mds.tooltip.period')}}" data-original-title=""></span>
-<span class="form-hint" ng-show="( {{field.basic.name}}.$error.period || !{{field.basic.name}}.$valid ) && !{{field.basic.name}}.$pristine">{{msg('mds.error.incorrectValuePeriod')}}</span>
+<span class="form-hint" ng-show="( fieldbasic.$error.period || !fieldbasic.$valid ) && !fieldbasic.$pristine">{{msg('mds.error.incorrectValuePeriod')}}</span>
 <period-modal></period-modal>
