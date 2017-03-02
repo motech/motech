@@ -14,6 +14,9 @@
             <span ng-hide="!step.name">
                 {{msg('task.by')}} {{taskMsg(step.name)}}
             </span>
+            <span ng-hide="isLookupAvailable(step)">
+                <i class="warning-mark fa fa-exclamation-triangle" aria-hidden="true"></i>
+            </span>
         </a>
     </div>
     <div ng-if="selectedTrigger" id="collapse-step-{{step.order}}" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
@@ -69,31 +72,31 @@
                     </ul>
                 </div>
             </div>
-            <div>
-                <div class="form-group" ui-if="step.displayName">
-                    <span class="col-md-2 col-sm-3 control-label">{{msg('task.subsubsection.lookup')}}:</span>
-                    <div class="btn-group offset-15">
-                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
-                            {{taskMsg(step.name) || msg('task.select')}}
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li ng-repeat="lookup in findObject(step.providerName, step.type).lookupFields">
-                                <a ng-click="selectLookup(step, lookup)">{{taskMsg(lookup.displayName)}}</a>
-                            </li>
-                        </ul>
-                    </div>
+            <div class="form-group" ui-if="step.displayName">
+                <span class="col-md-2 col-sm-3 control-label">{{msg('task.subsubsection.lookup')}}:</span>
+                <div class="btn-group offset-15">
+                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" target="_self" href="#">
+                        {{taskMsg(step.name) || msg('task.select')}}
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="lookup in findObject(step.providerName, step.type).lookupFields">
+                            <a ng-click="selectLookup(step, lookup)">{{taskMsg(lookup.displayName)}}</a>
+                        </li>
+                    </ul>
                 </div>
-                <div ng-repeat="lookupField in step.lookup">
-                    <div class="form-group" ng-class="{'has-error': actionCssClassError(lookupField)}" class="form-group form-inline clearfix">
-                        <label class="col-md-2 col-sm-3 control-label">{{taskMsg(lookupField.field)}}</label>
+            </div>
+            <div ng-repeat="lookupField in step.lookup">
+                <div class="form-group" ng-class="{'has-warning': actionCssClassWarning(lookupField), 'has-error': actionCssClassError(lookupField)}" class="form-group form-inline clearfix">
+                    <label class="col-md-2 col-sm-3 control-label">{{taskMsg(lookupField.field)}}
+                        <span class="help-inline" ui-if="actionCssClassWarning(lookupField)" help-popover="warning" data-title="{{msg('task.header.warning')}}"><i class="fa fa-exclamation-triangle"></i></span>
+                    </label>
 
-                        <!------------------------ editable fields ------------------------>
-                        <div class="form-inline col-md-10 col-sm-9">
-                            <editable-content data="lookupField" index="$index" type="UNICODE"> </editable-content>
-                        </div>
-
+                    <!------------------------ editable fields ------------------------>
+                    <div class="form-inline col-md-10 col-sm-9">
+                        <editable-content data="lookupField" index="$index" type="UNICODE"> </editable-content>
                     </div>
+
                 </div>
             </div>
             <div class="form-group" ui-if="step.displayName">
@@ -103,6 +106,11 @@
                         <input type="checkbox" ng-model="step.failIfDataNotFound"/>
                     </div>
                 </div>
+            </div>
+            <div ng-if="!isLookupAvailable(step)" class="form-group">
+                <span class="form-inline col-md-10 col-sm-9 offset-15 warning-mark">
+                    {{msg('task.info.lookupNotAvailable')}}
+                </span>
             </div>
             <div ui-if="step.lookup.field">
                 <div class="form-group" ng-class="{'has-error': actionCssClass(step.lookup)}" class="form-group form-inline clearfix">
@@ -126,5 +134,4 @@
             </div>
         </div>
     </div>
-
 </div>

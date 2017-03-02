@@ -17,13 +17,15 @@ import org.mockito.verification.VerificationMode;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mds.query.QueryExecution;
+import org.motechproject.tasks.compatibility.TaskMigrationManager;
 import org.motechproject.tasks.domain.mds.channel.ActionEvent;
+import org.motechproject.tasks.domain.mds.channel.Channel;
+import org.motechproject.tasks.domain.mds.channel.EventParameter;
+import org.motechproject.tasks.domain.mds.channel.TaskEvent;
+import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
 import org.motechproject.tasks.domain.mds.channel.builder.ActionEventBuilder;
 import org.motechproject.tasks.domain.mds.channel.builder.ActionParameterBuilder;
-import org.motechproject.tasks.domain.mds.channel.Channel;
-import org.motechproject.tasks.compatibility.TaskMigrationManager;
 import org.motechproject.tasks.domain.mds.task.DataSource;
-import org.motechproject.tasks.domain.mds.channel.EventParameter;
 import org.motechproject.tasks.domain.mds.task.FieldParameter;
 import org.motechproject.tasks.domain.mds.task.Filter;
 import org.motechproject.tasks.domain.mds.task.FilterSet;
@@ -32,15 +34,13 @@ import org.motechproject.tasks.domain.mds.task.LookupFieldsParameter;
 import org.motechproject.tasks.domain.mds.task.OperatorType;
 import org.motechproject.tasks.domain.mds.task.Task;
 import org.motechproject.tasks.domain.mds.task.TaskActionInformation;
-import org.motechproject.tasks.domain.mds.task.builder.TaskBuilder;
 import org.motechproject.tasks.domain.mds.task.TaskConfig;
 import org.motechproject.tasks.domain.mds.task.TaskDataProvider;
 import org.motechproject.tasks.domain.mds.task.TaskDataProviderObject;
 import org.motechproject.tasks.domain.mds.task.TaskError;
-import org.motechproject.tasks.domain.mds.channel.TaskEvent;
 import org.motechproject.tasks.domain.mds.task.TaskEventInformation;
 import org.motechproject.tasks.domain.mds.task.TaskTriggerInformation;
-import org.motechproject.tasks.domain.mds.channel.TriggerEvent;
+import org.motechproject.tasks.domain.mds.task.builder.TaskBuilder;
 import org.motechproject.tasks.dto.TaskErrorDto;
 import org.motechproject.tasks.exception.ActionNotFoundException;
 import org.motechproject.tasks.exception.TaskNameAlreadyExistsException;
@@ -83,11 +83,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.tasks.domain.enums.ParameterType.UNICODE;
 import static org.motechproject.tasks.constants.EventDataKeys.CHANNEL_MODULE_NAME;
 import static org.motechproject.tasks.constants.EventDataKeys.DATA_PROVIDER_NAME;
 import static org.motechproject.tasks.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
 import static org.motechproject.tasks.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
+import static org.motechproject.tasks.domain.enums.ParameterType.UNICODE;
 
 public class TaskServiceImplTest {
 
@@ -759,6 +759,11 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldNotUpdateTaskIfItDoesNotHaveAnyValidationErrors() {
+        Map<String, String> map = new HashMap<>();
+        map.put("phone", "12345");
+
+        action.setValues(map);
+
         Task task = new Task("name", trigger, asList(action), new TaskConfig(), true, false);
         when(tasksDataService.executeQuery(any(QueryExecution.class))).thenReturn(asList(task));
 

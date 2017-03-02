@@ -391,6 +391,12 @@
                                 if (source && object) {
                                     step.providerName = source.name;
                                     step.displayName = object.displayName;
+                                    step.isLookupAvailable = true;
+                                }
+
+                                if (!object) {
+                                    step.displayName = step.type;
+                                    step.isLookupAvailable = false;
                                 }
                             }
                             if ($scope.isActionFilterSet(step)) {
@@ -486,6 +492,24 @@
             return $scope.task.name && useTimeWindowValidation;
         };
 
+        $scope.isLookupAvailable = function (step) {
+            if ($stateParams.taskId) {
+                if (step.displayName && step.providerName) {
+                    return step.isLookupAvailable;
+                }
+            }
+            return true;
+        };
+
+        $scope.isTriggerAvailable = function () {
+            if ($stateParams.taskId) {
+                if ($scope.isTriggerValid !== undefined) {
+                    return $scope.isTriggerValid;
+                }
+            }
+            return true;
+        };
+
         $scope.isNumericalNonNegativeValue = function (value) {
             return !isNaN(value) && value >= 0;
         };
@@ -515,8 +539,8 @@
         $scope.removeAction = function (idx) {
             var removeActionSelected = function (idx) {
                 $scope.task.actions.remove(idx);
-                delete $scope.selectedActionChannel[idx];
-                delete $scope.selectedAction[idx];
+                $scope.selectedActionChannel.remove(idx);
+                $scope.selectedAction.remove(idx);
 
                 if (!$scope.$$phase) {
                     $scope.$apply($scope.task);
@@ -990,6 +1014,33 @@
             return unknown;
         };
 
+        $scope.hasUnknownDataSource = function (value) {
+            var regex = new RegExp("\\{\\{.*?\\}\\}", "g"), match, bubbles = [],
+                steps = $scope.task.taskConfig.steps, bubbleIdx = 0, stepIdx;
+
+            do {
+                match = regex.exec(value);
+                if (match) {
+                    bubbles.push(match[bubbleIdx]);
+                    bubbleIdx += 1;
+                }
+            } while (match);
+
+            if (value) {
+                for (stepIdx = 0; stepIdx < steps.length; stepIdx += 1) {
+                    for (bubbleIdx = 0; bubbleIdx < bubbles.length; bubbleIdx += 1) {
+
+                        if (bubbles[bubbleIdx].indexOf(steps[stepIdx].type) !== -1 &&
+                            steps[stepIdx].isLookupAvailable !== undefined) {
+
+                            return !steps[stepIdx].isLookupAvailable;
+                        }
+                    }
+                }
+            }
+            return false;
+        };
+
         $scope.save = function (enabled) {
             var actionOrder = [], taskOrder = [], filtersToDelete = [], success = function (response) {
                 var alertMessage = enabled ? $scope.msg('task.success.savedAndEnabled') : $scope.msg('task.success.saved'),
@@ -1121,6 +1172,12 @@
                 expression = $scope.hasUnknownTrigger(value);
             }
 
+            if (expression && $scope.isTriggerValid === undefined) {
+                $scope.isTriggerValid = false;
+            }
+
+            expression = expression || $scope.hasUnknownDataSource(value);
+
             return expression;
         };
 
@@ -1170,7 +1227,7 @@
 
         $scope.getAvailableFields = function () {
             var dataSources, fields = [];
-            if($scope.selectedTrigger) {
+            if($scope.selectedTrigger && $scope.selectedTrigger.eventParameters) {
                 $scope.selectedTrigger.eventParameters.forEach(function (_field) {
                     var field = JSON.parse(JSON.stringify(_field));
                     field.prefix = ManageTaskUtils.TRIGGER_PREFIX;
@@ -1694,6 +1751,7 @@
                 ModalFactory.showConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
                     if (val) {
                         $scope.util.trigger.remove($scope);
+                        $scope.$parent.$parent.$parent.isTriggerValid = true;
                         $scope.util.trigger.select($scope, channel, trigger);
                         $rootScope.$broadcast('triggerSelected', { selectedTrigger: trigger });
                         BootstrapDialogManager.close($scope.triggersDialog);
