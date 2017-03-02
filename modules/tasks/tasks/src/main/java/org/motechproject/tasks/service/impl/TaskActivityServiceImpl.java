@@ -4,6 +4,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;
 import org.motechproject.mds.query.QueryExecution;
+import org.motechproject.mds.query.QueryExecutor;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.Order;
@@ -153,33 +154,33 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     @Override
     @Transactional
     public List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypes, QueryParams queryParams, boolean lastExecution) {
-        return taskActivitiesDataService.byActivityTypesAndIds(activityTypes, getActivityIdsIfLastExecution(lastExecution), queryParams);
+        return taskActivitiesDataService.byActivityTypesAndIds(activityTypes, getActivityIdsIfLastExecution(lastExecution, activityTypes), queryParams);
     }
 
     @Override
     @Transactional
     public List<TaskActivity> getAllActivities(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange,
                                                QueryParams queryParams, boolean lastExecution) {
-        return taskActivitiesDataService.byActivityTypesIdsAndDate(activityTypes, getActivityIdsIfLastExecution(lastExecution), dateRange, queryParams);
+        return taskActivitiesDataService.byActivityTypesIdsAndDate(activityTypes, getActivityIdsIfLastExecution(lastExecution, activityTypes), dateRange, queryParams);
     }
 
     @Override
     @Transactional
     public List<TaskActivity> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypes, QueryParams queryParams, boolean lastExecution) {
-        return taskActivitiesDataService.byTaskAndActivityTypesAndIds(taskId, activityTypes, getActivityIdsIfLastExecution(lastExecution), queryParams);
+        return taskActivitiesDataService.byTaskAndActivityTypesAndIds(taskId, activityTypes, getActivityIdsIfLastExecution(lastExecution, activityTypes), queryParams);
     }
 
     @Override
     @Transactional
     public List<TaskActivity> getTaskActivities(Long taskId, Set<TaskActivityType> activityTypes, Range<DateTime> dateRange,
                                                 QueryParams queryParams, boolean lastExecution) {
-        return taskActivitiesDataService.byTaskAndActivityTypesIdsAndDate(taskId, activityTypes, getActivityIdsIfLastExecution(lastExecution), dateRange, queryParams);
+        return taskActivitiesDataService.byTaskAndActivityTypesIdsAndDate(taskId, activityTypes, getActivityIdsIfLastExecution(lastExecution, activityTypes), dateRange, queryParams);
     }
 
     @Override
     @Transactional
     public long getTaskActivitiesCount(Long taskId, Set<TaskActivityType> activityTypes, boolean lastExecution) {
-        return taskActivitiesDataService.countByTaskAndActivityTypesAndIds(taskId, activityTypes, getActivityIdsIfLastExecution(lastExecution));
+        return taskActivitiesDataService.countByTaskAndActivityTypesAndIds(taskId, activityTypes, getActivityIdsIfLastExecution(lastExecution, activityTypes));
     }
 
     @Override
@@ -191,37 +192,48 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     @Override
     @Transactional
     public long getTaskActivitiesCount(Long taskId, Set<TaskActivityType> activityTypes, Range<DateTime> dateRange, boolean lastExecution) {
-        return taskActivitiesDataService.countByTaskAndActivityTypesIdsAndDate(taskId, activityTypes, getActivityIdsIfLastExecution(lastExecution), dateRange);
+        return taskActivitiesDataService.countByTaskAndActivityTypesIdsAndDate(taskId, activityTypes, getActivityIdsIfLastExecution(lastExecution, activityTypes), dateRange);
     }
 
     @Override
     @Transactional
     public long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, boolean lastExecution) {
-        return taskActivitiesDataService.countByActivityTypesAndIds(activityTypes, getActivityIdsIfLastExecution(lastExecution));
+        return taskActivitiesDataService.countByActivityTypesAndIds(activityTypes, getActivityIdsIfLastExecution(lastExecution, activityTypes));
     }
 
     @Override
     @Transactional
     public long getAllTaskActivitiesCount(Set<TaskActivityType> activityTypes, Range<DateTime> dateRange, boolean lastExecution) {
-        return taskActivitiesDataService.countByActivityTypesIdsAndDate(activityTypes, getActivityIdsIfLastExecution(lastExecution), dateRange);
+        return taskActivitiesDataService.countByActivityTypesIdsAndDate(activityTypes, getActivityIdsIfLastExecution(lastExecution, activityTypes), dateRange);
     }
 
-    private Set<Long> getActivityIdsIfLastExecution(boolean lastExecution) {
-        return lastExecution ? getLatestActivitiesForTasks() : new HashSet<>();
+    private Set<Long> getActivityIdsIfLastExecution(boolean lastExecution, Set<TaskActivityType> activityTypes) {
+        return lastExecution ? getLatestActivitiesForTasks(activityTypes) : new HashSet<>();
     }
 
-    private Set<Long> getLatestActivitiesForTasks() {
-        List<Long> activitiesIds = taskActivitiesDataService.executeQuery(new QueryExecution<List<Long>>() {
+    private Set<Long> getLatestActivitiesForTasks(Set<TaskActivityType> activityTypes) {
+        List<Long> activitiesIds = new ArrayList<>();
+
+        for (TaskActivityType activityType : activityTypes) {
+            activitiesIds.addAll(getLatestActivityiesWithActivityType(activityType));
+        }
+
+        return new HashSet<>(activitiesIds);
+    }
+
+    private List<Long> getLatestActivityiesWithActivityType(TaskActivityType activityType) {
+        return taskActivitiesDataService.executeQuery(new QueryExecution<List<Long>>() {
             @Override
             public List<Long> execute(Query query, InstanceSecurityRestriction restriction) {
                 query.setResult("max(id)");
                 query.setGrouping("task");
 
-                return (List<Long>) query.execute();
+                query.setFilter("activityType == param");
+                query.declareParameters("java.lang.String param");
+
+                return (List) QueryExecutor.execute(query, activityType.getValue(), restriction);
             }
         });
-
-        return new HashSet<>(activitiesIds);
     }
 
     private boolean updateTaskProgress(TaskExecutionProgress progress, TaskActivity activity) {
