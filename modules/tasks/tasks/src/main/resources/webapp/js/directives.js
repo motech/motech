@@ -1273,7 +1273,7 @@
         };
     }]);
 
-    directives.directive('formatManipulationButton', ['$compile', function ($compile) {
+    directives.directive('formatManipulationButton', ['$compile', 'BootstrapDialogManager', function ($compile, BootstrapDialogManager) {
         return {
             restrict: 'EA',
             templateUrl: '../tasks/partials/widgets/string-manipulation-format-button.html',
@@ -1287,17 +1287,27 @@
                             }
                         });
                         return arr.join(",");
+                    },
+                    getModalScopeField = function(scope, fieldName) {
+                        var scopeLevel = scope, foundField;
+                        while (foundField === undefined && scopeLevel) {
+                            foundField = scopeLevel[fieldName];
+                            scopeLevel = scopeLevel.$parent;
+                        }
+
+                        return foundField;
                     };
+
                 scope.formatInput = [];
 
-                modalScope.getAvailableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.getAvailableFields;
-                modalScope.availableFields = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.fields;
-                modalScope.msg = scope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.taskMsg;
-                modalScope.argument = scope.argument;
-                scope.importDialog = new BootstrapDialog({
+                modalScope.getAvailableFields = getModalScopeField(scope, 'getAvailableFields');
+                modalScope.availableFields = getModalScopeField(scope, 'fields');
+                modalScope.msg = getModalScopeField(scope, 'taskMsg');
+                modalScope.argument = getModalScopeField(scope, 'argument');
+                scope.editDialog = new BootstrapDialog({
                     size: 'size-wide',
                     title: scope.msg('task.format.set.header'),
-                    closable: true,
+                    closable: false,
                     closeByBackdrop: false,
                     closeByKeyboard: false,
                     autodestroy: false,
@@ -1308,13 +1318,13 @@
                         action: function (dialogItself) {
                             modalScope.argument = parseFormatInput(modalScope.formatInput);
                             scope.changeArgument(modalScope.argument);
-                            dialogItself.close();
+                            BootstrapDialogManager.close(dialogItself);
                         }
                     }]
                 });
                 element.on('click', function (event) {
                     event.preventDefault();
-                    scope.importDialog.open();
+                    BootstrapDialogManager.open(scope.editDialog);
                 });
             }
         };
