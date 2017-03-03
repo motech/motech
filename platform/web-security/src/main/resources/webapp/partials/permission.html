@@ -54,7 +54,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="permission in permissionList | filter:roleNameFilter | filter:selectedItemRole | filterPagination:currentPage*pageSize | limitTo:pageSize">
+            <tr ng-repeat="permission in (filteredPermissions = (permissionList | filter:roleNameFilter | filter:selectedItemRole)) | filterPagination:currentPage*pageSize | limitTo:pageSize">
                 <td>{{currentPage * pageSize + $index + 1}}</td>
                 <td>{{permission.permissionName}}</td>
                 <td>{{permission.bundleName}}</td>
