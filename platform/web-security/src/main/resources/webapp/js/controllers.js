@@ -96,11 +96,14 @@
 
 
            $scope.numberOfPages = function(){
-               return Math.ceil($scope.userList.length/$scope.pageSize);
+               if ($scope.currentPage * $scope.pageSize > $scope.filteredUsers.length) {
+                   $scope.changeCurrentPage(Math.floor($scope.filteredUsers.length / $scope.pageSize));
+               }
+               return Math.ceil($scope.filteredUsers.length/$scope.pageSize);
            };
 
            $scope.changeCurrentPage = function(page) {
-               $scope.currentPage=page;
+               $scope.currentPage = page;
            };
 
            $scope.getUser = function(user)  {
