@@ -1,15 +1,19 @@
 package org.motechproject.server.web.controller;
 
-import org.motechproject.security.exception.UserNotFoundException;
-import org.motechproject.security.exception.NonAdminUserException;
-import org.motechproject.security.service.PasswordRecoveryService;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.motechproject.config.SettingsFacade;
 import org.motechproject.config.domain.LoginMode;
+import org.motechproject.security.exception.NonAdminUserException;
+import org.motechproject.security.exception.UserNotFoundException;
+import org.motechproject.security.service.PasswordRecoveryService;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.web.dto.ForgotViewData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,9 +59,9 @@ public class ForgotController {
         return view;
     }
 
-   @RequestMapping(value = "/forgotviewdata", method = RequestMethod.GET)
-   @ResponseBody
-   public ForgotViewData getForgotViewData(final HttpServletRequest request) {
+    @RequestMapping(value = "/forgotviewdata", method = RequestMethod.GET)
+    @ResponseBody
+    public ForgotViewData getForgotViewData(final HttpServletRequest request) {
         ForgotViewData view = new ForgotViewData();
 
         view.setLoginMode(settingsFacade.getPlatformSettings().getLoginMode());
@@ -71,7 +75,7 @@ public class ForgotController {
 
     @RequestMapping(value = "/forgot", method = RequestMethod.POST)
     @ResponseBody
-    public String forgotPost(@RequestBody String email) {
+    public ResponseEntity<String> forgotPost(@RequestBody String email) {
 
         LoginMode loginMode = settingsFacade.getPlatformSettings().getLoginMode();
 
@@ -80,26 +84,35 @@ public class ForgotController {
                 recoveryService.passwordRecoveryRequest(email);
             } catch (UserNotFoundException e) {
                 LOGGER.warn("Request for a nonexistent email", e);
-                return "security.forgot.noSuchUser";
+                return new ResponseEntity<>(buildResponseJSON("security.forgot.noSuchUser"), HttpStatus.NOT_FOUND);
             } catch (RuntimeException e) {
                 LOGGER.error("Error processing recovery", e);
-                return "security.forgot.errorSending";
+                return new ResponseEntity<>(buildResponseJSON("security.forgot.errorSending"), HttpStatus.BAD_REQUEST);
             }
         } else {
             try {
                 recoveryService.oneTimeTokenOpenId(email);
             } catch (UserNotFoundException e) {
                 LOGGER.warn("Request for a nonexistent email", e);
-                return "security.forgot.noSuchUser";
+                return new ResponseEntity<>(buildResponseJSON("security.forgot.noSuchUser"), HttpStatus.NOT_FOUND);
             } catch (NonAdminUserException e) {
                 LOGGER.warn("Request for a nonexistent email", e);
-                return "security.forgot.nonAdminUser";
+                return new ResponseEntity<>(buildResponseJSON("security.forgot.nonAdminUser"), HttpStatus.NOT_FOUND);
             } catch (RuntimeException e) {
                 LOGGER.error("Error processing recovery", e);
-                return "security.forgot.errorSending";
+                return new ResponseEntity<>(buildResponseJSON("security.forgot.errorSending"), HttpStatus.BAD_REQUEST);
             }
         }
 
-        return null;
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private String buildResponseJSON(String message) {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+
+        jsonObject.addProperty("message", message);
+
+        return gson.toJson(jsonObject);
     }
 }

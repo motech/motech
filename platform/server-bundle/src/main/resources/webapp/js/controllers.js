@@ -590,7 +590,8 @@
                         $scope.forgotViewData.processed=true;
                      })
                      .error(function (response) {
-                        $scope.error = 'security.tokenSendError';
+                        $scope.error = response.message ? response.message : 'security.tokenSendError';
+                        $scope.forgotViewData.processed=true;
                      });
              }
         };
