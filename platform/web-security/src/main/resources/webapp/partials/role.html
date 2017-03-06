@@ -17,7 +17,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="role in roleList | filter:propertyRoleName | filterPagination:currentPage*pageSize | limitTo:pageSize">
+                <tr ng-repeat="role in (filteredRoles = (roleList | filter:propertyRoleName)) | filterPagination:currentPage*pageSize | limitTo:pageSize">
                     <td>{{currentPage * pageSize + $index + 1}}</td>
                     <td><i class="fa fa-fw fa-user"></i> {{role.roleName}}</td>
                     <td ng-click="getRole(role)"><i class="fa fa-fw fa-edit"></i> <a>{{msg('security.edit')}}</a></td>

@@ -96,11 +96,14 @@
 
 
            $scope.numberOfPages = function(){
-               return Math.ceil($scope.userList.length/$scope.pageSize);
+               if ($scope.currentPage * $scope.pageSize > $scope.filteredUsers.length) {
+                   $scope.changeCurrentPage(Math.floor($scope.filteredUsers.length / $scope.pageSize));
+               }
+               return Math.ceil($scope.filteredUsers.length/$scope.pageSize);
            };
 
            $scope.changeCurrentPage = function(page) {
-               $scope.currentPage=page;
+               $scope.currentPage = page;
            };
 
            $scope.getUser = function(user)  {
@@ -224,15 +227,21 @@
            });
 
            $scope.numberOfPages=function(){
-               return Math.ceil($scope.roleList.length/$scope.pageSize);
+               if ($scope.currentPage * $scope.pageSize > $scope.filteredRoles.length) {
+                  $scope.changeCurrentPage(Math.floor($scope.filteredRoles.length / $scope.pageSize));
+               }
+               return Math.ceil($scope.filteredRoles.length/$scope.pageSize);
            };
 
            $scope.numberOfPagesPermissions=function(){
-               return Math.ceil($scope.permissionList.length/$scope.pageSize);
+               if ($scope.currentPage * $scope.pageSize > $scope.filteredPermissions.length) {
+                   $scope.changeCurrentPage(Math.floor($scope.filteredPermissions.length / $scope.pageSize));
+               }
+               return Math.ceil($scope.filteredPermissions.length/$scope.pageSize);
            };
 
            $scope.changeCurrentPage = function(page) {
-               $scope.currentPage=page;
+               $scope.currentPage = page;
            };
 
            $scope.uniquePermissionList = function(list) {
