@@ -20,7 +20,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr class="pointer" ng-click="getUser(user)" ng-repeat="user in userList | filter:{userName : propertyUserName} | filter:selectedItem.roleName | filterPagination:currentPage*pageSize | limitTo:pageSize">
+            <tr class="pointer" ng-click="getUser(user)" ng-repeat="user in (filteredUsers = (userList | filter:{userName : propertyUserName} | filter:selectedItem.roleName)) | filterPagination:currentPage*pageSize | limitTo:pageSize">
                 <td><a>{{user.userName}}</a></td>
                 <td><span ng-repeat="role in user.roles track by $index">{{role}}<span ng-hide="$index == (user.roles.length-1)">, </span></span></td>
                 <td ng-show="user.userStatus === 'ACTIVE' || user.userStatus === undefined"><a>{{msg('security.user.active')}}</a></td>
