@@ -226,7 +226,6 @@
                 return urlParam;
             };
 
-            $scope.reloadToLoginPageIfSessionExpired();
             if (url.indexOf('admin/bundleSettings/') > 0) {
                 $scope.selectedTabState.selectedTab = 'bundleSettings';
             } else {
@@ -277,30 +276,6 @@
             }
         };
 
-        $scope.$watch(function() {
-            return $window.location.href;
-        }, function() {
-            return $scope.reloadToLoginPageIfSessionExpired();
-        });
-
-        $scope.reloadToLoginPageIfSessionExpired = function() {
-            var fetchedUser = {};
-            if ($scope.activeLink) {
-                $scope.checkSession(function(response) {
-                    fetchedUser = response;
-
-                    if (typeof fetchedUser.userName === 'undefined') {
-                        $window.location.reload();
-                    }
-                });
-            }
-        };
-
-        $scope.checkSession = function(callback) {
-            $http.get('../server/getUser').success(function (response) {
-                callback(response);
-            });
-        };
 
         $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
             innerLayout({}, { show: false });
