@@ -20,7 +20,7 @@
     });
 
     serverModule.controller('MotechMasterCtrl', function ($scope, $rootScope, $ocLazyLoad, $state, $stateParams, $http,
-          i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout, ModalFactory, LoadingModal) {
+          i18nService, $cookieStore, $q, BrowserDetect, Menu, $location, $timeout, ModalFactory, LoadingModal, $window) {
 
         var handle = function () {
                 if (!$scope.$$phase) {
@@ -225,6 +225,7 @@
                 if(urlParam.indexOf('/') > 0) {urlParam = urlParam.replace(/(\/)\w+((\/)\w*)*/i, '');}
                 return urlParam;
             };
+
             if (url.indexOf('admin/bundleSettings/') > 0) {
                 $scope.selectedTabState.selectedTab = 'bundleSettings';
             } else {
@@ -274,6 +275,7 @@
                 }
             }
         };
+
 
         $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
             innerLayout({}, { show: false });
