@@ -33,6 +33,30 @@
         }];
 
         $httpProvider.interceptors.push(interceptor);
+
+        $httpProvider.interceptors.push(function($q, $window) {
+            var requestResponseObject = {}, defer;
+
+            function checkSession(data) {
+                defer = $q.defer();
+                if ((data.headers !== undefined && data.headers('login-required') === "true") && $window.location.pathname !== "/motech-platform-server/module/server/login") {
+                    $window.location.reload();
+                } else {
+                    defer.resolve(data);
+                }
+                return defer.promise;
+            }
+
+            requestResponseObject.response = function resp(data) {
+               return checkSession(data).$$state.value;
+            };
+
+            requestResponseObject.request = function(config) {
+                return config;
+            };
+            
+            return requestResponseObject;
+        });
     }]);
 
     serverModule.config(function($stateProvider, $locationProvider, $urlRouterProvider, $ocLazyLoadProvider) {
