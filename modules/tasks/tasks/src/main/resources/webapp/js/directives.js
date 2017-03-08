@@ -1490,11 +1490,16 @@
         };
     });
 
-    directives.directive('divPlaceholder', function() {
+    directives.directive('divPlaceholder', function($timeout) {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
-                var parent = scope, curText;
+                var parent = scope, curText,
+                    setElementValue = function (text) {
+                        $timeout(function () {
+                            element.html('<em style="color: gray;">' + text + '</em>');
+                        });
+                    };
 
                 while (parent.msg === undefined) {
                     parent = parent.$parent;
@@ -1503,7 +1508,7 @@
                 curText = parent.msg(attrs.divPlaceholder);
 
                 if (!element.text().trim().length) {
-                    element.html('<em style="color: gray;">' + curText + '</em>');
+                    setElementValue(curText);
                 }
 
                 element.focusin(function() {
@@ -1514,7 +1519,7 @@
 
                 element.focusout(function() {
                     if ($(this).text().toLowerCase() === curText.toLowerCase() || !$(this).text().length) {
-                        $(this).html('<em style="color: gray;">' + curText + '</em>');
+                        setElementValue(curText);
                     }
                 });
             }
