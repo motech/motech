@@ -87,6 +87,22 @@ public class ActionHandlerServiceImpl implements ActionHandlerService {
     }
 
     @Override
+    public void queryAndUpdate(Map<String, Object> parameters) throws ActionHandlerException {
+        LOGGER.debug("Action QUERY AND UPDATE: params {}", parameters);
+
+        String entityClassName = getEntityClassName(parameters);
+        MotechDataService dataService = getEntityDataService(entityClassName);
+        Entity entity = getEntity(entityClassName);
+
+        List<?> instances =  dataService.retrieveAll();
+
+        for (Object instance : instances) {
+            setInstancePropertiesForQuery(instance, entity.getFields(), parameters);
+            dataService.update(instance);
+        }
+    }
+
+    @Override
     public void delete(Map<String, Object> parameters) throws ActionHandlerException {
         LOGGER.debug("Action DELETE: params: {}", parameters);
 
@@ -96,6 +112,19 @@ public class ActionHandlerServiceImpl implements ActionHandlerService {
         Object instance = retrieveEntityInstance(dataService, instanceId);
 
         dataService.delete(instance);
+    }
+
+    private void setInstancePropertiesForQuery(Object instance, List<Field> fields, Map<String, Object> properties) throws ActionHandlerException {
+        for (Field field : fields) {
+            Object value = properties.get(field.getName());
+            if (value instanceof List) {
+                if (((List) value).size() > 0) {
+                    setInstanceProperty(instance, field, value);
+                }
+            } else if (null != value) {
+                setInstanceProperty(instance, field, value);
+            }
+        }
     }
 
     private void setInstanceProperties(Object instance, List<Field> fields, Map<String, Object> properties) throws ActionHandlerException {
