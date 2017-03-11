@@ -1048,7 +1048,7 @@
                 if (!scope.manipulationType){
                     return false;
                 }
-                if (['UNICODE', 'TEXTAREA', 'DATE'].indexOf(scope.manipulationType) === -1){
+                if (['UNICODE', 'TEXTAREA', 'DATE', 'MAP'].indexOf(scope.manipulationType) === -1){
                     return false;
                 }
                 if (!scope.manipulations){
@@ -1086,6 +1086,8 @@
                                     case 'DATE':
                                     case 'DATE2DATE':
                                         return modalScope.msg('task.dateManipulation');
+                                    case 'MAP':
+                                        return modalScope.msg('task.mapManipulation');
                                 }
                                 return null;
                             },
@@ -1155,6 +1157,9 @@
                 }
                 if(['date', 'date2date'].indexOf(manipulationType) > -1) {
                     $scope.manipulationTypes = $scope.manipulationTypes.concat(['beginningOfMonth','endOfMonth','plusMonths','minusMonths','plusDays', 'minusDays', 'plusHours', 'minusHours', 'plusMinutes', 'minusMinutes', 'quarter']);
+                }
+                if(['map'].indexOf(manipulationType) > -1) {
+                    $scope.manipulationTypes.push('getValue');
                 }
 
                 this.addManipulation = function (type, argument) {
