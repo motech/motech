@@ -1,5 +1,6 @@
 package org.motechproject.tasks.service.util;
 
+import com.google.common.base.Splitter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.joda.time.DateTime;
@@ -12,6 +13,7 @@ import org.motechproject.tasks.exception.TaskHandlerException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.motechproject.tasks.domain.KeyInformation.ADDITIONAL_DATA_PREFIX;
@@ -40,6 +42,7 @@ public class KeyEvaluator {
     private static final int PLUS_MINUTES_PATTERN_BEGIN_INDEX = 12;
     private static final int MINUS_MINUTES_PATTERN_BEGIN_INDEX = 13;
     private static final int PARSE_DATE_PATTERN_BEGIN_INDEX = 10;
+    private static final int MAP_GET_VALUE_PATTERN_BEGIN_INDEX = 9;
 
     private TaskContext taskContext;
 
@@ -180,7 +183,9 @@ public class KeyEvaluator {
         String lowerCase = manipulation.toLowerCase();
         String result = value;
 
-        if (lowerCase.contains("join")) {
+        if (lowerCase.contains("getvalue")) {
+            result = getValueFromMap(value, manipulation);
+        } else if (lowerCase.contains("join")) {
             result = joinManipulation(value, manipulation);
         } else if (lowerCase.contains("datetime")) {
             try {
@@ -212,6 +217,17 @@ public class KeyEvaluator {
         }
 
         return result;
+    }
+
+    private String getValueFromMap(String value, String manipulation) {
+        String pattern = manipulation.substring(MAP_GET_VALUE_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
+        Map<String, String> valueMap = splitToMap(value.substring(1, value.length() - 1));
+
+        return valueMap.containsKey(pattern) ? valueMap.get(pattern) : "";
+    }
+
+    private Map<String, String> splitToMap(String in) {
+        return Splitter.on(", ").withKeyValueSeparator("=").split(in);
     }
 
     private String parseDate(String value, String manipulation) {

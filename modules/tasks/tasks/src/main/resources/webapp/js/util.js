@@ -127,6 +127,10 @@
                 name: 'parseDate',
                 input: 'input[parsedate-update]',
                 pattern: 10
+            }, {
+                name: 'getValue',
+                input: 'input[getvalue-update]',
+                pattern: 9
             } ],
             find: function (data) {
                 var where = (data && data.where) || [],
