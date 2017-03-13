@@ -183,7 +183,9 @@ public class KeyEvaluator {
         String lowerCase = manipulation.toLowerCase();
         String result = value;
 
-        if (lowerCase.contains("join")) {
+        if (lowerCase.contains("getvalue")) {
+            result = getValueFromMap(value, manipulation);
+        } else if (lowerCase.contains("join")) {
             result = joinManipulation(value, manipulation);
         } else if (lowerCase.contains("datetime")) {
             try {
@@ -210,8 +212,6 @@ public class KeyEvaluator {
             result = parseDate(value, manipulation);
         } else if (lowerCase.contains("plus") || lowerCase.contains("minus") || lowerCase.contains("ofmonth") || lowerCase.contains("quarter")) {
             result = dateTimeChangeManipulation(value, lowerCase);
-        } else if (lowerCase.contains("getvalue")) {
-            result = getValueFromMap(value, lowerCase);
         } else {
             result = simpleManipulations(value, lowerCase.replace("()", ""));
         }
@@ -221,7 +221,7 @@ public class KeyEvaluator {
 
     private String getValueFromMap(String value, String manipulation) {
         String pattern = manipulation.substring(MAP_GET_VALUE_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
-        Map<String, String> valueMap = splitToMap(value.substring(1, value.length() - 1).toLowerCase());
+        Map<String, String> valueMap = splitToMap(value.substring(1, value.length() - 1));
 
         return valueMap.containsKey(pattern) ? valueMap.get(pattern) : "";
     }
