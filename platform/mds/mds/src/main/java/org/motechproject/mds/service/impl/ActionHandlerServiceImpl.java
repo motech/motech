@@ -1,5 +1,6 @@
 package org.motechproject.mds.service.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
@@ -117,11 +118,10 @@ public class ActionHandlerServiceImpl implements ActionHandlerService {
     private void setInstancePropertiesForQuery(Object instance, List<Field> fields, Map<String, Object> properties) throws ActionHandlerException {
         for (Field field : fields) {
             Object value = properties.get(field.getName());
-            if (value instanceof List) {
-                if (((List) value).size() > 0) {
-                    setInstanceProperty(instance, field, value);
-                }
-            } else if (null != value) {
+            
+            if (value instanceof List && CollectionUtils.isNotEmpty((List) value)) {
+                setInstanceProperty(instance, field, value);
+            } else if (!(value instanceof List) && null != value) {
                 setInstanceProperty(instance, field, value);
             }
         }
