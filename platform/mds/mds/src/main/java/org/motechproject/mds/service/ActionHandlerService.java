@@ -40,6 +40,15 @@ public interface ActionHandlerService {
     void createOrUpdate(Map<String, Object> parameters) throws ActionHandlerException;
 
     /**
+     * Query and updates each instance of the entity, based on the provided parameters.
+     *
+     * @param parameters
+     * @throws ActionHandlerException if the instance could not get updated due to missing class name, missing id of the instance,
+     *                                missing instance of the given id, problems setting instance properties, or any other reasons
+     */
+    void queryAndUpdate(Map<String, Object> parameters) throws ActionHandlerException;
+
+    /**
      * Deletes an instance of the entity, based on the provided parameters. The parameters should contain
      * the entity class name and instance id.
      *

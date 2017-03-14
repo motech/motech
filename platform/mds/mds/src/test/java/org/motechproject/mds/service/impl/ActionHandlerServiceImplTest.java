@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.domain.Entity;
@@ -16,6 +17,7 @@ import org.motechproject.mds.util.Constants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +27,7 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,6 +53,9 @@ public class ActionHandlerServiceImplTest {
     private Entity testEntity;
 
     private ActionHandlerServiceImpl actionHandlerService;
+
+    @Captor
+    private ArgumentCaptor<List<TestEntity>> testEntityListCaptor;
 
     @Before
     public void setUp() throws Exception {
@@ -112,6 +118,30 @@ public class ActionHandlerServiceImplTest {
     }
 
     @Test
+    public void shouldQueryAndUpdateEntity() throws ActionHandlerException {
+        Map<String, Object> parameters = updateTestParams();
+        Map map = new HashMap();
+        map.put("dog", "good");
+        map.put("cat", "bad");
+
+        List<TestEntity> preTestEntities = prepareListTestEntities(null);
+        List<TestEntity> expectedTestEntities = prepareListTestEntities(map);
+
+        when(testEntityDataService.retrieveAll()).thenReturn(preTestEntities);
+
+        actionHandlerService.queryAndUpdate(parameters);
+
+        ArgumentCaptor<TestEntity> testEntitiesCaptor = ArgumentCaptor.forClass(TestEntity.class);
+        verify(testEntityDataService, times(3)).update(testEntitiesCaptor.capture());
+
+        List<TestEntity> capturedTestEntities = testEntitiesCaptor.getAllValues();
+
+        assertEquals(expectedTestEntities.get(0), capturedTestEntities.get(0));
+        assertEquals(expectedTestEntities.get(1), capturedTestEntities.get(1));
+        assertEquals(expectedTestEntities.get(2), capturedTestEntities.get(2));
+    }
+
+    @Test
     public void shouldUpsertEntity() throws ActionHandlerException {
         Map<String, Object> parameters = updateTestParams();
 
@@ -122,6 +152,15 @@ public class ActionHandlerServiceImplTest {
         ArgumentCaptor<TestEntity> testEntityCaptor = ArgumentCaptor.forClass(TestEntity.class);
         verify(testEntityDataService).createOrUpdate(testEntityCaptor.capture());
         assertEquals(expectedTestEntity, testEntityCaptor.getValue());
+    }
+
+    private List<TestEntity> prepareListTestEntities(Map testMap) {
+        List<TestEntity> result = new ArrayList<>();
+        result.add(new TestEntity(1L, "hello", 42, new Date(2014, 12, 1), Locale.US, asList("pig", "cat"), testMap));
+        result.add(new TestEntity(2L, "hello", 42, new Date(2014, 12, 1), Locale.US, asList("pig", "cat"), testMap));
+        result.add(new TestEntity(3L, "hello", 42, new Date(2014, 12, 1), Locale.US, asList("pig", "cat"), testMap));
+
+        return result;
     }
 
     private Map<String, Object> updateTestParams() {
@@ -183,6 +222,11 @@ public class ActionHandlerServiceImplTest {
         }
 
         public TestEntity(String string, Integer integer, Date date, Locale locale, List list, Map map) {
+            this(null, string, integer, date, locale, list, map);
+        }
+
+        public TestEntity(Long id, String string, Integer integer, Date date, Locale locale, List list, Map map) {
+            this.id = id;
             this.string = string;
             this.integer = integer;
             this.date = date;

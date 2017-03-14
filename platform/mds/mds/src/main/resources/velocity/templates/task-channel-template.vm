@@ -113,6 +113,32 @@
             #updateActionParams( $entity false )
         },
         {
+            "name": "${entity.className}.queryAndUpdate",
+            "displayName": "QUERY AND UPDATE $entity.entityName",
+            "serviceInterface": "org.motechproject.mds.service.ActionHandlerService",
+            "serviceMethod": "queryAndUpdate",
+            "serviceMethodCallManner": "MAP",
+            "actionParameters": [
+                {
+                    "displayName": "Entity Class",
+                    "key": "@ENTITY",
+                    "value": "$entity.className",
+                    "type": "UNICODE",
+                    "required": true,
+                    "hidden": true
+                },
+                #foreach ( $field in $entity.nonAutoFieldInfos )
+                {
+                    "key": "$field.name",
+                    "displayName": "$field.displayName",
+                    "type": "$field.taskType",
+                    "required": false,
+                    "hidden": $field.unique
+                }#if ( $velocityHasNext ),#end
+                #end
+            ]
+        },
+        {
             "name": "${entity.className}.delete",
             "displayName": "DELETE $entity.entityName",
             "serviceInterface": "org.motechproject.mds.service.ActionHandlerService",
