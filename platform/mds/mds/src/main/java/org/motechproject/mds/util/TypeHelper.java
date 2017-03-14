@@ -499,10 +499,14 @@ public final class TypeHelper {
         switch (toClass) {
             case "org.joda.time.DateTime":
                 return val;
+            case "java.time.LocalDateTime":
+                return java.time.LocalDateTime.of(val.getYear(), val.getMonthOfYear(), val.getDayOfMonth(), val.getHourOfDay(), val.getMinuteOfHour());
             case "java.util.Date":
                 return val.toDate();
             case "org.joda.time.LocalDate":
                 return val.toLocalDate();
+            case "java.time.LocalDate":
+                return java.time.LocalDate.of(val.getYear(), val.getMonthOfYear(), val.getDayOfMonth());
             case "org.motechproject.commons.date.model.Time":
                 return new Time(val.getHourOfDay(), val.getMinuteOfHour());
             default:

@@ -468,6 +468,10 @@
                                             angular.forEach($scope.selectedAction[idx].actionParameters, function (param) {
                                                 param.value = info.values[param.key] || '';
                                             });
+
+                                            if (!$scope.$$phase) {
+                                                $scope.$apply($scope.selectedAction);
+                                            }
                                         });
                                     }
                                 }

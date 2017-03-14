@@ -1501,9 +1501,7 @@
             link: function(scope, element, attrs) {
                 var parent = scope, curText,
                     setElementValue = function (text) {
-                        $timeout(function () {
-                            element.html('<em style="color: gray;">' + text + '</em>');
-                        });
+                        element.html('<em style="color: gray;">' + text + '</em>');
                     };
 
                 while (parent.msg === undefined) {
