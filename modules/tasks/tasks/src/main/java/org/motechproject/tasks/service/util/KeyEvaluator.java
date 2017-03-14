@@ -12,6 +12,7 @@ import org.motechproject.tasks.exception.TaskHandlerException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -72,6 +73,10 @@ public class KeyEvaluator {
             if (value == null && keysList.size() <=1) {
                 conversionTemplate = null;
             } else {
+                if (value instanceof java.util.Date) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+                    value = sdf.format(value);
+                }
                 String stringValue = value != null ? value.toString() : "";
 
                 stringValue = manipulateValue(key.getManipulations(), stringValue);
