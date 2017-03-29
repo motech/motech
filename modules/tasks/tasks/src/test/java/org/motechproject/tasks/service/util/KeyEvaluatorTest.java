@@ -43,6 +43,8 @@ public class KeyEvaluatorTest {
         assertEquals(now.minusHours(2).toString(), keyEvaluator.manipulate("minusHours(2)", toString));
         assertEquals(now.plusMinutes(20).toString(), keyEvaluator.manipulate("plusMinutes(20)", toString));
         assertEquals(now.minusMinutes(20).toString(), keyEvaluator.manipulate("minusMinutes(20)", toString));
+        assertEquals("", keyEvaluator.manipulate("getvalue(mapEntry)", "{}"));
+        assertEquals("value", keyEvaluator.manipulate("getvalue(mapEntry)", "{mapEntry=value, mapEntry2=value2}"));
     }
 
     @Test(expected = MotechException.class)
