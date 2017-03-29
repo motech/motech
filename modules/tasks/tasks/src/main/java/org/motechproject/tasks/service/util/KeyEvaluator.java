@@ -13,6 +13,7 @@ import org.motechproject.tasks.exception.TaskHandlerException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -226,7 +227,7 @@ public class KeyEvaluator {
 
     private String getValueFromMap(String value, String manipulation) {
         String pattern = manipulation.substring(MAP_GET_VALUE_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
-        Map<String, String> valueMap = splitToMap(value.substring(1, value.length() - 1));
+        Map<String, String> valueMap = value.equals("{}") ? new HashMap<>() : splitToMap(value.substring(1, value.length() - 1));
 
         return valueMap.containsKey(pattern) ? valueMap.get(pattern) : "";
     }
