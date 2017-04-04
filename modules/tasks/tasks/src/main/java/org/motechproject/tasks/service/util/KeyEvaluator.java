@@ -1,5 +1,6 @@
 package org.motechproject.tasks.service.util;
 
+
 import com.google.common.base.Splitter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
@@ -45,6 +46,7 @@ public class KeyEvaluator {
     private static final int MINUS_MINUTES_PATTERN_BEGIN_INDEX = 13;
     private static final int PARSE_DATE_PATTERN_BEGIN_INDEX = 10;
     private static final int MAP_GET_VALUE_PATTERN_BEGIN_INDEX = 9;
+    private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
     private TaskContext taskContext;
 
@@ -75,7 +77,7 @@ public class KeyEvaluator {
                 conversionTemplate = null;
             } else {
                 if (value instanceof java.util.Date) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+                    SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
                     value = sdf.format(value);
                 }
                 String stringValue = value != null ? value.toString() : "";
@@ -241,7 +243,7 @@ public class KeyEvaluator {
         DateTimeFormatter formatter = DateTimeFormat.forPattern(pattern);
         DateTime dateTime = formatter.parseDateTime(value);
 
-        return dateTime.toString("yyyy-MM-dd HH:mm Z");
+        return dateTime.toString(DEFAULT_DATE_FORMAT);
     }
 
     private String joinManipulation(String value, String manipulation) {
