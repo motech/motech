@@ -31,7 +31,7 @@ public class KeyEvaluatorTest {
         assertEquals(string, keyEvaluator.manipulate("join(-)", "ala has a cat"));
         assertEquals("ala", keyEvaluator.manipulate("split(-,0)", string));
         assertEquals("cat", keyEvaluator.manipulate("split(-,3)", string));
-        assertEquals(pastDate + " 11:32 " + timeZone, keyEvaluator.manipulate("parseDate(yyyy/dd/MM hh:mm)", "2015/15/05 11:32"));
+        assertEquals(pastDate + "T11:32:00.000+0200", keyEvaluator.manipulate("parseDate(yyyy/dd/MM hh:mm)", "2015/15/05 11:32"));
         assertEquals(toStringWithPattern, keyEvaluator.manipulate("datetime(yyyy-MM-dd)", toString));
         assertEquals(now.dayOfMonth().withMinimumValue().withTime(0, 0, 0, 0).toString(), keyEvaluator.manipulate("beginningOfMonth", toString));
         assertEquals(now.dayOfMonth().withMaximumValue().withTime(23, 59, 59, 999).toString(), keyEvaluator.manipulate("endOfMonth", toString));
