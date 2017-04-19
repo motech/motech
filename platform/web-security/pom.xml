@@ -4,7 +4,7 @@
     <artifactId>motech-platform-web-security</artifactId>
     <packaging>bundle</packaging>
     <name>MOTECH Web Security</name>
-    <version>0.30-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
 
     <properties>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>motech</artifactId>
-        <version>0.30-SNAPSHOT</version>
+        <version>1.0-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
 

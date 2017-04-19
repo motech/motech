@@ -499,7 +499,7 @@ Installing the IDE, Intellij IDEA Community Edition & open MOTECH project
 
 	#. In Select Profiles, do not select any profile, click Next
 
-	#. In Select Maven projects to Import, there should only be one project: org.motechproject:motech:0.30-SNAPSHOT, click Next
+	#. In Select Maven projects to Import, there should only be one project: org.motechproject:motech:1.0-SNAPSHOT, click Next
 
 	#. In Please select project SDK, if the 1.8.0_73 is present, select it, otherwise add it:
 
