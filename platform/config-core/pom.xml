@@ -5,13 +5,13 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.30-SNAPSHOT</version>
+        <version>1.0-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
 
     <name>MOTECH Core Config</name>
     <artifactId>motech-platform-config-core</artifactId>
-    <version>0.30-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>

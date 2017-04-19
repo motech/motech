@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>motech</artifactId>
-        <version>0.30-SNAPSHOT</version>
+        <version>1.0-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
 
     <artifactId>motech-platform-commons-api</artifactId>
-    <version>0.30-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <name>MOTECH Platform Commons API</name>
     <packaging>bundle</packaging>
 
