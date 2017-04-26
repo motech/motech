@@ -29,6 +29,7 @@ docs/env
 docs/source/packages.rst
 docs/source/packages.txt
 docs/source/org
+**/swagger.json
 .tx/config
 ui/node_modules
 ui/bower_components
