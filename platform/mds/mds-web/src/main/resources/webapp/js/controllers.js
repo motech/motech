@@ -119,24 +119,25 @@
 
         /**
         * Return available values for combobox field.
+        * value is a parameter to be given to get the display name otherwise it is not needed.
         *
         * @param {Array} setting A array of field settings.
         * @return {Array} A array of possible combobox values.
         */
-        $scope.getComboboxValues = function (settings) {
+        $scope.getComboboxValues = function (settings, value) {
             var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value, keys = [], key;
             // Check the user supplied flag, if true return string set
             if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
-                return labelValues;
+                return !value ? labelValues : value;
             } else {
                 if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
                     labelValues =  $scope.getAndSplitComboboxValues(labelValues);
                     for(key in labelValues) {
                         keys.push(key);
                     }
-                    return keys;
+                    return !value ? keys : keys[value];
                 } else {        // there is no colon, so we are dealing with a string set, not a map
-                    return labelValues;
+                    return !value ? labelValues : value;
                 }
             }
         };
@@ -151,18 +152,7 @@
         };
 
         $scope.getComboboxDisplayName = function (settings, value) {
-            var labelValues = MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value;
-            // Check the user supplied flag, if true return string set
-            if (MDSUtils.find(settings, [{field: 'name', value: 'mds.form.label.allowUserSupplied'}], true).value === true){
-                return value;
-            } else {
-                if (labelValues !== undefined && labelValues[0].indexOf(":") !== -1) {
-                    labelValues =  $scope.getAndSplitComboboxValues(labelValues);
-                    return labelValues[value];
-                } else {         // there is no colon, so we are dealing with a string set, not a map
-                    return value;
-                }
-            }
+            return $scope.getComboboxValues(settings, value);
         };
 
         /**
@@ -281,10 +271,6 @@
             return mapKey.toString().length > 0 && mapValue.toString().length < 1;
         };
 
-        $scope.getMapLength = function (obj) {
-            return Object.keys(obj).length;
-        };
-
         $scope.getMdsEntityCsvImportPath = function(selectedEntityId) {
             return '../mds/instances/' + selectedEntityId + '/csvimport';
         };
@@ -366,27 +352,6 @@
                     }
                 }
             });
-        };
-
-        /**
-        * Convert string to map.
-        */
-        $scope.stringToMap = function (stringValue) {
-            var resultMaps = [], map = [];
-            if (stringValue !== null && stringValue !== undefined && stringValue.toString().indexOf(':') > 0) {
-                map = stringValue.split('\n');
-                angular.forEach(map, function (map, index) {
-                    var str;
-                    str = map.split(':');
-                    if (str.length > 1) {
-                    resultMaps.push({key: '', value: ''});
-                    resultMaps[index].key = str[0].trim();
-                    resultMaps[index].value = str[1].trim();
-                    }
-                },
-                resultMaps);
-                }
-            return resultMaps;
         };
 
         /**
@@ -575,14 +540,7 @@
         * Gets criterion values list.
         */
         $scope.getCriterionValues = function (fieldId, criterionName) {
-            var result = [];
-            fieldId = parseInt(fieldId, 10);
-            angular.forEach($scope.criterionValuesList, function (list, index) {
-                if (list !== undefined && list.id === fieldId && list.criteria.toString() === criterionName.toString()) {
-                    result = list.values.join(' ');
-                }
-            }, result);
-            return result;
+            $scope.getCriterionValuesList(fieldId, criterionName).join(' ');
         };
 
         /**
@@ -2489,11 +2447,8 @@
         * Function moving "Fields to display" item up (in model).
         */
         $scope.targetItemMoveUp = function(index) {
-            var tmp;
             if (index > 0) {
-                tmp = $scope.browsingDisplayed[index];
-                $scope.browsingDisplayed[index] = $scope.browsingDisplayed[index - 1];
-                $scope.browsingDisplayed[index - 1] = tmp;
+                MDSUtils.moveItemsInSchemaList($scope, index);
             }
         };
 
@@ -2501,11 +2456,8 @@
         * Function moving "Fields to display" item down (in model).
         */
         $scope.targetItemMoveDown = function(index) {
-            var tmp;
             if (index < $scope.browsingDisplayed.length - 1) {
-                tmp = $scope.browsingDisplayed[index + 1];
-                $scope.browsingDisplayed[index + 1] = $scope.browsingDisplayed[index];
-                $scope.browsingDisplayed[index] = tmp;
+                MDSUtils.moveItemsInSchemaList($scope, index + 1);
             }
         };
 
@@ -2533,27 +2485,7 @@
                 $scope.targetItemMoveUp(index);
             });
 
-            angular.forEach($scope.browsingDisplayed, function (item) {
-                array.push(item.id);
-            });
-
-            $scope.draft({
-                edit: true,
-                values: {
-                    path: 'browsing.$setDisplayedFields',
-                    advanced: true,
-                    value: [array]
-                }
-            }, function () {
-                // restore 'selected' state
-                $timeout(function() {
-                    $(".connected-list-target.browsing").children().each(function(index) {
-                        if(selected[$scope.browsingDisplayed[index].id]) {
-                            $(this).addClass('selected');
-                        }
-                    });
-                });
-            });
+            MDSUtils.draftForFields($scope, array, selected, $timeout);
         };
 
         /**
@@ -2580,67 +2512,23 @@
                 $scope.targetItemMoveDown(index);
             });
 
-            angular.forEach($scope.browsingDisplayed, function (item) {
-                array.push(item.id);
-            });
-
-            $scope.draft({
-                edit: true,
-                values: {
-                    path: 'browsing.$setDisplayedFields',
-                    advanced: true,
-                    value: [array]
-                }
-            }, function () {
-                // restore 'selected' state
-                $timeout(function() {
-                    $(".connected-list-target.browsing").children().each(function(index) {
-                        if(selected[$scope.browsingDisplayed[index].id]) {
-                            $(this).addClass('selected');
-                        }
-                    });
-                });
-            });
+            MDSUtils.draftForFields($scope, array, selected, $timeout);
         };
 
         /**
         * Checks if there are fields allowed to move up in 'Browsing Settings' view.
         */
         $scope.canMoveUp = function() {
-            var items = $('.target-item.browsing'),
-                wasLastSelected = true,
-                ret = false;
-            if (items.filter('.selected').size() === 0) {
-                return false;
-            }
-            items.each(function() {
-                var isThisSelected = $(this).hasClass('selected');
-                if (!wasLastSelected && isThisSelected) {
-                    ret = true;
-                }
-                wasLastSelected = isThisSelected;
-            });
-            return ret;
+            var isDown = false;
+            return MDSUtils.canMoveUpOrDownInSettingsView($scope, isDown);
         };
 
         /**
         * Checks if there are fields allowed to move up in 'Browsing Settings' view.
         */
         $scope.canMoveDown = function() {
-            var items = $('.target-item.browsing'),
-                wasLastSelected = true,
-                ret = false;
-            if (items.filter('.selected').size() === 0) {
-                return false;
-            }
-            $(items.get().reverse()).each(function() {
-                var isThisSelected = $(this).hasClass('selected');
-                if (!wasLastSelected && isThisSelected) {
-                    ret = true;
-                }
-                wasLastSelected = isThisSelected;
-            });
-            return ret;
+            var isDown = true;
+            return MDSUtils.canMoveUpOrDownInSettingsView($scope, isDown);
         };
 
         /**
@@ -3197,12 +3085,8 @@
         *                   otherwise false.
         */
         $scope.checkMax = function (viewValue, field) {
-            var max = $scope.getValidationCriteria(field, 1),
-            enabled = false;
-            if (field.validation !== null && max !== '' && (field.validation.criteria[1].enabled && viewValue !== null && viewValue !== undefined && viewValue !== '')) {
-                enabled = true;
-            }
-            return enabled
+            var max = $scope.getValidationCriteria(field, 1);
+            return MDSUtils.isEnabled(viewValue, field, max, 1)
                 ? MDSUtils.validateMaxLength(parseFloat(viewValue), parseFloat(max))
                 : false;
         };
@@ -3216,12 +3100,8 @@
         *                   otherwise false.
         */
         $scope.checkMin = function (viewValue, field) {
-            var min = $scope.getValidationCriteria(field, 0),
-            enabled = false;
-            if (field.validation !== null && min !== '' && (field.validation.criteria[0].enabled && viewValue !== null && viewValue !== undefined && viewValue !== '')) {
-                enabled = true;
-            }
-            return enabled
+            var min = $scope.getValidationCriteria(field, 0);
+            return MDSUtils.isFieldValidationEnabled(viewValue, field, min, 0)
                 ? MDSUtils.validateMin(parseFloat(viewValue), parseFloat(min))
                 : false;
         };
@@ -3235,12 +3115,8 @@
         *                   otherwise false.
         */
         $scope.checkInSet = function (viewValue, field) {
-            var inset = $scope.getValidationCriteria(field, 2),
-            enabled = false;
-            if (field.validation !== null && inset !== '' && (field.validation.criteria[2].enabled && viewValue !== null && viewValue !== undefined && viewValue !== '')) {
-                enabled = true;
-            }
-            return enabled
+            var inset = $scope.getValidationCriteria(field, 2);
+            return MDSUtils.isFieldValidationEnabled(viewValue, field, inset, 2)
                 ? MDSUtils.validateInSet(viewValue, inset)
                 : false;
         };
@@ -3254,12 +3130,8 @@
         *                   otherwise false.
         */
         $scope.checkOutSet = function (viewValue, field) {
-            var outset = $scope.getValidationCriteria(field, 3),
-            enabled = false;
-            if (field.validation !== null && outset !== '' && (field.validation.criteria[3].enabled && viewValue !== null && viewValue !== undefined && viewValue !== '')) {
-                enabled = true;
-            }
-            return enabled
+            var outset = $scope.getValidationCriteria(field, 3);            
+            return MDSUtils.isEnabled(viewValue, field, outset, 3)
                 ? MDSUtils.validateOutSet(viewValue, outset)
                 : false;
         };
@@ -3269,7 +3141,7 @@
     /**
     * The MdsDataBrowserCtrl controller is used on the 'Data Browser' view.
     */
-    controllers.controller('MdsDataBrowserCtrl', function ($rootScope, $scope, $http, $location, $state, $stateParams, Entities, Instances, History,
+    controllers.controller('MdsDataBrowserCtrl', function ($rootScope, $scope, $http, $location, $state, $stateParams, $controller, Entities, Instances, History,
                                 $timeout, MDSUtils, Locale, MDSUsers, ModalFactory, LoadingModal) {
 
         MDSUtils.setCustomOperatorFunctions($scope);
@@ -3604,7 +3476,7 @@
             $scope.relatedMode.isNested = true;
             var relatedClass  = $scope.getRelatedClass(field);
             $scope.editedField = angular.copy(field);
-            $('ng-form[name=' + field.name + '_field_name] #new-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
+            $('ng-form[name=' + field.name + '] #new-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
             $scope.editedInstanceId = undefined;
             $('body > #new-related_' + field.id).on('hide.bs.modal', function () {
                 $scope.relatedMode.isNested = false;
@@ -3691,7 +3563,7 @@
             $scope.relatedMode.isNested = true;
             instanceId = parseInt(instanceId, 10);
             $scope.editedInstanceId = instanceId;
-            $('ng-form[name=' + field.name + '_field_name] #edit-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
+            $('ng-form[name=' + field.name + '] #edit-related_' + field.id).modal({backdrop:'static', keyboard: false, show: true});
             var addedNewRecords,
                 editExisting = true,
                 setExisting = function () {
@@ -4503,11 +4375,11 @@
         };
 
         $scope.isMapField = function(field) {
-            return (field && field.type && field.type.typeClass === "java.util.Map") ? true : false;
+            return field && field.type && field.type.typeClass === "java.util.Map";
         };
 
         $scope.isComboboxField = function(field) {
-             return (field && field.type && field.type.typeClass === "java.util.Collection") ? true : false;
+             return field && field.type && field.type.typeClass === "java.util.Collection";
         };
 
         $scope.isMultiSelectCombobox = function(field) {
@@ -4945,7 +4817,7 @@
         /*
         * Return string with information about CRUD action
         */
-        $scope.getMsg = function(name,field) {
+        $scope.getMsg = function(name, field) {
             var answer = "";
             angular.forEach(field.fields,function(row) {
                     if(_.isEqual(name,row.name )) {
@@ -5332,7 +5204,7 @@
     /**
     * The MdsSettingsCtrl controller is used on the 'Settings' view.
     */
-    controllers.controller('MdsSettingsCtrl', function ($scope, $http, Entities, MdsSettings, FileUpload, ModalFactory, LoadingModal) {
+    controllers.controller('MdsSettingsCtrl', function ($scope, $http, Entities, MdsSettings, FileUpload, ModalFactory, LoadingModal, MDSUtils) {
         var getExportEntities, groupByModule;
 
         innerLayout({
@@ -5620,19 +5492,7 @@
         * after clicking on button 'Collapse All'.
         */
         $scope.collapseAll = function (tableName) {
-            var i, modulesLength;
-
-            if (tableName !== 'export-module') {
-                modulesLength = $scope.groupedImportEntitiesLength;
-            } else {
-                modulesLength = $scope.groupedExportEntitiesLength;
-            }
-
-            for (i = 0; i < modulesLength; i += 1) {
-                if ($("#" + tableName + ' .moduleDetails' + i + ":hidden").length <= 0) {
-                    $scope.hideModule(i, tableName);
-                }
-            }
+            MDSUtils.collapseOrExpandAllEntities($scope, tableName, true);
         };
 
         /**
@@ -5640,19 +5500,7 @@
         * after clicking on button 'Expand All'.
         */
         $scope.expandAll = function (tableName) {
-            var i, modulesLength;
-
-            if (tableName !== 'export-module') {
-                modulesLength = $scope.groupedImportEntitiesLength;
-            } else {
-                modulesLength = $scope.groupedExportEntitiesLength;
-            }
-
-            for (i = 0; i < modulesLength; i += 1) {
-                if ($("#" + tableName + ' .moduleDetails' + i + ":hidden").length > 0) {
-                    $scope.showModule(i, tableName);
-                }
-            }
+            MDSUtils.collapseOrExpandAllEntities($scope, tableName, false);
         };
     });
 }());

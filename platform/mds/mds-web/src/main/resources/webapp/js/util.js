@@ -201,6 +201,86 @@
                        return scope.msg("mds.form.operator.none");
                    }
                };
+            },
+            
+            moveItemsInSchemaList : function($scope, index) {
+                var tmp;
+                tmp = $scope.browsingDisplayed[index];
+                $scope.browsingDisplayed[index] = $scope.browsingDisplayed[index - 1];
+                $scope.browsingDisplayed[index - 1] = tmp;
+            },
+            
+            draftForFields : function($scope, array, selected, $timeout) {
+                angular.forEach($scope.browsingDisplayed, function (item) {
+                            array.push(item.id);
+                        });
+
+                        $scope.draft({
+                            edit: true,
+                            values: {
+                                path: 'browsing.$setDisplayedFields',
+                                advanced: true,
+                                value: [array]
+                            }
+                        }, function () {
+                            // restore 'selected' state
+                            $timeout(function() {
+                                $(".connected-list-target.browsing").children().each(function(index) {
+                                    if(selected[$scope.browsingDisplayed[index].id]) {
+                                        $(this).addClass('selected');
+                                    }
+                                });
+                            });
+                        });
+            },
+            
+            canMoveUpOrDownInSettingsView : function($scope, isDown) {
+                var items = $('.target-item.browsing'),
+                            wasLastSelected = true,
+                            ret = false;
+                if (items.filter('.selected').size() === 0) {
+                    return false;
+                }
+
+                if(isDown) {
+                    items = $(items.get().reverse());
+                }
+                items.each(function() {
+                    var isThisSelected = $(this).hasClass('selected');
+                    if (!wasLastSelected && isThisSelected) {
+                        ret = true;
+                    }
+                    wasLastSelected = isThisSelected;
+                });
+                return ret;
+            },
+            
+            isFieldValidationEnabled : function(viewValue, field, criterion, criterionNum) {
+                var enabled = false;
+                if (field.validation !== null && criterion !== '' && (field.validation.criteria[criterionNum].enabled && viewValue !== null && viewValue !== undefined && viewValue !== '')) {
+                    enabled = true;
+                }
+                return enabled;
+            },
+            
+            collapseOrExpandAllEntities : function($scope, tableName, toCollapse) {
+                var i, modulesLength;
+
+                if (tableName !== 'export-module') {
+                    modulesLength = $scope.groupedImportEntitiesLength;
+                } else {
+                    modulesLength = $scope.groupedExportEntitiesLength;
+                }
+                
+                for (i = 0; i < modulesLength; i += 1) {
+                    if (!toCollapse && $("#" + tableName + ' .moduleDetails' + i + ":hidden").length > 0) {
+                        $scope.showModule(i, tableName);
+                    }
+                    
+                    else if (toCollapse && $("#" + tableName + ' .moduleDetails' + i + ":hidden").length <= 0) {
+                        $scope.hideModule(i, tableName);
+                    }
+                }
             }
         };
     });
