@@ -70,7 +70,7 @@ public class BaseTomcatIT {
     }
 
     protected void login() throws IOException, InterruptedException {
-        String uri = String.format("http://%s:%d/motech-platform-server/module/server/motech-platform-server/j_spring_security_check", HOST, PORT);
+        String uri = String.format("http://%s:%d/motech-platform-server/server/motech-platform-server/j_spring_security_check", HOST, PORT);
 
         final HttpPost loginPost = new HttpPost(uri);
 
@@ -88,7 +88,7 @@ public class BaseTomcatIT {
     }
 
     protected void logout() throws IOException, InterruptedException {
-        String uri = String.format("http://%s:%d/motech-platform-server/module/server/j_spring_security_logout", HOST, PORT);
+        String uri = String.format("http://%s:%d/motech-platform-server/server/j_spring_security_logout", HOST, PORT);
 
         final HttpGet logoutGet = new HttpGet(uri);
 
@@ -101,7 +101,7 @@ public class BaseTomcatIT {
 
 
     protected void createAdminUser() throws IOException, InterruptedException {
-        String url = String.format("http://%s:%d/motech-platform-server/module/server/startup", HOST, PORT);
+        String url = String.format("http://%s:%d/motech-platform-server/server/startup", HOST, PORT);
         String json = "{\"language\":\"en\", \"adminLogin\":\"motech\", \"adminPassword\":\"motech\", \"adminConfirmPassword\": \"motech\", \"adminEmail\":\"motech@motech.com\", \"loginMode\":\"repository\"}";
 
         StringEntity entity = new StringEntity(json, HTTP.UTF_8);
@@ -120,7 +120,7 @@ public class BaseTomcatIT {
     protected void waitForTomcat() throws IOException, InterruptedException {
         logger.info("Waiting for tomcat");
 
-        String uri = String.format("http://%s:%d/motech-platform-server/module/server", HOST, PORT);
+        String uri = String.format("http://%s:%d/motech-platform-server/server", HOST, PORT);
         HttpGet waitGet = new HttpGet(uri);
         HttpResponse response = HTTP_CLIENT.execute(waitGet);
         logger.info("Proceeding after getting a response: {}", response);
@@ -164,7 +164,7 @@ public class BaseTomcatIT {
     protected JSONArray getBundleStatusFromServer(PollingHttpClient httpClient) throws IOException, JSONException, InterruptedException {
         logger.info("Trying to get a list of bundles installed in MOTECH");
 
-        String uri = String.format("http://%s:%d/motech-platform-server/module/admin/api/bundles", HOST, PORT);
+        String uri = String.format("http://%s:%d/motech-platform-server/admin/api/bundles", HOST, PORT);
 
         return httpClient.execute(new HttpGet(uri), new ResponseHandler<JSONArray>() {
             @Override

@@ -33,7 +33,7 @@ You can build the demo project invoking the following command from the demo proj
         $ mvn clean install
 
 The demo module exposes its options via a very simple UI, available under:
-<motech-platform-url>/module/scheduletracking-demo/enroll/scheduleTracking
+<motech-platform-url>/scheduletracking-demo/enroll/scheduleTracking
 
 
 Demo specification

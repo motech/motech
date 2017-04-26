@@ -144,7 +144,7 @@ public abstract class BasePkgTest {
      */
     protected void login() throws InterruptedException, IOException {
         PollingHttpClient defaultHttpClient = new PollingHttpClient();
-        HttpPost request = new HttpPost(getBaseUrl() + "/module/server/j_spring_security_check");
+        HttpPost request = new HttpPost(getBaseUrl() + "/server/j_spring_security_check");
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
         List<NameValuePair> nvps = new ArrayList<>();
@@ -153,7 +153,7 @@ public abstract class BasePkgTest {
         request.setEntity(new UrlEncodedFormEntity(nvps, "UTF8"));
 
         HttpResponse response = defaultHttpClient.execute(request);
-        assertEquals(String.format("Location: %s/module/server/home", getBaseUrl()),
+        assertEquals(String.format("Location: %s/server/home", getBaseUrl()),
                 response.getFirstHeader("Location").toString());
         assertFalse(response.getFirstHeader("Location").toString().contains("error=true"));
     }
@@ -171,7 +171,7 @@ public abstract class BasePkgTest {
         nameValuePairs.add(new BasicNameValuePair("configSource", "ui"));
 
         PollingHttpClient httpClient = new PollingHttpClient();
-        HttpPost request = new HttpPost(getBaseUrl() + "/module/server/bootstrap.do");
+        HttpPost request = new HttpPost(getBaseUrl() + "/server/bootstrap.do");
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
@@ -200,7 +200,7 @@ public abstract class BasePkgTest {
         nameValuePairs.add(new BasicNameValuePair("language", "en"));
 
         PollingHttpClient httpClient = new PollingHttpClient();
-        HttpPost request = new HttpPost(getBaseUrl() + "/module/server/startup.do");
+        HttpPost request = new HttpPost(getBaseUrl() + "/server/startup.do");
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 

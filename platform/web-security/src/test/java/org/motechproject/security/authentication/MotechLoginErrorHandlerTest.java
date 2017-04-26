@@ -29,9 +29,9 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class MotechLoginErrorHandlerTest {
 
-    private static final String LOGIN_ERROR = "/module/server/login?error=true";
-    private static final String LOGIN_BLOCKED = "/module/server/login?blocked=true";
-    private static final String CHANGE_PASSWORD = "/module/server/changepassword";
+    private static final String LOGIN_ERROR = "/server/login?error=true";
+    private static final String LOGIN_BLOCKED = "/server/login?blocked=true";
+    private static final String CHANGE_PASSWORD = "/server/changepassword";
 
     @Mock
     MotechUsersDao motechUsersDao;

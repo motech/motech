@@ -56,7 +56,7 @@
     </security:http>
 
     <bean id="loginFormAuthentication" class="org.motechproject.security.authentication.MotechLoginUrlAuthenticationEntryPoint">
-        <property name="loginFormUrl" value="/module/server/login"/>
+        <property name="loginFormUrl" value="/server/login"/>
     </bean>
 
     <security:http auto-config="false" entry-point-ref="loginFormAuthentication" use-expressions="true">
@@ -72,14 +72,14 @@
     </security:authentication-manager>
 
     <bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
-        <constructor-arg value="/module/server/login"/>
+        <constructor-arg value="/server/login"/>
         <constructor-arg>
             <list>
                 <ref bean="motechLogoutSuccessHandler"/>
                 <bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler"/>
             </list>
         </constructor-arg>
-        <property name="filterProcessesUrl" value="/module/server/j_spring_security_logout"/>
+        <property name="filterProcessesUrl" value="/server/j_spring_security_logout"/>
     </bean>
 
     <bean id="userAuthenticationProcessingFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
@@ -141,14 +141,14 @@
     <bean id="motechUserDetailsService" class="org.motechproject.security.service.authentication.MotechOpenIdUserDetailsService"/>
 
     <bean id="loginSuccessHandler" class="org.motechproject.security.authentication.MotechLoginSuccessHandler">
-        <property name="defaultTargetUrl" value="/module/server/home"/>
+        <property name="defaultTargetUrl" value="/server/home"/>
         <property name="alwaysUseDefaultTargetUrl" value="true"/>
     </bean>
 
     <bean id="loginMappingFailureHandler" class="org.motechproject.security.authentication.MotechLoginErrorHandler">
-        <constructor-arg value="/module/server/login?error=true"/>
-        <constructor-arg value="/module/server/login?blocked=true"/>
-        <constructor-arg value="/module/server/changepassword"/>
+        <constructor-arg value="/server/login?error=true"/>
+        <constructor-arg value="/server/login?blocked=true"/>
+        <constructor-arg value="/server/changepassword"/>
     </bean>
 
 </beans>

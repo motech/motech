@@ -58,7 +58,7 @@
                     </c:if>
                     <p>
                         <a class="btn btn-default" href="<%=request.getContextPath()%>"><spring:message code="server.error.goBack"/></a>
-                        <a class="btn btn-default" href="<%=request.getContextPath()%>/module/server/j_spring_security_logout"><span class="fa fa-power-off"></span>&nbsp;<spring:message code="server.signOut"/></a>
+                        <a class="btn btn-default" href="<%=request.getContextPath()%>/server/j_spring_security_logout"><span class="fa fa-power-off"></span>&nbsp;<spring:message code="server.signOut"/></a>
                     </p>
                     <c:if test="${not empty bundleErrors || not empty contextErrors}">
                         <p><spring:message code="server.error.exception"/></p>

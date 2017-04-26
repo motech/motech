@@ -73,7 +73,7 @@ A little VXML
               <assign name="from" expr="session.callerid" />
               <assign name="providerCallId" expr="session.sessionid" />
               <assign name="callStatus" expr="'ANSWERED'" />
-              <submit name="sendCode" next="http://zebra.motechproject.org:8080/motech-platform-server/module/ivr/template/voxeo/thankyou" namelist="code from providerCallId callStatus" method="get" />
+              <submit name="sendCode" next="http://zebra.motechproject.org:8080/motech-platform-server/ivr/template/voxeo/thankyou" namelist="code from providerCallId callStatus" method="get" />
             </filled>
           </form>
         </vxml>

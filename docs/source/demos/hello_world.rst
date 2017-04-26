@@ -76,7 +76,7 @@ Once the build succeeds, the project directory will contain our module packaged 
 
 If all goes well, our *Hello World Module* should appear alongside the other installed modules in the user interface. The state should be "Active."
 
-As a small test of our web controller, navigate your browser to http://localhost:8080/motech-platform-server/module/helloworld/sayHello. The controller should respond with the JSON string :code:`{"message":"Hello World"}`.
+As a small test of our web controller, navigate your browser to http://localhost:8080/motech-platform-server/helloworld/sayHello. The controller should respond with the JSON string :code:`{"message":"Hello World"}`.
 
 An Event-Driven Hello World
 ===========================
@@ -311,4 +311,4 @@ Final Walkthrough
 
 To review, in the Event-driven Hello World section of the tutorial, we added the Motech event system to our module. We defined two event subjects: a :code:`SEND_HELLO` event that our module emits to other modules in the system, and a :code:`CREATE_HELLO_RECORD` event to which our module listens for and responds. Our module emits the :code:`SEND_HELLO` event whenever the HelloWorldService's :code:`sayHello` method is called (in this case, when a user loads the /sayHello route as defined by the :code:`HelloWorldController`). Using the Tasks module's user interface, we defined a task linking the :code:`SEND_HELLO` and :code:`CREATE_HELLO_RECORD` events as a task trigger and task action, respectively. Our :code:`HelloWorldEventHandler` listens for :code:`CREATE_HELLO_RECORD` and adds new :code:`HelloWorldRecord`instances to our Motech Data Services repository.
 
-To verify that we implemented our feature correctly, load http://localhost:8080/motech-platform-server/module/helloworld/sayHello in your browser. The response sent to the browser remains the same. To check for the new record, click *Modules -> Data Services* in the Motech user interface. Select the *Data Browser* tab, then click on the :code:`HelloWorldRecord` under the heading for our *Hello World* module. In the list of record instances that appear, we should find a record with the name "HWEvent" and the message "Hello world!"
+To verify that we implemented our feature correctly, load http://localhost:8080/motech-platform-server/helloworld/sayHello in your browser. The response sent to the browser remains the same. To check for the new record, click *Modules -> Data Services* in the Motech user interface. Select the *Data Browser* tab, then click on the :code:`HelloWorldRecord` under the heading for our *Hello World* module. In the list of record instances that appear, we should find a record with the name "HWEvent" and the message "Hello world!"

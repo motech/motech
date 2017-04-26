@@ -202,8 +202,8 @@ public class SecurityRuleBuilder {
         }
 
         LogoutHandler springLogoutHandler = new SecurityContextLogoutHandler();
-        LogoutFilter logoutFilter = new LogoutFilter("/module/server/login", motechLogoutHandler, springLogoutHandler);
-        logoutFilter.setFilterProcessesUrl("/module/server/j_spring_security_logout");
+        LogoutFilter logoutFilter = new LogoutFilter("/server/login", motechLogoutHandler, springLogoutHandler);
+        logoutFilter.setFilterProcessesUrl("/server/j_spring_security_logout");
         filters.add(logoutFilter);
     }
 

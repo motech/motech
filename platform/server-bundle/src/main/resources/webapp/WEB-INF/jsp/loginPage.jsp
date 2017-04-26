@@ -79,7 +79,7 @@
                                         <div class="form-group">
                                             <input class="btn btn-primary" value="{{msg('security.signin')}}" type="submit"/>
                                             <span class="pull-right margin-before05">
-                                                <a href="../../module/server/forgot">
+                                                <a href="../../server/forgot">
                                                     "{{msg('security.signInQuestions')}}"
                                                 </a>
                                             </span>
@@ -96,7 +96,7 @@
                                         </div>
                                         <div class="form-group open-id">
                                             <p>{{msg('server.oneTimeToken')}}&nbsp;
-                                                <a href="../../module/server/forgot">
+                                                <a href="../../server/forgot">
                                                     {{msg('security.clickHere')}}
                                                 </a>
                                             </p>
@@ -133,7 +133,7 @@
                                         <div class="form-group margin-before2">
                                             <h5>
                                                 {{msg('security.donotRememberMsg1')}}
-                                                <a href="../../module/server/forgot">
+                                                <a href="../../server/forgot">
                                                     {{msg('security.clickHere')}}
                                                 </a>
                                                 {{msg('security.donotRememberMsg2')}}
@@ -173,7 +173,7 @@
                                                     <div class="form-group open-id">
                                                         <p>
                                                             {{msg('server.oneTimeToken')}}&nbsp;&nbsp;
-                                                            <a href="../../module/server/forgot">
+                                                            <a href="../../server/forgot">
                                                                 {{msg('security.clickHere')}}
                                                             </a>
                                                         </p>

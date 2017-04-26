@@ -1610,7 +1610,7 @@ to be processed. MDS REST API uses a BASIC access authentication method by defau
 REST endpoints
 ##############
 The general endpoint to the MDS REST operations is:
-``http://<motech-server-address>/module/mds/rest/<<path>>``
+``http://<motech-server-address>/mds/rest/<<path>>``
 
 The table below explains what HTTP request method are supported for each of the CRUD operation, as well as how the
 "path" should look like.
@@ -1747,16 +1747,16 @@ a better control on the result of the request. The parameters are applied as any
 
 Below, you will find some examples of valid REST URLs. Assume our entity is called MyEntity.
 
-- ``http://<<address>>:<<port>>/motech-platform-server/module/mds/rest/MyEntity``
+- ``http://<<address>>:<<port>>/motech-platform-server/mds/rest/MyEntity``
   Return 20 records from the first page (default settings applied)
 
-- ``http://<<address>>:<<port>>/motech-platform-server/module/mds/rest/MyEntity?id=15``
+- ``http://<<address>>:<<port>>/motech-platform-server/mds/rest/MyEntity?id=15``
   Return an instance with id 15
 
-- ``http://<<address>>:<<port>>/motech-platform-server/module/mds/rest/MyEntity?page=2&pageSize=50&sort=name&order=asc``
+- ``http://<<address>>:<<port>>/motech-platform-server/mds/rest/MyEntity?page=2&pageSize=50&sort=name&order=asc``
   Return 50 records from the second page, having sorted the instances by name field ascending
 
-- ``http://<<address>>:<<port>>/motech-platform-server/module/mds/rest/MyEntity?lookup=byName&name=Laura``
+- ``http://<<address>>:<<port>>/motech-platform-server/mds/rest/MyEntity?lookup=byName&name=Laura``
   Executes a lookup named "byName" with the lookup field "name" being "Laura" on the entity "MyEntity" and returns results.
 
 
@@ -1848,7 +1848,7 @@ is generated using `Swagger <http://swagger.io/>`_. In order to access this UI, 
                     :align: center
 
 
-The raw Swagger specification file (JSON format) is accessible at *<your_motech_url>/module/mds/rest-doc*.
+The raw Swagger specification file (JSON format) is accessible at *<your_motech_url>/mds/rest-doc*.
 
 ##################
 Entity validations

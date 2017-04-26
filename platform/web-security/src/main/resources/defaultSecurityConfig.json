@@ -122,6 +122,21 @@
            "active": true
        },
        {
+           "pattern": "/static/**",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 0,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ],
+           "active": true
+       },
+       {
            "pattern": "/**",
            "supportedSchemes": [
                "USERNAME_PASSWORD",

@@ -140,7 +140,7 @@ public class EmailSenderImpl implements EmailSender {
     private Map<String, Object> passLoginInfoTemplateParams(String username, Locale locale, String token) {
         Map<String, Object> params = new HashMap<>();
 
-        String path = "/module";
+        String path = "";
         String flag;
         if (settingsFacade.getPlatformSettings().getLoginMode().isRepository()) {
             flag = RESET_PATH;

@@ -55,12 +55,15 @@ public class ProxyServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        if (felixServlet == null) {
-            LOGGER.warn("OSGi proxy servlet not yet initialized, yet received request for {} from {}",
-                    req.getPathInfo(), req.getRemoteAddr());
-        } else {
-            felixServlet.service(req, res);
-        }
+        String path = req.getRequestURI().substring(req.getContextPath().length());
+            if (felixServlet == null) {
+                LOGGER.warn("OSGi proxy servlet not yet initialized, yet received request for {} from {}",
+                        req.getPathInfo(), req.getRemoteAddr());
+                new org.springframework.web.servlet.DispatcherServlet().service(req, res);
+
+            } else {
+                felixServlet.service(req, res);
+            }
     }
 
     @Override
