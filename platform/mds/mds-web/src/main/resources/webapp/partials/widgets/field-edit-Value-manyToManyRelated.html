@@ -1,12 +1,12 @@
 <div class="relation-field" id="relation-field_{{field.id}}" ng-init="relatedData.initValue(field)">
     <div class="btn-toolbar" role="toolbar">
         <div class="btn-group">
-            <span class="col-sm-1 form-control input-sm input-records" id="relationsTableTotalRecords_{{field.id}}">0</span>
+            <span class="col-sm-1 form-control input-sm input-records" id="relationsTableTotalRecords_{{field.id}}" ng-show="field.settings[6].value">0</span>
         </div>
         <div class="btn-group">
             <button ng-if="addedEntity || selectedInstance && !instanceId && !showTrashInstance" class="btn btn-sm btn-default" target="_self"
                     id="instanceGrid_hide" show-relations-grid="relationsTable_{{field.id}}">
-                <i class="fa fa-fw fa-lg fa-angle-double-up"></i>
+                <i class="fa"></i>
                 {{msg('mds.btn.showHide')}}
             </button>
         </div>

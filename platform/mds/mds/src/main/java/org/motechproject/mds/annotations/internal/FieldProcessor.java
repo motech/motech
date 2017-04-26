@@ -11,6 +11,8 @@ import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.InSet;
 import org.motechproject.mds.annotations.IndexedManyToMany;
 import org.motechproject.mds.annotations.NotInSet;
+import org.motechproject.mds.annotations.MultiRelationshipDisplay;
+import org.motechproject.mds.annotations.SingleRelationshipDisplay;
 import org.motechproject.mds.domain.ComboboxHolder;
 import org.motechproject.mds.domain.ManyToManyRelationship;
 import org.motechproject.mds.domain.ManyToOneRelationship;
@@ -72,6 +74,10 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.REGEXP;
 import static org.motechproject.mds.util.Constants.AnnotationFields.TYPE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.UPDATE;
 import static org.motechproject.mds.util.Constants.AnnotationFields.VALUE;
+import static org.motechproject.mds.util.Constants.AnnotationFields.EXPANDBYDEFAULT;
+import static org.motechproject.mds.util.Constants.AnnotationFields.SHOWCOUNT;
+import static org.motechproject.mds.util.Constants.AnnotationFields.ALLOWADDINGNEW;
+import static org.motechproject.mds.util.Constants.AnnotationFields.ALLOWADDINGEXISTING;
 import static org.motechproject.mds.util.Constants.MetadataKeys.DATABASE_COLUMN_NAME;
 import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_CLASS_NAME;
 import static org.motechproject.mds.util.Constants.MetadataKeys.ENUM_COLLECTION_TYPE;
@@ -362,6 +368,9 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         } else if (String.class.isAssignableFrom(classType)) {
             field.setSettings(createStringSettings(ac, isTextArea));
         }
+
+        addRelationshipDisplaySettings(ac, field);
+
     }
 
     private TypeDto getCorrectType(Class<?> classType, boolean isCollection, boolean isRelationship,
@@ -415,6 +424,41 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         list.add(new SettingDto(Constants.Settings.CASCADE_DELETE, delete));
 
         return list;
+    }
+
+    private void addRelationshipDisplaySettings(AccessibleObject ac, FieldDto field) {
+        MultiRelationshipDisplay multiRelationshipDisplay = ReflectionsUtil.getAnnotationSelfOrAccessor(ac, MultiRelationshipDisplay.class);
+        SingleRelationshipDisplay singleRelationshipDisplay = ReflectionsUtil.getAnnotationSelfOrAccessor(ac, SingleRelationshipDisplay.class);
+
+        if (field.getType().getTypeClass().equals(OneToOneRelationship.class.getName()) || field.getType().getTypeClass().equals(ManyToOneRelationship.class.getName())) {
+            boolean expandByDefault = parseBoolean(getAnnotationValue(singleRelationshipDisplay, EXPANDBYDEFAULT, TRUE.toString()));
+            boolean allowAddingNew = parseBoolean(getAnnotationValue(singleRelationshipDisplay, ALLOWADDINGNEW, TRUE.toString()));
+            boolean allowAddingExisting = parseBoolean(getAnnotationValue(singleRelationshipDisplay, ALLOWADDINGEXISTING, TRUE.toString()));
+
+            field.addSetting(new SettingDto(Constants.Settings.EXPANDBYDEFAULT, expandByDefault));
+            field.addSetting(new SettingDto(Constants.Settings.ALLOWADDINGNEW, allowAddingNew));
+            field.addSetting(new SettingDto(Constants.Settings.ALLOWADDINGEXISTING, allowAddingExisting));
+
+            if (multiRelationshipDisplay != null) {
+                LOGGER.warn("Annotation is used on a wrong field");
+            }
+        } else if (field.getType().getTypeClass().equals(OneToManyRelationship.class.getName()) || field.getType().getTypeClass().equals(ManyToManyRelationship.class.getName())) {
+            boolean expandByDefault = parseBoolean(getAnnotationValue(multiRelationshipDisplay, EXPANDBYDEFAULT, TRUE.toString()));
+            boolean allowAddingNew = parseBoolean(getAnnotationValue(multiRelationshipDisplay, ALLOWADDINGNEW, TRUE.toString()));
+            boolean allowAddingExisting = parseBoolean(getAnnotationValue(multiRelationshipDisplay, ALLOWADDINGEXISTING, TRUE.toString()));
+            boolean showCount = parseBoolean(getAnnotationValue(multiRelationshipDisplay, SHOWCOUNT, TRUE.toString()));
+
+            field.addSetting(new SettingDto(Constants.Settings.EXPANDBYDEFAULT, expandByDefault));
+            field.addSetting(new SettingDto(Constants.Settings.SHOWCOUNT, showCount));
+            field.addSetting(new SettingDto(Constants.Settings.ALLOWADDINGNEW, allowAddingNew));
+            field.addSetting(new SettingDto(Constants.Settings.ALLOWADDINGEXISTING, allowAddingExisting));
+
+            if (singleRelationshipDisplay != null) {
+                LOGGER.warn("Annotation is used on a wrong field");
+            }
+        } else if (multiRelationshipDisplay != null || singleRelationshipDisplay != null){
+            LOGGER.warn("Annotation is used on a wrong field");
+        }
     }
 
     private List<SettingDto> createComboboxSettings(AccessibleObject ac, Class<?> classType) {

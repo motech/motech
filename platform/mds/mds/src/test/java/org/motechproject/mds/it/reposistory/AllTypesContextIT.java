@@ -108,11 +108,11 @@ public class AllTypesContextIT extends BaseIT {
         );
         assertType(
                 "mds.field.relationship.oneToMany", "mds.field.description.relationship.oneToMany", OneToManyRelationship.class.getName(),
-                asList("mds.form.label.cascadePersist", "mds.form.label.cascadeUpdate", "mds.form.label.cascadeDelete"), null
+                asList("mds.form.label.cascadePersist", "mds.form.label.cascadeUpdate", "mds.form.label.cascadeDelete", "mds.form.label.showCount", "mds.form.label.expandByDefault", "mds.form.label.allowAddingExisting", "mds.form.label.allowAddingNew"), null
         );
         assertType(
                 "mds.field.relationship.oneToOne", "mds.field.description.relationship.oneToOne", OneToOneRelationship.class.getName(),
-                asList("mds.form.label.cascadePersist", "mds.form.label.cascadeUpdate", "mds.form.label.cascadeDelete"), null
+                asList("mds.form.label.cascadePersist", "mds.form.label.cascadeUpdate", "mds.form.label.cascadeDelete", "mds.form.label.expandByDefault", "mds.form.label.allowAddingExisting", "mds.form.label.allowAddingNew"), null
         );
         assertType(
         	"mds.field.float", "mds.field.description.float", Float.class.getName(),

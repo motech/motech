@@ -1601,7 +1601,7 @@
                     gridId = attrs.id,
                     gridRecords = 0,
                     fieldId = attrs.fieldId,
-                    gridHide = attrs.gridHide,
+                    gridHide = !scope.field.settings[3].value,
                     pagerHide = attrs.pagerHide,
                     selectedEntityId = scope.selectedEntity.id,
                     selectedInstance = (scope.selectedInstance !== undefined && angular.isNumber(parseInt(scope.selectedInstance, 10)))? parseInt(scope.selectedInstance, 10) : undefined;
@@ -1707,9 +1707,6 @@
                                         $('#' + attrs.entityRelationsGrid + '_center').addClass('page_' + gridId + '_center');
                                         gridRecords = $('#' + gridId).getGridParam('records');
                                         if (gridRecords > 0) {
-                                            if (gridHide !== undefined && gridHide === "true") {
-                                                $('body #instance_' + gridId).removeClass('hiddengrid');
-                                            }
                                             $('#relationsTableTotalRecords_' + fieldId).text(gridRecords + '  ' + scope.msg('mds.field.items'));
                                             $('#' + attrs.entityRelationsGrid + '_center').show();
                                             $('#gbox_' + gridId + ' .jqgfirstrow').css("height","0");
@@ -1717,9 +1714,11 @@
                                             $('#relationsTableTotalRecords_' + fieldId).text('0  ' + scope.msg('mds.field.items'));
                                             $('#' + attrs.entityRelationsGrid + '_center').hide();
                                             $('#gbox_' + gridId + ' .jqgfirstrow').css("height","1px");
-                                            if (gridHide !== undefined && gridHide === "true") {
-                                                $('body #instance_' + gridId).addClass('hiddengrid');
-                                            }
+                                        }
+
+                                        if (gridHide) {
+                                            $('body #instance_' + gridId).addClass('hiddengrid');
+                                            elem.jqGrid('setGridState','hidden');
                                         }
                                         $('#gview_' + gridId + ' .ui-jqgrid-hdiv').show();
                                         $('#gview_' + gridId + ' .ui-jqgrid-hdiv').addClass("table-lightblue");
@@ -1732,8 +1731,9 @@
                                 if (pagerHide === "true") {
                                     $('#' + attrs.entityRelationsGrid).addClass('hidden');
                                 }
-                                if (gridHide !== undefined && gridHide === "true") {
+                                if (gridHide) {
                                     $('body #instance_' + gridId).addClass('hiddengrid');
+                                    elem.jqGrid('setGridState','hidden');
                                 }
                             }
                         });
@@ -1861,7 +1861,6 @@
                 var isHiddenGrid,
                 elem = angular.element(element),
                 gridId = attrs.showRelationsGrid,
-                gridHide = attrs.gridHide,
                 setHiddenGrid = function () {
                     elem.children().removeClass('fa-angle-double-up');
                     elem.children().addClass('fa-angle-double-down');
@@ -1874,6 +1873,12 @@
                     $('#' + gridId).jqGrid('setGridState','visible');
                     $('body #instance_' + gridId).removeClass('hiddengrid').delay(500).fadeIn("slow");
                 };
+
+                if (scope.field.settings[3].value) {
+                    elem.children().addClass('fa-angle-double-up');
+                } else {
+                    elem.children().addClass('fa-angle-double-down');
+                }
 
                 elem.on('click', function () {
                     isHiddenGrid = $('#' + gridId).jqGrid('getGridParam','hiddengrid');

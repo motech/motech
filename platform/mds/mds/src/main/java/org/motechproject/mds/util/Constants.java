@@ -395,6 +395,26 @@ public final class Constants {
          */
         public static final String DELETE = "delete";
 
+        /**
+         * Constant <code>EXPANDBYDEFAULT</code> corresponding to the attribute name {@code expandByDefault}
+         */
+        public static final String EXPANDBYDEFAULT = "expandByDefault";
+
+        /**
+         * Constant <code>SHOWCOUNT</code> corresponding to the attribute name {@code showCount}
+         */
+        public static final String SHOWCOUNT = "showCount";
+
+        /**
+         * Constant <code>ALLOWADDINGNEW</code> corresponding to the attribute name {@code allowAddingNew}
+         */
+        public static final String ALLOWADDINGNEW = "allowAddingNew";
+
+        /**
+         * Constant <code>ALLOWADDINGEXISTING</code> corresponding to the attribute name {@code allowAddingExisting}
+         */
+        public static final String ALLOWADDINGEXISTING = "allowAddingExisting";
+
         private AnnotationFields() {
         }
     }
@@ -552,6 +572,11 @@ public final class Constants {
         public static final String CASCADE_PERSIST = "mds.form.label.cascadePersist";
         public static final String CASCADE_UPDATE = "mds.form.label.cascadeUpdate";
         public static final String CASCADE_DELETE = "mds.form.label.cascadeDelete";
+
+        public static final String EXPANDBYDEFAULT = "mds.form.label.expandByDefault";
+        public static final String SHOWCOUNT = "mds.form.label.showCount";
+        public static final String ALLOWADDINGNEW = "mds.form.label.allowAddingNew";
+        public static final String ALLOWADDINGEXISTING = "mds.form.label.allowAddingExisting";
 
         private Settings() {
         }

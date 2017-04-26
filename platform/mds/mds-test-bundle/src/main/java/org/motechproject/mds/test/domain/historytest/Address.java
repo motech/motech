@@ -2,6 +2,7 @@ package org.motechproject.mds.test.domain.historytest;
 
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.SingleRelationshipDisplay;
 import org.motechproject.mds.domain.MdsEntity;
 
 /**
@@ -14,6 +15,7 @@ public class Address extends MdsEntity {
     private String street;
 
     @Field
+    @SingleRelationshipDisplay(allowAddingNew = false)
     private House house;
 
     public String getStreet() {
