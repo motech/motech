@@ -180,6 +180,19 @@ public interface MotechDataService<T> {
      * @return a list of instances, filtered using specified parameters
      */
     List<T> filter(Filters filters, QueryParams queryParams);
+    
+    /**
+     * Retrieves all data member of type {@value T} from MDS, filtered using specified filters
+     * and query params being distinct.
+     *
+     * @param filters filters to use filtering instances
+     * @param queryParams query parameters to use filtering instances
+     * @param distinct to return distinct results
+     * @param result to return a data member of a class.
+     * @return a list of instances, filtered using specified parameters
+     */
+    List filterDistinctForResult(Filters filters, QueryParams queryParams, 
+            boolean distinct, String result);
 
     /**
      * Gets a total number of instances, after being filtered by the given filter.

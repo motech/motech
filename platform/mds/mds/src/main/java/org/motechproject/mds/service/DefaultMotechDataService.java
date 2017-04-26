@@ -391,6 +391,13 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         InstanceSecurityRestriction securityRestriction = validateCredentials();
         return repository.filter(filters, queryParams, securityRestriction);
     }
+    
+    @Override
+    @Transactional
+    public List filterDistinctForResult(Filters filters, QueryParams queryParams, boolean distinct, String result) {
+        InstanceSecurityRestriction securityRestriction = validateCredentials();
+        return repository.filterDistinctForResult(filters, queryParams, securityRestriction, distinct, result);
+    }
 
     @Override
     @Transactional
