@@ -79,9 +79,9 @@ public class JobsController {
      * @param jobInfo  the basic information about a job
      * @return retailed information about job, null if {@code jobid} was null
      */
-    @RequestMapping(value = "/job/details", method = RequestMethod.POST)
+    @RequestMapping(value = "/job/details", method = RequestMethod.GET)
     @ResponseBody
-    public JobDetailedInfo retrieveJobDetailedInfo(@RequestBody JobBasicInfo jobInfo) throws SchedulerException {
+    public JobDetailedInfo retrieveJobDetailedInfo(JobBasicInfo jobInfo) throws SchedulerException {
         return motechSchedulerDatabaseService.getScheduledJobDetailedInfo(jobInfo);
     }
 

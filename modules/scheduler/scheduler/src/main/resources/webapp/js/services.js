@@ -32,7 +32,7 @@
             },
             "getDetails": {
                 url: '../scheduler/api/job/details',
-                method: "POST",
+                method: "GET",
                 params: {}
             },
             "getJob": {
