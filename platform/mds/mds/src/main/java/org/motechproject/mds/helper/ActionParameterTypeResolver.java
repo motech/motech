@@ -27,6 +27,7 @@ public final class ActionParameterTypeResolver {
     private static final String LONG = "LONG";
     private static final String UNKNOWN = "UNKNOWN";
     private static final String LIST = "LIST";
+    private static final String SELECT = "SELECT";
 
     private ActionParameterTypeResolver() {
     }
@@ -77,7 +78,7 @@ public final class ActionParameterTypeResolver {
         if (comboboxHolder.isAllowMultipleSelections()) {
             return LIST;
         } else {
-            return UNICODE;
+            return SELECT;
         }
     }
 }
