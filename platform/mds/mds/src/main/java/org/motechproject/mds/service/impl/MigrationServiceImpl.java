@@ -18,8 +18,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 
 /**
@@ -59,7 +62,16 @@ public class MigrationServiceImpl implements MigrationService {
             LOGGER.debug("Bundle {} contains {} migrations files", bundle.getSymbolicName(), migrationFiles.size());
             File migrationDirectory = mdsConfig.getFlywayMigrationDirectory();
 
-            for (String resourcePath : migrationFiles) {
+            //numerically order the migration files before executing them
+            List<String> migrationFls = new ArrayList(migrationFiles);
+            Collections.sort(migrationFls, new Comparator<String>() {
+                @Override
+                public int compare(String s1, String s2) {
+                    return getMigrationsVersion(s1).compareTo(getMigrationsVersion(s2));
+                }
+            });
+
+            for (String resourcePath : migrationFls) {
                 Integer migrationVersion = getMigrationsVersion(resourcePath);
                 MigrationMapping migrationInfo = allMigrationMappings.retrieveByModuleAndMigrationVersion(bundle.getSymbolicName(),
                         migrationVersion);
