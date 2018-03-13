@@ -229,7 +229,7 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
     private void assertBundleClassLoading(Bundle bundle) {
         // We attempt to find a class that any bundle should be able to load.
         // If exception is thrown, this signals a problem with resolving the bundle.
-        // This is done to get access to the BundleException and its stracktrace that lies behind the ClassNotFoundException
+        // This is done to get access to the BundleException and its stacktrace that lies behind the ClassNotFoundException
         try {
             bundle.loadClass(Object.class.getName());
         } catch (ClassNotFoundException e) {
