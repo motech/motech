@@ -22,6 +22,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -231,7 +232,10 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         // If exception is thrown, this signals a problem with resolving the bundle.
         // This is done to get access to the BundleException and its stracktrace that lies behind the ClassNotFoundException
         try {
-            bundle.loadClass(Object.class.getName());
+            // Fragment bundles cannot load classes
+            if (!(isFragmentBundle(bundle))) {
+                bundle.loadClass(Object.class.getName());
+            }
         } catch (ClassNotFoundException e) {
             LOGGER.error("The {} [{}] bundle cannot be resolved. This might indicate a problem with bundle dependencies. " +
                             "Any further exceptions are most likely caused by this problem.",
@@ -378,6 +382,17 @@ public class MdsBundleWatcher implements SynchronousBundleListener {
         LOGGER.info("Schema retrieved in {} ms", stopWatch.getTime());
 
         return schemaHolder;
+    }
+
+    /**
+     * Implementation of this method is copied from {@link org.apache.felix.framework.util.Util#isFragment(BundleRevision)}
+     * We cannot use Util class because apache felix bundle does not export this package.
+     *
+     * @param bundle bundle to verify
+     * @return true if bundle is fragment, false otherwise
+     */
+    private boolean isFragmentBundle(Bundle bundle) {
+        return (bundle.adapt(BundleRevision.class).getTypes() & 1) > 0;
     }
 
     @Autowired
