@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>motech</artifactId>
-        <version>1.1</version>
+        <version>1.2-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
 
     <artifactId>motech-platform-commons-sql</artifactId>
-    <version>1.1</version>
+    <version>1.2-SNAPSHOT</version>
     <name>MOTECH Platform Commons SQL</name>
     <packaging>bundle</packaging>
 
