@@ -19,6 +19,7 @@
                 <entry key="messages" value="../server/resources/messages/"/>
             </map>
         </constructor-arg>
+        <property name="restDocsPath" value="/server/resources/swagger.json"/>
     </bean>
 
     <bean id="commonsDataProvider" class="org.motechproject.server.CommonsDataProvider"/>

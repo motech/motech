@@ -1,5 +1,7 @@
 package org.motechproject.server.web.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.motechproject.security.exception.UserNotFoundException;
 import org.motechproject.security.exception.NonAdminUserException;
 import org.motechproject.security.service.PasswordRecoveryService;
@@ -24,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
  * Forgot Controller for reset password.
  */
 @Controller
+@Api(value = "ForgotController", description = "Forgot Controller for reset password.")
 public class ForgotController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ForgotController.class);
 
@@ -55,9 +58,10 @@ public class ForgotController {
         return view;
     }
 
-   @RequestMapping(value = "/forgotviewdata", method = RequestMethod.GET)
-   @ResponseBody
-   public ForgotViewData getForgotViewData(final HttpServletRequest request) {
+    @RequestMapping(value = "/forgotviewdata", method = RequestMethod.GET)
+    @ApiOperation(value = "Retrieves forgot view data")
+    @ResponseBody
+    public ForgotViewData getForgotViewData(final HttpServletRequest request) {
         ForgotViewData view = new ForgotViewData();
 
         view.setLoginMode(settingsFacade.getPlatformSettings().getLoginMode());
@@ -70,6 +74,7 @@ public class ForgotController {
     }
 
     @RequestMapping(value = "/forgot", method = RequestMethod.POST)
+    @ApiOperation(value = "Recovers the password for the given email")
     @ResponseBody
     public String forgotPost(@RequestBody String email) {
 

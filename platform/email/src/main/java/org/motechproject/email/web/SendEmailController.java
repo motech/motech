@@ -1,5 +1,7 @@
 package org.motechproject.email.web;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.motechproject.email.constants.EmailRolesConstants;
 import org.motechproject.email.domain.Mail;
 import org.motechproject.email.exception.EmailSendException;
@@ -23,6 +25,7 @@ import java.io.IOException;
  */
 
 @Controller
+@Api(value="SendEmailController", description = "The SendEmailController class is responsible for handling requests connected with sending e-mails")
 public class SendEmailController {
     private EmailSenderService senderService;
 
@@ -36,9 +39,9 @@ public class SendEmailController {
     }
 
     @RequestMapping(value = "/send", method = RequestMethod.POST)
+    @ApiOperation(value="Sends the email to the given address")
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseStatus(HttpStatus.OK)
-
     public void sendEmail(@RequestBody Mail email) throws EmailSendException {
         senderService.send(email.getFromAddress(), email.getToAddress(), email.getSubject(), email.getMessage());
     }

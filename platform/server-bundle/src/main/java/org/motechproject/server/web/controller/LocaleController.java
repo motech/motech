@@ -1,5 +1,7 @@
 package org.motechproject.server.web.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.motechproject.osgi.web.service.LocaleService;
 import org.motechproject.server.web.dto.LocaleDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +26,15 @@ import java.util.TreeMap;
  */
 
 @Controller
+@Api(value = "LocaleController", description = "The <code>LocaleController</code> class is responsible for handling requests " +
+        "connected with internationalization")
 public class LocaleController {
 
     @Autowired
     private LocaleService localeService;
 
     @RequestMapping(value = "/lang", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Returns the current language")
     @ResponseBody
     public String getUserLang(HttpServletRequest request) {
         return localeService.getUserLocale(request).getLanguage();
@@ -37,6 +42,7 @@ public class LocaleController {
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/userlang", method = RequestMethod.POST)
+    @ApiOperation(value = "Sets the current language with the given locale for user")
     // The inconsistency in mapping address for this endpoint is caused by the need to bypass the security rule.
     public void setUserLang(HttpServletRequest request, HttpServletResponse response,
                             @RequestBody LocaleDto localeDto) {
@@ -45,18 +51,21 @@ public class LocaleController {
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/lang/session", method = RequestMethod.POST)
+    @ApiOperation(value = "Sets the current language with the given locale for session")
     public void setSessionLang(HttpServletRequest request, HttpServletResponse response,
-                            @RequestBody LocaleDto localeDto) {
+                               @RequestBody LocaleDto localeDto) {
         localeService.setSessionLocale(request, response, localeDto.toLocale());
     }
 
     @RequestMapping(value = "/lang/list", method = RequestMethod.GET)
+    @ApiOperation(value = "Returns all the supported languages")
     @ResponseBody
     public NavigableMap<String, String> getSupportedLanguages() {
         return localeService.getSupportedLanguages();
     }
 
     @RequestMapping(value = "/lang/available", method = RequestMethod.GET)
+    @ApiOperation(value = "Returns all the supported locales")
     @ResponseBody
     public Map<String, String> getAvailableLocales(HttpServletRequest request) {
         Locale userLocale = localeService.getUserLocale(request);

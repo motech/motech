@@ -26,6 +26,7 @@
             </list>
         </property>
         <property name="defaultURL" value="/scheduler/dashboard"/>
+        <property name="restDocsPath" value="/scheduler/swagger.json"/>
     </bean>
 
     <osgi:service ref="schedulerService" interface="org.motechproject.scheduler.service.MotechSchedulerService"/>

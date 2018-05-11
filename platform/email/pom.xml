@@ -16,6 +16,7 @@
 
     <properties>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
+        <swagger.location>${basedir}/src/main/resources/webapp/</swagger.location>
     </properties>
 
     <artifactId>motech-platform-email</artifactId>
@@ -62,6 +63,10 @@
             <artifactId>org.apache.bval.bundle</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.javax.mail</artifactId>
         </dependency>
@@ -91,6 +96,16 @@
         <dependency>
             <groupId>net.sf.supercsv</groupId>
             <artifactId>super-csv</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
     <build>
@@ -238,6 +253,43 @@
                                 </resource>
                             </resources>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>3.1.4</version>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <springmvc>true</springmvc>
+                            <locations>
+                                <location>org.motechproject.email.web</location>
+                            </locations>
+                            <schemes>
+                                <scheme>http</scheme>
+                            </schemes>
+                            <basePath>/motech-platform-server/module/email/api</basePath>
+                            <info>
+                                <title>Email REST API</title>
+                                <version>${project.version}</version>
+                                <description>REST API for Email module</description>
+                                <license>
+                                    <url>http://motechsuite.org/index.php/license</url>
+                                    <name>MOTECH Platform Opensource License Agreement</name>
+                                </license>
+                            </info>
+                            <swaggerDirectory>${swagger.location}</swaggerDirectory>
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

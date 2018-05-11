@@ -1,5 +1,7 @@
 package org.motechproject.tasks.web;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.motechproject.tasks.dto.TaskDataProviderDto;
 import org.motechproject.tasks.service.TaskWebService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import java.util.List;
  * Controller for managing Data Providers.
  */
 @Controller
+@Api(value="TaskDataProviderController", description = "Controller for managing Data Providers")
 public class TaskDataProviderController {
 
     private TaskWebService taskWebService;
@@ -33,6 +36,7 @@ public class TaskDataProviderController {
      * @return  the list of all Data Providers
      */
     @RequestMapping(value = "datasource", method = RequestMethod.GET)
+    @ApiOperation(value="Returns the list of all Data Providers")
     @ResponseBody
     public List<TaskDataProviderDto> getAllDataProviders() {
         return taskWebService.getProviders();

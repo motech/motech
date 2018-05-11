@@ -1,5 +1,7 @@
 package org.motechproject.server.web.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.service.MotechUserService;
@@ -33,6 +35,8 @@ import static org.motechproject.server.web.controller.Constants.REDIRECT_HOME;
  * StartupController that manages the platform system start up and captures the platform core settings and user information.
  */
 @Controller
+@Api(value = "StartupController", description = "StartupController that manages the platform system start up and captures " +
+        "the platform core settings and user information.")
 public class StartupController {
     private static final Logger LOGGER = LoggerFactory.getLogger(StartupController.class);
 
@@ -52,6 +56,7 @@ public class StartupController {
     private StartupFormValidatorFactory startupFormValidatorFactory;
 
     @RequestMapping(value = "/startupviewdata", method = RequestMethod.GET)
+    @ApiOperation(value = "Returns Motech startup ")
     @ResponseBody
     public StartupViewData getStartupViewData(final HttpServletRequest request) {
         StartupViewData viewData = new StartupViewData();
@@ -95,6 +100,7 @@ public class StartupController {
     }
 
     @RequestMapping(value = "/startup", method = RequestMethod.POST)
+    @ApiOperation(value = "Configures Motech with the provided startup settings")
     @ResponseBody
     public List<String> submitForm(@RequestBody StartupForm startupSettings) throws IOException {
         ConfigSource configSource = (configurationService.loadBootstrapConfig() != null) ?

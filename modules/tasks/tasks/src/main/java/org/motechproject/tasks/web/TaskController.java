@@ -1,5 +1,7 @@
 package org.motechproject.tasks.web;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -43,6 +45,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  * REST API for managing tasks.
  */
 @PreAuthorize(TasksRoles.HAS_ROLE_MANAGE_TASKS)
+@Api(value="TaskController", description = "REST API for managing tasks")
 @Controller
 public class TaskController {
 
@@ -63,6 +66,7 @@ public class TaskController {
      * @return  the list of all tasks
      */
     @RequestMapping(value = "/task", method = RequestMethod.GET)
+    @ApiOperation(value="Returns the list of all tasks")
     @ResponseBody
     public List<TaskDto> getAllTasks() {
         return taskWebService.getAllTasks();
@@ -76,6 +80,8 @@ public class TaskController {
      * @throws IOException  when there were problems while reading file
      */
     @RequestMapping(value = "/task/import", method = RequestMethod.POST)
+    @ApiOperation(value="Imports the task from the given file. The file must be specified as the \"file\" parameter in the form body and\n" +
+            "must be JSON file containing valid task definitions")
     @ResponseStatus(HttpStatus.OK)
     public void importTask(@RequestParam(value = "file") MultipartFile file)
             throws IOException {
@@ -92,6 +98,7 @@ public class TaskController {
      * @return  the task with given ID, null if not found
      */
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.GET)
+    @ApiOperation(value="Returns the task with the given ID")
     @ResponseBody
     public TaskDto getTask(@PathVariable Long taskId) {
         return taskWebService.getTask(taskId);
@@ -106,6 +113,9 @@ public class TaskController {
      * @return list of task errors
      */
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.POST)
+    @ApiOperation(value="Updates the task with the given ID and returns the list\n" +
+            "of errors that will occur when enabling task.\n" +
+            "If ID isn't specified in passed task nothing will happen")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Set<TaskErrorDto> saveTask(@RequestBody Task task) {
@@ -136,6 +146,7 @@ public class TaskController {
      * @param taskId  the ID of the task
      */
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.DELETE)
+    @ApiOperation(value="Deletes the task with the given ID")
     @ResponseStatus(HttpStatus.OK)
     public void deleteTask(@PathVariable Long taskId) {
         taskService.deleteTask(taskId);
@@ -150,6 +161,7 @@ public class TaskController {
      * @throws IOException  when there were problems while creating response file
      */
     @RequestMapping(value = "/task/{taskId}/export", method = RequestMethod.GET)
+    @ApiOperation(value="Exports the task with the given ID as JSON format file")
     public void exportTask(@PathVariable Long taskId, HttpServletResponse response)
             throws IOException {
         ObjectMapper mapper = new ObjectMapper().enable(INDENT_OUTPUT);
@@ -179,6 +191,8 @@ public class TaskController {
      * @return list of task errors
      */
     @RequestMapping(value = "/task/save", method = RequestMethod.POST)
+    @ApiOperation(value="Creates new task from the request body and returns the list\n" +
+            "of errors that will occur when enabling task")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Set<TaskErrorDto> save(@RequestBody Task task) {

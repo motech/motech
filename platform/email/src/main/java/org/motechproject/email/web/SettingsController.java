@@ -1,5 +1,7 @@
 package org.motechproject.email.web;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.email.purging.EmailPurger;
 import org.motechproject.email.constants.EmailRolesConstants;
@@ -37,6 +39,8 @@ import static org.motechproject.email.settings.SettingsDto.MAIL_LOG_PURGE_TIME_P
 
 
 @Controller
+@Api(value="SettingsController", description = "The SettingsController class is responsible for handling web requests, connected with settings in\n" +
+        "the Email module")
 public class SettingsController {
     private static final String NEW_LINE = System.lineSeparator();
     private static final String REQUIRED_FORMAT = "%s is required";
@@ -61,6 +65,7 @@ public class SettingsController {
     }
 
     @RequestMapping(value = "/settings", method = RequestMethod.GET)
+    @ApiOperation(value="Gets the email grid settings")
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseBody
     public SettingsDto getSettings() {
@@ -68,6 +73,7 @@ public class SettingsController {
     }
 
     @RequestMapping(value = "/settings", method = RequestMethod.POST)
+    @ApiOperation(value="Sets the grid settings with the given settings")
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseStatus(HttpStatus.OK)
     public void setSettings(@RequestBody SettingsDto settings) {

@@ -15,6 +15,7 @@
 
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
+        <swagger.location>${basedir}/src/main/resources/webapp/</swagger.location>
     </properties>
     <dependencies>
         <dependency>
@@ -67,10 +68,52 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>3.1.4</version>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <springmvc>true</springmvc>
+                            <locations>
+                                <location>org.motechproject.tasks.web</location>
+                            </locations>
+                            <schemes>
+                                <scheme>http</scheme>
+                            </schemes>
+                            <basePath>/motech-platform-server/module/tasks/api</basePath>
+                            <info>
+                                <title>Tasks REST API</title>
+                                <version>${project.version}</version>
+                                <description>REST API for Tasks module</description>
+                                <license>
+                                    <url>http://motechsuite.org/index.php/license</url>
+                                    <name>MOTECH Platform Opensource License Agreement</name>
+                                </license>
+                            </info>
+                            <swaggerDirectory>${swagger.location}</swaggerDirectory>
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>2.5</version>

@@ -1,5 +1,7 @@
 package org.motechproject.admin.web.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.admin.exception.LogFileTooLargeException;
@@ -30,6 +32,8 @@ import java.util.List;
  * Allows retrieving the system logs and changing the log4j log levels at runtime.
  */
 @Controller
+@Api(value="ServerLogController", description = "Controller responsible for the logs tab in the Admin UI.\n" +
+        "Allows retrieving the system logs and changing the log4j log levels at runtime.")
 public class ServerLogController {
 
     @Autowired
@@ -46,6 +50,9 @@ public class ServerLogController {
      */
     @PreAuthorize(SecurityConstants.MANAGE_LOGS)
     @RequestMapping(value = "/log", method = RequestMethod.GET)
+    @ApiOperation(value="Prints the server log. The log is retrieved from the catalina.out file from Tomcat.\n" +
+            "This always retrieves the last megabyte of the log file. This is the method used for fetching the logs\n" +
+            "when the user browses to them.")
     public void getServerLog(HttpServletResponse response) throws IOException {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
@@ -87,6 +94,9 @@ public class ServerLogController {
      */
     @PreAuthorize(SecurityConstants.MANAGE_LOGS)
     @RequestMapping(value = "/log/raw", method = RequestMethod.GET)
+    @ApiOperation(value="Prints the server log. The log is retrieved from the catalina.out file from Tomcat.\n" +
+            "This reads and returns the entire log file, so the response can get big. On the UI this is only\n" +
+            "activated using the RAW log button. If the file is larger than 2gb then an exception is thrown.")
     public void getEntireServerLog(HttpServletResponse response) throws IOException, LogFileTooLargeException {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
@@ -124,6 +134,7 @@ public class ServerLogController {
      */
     @PreAuthorize(SecurityConstants.MANAGE_LOGS)
     @RequestMapping(value = "/log/level", method = RequestMethod.GET)
+    @ApiOperation(value="Returns the log4j log levels for the platform")
     @ResponseBody
     public Loggers getLogLevels() {
         return new Loggers(logService.getLogLevels(), logService.getRootLogLevel());
@@ -136,6 +147,7 @@ public class ServerLogController {
      */
     @PreAuthorize(SecurityConstants.MANAGE_LOGS)
     @RequestMapping(value = "/log/level", method = RequestMethod.POST)
+    @ApiOperation(value="Changes the log levels in the platform")
     @ResponseStatus(HttpStatus.OK)
     public void changeLogLevels(@RequestBody Loggers config) {
         if (config != null) {

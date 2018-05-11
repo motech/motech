@@ -16,8 +16,8 @@
                     }
                 }
             })
-            .state('rest-docs.restUrl', {
-                 url: '/:restUrl',
+            .state('rest-docs.swagger', {
+                 url: '/:restModule',
                  parent: 'rest-docs',
                  views: {
                      'restdocsView': {
@@ -28,7 +28,7 @@
             });
     }]);
 
-    restDocModule.controller('ServerRestDocsCtrl', function ($scope, $location, $http, ModalFactory, LoadingModal) {
+    restDocModule.controller('ServerRestDocsCtrl', function ($scope, $location, $http, $stateParams, ModalFactory, LoadingModal) {
 
         $scope.getRestModuleName = function() {
             $scope.before = $location.path();
@@ -37,7 +37,7 @@
         };
 
         // get the url for the docs, then get the url
-        $http.get("../server/module/rest-docs/" + $scope.getRestModuleName()).success(function(data) {
+        $http.get("../server/module/rest-docs/" + $stateParams.restModule).success(function(data) {
             // call that url, send the server prefix in the param
             window.swaggerUi = new SwaggerUi({
                 url: getServerPrefix() + "/module" + data + "?serverPrefix=" + getServerPrefix(),

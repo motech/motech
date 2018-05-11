@@ -2,7 +2,7 @@
     <div class="header-footer-breadcrumb">
         <ul class="breadcrumb" role="navigation">
             <li><a role="menu" ui-sref="home">{{msg('server.home')}}</a></li>
-            <li><a role="menu" ui-sref="admin.bundles">{{msg('admin.module')}}</a></li>
+            <li><a role="menu" ui-sref="admin.bundles">{{msg('admin')}}</a></li>
             <li ng-show="selectedTabState.selectedTab === 'bundles'"
                 ng-class="{'active': selectedTabState.selectedTab === 'bundles'}">{{msg('admin.manageModules')}}</li>
             <li ng-show="selectedTabState.selectedTab === 'bundle'"

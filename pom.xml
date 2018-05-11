@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.motechproject</groupId>
@@ -640,6 +641,17 @@
                 <groupId>org.apache.bval</groupId>
                 <artifactId>org.apache.bval.bundle</artifactId>
                 <version>0.5</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>commons-lang3</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.2.1</version>
             </dependency>
             <dependency>
                 <groupId>commons-net</groupId>
@@ -1227,6 +1239,17 @@
                 <artifactId>json</artifactId>
                 <version>20140107</version>
             </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-core</artifactId>
+                <version>1.5.10</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.ws.rs</groupId>
+                        <artifactId>jsr311-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1571,7 +1594,7 @@
                         </goals>
                         <configuration>
                             <rules>
-                                <DependencyConvergence />
+                                <DependencyConvergence/>
                             </rules>
                         </configuration>
                     </execution>
@@ -1583,7 +1606,8 @@
                         <phase>verify</phase>
                         <configuration>
                             <rules>
-                                <NoPackageCyclesRule implementation="de.andrena.tools.nopackagecycles.NoPackageCyclesRule" />
+                                <NoPackageCyclesRule
+                                        implementation="de.andrena.tools.nopackagecycles.NoPackageCyclesRule"/>
                             </rules>
                             <skip>${enforcer.skip}</skip>
                         </configuration>
@@ -1870,11 +1894,13 @@
                                 </goals>
                                 <configuration>
                                     <rules>
-                                        <requireBackwardCompatibility implementation="org.semver.enforcer.RequireBackwardCompatibility">
+                                        <requireBackwardCompatibility
+                                                implementation="org.semver.enforcer.RequireBackwardCompatibility">
                                             <compatibilityType>BACKWARD_COMPATIBLE_IMPLEMENTER</compatibilityType>
                                             <dumpDetails>true</dumpDetails>
                                         </requireBackwardCompatibility>
-                                        <requireSemanticVersioningConformance implementation="org.semver.enforcer.RequireSemanticVersioningConformance" />
+                                        <requireSemanticVersioningConformance
+                                                implementation="org.semver.enforcer.RequireSemanticVersioningConformance"/>
                                     </rules>
                                 </configuration>
                             </execution>

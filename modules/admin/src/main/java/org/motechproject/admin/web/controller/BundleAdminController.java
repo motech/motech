@@ -1,5 +1,7 @@
 package org.motechproject.admin.web.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.motechproject.admin.bundles.ExtendedBundleInformation;
@@ -37,6 +39,9 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  * for handling the "Manage Modules" view on the Admin UI.
  */
 @Controller
+@Api(value="BundleAdminController", description = "The Spring controller responsible for operations on bundles (modules). It allows\n" +
+        "starting/stopping/installing/removing/restarting of bundles in the system. It is responsible\n" +
+        "for handling the \"Manage Modules\" view on the Admin UI")
 public class BundleAdminController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BundleAdminController.class);
@@ -55,6 +60,9 @@ public class BundleAdminController {
      * @return a list of module bundles
      */
     @RequestMapping(value = "/bundles", method = RequestMethod.GET)
+    @ApiOperation(value="Retrieves a list of bundles in the system. Bundles are represented by {@link BundleInformation} objects.\n" +
+            "Only non-platform (don't start with motech-platform), non-3rd party (must import at least one org.motechproject.* package) are\n" +
+            "returned. The framework and the admin module bundle are omitted")
     @ResponseBody
     public List<BundleInformation> getBundles() {
         return moduleAdminService.getBundles();
@@ -68,6 +76,9 @@ public class BundleAdminController {
      * @return the information about the bundle
      */
     @RequestMapping(value = "/bundles/{bundleId}", method = RequestMethod.GET)
+    @ApiOperation(value="Retrieves information about the bundle with the given bundle ID.\n" +
+            "This bundle does not have to be a MOTECH module.\n" +
+            "The information is returned in the form of {@link BundleInformation}")
     @ResponseBody
     public BundleInformation getBundle(@PathVariable long bundleId) {
         return moduleAdminService.getBundleInfo(bundleId);
@@ -81,6 +92,8 @@ public class BundleAdminController {
      * @return the detailed information about the bundle
      */
     @RequestMapping(value = "/bundles/{bundleId}/detail")
+    @ApiOperation(value="Retrieves detailed information about the bundle with the given bundle ID.\n" +
+            "This bundle does not have to be a MOTECH module.")
     @ResponseBody
     public ExtendedBundleInformation getBundleDetails(@PathVariable long bundleId) {
         return moduleAdminService.getBundleDetails(bundleId);
@@ -93,6 +106,7 @@ public class BundleAdminController {
      * @throws BundleException if starting the bundle failed
      */
     @RequestMapping(value = "/bundles/{bundleId}/start", method = RequestMethod.POST)
+    @ApiOperation(value="Starts the bundle with the given bundle ID")
     @ResponseBody
     public BundleInformation startBundle(@PathVariable long bundleId) throws BundleException {
         return moduleAdminService.startBundle(bundleId);
@@ -105,6 +119,7 @@ public class BundleAdminController {
      * @throws BundleException if stopping the bundle failed
      */
     @RequestMapping(value = "/bundles/{bundleId}/stop", method = RequestMethod.POST)
+    @ApiOperation(value="Stops the bundle with the given bundle ID")
     @ResponseBody
     public BundleInformation stopBundle(@PathVariable long bundleId) throws BundleException {
         return moduleAdminService.stopBundle(bundleId);
@@ -117,6 +132,7 @@ public class BundleAdminController {
      * @throws BundleException if stopping the bundle failed
      */
     @RequestMapping(value = "/bundles/{bundleId}/restart", method = RequestMethod.POST)
+    @ApiOperation(value="Restarts the bundle with the given bundle ID. Synonymous to doing a stop followed by a start")
     @ResponseBody
     public BundleInformation restartBundle(@PathVariable long bundleId) throws BundleException {
         return moduleAdminService.restartBundle(bundleId);
@@ -131,6 +147,8 @@ public class BundleAdminController {
      */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/bundles/{bundleId}/uninstall", method = RequestMethod.POST)
+    @ApiOperation(value="Uninstalls the bundle with the given bundle ID from the OSGi framework.\n" +
+            "If the bundle is a MOTECH module, its configuration will not be removed.")
     public void uninstallBundle(@PathVariable long bundleId) throws BundleException {
         moduleAdminService.uninstallBundle(bundleId, false);
         LOGGER.info("Bundle [{}] removed successfully");
@@ -145,6 +163,8 @@ public class BundleAdminController {
      */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/bundles/{bundleId}/uninstallconfig", method = RequestMethod.POST)
+    @ApiOperation(value="Uninstalls the bundle with the given bundle ID from the OSGi framework.\n" +
+            "If the bundle is a MOTECH module, its configuration will be removed.")
     public void uninstallBundleWithConfig(@PathVariable long bundleId) throws BundleException {
         moduleAdminService.uninstallBundle(bundleId, true);
         LOGGER.info("Bundle [{}] removed successfully");
@@ -161,6 +181,8 @@ public class BundleAdminController {
      * @return information about the newly installed bundle
      */
     @RequestMapping(value = "/bundles/upload", method = RequestMethod.POST)
+    @ApiOperation(value="Handles a request for installing a bundle in the OSGi framework.\n" +
+            "This can either be a file upload or a request to install from the Nexus repository.")
     @ResponseBody
     public BundleInformation uploadBundle(@RequestParam String moduleSource,
                                           @RequestParam(required = false) String moduleId,

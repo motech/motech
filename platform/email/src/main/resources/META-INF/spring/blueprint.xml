@@ -73,6 +73,7 @@
         </property>
         <property name="settingsURL" value="/email/settings" />
         <property name="defaultURL" value="/email/send"/>
+        <property name="restDocsPath" value="/email/resources/swagger.json"/>
     </bean>
 
     <osgi:service ref="emailSenderService"

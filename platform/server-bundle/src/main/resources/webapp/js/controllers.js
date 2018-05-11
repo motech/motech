@@ -247,7 +247,7 @@
                     $location.path(url);
                     if (url.indexOf('admin/bundleSettings/') > 0) {
                         $state.go('admin.bundleSettings', {'bundleId': url.substring(url.lastIndexOf("/")+1)});
-                    } else {
+                    } else if (moduleName !== 'rest-docs'){
                         $state.go(convertUrl(url), $state.params);
                     }
                     LoadingModal.close();

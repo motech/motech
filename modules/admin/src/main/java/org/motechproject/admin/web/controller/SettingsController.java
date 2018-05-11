@@ -1,6 +1,8 @@
 package org.motechproject.admin.web.controller;
 
 import com.google.common.net.HttpHeaders;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.admin.settings.AdminSettings;
 import org.motechproject.admin.internal.service.SettingsService;
@@ -33,6 +35,7 @@ import java.util.List;
  * Class responsible for communication between settings UI frontend and backend.
  */
 @Controller
+@Api(value="SettingsController", description = "Class responsible for communication between settings UI frontend and backend")
 public class SettingsController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SettingsController.class);
@@ -54,6 +57,8 @@ public class SettingsController {
      * @throws IOException if there was a problem reading the settings(if the config mode is FILE)
      */
     @RequestMapping(value = "/settings/{bundleId}", method = RequestMethod.GET)
+    @ApiOperation(value="Returns setting options with their values for a bundle with the given id. Each {@link org.motechproject.admin.settings.Settings}\n" +
+            "object describes one bundle configuration file")
     @ResponseBody public List<Settings> getBundleSettings(@PathVariable long bundleId) throws IOException {
         return settingsService.getBundleSettings(bundleId);
     }
@@ -66,6 +71,7 @@ public class SettingsController {
      */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/{bundleId}", method = RequestMethod.POST)
+    @ApiOperation(value="Saves a settings section of a bundle")
     public void saveBundleSettings(@PathVariable long bundleId, @RequestBody Settings bundleSettings) throws IOException {
         settingsService.saveBundleSettings(bundleSettings, bundleId);
         statusMessageService.info("{admin.settings.saved.bundle}", ADMIN_MODULE_NAME);
@@ -78,6 +84,7 @@ public class SettingsController {
      */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/platform/list", method = RequestMethod.POST)
+    @ApiOperation(value="Saves all platform settings")
     public void savePlatformSettings(@RequestBody Settings[] platformSettings) {
         settingsService.savePlatformSettings(Arrays.asList(platformSettings));
         statusMessageService.info("{admin.settings.saved.bundle}", ADMIN_MODULE_NAME);
@@ -89,6 +96,7 @@ public class SettingsController {
      * @throws IOException if there was a problem reading the settings (if the config mode is FILE)
      */
     @RequestMapping(value = "/settings/platform", method = RequestMethod.POST)
+    @ApiOperation(value="Saves a particular section of the platform settings")
     @ResponseStatus(HttpStatus.OK)
     public void savePlatformSettings(@RequestBody Settings platformSettings) throws IOException {
         settingsService.savePlatformSettings(platformSettings);
@@ -101,6 +109,7 @@ public class SettingsController {
      * @see org.motechproject.admin.settings.AdminSettings
      */
     @RequestMapping(value = "/settings/platform", method = RequestMethod.GET)
+    @ApiOperation(value="Returns the setting for the platform")
     @ResponseBody public AdminSettings getPlatformSettings() {
         return settingsService.getSettings();
     }
@@ -111,6 +120,7 @@ public class SettingsController {
      * @throws IOException if there was a problem writing the zip file
      */
     @RequestMapping(value = "/settings/platform/export", method = RequestMethod.GET)
+    @ApiOperation(value="Exports the platform configuration in a zip file")
     public void exportConfig(HttpServletResponse response) throws IOException {
         Date dateNow = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -132,6 +142,7 @@ public class SettingsController {
      */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/platform/upload", method = RequestMethod.POST)
+    @ApiOperation(value="Handles platform settings update through file upload")
     public void uploadSettingsFile(@RequestParam(required = true) MultipartFile file) {
         settingsService.saveSettingsFile(file);
         statusMessageService.info(PLATFORM_SETTINGS_SAVED, ADMIN_MODULE_NAME);
@@ -144,6 +155,7 @@ public class SettingsController {
      */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/platform/location", method = RequestMethod.POST)
+    @ApiOperation(value="Handles adding a new configuration location to the system")
     public void uploadSettingsLocation(@RequestParam(required = true) String location) throws IOException {
         settingsService.addSettingsPath(location);
         statusMessageService.info("{settings.saved.location}", ADMIN_MODULE_NAME);
@@ -155,6 +167,7 @@ public class SettingsController {
      */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/bundles/list", method = RequestMethod.GET)
+    @ApiOperation(value="Returns names of bundles with registered settings")
     @ResponseBody public List<String> getBundlesWithSettings() {
         return settingsService.retrieveRegisteredBundleNames();
     }
@@ -166,6 +179,8 @@ public class SettingsController {
      * @return the list of raw config file names
      */
     @RequestMapping(value = "/settings/{bundleId}/raw", method = RequestMethod.GET)
+    @ApiOperation(value="Returns raw config file names for a given bundle. Raw config is for example a json file, that is displayed\n" +
+            "to the user as an upload widget, instead a regular key-value settings UI")
     @ResponseBody public List<String> getRawFilenames(@PathVariable long bundleId) {
         return settingsService.getRawFilenames(bundleId);
     }
@@ -178,6 +193,7 @@ public class SettingsController {
      */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/{bundleId}/raw", method = RequestMethod.POST)
+    @ApiOperation(value="Handles an upload of a raw configuration file for a bundle")
     void uploadRawFile(@PathVariable long bundleId, @RequestParam(required = true) String filename,
                        @RequestParam(required = true) MultipartFile file) {
         settingsService.saveRawFile(file, filename, bundleId);
