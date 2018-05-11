@@ -2,13 +2,13 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>1.2</version>
+        <version>1.3-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>motech-platform-dataservices-web</artifactId>
-    <version>1.2</version>
+    <version>1.3-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>MOTECH Platform Data Services Web</name>
     <properties>
