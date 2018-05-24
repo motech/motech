@@ -24,8 +24,14 @@ import org.motechproject.mds.test.domain.Movie;
 import org.motechproject.mds.test.domain.TestLookup;
 import org.motechproject.mds.test.domain.TestMdsEntity;
 import org.motechproject.mds.test.domain.TestSingleReturnLookup;
+import org.motechproject.mds.test.domain.cascadedelete.ChildCase;
 import org.motechproject.mds.test.domain.cascadedelete.City;
 import org.motechproject.mds.test.domain.cascadedelete.Country;
+import org.motechproject.mds.test.domain.cascadedelete.Event;
+import org.motechproject.mds.test.domain.cascadedelete.EventLog;
+import org.motechproject.mds.test.domain.cascadedelete.MotherCase;
+import org.motechproject.mds.test.domain.cascadedelete.Subject;
+import org.motechproject.mds.test.domain.cascadedelete.Unit;
 import org.motechproject.mds.test.domain.editablelookups.Entry;
 import org.motechproject.mds.test.domain.historytest.Address;
 import org.motechproject.mds.test.domain.historytest.Company;
@@ -72,8 +78,14 @@ import org.motechproject.mds.test.service.TestMdsEntityService;
 import org.motechproject.mds.test.service.revertFromTrash.RevertFromTrashService;
 import org.motechproject.mds.test.service.TestSingleReturnLookupService;
 import org.motechproject.mds.test.service.TransactionTestService;
+import org.motechproject.mds.test.service.cascadedelete.ChildCaseDataService;
 import org.motechproject.mds.test.service.cascadedelete.CityDataService;
 import org.motechproject.mds.test.service.cascadedelete.CountryDataService;
+import org.motechproject.mds.test.service.cascadedelete.EventDataService;
+import org.motechproject.mds.test.service.cascadedelete.EventLogDataService;
+import org.motechproject.mds.test.service.cascadedelete.MotherCaseDataService;
+import org.motechproject.mds.test.service.cascadedelete.SubjectDataService;
+import org.motechproject.mds.test.service.cascadedelete.UnitDataService;
 import org.motechproject.mds.test.service.editablelookups.EntryDataService;
 import org.motechproject.mds.test.service.historytest.AddressDataService;
 import org.motechproject.mds.test.service.historytest.CompanyDataService;
@@ -233,11 +245,34 @@ public class MdsDdeBundleIT extends BasePaxIT {
     @Inject
     private VehicleOwnerDataService vehicleOwnerDataService;
 
+
+    // cascade ends starts here
     @Inject
     private CityDataService cityDataService;
 
     @Inject
     private CountryDataService countryDataService;
+
+    @Inject
+    private MotherCaseDataService motherCaseDataService;
+
+    @Inject
+    private ChildCaseDataService childCaseDataService;
+
+    @Inject
+    private EventLogDataService eventLogDataService;
+
+    @Inject
+    private EventDataService eventDataService;
+
+    @Inject
+    private SubjectDataService subjectDataService;
+
+    @Inject
+    private UnitDataService unitDataService;
+
+    // cascade ends starts
+
 
     @Inject
     private MessageDataService messageDataService;
@@ -333,8 +368,16 @@ public class MdsDdeBundleIT extends BasePaxIT {
         stateDataService.deleteAll();
         districtDataService.deleteAll();
         languageDataService.deleteAll();
+        // Cascade delete start here
         cityDataService.deleteAll();
         countryDataService.deleteAll();
+        childCaseDataService.deleteAll();
+        motherCaseDataService.deleteAll();
+        eventDataService.deleteAll();
+        eventLogDataService.deleteAll();
+        unitDataService.deleteAll();
+        subjectDataService.deleteAll();
+        // Cascade delete start here
         testSingleReturnLookupService.deleteAll();
         departmentDataService.deleteAll();
         employeeDataService.deleteAll();
@@ -472,7 +515,7 @@ public class MdsDdeBundleIT extends BasePaxIT {
     }
 
     @Test
-    public void testCascadeDelete() {
+    public void testCascadeDeleteBiDiractional() {
         City warsaw = new City("Warsaw");
         cityDataService.create(warsaw);
 
@@ -498,6 +541,90 @@ public class MdsDdeBundleIT extends BasePaxIT {
 
         ci1 = cityDataService.findById(warsaw.getId());
         assertNull(ci1);
+    }
+
+    @Test
+    public void testCascadeDeleteUniDirectional() {
+        ChildCase child1 = new ChildCase("Child 1");
+        childCaseDataService.create(child1);
+
+        ChildCase child2 = new ChildCase("Child 2");
+        childCaseDataService.create(child2);
+
+        MotherCase mother1 = new MotherCase("Mother");
+        mother1.getChildCases().add(child1);
+        mother1.getChildCases().add(child2);
+
+
+        motherCaseDataService.create(mother1);
+
+        MotherCase mother = motherCaseDataService.findById(mother1.getId());
+        assertNotNull(mother);
+
+        ChildCase child = childCaseDataService.findById(child1.getId());
+        assertNotNull(child);
+
+        motherCaseDataService.delete(mother);
+        mother = motherCaseDataService.findById(mother.getId());
+        assertNull(mother);
+
+        child = childCaseDataService.findById(child2.getId());
+        assertNull(child);
+    }
+
+
+    @Test
+    public void testCascadeDeleteMap() {
+
+
+        Event event = new Event("Say Hello");
+        event.getData().put("heading", "Hello Message");
+        event.getData().put("from", "xx@mm.com");
+        eventDataService.create(event);
+
+
+        EventLog loggingSystem = new EventLog("Logging System");
+        loggingSystem.getEvents().add(event);
+
+
+        eventLogDataService.create(loggingSystem);
+
+        EventLog eventLog = eventLogDataService.findById(loggingSystem.getId());
+        assertNotNull(eventLog);
+
+        event = eventDataService.findById(event.getId());
+        assertNotNull(event);
+
+        eventLogDataService.delete(eventLog);
+        eventLog = eventLogDataService.findById(eventLog.getId());
+        assertNull(eventLog);
+
+        event = eventDataService.findById(event.getId());
+        assertNull(event);
+
+        Unit unit = new Unit("Tree");
+        unit.getChapters().put("01", "Binary Tree");
+        unit.getChapters().put("02", "Balanced Binary Tree");
+        unitDataService.create(unit);
+
+        Subject subject = new Subject("Data Structure");
+        subject.getUnits().add(unit);
+        subjectDataService.create(subject);
+
+        subject = subjectDataService.findById(subject.getId());
+        assertNotNull(subject);
+
+        unit = unitDataService.findById(unit.getId());
+        assertNotNull(unit);
+
+        subjectDataService.delete(subject);
+        subject = subjectDataService.findById(subject.getId());
+        assertNull(subject);
+
+        unit = unitDataService.findById(unit.getId());
+        assertNull(unit);
+
+
     }
 
     @Test

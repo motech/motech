@@ -45,6 +45,12 @@
     <osgi:reference id="entityWithMapDataService" interface="org.motechproject.mds.test.service.mapdeserialisation.EntityWithStringObjectMapDataService" />
     <osgi:reference id="testMdsVersionedEntityService" interface="org.motechproject.mds.test.service.optimisticlocking.TestMdsVersionedEntityService" />
     <osgi:reference id="simpleClassWithVersioningService" interface="org.motechproject.mds.test.service.optimisticlocking.SimpleClassWithVersioningService" />
+    <osgi:reference id="childCaseDataService" interface="org.motechproject.mds.test.service.cascadedelete.ChildCaseDataService"/>
+    <osgi:reference id="eventDataService" interface="org.motechproject.mds.test.service.cascadedelete.EventDataService"/>
+    <osgi:reference id="eventLogDataService" interface="org.motechproject.mds.test.service.cascadedelete.EventDataService"/>
+    <osgi:reference id="motherCaseDataService" interface="org.motechproject.mds.test.service.cascadedelete.MotherCaseDataService"/>
+    <osgi:reference id="subjectDataService" interface="org.motechproject.mds.test.service.cascadedelete.SubjectDataService"/>
+    <osgi:reference id="unitDataService" interface="org.motechproject.mds.test.service.cascadedelete.UnitDataService"/>
 
     <osgi:service ref="jdoListenerTestService" interface="org.motechproject.mds.test.service.instancelifecyclelistener.JdoListenerTestService" auto-export="interfaces"/>
     <osgi:service ref="transactionTestService" interface="org.motechproject.mds.test.service.TransactionTestService" auto-export="interfaces"/>
