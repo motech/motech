@@ -19,6 +19,7 @@ import javax.annotation.PostConstruct;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.Properties;
 
 import static org.motechproject.server.startup.MotechPlatformState.DB_ERROR;
 import static org.motechproject.server.startup.MotechPlatformState.FIRST_RUN;
@@ -132,12 +133,17 @@ public class StartupManager {
                 markPlatformStateAs(NORMAL_RUN);
             }
 
+            Properties properties = dbSettings.asProperties();
+
             if (isFirstRun() || motechSettings == null ||
                     !motechSettings.getConfigFileChecksum().equals(dbSettings.getConfigFileChecksum())) {
                 LOGGER.info("Updating database startup");
 
-                dbSettings.updateSettings(motechSettings.getConfigFileChecksum(),
-                            motechSettings.getFilePath(), motechSettings.asProperties());
+                Properties propertiesToUpdate = motechSettings.asProperties();
+                for (Object key : propertiesToUpdate.keySet()) {
+                    Object value = propertiesToUpdate.get(key);
+                    properties.put(key, value == null ? "" : value);
+                }
             }
 
             try {
@@ -150,7 +156,7 @@ public class StartupManager {
             dbSettings.setLastRun(DateTime.now());
             dbSettings.setPlatformInitialized(true);
 
-            configurationService.savePlatformSettings(dbSettings);
+            configurationService.savePlatformSettings(properties);
         } catch (RuntimeException e) {
             LOGGER.error(e.getMessage(), e);
             markPlatformStateAs(DB_ERROR);
