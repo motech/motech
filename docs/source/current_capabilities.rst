@@ -1,7 +1,7 @@
 =============================
 MOTECH's Current Capabilities
 =============================
-The latest version of MOTECH is 0.27.x. We recognize that open source projects rapidly develop with many contributors adding a piece at a time. This document focuses on the capabilities of MOTECH right now and will remain updated regardless of the current release. We're keeping a list of future features on `our roadmap <roadmap.html>`_ with a focus on MOTECH 1.0.
+The latest version of MOTECH is 0.29.x. We recognize that open source projects rapidly develop with many contributors adding a piece at a time. This document focuses on the capabilities of MOTECH right now and will remain updated regardless of the current release. We're keeping a list of future features on `our roadmap <roadmap.html>`_ with a focus on delivering MOTECH 1.0.
 
 Below is a list of features currently available in MOTECH:
 
@@ -12,14 +12,24 @@ Below is a list of features currently available in MOTECH:
 - Tasks
     - Wire up events in MOTECH through the UI with the tasks module
     - The tasks module is the primary method to act on events in MOTECH. Each interaction raises an event in MOTECH which can trigger a task and perform a corresponding action.
+    - Run tasks on a user defined schedule, configurable through the UI.
+    - Interact with systems over intermittent internet connections:
+        - Push button retries allow administrators to retry a task when they know the other system is available
+        - Users are now able to define retry schedules. For example, if the system is down now, a user can try to retry it on 6, 12 and 24 hour increments.
 - Interfaces
     - Web Browser
         - End users can directly interact with the MOTECH interface through a web browser
+        - End users can collect form data in `Enketo <https://www.enketo.org/>`_, which posts to an xform based system (Ona.io, KoBo Toolbox or ODK Aggregate), which then forwards to MOTECH.
     - Commcare two-way integration
         - Configure multiple connections to Commcare projects
         - Receive and act on forwarded forms and cases from CommCare
         - Import historical forms
         - Connect to Commcare's data, fixture and location APIs to supplement tasks
+        - Interact with supply quantities in CommCare supply
+        - Create/Update case properties from MOTECH
+        - Post forms from a MOTECH Task action to CommCare (currently support simple forms without logic)
+    - Mobile Data Collection
+        - Collect data on Android phones using ODK Collect, ODK Scan or Ona Collect. The data is forwarded from Ona.io, Kobo Toolbox or ODK Aggregate to MOTECH
     - SMS Integration
         - Send and receive SMS from MOTECH through integration with an SMS aggregater with predefined configurations for popular systems including:
             - `Clickatell <https://www.clickatell.com/>`_
@@ -31,13 +41,24 @@ Below is a list of features currently available in MOTECH:
             - `Voxeo <https://voxeo.com/>`_
             - `Voto <https://www.votomobile.org/>`_
         - Create a JSON SMS template to easily connect to a specific Mobile Network Operator
+        - Integration with RapidPro allowing us to create, update and delete contacts as well as initiate flows and respond to webhooks.
     - IVR Integration
         - Initiate outgoing calls from MOTECH by integrating with a mobile network operator
+        - Integration with RapidPro allowing us to create, update and delete contacts as well as initiate flows and respond to webhooks.
 - Modules
+    - OpenMRS Integration through their REST API
+        - Create/Update patients in OpenMRS
+        - Query patient, person, program and relationships from OpenMRS
+        - Sync patient and program information between OpenMRS and another system (CommCare, DHIS2, Ona.io, etc.)
+        - Create encounters and observations
     - Perform Message Campaigns
         - MOTECH is able to perform SMS, voice and email message campaigns directly to communities and front line workers
     - Pill Reminder System
         - Enroll users in a custom pill regimen and send per-user reminders for their specific medication
+    - mTraining (remote training over SMS/IVR)
+        - Conduct structured courses through basic phones using SMS and IVR technologies
+        - Quiz participants and achieve milestones as they work through your curriculum
+        - Print lists of participants who have completed the curriculum
     - Consume Facility, Provider and Organization information based on the IHE Care Services Discovery profile
         - Connect to a CSD provider such as OpenInfoMan via REST or SOAP and store the data in the MOTECH Data Services system.
 - Reporting
@@ -47,5 +68,7 @@ Below is a list of features currently available in MOTECH:
         - Enroll tracked entities in DHIS2 programs
         - Push program stage events
         - Send aggregate data values and value sets
+    - Collect live metrics with GraphiteJS
+        - MOTECH can interact with a GraphiteJS server, allowing you to collect live metrics and create dashboards to determine how your implementaiton is performing.
     - ETL Connections to Pentaho and Jasper Reports
         - MOTECH can connect to popular third party reporting systems through an Extraction, Transformation and Loading (ETL) system such as `Pentaho's Data Integration - Kettle <http://community.pentaho.com/projects/data-integration/>`_ and `Jaspersoft-ETL <http://community.jaspersoft.com/project/jaspersoft-etl>`_
