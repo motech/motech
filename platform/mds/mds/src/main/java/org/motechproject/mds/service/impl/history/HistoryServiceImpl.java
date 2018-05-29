@@ -1,12 +1,12 @@
 package org.motechproject.mds.service.impl.history;
 
 import org.motechproject.mds.domain.EntityType;
-import org.motechproject.mds.service.HistoryTrashClassHelper;
 import org.motechproject.mds.query.Property;
 import org.motechproject.mds.query.PropertyBuilder;
 import org.motechproject.mds.query.QueryParams;
 import org.motechproject.mds.query.QueryUtil;
 import org.motechproject.mds.service.HistoryService;
+import org.motechproject.mds.service.HistoryTrashClassHelper;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.PropertyUtil;
 import org.slf4j.Logger;
@@ -72,7 +72,15 @@ public class HistoryServiceImpl extends BasePersistenceService implements Histor
             Query query = initQuery(historyClass);
             QueryUtil.setQueryParams(query, queryParams);
 
-            list = new ArrayList((List) query.execute(objId));
+            ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+            try {
+                // We want to be sure that proper class loader will be used
+                Thread.currentThread().setContextClassLoader(historyClass.getClassLoader());
+                list = new ArrayList((List) query.execute(objId));
+            } finally {
+                Thread.currentThread().setContextClassLoader(oldClassLoader);
+            }
+
             // Remove current revision from the list of historical revisions
             list.remove(getLatestRevision(historyClass, objId));
         }
