@@ -8,13 +8,13 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>1.3-SNAPSHOT</version>
+        <version>1.3</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
     <artifactId>motech-upload-test-bundle</artifactId>
     <name>MOTECH Upload Test Bundle</name>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3</version>
     <packaging>bundle</packaging>
 
     <properties>
