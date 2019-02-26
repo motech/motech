@@ -1,6 +1,5 @@
 package org.motechproject.server.bootstrap;
 
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.SQLDBConfig;
@@ -14,10 +13,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
@@ -26,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.File;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -101,19 +99,29 @@ public class BootstrapController {
             return new ModelAndView(REDIRECT_HOME);
         }
 
+        ModelAndView bootstrapView;
         if (result.hasErrors()) {
-            ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
+            bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
             bootstrapView.addObject("errors", getErrors(result));
             addCommonBootstrapViewObjects(bootstrapView);
             return bootstrapView;
         }
 
         String queueUrl = form.getQueueUrl();
-        boolean reachable = messageBrokerPingService.pingBroker(queueUrl);
+        boolean isAmqReachable = messageBrokerPingService.pingBroker(queueUrl);
 
-        if (!reachable) {
-            ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
+        if (!isAmqReachable) {
+            bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
             bootstrapView.addObject(ERRORS, singletonList(getMessage("server.bootstrap.verify.amq.warning", new Object[]{queueUrl}, request)));
+            addCommonBootstrapViewObjects(bootstrapView);
+            return bootstrapView;
+        }
+
+        boolean isDBReachable = testSqlConnection(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()), request);
+
+        if (!isDBReachable) {
+            bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
+            bootstrapView.addObject(ERRORS, singletonList(getMessage("server.bootstrap.verifySql.error", new Object[]{queueUrl}, request)));
             addCommonBootstrapViewObjects(bootstrapView);
             return bootstrapView;
         }
@@ -132,13 +140,13 @@ public class BootstrapController {
         } catch (RuntimeException e) {
             LOGGER.error("Error while saving bootstrap configuration", e);
 
-            ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
+            bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
             bootstrapView.addObject("errors", singletonList(getMessage("server.error.bootstrap.save", request)));
             addCommonBootstrapViewObjects(bootstrapView);
             return bootstrapView;
         }
 
-        ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
+        bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
         bootstrapView.getModelMap().put("redirect", true);
         return bootstrapView;
     }
@@ -154,41 +162,7 @@ public class BootstrapController {
             response.put(ERRORS, getErrors(result));
             response.put(SQL_CONFIG_ERROR, true);
         } else {
-            Connection sqlConnection = null;
-            try {
-                Class.forName(form.getSqlDriver()).newInstance();
-                if (StringUtils.isNotBlank(form.getSqlPassword()) || StringUtils.isNotBlank(form.getSqlUsername())) {
-                    sqlConnection = DriverManager.getConnection(form.getSqlUrl(), form.getSqlUsername(), form.getSqlPassword());
-                } else {
-                    sqlConnection = DriverManager.getConnection(form.getSqlUrl());
-                }
-                boolean reachable = sqlConnection.prepareCall("SELECT 0;").execute();
-                if (reachable) {
-                    response.put(SUCCESS, reachable);
-                } else {
-                    response.put(SUCCESS, reachable);
-                    response.put(SQL_CONFIG_ERROR, true);
-                }
-
-                sqlConnection.close();
-            } catch (SQLException e) {
-                response.put(WARNINGS, singletonList(getMessage("server.bootstrap.verify.warning", request)));
-                response.put(SUCCESS, false);
-                response.put(SQL_CONFIG_ERROR, true);
-            } catch (IllegalArgumentException | IllegalAccessException | InstantiationException | ClassNotFoundException e) {
-                response.put(ERRORS, singletonList(getMessage("server.error.invalid.sqlDriver", request)));
-                response.put(WARNINGS, singletonList(getMessage("server.bootstrap.verifySql.error", request)));
-                response.put(SUCCESS, false);
-                response.put(SQL_CONFIG_ERROR, true);
-            } finally {
-                if (sqlConnection != null) {
-                    try {
-                        sqlConnection.close();
-                    } catch (SQLException e) {
-                        LOGGER.error("Error while closing SQL connection", e);
-                    }
-                }
-            }
+            response = verifySqlConnection(new SQLDBConfig(form.getSqlUrl(), form.getSqlDriver(), form.getSqlUsername(), form.getSqlPassword()), request);
         }
         return response;
     }
@@ -250,5 +224,49 @@ public class BootstrapController {
 
     private String getMessage(String key, Object[] params, HttpServletRequest request) {
         return messageSource.getMessage(key, params, localeResolver.resolveLocale(request));
+    }
+
+
+    private Map<String, Object> verifySqlConnection(SQLDBConfig config, HttpServletRequest request) {
+        Map<String, Object> response = new HashMap<>();
+        boolean reachable;
+        Connection sqlConnection = null;
+        try {
+            sqlConnection = ConnectionUtil.getConnection(config);
+            reachable = sqlConnection.prepareCall("SELECT 0;").execute();
+            response.put(SUCCESS, reachable);
+            if (!reachable) {
+                response.put(SQL_CONFIG_ERROR, true);
+            }
+        } catch (SQLException e) {
+            response.put(WARNINGS, singletonList(getMessage("server.bootstrap.verify.warning", request)));
+            response.put(SUCCESS, false);
+            response.put(SQL_CONFIG_ERROR, true);
+        } catch (IllegalArgumentException | IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+            response.put(ERRORS, singletonList(getMessage("server.error.invalid.sqlDriver", request)));
+            response.put(WARNINGS, singletonList(getMessage("server.bootstrap.verifySql.error", request)));
+            response.put(SUCCESS, false);
+            response.put(SQL_CONFIG_ERROR, true);
+        } finally {
+            if (sqlConnection != null) {
+                try {
+                    sqlConnection.close();
+                } catch (SQLException e) {
+                    LOGGER.error("Error while closing SQL connection", e);
+                }
+            }
+        }
+
+        return response;
+    }
+
+    private boolean testSqlConnection(SQLDBConfig config, HttpServletRequest request) {
+        Map<String, Object> response = verifySqlConnection(config, request);
+        boolean isDBReachable = false;
+        if (response.get(SUCCESS) instanceof Boolean) {
+            isDBReachable = (Boolean) response.get(SUCCESS);
+        }
+
+        return isDBReachable;
     }
 }
