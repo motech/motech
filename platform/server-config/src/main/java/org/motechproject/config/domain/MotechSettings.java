@@ -27,6 +27,10 @@ public interface MotechSettings {
 
     String getJmxBroker();
 
+    String getJmxUsername();
+
+    String getJmxPassword();
+
     String getServerHost();
 
     String getUploadSize();
@@ -70,6 +74,10 @@ public interface MotechSettings {
     void setJmxHost(String jmxHost);
 
     void setJmxBroker(String jmxBroker);
+
+    void setJmxUsername(String jmxUsername);
+
+    void setJmxPassword(String jmxPassword);
 
     void setUploadSize(String uploadSize);
 

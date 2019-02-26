@@ -22,6 +22,8 @@ public final class ConfigurationConstants {
 
     public static final String JMX_HOST = "jmx.host";
     public static final String JMX_BROKER = "jmx.broker";
+    public static final String JMX_USERNAME = "jmx.username";
+    public static final String JMX_PASSWORD = "jmx.password";
 
     public static final String PROVIDER_NAME = "provider.name";
     public static final String PROVIDER_URL = "provider.url";

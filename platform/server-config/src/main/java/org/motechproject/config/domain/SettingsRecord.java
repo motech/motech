@@ -104,6 +104,18 @@ public class SettingsRecord implements MotechSettings {
 
     @Ignore
     @Override
+    public String getJmxUsername() {
+        return platformSettings.get(ConfigurationConstants.JMX_USERNAME);
+    }
+
+    @Ignore
+    @Override
+    public String getJmxPassword() {
+        return platformSettings.get(ConfigurationConstants.JMX_PASSWORD);
+    }
+
+    @Ignore
+    @Override
     public String getServerHost() {
         return new MotechURL(platformSettings.get(ConfigurationConstants.SERVER_URL)).getHost();
     }
@@ -160,6 +172,17 @@ public class SettingsRecord implements MotechSettings {
         savePlatformSetting(ConfigurationConstants.JMX_BROKER, jmxBroker);
     }
 
+    @Ignore
+    @Override
+    public void setJmxUsername(String jmxUsername) {
+        savePlatformSetting(ConfigurationConstants.JMX_USERNAME, jmxUsername);
+    }
+
+    @Ignore
+    @Override
+    public void setJmxPassword(String jmxPassword) {
+        savePlatformSetting(ConfigurationConstants.JMX_PASSWORD, jmxPassword);
+    }
     @Ignore
     @Override
     public void setStatusMsgTimeout(final String statusMsgTimeout) {

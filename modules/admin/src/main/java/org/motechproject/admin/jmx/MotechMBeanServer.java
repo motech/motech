@@ -19,6 +19,7 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.HashMap;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -137,7 +138,11 @@ public class MotechMBeanServer {
 
     private void createConnection() {
         try {
-            JMXConnector jmxc = JMXConnectorFactory.connect(new JMXServiceURL(getUrl()));
+            HashMap environment = new HashMap();
+            String[]  credentials = new String[] {configurationService.getPlatformSettings().getJmxUsername(),
+                    configurationService.getPlatformSettings().getJmxPassword()};
+            environment.put (JMXConnector.CREDENTIALS, credentials);
+            JMXConnector jmxc = JMXConnectorFactory.connect(new JMXServiceURL(getUrl()), environment);
             connection = jmxc.getMBeanServerConnection();
         } catch (IOException ioEx) {
             throw new MotechException(String.format("JMX connection could not be acquired from url %s", getUrl()), ioEx);
