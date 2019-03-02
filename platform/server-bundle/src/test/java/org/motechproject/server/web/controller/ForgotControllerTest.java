@@ -12,6 +12,8 @@ import org.motechproject.config.SettingsFacade;
 import org.motechproject.config.domain.LoginMode;
 import org.motechproject.config.domain.MotechSettings;
 import org.motechproject.server.web.dto.ForgotViewData;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import javax.servlet.http.HttpServletRequest;
@@ -79,7 +81,9 @@ public class ForgotControllerTest {
         when(cookieLocaleResolver.resolveLocale(request)).thenReturn(Locale.ENGLISH);
         when(motechSettings.getLoginMode()).thenReturn(LoginMode.REPOSITORY);
 
-        assertEquals("security.forgot.noSuchUser", controller.forgotPost(EMAIL));
+        ResponseEntity<String> expectedResponse = new ResponseEntity<>("{\"message\":\"security.forgot.noSuchUser\"}", HttpStatus.NOT_FOUND);
+
+        assertEquals(expectedResponse, controller.forgotPost(EMAIL));
 
         verify(recoveryService).passwordRecoveryRequest(EMAIL);
     }
