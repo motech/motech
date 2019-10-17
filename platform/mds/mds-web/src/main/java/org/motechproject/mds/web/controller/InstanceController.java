@@ -26,7 +26,7 @@ import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.domain.HistoryRecord;
-import org.motechproject.mds.web.domain.Records;
+import org.motechproject.commons.api.Records;
 import org.motechproject.mds.web.domain.RelationshipsUpdate;
 import org.motechproject.mds.web.service.InstanceService;
 import org.slf4j.Logger;

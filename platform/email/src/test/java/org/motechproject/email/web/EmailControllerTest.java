@@ -9,9 +9,9 @@ import org.mockito.Mock;
 import org.motechproject.email.builder.EmailRecordSearchCriteria;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
-import org.motechproject.email.domain.EmailRecords;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.email.service.impl.EmailAuditServiceImpl;
+import org.motechproject.commons.api.Records;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -91,7 +91,7 @@ public class EmailControllerTest {
 
         when(auditService.countEmailRecords(any(EmailRecordSearchCriteria.class))).thenReturn(54L);
 
-        EmailRecords<? extends BasicEmailRecordDto> records = emailController.getEmails(filter, request);
+        Records<? extends BasicEmailRecordDto> records = emailController.getEmails(filter, request);
         assertEquals(Integer.valueOf(1), records.getPage());
         assertEquals(Integer.valueOf(54), records.getRecords());
         assertEquals(Integer.valueOf(6), records.getTotal());
@@ -107,7 +107,7 @@ public class EmailControllerTest {
     public void shouldReturnAllEmailRecordsWhenNoFiltersSet() {
         when(auditService.countEmailRecords(any(EmailRecordSearchCriteria.class))).thenReturn(88L);
 
-        EmailRecords<? extends BasicEmailRecordDto> records = emailController.getEmails(new GridSettings(), request);
+        Records<? extends BasicEmailRecordDto> records = emailController.getEmails(new GridSettings(), request);
         assertEquals(Integer.valueOf(1), records.getPage());
         assertEquals(Integer.valueOf(88), records.getRecords());
         assertEquals(Integer.valueOf(9), records.getTotal());

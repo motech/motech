@@ -154,7 +154,11 @@
                         timeoutHnd = setTimeout(function () {
                             jQuery('#' + attrs.emailJqgridSearch).jqGrid('setGridParam', {
                                 page: 1,
-                                url: '../email/emails' + params
+                                url: '../email/emails' + params,
+                                prmNames: {
+                                    sort: 'sortColumn',
+                                    order: 'sortDirection'
+                                }
                             }).trigger('reloadGrid');
                         }, time || 0);
                     };
@@ -230,6 +234,10 @@
                         width: 200
                     }],
                     pager: '#' + attrs.emailLoggingGrid,
+                    prmNames: {
+                        sort: 'sortColumn',
+                        order: 'sortDirection'
+                    },
                     sortname: 'deliveryTime',
                     rownumbers: true,
                     viewrecords: true,

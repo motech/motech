@@ -1,4 +1,4 @@
-package org.motechproject.mds.web.domain;
+package org.motechproject.commons.api;
 
 import java.util.List;
 
