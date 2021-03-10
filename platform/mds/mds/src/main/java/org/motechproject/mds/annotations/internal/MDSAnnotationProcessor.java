@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The <code>MDSAnnotationProcessor</code> class is responsible for scanning bundle contexts and
@@ -18,6 +19,7 @@ import java.util.Map;
  *
  * @see org.motechproject.mds.annotations.internal.LookupProcessor
  * @see org.motechproject.mds.annotations.internal.EntityProcessor
+ * @see org.motechproject.mds.annotations.internal.EntityExtensionProcessor
  * @see org.motechproject.mds.annotations.internal.InstanceLifecycleListenerProcessor
  */
 @Component
@@ -28,6 +30,7 @@ public class MDSAnnotationProcessor {
     private LookupProcessor lookupProcessor;
     private InstanceLifecycleListenerProcessor instanceLifecycleListenerProcessor;
     private InstanceLifecycleListenersProcessor instanceLifecycleListenersProcessor;
+    private EntityExtensionProcessor entityExtensionProcessor;
 
     public MDSProcessorOutput processAnnotations(Bundle bundle, SchemaHolder schemaHolder) {
         String symbolicName = bundle.getSymbolicName();
@@ -56,6 +59,23 @@ public class MDSAnnotationProcessor {
         return output;
     }
 
+    public void processAnnotationsExtensions(List<MDSProcessorOutput> outputs, Bundle bundle, SchemaHolder schemaHolder) {
+        Set<Bundle> affectedBundles;
+        String symbolicName = bundle.getSymbolicName();
+
+        LOGGER.debug("Starting scanning bundle {} for MDS annotations' extensions", symbolicName);
+
+        entityExtensionProcessor.setEntitiesProcessingResult(outputs);
+        entityExtensionProcessor.execute(bundle, schemaHolder);
+        affectedBundles = entityExtensionProcessor.getAffectedBundles();
+
+        LOGGER.debug("Finished scanning bundle {} form MDS annotation' extensions. Starting to process results.", symbolicName);
+
+        for (Bundle abundle:affectedBundles) {
+            MDSInterfaceResolver.processMDSInterfaces(abundle);
+        }
+    }
+
     @Autowired
     public void setLookupProcessor(LookupProcessor lookupProcessor) {
         this.lookupProcessor = lookupProcessor;
@@ -65,6 +85,9 @@ public class MDSAnnotationProcessor {
     public void setEntityProcessor(EntityProcessor entityProcessor) {
         this.entityProcessor = entityProcessor;
     }
+
+    @Autowired
+    public void setEntityExtensionProcessor(EntityExtensionProcessor entityExtensionProcessor) { this.entityExtensionProcessor = entityExtensionProcessor; }
 
     @Autowired
     public void setInstanceLifecycleListenerProcessor(InstanceLifecycleListenerProcessor instanceLifecycleListenerProcessor) {

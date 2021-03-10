@@ -26,6 +26,7 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.TypeValidationDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.exception.field.EnumFieldAccessException;
+import org.motechproject.mds.exception.entity.FieldExistInExtendedEntityException;
 import org.motechproject.mds.reflections.ReflectionsUtil;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.MemberUtil;
@@ -112,6 +113,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
     private EntityDto entity;
     private Class clazz;
+    private Collection<FieldDto> existingFields;
 
     @Override
     public Class<Field> getAnnotationType() {
@@ -135,6 +137,16 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         return elements;
     }
 
+    public void checkForRepeatingFields(Class<?> declaringClass, String fieldName) {
+        if(declaringClass.equals(clazz)) {
+            for (FieldDto existingField : existingFields) {
+                if(existingField.getBasic().getName().equals(fieldName)){
+                    throw new FieldExistInExtendedEntityException(fieldName, clazz, clazz.getSuperclass());
+                }
+            }
+        }
+    }
+
     @Override
     protected void process(AnnotatedElement element) {
         AccessibleObject ac = (AccessibleObject) element;
@@ -150,6 +162,9 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
             String fieldName = MemberUtil.getFieldName(ac);
 
+            if(existingFields != null) {
+                checkForRepeatingFields(declaringClass, fieldName);
+            }
             FieldDto currentField = getFieldByName(declaringClass.getName(), fieldName);
 
             boolean isRelationship = ReflectionsUtil.hasAnnotationClassLoaderSafe(
@@ -218,6 +233,11 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         }
     }
 
+    @Override
+    public void afterExecution() {
+        existingFields = null;
+    }
+
     private String getRelatedFieldName(AccessibleObject ac, Class<?> classType, Class<?> genericType, Class<?> declaringClass, boolean isRelationship) {
         IndexedManyToMany manyToMany = getAnnotationClassLoaderSafe(ac, classType, IndexedManyToMany.class);
 
@@ -229,6 +249,10 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
 
     private boolean isRelatedFieldCollection(java.lang.reflect.Field relatedField) {
         return relatedField != null && Collection.class.isAssignableFrom(relatedField.getType());
+    }
+
+    public void setExistingFields(Collection<FieldDto> existingFields){
+        this.existingFields = existingFields;
     }
 
     private boolean isUiChanged(FieldDto currentField) {
@@ -388,10 +412,6 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
         }
 
         return type;
-    }
-
-    @Override
-    protected void afterExecution() {
     }
 
     public void setEntity(EntityDto entity) {
